@@ -1,0 +1,32 @@
+{
+  "unit": "t125-catalog",
+  "date": "2026-09-27",
+  "actor": "checker (fresh subagent, own browser, own fixture)",
+  "server": "uv run uvicorn autotester.ui.app:app (bound worktree D:/autoTesting/.worktrees/t125-catalog, AUTOTESTER_ROOT pointed at an isolated scratch data dir, never the bound tree's own project data)",
+  "fixture": "scratch project 'demo': two flows (login flow needing {{SECRET:DEMO_PASSWORD}}, Google sign-up flow needing {{SECRET:GOOGLE_SIGNUP_TOKEN}}), approved FlowSpec, neither secret value set, default write_policy=read_only",
+  "pages_visited": [
+    {
+      "url": "/projects/demo/catalog",
+      "http_status": 200,
+      "console_errors": 0,
+      "console_warnings": 0,
+      "screenshot": "catalog-page.png",
+      "observations": [
+        "Case-class table shows a genuine three-state mix: runnable rows in the green pill (e.g. happy, network_offline_slow), blocked-with-reason rows in the warning pill naming the reason and action (double_submit -> 'needs a wider write policy ...'; auth_wrong_creds / auth_expired_session -> 'missing credential ...').",
+        "Standard-packs table shows the not-applicable state distinctly: Month/year picker and Excel column-mapping upload both render 'not applicable' (Applicable=no) while OAuth sign-up carry-over renders 'missing credential' (Applicable=yes) -- the three states (runnable / blocked-with-reason / not-applicable) are textually distinguishable within the same page, confirming the builder's claimed 3-way distinction is not collapsed to two on this page.",
+        "DEFECT (filed ISS-t125-2): auth_wrong_creds, auth_expired_session AND the OAuth pack all render the identical action text 'set DEMO_PASSWORD, GOOGLE_SIGNUP_TOKEN in the repo-root .env' -- i.e. every missing_credential row names BOTH missing keys project-wide, not just the key its own flow actually needs. A person reading auth_wrong_creds's row would be told (incorrectly) that setting GOOGLE_SIGNUP_TOKEN is part of unblocking it."
+      ]
+    },
+    {
+      "url": "/projects/nope/catalog",
+      "http_status": 404,
+      "console_errors": 1,
+      "console_warnings": 0,
+      "observations": [
+        "The one console error is the browser's own 'Failed to load resource: 404' log for the main document -- expected for an intentional 404 (matches test_catalog_page_404s_for_an_unknown_project); not a defect."
+      ]
+    }
+  ],
+  "capability_coverage_note": "Not part of this file -- capability-coverage rows 1-5 were re-derived separately in an independent scratch-venv copy outside this worktree (never in a live browser); see the verdict file for that evidence.",
+  "verdict_contribution": "LIVE-BROWSER evidence supports CAPABILITY-COVERAGE distinctness claim (item 4) but surfaces a new, independently-confirmed defect (ISS-t125-2) invisible to any single-flow unit test."
+}
