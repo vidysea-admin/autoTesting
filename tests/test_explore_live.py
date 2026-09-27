@@ -52,7 +52,7 @@ def crawl_result(
         scope="local fixture crawl in the live test suite", max_actions=200,
         wall_clock_s=600.0, granted_by="test", granted_at="2026-09-08",
         expires_at="2099-01-01",
-    ))
+    ).sign())
     observer = PageObserver()
     session = BrowserSession(project, secrets, tmp_path / "shots", paths, observer=observer)
     try:

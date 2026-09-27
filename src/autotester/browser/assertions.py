@@ -107,8 +107,14 @@ def _network_met(session, pattern: str) -> bool:
     `_drain_network_evidence`, folded before every assertion check) -- a
     pure read of the observed response stream (NA4), never a second capture
     mechanism (NA6). Excludes this module's own `assert network: ...`
-    records so a prior assertion's own label can never satisfy a later one."""
-    return any(pattern in item.path for item in session.state.evidence
+    records so a prior assertion's own label can never satisfy a later one.
+
+    AT-578: scoped to `session.state.evidence_start` onward -- on the serial
+    route, one session runs several cases in a row, and without this an
+    EARLIER case's captured request would silently satisfy a LATER case's
+    `network` expectation (the assertion-side twin of AT-577)."""
+    return any(pattern in item.path
+               for item in session.state.evidence[session.state.evidence_start:]
                if item.kind == EvidenceKind.NETWORK and not item.path.startswith("assert "))
 
 

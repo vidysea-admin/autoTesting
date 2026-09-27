@@ -189,6 +189,26 @@ def test_spa_states_found_by_two_separate_crawls_still_do_not_conflict() -> None
     assert after_second.conflicts == []
 
 
+def test_an_index_html_rediscovery_merges_with_a_slash_screen_instead_of_duplicating() -> None:
+    """AT-618: `merge_screens`'s own-pattern dedupe (`by_pattern`) is a literal
+    dict lookup on `Screen.url_pattern`, never routed through
+    `stages/coverage.py::_path_of` — so `screen_from` itself must store the
+    FOLDED pattern, or a screen first crawled at '/' and rediscovered at
+    '/index.html' (same page, same name) is filed as a brand-new Screen
+    instead of the rediscovery `_is_rediscovery` exists to catch."""
+    spec = FlowSpec(project="erp", screens=[
+        Screen(id="scr_old", name="Home", url_pattern="/"),
+    ])
+    index_node = make_node(url="https://app.test/index.html", template="app.test/",
+                           name="Home")
+
+    merged = merge_screens(spec, [index_node], "erp", crawl_id="crawl_1")
+
+    assert len(merged.screens) == 1
+    assert merged.screens[0].id == "scr_old"
+    assert merged.conflicts == []
+
+
 def test_a_human_authored_claim_is_still_contradicted_by_a_crawl() -> None:
     """The other direction, and the reason the rule is about identity rather
     than about suppressing conflicts: a screen with no structural identity

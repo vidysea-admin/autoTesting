@@ -11,7 +11,7 @@ Contract: qa/contracts/consent.md CN5-CN7.
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -136,22 +136,30 @@ def test_approve_refuses_an_unparseable_expiry(root: Path) -> None:
     assert "YYYY-MM-DD" in result.output
 
 
-def test_approve_refuses_an_expiry_of_today(root: Path) -> None:
+def test_approve_grants_an_expiry_of_today(root: Path) -> None:
     """AT-147, high, and the date an operator granting SAME-DAY production
     consent for T-145 would actually type.
 
     `_validate_grant` compared `< date.today()` while `RunApproval.is_expired`
     reads a bare date through `fromisoformat` — i.e. MIDNIGHT — so an approval
     "expiring today" was already dead at 00:00:01. `approve` printed a green
-    granted line; the very next `explore` refused it as `expired`."""
+    granted line; the very next `explore` refused it as `expired`.
+
+    **Updated for CN4 (at147 answered C, D-048):** a NEW grant no longer stores
+    the bare date at all — `approve_cmd` now stores an explicit end-of-day
+    timestamp, so `--expires <today>` is GRANTED and honoured through the rest
+    of today. The old contradiction is gone because the grant and the runtime
+    now agree on what "today" means, not because either moved to match the
+    other's mistake. The exact boundary is pinned, timezone-independently, by
+    `test_a_new_grant_is_honoured_through_the_end_of_its_day_and_refused_one_second_later`
+    below."""
     result = runner.invoke(app, [
         "approve", "demo", "--kind", "crawl", "--target", BASE_URL,
         "--scope", "s", "--granted-by", "umesh", "--expires", date.today().isoformat(),
     ])
 
-    assert result.exit_code == 1
-    assert "today" in result.output
-    assert TOMORROW in result.output, "the refusal must name the date to use instead"
+    assert result.exit_code == 0
+    assert date.today().isoformat() in result.output
 
 
 def test_the_grant_and_the_runtime_agree_on_every_expiry_they_accept(
@@ -177,14 +185,22 @@ def test_the_expiry_refusal_prints_a_usable_date(root: Path) -> None:
     """AT-150: the refusal said the operator needs "tomorrow's date" and never
     printed one. My own test asserted only that the word "tomorrow" appeared,
     so a refusal naming no usable date would have passed it — a test written
-    against the message I meant rather than the message a reader gets."""
+    against the message I meant rather than the message a reader gets.
+
+    **Updated for CN4 (at147 answered C, D-048):** `--expires <today>` is no
+    longer refused (`test_approve_grants_an_expiry_of_today`), so this drives
+    the one branch that remains — a genuinely PAST date — and the usable date
+    it must now print is TODAY, since today is the earliest day a new grant
+    can still cover."""
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+
     result = runner.invoke(app, [
         "approve", "demo", "--kind", "crawl", "--target", BASE_URL,
-        "--scope", "s", "--granted-by", "umesh", "--expires", date.today().isoformat(),
+        "--scope", "s", "--granted-by", "umesh", "--expires", yesterday,
     ])
 
     assert result.exit_code == 1
-    assert TOMORROW in result.output, "the refusal must name a date, not a word"
+    assert date.today().isoformat() in result.output, "the refusal must name a date, not a word"
 
 
 # -- AT-151 / AT-152: one arm fixed, the other forgotten (again) -----------
@@ -193,7 +209,13 @@ def test_a_past_expiry_also_names_a_usable_date(root: Path) -> None:
     """AT-151: the AT-150 fix named a usable date on the `today` branch and not
     on the `past` one. That is the AT-149 pattern a THIRD time -- fixing one arm
     of a two-arm condition and leaving its twin. CN4 requires the refusal to
-    name a usable date unqualified, not on the branch I happened to test."""
+    name a usable date unqualified, not on the branch I happened to test.
+
+    **Updated for CN4 (at147 answered C, D-048):** there is now only one arm
+    (`expiry < today`), so this test and `test_the_expiry_refusal_prints_a_usable_date`
+    exercise it at two different distances into the past — kept as two tests
+    because AT-151's own lesson is that one distance is not enough evidence an
+    arm generalises. The usable date is TODAY now, not tomorrow."""
     long_ago = (date.today() - timedelta(days=400)).isoformat()
 
     result = runner.invoke(app, [
@@ -202,4 +224,53 @@ def test_a_past_expiry_also_names_a_usable_date(root: Path) -> None:
     ])
 
     assert result.exit_code == 1
-    assert TOMORROW in result.output, "the past branch names no usable date"
+    assert date.today().isoformat() in result.output, "the past branch names no usable date"
+
+
+# -- at147 answered C (D-048): end-of-day for NEW grants only --------------
+
+def test_a_new_grant_is_honoured_through_the_end_of_its_day_and_refused_one_second_later(
+    root: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CN4: a NEW grant's expiry is stored offset-aware in local time, e.g.
+    `2026-09-26T23:59:59+05:30` — never naive, or `RunApproval.is_expired`
+    would read it as UTC and shift the boundary by the host's own offset.
+    `cli_crawl._local_now` is the single seam monkeypatched here, so this pins
+    an exact instant regardless of the machine's real clock or timezone."""
+    import autotester.cli_crawl as cli_crawl_mod
+    from autotester.core.consent import ApprovalRequired, require_approval
+    from autotester.schema.enums import ApprovalKind
+
+    tz = timezone(timedelta(hours=5, minutes=30))
+    fixed_now = datetime(2026, 9, 26, 10, 0, 0, tzinfo=tz)
+    monkeypatch.setattr(cli_crawl_mod, "_local_now", lambda: fixed_now)
+
+    result = runner.invoke(app, [
+        "approve", "demo", "--kind", "crawl", "--target", BASE_URL,
+        "--scope", "s", "--granted-by", "umesh", "--expires", "2026-09-26",
+        "--max-actions", str(CLI_DEFAULT_ACTIONS), "--wall-clock", CLI_DEFAULT_WALL_CLOCK,
+    ])
+    assert result.exit_code == 0
+
+    store = ProjectStore("demo", root)
+    approval = store.list_approvals()[0]
+    assert approval.expires_at == "2026-09-26T23:59:59+05:30", (
+        "must be offset-aware end-of-day local time, never a naive stamp"
+    )
+
+    last_local_second = datetime(2026, 9, 26, 23, 59, 59, tzinfo=tz)
+    one_second_later = datetime(2026, 9, 27, 0, 0, 0, tzinfo=tz)
+
+    covering = require_approval(
+        [approval], project="demo", kind=ApprovalKind.CRAWL, target=BASE_URL,
+        actions=CLI_DEFAULT_ACTIONS, wall_clock_s=float(CLI_DEFAULT_WALL_CLOCK),
+        now=last_local_second,
+    )
+    assert covering.id == approval.id
+
+    with pytest.raises(ApprovalRequired):
+        require_approval(
+            [approval], project="demo", kind=ApprovalKind.CRAWL, target=BASE_URL,
+            actions=CLI_DEFAULT_ACTIONS, wall_clock_s=float(CLI_DEFAULT_WALL_CLOCK),
+            now=one_second_later,
+        )

@@ -66,7 +66,7 @@ def _crawl_inventory(tmp_path: Path, base: str,
         project="inv", run_kind=ApprovalKind.CRAWL, target=url, scope="local inventory fixture",
         max_actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s, granted_by="test",
         granted_at="2026-09-17", expires_at="2099-01-01",
-    ))
+    ).sign())
     creds = INVENTORY["login"]
     case = Case(project="inv", flow_id="login", kind=CaseKind.BEST, case_class=CaseClass.HAPPY,
                 title="sign in", steps=[

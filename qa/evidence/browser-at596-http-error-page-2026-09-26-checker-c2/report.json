@@ -1,0 +1,26 @@
+{
+  "405": {
+    "status": 405,
+    "content_type": "text/html; charset=utf-8",
+    "allow": "POST",
+    "h2": "405 Method Not Allowed",
+    "console_errors": [
+      "Failed to load resource: the server responded with a status of 405 (Method Not Allowed)"
+    ]
+  },
+  "404-unmatched": {
+    "status": 404,
+    "content_type": "text/html; charset=utf-8",
+    "allow": null,
+    "h2": "404 Not Found",
+    "console_errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "back_link": "http://127.0.0.1:8093/",
+  "405-json": {
+    "status": 405,
+    "allow": "POST",
+    "body": "{\"detail\":\"Method Not Allowed\"}"
+  }
+}

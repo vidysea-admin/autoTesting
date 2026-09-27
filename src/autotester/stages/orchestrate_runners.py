@@ -68,6 +68,7 @@ def make_ingest_runner(
     proposal for MODEL to fold in. Reuses `ingest_video` unchanged."""
 
     def _run(ctx: StageContext, prev_ref: str | None) -> str:
+        provider.trace = ctx.trace  # D-041: this run's LLM calls join its own trace.jsonl
         spec = ingest_video(source, project_slug, provider, docs)
         return _persist_proposal(ctx, StageName.INGEST, spec)
 

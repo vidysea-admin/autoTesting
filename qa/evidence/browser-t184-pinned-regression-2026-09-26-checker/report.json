@@ -1,0 +1,22 @@
+{
+  "base": "http://127.0.0.1:8794",
+  "slug": "pin-check",
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "http_errors": [
+    "409 http://127.0.0.1:8794/projects/pin-check/cases/case_1ef249f76356/delete"
+  ],
+  "pinned_row_found": true,
+  "unpinned_row_found": true,
+  "pinned_delete_status": 409,
+  "pinned_delete_content_type": "application/json",
+  "pinned_delete_body": "{\"detail\":\"case 'case_1ef249f76356' is pinned (issue iss_e9fafcb88df3) and cannot be pruned\"}",
+  "pinned_delete_page_text": "{\"detail\":\"case 'case_1ef249f76356' is pinned (issue iss_e9fafcb88df3) and cannot be pruned\"}",
+  "pinned_delete_url_after": "http://127.0.0.1:8794/projects/pin-check/cases/case_1ef249f76356/delete",
+  "pinned_case_still_listed": true,
+  "unpinned_delete_status": 303,
+  "unpinned_delete_url_after": "http://127.0.0.1:8794/projects/pin-check/cases",
+  "unpinned_case_still_listed_after_delete": false,
+  "pinned_case_still_listed_final": true
+}

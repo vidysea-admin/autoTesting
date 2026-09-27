@@ -1,0 +1,19 @@
+{
+  "3_pin_link_count": 1,
+  "4_form_url": "http://127.0.0.1:8094/projects/demo/issues/iss_42ee581365d2/pin",
+  "4_after_submit_url": "http://127.0.0.1:8094/projects/demo/cases",
+  "4_pinned_title_shown": true,
+  "5_pin_link_gone": true,
+  "5_pinned_pill": true,
+  "6_delete_forms": 1,
+  "6_delete_status": 409,
+  "6_delete_page_text": "{\"detail\":\"case 'case_3f7c8f9acd43' is pinned (issue iss_42ee581365d2) and cannot be pruned\"}",
+  "6_case_still_listed": true,
+  "7_repin_form_status_url": "http://127.0.0.1:8094/projects/demo/issues/iss_42ee581365d2/pin",
+  "7_repin_status": 400,
+  "7_repin_page_text": "{\"detail\":\"this project already has a case with exactly these steps: 'pinned regression \u2014 Google sign-in drops the data filled at signup'. Change a step to make it a different case, or rename the existing one from the cases list.\"}",
+  "console": [
+    "error: Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "error: Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ]
+}

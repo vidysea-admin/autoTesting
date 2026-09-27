@@ -34,24 +34,29 @@ class MockProvider(Provider):
     def available(self) -> bool:
         return True
 
-    def _next(self, role: str, prompt: str) -> Any:
+    def _next(self, role: str, prompt: str, *,
+              prompt_file: str | None = None, fed_id: str | None = None) -> Any:
         self.prompts.append((role, prompt))
         queue = self.responses.get(role) or []
         if not queue:
             raise ProviderError(f"mock provider has no queued response for role={role}")
-        self.record(role, input_tokens=len(prompt) // 4, output_tokens=16)
+        self.record(role, input_tokens=len(prompt) // 4, output_tokens=16,
+                    prompt_file=prompt_file, fed_id=fed_id)
         return queue.pop(0)
 
     def see_video(self, path: Path, prompt: str, schema: type[ModelT],
-                  options: VisionOptions | None = None) -> ModelT:
+                  options: VisionOptions | None = None, *,
+                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:
         self.vision_options.append(options)
-        return self._next("vision", f"{path}:{prompt}")
+        return self._next("vision", f"{path}:{prompt}", prompt_file=prompt_file, fed_id=fed_id)
 
-    def act(self, prompt: str, schema: type[ModelT] | None = None) -> Any:
-        return self._next("agent", prompt)
+    def act(self, prompt: str, schema: type[ModelT] | None = None, *,
+            prompt_file: str | None = None, fed_id: str | None = None) -> Any:
+        return self._next("agent", prompt, prompt_file=prompt_file, fed_id=fed_id)
 
     def judge(
-        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None
+        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,
+        prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
         self.judge_images.append(images or [])
-        return self._next("judge", prompt)
+        return self._next("judge", prompt, prompt_file=prompt_file, fed_id=fed_id)

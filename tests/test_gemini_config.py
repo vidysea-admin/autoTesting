@@ -8,6 +8,9 @@ fields a given model string gets, not how a response schema is rendered.
 
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from autotester.providers.gemini import GeminiProvider, _is_gemini_3
 from autotester.schema.observation import VisionOptions
 
@@ -62,3 +65,63 @@ def test_config_does_not_set_thinking_config_for_an_older_model() -> None:
     provider = GeminiProvider(api_key="fake-key", model="gemini-2.0-flash")
     config = provider._config(None, VisionOptions())
     assert config.thinking_config is None
+
+
+# -- AT-367: temperature used to be dropped (unreachable `elif`) on every ----
+# -- 3.x model, including DEFAULT_MODEL -------------------------------------
+
+def test_config_honours_temperature_on_the_default_gemini_3_model() -> None:
+    """DEFAULT_MODEL ('gemini-3.6-flash') satisfies `_is_gemini_3`, so the old
+    `elif opts.temperature is not None` branch could never fire for it -- a
+    caller-set temperature was silently dropped with nothing failing."""
+    provider = GeminiProvider(api_key="fake-key")  # DEFAULT_MODEL
+    config = provider._config(None, VisionOptions(temperature=0.4))
+    assert config.temperature == 0.4
+
+
+def test_config_honours_temperature_alongside_thinking_config() -> None:
+    """temperature is an independent GenerateContentConfig field the SDK
+    accepts on every model -- it does not conflict with thinking_config, so
+    both are set together on a 3.x model."""
+    provider = GeminiProvider(api_key="fake-key", model="gemini-3.6-flash")
+    config = provider._config(None, VisionOptions(temperature=0.7, thinking_level="low"))
+    assert config.temperature == 0.7
+    assert config.thinking_config.thinking_level == "LOW"
+
+
+def test_config_omits_temperature_when_caller_does_not_set_it() -> None:
+    """No regression: an unset temperature still isn't sent for a 3.x model."""
+    provider = GeminiProvider(api_key="fake-key", model="gemini-3.6-flash")
+    config = provider._config(None, VisionOptions())
+    assert config.temperature is None
+
+
+# -- AT-370: thinking_level was an unvalidated bare str ----------------------
+
+def test_visionoptions_rejects_an_invalid_thinking_level() -> None:
+    """A typo used to reach the SDK as a silently-accepted nonsense enum
+    member (only a stderr UserWarning, nothing raised through this repo's own
+    error path). It must now fail at construction time instead."""
+    with pytest.raises(ValidationError):
+        VisionOptions(thinking_level="banana")
+
+
+@pytest.mark.parametrize("level", ["minimal", "low", "medium", "high"])
+def test_visionoptions_accepts_every_sdk_thinking_level(level: str) -> None:
+    assert VisionOptions(thinking_level=level).thinking_level == level
+
+
+# -- AT-591: media_resolution was an unvalidated bare str, same shape --------
+# -- as AT-370's thinking_level ----------------------------------------------
+
+def test_visionoptions_rejects_an_invalid_media_resolution() -> None:
+    """A typo (e.g. 'ultra') used to reach the SDK unvalidated -- gemini.py's
+    f'MEDIA_RESOLUTION_{value.upper()}' would build a nonsense enum name the
+    SDK does not define. It must now fail at construction time instead."""
+    with pytest.raises(ValidationError):
+        VisionOptions(media_resolution="ultra")
+
+
+@pytest.mark.parametrize("resolution", ["low", "medium", "high"])
+def test_visionoptions_accepts_every_sdk_media_resolution(resolution: str) -> None:
+    assert VisionOptions(media_resolution=resolution).media_resolution == resolution

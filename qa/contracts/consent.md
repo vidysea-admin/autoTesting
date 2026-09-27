@@ -53,11 +53,19 @@ it refuses", it is "can a check that ran for real get past it".
 
 ### CN4 — Consent is never open-ended
 - `expires_at` is required. An unparseable expiry is treated as **expired**, never as eternal.
-- **A bare date means the START of that day, not the end.** `expires_at: "2026-09-09"` is read by
-  `fromisoformat` as midnight, so consent lapses at `2026-09-09 00:00:00`. This is recorded, not
-  endorsed: whether it *should* mean end-of-day is a CRITICAL amendment (it widens every approval
-  already on disk by up to 24h) and is put to the human at `qa/gates/at147-expiry-end-of-day.md`.
-  Until that is answered, the semantics above are the contract.
+- **A date given at the grant means through the END of that day, for grants minted from
+  2026-09-26 on** (at147 answered C, D-048).
+  - `approve --expires <date>` stores an explicit, **offset-aware** end-of-day timestamp in the
+    operator's local timezone, e.g. `2026-09-26T23:59:59+05:30`. Consent lapses after the last
+    local second of the named day, and `--expires <today>` is therefore grantable.
+  - The timestamp must never be stored naive. `RunApproval.is_expired` (schema/approval.py) reads a
+    naive stamp as UTC, so a naive `T23:59:59` would run about 5.5 h past local midnight on an IST
+    host.
+  - **A bare date already on disk keeps its old meaning.** `fromisoformat` reads
+    `expires_at: "2026-09-09"` as midnight, so that row lapses at the START of its day. No stored
+    approval is widened: option B, retroactive end-of-day, was declined.
+  - Making a stored bare date inclusive, or changing the time stamped on new grants, is a CRITICAL
+    amendment, not a fix.
 - **The grant and the runtime must agree: every expiry `approve` ACCEPTS must be one
   `require_consent` will HONOUR.** Two comparisons implementing one rule is where AT-145 and
   AT-147 both came from — a whole day in which `approve` printed a green "granted" line for a
@@ -66,6 +74,12 @@ it refuses", it is "can a check that ran for real get past it".
   it (the CN6 principle, applied one level up at the grant).
 - **Verify:** `tests/test_consent.py`; and the property test driving the real CLI grant into the
   real `require_consent` (`tests/test_approve_cli.py::test_the_grant_and_the_runtime_agree_on_every_expiry_they_accept`).
+  For the end-of-day rule, a test must show all three of these:
+  - a NEW grant for day D is honoured at D 23:59:59 local time and refused one second later, with
+    the boundary pinned as an exact aware instant;
+  - a pre-existing bare-date row for D still lapses at D 00:00;
+  - `--expires <today>` is granted AND honoured.
+  Each is red with the fix reverted (C7).
 
 ### CN5 — Approval does not transfer
 - Matching on (`project`, `run_kind`, `target`) is **EXACT** string matching. A prefix match would
@@ -162,3 +176,10 @@ it refuses", it is "can a check that ran for real get past it".
   **CN9** (the gate is unconditional; the maker's trade upheld, reversal is CRITICAL) · why: the
   maker asked for a ruling on the trade and it should not stay implicit; AT-100's lesson is that an
   unfalsifiable check is the failure mode, and "can only fail" is the mirror of it.
+- 2026-09-26 · amendment (authorized by D-048; Umesh answered qa/gates/at147-expiry-end-of-day.md = C)
+  · **CN4**: new grants store an offset-aware local `<date>T23:59:59±hh:mm`, so a named day is
+  inclusive. The timezone rule was added on the same-day pre-commit review (is_expired reads naive
+  stamps as UTC). Bare-date rows
+  already on disk keep start-of-day. This widens consent only for grants made after this date,
+  and only by the operator's own explicit choice of day. Nothing already granted changes. The
+  maker builds it against this text, and AT-150/AT-151 are re-judged against it.

@@ -15,12 +15,12 @@ from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import RepoDocs
-from autotester.providers.base import Provider
+from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Failure, Judgment, Rubric, Verdict
 
-PROMPT_NAME = "grade_v1.md"
+SKILL_NAME = "grade"  # src/autotester/skills/grade/SKILL.md (T-175, was grade_v1.md)
 
 
 def _render_evidence(result: RawResult) -> str:
@@ -41,7 +41,7 @@ def _render_rubric(rubric: Rubric) -> str:
 
 
 def build_grade_prompt(rubric: Rubric, result: RawResult, docs: RepoDocs) -> str:
-    template = (docs.prompts_dir / PROMPT_NAME).read_text(encoding="utf-8")
+    template = load_skill_prompt(SKILL_NAME, skills_dir=docs.skills_dir)
     return (
         template.replace("{{RUBRIC}}", _render_rubric(rubric))
         .replace("{{EVIDENCE}}", _render_evidence(result))
@@ -134,6 +134,12 @@ def _outcome_verdict(result: RawResult, rubric: Rubric, run_id: str) -> Verdict 
         return _verdict(run_id, result, rubric, verdict_result=Result.INCONCLUSIVE,
                          provider_id="rule", scoreboard="not judged: execution errored",
                          note=result.error)
+    if result.outcome is Outcome.NOT_RUN:
+        # D-045/AT-581 (E6): the case's execution condition could not be enacted -- it never
+        # ran, so it never reaches the judge and can never come back PASS.
+        return _verdict(run_id, result, rubric, verdict_result=Result.INCONCLUSIVE,
+                         provider_id="rule", scoreboard="not judged: execution condition "
+                         "could not be enacted", note=result.not_run_reason)
     return None
 
 
@@ -169,7 +175,8 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     seen = [path for path in requested if path.exists()]
     counts = {"images_requested": len(requested), "images_seen": len(seen)}
 
-    judgment = judge.judge(prompt, Judgment, images=seen)
+    judgment = judge.judge(prompt, Judgment, images=seen,
+                           prompt_file=SKILL_NAME, fed_id=result.case_id)
     problem = _inconsistency(rubric, judgment)
     if problem is not None:
         return _verdict(run_id, result, rubric, verdict_result=Result.INCONCLUSIVE,

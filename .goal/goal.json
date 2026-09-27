@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-09-24T22:50:18",
+  "updated": "2026-09-26T08:34:30",
   "progress": {
-    "total": 67,
-    "done": 39,
+    "total": 70,
+    "done": 47,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 28,
+    "pending": 23,
     "current": "T-122",
-    "percent": 58
+    "percent": 67
   },
   "tasks": [
     {
@@ -451,7 +451,7 @@
     {
       "id": "T-123",
       "title": "Medium-issue batch: AT-087 per-field exemption, AT-076/086 config-field rule, AT-079/080, AT-065, AT-085",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "low",
       "deps": [
         "T-121"
@@ -465,7 +465,8 @@
       "attempts": 0,
       "created": "2026-09-07T17:15:41",
       "user_value": "normal",
-      "criticality": "low"
+      "criticality": "low",
+      "completed": "2026-09-25T05:23:16"
     },
     {
       "id": "T-130",
@@ -762,7 +763,7 @@
         "cmd": "uv run pytest tests/test_catalog.py tests/test_ui_catalog.py",
         "expect_exit": 0
       },
-      "note": "plan.md 5A. expand.py generates cases without saying which cannot actually run; a blocked entry must name the one action that unblocks it.",
+      "note": "plan.md 5A. expand.py generates cases without saying which cannot actually run; a blocked entry must name the one action that unblocks it. | EXTEND (AT-588, meeting 2026-09-26): packs for OAuth sign-up carry-over, month/year pickers, Excel column-mapping upload.",
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
@@ -771,7 +772,7 @@
     {
       "id": "T-126",
       "title": "Governance debt sweep: adapter allowlist (D-018), QUEUE/SNAPSHOT drift, ledger backfill",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "low",
       "deps": [
         "T-124"
@@ -785,7 +786,8 @@
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "normal",
-      "criticality": "low"
+      "criticality": "low",
+      "completed": "2026-09-25T06:08:27"
     },
     {
       "id": "T-150",
@@ -1080,7 +1082,7 @@
         "cmd": "uv run pytest tests/test_eval_compiler.py",
         "expect_exit": 0
       },
-      "note": "Generates best/worst/edge evals with source traceability; component PASS cannot hide workflow/application failure. | D-041: include the traceability knowledge graph (persona graph extended: screen/control/flow/scenario/case/verdict/API/release nodes+edges; JSON, no graph DB).",
+      "note": "Generates best/worst/edge evals with source traceability; component PASS cannot hide workflow/application failure. | D-041: include the traceability knowledge graph (persona graph extended: screen/control/flow/scenario/case/verdict/API/release nodes+edges; JSON, no graph DB). | EXTEND (AT-586, meeting 2026-09-26): structured scenario variants.",
       "attempts": 0,
       "created": "2026-09-10T05:58:09",
       "user_value": "high",
@@ -1152,7 +1154,7 @@
     {
       "id": "T-172",
       "title": "Run trace: redacted trace.jsonl per run (stage + LLM spans: model, tokens, latency, cost, fallback hops, verdict fed) + UI panel (D-041)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-163"
       ],
@@ -1166,12 +1168,13 @@
       "note": "D-041 phase 1; phase 2 = Langfuse self-hosted export when on a server.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
-      "user_value": "high"
+      "user_value": "high",
+      "completed": "2026-09-25T06:01:45"
     },
     {
       "id": "T-173",
       "title": "Parallel case execution: N isolated browser contexts bounded by measured RAM/CPU and project.max_parallel; write-policy cases serial (D-041)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-163"
       ],
@@ -1185,7 +1188,10 @@
       "note": "D-041; must prove parallel verdicts == serial verdicts on a fixture.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
-      "user_value": "high"
+      "user_value": "high",
+      "reopen_reason": "Mode B sweep 2026-09-25: PR6 not fully backed -- stages/parallel_run.py::_run_one calls session_factory(case) outside its try, so a context-launch failure aborts run_cases and discards siblings (AT-565, high). Fix folded into at562-564-live-wiring.",
+      "reopen_at": "2026-09-25T06:07:48",
+      "completed": "2026-09-25T10:35:48"
     },
     {
       "id": "T-174",
@@ -1209,7 +1215,7 @@
     {
       "id": "T-175",
       "title": "Prompts as SKILL.md: grader, test-design, bug-hunting, ingest prompts in skill folders loaded via the provider seam (D-041)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "medium",
       "criticality": "medium",
@@ -1221,7 +1227,8 @@
       "note": "D-041; Vidysea portable core.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
-      "user_value": "normal"
+      "user_value": "normal",
+      "completed": "2026-09-25T05:36:17"
     },
     {
       "id": "T-176",
@@ -1315,7 +1322,7 @@
         "cmd": "uv run pytest tests/test_agent_subagents.py",
         "expect_exit": 0
       },
-      "note": "D-042: the grader subagent holds no action tools and runs in its own context, so C7 (executor never grades itself) still holds.",
+      "note": "D-042: the grader subagent holds no action tools and runs in its own context, so C7 (executor never grades itself) still holds. | EXTEND (AT-589, meeting 2026-09-26): explicit judge vendor + warning when it matches the agent's vendor.",
       "attempts": 0,
       "created": "2026-09-24T22:20:00",
       "user_value": "high"
@@ -1338,6 +1345,60 @@
       "attempts": 0,
       "created": "2026-09-24T22:20:00",
       "user_value": "high"
+    },
+    {
+      "id": "T-182",
+      "title": "Enact VIEWPORT_MOBILE / LOCALE_I18N cases (per-case viewport + locale at context creation) or report them not-run, never PASS (AT-581)",
+      "status": "done",
+      "deps": [],
+      "base_criticality": "high",
+      "criticality": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run pytest tests/test_viewport_locale_enact.py",
+        "expect_exit": 0
+      },
+      "note": "AT-581 (meeting review 2026-09-26, D-045 execute E6): launch.py:30 hard-codes 1366x850 and default locale, so mobile/i18n PASS is false.",
+      "attempts": 0,
+      "created": "2026-09-26T07:35:49",
+      "user_value": "high",
+      "completed": "2026-09-26T08:34:30"
+    },
+    {
+      "id": "T-183",
+      "title": "Both run exports (Excel + HTML) carry each failure's criterion, judge reason, fix_hint and the case's steps (AT-582)",
+      "status": "done",
+      "deps": [],
+      "base_criticality": "high",
+      "criticality": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run pytest tests/test_report_export_reason.py",
+        "expect_exit": 0
+      },
+      "note": "AT-582 (meeting review 2026-09-26, D-045 report-export RE6).",
+      "attempts": 0,
+      "created": "2026-09-26T07:35:49",
+      "user_value": "high",
+      "completed": "2026-09-26T08:14:01"
+    },
+    {
+      "id": "T-184",
+      "title": "Known bug -> pinned p0 regression Case that runs in every regression run (AT-585)",
+      "status": "done",
+      "deps": [],
+      "base_criticality": "high",
+      "criticality": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run pytest tests/test_pinned_regression.py",
+        "expect_exit": 0
+      },
+      "note": "AT-585 (meeting review 2026-09-26): issues.py only emits Excel rows; REGRESSION_ANCHOR replays happy paths only.",
+      "attempts": 0,
+      "created": "2026-09-26T07:35:49",
+      "user_value": "high",
+      "completed": "2026-09-26T08:17:10"
     }
   ],
   "decisions": [],
@@ -1581,6 +1642,27 @@
       "message": "T-181 needs review (high)",
       "task_id": "T-181",
       "acked": false
+    },
+    {
+      "ts": "2026-09-26T07:37:02",
+      "level": "warn",
+      "message": "T-182 needs review (high)",
+      "task_id": "T-182",
+      "acked": false
+    },
+    {
+      "ts": "2026-09-26T07:37:02",
+      "level": "warn",
+      "message": "T-183 needs review (high)",
+      "task_id": "T-183",
+      "acked": false
+    },
+    {
+      "ts": "2026-09-26T07:37:02",
+      "level": "warn",
+      "message": "T-184 needs review (high)",
+      "task_id": "T-184",
+      "acked": false
     }
   ],
   "preferences": {
@@ -1589,9 +1671,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.71,
-    "eta_days": 16.4
+    "velocity_per_day": 1.91,
+    "eta_days": 12.6
   },
-  "last_deterministic_tick": "2026-09-24T22:50:18",
+  "last_deterministic_tick": "2026-09-26T08:32:02",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }

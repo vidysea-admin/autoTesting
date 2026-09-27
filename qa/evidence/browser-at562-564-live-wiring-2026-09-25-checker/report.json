@@ -1,0 +1,37 @@
+{
+  "unit": "at562-564-live-wiring",
+  "cycle_checked": 2,
+  "head": "dd442eb",
+  "date": "2026-09-25",
+  "checker": "claude-opus-session (checker seat)",
+  "instrument": "playwright MCP driving a real Chromium; app = branch worktree via uvicorn on 127.0.0.1:8772; AUTOTESTER_ROOT = scratchpad/at562-moded-root (never the real projects/ or .env)",
+  "fixture": {
+    "site": "tests/fixtures/regression_site served on 127.0.0.1:46671",
+    "project": "rd (copy of regression-demo): max_parallel=2, read_only, declared secret RD_PASSWORD (scratch-root .env), login step fills {{SECRET:RD_PASSWORD}}",
+    "cases": ["case_cf844a2b645c Login with correct credentials", "case_8c1ec91abecf Homepage loads (index.html?home=1, non-entry)", "case_rd_loginpage Login page loads"],
+    "judge": "in-process CheckerJudge (MockProvider subclass) swapped for LangChainFallbackProvider: PASS 1/1 for every case except case_8c1ec91abecf, for which it raises ProviderError (simulated grader outage). No real model call, no API key."
+  },
+  "interactions": [
+    {"action": "click '▶ Run tests' on an app with no provider configured (port 8771, unmocked)", "observed": "400 {\"detail\":\"no AI provider is configured ... cannot grade a run\"} — pre-existing guard, not a crash; explains the one console error"},
+    {"action": "free RAM 3.33 GB, click '▶ Run tests' (port 8772)", "observed": "POST /projects/rd/run 303 -> /report; no 500; report shows 1 run, 2 PASS + 1 INCONCLUSIVE"},
+    {"action": "open run view", "observed": "trace card renders: execute/done/8.38s + 2 judge llm_call rows; per-case cards"}
+  ],
+  "assertions": {
+    "run_completes_without_500": true,
+    "run_json_parallel_n": 2,
+    "run_json_parallel_bound_by": "config",
+    "results_saved": 3,
+    "verdicts_saved": 3,
+    "trace_jsonl": ["llm_call judge fed_id=case_cf844a2b645c", "llm_call judge fed_id=case_rd_loginpage", "stage execute done"],
+    "grader_outage_case": "outcome=errored, verdict INCONCLUSIVE graded by 'rule' (AT-568 fallback reached live)",
+    "secret_value_in_run_dir": false,
+    "secret_value_in_run_view_dom": false,
+    "console_errors": {"count": 1, "explained": "the 400 from the deliberately unmocked first click on port 8771"}
+  },
+  "findings": [
+    {"issue": "AT-572", "severity": "high", "what": "Parallel sessions from default_session_factory share one run_dir and each restarts its screenshot counter at 01, so sibling cases write the SAME evidence file (01-step01-navigate.png). Live run: case_cf844a2b645c and case_rd_loginpage both reference 01-step01-navigate.png; the run dir holds 4 PNGs for 6 captured steps. Deterministic probe (scratchpad/probe_screenshot_collision.py, real BrowserSession, cases run one after the other): Homepage loads and Login page loads both -> ['01-step01-navigate.png'], file holds the last writer's page. A case's judge can be shown a sibling's screenshot -> a silent wrong verdict."},
+    {"issue": "AT-573", "severity": "medium", "what": "A grader/provider failure in the parallel path turns a COMPLETED execution into outcome=errored with 'not judged: execution errored' and 'no screenshots captured': the case's real RawResult and step evidence are discarded and the failure is misattributed to execution."}
+  ],
+  "screenshots": ["run-view.png"],
+  "verdict_effect": "FAIL (AT-572 high)"
+}

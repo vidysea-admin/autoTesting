@@ -1,0 +1,1827 @@
+{
+ "chromium": "151.0.7922.34",
+ "cases": [
+  {
+   "case": "plain contents",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "open details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "closed details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "closed details, contents nested twice",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "cv:hidden block",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "display:none",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "hidden attribute",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "visibility:hidden ancestor",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "opacity:0 ancestor",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "closed dialog",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "contents inside ul",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "author span:empty{display:none}",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "author *:empty{display:none}",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "summary itself display:contents, closed details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "summary contents > contents span, closed",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "SECOND summary display:contents, closed details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "contents wrapping a summary, closed details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "hidden=until-found on block box",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "hidden=until-found on inline span box",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "open dialog (non-modal)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "modal dialog (showModal)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "fieldset > legend display:contents",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "fieldset > legend > contents",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "fieldset > contents",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "table with display:contents tr",
+   "OLD": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "table: contents td text",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "table: tbody+tr contents, JS text in tr",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "slot display:contents: slotted contents child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "slot inside visible div: slotted contents child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "slot inside CLOSED details in shadow",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "slot inside cv:hidden div in shadow",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "slot inside display:none in shadow",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "unslotted light child (no slot)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "flex container contain:paint height:0",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "grid container contain:paint height:0",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "flex container clip-path hides all",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "grid 0-size track overflow visible",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "nested closed>closed, contents at L1",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "nested closed>closed, contents at L2",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "nested closed>closed, contents in inner summary",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "nested closed>open, contents at L2",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "nested open>closed, contents in inner summary",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "nested open>closed, contents at L2",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "closed details, contents wrapper x3",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "closed details with ::details-content visible",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "details itself display:contents, closed",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "open details display:contents inside closed details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "video fallback child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "video controls fallback child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "audio controls fallback child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "audio (no controls) fallback child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "canvas fallback child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "iframe child (JS)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "object (no data) fallback child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "object with svg data fallback child",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "textarea element child (JS)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "select element child (JS)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "img element child (JS)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "input element child (JS)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "slotted child, plain slot (must report)",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  }
+ ],
+ "attacks": [
+  {
+   "case": "A1 closed details, NO author override",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "A2 open details, NO author override",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "A3 closed, ::details-content{display:contents}",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "A4 closed, ::details-content{display:inline}",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "A5 open, ::details-content{display:none}",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "A6 closed, ::details-content{content-visibility:auto}",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_NEGATIVE"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": true
+  },
+  {
+   "case": "A7 open, [open]::details-content{content-visibility:hidden}",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "MASTER": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "D4 slot->slot, inner CLOSED-mode shadow, slot in closed details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "D5 closed-mode shadow, slot inside CLOSED details",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "gt_found": true,
+   "painted": false
+  },
+  {
+   "case": "D7 closed-mode shadow, slot inside cv:hidden div",
+   "OLD": {
+    "reported": false,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "ok"
+   },
+   "C3": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "MASTER": {
+    "reported": true,
+    "pos_ctrl": true,
+    "mutations": [],
+    "console_errors": 0,
+    "verdict": "FALSE_POSITIVE"
+   },
+   "gt_found": true,
+   "painted": false
+  }
+ ]
+}

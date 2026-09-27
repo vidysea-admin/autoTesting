@@ -204,3 +204,18 @@ def test_an_approved_flowspec_is_not_falsely_warned_about(
     assert "approved" in text.lower()
 
 
+def test_the_crawl_page_states_the_flowspec_could_not_be_read(
+    client: TestClient, scratch_root: Path
+) -> None:
+    """AT-477: an invalid flowspec.json must not 500 the crawl page — the
+    coverage card says the spec could not be read, same as AT-472 for
+    the crawl record itself."""
+    store = make_project(scratch_root)
+    seed_crawl(store)
+    store.paths.flowspec.write_text("{ this is not a flowspec", encoding="utf-8")
+    response = client.get("/projects/demo/crawls/crawl_demo")
+    assert response.status_code == 200
+    assert "could not be read" in response.text.lower()
+    assert "Against the FlowSpec" in response.text
+
+

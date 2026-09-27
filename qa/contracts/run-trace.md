@@ -1,6 +1,6 @@
 # Contract — run-trace (redacted per-run observability, D-041 phase 1)
 
-**Status:** DRAFT (goes DRAFT->ACTIVE on T-172's first checker PASS).
+**Status:** ACTIVE (DRAFT->ACTIVE by /checker on T-172's checker PASS, 2026-09-25; qa/verdicts/t172-run-trace.md Cycle checked: 2, merged 7975c81). Live orchestrator-wiring gap AT-564.
 **Feature:** a redacted `trace.jsonl` per run under `projects/<slug>/runs/<run_id>/`, carrying one
 span per pipeline stage and one span per LLM call, plus a UI panel on the run view surfacing
 per-stage time/cost/model hops. This is D-041 phase 1 observability — local and file-based; phase 2
@@ -86,3 +86,4 @@ new, justified module per C3 rather than pushing the file over budget.
 
 - 2026-09-24 · init · contract authored by /checker as DRAFT, from D-041 (Approved-by Umesh —
   AskUserQuestion answers + plan approval, chat 2026-09-24). No prior draft existed; nothing amended.
+- 2026-09-25 · DRAFT->ACTIVE · /checker Mode B sweep, on T-172 checker PASS (qa/verdicts/t172-run-trace.md Cycle checked: 2, merged 7975c81), as this contract's own status line pre-authorized; precedent network-assertions.md at the T-170 PASS. No criterion text changed.

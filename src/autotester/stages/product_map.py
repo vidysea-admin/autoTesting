@@ -8,7 +8,7 @@ avoid publishing a screenshot reference until that PNG really exists.
 from __future__ import annotations
 
 from autotester.core.ids import content_id
-from autotester.core.urls import absolute_url, url_template
+from autotester.core.urls import screen_url_pattern
 from autotester.media.frames import frame_name, is_complete_png
 from autotester.schema.analysis import AnalysedScreen
 from autotester.schema.flowspec import FlowSpec
@@ -37,8 +37,7 @@ def _new_screen(store: ProjectStore, source_id: str, screen: AnalysedScreen) -> 
         id=content_id("screen", {"project": store.paths.slug, "key": key}),
         name=screen.name,
         purpose=screen.purpose,
-        url_pattern=(url_template(absolute_url(screen.url), keep_host=False)
-                     if screen.url else None),
+        url_pattern=screen_url_pattern(screen.url),
         fields=list(screen.fields),
         ui_elements=list(screen.ui_elements),
         frame_ref=_frame_ref(store, source_id, screen),
@@ -58,7 +57,7 @@ def _fold_screen(mapped: MappedScreen, source_id: str, screen: AnalysedScreen,
     if not mapped.purpose and screen.purpose:
         mapped.purpose = screen.purpose
     if not mapped.url_pattern and screen.url:
-        mapped.url_pattern = url_template(absolute_url(screen.url), keep_host=False)
+        mapped.url_pattern = screen_url_pattern(screen.url)
     if not mapped.frame_ref and frame_ref:
         mapped.frame_ref = frame_ref
 

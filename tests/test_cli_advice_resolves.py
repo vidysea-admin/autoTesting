@@ -158,9 +158,11 @@ def test_every_site_is_reported_with_a_line_a_human_can_open() -> None:
 
 EXPECTED_SITES = {
     ("cli.py", "providers"),
+    ("cli_orchestrate.py", "ingest register"),
     ("cli_issues.py", "ingest analyze"),
     ("cli_issues.py", "ingest list"),
     ("cli_issues.py", "issues derive"),
+    ("cli_issues.py", "issues list"),
     ("cli_video.py", "ingest register"),
     ("cli_video.py", "ingest list"),
     ("core/consent.py", "approve"),
@@ -184,9 +186,10 @@ removing it without putting this in its place was a net loss.
 
 Two sites in `media_prep.py` share a command (the constant and the message that
 interpolates it), so this set has ten entries for eleven sites; the count is
-asserted separately."""
+asserted separately. AT-110 added a second `core/consent.py` "approve" site
+(re-grant an unsigned approval), so that command now has two sites as well."""
 
-EXPECTED_SITE_COUNT = 16
+EXPECTED_SITE_COUNT = 19
 
 
 def test_no_advice_site_can_vanish_unnoticed() -> None:

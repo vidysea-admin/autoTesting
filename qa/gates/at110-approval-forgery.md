@@ -1,6 +1,6 @@
 # GATE — AT-110: a consent approval can be forged, not just detected as edited
 
-**Opened:** 2026-09-08T08:20:00+05:30 · **Status: OPEN** · **Approver:** Umesh
+**Opened:** 2026-09-08T08:20:00+05:30 · **Status: ANSWERED -> built and merged** (option 1, HMAC keyed from .env; at110-approval-signing cycle-2 checker PASS, merged 48aba2f, AT-110 fixed) · **Approver:** Umesh
 
 ## The question, in one line
 Should a `RunApproval` be **signed with a secret** so a widened row cannot be forged — and if so,

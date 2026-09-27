@@ -252,7 +252,11 @@ again at at438 cycle 1. A module whose acceptance line is invented per verdict c
 - **(b) No new false negative on visible text — charged.** A change to the detector must not stop
   reporting text a reader can see on a page where the pre-change detector reported it, and must not
   visibly change the page it observes (a probe that restarts an animation, reflows, or leaves a node
-  behind). **North-star tie-break, written down:** where suppressing a false positive and keeping a
+  behind). **Pre-change detector, defined (D-048, D-049):** the detector as it stood at the unit's
+  branch point, meaning the parent commit on master before the unit's first cycle. It is never a
+  failed or committed earlier cycle of the same unit. A unit is judged against the code that existed
+  before it began, not against its own earlier draft. A later cycle that falls behind an earlier cycle
+  of the same unit is not, by itself, a U14(b) failure. **North-star tie-break, written down:** where suppressing a false positive and keeping a
   true positive conflict, keeping the visible text wins — a missed leak is the failure this detector
   exists to prevent (AT-355), and a false positive costs a reviewer a look, not a bug.
 - **(c) What this does not see — contract-owned.** The list below is the detector's disclosed blind
@@ -260,8 +264,11 @@ again at at438 cycle 1. A module whose acceptance line is invented per verdict c
   filed to charged is an amendment, not a measurement). Widening or narrowing it is an amendment to
   this file, not a docstring edit in `visual_order.js`. As of this amendment: the scroll/clip
   interaction classes held by gate `qa/gates/at416-clip-vs-reach-direction.md` (AT-379, AT-408,
-  AT-416, AT-417 — the strict-xfail rows of the invariance probe) and AT-440 (five display types
-  missing from `HIDES_ON`).
+  AT-416, AT-417 — the strict-xfail rows of the invariance probe), AT-440 (five display types
+  missing from `HIDES_ON`), and AT-454 (D-049). AT-454 is a `display:contents` child slotted through
+  a `mode:"closed"` shadow root, reported although it does not paint. `assignedSlot` is `null`
+  across a closed root's boundary, so the flat-tree walk falls back to `parentElement` and cannot see
+  the hiding box inside. A real fix needs CDP-level shadow inspection and would be its own unit.
 - **Scope in time.** Charged against manifests whose `Fix cycle` is submitted after the commit that
   adds this criterion. The at438-display-contents cycle-1 verdict and the classes it filed (AT-442 to
   AT-445) are that verdict's to own; this criterion neither discharges nor adds to them.
@@ -499,3 +506,13 @@ again at at438 cycle 1. A module whose acceptance line is invented per verdict c
   be a criterion no verdict can judge (AT-218's vacuous class). Its intent is served instead by the
   standing live UI validation verdicts (`qa/verdicts/live-2026-09-16-ui.md`), which the queue keeps
   scheduling.
+- 2026-09-26 · /checker (at438-display-contents, D-048 gate answer a+b+c, D-049) · U14(b)'s
+  baseline is defined: "pre-change detector" means the detector at the unit's branch point, never an
+  earlier cycle of the same unit. Why: cycles 2 and 3 were charged against the cycle-1 probe
+  c687b73, which itself FAILED (AT-442). Against the pre-unit detector c687b73^, cycle 3 (9fc937d)
+  drops zero reported texts. Re-measured in real Chromium, 70 layouts (qa/evidence/browser-at438-
+  rerule-2026-09-26-checker/): false negatives OLD 26, C3 2, MASTER 2. U14(c) gains AT-454 as a
+  disclosed false-positive class. **Weakening, named:** U14(b) no longer charges a cycle for losing
+  ground a rejected earlier cycle had gained, only for falling behind pre-unit master. AT-453 (the
+  ::details-content display:contents/inline miss) is NOT added to (c). It stays charged and open as
+  its own unit, capped at 2 cycles (gate option b).

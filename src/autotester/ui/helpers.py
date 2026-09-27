@@ -3,6 +3,11 @@
 One place for slug/id validation so `ui/app.py`, `ui/routes_runs.py` and
 `ui/routes_credentials.py` never each grow their own copy (AT-035's
 attribute-injection hole started exactly there).
+
+The credential-guard functions (`_refuse_unsafe_value`, `_refuse_unsafe_
+submission`, and their helpers) live in `ui/credential_guard.py` (AT-567 --
+split out to keep this file under the C2 line cap) and are re-exported below
+so every existing `from autotester.ui.helpers import ...` keeps working.
 """
 
 from __future__ import annotations
@@ -11,18 +16,38 @@ import os
 import re
 import tempfile
 from pathlib import Path
-from urllib.parse import unquote_plus
 
 from fastapi import HTTPException
 
-from autotester.browser.secrets import SecretStore, host_of
+from autotester.browser.secrets import host_of
 from autotester.browser.session import NavigationRefused, check_destination
 from autotester.core.paths import repo_root
-from autotester.core.redact import BIDI_OVERRIDES, PLACEHOLDER_RE
+from autotester.core.redact import PLACEHOLDER_RE
 from autotester.schema.enums import Action
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
 from autotester.store.project_store import ProjectStore
+from autotester.ui.credential_guard import (
+    _credential_variants,
+    _refuse_direction_override,
+    _refuse_unsafe_submission,
+    _refuse_unsafe_value,
+)
+
+__all__ = [
+    "_credential_variants",
+    "_load_project_or_404",
+    "_project_slugs",
+    "_refuse_direction_override",
+    "_refuse_unsafe_submission",
+    "_refuse_unsafe_value",
+    "_require_project_name",
+    "_require_reachable_base_url",
+    "_require_reachable_navigate_steps",
+    "_require_safe_id",
+    "_require_slug",
+    "_reserved_temp_path",
+]
 
 # Same shape as schema.project.Project.slug's own field pattern -- a slug is a
 # single safe path segment, never `..`, `/`, `\`, or a null byte, before it is
@@ -140,146 +165,6 @@ def _load_project_or_404(slug: str) -> tuple[ProjectStore, Project]:
     if project is None:
         raise HTTPException(404, f"no project '{slug}'")
     return store, project
-
-def _credential_variants(text: str) -> list[str]:
-    """The forms a pasted credential can arrive in that all recover trivially.
-
-    AT-074: `Redactor.is_clean` is a plain substring test, so a value that was
-    URL-encoded, or that a user broke with a stray space or newline, sailed
-    through and was written to a git-tracked file — recoverable with one
-    `unquote_plus` or a whitespace strip. Matching is done against every form,
-    not just the literal one.
-
-    AT-339: case and separator transforms are NOT handled here, because they
-    need both sides folded and only the redactor holds the values — see
-    `Redactor.contains_folded`, applied to EVERY form in this list at each call
-    site. Adding a `.casefold()` entry to this list would have done nothing:
-    the stored value would still be compared in its original case.
-
-    AT-346: the fold used to be applied to the raw text only, never to these
-    variants, so each guard covered exactly the half the other did not —
-    `zebra%5Fquilt%5Fapikey%5F31` survived folding with its escapes intact, and
-    the `unquote_plus` form that would have exposed it was only ever compared
-    byte-for-byte. Composition is the point: decode, THEN fold.
-    """
-    decoded = unquote_plus(text)
-    return [
-        text,
-        decoded,
-        "".join(text.split()),
-        "".join(decoded.split()),
-    ]
-
-
-def _refuse_direction_override(value: str, field: str) -> None:
-    """Refuse text carrying a bidi OVERRIDE, on its own terms (AT-355).
-
-    Checked before the credential comparison, and never folded away, because
-    subtracting the override is what let the leak through: it deletes the
-    character that causes the reordering and then compares a string that is not
-    the credential, while a reader sees the credential in plain type.
-
-    The message names the override rather than claiming a credential, because
-    this fires on text holding no credential at all -- saying otherwise would
-    send the user hunting for a secret that is not there, which is the same
-    false diagnosis the "split across" message made in AT-339.
-    """
-    if any(override in value for override in BIDI_OVERRIDES):
-        raise HTTPException(400, (
-            f"{field} contains a text-direction override character. It makes text "
-            f"render in a different order than it is stored, so what you see is not "
-            f"what is saved. Remove it and type the value plainly."
-        ))
-
-
-def _refuse_unsafe_value(
-    value: str, project: Project, secrets: SecretStore, *, field: str = "this field",
-    exempt: frozenset[str] = frozenset(),
-) -> None:
-    """One field. Placeholders must name a declared key; a literal must not be a
-    real `.env` value.
-
-    Two distinct mistakes, both silent before this existed:
-    - Typing the credential ITSELF into a text box. `cases.jsonl` is git-TRACKED
-      in a public repo, so that is a credential committed in cleartext; and
-      because no `{{SECRET:KEY}}` placeholder is present, `session.fill` never
-      tags the field, so it shows up in every screenshot too.
-    - Referencing a key the project has not declared. That resolved only at
-      typing time, deep inside `_value_for`, surfacing as a stringified
-      `UndeclaredSecret` inside a generic ERRORED outcome.
-    """
-    if not value:
-        return
-    _refuse_direction_override(value, field)
-    referenced = PLACEHOLDER_RE.findall(value)
-    if referenced:
-        for key in referenced:
-            if project.secret(key) is None:
-                raise HTTPException(400, (
-                    f"this project has not declared a credential called '{key}'. "
-                    f"Declare it in Project settings first, then use it here."
-                ))
-        return
-    if value in exempt:
-        # AT-078: a field re-submitted byte-identical to what is already on
-        # disk for that same field of that same project. `.env` holds plain
-        # configuration as well as credentials -- `pathlynks`'s own base_url
-        # is byte-identical to the non-secret PATHLYNKS_USER_LOGIN_URL -- so
-        # without this, a no-op save of a project's own data was refused with
-        # no fix the user could express. Narrow on purpose: it exempts only
-        # data the system itself already stored, never fresh input (AT-083).
-        return
-    redactor = secrets.redactor()
-    variants = _credential_variants(value)
-    if (any(not redactor.is_clean(v) for v in variants)
-            or any(redactor.contains_folded(v) for v in variants)):
-        raise HTTPException(400, (
-            f"{field} looks like it contains a real credential. Values are stored in "
-            f"the repository in plain text and appear in screenshots, so they must "
-            f"never be typed in directly. Declare it in Project settings and use "
-            f"{{{{SECRET:KEY}}}} in a step's Value box — note that only a Value is "
-            f"substituted, not a URL or a title."
-        ))
-
-
-def _refuse_unsafe_submission(
-    texts: list[tuple[str, str]], project: Project, secrets: SecretStore,
-    *, exempt: frozenset[str] = frozenset(),
-) -> None:
-    """Every user-supplied field of a case, and their concatenation.
-
-    AT-070: the guard was wired to the value box alone, so the same credential
-    typed into the title, the target or the expect box sailed through into a
-    git-tracked `cases.jsonl`. The title was the worst of the three — U6 leaves
-    `rationale=None`, so `claim_of` falls back to the title and feeds it to the
-    grade prompt, where `guard_prompt` raises and 500s every later run.
-
-    AT-083: matching runs over EVERY value in `.env`, declared or not -- an
-    undeclared key (a provider API key, say) is still a credential, and this
-    repo is public. Scoping to declared-only was a real hole.
-
-    AT-071: checking fields one at a time also missed a value split across two
-    rows, which reassembles byte-for-byte on disk. So the joined text is checked
-    too. A false positive there costs a clear error message asking for a
-    placeholder; a false negative costs a committed credential.
-    """
-    for label, text in texts:
-        _refuse_unsafe_value(text.strip(), project, secrets, field=label, exempt=exempt)
-    # An exempt field holds data the system itself already stored, so it cannot
-    # be half of a freshly-pasted credential -- and leaving it in would re-fire
-    # the very false positive the exemption exists to stop (AT-078: pathlynks's
-    # own base_url contains a non-secret .env URL, so the join always matched).
-    fresh = [(label, text.strip()) for label, text in texts if text.strip() not in exempt]
-    joined = "".join(text for _label, text in fresh)
-    redactor = secrets.redactor()
-    joined_variants = _credential_variants(joined)
-    if joined and (any(not redactor.is_clean(v) for v in joined_variants)
-                   or any(redactor.contains_folded(v) for v in joined_variants)):
-        raise HTTPException(400, (
-            "a real credential appears to be split across "
-            f"{', '.join(sorted({label for label, _t in fresh}))}. Declare it in Project "
-            "settings and use {{SECRET:KEY}} in a step's Value box instead."
-        ))
 
 
 def _reserved_temp_path(suffix: str, directory: Path | None = None) -> Path:

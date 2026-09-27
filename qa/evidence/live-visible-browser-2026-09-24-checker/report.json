@@ -1,0 +1,25 @@
+{
+  "mode": "checker live visible-browser validation of merged master (user-directed)",
+  "date": "2026-09-24",
+  "head": "1b779f9",
+  "actor": "sole checker (topology B), in-session real browser via playwright MCP",
+  "instrument": "real app started by checker on 127.0.0.1:8014 (uv run uvicorn autotester.ui.app:app); foreign :8000 stub avoided",
+  "pages": [
+    {"url": "/", "title": "Projects — AutoTester", "render": "pass", "console_errors": 0,
+     "notes": "9 projects, stat tiles (9/29 cases/3 clean/1 failing/5 never-run); the xssprobe project named <script>alert(1)</script> renders ESCAPED as text, no alert — AT-035 XSS defence holds live"},
+    {"url": "/live", "title": "Live view", "render": "pass", "console_errors": 0,
+     "notes": "noVNC watch page renders; its iframe shows 'localhost refused to connect' which is EXPECTED (the VNC display only exists inside the Docker container — the page itself says so). Not a defect."},
+    {"url": "/projects/regression-demo/report", "title": "Report", "render": "pass", "console_errors": 0,
+     "notes": "run history + downloads render"},
+    {"url": "/projects/regression-demo/runs/run-after-01M1MSV7...", "title": "Run detail", "render": "pass", "console_errors": 0,
+     "notes": "regression-proof feature (F-016) LIVE: 1 PASS / 1 FAIL scoreboard; FAIL case shows real gemini grader reasoning ('DOM evidence shows Invalid credentials instead of Login successful') + step-flow"}
+  ],
+  "interactions": [
+    {"did": "JS-eval click of the first run link on the report page", "expected": "navigate to that run's detail page", "observed": "URL changed /report -> /runs/run-after-01M1MSV7...; run detail rendered", "pass": true},
+    {"did": "click screenshot link #lb-0-0 on run detail", "expected": "CSS :target lightbox reveals the enlarged screenshot", "observed": "hash=#lb-0-0, target #lb-0-0 computed display=flex (visible), contains a real embedded PNG (data:image/png;base64,iV...)", "pass": true},
+    {"did": "render xssprobe project name", "expected": "escaped, no script execution", "observed": "literal text, no alert dialog", "pass": true}
+  ],
+  "note_on_click_tool": "playwright MCP browser_click rejected {element,ref} with 'expected string at target' in this build — a tooling arg-schema quirk, NOT a product defect. Interactions were driven via real navigation + browser_evaluate clicks instead; state changes asserted.",
+  "not_done_gated": "did NOT trigger any 'Run' or 'Analyze' — those launch real browser/vision-model runs against real product/ERP data (credential- and data-gated). /settings/providers not re-opened (avoids re-capturing the AT-554 key into a snapshot; AT-554 already resolved by D-034 as accepted owner-only-local).",
+  "verdict": "Merged master (1b779f9) live UI is healthy: 4 surfaces render with 0 console errors, XSS escaping holds, and the regression-proof + lightbox features work with asserted interactive state changes. No live defect found. (Not a unit Mode-A verdict — no unit is ready-for-check yet; t170/at110 pending.)"
+}

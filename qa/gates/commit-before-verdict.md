@@ -57,4 +57,4 @@ how several of this session's findings were made.
 Reply `A`, `B` or `C`. I will append `Answered: <ISO date> — <choice> — <where>` to this file before
 changing anything.
 
-Answered: (pending)
+Answered: 2026-09-26T22:34:22+05:30 — C — Umesh via AskUserQuestion in the checker session. Official rule: a unit is committed on its own branch (wave/<slug> worktree) before check, and reaches master only by merge after a checker PASS with a matching cycle. This ratifies the current practice.

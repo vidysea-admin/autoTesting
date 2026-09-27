@@ -406,3 +406,26 @@ These are the AT-450 shadow layouts in closed mode. They are false positives tha
 - The unit was again committed (`9fc937d`) before a verdict.
 
 **This was the last fix cycle.** Under the protocol the maker flips the manifest to STALLED. The remaining defect is in AT-453, and its fix direction is measured. I ran the one-conjunct candidate (`cv === "hidden" && HIDES_ON.test(pseudo.display)`, in `fixdir3.py` / `report_fixdir3.json`) on 26 details-shaped pages: A1 to A7, B1 to B6, closed `::details-content{display:flow-root}` and `{display:grid}`, and every details row of the 60 layouts. It is correct on all 26, including A3 and A4, and it breaks nothing that NEW got right.
+
+# Re-ruling of cycle 3 (2026-09-26, D-048 gate answer a+b+c, D-049)
+
+**Cycle checked: 3 (re-ruled; no new manifest cycle)**
+
+```
+VERDICT: PASS (re-ruled; supersedes the cycle-3 FAIL above for U14(b) only)
+SCOREBOARD: 1/1 criteria met (U14: (a) holds, (b) holds against the pre-unit detector c687b73^, (c) respected with AT-454 added), 2/2 invariants hold (C2, C7)
+FAILURES: none
+CAPABILITY-COVERAGE: 9/9 rows reproduced (cycle 3, unchanged)
+LIVE-BROWSER: qa/evidence/browser-at438-rerule-2026-09-26-checker/ (headed Chromium 151, 70 layouts x 3 detectors, 0 console errors, 0 DOM mutations across 210 evaluations)
+ISSUES-WRITTEN: none. AT-438/449/450 fixed (9fc937d is on master), AT-454 wontfix (U14(c)), AT-453 stays open as its own unit
+EXECUTOR: maker builder (checker: claude-opus orchestrator + sonnet subagents)
+EXPLANATION: Umesh answered qa/gates/at438-u14b-baseline.md with (a): U14(b) compares against the detector before the unit began, c687b73^, not the failed cycle-1 probe. The cycle-3 FAIL's only charge (AT-453, A3/A4) is a false negative that c687b73^ also has, so it is not a regression under that baseline. It stays open as its own capped unit (gate option b).
+```
+
+## Measurement (independent, real Chromium)
+
+- Three detectors were extracted with `git show`: OLD `c687b73^`, C3 `9fc937d`, MASTER `HEAD`. C3 and MASTER `visual_order.js` are byte-identical.
+- Texts OLD reports that C3/MASTER drop: **0**.
+- False negatives / false positives over 70 rows: OLD 26/0, C3 2/6, MASTER 2/6. The 2 false negatives are AT-453 (A3 `::details-content{display:contents}`, A4 `{display:inline}`). The 6 false positives are AT-454 (D4, D5, D7, closed shadow) plus 3 from the already-filed AT-451 family.
+- AT-438's own defect (display:contents text through a hiding ancestor) has 0 false negatives across every plain display:contents layout.
+- An adversarial skeptic built 16+ more shapes: 5-level nested contents, mixed details/contents chains, multi-level open-shadow slot chains, runtime attribute removal, content-visibility:auto. It found no case where OLD caught painted text that C3 drops. Refuted: false.

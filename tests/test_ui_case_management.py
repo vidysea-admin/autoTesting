@@ -178,3 +178,21 @@ def test_deleting_then_re_adding_the_same_steps_works(
     assert response.status_code == 303
     cases = ProjectStore("demo", scratch_root).list_cases()
     assert [c.title for c in cases] == ["Second go"]
+
+
+def test_deleting_a_pinned_case_through_the_ui_is_refused_with_409(
+    client: TestClient, scratch_root: Path
+) -> None:
+    """AT-585: the delete button is the real prune path a human has, and it
+    must refuse a pinned case (409, case found and protected) rather than
+    silently succeeding or claiming 404 (case not found)."""
+    _onboard(client)
+    _add_case(client, "Known bug — pinned regression")
+    store = ProjectStore("demo", scratch_root)
+    case = store.list_cases()[0]
+    store.update_case(case.model_copy(update={"pinned": True, "pinned_issue_id": "iss_1"}))
+
+    response = client.post(f"/projects/demo/cases/{case.id}/delete", follow_redirects=False)
+
+    assert response.status_code == 409
+    assert [c.id for c in ProjectStore("demo", scratch_root).list_cases()] == [case.id]

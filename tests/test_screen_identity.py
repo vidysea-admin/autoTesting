@@ -82,6 +82,25 @@ def test_different_controls_at_the_same_url_are_different_nodes() -> None:
     assert node_closed.id != node_open.id
 
 
+def test_index_html_and_directory_root_collapse_to_one_node_identity() -> None:
+    """AT-334, reproduced at the unit that actually filed it: a real crawl of
+    tests/fixtures/modal_site measured six nodes for a three-page site because
+    "/" and "/index.html" (same page, same veiled state, identical reachable
+    controls) got different url_templates and therefore different node ids.
+    Pinned here at the node-identity boundary so the fix is verified without a
+    browser."""
+    elements = [el("button", "Excited"), el("button", "Focused"), el("button", "Tired"),
+                el("link", "Skip for now")]
+    obs_root = PageObservation(url="https://app.test/", elements=elements)
+    obs_index = PageObservation(url="https://app.test/index.html", elements=elements)
+
+    node_root = node_from(obs_root, "crawl_1", "modal_site", depth=0)
+    node_index = node_from(obs_index, "crawl_1", "modal_site", depth=0)
+
+    assert node_root.id == node_index.id
+    assert node_root.url_template == node_index.url_template == "/"
+
+
 def test_node_extra_field_rejected() -> None:
     import pytest
     from pydantic import ValidationError

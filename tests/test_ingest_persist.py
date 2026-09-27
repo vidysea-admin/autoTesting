@@ -215,8 +215,10 @@ def test_a_silent_recording_says_so_instead_of_leaving_a_gap(tmp_path: Path) -> 
 
 def test_the_prompt_template_still_carries_the_placeholder_the_code_replaces() -> None:
     """If the template loses `{{NARRATION}}`, injection becomes a silent no-op
-    and every ingest runs blind to what the tester actually said."""
-    template = (RepoDocs().prompts_dir / "ingest_video_v1.md").read_text(encoding="utf-8")
+    and every ingest runs blind to what the tester actually said.
+
+    T-175: the ingest prompt now ships as `skills/ingest-video/SKILL.md`."""
+    template = (RepoDocs().skills_dir / "ingest-video" / "SKILL.md").read_text(encoding="utf-8")
     assert "{{NARRATION}}" in template
     assert "{{SOURCE_LABEL}}" in template
 

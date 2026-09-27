@@ -9,7 +9,10 @@ from __future__ import annotations
 
 import ast
 import os
+import sys
+import tomllib
 from dataclasses import dataclass
+from importlib.metadata import packages_distributions
 from pathlib import Path
 
 from autotester.core.paths import RepoDocs, repo_root
@@ -128,6 +131,67 @@ def check_duplicate_definitions(root: Path) -> list[Violation]:
     return out
 
 
+def _dep_name(requirement: str) -> str:
+    """PEP 508 requirement string -> bare, normalized distribution name."""
+    name = requirement
+    for cut in "[<>=!~; ":
+        name = name.split(cut, 1)[0]
+    return name.strip().lower().replace("_", "-")
+
+
+def check_dependencies_declared(root: Path) -> list[Violation]:
+    """AT-130: an import that resolves only because some OTHER declared package
+    happens to depend on it is a hazard -- the day that other package drops or
+    renames the dependency, the import breaks with no pyproject change and no
+    failing test (that is exactly how GeminiProvider's `google-genai` import
+    survived undeclared, riding on `langchain-google-genai`'s pin). Every
+    third-party top-level import under src/ must be declared directly, or be
+    stdlib. Imports of modules the current environment cannot resolve at all
+    are left to `import` itself to fail -- this check only catches the
+    "works by transitive accident" class. AT-590: a declared-optional soft import
+    (TYPE_CHECKING-only or try/except ImportError/ModuleNotFoundError) is skipped
+    here instead, per `ledger.render.soft_import_ids` (moved there -- this file is
+    at C2's 300-line cap)."""
+    from autotester.ledger.render import soft_import_ids
+
+    pyproject = root / "pyproject.toml"
+    if not pyproject.exists():
+        return []
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    declared = {_dep_name(d) for d in data.get("project", {}).get("dependencies", [])}
+    dist_map = packages_distributions()
+    stdlib = set(sys.stdlib_module_names)
+
+    out = []
+    for path in _python_files(root):
+        rel = path.relative_to(root)
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        soft = soft_import_ids(tree)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                modules = [(alias.name, node.lineno) for alias in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                modules = [(node.module, node.lineno)]
+            else:
+                continue
+            if id(node) in soft:
+                continue
+            for module, lineno in modules:
+                top = module.split(".")[0]
+                if top == "autotester" or top in stdlib:
+                    continue
+                candidates = dist_map.get(top)
+                if not candidates:  # not resolvable in this env -- not this check's job
+                    continue
+                normalized = {c.lower().replace("_", "-") for c in candidates}
+                if not normalized & declared:
+                    out.append(Violation(
+                        "undeclared-dependency", f"{rel}:{lineno}",
+                        f"`{module}` resolves via {sorted(candidates)}, none of which are "
+                        "declared in [project].dependencies -- add the direct package"))
+    return out
+
+
 def check_generated_fresh(root: Path) -> list[Violation]:
     """L1: ARCHITECTURE generated sections and SNAPSHOT must equal a fresh regeneration."""
     from autotester.ledger.render import apply_map, render_snapshot
@@ -205,6 +269,7 @@ def run(root: Path | None = None) -> list[Violation]:
     violations: list[Violation] = []
     for check in (check_file_sizes, check_function_sizes, check_file_names,
                   check_root_clean, check_duplicate_definitions,
+                  check_dependencies_declared,
                   check_ledger, check_qa_issue_rows, check_adapter_pytest_q,
                   check_goal_pytest_q, check_generated_fresh,
                   check_architecture_budget, check_docs_routed):

@@ -43,7 +43,8 @@ class SpyProvider(Provider):
     def available(self) -> bool:
         return True
 
-    def see_video(self, path, prompt, schema, options=None):
+    def see_video(self, path, prompt, schema, options=None, *,
+                  prompt_file=None, fed_id=None):
         self.calls.append((str(path), prompt))
         if self.fail:
             raise ProviderError("no credentials")

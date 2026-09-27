@@ -77,6 +77,7 @@ def _run_with_urls(
     """Press ▶ Run tests for real, with the browser faked out and the run's
     evidence saying it reached `urls`."""
     import autotester.ui.routes_runs as routes_runs_module
+    import autotester.ui.run_execution as run_execution_module
     from autotester.browser.session import BrowserSession
 
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
@@ -86,7 +87,7 @@ def _run_with_urls(
         def available(self) -> bool:
             return True
 
-    def fake_run_and_grade_case(case_, session, judge, run_id, store_):
+    def fake_run_and_grade_case_resilient(case_, session, judge, run_id, store_):
         result = RawResult(
             case_id=case_.id, outcome=Outcome.COMPLETED,
             evidence=[Evidence(kind=EvidenceKind.URL, path=u) for u in urls],
@@ -96,7 +97,11 @@ def _run_with_urls(
         return result, verdict
 
     monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
-    monkeypatch.setattr(routes_runs_module, "run_and_grade_case", fake_run_and_grade_case)
+    # AT-567: _run_and_grade_resilient (and its call to run_and_grade_case_
+    # resilient) now lives in ui/run_execution.py -- patch it there, where the
+    # name is actually looked up at call time, not on routes_runs_module.
+    monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
+                        fake_run_and_grade_case_resilient)
     response = client.post("/projects/demo/run", follow_redirects=False)
     assert response.status_code == 303, response.text
 

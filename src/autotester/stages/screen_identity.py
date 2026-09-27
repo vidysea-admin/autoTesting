@@ -60,8 +60,14 @@ def node_from(
 ) -> ScreenNode:
     """Build a `ScreenNode` whose id is a pure function of
     `(url_template, structural_signature)` — the same inputs always produce
-    the same node, regardless of when or how it was visited."""
-    template = url_template(observation.url, keep_host=False)
+    the same node, regardless of when or how it was visited.
+
+    `fold_index=True` (AT-334): a directory index reached by its bare
+    directory URL and by its served `index.html`/`index.htm` filename is the
+    same screen, not two — measured on a real crawl of
+    tests/fixtures/modal_site (six nodes for a three-page site, each veil
+    duplicated too)."""
+    template = url_template(observation.url, keep_host=False, fold_index=True)
     signature = structural_signature(observation.elements)
     return ScreenNode(
         crawl_id=crawl_id, project=project, url_template=template,

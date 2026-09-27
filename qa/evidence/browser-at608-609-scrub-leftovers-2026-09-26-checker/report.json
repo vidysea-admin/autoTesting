@@ -1,0 +1,24 @@
+{
+  "pages": [
+    {
+      "name": "crawl_page",
+      "url": "http://127.0.0.1:8097/projects/demo/crawls/crawl_demo",
+      "secret_in_html": false,
+      "secret_in_visible_text": false,
+      "redacted_marker_present": true,
+      "console_errors_so_far": 0
+    },
+    {
+      "name": "bounds_form_submit",
+      "form_present": true,
+      "after_url": "http://127.0.0.1:8097/projects/demo/explore",
+      "after_status_excerpt": "AT\nAutoTester\nProjects\n+ New project\n\u25cf Live view\n\u2699 Settings\nPROJECTS\nDemo\n+ New project\n\u2190 Back\nPROJECTS / DEMO / CRAWLS\nCrawl approval required\nCrawl not started\n\nrefusing to start a crawl run against https://demo.test \u2014 no approval exists for it\n\nReview credentials and approve crawl"
+    }
+  ],
+  "console_messages": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    }
+  ]
+}

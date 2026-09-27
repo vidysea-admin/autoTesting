@@ -65,3 +65,23 @@ def load_repo_env(root: Path | None = None) -> list[str]:
         os.environ[key] = value
         loaded.append(key)
     return loaded
+
+
+PUBLIC_ENV_KEYS: frozenset[str] = frozenset({
+    "PATHLYNKS_USER_LOGIN_URL",
+})
+"""AT-086: `.env` keys whose value is explicitly declared NOT a credential (a
+public URL, not a secret) -- so `ui/helpers.py`'s submission guard can let a
+project's own base_url/allowed_domains match one without refusing it, even at
+onboarding, before anything is stored to make the AT-078 already-stored
+exemption apply.
+
+Declared HERE, in source, on purpose: no HTTP route reads or writes this name
+(not a `Project` field, not a `Form`, not `project.json`), so no request can
+ever add a real secret's key to it and walk its value past the guard by
+calling it public. Widening this list is a code change, reviewed like any
+other -- never inferred from behaviour, never a runtime declaration. Every
+other masking path (`Redactor.scrub`, `SecretStore.guard_prompt`) still treats
+every `.env` value as secret regardless of this list (C5 unchanged) -- only
+the UI submission guard's `SecretStore.public_values()` consults it, and only
+for a value that appears under NO other, non-public key (see that method)."""

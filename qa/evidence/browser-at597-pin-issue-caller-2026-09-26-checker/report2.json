@@ -1,0 +1,28 @@
+{
+  "steps": [
+    {
+      "step": "TRULY all-blank submit returns 400",
+      "ok": true,
+      "detail": "status=400"
+    },
+    {
+      "step": "still on pin form (no redirect) after blank refusal",
+      "ok": true,
+      "detail": "http://127.0.0.1:8597/projects/liveproj/issues/iss_4d14727c03ba/pin"
+    },
+    {
+      "step": "cases page lists case titles",
+      "ok": true,
+      "detail": "['pinned regression \u2014 Google sign-in drops the data filled at signup', 'pinned regression \u2014 Google sign-in drops the data filled at signup']"
+    },
+    {
+      "step": "first pinned case present (from earlier run)",
+      "ok": true,
+      "detail": "['pinned regression \u2014 Google sign-in drops the data filled at signup', 'pinned regression \u2014 Google sign-in drops the data filled at signup']"
+    }
+  ],
+  "console_error_count": 1,
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ]
+}

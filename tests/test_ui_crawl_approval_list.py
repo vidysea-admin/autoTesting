@@ -52,7 +52,7 @@ def _approval(**overrides: object) -> RunApproval:
         granted_at="2026-09-16T00:00:00+00:00", expires_at="2099-01-01T00:00:00+00:00",
     )
     fields.update(overrides)
-    return RunApproval(**fields)
+    return RunApproval(**fields).sign()
 
 
 def test_saving_shows_a_confirmation_naming_the_saved_grant(

@@ -1,0 +1,15 @@
+{
+  "unit": "at334-index-alias",
+  "cycle": 2,
+  "code": "7f051eb",
+  "head": "a23ec9b",
+  "instrument": "Playwright Chromium headless=False via autotester BrowserSession; tests/fixtures/modal_site scratch copy served on 127.0.0.1:8113 (port 8072 untouched; server killed after)",
+  "visits": [
+    {"url": "/index.html", "node.url_template": "/", "screen.url_pattern": "/", "coverage._path_of": "/", "modal_click_state_change": true, "console_errors": 1, "console_error_note": "favicon.ico 404, unrelated"},
+    {"url": "/", "node.url_template": "/", "screen.url_pattern": "/", "coverage._path_of": "/", "modal_click_state_change": true, "console_errors": 0}
+  ],
+  "coverage_gap_for_root_after_index": false,
+  "non_index_pages_unfolded": {"/reports.html": "/reports.html", "/settings.html": "/settings.html"},
+  "screenshots": ["index.html.png", "root.png"],
+  "result": "PASS"
+}

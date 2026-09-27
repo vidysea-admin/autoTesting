@@ -199,7 +199,7 @@ def test_a_real_browser_types_and_submits_the_filled_form(
         scope="local fixture: synthetic typing proof, form submit on a GET form",
         max_actions=60, wall_clock_s=120.0, granted_by="test",
         granted_at="2026-09-21", expires_at="2099-01-01",
-    ))
+    ).sign())
     observer = PageObserver()
     session = BrowserSession(project, secrets, tmp_path / "shots", paths, observer=observer)
     try:

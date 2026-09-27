@@ -263,3 +263,12 @@ def test_a_missing_goal_json_is_not_a_violation(tmp_path: Path) -> None:
     _pyproject(tmp_path, "-q")
 
     assert checks.check_goal_pytest_q(tmp_path) == []
+
+
+def test_a_row_is_found_whatever_order_its_keys_are_in(tmp_path: Path) -> None:
+    """AT-571: the row reader matched `"id" ... "status"` with a regex, so a row
+    serialized status-first (AT-568/569/570 on 2026-09-25) was invisible and doctor
+    reported it lost. A JSON row's key order carries no meaning; neither may ours."""
+    row = json.dumps({"status": "open", "id": "AT-900", "severity": "low", "title": "t"})
+    _qa(tmp_path, ledger=row + "\n", manifests={"u.md": "**Issues addressed:** AT-900 (low, open)"})
+    assert checks.check_qa_issue_rows(tmp_path) == []

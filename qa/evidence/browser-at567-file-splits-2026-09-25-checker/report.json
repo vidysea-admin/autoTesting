@@ -1,0 +1,31 @@
+{
+  "unit": "at567-file-splits",
+  "cycle_checked": 1,
+  "head": "689b93a",
+  "date": "2026-09-25",
+  "checker": "claude-opus-session (checker seat)",
+  "instrument": "scratchpad/drive_run_view.py: Python Playwright driving a real, VISIBLE Chromium (headless=False), used because the playwright MCP failed to reconnect after the session restart. The checker's own browser, not the maker's evidence. App = branch worktree via scratchpad/moded_launch_at562.py; AUTOTESTER_ROOT = scratchpad/at562-moded-root; fixture tests/fixtures/regression_site on 127.0.0.1:46671.",
+  "harness_patches_disclosed": [
+    "judge only: rr.LangChainFallbackProvider -> CheckerJudge (MockProvider subclass), PASS 1/1 except case_rd_loginpage, which raises ProviderError. No real model call, no API key.",
+    "run 1 (serial): plan NOT pinned; n=1 chosen by budget. run 2 (parallel): plan pinned to n=2 (CHECKER_FORCE_N2) so the moved _run_cases_in_parallel executes."
+  ],
+  "fixture": "Homepage loads = ENTRY case (index.html = base_url) + Login with correct credentials + Login page loads (grader outage)",
+  "runs": {
+    "serial": {
+      "run": "run-01M3C80PJ3NDBX8N9E976TSR55", "post": 303, "parallel_n": 1, "bound_by": "budget",
+      "screenshots": "6 distinct paths / 6 steps; entry case under case_8c1ec91abecf/ with the homepage bytes d08a32ac",
+      "outage_case": "completed + INCONCLUSIVE by rule",
+      "trace": "2 llm_call + execute/done",
+      "run_view": "12/12 images; 0 console errors; 0 HTTP errors", "export": "200, 6 PNGs", "secret": "absent from DOM and export",
+      "driver_output": "serial.json / serial.png"
+    },
+    "parallel": {
+      "run": "run-01M3C8267BYXQGTD2E3T0C5WBK", "post": 303, "parallel_n": 2, "bound_by": "config (pinned)",
+      "screenshots": "every case under its own case_<id>/ folder, 6 distinct paths / 6 steps; entry bytes d08a32ac",
+      "outage_case": "completed + INCONCLUSIVE by rule",
+      "run_view": "12/12 images; 0 console errors; 0 HTTP errors", "export": "200, 6 PNGs", "secret": "absent from DOM and export",
+      "driver_output": "parallel.json / parallel.png"
+    }
+  },
+  "verdict_effect": "PASS: both moved execution paths behave exactly as the pre-split code did (at576-577 cycle 2 evidence)"
+}

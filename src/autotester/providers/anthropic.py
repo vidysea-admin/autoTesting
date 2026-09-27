@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import base64
 import os
+import time
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -37,17 +38,22 @@ class AnthropicProvider(Provider):
     def available(self) -> bool:
         return bool(self._api_key)
 
-    def act(self, prompt: str, schema: type[ModelT] | None = None) -> Any:
-        return self._structured(prompt, schema, role="agent")
+    def act(self, prompt: str, schema: type[ModelT] | None = None, *,
+            prompt_file: str | None = None, fed_id: str | None = None) -> Any:
+        return self._structured(prompt, schema, role="agent",
+                                 prompt_file=prompt_file, fed_id=fed_id)
 
     def judge(
-        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None
+        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,
+        prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
-        return self._structured(prompt, schema, role="judge", images=images)
+        return self._structured(prompt, schema, role="judge", images=images,
+                                 prompt_file=prompt_file, fed_id=fed_id)
 
     def _structured(
         self, prompt: str, schema: type[ModelT] | None, *, role: str,
         images: list[Path] | None = None,
+        prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
         if not self.available():
             raise ProviderError("ANTHROPIC_API_KEY is not set")
@@ -72,6 +78,7 @@ class AnthropicProvider(Provider):
             for path in (images or []) if path.exists()
         ]
         content.append({"type": "text", "text": prompt})
+        started = time.perf_counter()
         response = client.messages.create(
             model=self._model,
             max_tokens=2048,
@@ -79,6 +86,7 @@ class AnthropicProvider(Provider):
             tool_choice={"type": "tool", "name": _TOOL_NAME},
             messages=[{"role": "user", "content": content}],
         )
+        latency_s = time.perf_counter() - started
         block = next((b for b in response.content if b.type == "tool_use"), None)
         if block is None:
             raise ProviderError(f"{self.id}: no tool_use block in response for role={role}")
@@ -86,5 +94,6 @@ class AnthropicProvider(Provider):
             role,
             input_tokens=response.usage.input_tokens,
             output_tokens=response.usage.output_tokens,
+            prompt_file=prompt_file, fed_id=fed_id, latency_s=latency_s,
         )
         return schema.model_validate(block.input)

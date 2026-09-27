@@ -17,6 +17,8 @@ import http.server
 import shutil
 import sys
 import threading
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -41,6 +43,20 @@ from autotester.store.project_store import ProjectStore
 FIXTURE_DIR = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "regression_site"
 LOGIN_GOOD = FIXTURE_DIR / "login.html"
 LOGIN_BROKEN = FIXTURE_DIR / "login.broken.html"
+
+
+@contextmanager
+def _swapped_fixture(good_path: Path, broken_path: Path) -> Iterator[None]:
+    """Copy `broken_path` over `good_path` for the body's duration, then restore
+    `good_path`'s original content -- even if the body raises or is interrupted
+    (AT-560: `good_path` is a TRACKED fixture; an interrupted run must never
+    leave it in the broken state)."""
+    backup = good_path.read_text(encoding="utf-8")
+    try:
+        shutil.copy(broken_path, good_path)
+        yield
+    finally:
+        good_path.write_text(backup, encoding="utf-8")
 
 
 class _NoCacheHandler(http.server.SimpleHTTPRequestHandler):
@@ -164,7 +180,6 @@ def main() -> None:
     store.save_project(project)
     cases = seat_demo_cases(store, build_cases(project.slug, base_url))
     judge = LangChainFallbackProvider()
-    good_backup = LOGIN_GOOD.read_text(encoding="utf-8")  # read BEFORE anything can fail
 
     try:
         print("--- BEFORE (working build) ---")
@@ -173,14 +188,12 @@ def main() -> None:
             print(f"{title}: {result}  (observed: {text!r})")
 
         print("\n--- injecting the regression (login.html -> login.broken.html) ---")
-        shutil.copy(LOGIN_BROKEN, LOGIN_GOOD)
-
-        print("--- AFTER (broken build) ---")
-        after = run_suite(project, cases, store, judge, "after")
-        for title, (result, text) in after.items():
-            print(f"{title}: {result}  (observed: {text!r})")
+        with _swapped_fixture(LOGIN_GOOD, LOGIN_BROKEN):
+            print("--- AFTER (broken build) ---")
+            after = run_suite(project, cases, store, judge, "after")
+            for title, (result, text) in after.items():
+                print(f"{title}: {result}  (observed: {text!r})")
     finally:
-        LOGIN_GOOD.write_text(good_backup, encoding="utf-8")  # restore the canonical good state
         server.shutdown()
 
     login_title, home_title = cases[0].title, cases[1].title

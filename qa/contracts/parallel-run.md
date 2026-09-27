@@ -1,6 +1,6 @@
 # Contract — parallel-run (N isolated browser contexts, D-041)
 
-**Status:** DRAFT (goes DRAFT->ACTIVE on T-173's first checker PASS).
+**Status:** ACTIVE (DRAFT->ACTIVE by /checker on T-173's checker PASS, 2026-09-25; qa/verdicts/t173-parallel-run.md Cycle checked: 1, merged 626fa03). Live-path wiring gap AT-562; PR6 session-factory isolation defect AT-565 (T-173 reopened) is a violation OF this ACTIVE criterion, not a reason to keep the contract DRAFT.
 **Feature:** run N cases concurrently in isolated Playwright browser contexts, where N is bounded by
 both `project.max_parallel` and a measured RAM/CPU budget, with the chosen N and its binding limit
 recorded on the run; cases against a project whose `write_policy` permits writes on a shared test
@@ -84,3 +84,4 @@ justified module per C3 rather than pushing the file over budget.
 
 - 2026-09-24 · init · contract authored by /checker as DRAFT, from D-041 (Approved-by Umesh —
   AskUserQuestion answers + plan approval, chat 2026-09-24). No prior draft existed; nothing amended.
+- 2026-09-25 · DRAFT->ACTIVE · /checker Mode B sweep, on T-173 checker PASS (qa/verdicts/t173-parallel-run.md Cycle checked: 1, merged 626fa03), as this contract's own status line pre-authorized; precedent network-assertions.md at the T-170 PASS. No criterion text changed.

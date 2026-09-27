@@ -27,7 +27,7 @@ from autotester.schema.case import Case
 from autotester.schema.enums import KIND_BY_CLASS, Action, CaseClass
 from autotester.schema.flowspec import ExpectedState, Step
 from autotester.schema.project import Project
-from autotester.store.project_store import ProjectStore
+from autotester.store.project_store import PinnedCaseError, ProjectStore
 from autotester.ui import theme
 from autotester.ui.case_form import (
     STEP_ROWS,
@@ -273,7 +273,7 @@ def rename_case(slug: str, case_id: str, title: str = Form(...)) -> RedirectResp
         raise HTTPException(404, f"no case '{case_id}'")
     secrets = SecretStore.load(project, ProjectPaths(slug).env_file, strict=False)
     _refuse_unsafe_submission([("the title", title)], project, secrets,
-                               exempt=frozenset({case.title}))
+                               exempt={"the title": case.title})
     store.update_case(case.model_copy(update={"title": title.strip()}))
     return RedirectResponse(f"/projects/{slug}/cases", status_code=303)
 
@@ -281,9 +281,16 @@ def rename_case(slug: str, case_id: str, title: str = Form(...)) -> RedirectResp
 @router.post("/projects/{slug}/cases/{case_id}/delete")
 def delete_case(slug: str, case_id: str) -> RedirectResponse:
     """Past runs and verdicts are history and stay on disk — only the case
-    itself stops being scheduled."""
+    itself stops being scheduled.
+
+    AT-585: a pinned case refuses here with a 409, not a 404 — the case
+    exists and was found, it is specifically protected from pruning."""
     store, _project = _load_project_or_404(slug)
     _require_safe_id(case_id, "case id")
-    if not store.delete_case(case_id):
+    try:
+        deleted = store.delete_case(case_id)
+    except PinnedCaseError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    if not deleted:
         raise HTTPException(404, f"no case '{case_id}'")
     return RedirectResponse(f"/projects/{slug}/cases", status_code=303)

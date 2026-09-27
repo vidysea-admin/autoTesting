@@ -33,4 +33,7 @@ def loop_status_cmd(
     report = loop_status.status(threshold_hours=hours)
     for text, level in loop_status.report_lines(report):
         typer.secho(text, fg=_LEVEL_COLOR.get(level))
-    raise typer.Exit(1 if (strict and report.asleep_now) else 0)
+    # AT-592: `asleep_now` alone misses an all-future log -- no open gap to key
+    # off, yet `report_lines` above just printed CORRUPT and "last: none
+    # credible". `strict_unhealthy` covers both the silent-now case and that one.
+    raise typer.Exit(1 if (strict and report.strict_unhealthy) else 0)

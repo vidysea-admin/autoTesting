@@ -172,6 +172,25 @@ def test_a_no_op_merge_does_not_credit_an_unrelated_recording(tmp_path: Path) ->
 
 # -- AT-290: learning a pattern must close the ask that requested it ----------
 
+def test_a_stored_index_html_pattern_answers_a_slash_gap(tmp_path: Path) -> None:
+    """AT-618: `stages/coverage.py::_path_of` folds `index.html` when it OPENS a
+    gap; `merge_flowspec._answered_gap_ids` must fold identically when it
+    CLOSES one, or a Screen whose stored `url_pattern` is the unfolded
+    '/index.html' form never answers a gap raised against '/' — the ask stays
+    open forever even after the answering video lands."""
+    store = ProjectStore(PROJECT, tmp_path)
+    spec = approved(screen("scr_1", "Sign in", "https://app.test/signin"))
+    queue_requests(store, diff_coverage(spec, [make_result("case_1", "https://app.test/")]))
+    assert len(open_requests(store)) == 1
+
+    merged = merge_flowspec(
+        spec, ingested(screen("scr_2", "Home", "https://app.test/index.html")),
+        source_id="src_video_2")
+    resolve_requests(store, merged, source_id="src_video_2")
+
+    assert open_requests(store) == []
+
+
 def test_learning_a_url_pattern_closes_the_request_that_asked_for_it(tmp_path: Path) -> None:
     """The whole point of AT-290: the loop must close on the COMMON case, not
     only when the recording happens to reveal a screen name nobody knew."""

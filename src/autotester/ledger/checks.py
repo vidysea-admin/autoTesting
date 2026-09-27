@@ -138,6 +138,20 @@ def check_ledger(root: Path) -> list[Violation]:
             for task in missing]
 
 
+def _status_by_id(text: str) -> dict[str, str]:
+    """Each row's `id` -> `status`, read as JSON so key order does not matter (AT-571).
+    A line that is not a JSON object is skipped: C10 judges rows, not syntax."""
+    out: dict[str, str] = {}
+    for line in text.splitlines():
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(row, dict) and re.fullmatch(ISSUE_ID, str(row.get("id", ""))):
+            out[row["id"]] = str(row.get("status", ""))
+    return out
+
+
 def check_qa_issue_rows(root: Path) -> list[Violation]:
     """C10: the ledger never silently loses what the handshake recorded (AT-496).
 
@@ -152,8 +166,7 @@ def check_qa_issue_rows(root: Path) -> list[Violation]:
     ledger = root / "qa" / "issues.jsonl"
     if not ledger.exists():
         return []
-    text = ledger.read_text(encoding="utf-8", errors="replace")
-    status_of = dict(re.findall(rf'"id":\s*"({ISSUE_ID})".*?"status":\s*"(\w+)"', text))
+    status_of = _status_by_id(ledger.read_text(encoding="utf-8", errors="replace"))
     out: list[Violation] = []
     for kind, marker in (("manifests", "**Issues addressed:**"), ("verdicts", "ISSUES-WRITTEN")):
         for path in sorted((root / "qa" / kind).glob("*.md")):

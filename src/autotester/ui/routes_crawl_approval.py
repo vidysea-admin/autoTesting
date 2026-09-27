@@ -16,6 +16,7 @@ from fastapi import APIRouter, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.browser.secrets import SecretStore
+from autotester.core.ids import SigningKeyMissing
 from autotester.core.paths import ProjectPaths
 from autotester.schema.approval import RunApproval
 from autotester.schema.enums import ApprovalKind
@@ -58,10 +59,19 @@ def _crawl_approval_form(slug: str, target: str) -> str:
 
 
 def _in_force(approval: RunApproval, slug: str, target: str) -> bool:
-    """What the consent gate would honour for this project's crawl ΓÇö never list more."""
-    return (approval.project == slug and approval.run_kind is ApprovalKind.CRAWL
+    """What the consent gate would honour for this project's crawl ΓÇö never list
+    more. Listing a grant the gate would refuse is a false reassurance, so this
+    checks the same signature `core/consent.py` does (AT-110) — a card that
+    still showed a forged or legacy-unsigned row as "in force" would be
+    exactly that false reassurance in the one place a human actually looks."""
+    if not (approval.project == slug and approval.run_kind is ApprovalKind.CRAWL
             and approval.target == target and approval.is_intact
-            and not approval.is_expired(datetime.now(UTC)))
+            and not approval.is_expired(datetime.now(UTC))):
+        return False
+    try:
+        return approval.is_signed_and_verified
+    except SigningKeyMissing:
+        return False  # fail closed: can't verify, don't claim it's in force
 
 
 def _approvals_card(approvals: list[RunApproval], slug: str, target: str, saved: str,
@@ -180,6 +190,10 @@ def crawl_approval_submit(
         granted_by=signer, granted_at=now, expires_at=expiry,
         note=note.strip() or None,
     )
+    try:
+        candidate.sign()
+    except SigningKeyMissing as exc:
+        return _approval_error(slug, str(exc))
     already = _matching_grant(store.list_approvals(), candidate)
     if already is None:
         store.add_approval(candidate)

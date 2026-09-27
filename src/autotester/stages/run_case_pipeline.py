@@ -16,6 +16,7 @@ from autotester.browser.session import BrowserSession
 from autotester.providers.base import Provider
 from autotester.schema.base import Provenance
 from autotester.schema.case import Case
+from autotester.schema.enums import Result
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Criterion, Rubric, Verdict
 from autotester.stages.execute import run_case
@@ -83,6 +84,20 @@ def is_stale_default(rubric: Rubric, case: Case) -> bool:
     return rubric.criteria == untouched.criteria and rubric.no_fire == untouched.no_fire
 
 
+def _rubric_for(case: Case, store: ProjectStore) -> Rubric:
+    """Load `case`'s persisted rubric, or build+persist the lazy default the
+    first time one doesn't exist (or the persisted one is a stale default,
+    AT-059) — the single rubric-resolution seam both `run_and_grade_case` and
+    `grade_errored_result` (AT-568) go through, so there is one place, not
+    two, that decides what a case is graded against."""
+    rubric_id = case.rubric_ref or f"rub_{case.id}"
+    rubric = store.load_rubric(rubric_id)
+    if rubric is None or is_stale_default(rubric, case):
+        rubric = default_rubric(case, rubric_id)
+        store.save_rubric(rubric)
+    return rubric
+
+
 def run_and_grade_case(
     case: Case, session: BrowserSession, judge: Provider, run_id: str,
     store: ProjectStore | None = None,
@@ -93,11 +108,60 @@ def run_and_grade_case(
     so a UI button and a CLI script call exactly the same path."""
     store = store or ProjectStore(case.project)
     result = run_case(case, session)
-    rubric_id = case.rubric_ref or f"rub_{case.id}"
-    rubric = store.load_rubric(rubric_id)
-    if rubric is None or is_stale_default(rubric, case):
-        rubric = default_rubric(case, rubric_id)
-        store.save_rubric(rubric)
+    rubric = _rubric_for(case, store)
     verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
                     secrets=session.secrets)
     return result, verdict
+
+
+def run_and_grade_case_resilient(
+    case: Case, session: BrowserSession, judge: Provider, run_id: str, store: ProjectStore,
+) -> tuple[RawResult, Verdict]:
+    """Like `run_and_grade_case`, but a grader/provider exception that happens
+    AFTER `run_case` already produced a real result never discards that
+    result (AT-573). Used only by the parallel route (`ui/routes_runs.py::
+    _run_cases_in_parallel`); the serial route still calls `run_and_grade_case`
+    directly, unchanged.
+
+    Without this, T-173's parallel fan-out (`stages/parallel_run.py::
+    run_cases`) catches the propagating exception at `_run_one` and replaces
+    the case's outcome with a synthetic `ERRORED` `RawResult` that carries
+    NONE of the real result's evidence — a COMPLETED run with real
+    screenshots reported as "execution errored", when execution had in fact
+    finished; only grading failed. Here, `result` is captured first and
+    always returned; any exception raised while resolving the rubric or
+    grading is caught, and it produces an `INCONCLUSIVE` verdict naming the
+    grader failure instead of propagating."""
+    result = run_case(case, session)
+    try:
+        rubric = _rubric_for(case, store)
+        verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
+                        secrets=session.secrets)
+    except Exception as exc:  # the grader failed; execution did not (C7: still not a guess)
+        verdict = Verdict(
+            run_id=run_id, case_id=result.case_id, result=Result.INCONCLUSIVE,
+            scoreboard="not judged: the grader failed after execution completed",
+            grader_provider="rule", note=f"{type(exc).__name__}: {exc}",
+        )
+    return result, verdict
+
+
+def grade_errored_result(
+    case: Case, result: RawResult, judge: Provider, run_id: str, store: ProjectStore,
+) -> Verdict:
+    """A `Verdict` for a `RawResult` that never reached a `run_and_grade_case`
+    call at all (AT-568). T-173's parallel fan-out (`stages/parallel_run.py::
+    run_cases`) reports a `session_factory` crash, or any exception raised
+    before a caller captured its own verdict, as its own ERRORED `RawResult`
+    — with no matching verdict, since `run_and_grade_case` (and the `grade()`
+    call inside it) was never reached for that case.
+
+    Always safe to call here: `result.outcome` is `Outcome.ERRORED` in every
+    caller of this function, and `grade()`'s own `_outcome_verdict` shortcuts
+    ERRORED/BLOCKED_HITL deterministically — before ever building a prompt or
+    calling `judge` — so this never risks a second crash grading the first
+    one. Goes through the exact same rubric seam (`_rubric_for`) as a normal
+    run, so an ERRORED case is still gradeable against its real rubric, not a
+    placeholder."""
+    rubric = _rubric_for(case, store)
+    return grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id))

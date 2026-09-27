@@ -193,6 +193,30 @@ def review_line(spec: FlowSpec) -> str:
     )
 
 
+def bounds_form(slug: str, label: str) -> str:
+    """The exact four operator-controlled bounds used by crawl preflight/run.
+
+    Moved here from `routes_crawls.py` (AT-608/609) to keep that module under
+    the 300-line cap after it started scrubbing the coverage card -- same
+    C2 split this module already exists for (see module docstring)."""
+    safe = escape(slug)
+    fields = (
+        ("max_screens", "Maximum screens", "30", "1"),
+        ("max_actions", "Maximum actions", "200", "1"),
+        ("wall_clock_s", "Wall clock (seconds)", "600", "any"),
+        ("max_depth", "Maximum depth", "6", "1"),
+    )
+    inputs = "".join(
+        f"<div class='field'><label>{title}</label><input type='number' name='{name}' "
+        f"min='1' step='{step}' value='{value}' required></div>"
+        for name, title, value, step in fields
+    )
+    return (
+        f"<form method='post' action='/projects/{safe}/explore'>"
+        f"{inputs}<button type='submit'>{label}</button></form>"
+    )
+
+
 def coverage_card(gaps: list, unreached: list[Screen]) -> str:
     """The crawl against the FlowSpec, both directions — screens the spec
     cannot name, and screens the spec claims that the crawl never reached."""

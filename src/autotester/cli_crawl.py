@@ -6,7 +6,7 @@ the same typer apps there, so the CLI surface a user sees is unchanged.
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, time
 from pathlib import Path
 from typing import Any
 
@@ -135,6 +135,17 @@ def _merge_into_flowspec(store_: ProjectStore, project: str, crawl_id: str) -> N
     )
 
 
+def _local_now() -> datetime:
+    """The operator's current local moment, offset-aware — the seam a test pins (CN4)."""
+    return datetime.now().astimezone()
+
+
+def _end_of_day(day: date) -> datetime:
+    """The last local second of `day` -- a NEW grant's `expires_at` (CN4, at147
+    answered C, D-048); never naive, since `is_expired` reads a naive stamp as UTC."""
+    return datetime.combine(day, time(23, 59, 59), tzinfo=_local_now().tzinfo)
+
+
 def _validate_grant(expires: str, target: str, proj: Any) -> None:
     """Refuse a grant that can never cover anything, and flag a likely typo (AT-145).
 
@@ -151,30 +162,16 @@ def _validate_grant(expires: str, target: str, proj: Any) -> None:
     except ValueError:
         typer.secho(f"--expires must be YYYY-MM-DD, not {expires!r}", fg=typer.colors.RED)
         raise typer.Exit(1) from None
-    if expiry <= date.today():
-        # AT-147: `<` let TODAY through with a green "granted" line, and then
-        # `RunApproval.is_expired` refused it -- because `fromisoformat` reads a
-        # bare date as MIDNIGHT, so an approval "expiring today" is already dead
-        # at 00:00:01. That is the exact date an operator granting same-day
-        # production consent for T-145 would type.
-        #
-        # Fixed at the grant, deliberately NOT by making `is_expired` inclusive:
-        # that would widen every approval already on disk by up to 24 hours, and
-        # silently lengthening a consent window is not a fix a maker gets to
-        # make to a security gate on its own. Flagged for the contract instead.
-        # AT-150: print the date, not the word "tomorrow". My own test asserted
-        # only that the word appeared, so a refusal that never named a usable
-        # date would have passed it.
-        usable = (date.today() + timedelta(days=1)).isoformat()
-        # AT-151: the AT-150 fix named a usable date on the `today` branch and
-        # not on the `past` one -- the AT-149 pattern a third time, fixing one
-        # arm of a two-arm condition. Both arms now end at the same sentence,
-        # so there is no arm left to forget.
-        cause = ("already in the past" if expiry < date.today() else
-                 "today, and consent expires at the START of the named day")
+    today = _local_now().date()
+    if expiry < today:
+        # CN4 (at147 answered C, D-048): a date means THROUGH THE END of that
+        # day for grants minted from 2026-09-26 on; a bare row already on disk
+        # keeps its old start-of-day meaning (option B, retroactive widening,
+        # was declined). AT-150/AT-151: name a usable date on every arm -- TODAY.
+        usable = today.isoformat()
         typer.secho(
-            f"--expires {expires} is {cause}; this grant would refuse every run "
-            f"it was asked about — use --expires {usable} or later",
+            f"--expires {expires} is already in the past; this grant would "
+            f"refuse every run it was asked about — use --expires {usable} or later",
             fg=typer.colors.RED)
         raise typer.Exit(1)
     _warn_on_target_mismatch(target, proj)
@@ -223,6 +220,17 @@ def _warn_on_target_mismatch(target: str, proj: Any) -> None:
         fg=typer.colors.YELLOW)
 
 
+def _signed_or_refuse(candidate: Any) -> None:
+    """AT-110: sign in place, or refuse the grant naming the missing key."""
+    from autotester.core.ids import SigningKeyMissing
+
+    try:
+        candidate.sign()
+    except SigningKeyMissing as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(1) from None
+
+
 def approve_cmd(
     project: str,
     kind: str = typer.Option(..., "--kind", help="read | crawl | adversarial | live_case"),
@@ -239,11 +247,10 @@ def approve_cmd(
 ) -> None:
     """Grant a human's approval for one kind of run against one target (D-018).
 
-    Nothing outward-facing starts without one. The approval is content-addressed,
-    so an accidental edit to the row invalidates it rather than silently taking
-    effect — but the hash is unkeyed, so this is tamper EVIDENCE, not tamper
-    proofing: anyone who can write approvals.jsonl can recompute a valid id
-    (AT-110).
+    Content-addressed AND signed with an HMAC keyed from
+    `AUTOTESTER_APPROVAL_KEY` in the repo-root `.env` (AT-110): tamper-proof
+    against anyone who does not hold that key — not against an agent that can
+    edit the code (`core/consent.py`) which checks it.
     """
     from autotester.schema.approval import RunApproval
     from autotester.schema.enums import ApprovalKind
@@ -259,14 +266,19 @@ def approve_cmd(
         typer.secho(f"--kind must be one of: {allowed}", fg=typer.colors.RED)
         raise typer.Exit(1) from None
     _validate_grant(expires, target, store_.load_project())
-    approval = store_.add_approval(RunApproval(
+    # CN4 (at147 answered C, D-048): store the END of the day, offset-aware in
+    # local time -- never the bare date (shares `_local_now()` with `_validate_grant`).
+    expires_at = _end_of_day(date.fromisoformat(expires)).isoformat()
+    candidate = RunApproval(
         project=project, run_kind=run_kind, target=target, scope=scope,
         max_actions=max_actions, max_probes=max_probes, wall_clock_s=wall_clock,
         production=production, granted_by=granted_by,
-        granted_at=date.today().isoformat(), expires_at=expires,
-    ))
+        granted_at=date.today().isoformat(), expires_at=expires_at,
+    )
+    _signed_or_refuse(candidate)
+    approval = store_.add_approval(candidate)
     typer.secho(
-        f"{approval.id}: {run_kind.value} on {target} until {expires} "
+        f"{approval.id}: {run_kind.value} on {target} until {expires_at} "
         f"(actions<={max_actions}, probes<={max_probes})",
         fg=typer.colors.GREEN,
     )

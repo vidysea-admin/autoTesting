@@ -1,0 +1,44 @@
+{
+  "unit": "at593-crawls-gap-log",
+  "issue": "AT-593",
+  "fix_cycle": 1,
+  "mode": "D",
+  "date": "2026-09-26",
+  "server": {
+    "root": "AUTOTESTER_ROOT scratch dir (checker-owned, isolated)",
+    "port": 8095,
+    "stderr_log": "server-stderr.log",
+    "stdout_log": "server-stdout.log"
+  },
+  "target_site": {
+    "url": "http://127.0.0.1:8096/",
+    "port": 8096,
+    "note": "single static page, no links, so the crawl completes in one screen / zero actions"
+  },
+  "steps": [
+    "seeded project 'demo' via ProjectStore/Project API (same shape as tests/test_ui_crawl_approval.py::make_project), base_url http://127.0.0.1:8096, allowed_domains [127.0.0.1]",
+    "wrote a real repo-root .env with DEMO_PASSWORD=hunter2 (fake secret) and AUTOTESTER_APPROVAL_KEY (required for a signed crawl approval; first attempt 400'd without it, added it and restarted uvicorn)",
+    "wrote a broken flowspec.json: {\"project\": \"demo\", \"screens\": \"hunter2\"} -- reproduces the pydantic input_value= echo leak vector the manifest describes",
+    "drove a real headed Chromium: GET /projects/demo/env, filled and submitted the crawl-approval form (granted_by=Checker, max_actions=5, wall_clock_s=30, expires 2099)",
+    "GET /projects/demo/crawls, filled max_screens=3 max_actions=5 wall_clock_s=20 max_depth=2, clicked 'Explore now'",
+    "POST /projects/demo/explore ran a REAL (unmocked) BrowserSession/Playwright crawl against the local target site, then redirected 303 to /projects/demo/crawls/<id> -- this is the exact code path that reaches _queue_coverage_gap in production use, not a TestClient/mock substitute"
+  ],
+  "results": {
+    "crawl_id": "crawl_01M3F45W1NTZ22XAB65GQXSKCK",
+    "route_behavior": "303 redirect, crawl persisted and rendered -- AT-477 behavior unchanged",
+    "console_errors_on_crawl_page": 0,
+    "console_warnings_on_crawl_page": 0,
+    "server_stderr_log_line": "coverage gap not queued for crawl_01M3F45W1NTZ22XAB65GQXSKCK: the FlowSpec could not be read -- ValueError: ...flowspec.json: 1 validation error for FlowSpec\nscreens\n  Input should be a valid array [type=list_type, input_value='[REDACTED]:DEMO_PASSWORD', input_type=str]...",
+    "raw_secret_in_server_stderr": false,
+    "note_on_log_delivery": "no logging.basicConfig/handler exists anywhere in the app (confirmed by grep); the WARNING reached stderr via Python's logging.lastResort handler (stdlib default for WARNING+ when no handler is configured anywhere in the logger hierarchy) -- confirmed empirically. The line therefore has NO level/logger-name prefix (lastResort's default Formatter is bare %(message)s), unlike uvicorn's own INFO lines above it in the same file."
+  },
+  "adversarial_finding": {
+    "title": "The crawl page itself (_coverage_card, 'Against the FlowSpec' section) renders the SAME spec_error RAW, unscrubbed -- the fake secret 'hunter2' appeared verbatim in the browser DOM",
+    "location": "src/autotester/ui/routes_crawls.py:115 -- `f\"<p class='meta'>{escape(spec_error)}</p>\"` -- escape() only, no redactor.scrub()",
+    "reproduced": "directly observed in the live accessibility snapshot of http://127.0.0.1:8095/projects/demo/crawls/crawl_01M3F45W1NTZ22XAB65GQXSKCK -- the 'Against the FlowSpec' paragraph read '...input_value=''hunter2''...' in full, while the unrelated 'Run detail' table's 'FlowSpec screens reached' row on the SAME page showed the SAME message already scrubbed to '[REDACTED]:DEMO_PASSWORD'. Traced the second path to src/autotester/stages/crawl_coverage.py:96-113 `of_run()`: `scrub = rt.session.secrets.scrub_optional; ... spec_error = scrub(f\"could not read the FlowSpec -- {type(exc).__name__}: {exc}\")` -- this ALREADY-SCRUBBED value is what gets persisted onto the Crawl record at crawl-finish time (AT-472, predates AT-593), which is what the Run-detail table reads back. _coverage_card, by contrast, recomputes spec_error fresh at RENDER time via `_load_flowspec_safe(store)` with zero redactor in scope.",
+    "scope_note": "pre-existing since AT-477, NOT introduced by AT-593's diff -- _coverage_card is explicitly the untouched function per the manifest, and this diff never touches it. Not a regression from this unit. But it is a live, reproducible secret-to-browser-DOM leak sitting one function away from the one AT-593 just fixed, using the exact same spec_error string and the exact same redactor the fix now threads through -- _coverage_card has no redactor argument at all right now.",
+    "severity": "high (real, currently-exploitable: any operator or anyone with access to the crawl page sees the raw credential in cleartext HTML -- CLAUDE.md's own hard rule is 'logs pass Redactor.scrub', and core/redact.py's docstring states the goal even more broadly: a secret value must never reach a log OR an artifact -- a rendered HTML page an operator is looking at is a materially worse exposure surface than a log file, since it requires zero shell/log access)",
+    "suggested_fix": "thread a Redactor into _coverage_card exactly the same way this unit just threaded one into _queue_coverage_gap, and scrub spec_error before escape() at line 115 (both call sites of _coverage_card -- the crawl page and the merge page -- would need the redactor available; project.write_policy/SecretStore.load(project, paths.env_file, strict=False).redactor() is the same 'one loader' pattern already used twice in this codebase)",
+    "confidence": "95% -- directly reproduced, not inferred"
+  }
+}

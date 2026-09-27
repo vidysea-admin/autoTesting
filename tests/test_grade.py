@@ -214,8 +214,12 @@ def test_verdict_round_trips_through_project_store_without_colliding_with_result
 # -- G5 prompt is a file --------------------------------------------------
 
 def test_prompt_is_read_from_a_file_not_built_inline() -> None:
+    """T-175: the grade prompt now ships as a `SKILL.md` (Agent Skills shape),
+    read through the one provider-seam loader -- still a file, never a Python
+    string literal built inline."""
     docs = RepoDocs()
-    template_path = docs.prompts_dir / "grade_v1.md"
-    assert template_path.exists()
-    assert "{{RUBRIC}}" in template_path.read_text(encoding="utf-8")
-    assert "{{EVIDENCE}}" in template_path.read_text(encoding="utf-8")
+    skill_path = docs.skills_dir / "grade" / "SKILL.md"
+    assert skill_path.exists()
+    text = skill_path.read_text(encoding="utf-8")
+    assert "{{RUBRIC}}" in text
+    assert "{{EVIDENCE}}" in text

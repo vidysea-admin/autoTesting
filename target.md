@@ -147,10 +147,10 @@ comes only after that — "not only erp". T-122/T-145/T-136 get re-scoped to "se
 - [!] T-122 login case + first logged-in run on the second product — credentials after Pathlynks is proven
 - [!] T-145 live bounded READ_ONLY crawl of the second product — needs T-122 + consent (CRITICAL, dual-check)
 - [!] T-136 score recordings vs a trainer truth sheet → real recall/FP/time — **needs the truth sheet**
-- [~] T-123 medium credential-safety batch — AT-085 `/healthz` + AT-065 rubric stamp ✅ (18ff2a9); AT-086/087 🎯 (gate answered: both a)
+- [x] T-123 medium credential-safety batch — AT-085 `/healthz` + AT-065 rubric stamp ✅ (18ff2a9); AT-086/087 ✅ merged 6e5c806 (checker FINAL PASS + Mode D; gate answered: both a)
 - [ ] T-125 test catalog (runnable/blocked + cheap→expensive) — D-039 ✅, contract `catalog.md` DRAFT
-- [~] T-126 governance debt sweep — maker side ✅ (allowlist + FEATURES backfill, checker PASS, merged); follow-up AT-560 (allowlist note wording)
-- [~] AT-110 tamper-proof consent approvals (HMAC keyed from `.env`) — build in progress
+- [x] T-126 governance debt sweep — maker side ✅ (allowlist + FEATURES backfill, checker PASS, merged); AT-560 follow-up ✅ merged f94c5c2; closed by checker sweep 2026-09-25
+- [x] AT-110 tamper-proof consent approvals (HMAC keyed from `.env`) — ✅ checker PASS cycle 2 + live Mode D, merged 48aba2f
 - [x] AT-483 orphaned-crawl liveness — re-landed onto master (2d58215) after its 09-18 PASS never merged
 
 *Status truth: the plumbing is real, but everything downstream of a **learned** FlowSpec is
@@ -161,12 +161,12 @@ fixture-proven only. The ERP trust number is the first time AutoTester is measur
 ## THE PRODUCT VISION (reusable platform) — 🎯 target, mostly unbuilt
 
 ### M8 · Systematic exploration upgrades
-- [x] T-163 resumable learn-or-explore orchestrator + durable per-stage checkpoints (F-045, dual PASS)
+- [x] T-163 resumable learn-or-explore orchestrator + durable per-stage checkpoints (F-045, dual PASS) — ✅ live caller `autotester orchestrate` (AT-575, merged ec98b33)
 - [x] T-170 first-party API/network assertions (D-040 split from T-165) — F-047, checker PASS, merged 1fc7276
 - [ ] T-165 hybrid BFS→bounded-DFS traversal + frontier completeness + form-input replay + persona-seeded
       incremental crawl + change tracking (D-040; contract `crawl-traversal.md` DRAFT; CRITICAL dual-check)
 - [ ] T-171 permission-surface coverage — every reachable control exercised or blocked-with-reason (D-040)
-- [ ] T-173 parallel case execution — N isolated browsers, RAM/CPU-bounded (D-041; `parallel-run.md` DRAFT)
+- [x] T-173 parallel case execution — ✅ merged 626fa03 + live UI wiring ef1b043 (at562-564: per-case evidence, crash isolation; checker PASS c3 + Mode D). Open: AT-574 serial-path resilience, AT-570 RunApproval (T-122)
 
 ### M9 · Durable product model
 - [x] T-164 durable **Portal Persona** JSON + knowledge page + change history (F-046, 3ceb7b9)
@@ -186,9 +186,9 @@ fixture-proven only. The ERP trust number is the first time AutoTester is measur
 |---|---|---|
 | Workflow graph | LangGraph 1.x, from T-167 (stages migrate only when touched) | T-167 |
 | Agents | LangChain Deep Agents lead tester + subagents (explorer, designer, runner, independent grader, reporter), after Wave 1 — T-179..T-181 (D-042, supersedes D-041's no-multi-agent) | T-179 · T-180 · T-181 |
-| Skills | prompts as `SKILL.md` | T-175 (contract `skills.md` DRAFT) |
+| Skills | prompts as `SKILL.md` | T-175 ✅ merged 9b3fd5e (checker PASS) |
 | Tools / MCP | Playwright (deterministic) · browser-use fallback · AutoTester as MCP server + CLI contract | T-177 · T-174 |
-| Observability | local redacted `trace.jsonl` → Langfuse self-hosted on a server | T-172 (contract `run-trace.md` DRAFT) |
+| Observability | local redacted `trace.jsonl` → Langfuse self-hosted on a server | T-172 ✅ merged 7975c81 (local trace; live caller = AT-564) |
 - Prompts ship as `SKILL.md` skills (T-175) while crawl / run_case / get_persona / get_catalog / capture_network / grade_case / report stay plain tools with deterministic guards (safety, credentials, write-policy) inside them, not left to the model (D-042).
 - Refused: "regenerate tests instead of maintaining them". Deferred to Umesh: differential base-vs-head oracle.
 
@@ -209,7 +209,7 @@ fixture-proven only. The ERP trust number is the first time AutoTester is measur
 2. Both intake modes work on a real target and beat-or-match a human tester (T-169).
 3. Every finding is evidence-backed and correctly classified; coverage shows untested branches.
 
-## Progress (from `.goal/goal.json`, 2026-09-24): 39 / 67 done (58% — the roadmap grew by 12 tasks via D-040/D-041/D-042, not a regression). In flight: AT-110 (paused on RAM). Next: T-172, T-173, AT-086/087, T-175, T-126, AT-335, then T-125 / T-165; the Deep Agents layer (T-179..T-181) after Wave 1.
+## Progress (from `.goal/goal.json`, 2026-09-26): 47 / 70 done (67% — T-182..T-184 added by the 2026-09-26 meeting review, D-045; T-182 mobile/locale conditions, T-183 export failure detail and T-184 pinned regression case done — the roadmap grew by 12 tasks via D-040/D-041/D-042, not a regression). Status 2026-09-25: merged today — AT-110, AT-560, AT-086/087, T-173, T-175, T-172, AT-571, at562-564 live wiring (ef1b043). Open follow-ups: AT-574 serial-path resilience, AT-575 orchestrator live caller, AT-567 file splits, AT-570 RunApproval (T-122). Waiting on Umesh: AT-335 + T-125 builders were stopped. Next: T-179 Deep Agents lead tester (deps done) when RAM allows.
 _Machine backlog + done-checks: `.goal/goal.json`. Whole-project screen: `docs/SNAPSHOT.md`._
 _Note: rewriting `.goal/goal.json`'s north star or adding DISCOVER/MODEL to `docs/ARCHITECTURE.md`
 is a state change that needs an authorizing `docs/DECISIONS.md` entry first (Lab Protocol) — this

@@ -58,3 +58,5 @@ ever says whether it was answered. The rule existed; the maker did not follow it
 
 ## Answer log
 <!-- On answering, append exactly: **Answered:** <ISO datetime> — <choice> — <where> -->
+
+**Answered:** 2026-09-26T22:34:22+05:30 — provide — Umesh via AskUserQuestion in the checker session. Umesh will enter a TEST account's ERP_EMAIL and ERP_PASSWORD himself in the UI (project erp -> Credentials -> gitignored projects/erp/.env), never in chat or a commit, never Karun's or Shubi's real 2FA login. T-122 unblocks once both KEYS are present (checked by key name only, never by value); every run still needs its own approval.

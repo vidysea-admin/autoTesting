@@ -4,9 +4,21 @@
 #
 # class · lane [exact model(s)] · n · pass@1 · done_as_expected(<=2cyc) · mean_cyc · med_wall_s · $/unit · tok/unit · last
 
+feature · claude-sonnet [claude-sonnet-5] · n=2 · pass@1=100% · expected=100% · 1.5cyc · 1778s · $? · 354,954tok · 2026-09-25
+feature-build · claude-opus [claude-opus-5-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 1680s · $? · ?tok · 2026-09-24
+feature-build · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 3200s · $? · ?tok · 2026-09-24
+goal-registration · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 457s · $? · ?tok · 2026-09-24
+goal-registration-fix · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 197s · $? · ?tok · 2026-09-24
+governance-config · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 941s · $? · ?tok · 2026-09-24
+governance-fix · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 368s · $? · 108,966tok · 2026-09-24
+issue-fix-batch · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 2122s · $? · ?tok · 2026-09-24
+merge-reland · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 2.0cyc · 2764s · $? · ?tok · 2026-09-24
+refactor · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 618s · $? · 253,348tok · 2026-09-25
+security-feature · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 2.0cyc · 1231s · $? · 326,914tok · 2026-09-24
+security-fix · claude-sonnet [claude-sonnet-5] · n=1 · pass@1=100% · expected=100% · 1.0cyc · 625s · $? · 279,151tok · 2026-09-24
 test-hardening · ollama/deepseek-v4.1-flash · n=1 · pass@1=0% · expected=100% · 2.0cyc · 166s · $? · ?tok · 2026-09-22
 
 ## Cost context (last 14 days)
-External lanes (Ollama plan credits, metered by token): scored units 1 · worker tokens 0 · 0 tok/PASS
-Claude lanes cost tokens · main=5,766,828,676 · subagents=2,491,506,668 (incl. checkers)
-Opus share of subagent tokens: 34%  (Sonnet builds are ~5x cheaper)
+External lanes (Ollama plan credits, metered by token): scored units 1 · worker tokens 0 · tok/PASS unknown (older rows lack worker_tokens)
+Claude lanes cost tokens · main=4,358,907,696 · subagents=3,070,798,089 (incl. checkers) · ~>=236,215,237/Claude-build (overcounts: checkers included)
+Opus share of subagent tokens: 25%  (Sonnet builds are ~5x cheaper)

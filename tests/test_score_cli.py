@@ -75,7 +75,18 @@ def run(truth: Path, root: Path, *extra: str) -> subprocess.CompletedProcess:
     return subprocess.run(
         [sys.executable, str(SCRIPT), "--project", "erp", "--truth", str(truth),
          "--sheet", "Trainer module", "--root", str(root), *extra],
-        capture_output=True, text=True)
+        capture_output=True, text=True, timeout=180)
+
+
+def run_json(truth: Path, root: Path, *extra: str) -> dict:
+    """AT-580: a child that crashed or was starved used to surface as a bare
+    JSONDecodeError on empty stdout. Assert the exit code first and carry stderr
+    into the failure, so the real cause is on screen."""
+    result = run(truth, root, *extra)
+    assert result.returncode == 0, (
+        f"score CLI exited {result.returncode}; "
+        f"stderr: {result.stderr!r}; stdout: {result.stdout!r}")
+    return json.loads(result.stdout)
 
 
 # -- the exit code is the whole point ----------------------------------------
@@ -130,7 +141,7 @@ def test_a_partial_analysis_is_reported_beside_the_recall(tmp_path: Path) -> Non
     truth = a_truth_sheet(tmp_path / "truth.xlsx", rows=2)
     a_project(tmp_path, issues=2, used=1, expected=12)
 
-    report = json.loads(run(truth, tmp_path).stdout)
+    report = run_json(truth, tmp_path)
 
     assert report["coverage"]["complete"] is False
     assert report["coverage"]["observations_used"] == 1
@@ -142,7 +153,7 @@ def test_a_complete_analysis_says_so(tmp_path: Path) -> None:
     truth = a_truth_sheet(tmp_path / "truth.xlsx", rows=2)
     a_project(tmp_path, issues=2, used=12, expected=12)
 
-    report = json.loads(run(truth, tmp_path).stdout)
+    report = run_json(truth, tmp_path)
 
     assert report["coverage"]["complete"] is True
     assert report["coverage"]["partial_sources"] == []
@@ -183,7 +194,7 @@ def test_a_source_with_no_analysis_is_not_reported_as_complete(tmp_path: Path) -
                           what_is_wrong="from a source with no analysis",
                           severity=Severity.S2, category=IssueCategory.FEATURE_GAP))
 
-    report = json.loads(run(truth, tmp_path).stdout)
+    report = run_json(truth, tmp_path)
 
     assert report["coverage"]["complete"] is False
     assert orphan.id in report["coverage"]["sources_with_no_analysis"]
@@ -197,8 +208,16 @@ def test_the_declared_bounds_are_honoured_not_ignored(tmp_path: Path, flag, valu
     truth = a_truth_sheet(tmp_path / "truth.xlsx", rows=2)
     a_project(tmp_path, issues=2)
 
-    loose = json.loads(run(truth, tmp_path).stdout)
-    tight = json.loads(run(truth, tmp_path, flag, value).stdout)
+    loose = run_json(truth, tmp_path)
+    tight = run_json(truth, tmp_path, flag, value)
 
     assert loose["found"] == 2, "the fixture must match under the defaults"
     assert tight["found"] < loose["found"], f"{flag}={value} changed nothing"
+
+
+def test_a_failing_child_is_reported_with_its_stderr_not_as_a_json_error(tmp_path: Path) -> None:
+    """AT-580: run_json must name the child's exit code and stderr, never hide a
+    crash behind `json.loads('')`."""
+    truth = tmp_path / "truth.xlsx"
+    with pytest.raises(AssertionError, match=r"score CLI exited [1-9]"):
+        run_json(truth, tmp_path, "--no-such-flag")

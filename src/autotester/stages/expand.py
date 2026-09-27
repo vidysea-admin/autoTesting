@@ -8,13 +8,13 @@ multiply one guess into a dozen, exactly what the review gate exists to stop.
 from __future__ import annotations
 
 from autotester.core.paths import RepoDocs
-from autotester.providers.base import Provider
+from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.case import Case, ExpandedSteps
 from autotester.schema.enums import KIND_BY_CLASS, Action, CaseClass
 from autotester.schema.flowspec import Flow, FlowSpec
 from autotester.stages.review import require_reviewed
 
-PROMPT_NAME = "expand_case_v1.md"
+SKILL_NAME = "expand-case"  # src/autotester/skills/expand-case/SKILL.md (T-175, was expand_case_v1)
 
 CLASS_DESCRIPTIONS: dict[CaseClass, str] = {
     CaseClass.INPUT_EMPTY: "submit with a required field left empty",
@@ -78,7 +78,7 @@ def applicable_classes(flow: Flow) -> list[CaseClass]:
 
 
 def build_expand_prompt(flow: Flow, case_class: CaseClass, docs: RepoDocs) -> str:
-    template = (docs.prompts_dir / PROMPT_NAME).read_text(encoding="utf-8")
+    template = load_skill_prompt(SKILL_NAME, skills_dir=docs.skills_dir)
     steps_text = "\n".join(
         f"{s.order}. {s.action.value} {s.target}" + (f" = {s.value}" if s.value else "")
         for s in sorted(flow.steps, key=lambda s: s.order)
@@ -122,7 +122,8 @@ def expand_flow(
         if case_class is CaseClass.HAPPY:
             continue
         prompt = build_expand_prompt(flow, case_class, docs)
-        expanded = provider.act(prompt, ExpandedSteps)
+        expanded = provider.act(prompt, ExpandedSteps,
+                                prompt_file=SKILL_NAME, fed_id=flow.id)
         case = _expanded_case(flow, project, case_class, expanded)
         if case is not None:
             cases.append(case)

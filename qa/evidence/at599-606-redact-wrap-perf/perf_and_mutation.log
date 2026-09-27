@@ -1,0 +1,112 @@
+# at599-606-redact-wrap-perf — perf + mutation evidence
+
+## Profiling (throwaway copy, `uv run python` + `cProfile`, ~530 KB synthetic corpus,
+## 5 secrets, before any fix in this unit — HEAD before this branch's edits)
+
+Top of `cProfile` cumulative-time table for one `Redactor.contains_folded(text)` call:
+
+```
+39233494 function calls in 9.972 seconds   (profiler overhead included; real
+                                             unprofiled call: 2.750s for this
+                                             call alone, 2.093s more for
+                                             assert_no_raw_secrets on top)
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    9.972    9.972 redact.py:91(contains_folded)
+        1    0.000    0.000    9.972    9.972 redact_fold.py:251(_contains_folded_secret)
+        3    0.000    0.000    9.959    3.320 redact_fold.py:159(fold_credential)
+        6    0.371    0.062    9.935    1.656 {method 'join' of 'str' objects}
+  1567377    0.493    0.000    9.086    0.000 redact_fold.py:205(<genexpr>)
+  1591296    1.170    0.000    8.594    0.000 redact_fold.py:88(_is_ignorable)   <- 86% of total
+  1567376    2.526    0.000    7.153    0.000 {built-in method builtins.any}
+        1    0.000    0.000    6.584    6.584 {method 'update' of 'set' objects}
+ 28212732    4.617    0.000    4.617    0.000 redact_fold.py:108(<genexpr>)      <- the 17-tuple
+                                                                                     ignorable-range
+                                                                                     scan inside
+                                                                                     _is_ignorable
+```
+
+`_is_ignorable` is called once per character of `text` for each of the 3 candidate strings
+`fold_credential` folds (the text itself, its reversal, its HTML-unescape) -- ~1.59M Python-level
+calls for a 530 KB input, each doing an `unicodedata.category` lookup plus a linear scan of a
+17-tuple ignorable-range table via a freshly-built generator (`any(...)`). That generator
+construction + scan is the dominant cost (28.2M inner-tuple iterations, 4.617s tottime alone) --
+real work that is O(1) per call but with a high constant, repeated far more often than the input
+actually grows (natural text repeats the same few hundred distinct characters).
+
+## Fix: `functools.lru_cache` on `_is_ignorable` (redact_fold.py) and on
+## `declared_secret_encodings` (redact_encodings.py) -- both pure functions of one small,
+## low-cardinality input, so caching changes nothing they return, only how often the work reruns.
+
+Same 500 KB corpus (`tests/test_redact_wrap_perf.py::_make_corpus`, fixed seed), same 5 secrets,
+`contains_folded` + `assert_no_raw_secrets` combined, one process per measurement:
+
+| state | 500 KB combined call |
+|---|---|
+| BEFORE (both `@lru_cache` decorators removed -- reproduces the pre-fix code exactly) | 4.19s |
+| AFTER (this unit's code, as committed) | 0.619s |
+
+Cold-process, `contains_folded` alone, AFTER fix, across sizes (fresh Python process per row, no
+warm cache carried over from a previous size):
+
+| size | time | ratio vs previous |
+|---|---|---|
+| 250 KB | 0.353s | -- |
+| 500 KB | 0.670s | 1.90x for 2x size |
+| 1000 KB | 1.504s | 2.25x for 2x size |
+
+Both ratios sit well under a quadratic doubling (4x), consistent with the C1/AT-606 fix note in
+`redact_fold.py::_is_ignorable`'s docstring and `redact_encodings.py::declared_secret_encodings`'s.
+
+## Mutation run (AT-599), throwaway copy outside the worktree, `uv sync --frozen`
+
+Baseline asserted green first: `uv run pytest tests/test_redact_wrap_perf.py
+tests/test_redact_obfuscation.py tests/test_core.py` -> `73 passed`.
+
+Sabotage: `redact_fold.py`'s single call site
+`if contains_wrapped_encoding(text, widened_secrets, MIN_FOLDED_LEN):\n        return True\n`
+(anchor matched exactly once) replaced with `if False:  # AT-599 SABOTAGE\n        return True\n`
+(file changed on disk, confirmed).
+
+```
+$ uv run pytest tests/test_redact_wrap_perf.py -v
+8 failed, 3 passed in 2.67s
+FAILED test_contains_folded_catches_mid_token_newline_in_base64[\n]
+FAILED test_contains_folded_catches_mid_token_newline_in_base64[\r\n]
+FAILED test_assert_no_raw_secrets_blocks_mid_token_newline_in_base64[\n]
+FAILED test_assert_no_raw_secrets_blocks_mid_token_newline_in_base64[\r\n]
+FAILED test_contains_folded_catches_mid_token_newline_in_hex
+FAILED test_assert_no_raw_secrets_blocks_mid_token_newline_in_hex
+FAILED test_contains_folded_catches_mime_76_char_wrapped_base64
+FAILED test_assert_no_raw_secrets_blocks_mime_76_char_wrapped_base64
+```
+
+All 8 AT-599 detection tests killed, attributed by name; the 3 unrelated tests in the same file
+(the benign-prose negative test and the two perf tests) stayed green, showing the sabotage isolates
+to exactly the code path it targets. Reverted; byte-identical to pre-mutation (`diff` exit 0).
+
+## Mutation run (AT-606), same throwaway copy
+
+Sabotage: removed both `@functools.lru_cache(...)` decorators (anchor matched exactly once in each
+of `redact_fold.py` and `redact_encodings.py`; both files changed on disk, confirmed).
+
+```
+$ uv run pytest tests/test_redact_wrap_perf.py -v
+1 failed, 10 passed in 14.53s
+FAILED test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus
+  AssertionError: 500 KB scan took 4.19s, expected under 3s
+```
+
+`test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus` is KILLED, attributed by name and
+matching the exact regression this unit fixes. `test_redact_scan_time_roughly_doubles_not_
+quadruples_with_input_size` was NOT killed by this mutation at the 250 KB/500 KB sizes it uses
+(large/small ratio was ~2.04x even with both caches removed -- the growth in this specific size
+window stays close to linear on this machine even for the pre-fix code; the checker's originally
+reported 49x-for-10x superlinear reading likely needs either a larger absolute size or a
+higher-cardinality corpus than this synthetic one to reproduce directly). Recorded as INCONCLUSIVE
+for that one test under this specific mutation, per core-invariants.md C7 -- not hidden, and not
+claimed as a kill it did not earn. The sibling bound test's kill is the one this unit relies on to
+show the perf test file is not vacuous; the ratio test is kept because the brief asks for it and it
+remains a real, meaningful assertion (it would fire on a genuine return to the checker's originally
+measured magnitude of superlinearity), just not proven-killed by this particular mutation at this
+size window. Reverted; byte-identical to pre-mutation (`diff` exit 0 against both files).

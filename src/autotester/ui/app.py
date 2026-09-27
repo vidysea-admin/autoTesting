@@ -23,6 +23,7 @@ from autotester.schema.project import Project, Source
 from autotester.stages.report_export import valid_runs_newest_first
 from autotester.store.project_store import ProjectStore
 from autotester.ui import (
+    error_pages,
     project_view,
     routes_cases,
     routes_catalog,
@@ -70,6 +71,7 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="AutoTester", lifespan=_lifespan)
+error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
 app.include_router(routes_cases.router)
 app.include_router(routes_project_edit.router)
 app.include_router(routes_runs.router)

@@ -1,6 +1,6 @@
 # Contract — skills (prompts as SKILL.md, D-041)
 
-**Status:** DRAFT (goes DRAFT->ACTIVE on T-175's first checker PASS).
+**Status:** ACTIVE (DRAFT->ACTIVE by /checker on T-175's checker PASS, 2026-09-25; qa/verdicts/t175-prompt-skills.md Cycle checked: 1, merged 9b3fd5e). core-invariants C8 prompt-location wording scoped to this migration by D-043.
 **Feature:** move the grader, test-design (expand), bug-hunting, and ingest prompts out of the loose
 `src/autotester/prompts/*.md` files and into per-skill folders following the Agent Skills open
 standard (frontmatter `name` + `description`, a body of instructions, an optional `references/`
@@ -80,3 +80,4 @@ green→red-for-the-named-reason→revert→green. File/function caps (core-inva
 
 - 2026-09-24 · init · contract authored by /checker as DRAFT, from D-041 (Approved-by Umesh —
   AskUserQuestion answers + plan approval, chat 2026-09-24). No prior draft existed; nothing amended.
+- 2026-09-25 · DRAFT->ACTIVE · /checker Mode B sweep, on T-175 checker PASS (qa/verdicts/t175-prompt-skills.md Cycle checked: 1, merged 9b3fd5e), as this contract's own status line pre-authorized; precedent network-assertions.md at the T-170 PASS. No criterion text changed.

@@ -31,7 +31,7 @@ def approval(**overrides: object) -> RunApproval:
         "expires_at": "2026-09-09",
     }
     fields.update(overrides)
-    return RunApproval(**fields)  # type: ignore[arg-type]
+    return RunApproval(**fields).sign()  # type: ignore[arg-type]
 
 
 def require(approvals: list[RunApproval], **kw: object) -> RunApproval:
@@ -102,6 +102,16 @@ def test_offset_expiry_is_compared_as_a_utc_instant(
     expiry: str, now: datetime, expired: bool,
 ) -> None:
     assert approval(expires_at=expiry).is_expired(now) is expired
+
+
+def test_a_pre_existing_bare_date_row_still_lapses_at_the_start_of_its_day() -> None:
+    """CN4 (at147 answered C, D-048): only a NEW grant gets end-of-day treatment
+    (see `tests/test_approve_cli.py`). A bare `expires_at` already on disk keeps
+    reading through `fromisoformat` as MIDNIGHT -- option B, retroactively
+    widening every approval already granted, was declined."""
+    row = approval(expires_at="2026-09-26")
+    assert row.is_expired(datetime(2026, 9, 26, 0, 0, 0)) is False
+    assert row.is_expired(datetime(2026, 9, 26, 0, 0, 1)) is True
 
 
 def test_runtime_default_clock_is_utc_aware(monkeypatch: pytest.MonkeyPatch) -> None:

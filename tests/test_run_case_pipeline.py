@@ -12,8 +12,13 @@ from autotester.schema.case import Case
 from autotester.schema.enums import Action, CaseClass, CaseKind, Outcome, Result
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
+from autotester.schema.run import RawResult
 from autotester.schema.verdict import Judgment
-from autotester.stages.run_case_pipeline import default_rubric, run_and_grade_case
+from autotester.stages.run_case_pipeline import (
+    default_rubric,
+    grade_errored_result,
+    run_and_grade_case,
+)
 from autotester.store.project_store import ProjectStore
 
 
@@ -217,3 +222,51 @@ def test_a_rubric_with_no_provenance_is_treated_as_hand_authored(
                        "run_1", store)
 
     assert "a legacy claim" in store.load_rubric(f"rub_{old.id}").criteria[0].text
+
+
+# -- AT-568: grading a result that never reached run_and_grade_case -----------
+
+def test_grade_errored_result_never_calls_the_judge(tmp_path: Path) -> None:
+    """AT-568: `stages.parallel_run.run_cases` reports a `session_factory`
+    crash (or any exception before a caller captured its own verdict) as its
+    own ERRORED `RawResult`, with no `run_and_grade_case` call ever having
+    happened for that case. `grade_errored_result` must still produce a
+    coherent `Verdict` for it -- and must be safe to call unconditionally,
+    because `grade()`'s own ERRORED short-circuit never reaches the judge.
+    A `MockProvider` with NO queued "judge" response proves this: if
+    `grade_errored_result` ever called `judge.judge(...)`, `MockProvider`
+    would raise `ProviderError('no queued response')` instead of returning."""
+    store = ProjectStore("demo", tmp_path)
+    store.save_project(_project())
+    case = _case()
+    judge = MockProvider(responses={})  # would raise if .judge() were ever called
+    crashed = RawResult(case_id=case.id, outcome=Outcome.ERRORED,
+                        error="RuntimeError: boom starting the session")
+
+    verdict = grade_errored_result(case, crashed, judge, "run_1", store)
+
+    assert verdict.case_id == case.id
+    assert verdict.result is Result.INCONCLUSIVE
+    assert verdict.note == crashed.error
+    assert verdict.grader_provider == "rule"
+    assert judge.prompts == []  # never reached: no prompt was ever built for it
+
+
+def test_grade_errored_result_builds_and_persists_the_same_default_rubric(
+    tmp_path: Path,
+) -> None:
+    """It goes through the exact same rubric seam as a normal run (`_rubric_
+    for`), so an ERRORED case is gradeable against its real rubric -- and a
+    later real run of the same case reuses the rubric this call persisted,
+    rather than building a second, divergent one."""
+    store = ProjectStore("demo", tmp_path)
+    store.save_project(_project())
+    case = _case()
+    judge = MockProvider(responses={})
+    crashed = RawResult(case_id=case.id, outcome=Outcome.ERRORED, error="boom")
+
+    grade_errored_result(case, crashed, judge, "run_1", store)
+
+    persisted = store.load_rubric(f"rub_{case.id}")
+    assert persisted is not None
+    assert persisted.criteria[0].id == "c1"

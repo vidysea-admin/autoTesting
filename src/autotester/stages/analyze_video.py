@@ -22,7 +22,7 @@ import hashlib
 from pathlib import Path
 
 from autotester.core.paths import RepoDocs
-from autotester.providers.base import Provider, ProviderError
+from autotester.providers.base import Provider, ProviderError, load_skill_prompt
 from autotester.schema.analysis import VideoAnalysis
 from autotester.schema.media import MediaChunk, Transcript
 from autotester.schema.observation import ModelObservation, VideoObservation, VisionOptions
@@ -36,7 +36,18 @@ PROMPT_NAMES = ("ingest_video_v1.md", "video_issues_v1.md")
 """Two passes with different questions. One asks what the product IS; the other
 asks what is WRONG with it. Asking both in a single prompt produced answers that
 were worse at each — a model told to map and criticise at once does neither
-carefully."""
+carefully.
+
+These stay their pre-T-175 string values on purpose: they are the cache key
+(`ModelObservation.prompt_name`, persisted to disk), and an existing project's
+cached observations must keep matching after this stage starts reading its
+prompt text from `SKILL_NAMES` below instead of `prompts_dir`."""
+
+SKILL_NAMES = {
+    "ingest_video_v1.md": "ingest-video",
+    "video_issues_v1.md": "video-issues",
+}
+"""Cache-key prompt name -> the SKILL.md folder that now holds its text (T-175)."""
 
 
 class NoObservations(RuntimeError):
@@ -74,7 +85,7 @@ def build_chunk_prompt(prompt_name: str, source: Source, docs: RepoDocs,
     Slicing matters: handing a model the whole recording's transcript while it
     watches three minutes of it invites alignment to speech it cannot see, and
     a quote attached to the wrong screen is worse than no quote."""
-    template = (docs.prompts_dir / prompt_name).read_text(encoding="utf-8")
+    template = load_skill_prompt(SKILL_NAMES[prompt_name], skills_dir=docs.skills_dir)
     narration = narration_block(transcript)  # absent, or unreadable: never silence (AT-216)
     if transcript is not None and transcript.segments:
         sliced = transcript.slice(chunk.offset_s, chunk.length_s)
@@ -108,7 +119,8 @@ def observe_chunk(store: ProjectStore, source: Source, provider: Provider,
             return cached
 
     try:
-        answer = provider.see_video(Path(chunk.path), prompt, VideoObservation, options)
+        answer = provider.see_video(Path(chunk.path), prompt, VideoObservation, options,
+                                    prompt_file=prompt_name, fed_id=source.id)
     except ProviderError:
         return None
 

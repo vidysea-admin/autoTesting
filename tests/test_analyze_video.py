@@ -21,6 +21,7 @@ from autotester.schema.media import MediaChunk, Transcript, TranscriptSegment
 from autotester.schema.project import Project, Source
 from autotester.stages.analyze_video import (
     PROMPT_NAMES,
+    SKILL_NAMES,
     NoObservations,
     analyze,
     build_chunk_prompt,
@@ -126,8 +127,12 @@ def test_both_prompts_exist_and_carry_the_placeholders(prompt_name: str) -> None
     """A prompt named by the driver but absent from disk fails only when a
     real analyze runs, which is the most expensive place to find out. And a
     template missing `{{NARRATION}}` makes the injection a silent no-op —
-    AT-133's lesson, one stage over."""
-    text = (RepoDocs().prompts_dir / prompt_name).read_text(encoding="utf-8")
+    AT-133's lesson, one stage over.
+
+    T-175: both now ship as `SKILL.md` folders under `skills_dir`, named by
+    `SKILL_NAMES[prompt_name]`."""
+    skill_path = RepoDocs().skills_dir / SKILL_NAMES[prompt_name] / "SKILL.md"
+    text = skill_path.read_text(encoding="utf-8")
 
     assert "{{NARRATION}}" in text
     assert "{{SOURCE_LABEL}}" in text

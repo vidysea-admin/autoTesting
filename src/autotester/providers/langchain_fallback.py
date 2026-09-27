@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import base64
 import os
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, TypeVar
@@ -116,17 +117,21 @@ class LangChainFallbackProvider(Provider):
     def available(self) -> bool:
         return bool(self._chain)
 
-    def act(self, prompt: str, schema: type[ModelT] | None = None) -> Any:
-        return self._call(prompt, schema, role="agent")
+    def act(self, prompt: str, schema: type[ModelT] | None = None, *,
+            prompt_file: str | None = None, fed_id: str | None = None) -> Any:
+        return self._call(prompt, schema, role="agent", prompt_file=prompt_file, fed_id=fed_id)
 
     def judge(
-        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None
+        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,
+        prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
-        return self._call(prompt, schema, role="judge", images=images)
+        return self._call(prompt, schema, role="judge", images=images,
+                           prompt_file=prompt_file, fed_id=fed_id)
 
     def _call(
         self, prompt: str, schema: type[ModelT] | None, *, role: str,
         images: list[Path] | None = None,
+        prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
         if schema is None:
             raise ProviderError(f"{self.id} requires a schema for structured output (role={role})")
@@ -134,9 +139,10 @@ class LangChainFallbackProvider(Provider):
             raise ProviderError(f"{self.id} has no configured provider (no API key/service found)")
 
         errors: list[str] = []
-        for name, factory in self._chain:
+        for hop, (name, factory) in enumerate(self._chain):
             try:
-                return self._try_tier(name, factory, prompt, schema, role, images)
+                return self._try_tier(name, factory, prompt, schema, role, images,
+                                       hop, prompt_file, fed_id)
             except Exception as exc:  # deliberately broad: any vendor failure falls through
                 errors.append(f"{name}: {type(exc).__name__}: {exc}")
                 continue
@@ -146,15 +152,20 @@ class LangChainFallbackProvider(Provider):
 
     def _try_tier(
         self, name: str, factory: Callable[[], Any], prompt: str, schema: type[ModelT], role: str,
-        images: list[Path] | None = None,
+        images: list[Path] | None, fallback_hops: int,
+        prompt_file: str | None, fed_id: str | None,
     ) -> ModelT:
         model = factory().with_structured_output(schema, include_raw=True)
+        started = time.perf_counter()
         response = model.invoke(_message(prompt, images))
+        latency_s = time.perf_counter() - started
         parsed = response["parsed"]
         if parsed is None:
             raise ProviderError(f"{name}: structured output did not parse")
         self.id = name
         usage = getattr(response.get("raw"), "usage_metadata", None) or {}
         self.record(role, input_tokens=usage.get("input_tokens", 0) or 0,
-                    output_tokens=usage.get("output_tokens", 0) or 0)
+                    output_tokens=usage.get("output_tokens", 0) or 0,
+                    prompt_file=prompt_file, fed_id=fed_id, latency_s=latency_s,
+                    fallback_hops=fallback_hops)
         return parsed

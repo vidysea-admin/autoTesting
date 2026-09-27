@@ -11,6 +11,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 import regression_proof as rp
@@ -111,6 +113,38 @@ def test_bench_trial_seats_the_same_demo_cases_the_same_way() -> None:
     assert bench_trial.seat_demo_cases is rp.seat_demo_cases
     main = inspect.getsource(bench_trial.main)  # the import alone would not stop a bare loop
     assert "seat_demo_cases(" in main and "add_case(" not in main
+
+
+def test_swapped_fixture_copies_the_broken_content_in(tmp_path: Path) -> None:
+    good = tmp_path / "login.html"
+    broken = tmp_path / "login.broken.html"
+    good.write_text("GOOD", encoding="utf-8")
+    broken.write_text("BROKEN", encoding="utf-8")
+
+    with rp._swapped_fixture(good, broken):
+        assert good.read_text(encoding="utf-8") == "BROKEN"
+
+    assert good.read_text(encoding="utf-8") == "GOOD"
+
+
+def test_swapped_fixture_restores_the_tracked_file_even_when_the_body_raises(
+        tmp_path: Path) -> None:
+    """AT-560: scripts/regression_proof.py mutates a TRACKED fixture (login.html)
+    for the duration of the AFTER run. If that run raises partway -- a browser
+    crash, a judge call failing, anything -- the fixture must still come back to
+    its good state, never be left broken on disk. Uses a throwaway tmp_path copy,
+    never the real tests/fixtures/regression_site/ files."""
+    good = tmp_path / "login.html"
+    broken = tmp_path / "login.broken.html"
+    good.write_text("GOOD", encoding="utf-8")
+    broken.write_text("BROKEN", encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="boom"), rp._swapped_fixture(good, broken):
+        assert good.read_text(encoding="utf-8") == "BROKEN"
+        raise RuntimeError("boom")
+
+    assert good.read_text(encoding="utf-8") == "GOOD", \
+        "the tracked fixture must be restored even after the body raised"
 
 
 def test_no_cache_handler_overrides_end_headers() -> None:

@@ -1,0 +1,11 @@
+Checker at597 cycle 4, 2026-09-26. Worktree 5cdabc1 served on 127.0.0.1:8094, scratch AUTOTESTER_ROOT, project demo (allowed_domains demo.test)
+
+UI re-pin with DIFFERENT steps (issue already pinned) -> HTTP 409
+  {"detail":"issue 'iss_42ee581365d2' is already pinned as case 'case_3f7c8f9acd43'. Unpin it first ..."}
+UI-pinned case stored: [('navigate', 'https://demo.test/signup', None, ['Welcome'])]
+
+CLI (.venv/Scripts/autotester.exe issues pin demo <issue_b> ...):
+  --step "navigate:https://demo.test:443/signup::Welcome" --step "click:#yes::Saved"  -> exit 0
+     stored: [('navigate','https://demo.test:443/signup',None,['Welcome']), ('click','#yes',None,['Saved'])]
+  re-pin --step "navigate:https://demo.test/other::X" -> exit 2, "already pinned as case ..."
+  --step "navigate:https://demo.test/a:v:X"           -> exit 2, "navigate has no value field ..."

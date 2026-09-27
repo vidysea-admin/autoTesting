@@ -1,0 +1,44 @@
+{
+  "unit": "at562-564-live-wiring",
+  "cycle_checked": 3,
+  "head": "6cb5049",
+  "date": "2026-09-25",
+  "checker": "claude-opus-session (checker seat)",
+  "instrument": "playwright MCP driving a real Chromium; app = branch worktree via scratchpad/moded_launch_at562.py on 127.0.0.1:8773; AUTOTESTER_ROOT = scratchpad/at562-moded-root (never the real projects/ or .env)",
+  "harness_patches_disclosed": [
+    "judge: rr.LangChainFallbackProvider -> CheckerJudge (MockProvider subclass): PASS 1/1 for every case except case_8c1ec91abecf, which raises ProviderError (simulated grader outage). No real model call, no API key.",
+    "plan: rr.plan_parallel_run pinned to ParallelPlan(n=2, bound_by='config') because host free RAM was 1.12 GB, below the 2-slot floor (2048 MB + 2x512 MB); unpinned, the route would take the serial path and never exercise this unit. The RAM-budget decision itself is unit-tested with injected numbers (tests/test_parallel_run.py)."
+  ],
+  "fixture": {
+    "site": "tests/fixtures/regression_site on 127.0.0.1:46671",
+    "project": "rd: max_parallel=2, read_only, declared secret RD_PASSWORD (scratch-root .env), login step fills {{SECRET:RD_PASSWORD}}",
+    "cases": ["case_cf844a2b645c Login with correct credentials", "case_8c1ec91abecf Homepage loads (non-entry)", "case_rd_loginpage Login page loads"]
+  },
+  "interactions": [
+    {"action": "click '▶ Run tests'", "observed": "POST /projects/rd/run 303 -> /report; no 500; run-01M3BF1NCX76XYNQBYR3Q38GXW"},
+    {"action": "open run view", "observed": "trace card: execute/done/6.15s + 2 judge rows; 3 case cards; 12 <img> all loaded (naturalWidth>0)"},
+    {"action": "GET /projects/rd/report.html (the HTML download)", "observed": "200, 6 embedded PNGs with captions for all 6 steps"}
+  ],
+  "assertions": {
+    "run_json_parallel_n": 2,
+    "results_saved": 3,
+    "verdicts_saved": 3,
+    "AT-572_evidence_paths": {
+      "case_8c1ec91abecf": ["case_8c1ec91abecf/01-step01-navigate.png"],
+      "case_cf844a2b645c": ["case_cf844a2b645c/01-step01-navigate.png", "case_cf844a2b645c/02-step02-fill.png", "case_cf844a2b645c/03-step03-fill.png", "case_cf844a2b645c/04-step04-click.png"],
+      "case_rd_loginpage": ["case_rd_loginpage/01-step01-navigate.png"]
+    },
+    "AT-572_png_files_on_disk": 6,
+    "AT-572_steps_captured": 6,
+    "AT-572_homepage_bytes_differ_from_login_page": true,
+    "AT-573_grader_outage_case": "outcome=completed (real RawResult kept, its screenshot kept and rendered); verdict INCONCLUSIVE by 'rule', scoreboard 'not judged: the grader failed after execution completed', note 'ProviderError: simulated judge outage (checker Mode D)'",
+    "trace_jsonl": ["llm_call fed_id=case_cf844a2b645c", "llm_call fed_id=case_rd_loginpage", "stage execute done"],
+    "secret_value_in_run_dir": false,
+    "secret_value_in_run_view_dom": false,
+    "secret_value_in_html_export": false,
+    "console_errors": {"count": 1, "explained": "a 404 from a URL the checker guessed (/projects/rd/report/export.html) inside browser_evaluate; the app's own pages logged 0"}
+  },
+  "also_run": "scratchpad/probe_screenshot_collision.py (real BrowserSession via default_session_factory, sequential): Homepage -> case_8c1ec91abecf/01-step01-navigate.png, Login page -> case_rd_loginpage/01-step01-navigate.png, SHARED: []",
+  "screenshots": ["run-view.png"],
+  "verdict_effect": "PASS"
+}

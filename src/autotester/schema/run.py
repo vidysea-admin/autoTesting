@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -45,6 +46,12 @@ class RawResult(Artifact):
     duration_s: float = 0.0
     error: str | None = None
     hitl_prompt: str | None = Field(default=None, description="what the human must supply")
+    not_run_reason: str | None = Field(
+        default=None,
+        description="D-045/AT-581 (E6): set when case_class named an execution condition "
+                    "(VIEWPORT_MOBILE/LOCALE_I18N) the executor could not enact -- outcome is "
+                    "then NOT_RUN and this names why, never a silent default-condition PASS",
+    )
     evidence: list[Evidence] = Field(default_factory=list)
     log_ref: str | None = None
 
@@ -61,3 +68,14 @@ class Run(Artifact):
     started_at: datetime | None = None
     finished_at: datetime | None = None
     usage: list[ProviderUsage] = Field(default_factory=list)
+    parallel_n: int | None = Field(
+        default=None,
+        description="T-173/D-041: cases that ran concurrently in this run; None means the run "
+                    "predates parallel execution or was not eligible for it",
+    )
+    parallel_bound_by: Literal["config", "budget", "write_policy"] | None = Field(
+        default=None,
+        description="which term chose parallel_n -- project.max_parallel ('config'), the "
+                    "measured RAM/CPU budget ('budget'), or a forced serial fallback because "
+                    "write_policy is allow_writes ('write_policy')",
+    )

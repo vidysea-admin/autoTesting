@@ -1,0 +1,15 @@
+{
+  "base": "http://127.0.0.1:8779",
+  "console_errors": [],
+  "http_errors": [],
+  "after_run_url": "http://127.0.0.1:8779/projects/rd/report",
+  "after_run_title": "Report \u2014 rd \u2014 AutoTester",
+  "run_href": "/projects/rd/runs/run-01M3C80PJ3NDBX8N9E976TSR55",
+  "run_view_text": "AT\nAutoTester\nProjects\n+ New project\n\u25cf Live view\n\u2699 Settings\nPROJECTS\nRD parallel fixture\n+ New project\n\u2190 Back\nPROJECTS / RD / REPORT / RUN\nRun run-01M3C80PJ3NDBX8N9E976TSR55\n2\n\u2713 PASS\n1\n? INCONCLUSIVE\nTrace\nSTAGE\tSTATUS\tDURATION\nexecute\tdone\t8.48s\nROLE\tMODEL\tLATENCY\tCOST\njudge\tchecker-mock-judge\t0.00s\t$0.0000\njudge\tchecker-mock-judge\t0.00s\t$0.0000\nHomepage loads\ncompleted\n\u2713 PASS\njudged by checker-mock-judge\n\nCriteria 1/1 met.\n\nstep01-navigate\nLogin with correct credentials\ncompleted\n\u2713 PASS\njudged by checker-mock-judge\n\nCriteria 1/1 met.\n\nstep01-navigate\n\u2192\nstep02-fill\n\u2192\nstep03-fill\n\u2192\nstep04-click\nLogin page loads\ncompleted\n? INCONCLUSIVE\njudged by rule\n\nnot judged: the grader failed after execution completed\n\nstep01-navigate",
+  "images": 12,
+  "images_loaded": 12,
+  "secret_in_dom": false,
+  "export_status": 200,
+  "export_pngs": 6,
+  "secret_in_export": false
+}

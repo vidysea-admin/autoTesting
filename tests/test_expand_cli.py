@@ -205,7 +205,7 @@ def test_a_provider_failure_mid_expand_is_a_clean_refusal_not_a_traceback(
     store = _seed(root)
 
     class _Exploding(MockProvider):
-        def act(self, prompt: str, schema=None):
+        def act(self, prompt: str, schema=None, *, prompt_file=None, fed_id=None):
             raise ProviderError("the answer hit max_output_tokens and was truncated (role=agent)")
 
     monkeypatch.setattr("autotester.cli.providers.get", lambda _id, **_kw: _Exploding())

@@ -120,6 +120,29 @@ class LoopStatus:
         than silently papered over."""
         return any(not gap.explained and gap.end != self.open_end for gap in self.gaps)
 
+    @property
+    def strict_unhealthy(self) -> bool:
+        """What `--strict` exits non-zero for.
+
+        AT-592: `asleep_now` only fires off an OPEN GAP, and `find_gaps` over an
+        empty `credible` list returns `((), None)` -- so a log where every stamp
+        is future-dated has no open gap to report and `asleep_now` reads False,
+        even though `report_lines` renders it with a `CORRUPT` row and `last:
+        none credible`. That is not the healthy case `--strict` was built to let
+        through; it is a log strict has no gap arithmetic to run on at all.
+
+        True when the loop is silently asleep right now (`asleep_now`), or when
+        there are ticks but every one of them was excluded as not credible
+        (`ticks > 0` and `last_tick is None`) -- the CORRUPT state `report_lines`
+        already names but `asleep_now` alone cannot see.
+
+        AT-610 (qa/gates/at610-strict-out-of-order.md, answered A): deliberately
+        does NOT also fire on `anomalies.out_of_order` -- liveness is judged on
+        the sorted credible ticks, so write-order corruption never hides an
+        outage, and gating on it would widen this property beyond "is the loop
+        asleep" for a smell that report_lines already renders as CORRUPT."""
+        return self.asleep_now or (self.ticks > 0 and self.last_tick is None)
+
 
 def read_ticks(path: Path) -> list[datetime]:
     """Every tick stamp in `qa/.last-tick`, **in file order**, timezone-aware.
@@ -176,11 +199,24 @@ def report_lines(report: LoopStatus) -> list[tuple[str, str]]:
 
     The rendering lives here rather than in `cli.py` so the wording is testable
     without a terminal — the disclosure line below is the substance of what this
-    unit promises, and a string only a CLI can produce is a string no test reads."""
-    if report.last_tick is None:
+    unit promises, and a string only a CLI can produce is a string no test reads.
+
+    AT-424: the early return used to key off `last_tick is None`, which is also
+    true when every stamp is future-dated and `credible` is empty -- so an
+    all-future log rendered identically to a truly empty one, and the CORRUPT
+    row below was never reached. The early return now keys off `ticks == 0`,
+    the actual "nothing was parsed" case; a non-zero `ticks` with no credible
+    survivor falls through and gets its anomaly rows."""
+    if report.ticks == 0:
         return [("loop-status: no ticks recorded", "warn")]
 
-    rows = [(f"ticks: {report.ticks} · last: {report.last_tick.isoformat()}", "plain")]
+    if report.last_tick is not None:
+        rows = [(f"ticks: {report.ticks} · last: {report.last_tick.isoformat()}", "plain")]
+    else:
+        rows = [(
+            f"ticks: {report.ticks} · last: none credible — every stamp is dated after now",
+            "bad",
+        )]
     if report.anomalies.future:
         rows.append((
             f"  CORRUPT: {report.anomalies.future} tick stamp(s) dated after now — excluded from "
@@ -197,7 +233,7 @@ def report_lines(report: LoopStatus) -> list[tuple[str, str]]:
         rows.append((
             "note: a finished pause deletes qa/.paused, so a CLOSED gap can never be proven "
             "deliberate — historical gaps read as SLEEP either way (AT-368).", "warn"))
-    if not report.gaps:
+    if not report.gaps and report.last_tick is not None:
         rows.append(("loop-status: no gaps", "ok"))
     return rows
 

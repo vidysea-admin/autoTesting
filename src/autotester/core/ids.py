@@ -1,8 +1,16 @@
-"""Identifier generation. The ONLY place ids are minted."""
+"""Identifier generation. The ONLY place ids are minted.
+
+Also the ONLY place a `RunApproval` is signed or verified (AT-110) — the HMAC
+below is keyed from `AUTOTESTER_APPROVAL_KEY` in the repo-root `.env` and
+shares its canonical-JSON encoding with `content_hash` rather than
+re-deriving it, so there is exactly one definition of "how a payload is
+turned into bytes" in this module.
+"""
 
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 import time
@@ -11,6 +19,58 @@ from typing import Any
 _ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 _HASH_LEN = 12
 
+APPROVAL_KEY_ENV = "AUTOTESTER_APPROVAL_KEY"
+"""The repo-root `.env` key that signs/verifies a `RunApproval` (AT-110).
+Read directly from `os.environ` — the same convention every other
+system-level credential (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, ...) already
+uses — after `core.env.load_repo_env()` has populated it. Never resolved
+through `browser.secrets.SecretStore`: that class scopes a value to the
+browser hosts a project declares, and this key is never typed into a page."""
+
+
+class SigningKeyMissing(RuntimeError):
+    """`AUTOTESTER_APPROVAL_KEY` is not set. Raised by `sign_payload` and
+    `verify_payload` alike — signing and verifying fail CLOSED on a missing
+    key, never silently succeeding and never silently accepting."""
+
+
+def _canonical_json(payload: Any) -> str:
+    """The one serialisation both `content_hash` and the HMAC sign over — key
+    order normalised so logically identical payloads always encode the same
+    way, whether they are being hashed or signed."""
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+
+
+def _signing_key() -> bytes:
+    key = os.environ.get(APPROVAL_KEY_ENV)
+    if not key:
+        raise SigningKeyMissing(
+            f"{APPROVAL_KEY_ENV} is not set — add a real value to the repo-root "
+            ".env before granting or verifying a signed approval (see .env.example)"
+        )
+    return key.encode("utf-8")
+
+
+def sign_payload(payload: Any) -> str:
+    """HMAC-SHA256 hex digest of `payload`'s canonical JSON, keyed by
+    `AUTOTESTER_APPROVAL_KEY`. Raises `SigningKeyMissing` if the key is not
+    configured — there is no implicit/default key to fall back on."""
+    return hmac.new(_signing_key(), _canonical_json(payload).encode("utf-8"),
+                    hashlib.sha256).hexdigest()
+
+
+def verify_payload(payload: Any, signature: str) -> bool:
+    """Constant-time check that `signature` is `payload`'s HMAC under the
+    configured key. Raises `SigningKeyMissing` if the key is not configured —
+    a caller must never read a missing key as "nothing to verify against, so
+    accept". An empty `signature` simply fails (once a key is confirmed to
+    exist), so a legacy/unsigned row reads as unverifiable, not as a
+    configuration error."""
+    expected = sign_payload(payload)
+    if not signature:
+        return False
+    return hmac.compare_digest(expected, signature)
+
 
 def content_hash(payload: Any) -> str:
     """Stable 12-char hash of any JSON-serialisable payload.
@@ -18,8 +78,7 @@ def content_hash(payload: Any) -> str:
     Used for immutable, content-addressed objects (sources, cases, scripts).
     Key order is normalised so logically identical payloads hash identically.
     """
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
-    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    digest = hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
     return digest[:_HASH_LEN]
 
 

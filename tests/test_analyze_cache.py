@@ -13,7 +13,7 @@ from __future__ import annotations
 from video_fakes import SpyProvider, prepared
 
 from autotester.core.paths import RepoDocs
-from autotester.stages.analyze_video import PROMPT_NAMES, analyze
+from autotester.stages.analyze_video import PROMPT_NAMES, SKILL_NAMES, analyze
 
 __all__ = ["prepared"]
 
@@ -92,33 +92,45 @@ def test_a_half_written_observation_heals_instead_of_blocking(prepared) -> None:
     assert analysis.observations_used == len(PROMPT_NAMES) * 2
 
 
+def _write_skill(skills_dir, skill_name: str, body: str) -> None:
+    """A minimal but valid `SKILL.md` (T-175 Agent Skills shape) for a stub tree."""
+    folder = skills_dir / skill_name
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "SKILL.md").write_text(
+        f"---\nname: {skill_name}\ndescription: stub for a cache-invalidation test\n---\n\n{body}",
+        encoding="utf-8",
+    )
+
+
 def test_editing_a_prompt_invalidates_its_cached_answers(prepared, tmp_path) -> None:
     """AT-200. The cache was keyed on the prompt's NAME, and editing a prompt
     file does not change its name — so a changed question silently returned the
     answer to the old one. That failure is invisible in the artifact, which is
-    what makes it the kind that gets a cache switched off entirely."""
-    store, source = prepared
-    prompts = tmp_path / "prompts"
-    prompts.mkdir()
-    for name in PROMPT_NAMES:
-        (prompts / name).write_text("ask this. {{NARRATION}} {{SOURCE_LABEL}}", encoding="utf-8")
+    what makes it the kind that gets a cache switched off entirely.
 
-    class EditablePrompts(RepoDocs):
-        """Prompts ship with the CODE (`prompts_dir` deliberately ignores the
+    T-175: prompts ship as `SKILL.md` folders now, read through `skills_dir`
+    instead of `prompts_dir` — the override moves with them."""
+    store, source = prepared
+    skills = tmp_path / "skills"
+    for name in PROMPT_NAMES:
+        _write_skill(skills, SKILL_NAMES[name], "ask this. {{NARRATION}} {{SOURCE_LABEL}}")
+
+    class EditableSkills(RepoDocs):
+        """Skills ship with the CODE (`skills_dir` deliberately ignores the
         data root), so editing one for a test means overriding that property
         rather than pointing `AUTOTESTER_ROOT` somewhere."""
 
         @property
-        def prompts_dir(self):
-            return prompts
+        def skills_dir(self):
+            return skills
 
-    docs = EditablePrompts()
+    docs = EditableSkills()
     pro = SpyProvider("spy:pro")
     analyze(store, source, [pro], docs=docs)
     pro.calls.clear()
 
-    (prompts / PROMPT_NAMES[0]).write_text("ask something ELSE. {{NARRATION}} {{SOURCE_LABEL}}",
-                                           encoding="utf-8")
+    _write_skill(skills, SKILL_NAMES[PROMPT_NAMES[0]],
+                 "ask something ELSE. {{NARRATION}} {{SOURCE_LABEL}}")
     analyze(store, source, [pro], docs=docs)
 
     assert len(pro.calls) == 2, "the edited prompt reused the old answer"

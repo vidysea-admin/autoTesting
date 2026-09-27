@@ -64,4 +64,4 @@ two agreeing meanings is the right one.
   intuitive meaning with **no retroactive widening at all**; costs one line in `approve_cmd` and
   makes `approvals.jsonl` slightly less pretty. *The checker's recommendation.*
 
-**Answered:**
+**Answered:** 2026-09-26T22:34:22+05:30 — C — Umesh via AskUserQuestion in the checker session. A date given to --expires means through the END of that day, for approvals minted from now on only; approvals already on disk keep their stored instant (no retroactive widening).

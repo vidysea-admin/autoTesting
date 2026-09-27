@@ -66,11 +66,16 @@ def screen_from(node: ScreenNode) -> Screen:
     from `node.url_template`: the node template carries a host (it is a browsing
     identity), while a `Screen.url_pattern` is a path pattern — that is what
     `stages/coverage.py` and `stages/ingest.py` both compare against.
+
+    `fold_index=True` (AT-618): `node.id` was already built from a folded
+    `url_template` (`screen_identity.node_from`) — deriving `url_pattern`
+    unfolded here would let a merged Screen disagree with the very node it came
+    from, exactly the coverage.md V1 seam AT-618 found open.
     """
     return Screen(
         id=node.id,
         name=node.name or node.title or node.url_template,
-        url_pattern=url_template(node.url_example, keep_host=False),
+        url_pattern=url_template(node.url_example, keep_host=False, fold_index=True),
         signals=_signals(node),
         fields=_fields(node),
         screenshot_ref=node.screenshot_ref,

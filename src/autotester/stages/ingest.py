@@ -13,8 +13,8 @@ from pathlib import Path
 
 from autotester.core.ids import content_id, file_sha256
 from autotester.core.paths import RepoDocs
-from autotester.core.urls import absolute_url, url_template
-from autotester.providers.base import Provider
+from autotester.core.urls import screen_url_pattern
+from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.base import Provenance
 from autotester.schema.enums import ReviewStatus, SourceKind
 from autotester.schema.flowspec import Flow, FlowSpec, Screen, SourceRef, Step
@@ -28,7 +28,7 @@ from autotester.schema.observation import (
 from autotester.schema.project import Source
 from autotester.store.project_store import ProjectStore
 
-PROMPT_NAME = "ingest_video_v1.md"
+SKILL_NAME = "ingest-video"  # skills/ingest-video/SKILL.md (T-175, was prompts/ingest_video_v1.md)
 UNREADABLE = "unreadable"
 """`Transcript.engine` for a sidecar that exists and could not be parsed — the
 one state that must never be reported to the model as silence (AT-134)."""
@@ -47,7 +47,7 @@ def build_ingest_prompt(source: Source, docs: RepoDocs,
     Injecting the existing transcript is also why the model is told to ALIGN to
     it rather than re-transcribe: asked to do both, it paraphrases speech into
     something plausible, and a paraphrased complaint is a fabricated one."""
-    template = (docs.prompts_dir / PROMPT_NAME).read_text(encoding="utf-8")
+    template = load_skill_prompt(SKILL_NAME, skills_dir=docs.skills_dir)
     return (template
             .replace("{{SOURCE_LABEL}}", source.label or source.id)
             .replace("{{NARRATION}}", narration_block(transcript)))
@@ -134,8 +134,7 @@ def _to_screen(observed: ObservedScreen, source_id: str) -> Screen:
         id=content_id("scr", {"name": observed.name, "signals": sorted(observed.signals)}),
         name=observed.name,
         signals=observed.signals,
-        url_pattern=(url_template(absolute_url(observed.url), keep_host=False)
-                     if observed.url else None),
+        url_pattern=screen_url_pattern(observed.url),
         fields=observed.fields,
         source_ref=SourceRef(source_id=source_id, t_start=observed.t_start,
                              t_end=observed.t_end),
@@ -258,7 +257,8 @@ def ingest_video(
     verify_source_bytes(source)
     docs = docs or RepoDocs()
     prompt = build_ingest_prompt(source, docs, transcript)
-    observation = provider.see_video(Path(source.path), prompt, VideoObservation, options)
+    observation = provider.see_video(Path(source.path), prompt, VideoObservation, options,
+                                      prompt_file=SKILL_NAME, fed_id=source.id)
 
     screen_ids: dict[str, str] = {}
     screens: list[Screen] = []

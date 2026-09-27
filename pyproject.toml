@@ -25,6 +25,10 @@ dependencies = [
     "pymongo>=4.9.0",
     "python-dotenv>=1.2.3",
     "python-multipart>=0.0.32",
+    "starlette>=1.6.0",  # AT-130 regression test: ui/routes_crawls.py, routes_issues.py and
+                          # routes_report.py import `starlette.background.BackgroundTask`
+                          # directly; it was only a transitive dep of fastapi/uvicorn -- the
+                          # same undeclared-direct-import hazard the new doctor check catches.
     "typer>=0.27.2",
     "uvicorn[standard]>=0.30.0",
 ]

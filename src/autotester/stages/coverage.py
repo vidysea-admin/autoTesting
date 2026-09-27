@@ -26,8 +26,14 @@ def _path_of(url: str) -> str:
     """Both sides of every coverage diff are normalised the same way (V1
     amendment, T-144): a run that visited `/students/1` must not be reported as
     a gap against a screen whose pattern is `/students/{id}`. Before this,
-    coverage compared raw paths and every id-bearing route looked unknown."""
-    return url_template(url, keep_host=False)
+    coverage compared raw paths and every id-bearing route looked unknown.
+
+    `fold_index=True` (AT-618): this is a screen-identity comparison, the same
+    kind `stages/screen_identity.py::node_from` and `urls.screen_url_pattern`
+    already fold — a screen reached by `/index.html` and a `Screen.url_pattern`
+    of `/` (or vice versa) must agree here too, or coverage reports a gap for a
+    page the FlowSpec already knows."""
+    return url_template(url, keep_host=False, fold_index=True)
 
 
 def _known_paths(spec: FlowSpec) -> set[str]:

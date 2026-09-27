@@ -599,3 +599,142 @@ annotated — AT-110/AT-086/AT-087 gate-answered notes; 0 bypasses; AT-483-class
 CLEAN across 24 sampled SHAs; contracts + enforcement + delegation health CLEAN; goal-coverage
 38/64, no drift; 5 gates newly answered and removed from the open-HUMAN_GATE table; HEAD
 `f1b8569`).
+
+
+## Sweep refresh — 2026-09-25 (sharded Mode B; 3 read-only shards + consolidation, single writer)
+
+Refreshed **2026-09-25T06:07:48+05:30** (system clock, AT-399). Window `f1b8569..8a97eca`, 103
+commits (master moved on during the sweep: the T-172 close-out `d03fdfb` and this sweep's own writes).
+**This section supersedes every TOP-3 and HUMAN_GATE table above it.** The 2026-09-24b sweep stamped
+`.last-sweep` without appending a queue section — that drift was T-126's "QUEUE drift" item, closed here.
+
+**GRILL — human decision, not a build row (carried, unanswered):**
+- GRILL: recurring vacuous-guard prevention policy (AT-218). Two fresh instances this window —
+  AT-561's empty-redactor gate and AT-565's unguarded session factory — both caught by checks.
+- GRILL: real two-mode acceptance thresholds for D-023/T-169 (AT-281).
+- GRILL (AT-402): structure-before-code review of `visual_order.js`.
+
+### Findings this sweep — FINDINGS: 3
+
+| Issue | Sev | What |
+|---|---|---|
+| **AT-565** | high | PR6 crash isolation covers `run_fn` only: `stages/parallel_run.py::_run_one` calls `session_factory(case)` outside its try, so one case's context-launch failure aborts `run_cases` and discards every sibling's result. Missed by the t173 checker PASS (its PR6 row only mutated the `run_fn` except-clause). **T-173 reopened**; fix folded into at562-564-live-wiring. |
+| AT-566 | medium | `qa/loop.md:53` — `BLOCKED` re-arms `ScheduleWakeup 300s` with no cap, unlike HUMAN_GATE (max 8) / STALLED (3 cycles) / EXHAUSTED (stop): "can it spin" = yes. |
+| AT-567 | medium (erosion signal, never a blocker) | `ui/helpers.py` (223→300 over 6 credential-guard commits in 14 days) and `stages/explore_node.py` (9 commits in 14 days) both at the C2 300-line cap. |
+
+**Extended, not re-filed:** AT-564 now also names T-163 — the resumable orchestrator has no CLI/UI
+caller, and unlike T-172/T-173 this is undisclosed (FEATURES F-045 is `live`, target.md M8 ticks T-163
+with no caveat). Maker to add the caveat until at562-564 lands.
+
+**Applied this sweep (checker-owned surfaces):** reverify sample 8/8 VERIFIED → `verified` (AT-528,
+AT-531, AT-532, AT-540, at540-cycle1 rows of AT-547..AT-550; AT-532's pin stays weak, pre-existing
+note) · contracts `parallel-run.md`, `run-trace.md`, `skills.md` DRAFT→ACTIVE (each pre-authorized by
+its own status line) · inbox 2026-09-24T23:00 D-042 entry folded → `agent-layer.md` AL2/AL3/AL4 ·
+`at110-approval-forgery.md` header closed · token ledger appended (opus sub-agent share 0.0, no unit at
+fix cycle 3) · **T-126 closed** (allowlist, SNAPSHOT drift, ledger backfill, QUEUE drift all met).
+
+**Non-findings (not re-filed):** bypass CLEAN across all 103 commits (every src/tests/scripts commit
+traces to a manifest → matching-cycle PASS: t172 c2, at110 c2, at560, t173, at086-087, t175,
+d042-registration, t170, fix-t175-criticality) · pair state CLEAN (building worktrees at335,
+at562-564, t125-catalog correctly have no manifest yet; `.last-tick` fresh; not paused) · delegation
+CLEAN (all `claude-sonnet-subagent`; no pair at the 10-unit floor) · data boundary = the accepted
+AT-365 signal only · enforcement CLEAN (5 hooks present, D-037-authorized; `qa/loop.md` Stop lists the
+seven states) · goal drift CLEAN (no `.regrill-due`, north star unedited since the last amendment,
+every STALLED stamp has its `qa/debug/` report, no gate answered off-disk) · **proposed, not applied:**
+orchestrator contract OR7 "reachable from a real entry point (CLI command or UI route), not
+test-only" — the remedy for loop-design "can it Goodhart the verifier" (AT-562/AT-564/F-045); a new
+criterion needs an authorizing D-entry.
+
+### TOP-3 BUILDABLE NEXT UNITS (2026-09-25 refresh)
+
+| # | Unit | Why |
+|---|---|---|
+| **1** | **at562-564-live-wiring** (in build) — CLI/UI run entry points through `StageContext(secrets=...)` and `run_cases`, **plus the AT-565 PR6 fix** | Closes AT-562, AT-564, AT-565 and re-closes T-173; must land before parallel execution reaches real runs. Checker bar: every non-browser test file green; real Mode D (UI entry points change); a PR6 test in which the FACTORY raises. |
+| **2** | **AT-566** — cap `BLOCKED` in `qa/loop.md` like HUMAN_GATE | Small; stops the loop spinning on a persistent environment block. |
+| **3** | **AT-567** — split `ui/helpers.py` by responsibility before the next credential-guard fix (then `stages/explore_node.py`) | Zero headroom under the 300-line cap; a split under deadline pressure is how guards get dropped. |
+
+**In flight, not re-queued:** at335-modal-determinism, t125-catalog. **Deprioritised (unchanged):**
+AT-497/AT-545 · AT-488/AT-502 (erosion, advisory) · AT-556 · AT-546.
+
+### HUMAN_GATE — do not build as ordinary units (re-derived on disk this sweep)
+
+Re-derived strictly: a gate is open only if it has **no line beginning `Answered:` + a date** (a plain
+grep for "Answered:" also matches each gate's own how-to-answer text and wrongly reads every gate as
+answered).
+
+| Open gate (11) | Blocks |
+|---|---|
+| `erp-credentials.md` / AT-529 | the live logged-in ERP runs (T-122, T-136, T-145) |
+| `at147-expiry-end-of-day.md` | whether a bare-date approval expiry means start or end of day (CN4) |
+| `at218-vacuous-guard-class.md` | the vacuous-guard prevention policy (GRILL above) |
+| `at253-agent-fallback-wiring.md` | the ARCHITECTURE execution-model D-entry for the agent fallback |
+| `at383-loop-status-consumer.md`, `at416-clip-vs-reach-direction.md` | carried |
+| `at438-u14b-baseline.md`, `commit-before-verdict.md` | the other session's AT-438; protocol departure |
+| `at516-evidence-spec-splitting-policy.md`, `at520-scripts-line-cap.md` | carried |
+| `t135-url-pattern-data-migration.md` | the one-off url_pattern backfill |
+
+**Correction to the tables above:** `live-crawl-target.md`, `post-login-forms.md` (both answered
+2026-09-21), `t136-model-credentials.md` (answered 2026-09-09) and `t162-contract-approval.md`
+(answered 2026-09-21) were still listed as "unanswered" by the 2026-09-24b table. They carry dated
+`Answered:` lines and are **not** blockers. Also closed since that table: `d042-deep-agents.md`
+(2026-09-24).
+
+**Terminal state: `FINDINGS: 3`** (AT-565 high, AT-566, AT-567; AT-564 extended; T-173 reopened;
+T-126 closed; 8/8 sampled fixed rows verified; bypass CLEAN; HEAD at stamp `8a97eca`-window, commit
+`89f5b3a` + this correction).
+
+
+## Meeting-input refresh — 2026-09-26 (checker goal-coverage review of the 2026-09-25 counselor-tool meeting)
+
+Source: Umesh shared the transcript of the counselor-tool meeting. It asks for exactly AutoTester's job: a tester agent
+separate from the builder, testing "as a tier-2 counselor", happy AND negative paths on every release, a reviewable
+video, "run the 50 cases", and written checklists so a known bug never comes back. The checker mapped each ask against
+the repo with file:line evidence and filed **AT-581..AT-589**. Contracts were tightened by **D-045**: execute.md E6 and
+report-export.md RE6.
+
+### TOP-3 BUILDABLE NEXT UNITS (meeting refresh)
+
+| # | Unit | Why |
+|---|---|---|
+| **1** | **AT-581** — enact VIEWPORT_MOBILE / LOCALE_I18N (per-case viewport/locale), or report not-run | High. These cases pass today at desktop size in the default locale, a false-pass class the north star counts. Closes execute.md E6. |
+| **2** | **AT-582** — show each failure's reason, fix_hint and repro steps in both exports | Medium and cheap. The judge already writes these; the developer report drops them. Closes report-export.md RE6. |
+| **3** | **AT-585** — known bug -> pinned p0 regression case in every release run | High. Answers "why does this bug keep coming back" (e.g. Google sign-in dropping signup data). |
+
+**Extend existing tasks rather than creating new ones:** T-166 += structured scenario variants (AT-586); T-125 += standard
+packs for OAuth sign-up carry-over, month/year pickers and Excel column-mapping upload (AT-588); T-180 += an explicit
+judge vendor with a warning when judge == agent (AT-589).
+
+### HUMAN_GATE (new, open)
+
+| Gate | Blocks |
+|---|---|
+| `meeting-user-persona-ux-judging.md` | AT-583 user personas, AT-584 advisory UX/comprehension judging |
+| `meeting-run-video-scope.md` | AT-587 run video recording (always vs on-FAIL, retention, secret masking) |
+
+**Out of scope for this repo (noted only):** the seminar-capture agent, audio-first counselor UX, and removing the Gemini
+dependency from VTC belong to other Vidysea projects.
+
+## Sweep 2026-09-26
+
+Mode B, sharded (3 shards + consolidation), window `a49c3b8..HEAD`. Full report:
+`qa/verdicts/sweep-2026-09-26.md`. 4 new rows filed (AT-613..AT-616), 0 fixed→verified flips, 1
+instrument gap (shard 1 returned empty — checks 1/2/3/1c did not run this cycle).
+
+### TOP-3 NEXT UNITS (this sweep)
+
+| # | Unit | Why |
+|---|---|---|
+| **1** | **AT-616** — reproduce the AT-608/AT-609 regression-check red/green split cleanly, then flip both `fixed -> verified` | Blocks closing out two already-fixed secret-leak rows; the discrepancy itself (real-path pytest run stays green with the fix reverted) is worth a second pair of eyes before it's dismissed as tooling noise. |
+| **2** | **AT-614** — split `src/autotester/core/redact_fold.py` off the 300-line cap | Same remedy AT-567 already proved out for helpers.py/session.py/routes_runs.py; do it before the next redact fix has to work in a file with zero headroom. |
+| **3** | **AT-613** — re-run the real `autotester snapshot` generator over `docs/SNAPSHOT.md` | The file every SessionStart hook injects is currently missing F-057/058/059 and T-182/183/184; cheap, high-leverage fix. |
+
+### GRILL: (carried, unchanged by this sweep)
+
+- AT-218, AT-281, AT-402 — untouched this window, out of scope for shards 2/3 (check 6 owns them,
+  ran but did not re-verify; still open, not re-litigated here).
+
+### Proposed folds for the standing checker (not applied by this sweep)
+
+- **AT-582**: stale — its named fix shipped via T-183 (checker-PASSed) and is confirmed live in
+  `stages/report_export.py`. Flip to `fixed`/`fixed_by: T-183`, or narrow the title to the
+  still-open must-fix/suggestion split noted in `docs/FEATURES.jsonl` F-057.

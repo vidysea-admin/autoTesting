@@ -18,7 +18,7 @@ from datetime import UTC, datetime
 
 from autotester.browser.observe import observe
 from autotester.core.redact import PLACEHOLDER_RE
-from autotester.core.urls import absolute_url, url_template
+from autotester.core.urls import screen_url_pattern
 from autotester.schema.case import Case
 from autotester.schema.crawl import Crawl
 from autotester.schema.enums import Action, CrawlStatus, EdgeOutcome
@@ -49,7 +49,7 @@ def login_template(case: Case) -> str | None:
                  if s.action is Action.NAVIGATE), None)
     if step is None or PLACEHOLDER_RE.search(step.target):
         return None
-    return url_template(absolute_url(step.target), keep_host=False)
+    return screen_url_pattern(step.target)
 
 
 def observed_signature(session: object) -> tuple[str | None, str | None]:

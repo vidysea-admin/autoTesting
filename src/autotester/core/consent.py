@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from autotester.core.ids import SigningKeyMissing
 from autotester.schema.approval import RunApproval
 from autotester.schema.enums import ApprovalKind
 
@@ -68,6 +69,19 @@ def _reject_reason(
     """Why this candidate approval does not cover the run, or None if it does."""
     if not approval.is_intact:
         return f"{approval.id}: edited after it was granted (content id no longer matches)"
+    try:
+        signed_and_verified = approval.is_signed_and_verified
+    except SigningKeyMissing as exc:
+        # Fail closed: no key configured means NOTHING can be verified, so
+        # every approval is refused, never silently honoured (AT-110).
+        return f"{approval.id}: cannot verify — {exc}"
+    if not signed_and_verified:
+        if not approval.signature:
+            return (
+                f"{approval.id}: no signature — granted before signing was required, "
+                "or the row was forged; re-grant it with `uv run autotester approve`"
+            )
+        return f"{approval.id}: signature does not verify — the row was edited or forged"
     if approval.is_expired(now):
         return f"{approval.id}: expired {approval.expires_at}"
     if production and not approval.production:

@@ -130,6 +130,11 @@ class Project(Artifact):
         description="the browser may only be driven here; secrets scoped within",
     )
     write_policy: WritePolicy = WritePolicy.READ_ONLY
+    max_parallel: int = Field(
+        default=1, ge=1,
+        description="ceiling on concurrently-running cases (T-173/D-041); the run's actual N "
+                    "is min(this, a measured RAM/CPU budget) -- see stages/parallel_run.py",
+    )
     secrets: list[SecretRef] = Field(default_factory=list)
     providers: ProviderConfig = Field(default_factory=ProviderConfig)
     headed: bool = Field(default=True, description="real visible browser by default")

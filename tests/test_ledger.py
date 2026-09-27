@@ -274,12 +274,15 @@ def test_architecture_over_budget_is_a_doctor_violation(tmp_path: Path) -> None:
 
 
 def test_snapshot_rolls_up_high_features_past_the_cap(tmp_path: Path) -> None:
+    """AT-613: the newest feature (last appended) must be in the shown slice, not pushed out."""
     docs = make_docs(tmp_path)
+    newest = None
     for i in range(render.HIGH_FEATURES_SHOWN + 2):
-        store.append_event(docs.features, row(store.load_events(docs.features),
+        newest = store.append_event(docs.features, row(store.load_events(docs.features),
                                               feature=f"feat-{i}", reason="why"))
     text = render.render_snapshot(docs)
     assert "+2 more high-value features" in text
+    assert f"{newest.id} **{newest.title}**" in text
     assert text.count("\n") <= render.SNAPSHOT_MAX_LINES
 
 

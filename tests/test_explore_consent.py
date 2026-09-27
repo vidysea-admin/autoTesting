@@ -36,7 +36,7 @@ def _store_with(tmp_path: Path, production: bool) -> tuple[ProjectStore, object]
         max_actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s,
         granted_by="test", granted_at="2026-09-21", expires_at="2099-01-01",
         production=production,
-    ))
+    ).sign())
     return store, project
 
 

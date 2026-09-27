@@ -70,3 +70,5 @@ to keep trustworthy.
 Append a line to this file and nothing else is needed:
 
 `**Answered:** <ISO date> — <(a) | (b) | (c) | (d), with any narrowing> — Umesh`
+
+**Answered:** 2026-09-26T22:34:22+05:30 — (c) — Umesh via AskUserQuestion in the checker session. Leave a stale evidence spec byte-intact but tag it 'stale on purpose, test moved to <new node id>', so a check can tell an intended stale spec from an unexplained one.

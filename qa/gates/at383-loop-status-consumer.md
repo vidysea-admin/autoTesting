@@ -45,4 +45,4 @@ I checked all four candidates:
 Nothing written. No hook touched, no DECISIONS entry drafted — under the Lab Protocol the
 authorizing entry comes **before** the change, not after.
 
-Answered:
+Answered: 2026-09-26T22:34:22+05:30 — C (both) — Umesh via AskUserQuestion in the checker session. A now: call `autotester loop-status --strict` from qa/hooks/mc-sessionstart.ps1 (report at session start; enforcement path, authorized with Approved-by Umesh in D-048). B later: the shared sweep routine outside this repo, when that file is next touched.

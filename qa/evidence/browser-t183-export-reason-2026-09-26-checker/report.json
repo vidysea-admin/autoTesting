@@ -1,0 +1,28 @@
+{
+  "base": "http://127.0.0.1:8791",
+  "console_errors": [],
+  "http_errors": [],
+  "run_view_status_ok": true,
+  "fail_case_reason_visible": true,
+  "fail_case_fix_hint_visible": true,
+  "criterion_ids_visible": true,
+  "repro_steps_visible": true,
+  "xss_escaped": true,
+  "detail_blocks_on_page": 2,
+  "xlsx_header": [
+    "Case",
+    "Kind",
+    "Class",
+    "Outcome",
+    "Result",
+    "Criteria met",
+    "Duration (s)",
+    "Grader",
+    "Notes",
+    "Failures",
+    "Repro steps"
+  ],
+  "xlsx_has_new_columns": true,
+  "xlsx_fail_row_failures": "c1: login form still visible, token leaked: sk-live-51Hh2example9f0000000000000000000000 (fix: check the redirect wait)\nc2: placeholder present {{SECRET:EMAIL_KEY}} and xss <script>alert(1)</script> (fix: sanitize <script>alert(1)</script>)",
+  "xlsx_pass_row_failures_blank": true
+}

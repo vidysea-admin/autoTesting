@@ -122,8 +122,8 @@ def env_url_submit(
     _refuse_unsafe_submission(
         [("the base URL", base_url), ("allowed domains", allowed_domains)],
         project, SecretStore.load(project, ProjectPaths(slug).env_file, strict=False),
-        exempt=frozenset({project.base_url, ", ".join(project.allowed_domains),
-                          *project.allowed_domains}),
+        exempt={"the base URL": project.base_url,
+                "allowed domains": ", ".join(project.allowed_domains)},
     )
     store.save_project(project.model_copy(update={
         "base_url": base_url.strip(), "allowed_domains": domains,

@@ -1,0 +1,8 @@
+INFO:     Started server process [7668]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8095 (Press CTRL+C to quit)
+coverage gap not queued for crawl_01M3F45W1NTZ22XAB65GQXSKCK: the FlowSpec could not be read -- ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\909303db-cd49-47bd-ad40-ab83e988e1dc\scratchpad\at593-modeD-root\projects\demo\flowspec.json: 1 validation error for FlowSpec
+screens
+  Input should be a valid array [type=list_type, input_value='[REDACTED]:DEMO_PASSWORD', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.13/v/list_type

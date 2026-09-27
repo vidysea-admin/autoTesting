@@ -215,7 +215,7 @@ def grant_crawl_approval(store: ProjectStore, project: Project,
         scope="fixture crawl in tests", max_actions=bounds.max_actions,
         wall_clock_s=bounds.wall_clock_s, granted_by="test",
         granted_at="2026-09-08", expires_at="2099-01-01",
-    ))
+    ).sign())
 
 
 def crawl_it(tmp_path: Path, *, project: Project | None = None,

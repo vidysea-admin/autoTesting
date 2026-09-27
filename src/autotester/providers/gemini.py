@@ -12,6 +12,7 @@ those too, standalone, like `AnthropicProvider` can).
 from __future__ import annotations
 
 import os
+import time
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -54,23 +55,32 @@ class GeminiProvider(Provider):
         return bool(self._api_key)
 
     def see_video(self, path: Path, prompt: str, schema: type[ModelT],
-                  options: VisionOptions | None = None) -> ModelT:
+                  options: VisionOptions | None = None, *,
+                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:
         return self._structured(prompt, schema, role="vision", video_path=path,
-                                options=options)
+                                options=options, prompt_file=prompt_file, fed_id=fed_id)
 
-    def act(self, prompt: str, schema: type[ModelT] | None = None) -> Any:
-        return self._structured(prompt, schema, role="agent")
+    def act(self, prompt: str, schema: type[ModelT] | None = None, *,
+            prompt_file: str | None = None, fed_id: str | None = None) -> Any:
+        return self._structured(prompt, schema, role="agent",
+                                 prompt_file=prompt_file, fed_id=fed_id)
 
     def judge(
-        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None
+        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,
+        prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
-        return self._structured(prompt, schema, role="judge", images=images)
+        return self._structured(prompt, schema, role="judge", images=images,
+                                 prompt_file=prompt_file, fed_id=fed_id)
 
     def _config(self, schema: type[BaseModel] | None, options: VisionOptions | None) -> Any:
-        """Build the generation config. 3.x models take `media_resolution` and a
-        thinking level; older ones take a temperature. Seed and token ceiling
-        are set for BOTH, because without them a re-run of the same chunk is a
-        different answer and the on-disk observation cache means nothing."""
+        """Build the generation config. 3.x models additionally take
+        `media_resolution` and a thinking level; `temperature` is an independent
+        sampling knob the SDK accepts on every model (AT-367: it does NOT
+        conflict with `thinking_config`, which governs reasoning effort, not
+        sampling) so it is applied whenever the caller sets it, regardless of
+        model. Seed and token ceiling are set for ALL calls, because without
+        them a re-run of the same chunk is a different answer and the on-disk
+        observation cache means nothing."""
         from google.genai import types
 
         opts = options or VisionOptions()
@@ -92,7 +102,12 @@ class GeminiProvider(Provider):
                 kwargs["thinking_config"] = types.ThinkingConfig(
                     thinking_level=opts.thinking_level.upper()
                 )
-            elif opts.temperature is not None:
+            # AT-367: temperature used to be gated behind `elif`, so a caller-set
+            # value was silently dropped for every 3.x model (including
+            # DEFAULT_MODEL) with nothing failing. It is an independent
+            # GenerateContentConfig field the SDK accepts alongside
+            # thinking_config, so it is honoured for every model.
+            if opts.temperature is not None:
                 kwargs["temperature"] = opts.temperature
             if opts.system_instruction:
                 kwargs["system_instruction"] = opts.system_instruction
@@ -114,6 +129,7 @@ class GeminiProvider(Provider):
         self, prompt: str, schema: type[ModelT] | None, *, role: str,
         video_path: Path | None = None, images: list[Path] | None = None,
         options: VisionOptions | None = None,
+        prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
         if not self.available():
             raise ProviderError("GEMINI_API_KEY/GOOGLE_API_KEY is not set")
@@ -124,6 +140,7 @@ class GeminiProvider(Provider):
 
         client = genai.Client(api_key=self._api_key)
         contents = self._contents(client, prompt, video_path, images)
+        started = time.perf_counter()
         try:
             response = client.models.generate_content(
                 model=self._model, contents=contents,
@@ -135,6 +152,7 @@ class GeminiProvider(Provider):
             raise ProviderError(
                 f"{self.label} generate_content failed (role={role}): "
                 f"{type(exc).__name__}: {exc}") from exc
+        latency_s = time.perf_counter() - started
 
         if response.parsed is None:
             raise ProviderError(self._unparsed_reason(response, role))
@@ -143,6 +161,7 @@ class GeminiProvider(Provider):
             role,
             input_tokens=getattr(usage, "prompt_token_count", 0) or 0,
             output_tokens=getattr(usage, "candidates_token_count", 0) or 0,
+            prompt_file=prompt_file, fed_id=fed_id, latency_s=latency_s,
         )
         # AT-230: `response_schema` is now a sanitised dict rather than the
         # Pydantic class, so the SDK hands back a plain dict instead of building

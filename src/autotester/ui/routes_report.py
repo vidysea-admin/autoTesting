@@ -11,7 +11,9 @@ from fastapi import APIRouter
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from starlette.background import BackgroundTask
 
+from autotester.core.trace import read_spans
 from autotester.schema.enums import EvidenceKind, Result
+from autotester.schema.trace import LLMSpan, StageSpan
 from autotester.stages.report_export import (
     export_excel,
     export_html,
@@ -105,6 +107,33 @@ def _failure_list(failures: list) -> str:
     return f"<ul class='failure-list'>{items}</ul>"
 
 
+def _trace_card(store: ProjectStore, run_id: str) -> str:
+    """RT7: a read-only VIEW over `trace.jsonl` — per-stage time, and per-LLM
+    -call latency/cost/model — never a second source of truth (core-invariants
+    C6). A run with no trace yet (or one from before D-041) renders nothing."""
+    spans = read_spans(store.paths.run_trace(run_id))
+    stage_rows = "".join(
+        f"<tr><td>{escape(s.stage.value)}</td><td>{escape(s.status)}</td>"
+        f"<td>{s.duration_s:.2f}s</td></tr>"
+        for s in spans if isinstance(s, StageSpan) and s.duration_s is not None
+    )
+    llm_rows = "".join(
+        f"<tr><td>{escape(s.role)}</td><td>{escape(s.provider)}</td>"
+        f"<td>{s.latency_s:.2f}s</td><td>${s.cost:.4f}</td></tr>"
+        for s in spans if isinstance(s, LLMSpan)
+    )
+    if not stage_rows and not llm_rows:
+        return ""
+    body = ""
+    if stage_rows:
+        body += ("<table><tr><th>Stage</th><th>Status</th><th>Duration</th></tr>"
+                  f"{stage_rows}</table>")
+    if llm_rows:
+        body += ("<table><tr><th>Role</th><th>Model</th><th>Latency</th><th>Cost</th></tr>"
+                  f"{llm_rows}</table>")
+    return theme.card(body, title="Trace")
+
+
 def _unknown_run_page(slug: str, run_id: str) -> HTMLResponse:
     safe_slug = escape(slug)
     body = theme.breadcrumb(
@@ -161,6 +190,7 @@ def run_view(slug: str, run_id: str) -> Response:
         )
         + f"<h1>Run <code>{safe_run_id}</code></h1>"
         + (_counts_stats(counts) if counts else "")
+        + _trace_card(store, run_id)
         + (sections or theme.empty_state("📭", "No case results in this run yet."))
     )
     return theme.page(f"Run {safe_run_id}", body, active_slug=slug)

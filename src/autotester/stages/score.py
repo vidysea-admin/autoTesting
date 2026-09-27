@@ -206,6 +206,28 @@ def load_truth(path: Path, sheet_name: str) -> list[TruthRow]:
         workbook.close()
 
 
+def _best_candidate(row: TruthRow, remaining: list[Issue], window_s: float):
+    """The single best-scoring issue for `row`, or `None` if nothing shares its
+    recording within `window_s`. Sorted, not `max()`: highest similarity, then
+    closest in time, then the issue's own content-addressed id.
+
+    **AT-221 — the tie-break must be total.** I claimed the ordering was
+    deterministic; it was not. `max()` returns the FIRST maximum, so two issues
+    of equal similarity handed the choice to `list_issues()` file order, and
+    permuting them moved recall from 0.5 to 1.0. That is AT-197's defect exactly
+    -- a non-total sort key letting caller order leak in -- reappearing in the
+    module that computes the north star's own number. The id makes the key
+    TOTAL, so no tie survives."""
+    candidates = [
+        (similarity(row.text, f"{i.title} {i.what_is_wrong}"), abs(i.at_s - row.at_s), i)
+        for i in remaining
+        if recording_key(i.recording_label) == row.recording
+        and abs(i.at_s - row.at_s) <= window_s
+    ]
+    ordered = sorted(candidates, key=lambda c: (-c[0], c[1], c[2].id))
+    return ordered[0] if ordered else None
+
+
 def score(truth: list[TruthRow], issues: list[Issue], *,
           window_s: float = 20.0, threshold: float = 0.30) -> Scorecard:
     """Greedy best-match, each truth row claimed at most once.
@@ -219,38 +241,29 @@ def score(truth: list[TruthRow], issues: list[Issue], *,
     can follow why a given row was claimed. An optimal matcher would raise recall
     slightly and cost every reader the ability to check it.
 
-    **AT-221 — the tie-break must be total.** I claimed the ordering was
-    deterministic; it was not. `max()` returns the FIRST maximum, so two issues
-    of equal similarity handed the choice to `list_issues()` file order, and
-    permuting them moved recall from 0.5 to 1.0. That is AT-197's defect exactly
-    -- a non-total sort key letting caller order leak in -- reappearing in the
-    module that computes the north star's own number. The key now ends in the
-    issue id, which is content-addressed and unique, so no tie survives."""
+    **AT-233 — a rejected best candidate keeps its score.** A candidate under
+    `threshold` used to be discarded down to the same similarity=0.0,
+    seconds_apart=None as a row with no candidate at all -- indistinguishable
+    from silence. It now keeps its real similarity/seconds_apart on the Match
+    (issue_id stays unset, so `found` is still False); only a row with no
+    candidate in range at all stays at the 0.0/None default."""
     remaining = list(issues)
     matches: list[Match] = []
 
     for row in truth:
         if row.recording == UNKNOWN_RECORDING:
-            # AT-223, second half. Giving both sides the same sentinel was not
-            # enough -- the sentinel equals itself, so a blank truth cell still
-            # matched a blank label and scored 1.0. An unrecognisable recording
-            # must match NOTHING, including another unrecognisable one.
+            # AT-223, second half: an unrecognisable recording must match
+            # NOTHING, including another unrecognisable one.
             matches.append(Match(truth=row))
             continue
-        candidates = [
-            (similarity(row.text, f"{i.title} {i.what_is_wrong}"), abs(i.at_s - row.at_s), i)
-            for i in remaining
-            if recording_key(i.recording_label) == row.recording
-            and abs(i.at_s - row.at_s) <= window_s
-        ]
-        # Sorted, not `max()`: highest similarity, then closest in time, then the
-        # issue's own content-addressed id. The id makes the key TOTAL (AT-221).
-        ordered = sorted(candidates, key=lambda c: (-c[0], c[1], c[2].id))
-        best = ordered[0] if ordered else None
-        if best is None or best[0] < threshold:
+        best = _best_candidate(row, remaining, window_s)
+        if best is None:
             matches.append(Match(truth=row))
             continue
         ratio, apart, issue = best
+        if ratio < threshold:
+            matches.append(Match(truth=row, similarity=ratio, seconds_apart=apart))
+            continue
         remaining.remove(issue)
         matches.append(Match(truth=row, issue_id=issue.id, issue_title=issue.title,
                              similarity=ratio, seconds_apart=apart))

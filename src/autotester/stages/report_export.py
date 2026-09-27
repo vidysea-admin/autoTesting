@@ -15,10 +15,13 @@ from pathlib import Path
 
 from openpyxl import Workbook
 
+from autotester.browser.secrets import SecretStore
 from autotester.core.excel import autosize_columns
+from autotester.core.redact import Redactor
 from autotester.schema.case import Case
-from autotester.schema.enums import EvidenceKind
+from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.run import Run
+from autotester.schema.verdict import Verdict
 from autotester.store import ProjectStore
 
 _BADGE_COLOR = {
@@ -61,6 +64,53 @@ def _case_lookup(store: ProjectStore) -> dict[str, Case]:
     return {c.id: c for c in store.list_cases()}
 
 
+def _load_redactor(store: ProjectStore) -> Redactor:
+    """The same Redactor/SecretStore path every other stage uses (C5) -- not a
+    new redaction mechanism. A stored `Case.steps` value should already be a
+    `{{SECRET:KEY}}` placeholder (never a raw value), but export is the last
+    stop before a human-shared file, so a repro step is scrubbed here too
+    (AT-594) in case a raw secret ever reached a stored case despite that
+    design. A project with no `.env` (or none declared) yields an empty,
+    harmless `Redactor`."""
+    project = store.load_project()
+    if project is None:
+        return Redactor({})
+    return SecretStore.load(project, store.paths.env_file, strict=False).redactor()
+
+
+def _needs_developer_detail(verdict: Verdict | None) -> bool:
+    """RE6 (D-045): a FAIL or INCONCLUSIVE verdict is what a developer must act
+    on -- a PASS gets no failure/repro detail."""
+    return verdict is not None and verdict.result in (Result.FAIL, Result.INCONCLUSIVE)
+
+
+def _failure_rows(verdict: Verdict | None) -> list[tuple[str, str, str | None]]:
+    """Each failure's (criterion_id, reason, fix_hint), verbatim off the
+    stored Verdict -- RE1: nothing recomputed."""
+    if verdict is None:
+        return []
+    return [(f.criterion_id, f.reason, f.fix_hint) for f in verdict.failures]
+
+
+def _repro_steps(case: Case | None, redactor: Redactor) -> list[str]:
+    """The case's own steps, formatted as a plain-text repro recipe.
+
+    `redactor.scrub` runs over the formatted line before it reaches either
+    export (AT-594): a `{{SECRET:KEY}}` placeholder is not a known secret
+    VALUE, so it passes through untouched and exports as the placeholder,
+    never a resolved value; a step that somehow held a raw declared secret is
+    masked here, the same last-stop guarantee every other artifact gets."""
+    if case is None:
+        return []
+    return [
+        redactor.scrub(
+            f"{step.order}. {step.action.value} {step.target}"
+            + (f" = {step.value}" if step.value else "")
+        )
+        for step in case.steps
+    ]
+
+
 def export_excel(
     project_slug: str, run_id: str | None, out_path: Path, root: Path | None = None
 ) -> Path:
@@ -69,17 +119,29 @@ def export_excel(
     run_id = run_id or _latest_run_id(store)
     cases = _case_lookup(store)
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
+    redactor = _load_redactor(store)
 
     wb = Workbook()
     ws = wb.active
     ws.title = "Run report"
     ws.append(["Case", "Kind", "Class", "Outcome", "Result", "Criteria met",
-               "Duration (s)", "Grader", "Notes"])
+               "Duration (s)", "Grader", "Notes", "Failures", "Repro steps"])
     for result in store.load_results(run_id):
         case = cases.get(result.case_id)
         verdict = verdicts.get(result.case_id)
+        detail = _needs_developer_detail(verdict)
+        failures_text = "\n".join(
+            f"{criterion_id}: {reason}" + (f" (fix: {fix_hint})" if fix_hint else "")
+            for criterion_id, reason, fix_hint in _failure_rows(verdict)
+        ) if detail else ""
+        steps_text = "\n".join(_repro_steps(case, redactor)) if detail else ""
+        # AT-609: `Case.title` is operator-authored free text, not a step
+        # value -- nothing upstream guarantees it never carries a pasted raw
+        # secret, so it gets the same last-stop scrub every other exported
+        # field gets.
+        case_title = redactor.scrub(case.title) if case else result.case_id
         ws.append([
-            case.title if case else result.case_id,
+            case_title,
             case.kind.value if case else "",
             case.case_class.value if case else "",
             result.outcome.value,
@@ -88,6 +150,8 @@ def export_excel(
             round(result.duration_s, 2),
             verdict.grader_provider if verdict else "",
             (verdict.scoreboard if verdict else "") or (result.error or ""),
+            failures_text,
+            steps_text,
         ])
     autosize_columns(ws)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -120,28 +184,59 @@ def png_base64(path: Path, allowed_root: Path, trusted_root: Path) -> str | None
     return base64.b64encode(candidate.read_bytes()).decode("ascii")
 
 
-def _case_section(store: ProjectStore, run_id: str, case: Case | None, result, verdict) -> str:
+def _case_section(
+    store: ProjectStore, run_id: str, case: Case | None, result, verdict, redactor: Redactor
+) -> str:
     run_dir = store.paths.run_dir(run_id)
-    title = escape(case.title if case else result.case_id)
+    # AT-609: `Case.title` (the <h2>) and `Evidence.label` (the <figcaption>)
+    # are both operator-authored free text with no upstream guarantee against
+    # a pasted raw secret -- scrubbed here, the same last-stop rule the repro
+    # steps already get, before `escape` ever sees them.
+    title = escape(redactor.scrub(case.title) if case else result.case_id)
     color = _BADGE_COLOR.get(verdict.result.value if verdict else "", "#6b7280")
     badge_text = escape(verdict.result.value) if verdict else escape(result.outcome.value)
     shots = [e for e in result.evidence if e.kind is EvidenceKind.SCREENSHOT]
     figures = "".join(
         f"<figure><img src='data:image/png;base64,{data}'>"
-        f"<figcaption>{escape(shot.label or shot.path)}</figcaption></figure>"
+        f"<figcaption>{escape(redactor.scrub(shot.label or shot.path))}</figcaption></figure>"
         for shot in shots
         for data in [png_base64(run_dir / shot.path, run_dir, store.paths.dir)] if data is not None
     )
     scoreboard = escape(verdict.scoreboard) if verdict and verdict.scoreboard else ""
     error = escape(result.error) if result.error else ""
     no_shots = "<p class='meta'>no screenshots captured</p>"
+    detail = _failure_detail_html(verdict, case, redactor)
     return (
         f"<section><h2>{title} "
         f"<span class='badge' style='background:{color}'>{badge_text}</span></h2>"
         f"<p class='meta'>{scoreboard}{error}</p>"
+        f"{detail}"
         f"<div class='shots'>{figures or no_shots}</div>"
         "</section>"
     )
+
+
+def _failure_detail_html(verdict: Verdict | None, case: Case | None, redactor: Redactor) -> str:
+    """RE6 (D-045): for a FAIL/INCONCLUSIVE verdict, each failure's criterion,
+    reason and fix_hint, plus the case's own steps as the repro -- read
+    straight off the stored Verdict/Case (RE1: nothing recomputed)."""
+    if not _needs_developer_detail(verdict):
+        return ""
+    items = "".join(
+        f"<li><code>{escape(criterion_id)}</code> — {escape(reason)}"
+        + (f" <em>fix: {escape(fix_hint)}</em>" if fix_hint else "") + "</li>"
+        for criterion_id, reason, fix_hint in _failure_rows(verdict)
+    )
+    failures_html = f"<h3>Failures</h3><ul>{items}</ul>" if items else ""
+    steps = _repro_steps(case, redactor)
+    steps_html = (
+        "<h3>Repro steps</h3><ol>"
+        + "".join(f"<li>{escape(step)}</li>" for step in steps)
+        + "</ol>"
+    ) if steps else ""
+    if not failures_html and not steps_html:
+        return ""
+    return f"<div class='detail'>{failures_html}{steps_html}</div>"
 
 
 def export_html(
@@ -154,9 +249,10 @@ def export_html(
     cases = _case_lookup(store)
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
     results = store.load_results(run_id)
+    redactor = _load_redactor(store)
 
     sections = "".join(
-        _case_section(store, run_id, cases.get(r.case_id), r, verdicts.get(r.case_id))
+        _case_section(store, run_id, cases.get(r.case_id), r, verdicts.get(r.case_id), redactor)
         for r in results
     )
     style = (
@@ -166,6 +262,8 @@ def export_html(
         "section{border:1px solid #e2e5ea;border-radius:10px;padding:1.2rem 1.4rem;"
         "margin-bottom:1.2rem}"
         ".badge{color:#fff;padding:.15rem .6rem;border-radius:999px;font-size:.75rem}"
+        ".detail{margin-top:.6rem}.detail h3{font-size:.85rem;margin:.6rem 0 .2rem}"
+        ".detail li{font-size:.85rem;margin-bottom:.2rem}"
         ".shots{display:flex;flex-wrap:wrap;gap:1rem;margin-top:.8rem}"
         "figure{margin:0;max-width:320px}img{max-width:100%;border:1px solid #e2e5ea;"
         "border-radius:6px}figcaption{font-size:.75rem;color:#667085;margin-top:.3rem}"

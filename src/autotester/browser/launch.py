@@ -13,6 +13,10 @@ from typing import Any
 from autotester.core.paths import ProjectPaths
 from autotester.schema.project import Project
 
+DEFAULT_VIEWPORT = {"width": 1366, "height": 850}
+"""The desktop viewport every context launches with. `browser/conditions.py` reads this
+to reset a VIEWPORT_MOBILE case back to default afterwards (D-045/AT-581)."""
+
 
 def launch_options(project: Project, paths: ProjectPaths) -> dict[str, Any]:
     """Arguments for `launch_persistent_context` (B5): headed by default, own profile.
@@ -27,7 +31,7 @@ def launch_options(project: Project, paths: ProjectPaths) -> dict[str, Any]:
     return {
         "user_data_dir": str(paths.profile_dir),
         "headless": not project.headed,
-        "viewport": {"width": 1366, "height": 850},
+        "viewport": dict(DEFAULT_VIEWPORT),
         "slow_mo": slow_mo_ms,
         "args": [
             "--disable-blink-features=AutomationControlled",

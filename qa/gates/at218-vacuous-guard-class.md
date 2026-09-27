@@ -34,4 +34,4 @@ Run `/grill "the recurring vacuous-guard class"` when ready, or answer directly 
 manifest/DECISIONS.md — whichever you prefer. Whatever you decide, append an `Answered:` line to
 this file before I act on it.
 
-**Answered:** _(not yet — gate remains open)_
+**Answered:** 2026-09-26T22:34:22+05:30 — Option 2 — Umesh via AskUserQuestion in the checker session. Every new guard or test ships with proof that it fails with the bug present (a recorded falsification run: the manifest's capability-coverage row, red on the named assertion). A guard without that proof is an unenumerated claim and fails check.

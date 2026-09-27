@@ -1,0 +1,42 @@
+{
+  "target": "branch (at477-explore-invalid-flowspec, fix 498b2d5)",
+  "steps": [
+    {
+      "step": "GET /projects/covbadspec/crawls (no crawl yet)",
+      "status": 200,
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\branch\\01-crawls-list-empty.png"
+    },
+    {
+      "step": "POST /projects/covbadspec/explore (first crawl, no flowspec yet)",
+      "final_url": "http://127.0.0.1:8791/projects/covbadspec/crawls/crawl_01M3DQWR83D6D92CBS0VYE3YKM",
+      "console_errors_this_step": 0,
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\branch\\02-after-first-explore.png"
+    },
+    {
+      "step": "corrupt flowspec.json on disk",
+      "path": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\909303db-cd49-47bd-ad40-ab83e988e1dc\\scratchpad\\c477-root\\projects\\covbadspec\\flowspec.json",
+      "written": true
+    },
+    {
+      "step": "GET the same crawl page again (flowspec now broken)",
+      "status": 200,
+      "console_errors_this_step": 0,
+      "card_states_failure": true,
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\branch\\03-crawl-page-broken-flowspec.png"
+    },
+    {
+      "step": "POST /projects/covbadspec/explore (second crawl, flowspec now broken)",
+      "final_url": "http://127.0.0.1:8791/projects/covbadspec/crawls/crawl_01M3DQZAF3SSJ0WJQ253R2WBM1",
+      "console_errors_this_step": 0,
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\branch\\04-after-second-explore-broken-flowspec.png"
+    },
+    {
+      "step": "confirm the SECOND crawl's page also renders 200 + the same card",
+      "status": 200,
+      "card_states_failure": true,
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\branch\\05-second-crawl-page-final.png"
+    }
+  ],
+  "total_console_errors": 0,
+  "result": "PASS \u2014 no 500s observed, card rendered as designed, crawl records survived"
+}

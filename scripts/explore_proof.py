@@ -31,6 +31,7 @@ from regression_proof import _NoCacheHandler
 from autotester.browser.observe import PageObserver
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
+from autotester.core.env import load_repo_env
 from autotester.core.paths import ProjectPaths
 from autotester.schema.approval import RunApproval
 from autotester.schema.crawl import CrawlBounds
@@ -73,7 +74,7 @@ def crawl(base_url: str, root: Path, *, headed: bool) -> tuple[object, ProjectSt
         scope="credential-free proof against the local fixture site",
         max_actions=60, wall_clock_s=180.0, granted_by="explore_proof",
         granted_at="2026-09-08", expires_at="2099-01-01",
-    ))
+    ).sign())
     observer = PageObserver()
     session = BrowserSession(project, SecretStore.load(project, root / ".env", strict=False),
                              root / "shots", paths, observer=observer)
@@ -157,6 +158,7 @@ def checks(crawl_obj: object, store: ProjectStore) -> list[tuple[str, bool, str]
 
 
 def main() -> int:
+    load_repo_env()  # AT-110: crawl() signs its own approval, which needs the key
     headed = "--headed" in sys.argv
     server, base_url = start_server()
     root = Path(tempfile.mkdtemp(prefix="explore-proof-"))

@@ -34,6 +34,11 @@ from autotester.store.filestore import (
 from autotester.store.request_store import RequestStoreMixin
 
 
+class PinnedCaseError(RuntimeError):
+    """AT-585: `delete_case` raises this for a pinned case -- unpin via
+    `update_case` first if it genuinely must go."""
+
+
 class ProjectStore(CrawlStoreMixin, RequestStoreMixin):
     """Load and save one project's artifacts as human-editable files (C6).
 
@@ -127,8 +132,15 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin):
             self._case_ids.add(case.id)
 
     def delete_case(self, case_id: str) -> bool:
-        """Remove a case; True when one was removed. Its past runs and verdicts
-        are history and are deliberately left alone."""
+        """Remove a case; True when one was removed. Past runs/verdicts stay.
+        AT-585: raises `PinnedCaseError` for a pinned case, never a silent
+        False -- a caller must not mistake "protected" for "not found"."""
+        case = self.get_case(case_id)
+        if case is not None and case.pinned:
+            raise PinnedCaseError(
+                f"case '{case_id}' is pinned (issue {case.pinned_issue_id}) "
+                "and cannot be pruned"
+            )
         removed = delete_jsonl_row(self.paths.cases, Case, case_id)
         if removed and self._case_ids is not None:
             self._case_ids.discard(case_id)

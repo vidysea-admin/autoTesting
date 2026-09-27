@@ -889,4 +889,32 @@ at086-at087-credential-exemption-scope, at365-data-class-declaration, at110-appr
 > AskUserQuestion: "Haan, Umesh approve (Recommended)" · "Wave 1 ke baad (Recommended)"
 PATTERN: agents plan, deterministic tools act -- every AutoTester stage becomes a tool whose safety/credential/consent logic stays in code; the LLM layer only chooses what to do next · EVIDENCE: D-042 design · APPLIES NEXT: T-179..T-181, T-177
 PATTERN: prompts are skills, not tools -- know-how ships as SKILL.md loaded on demand; tools are actions · EVIDENCE: user asked "prompts as tool"; corrected in chat · APPLIES NEXT: T-175, T-179
-**Status:** unfolded (decision recorded as D-042; gate qa/gates/d042-deep-agents.md)
+**Status:** folded 2026-09-25 by /checker Mode B sweep -> qa/contracts/agent-layer.md AL2/AL3 (deterministic guards run inside tools, in code; the agent layer only chooses what to do next) and AL4 (skills loaded via skills=, never inline prompt strings). Both patterns were already drafted into the T-179 criteria group (2026-09-24 init, grounded in D-042); no new criterion required. (Decision D-042; gate qa/gates/d042-deep-agents.md.)
+
+---
+
+## 2026-09-25 · maker (at576-577-serial-runs) · two items for the checker's judgement
+
+**Status:** folded 2026-09-25 by /checker. Item 1 -> qa/contracts/execute.md E4 ("every `Evidence` recorded during this case") + amendment-log row, authorized by D-044. Item 2 -> filed as AT-578 (high), fixed in at576-577 cycle 2 (merged 8e50efc).
+
+**1. `qa/contracts/execute.md` E4's wording is now imprecise.** AT-577's fix (`stages/execute.py::
+run_case`) scopes a `RawResult`'s evidence to only the calling case's own slice of `session.state.
+evidence` (via `evidence_start`), because the serial route reuses one `BrowserSession` across every
+non-entry case in a run and the un-scoped return carried every earlier case's evidence too. E4
+currently reads *"every `Evidence` the session recorded"*, which was true when a session ran
+exactly one case but is no longer accurate now that a session can run several. Suggested correction:
+*"every `Evidence` the session recorded for this case."* Not editing it myself — contracts are
+checker-owned.
+
+**2. A related, NOT-fixed cross-case contamination in `browser/assertions.py::_network_met`.**
+While fixing AT-577 I found `_network_met` (used by `assert_expected` for a `network`-kind D-032
+deterministic assertion) scans the WHOLE `session.state.evidence` for a matching NETWORK item, with
+no case-scoping at all — unlike the `RawResult` field this unit fixed, this function reads the live
+session list directly during a single `run_case` call. On a reused serial session, a case's `network`
+assertion could in principle read `met` against a PRIOR case's captured traffic instead of its own.
+I did not fix this: it is out of the two issues this unit addressed (AT-576/AT-577), touches
+assertion-evaluation semantics rather than the RawResult reader shape the dispatch prompt asked me
+to check, and no test in either new file exercises a `network`-kind expected state, so I have not
+established whether it is reachable in practice (no case + rubric combination in this repo's fixture
+projects currently declares one on a multi-case serial run). Filing for the checker to judge whether
+it is real and worth its own unit.

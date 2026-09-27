@@ -11,6 +11,7 @@ Contract: qa/contracts/ui.md + explore.md (D-018).
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -136,3 +137,100 @@ def test_one_bounds_object_reaches_preflight_and_run(
     bounds = seen[0]
     assert (bounds.max_screens, bounds.max_actions, bounds.wall_clock_s, bounds.max_depth) == (  # type: ignore[attr-defined]
         7, 11, 13.0, 3)
+
+
+def test_explore_survives_an_invalid_flowspec_after_the_crawl_finished(
+    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AT-477: routes_crawls.py:251 called store.load_flowspec() unguarded
+    after the crawl already finished and saved -- a broken flowspec.json
+    turned a completed crawl into a 500 that hid its own result. The route
+    must redirect to the crawl page (which itself must not 500 either --
+    covered by test_ui_crawls.py's crawl-page test)."""
+    store = make_project(scratch_root)
+    store.paths.flowspec.write_text("{ this is not a flowspec", encoding="utf-8")
+
+    class Session:
+        def __init__(self, *_a: object, **_k: object) -> None: pass
+        def __enter__(self) -> Session: return self
+        def __exit__(self, *_a: object) -> None: pass
+
+    def run(_project: object, _session: object, _store: object, **kwargs: object) -> Crawl:
+        crawl = Crawl(project="demo", id=str(kwargs["crawl_id"]))
+        _store.save_crawl(crawl)
+        return crawl
+
+    monkeypatch.setattr("autotester.browser.session.BrowserSession", Session)
+    monkeypatch.setattr("autotester.stages.explore_consent.require_consent",
+                        lambda *_a, **_k: None)
+    monkeypatch.setattr("autotester.stages.explore.run_crawl", run)
+    response = client.post("/projects/demo/explore", data={
+        "max_screens": "7", "max_actions": "11", "wall_clock_s": "13", "max_depth": "3",
+    }, follow_redirects=False)
+    assert response.status_code == 303
+    crawl_id = response.headers["location"].rsplit("/", 1)[-1]
+    assert store.load_crawl(crawl_id) is not None
+    page = client.get(response.headers["location"])
+    assert page.status_code == 200
+
+
+def test_explore_logs_a_redacted_flowspec_read_failure(
+    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """AT-593: `_queue_coverage_gap` used to discard the read failure with no
+    server-side trace at all. A broken flowspec.json can echo an
+    operator-pasted secret via pydantic's own `input_value=...`, so the
+    logged line must both exist and be scrubbed -- and the route's AT-477
+    behaviour (redirect, crawl kept) must not change."""
+    store = make_project(scratch_root)
+    (scratch_root / ".env").write_text("DEMO_PASSWORD=hunter2\n", encoding="utf-8")
+    store.paths.flowspec.write_text('{"project": "demo", "screens": "hunter2"}',
+                                    encoding="utf-8")
+
+    class Session:
+        def __init__(self, *_a: object, **_k: object) -> None: pass
+        def __enter__(self) -> Session: return self
+        def __exit__(self, *_a: object) -> None: pass
+
+    def run(_project: object, _session: object, _store: object, **kwargs: object) -> Crawl:
+        crawl = Crawl(project="demo", id=str(kwargs["crawl_id"]))
+        _store.save_crawl(crawl)
+        return crawl
+
+    monkeypatch.setattr("autotester.browser.session.BrowserSession", Session)
+    monkeypatch.setattr("autotester.stages.explore_consent.require_consent",
+                        lambda *_a, **_k: None)
+    monkeypatch.setattr("autotester.stages.explore.run_crawl", run)
+    with caplog.at_level(logging.WARNING, logger="autotester.ui.routes_crawls"):
+        response = client.post("/projects/demo/explore", data={
+            "max_screens": "7", "max_actions": "11", "wall_clock_s": "13", "max_depth": "3",
+        }, follow_redirects=False)
+    assert response.status_code == 303
+    crawl_id = response.headers["location"].rsplit("/", 1)[-1]
+    assert store.load_crawl(crawl_id) is not None
+    assert "coverage gap not queued" in caplog.text
+    assert "hunter2" not in caplog.text
+    assert "[REDACTED]" in caplog.text
+
+
+def test_crawl_page_scrubs_a_secret_from_a_broken_flowspecs_read_error(
+    client: TestClient, scratch_root: Path,
+) -> None:
+    """AT-608: `_coverage_card` renders `_load_flowspec_safe`'s read-failure
+    text straight into the crawl page with `escape()` only -- pydantic's own
+    error text echoes `input_value=...`, so a declared secret pasted into a
+    broken flowspec.json reached the browser raw. The card must render the
+    same stated read failure (AT-477's contract is unchanged) but scrubbed."""
+    store = make_project(scratch_root)
+    (scratch_root / ".env").write_text("DEMO_PASSWORD=hunter2\n", encoding="utf-8")
+    store.paths.flowspec.write_text('{"project": "demo", "screens": "hunter2"}',
+                                    encoding="utf-8")
+    store.save_crawl(Crawl(project="demo", id="crawl_demo"))
+
+    response = client.get("/projects/demo/crawls/crawl_demo")
+
+    assert response.status_code == 200
+    assert "hunter2" not in response.text
+    assert "[REDACTED]" in response.text
+    assert "the FlowSpec could not be read" in response.text

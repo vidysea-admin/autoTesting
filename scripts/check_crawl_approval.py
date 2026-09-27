@@ -16,11 +16,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from autotester.core.consent import ApprovalRequired, require_approval
+from autotester.core.env import load_repo_env
 from autotester.schema.enums import ApprovalKind, CrawlStatus
 from autotester.store.project_store import ProjectStore
 
 
 def main() -> int:
+    load_repo_env()  # AT-110: require_approval now verifies a signature keyed from .env
     if len(sys.argv) != 2:
         print("usage: check_crawl_approval.py <project-slug>")
         return 2

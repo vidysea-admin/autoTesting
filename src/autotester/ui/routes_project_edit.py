@@ -197,12 +197,13 @@ def edit_project_submit(
         [("the name", name), ("the base URL", base_url),
          ("allowed domains", allowed_domains)],
         project, SecretStore.load(project, ProjectPaths(slug).env_file, strict=False),
-        # AT-078: re-saving this project's own stored values is a no-op, not a
-        # paste. Only what is already on disk for these exact fields is exempt.
-        exempt=frozenset({
-            project.name, project.base_url, ", ".join(project.allowed_domains),
-            *project.allowed_domains,
-        }),
+        # AT-078/AT-087: re-saving this project's own stored value for EACH
+        # field is a no-op, not a paste -- per-field, never cross-field.
+        exempt={
+            "the name": project.name,
+            "the base URL": project.base_url,
+            "allowed domains": ", ".join(project.allowed_domains),
+        },
     )
 
     store.save_project(project.model_copy(update={
@@ -231,7 +232,7 @@ def declare_secret(
     _refuse_unsafe_submission(
         [("the key", key), ("the description", description), ("the scope", domains)],
         project, SecretStore.load(project, ProjectPaths(slug).env_file, strict=False),
-        exempt=frozenset({", ".join(project.allowed_domains), *project.allowed_domains}),
+        exempt={"the scope": ", ".join(project.allowed_domains)},
     )
     ref = build_secret_ref(
         project, key, domains, description, mask_in_screenshot=bool(mask_in_screenshot),

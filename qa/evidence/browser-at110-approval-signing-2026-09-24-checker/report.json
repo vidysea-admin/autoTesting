@@ -1,0 +1,18 @@
+{
+  "mode": "checker Mode D — live visible-browser validation of the at110 UI change (real playwright browser, isolated AUTOTESTER_ROOT)",
+  "date": "2026-09-24",
+  "unit": "at110-approval-signing",
+  "actor": "sole checker (topology B), in-session real browser via playwright MCP",
+  "instrument": "app started by checker on 127.0.0.1:8021 (uv run uvicorn autotester.ui.app:app) against an ISOLATED scratch root (AUTOTESTER_ROOT), AUTOTESTER_APPROVAL_KEY set in the app process; no real project touched",
+  "changed_ui_path": "src/autotester/ui/routes_crawl_approval.py — _in_force now also requires is_signed_and_verified (fail-closed); crawl_approval_submit signs the candidate and returns the existing _approval_error page on a missing key. Template markup byte-unchanged.",
+  "setup": "project 'moded' (base_url https://example.test/login). approvals.jsonl seeded with TWO crawl rows for that exact target: (1) a SIGNED grant via `autotester approve` (appr_9b601c2e0610, scope 'read only, no clicks', max_actions 50); (2) a FORGED row — id re-minted by model_post_init, no signature, max_actions 9999, granted_by 'attacker', scope 'FORGED wide open'.",
+  "page": {"url": "/projects/moded/env", "title": "T161 Final Smoke — credentials — AutoTester", "render": "pass", "console_errors": 0, "console_warnings": 0},
+  "assertions": [
+    {"did": "load the 'Approvals in force' card in a real browser", "expected": "shows only the row the consent gate would honour (signed+verified), hides the forged/unsigned one", "observed": "card lists exactly one row: checker | read only, no clicks | 50 | 300s | 2026-12-31 | appr_9b601c2e0610", "pass": true},
+    {"did": "check the forged row (9999 actions, 'attacker', no signature) is NOT presented as in force", "expected": "absent from the card", "observed": "no '9999', no 'attacker', no 'FORGED' anywhere in the rendered page", "pass": true},
+    {"did": "check the honest accounting note", "expected": "the hidden forged row is counted, not silently dropped", "observed": "'1 more on file are expired, edited after granting, or for another target or project, and are not honoured.'", "pass": true},
+    {"did": "count console messages", "expected": "0 errors", "observed": "0 errors, 0 warnings", "pass": true}
+  ],
+  "not_done": "The missing-key grant error path (crawl_approval_submit -> _approval_error) was NOT separately browser-exercised — it reuses the existing _approval_error themed page verbatim (no new markup, confirmed by reading routes_crawl_approval.py) and is covered by TestClient tests + code inspection. The primary UI-visible behaviour of this unit — the in-force card correctly refusing to display a forged/unsigned row — is confirmed live above.",
+  "verdict": "Mode D PASS. The at110 UI change (the _in_force signature filter) behaves correctly in a real browser: a forged/unsigned approval is not shown as 'in force', the signed one is, the hidden row is honestly accounted for, and there are zero console errors."
+}

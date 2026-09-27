@@ -1,0 +1,68 @@
+{
+  "mobile_outcome": "completed",
+  "mobile_evidence": [
+    {
+      "kind": "url",
+      "path": "http://127.0.0.1:8912/index.html",
+      "label": null
+    },
+    {
+      "kind": "dom",
+      "path": "assert visible_text: met (expected to contain '390x844')",
+      "label": null
+    },
+    {
+      "kind": "screenshot",
+      "path": "01-step01-navigate.png",
+      "label": "step01-navigate"
+    },
+    {
+      "kind": "dom",
+      "path": "clicked #a",
+      "label": null
+    },
+    {
+      "kind": "screenshot",
+      "path": "02-step02-click.png",
+      "label": "step02-click"
+    }
+  ],
+  "mobile_screenshot_dims": [
+    {
+      "path": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\909303db-cd49-47bd-ad40-ab83e988e1dc\\scratchpad\\c182-live-run3\\run\\01-step01-navigate.png",
+      "dims": [
+        390,
+        844
+      ]
+    },
+    {
+      "path": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\909303db-cd49-47bd-ad40-ab83e988e1dc\\scratchpad\\c182-live-run3\\run\\02-step02-click.png",
+      "dims": [
+        390,
+        844
+      ]
+    }
+  ],
+  "mobile_assert_evidence": [
+    "assert visible_text: met (expected to contain '390x844')"
+  ],
+  "happy_outcome": "completed",
+  "happy_screenshot_dims": [
+    {
+      "path": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\909303db-cd49-47bd-ad40-ab83e988e1dc\\scratchpad\\c182-live-run3\\run\\03-step01-navigate.png",
+      "dims": [
+        1366,
+        850
+      ]
+    }
+  ],
+  "happy_assert_evidence": [
+    "assert visible_text: met (expected to contain '1366x850')"
+  ],
+  "locale_outcome": "not_run",
+  "locale_not_run_reason": "locale is fixed at browser-context launch (Playwright persistent-context limitation); this session's context already launched in the project's default locale",
+  "locale_evidence_count": 0,
+  "locale_verdict": "INCONCLUSIVE",
+  "locale_verdict_note": "locale is fixed at browser-context launch (Playwright persistent-context limitation); this session's context already launched in the project's default locale",
+  "judge_prompts_len": 0
+}

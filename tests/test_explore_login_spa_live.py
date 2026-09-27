@@ -49,7 +49,7 @@ def _crawl(tmp_path: Path, base: str, password: str, *, sticky: bool = False) ->
         project="spa", run_kind=ApprovalKind.CRAWL, target=url, scope="local SPA fixture",
         max_actions=30, wall_clock_s=90.0, granted_by="test", granted_at="2026-09-17",
         expires_at="2099-01-01",
-    ))
+    ).sign())
     case = Case(project="spa", flow_id="login", kind=CaseKind.BEST, case_class=CaseClass.HAPPY,
                 title="sign in", steps=[
                     Step(order=1, action=Action.NAVIGATE, target=url),

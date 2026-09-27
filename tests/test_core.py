@@ -1,12 +1,15 @@
-"""Core utility tests. Redaction is a security control, so it is tested hardest."""
+"""Core utility tests. Redaction is a security control, so it is tested hardest.
+
+Encoded/obfuscated-spelling regression tests (AT-347/AT-352/AT-356, three fix
+cycles) live in test_redact_obfuscation.py; core.ids tests live in
+test_ids.py -- both split out here in AT-352 cycle 3 when this file crossed
+the C2 300-line cap.
+"""
 
 from __future__ import annotations
 
-import time
-
 import pytest
 
-from autotester.core.ids import content_hash, content_id, run_id, ulid
 from autotester.core.redact import (
     MASK,
     Redactor,
@@ -14,28 +17,6 @@ from autotester.core.redact import (
     has_placeholder,
     placeholder_keys,
 )
-
-
-def test_content_hash_ignores_key_order() -> None:
-    assert content_hash({"a": 1, "b": 2}) == content_hash({"b": 2, "a": 1})
-
-
-def test_content_id_is_prefixed_and_stable() -> None:
-    first = content_id("case", {"x": 1})
-    assert first.startswith("case_")
-    assert first == content_id("case", {"x": 1})
-
-
-def test_ulids_are_unique_and_time_ordered() -> None:
-    ids = [ulid() for _ in range(50)]
-    assert len(set(ids)) == 50
-    assert all(len(i) == 26 for i in ids)
-    # Ordering is by the 10-char millisecond prefix; ids from the same
-    # millisecond are unordered by design (the remaining 16 chars are random).
-    time.sleep(0.002)
-    later = ulid()
-    assert later[:10] >= max(i[:10] for i in ids)
-    assert run_id().startswith("run_")
 
 
 def test_redactor_masks_secret_values_anywhere_in_text() -> None:

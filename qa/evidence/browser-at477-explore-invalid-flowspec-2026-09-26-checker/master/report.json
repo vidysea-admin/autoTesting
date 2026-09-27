@@ -1,0 +1,38 @@
+{
+  "target": "master (origin/master 67b0df3, pre-fix)",
+  "steps": [
+    {
+      "step": "GET crawls list (no crawl yet)",
+      "status": 200,
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\master\\01-crawls-list-empty.png"
+    },
+    {
+      "step": "POST /explore (first crawl, no flowspec yet -- should behave normally, pre-existing bug needs a flowspec to trigger)",
+      "final_url": "http://127.0.0.1:8793/projects/covbadspec/crawls/crawl_01M3DR7XYWMP6RCR1CXZ2V4S40",
+      "console_errors_this_step": 0,
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\master\\02-after-first-explore.png"
+    },
+    {
+      "step": "corrupt flowspec.json on disk",
+      "written": true
+    },
+    {
+      "step": "GET the same crawl page again (flowspec now broken) -- expect 500",
+      "status": 500,
+      "console_errors_this_step": 1,
+      "body_snippet": "Internal Server Error",
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\master\\03-crawl-page-broken-flowspec-500.png"
+    },
+    {
+      "step": "GET crawls list again",
+      "status": 200
+    },
+    {
+      "step": "POST /explore (second crawl, flowspec broken, crawl already saved) -- expect 500",
+      "explore_response_status": 500,
+      "console_errors_this_step": 1,
+      "final_url_after": "http://127.0.0.1:8793/projects/covbadspec/explore",
+      "screenshot": "D:\\autoTesting\\qa\\evidence\\browser-at477-explore-invalid-flowspec-2026-09-26-checker\\master\\04-after-second-explore-broken-flowspec-500.png"
+    }
+  ]
+}

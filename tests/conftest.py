@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import functools
 import http.server
+import os
 import sys
 import threading
 from collections.abc import Callable, Iterator
@@ -21,6 +22,38 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from regression_proof import _NoCacheHandler
+
+_APPROVAL_KEY_ENV = "AUTOTESTER_APPROVAL_KEY"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _approval_signing_key() -> Iterator[None]:
+    """AT-110: every `RunApproval` is now signed with an HMAC keyed from
+    `AUTOTESTER_APPROVAL_KEY`. Setting it here, for every test, means the many
+    existing fixtures across the suite that grant a fixture approval
+    (`crawl_fake.grant_crawl_approval`, `test_consent.approval()`, ...) need
+    only add `.sign()` at the construction site — the key itself is never a
+    per-file concern.
+
+    SESSION-scoped and plain `os.environ` rather than the (function-scoped
+    only) `monkeypatch` fixture: several fixtures that sign an approval during
+    their own setup are themselves `scope="module"` (e.g.
+    `test_explore_modal.py::panel_crawl`), and pytest instantiates
+    higher-scoped fixtures BEFORE function-scoped ones for the same test — a
+    function-scoped autouse fixture had already set the key too late for them
+    (measured: `SigningKeyMissing` from inside a module-scoped fixture's own
+    `.sign()` call). `setdefault` leaves an already-exported real value alone,
+    mirroring `core.env.load_repo_env`'s "existing environment variables win".
+    Deliberately NOT the real `.env` (`PYTEST_CURRENT_TEST` already keeps
+    `core.env.load_repo_env` from touching it): a test that wants to exercise
+    the "no key configured" refusal uses the function-scoped `monkeypatch`
+    fixture's `delenv("AUTOTESTER_APPROVAL_KEY")` over this — `monkeypatch`
+    restores whatever was there before, session-set or not."""
+    had_it = _APPROVAL_KEY_ENV in os.environ
+    os.environ.setdefault(_APPROVAL_KEY_ENV, "test-only-signing-key-never-a-real-secret")
+    yield
+    if not had_it:
+        os.environ.pop(_APPROVAL_KEY_ENV, None)
 
 
 @pytest.fixture(scope="session")

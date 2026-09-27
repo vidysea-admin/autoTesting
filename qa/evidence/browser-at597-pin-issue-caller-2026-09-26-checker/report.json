@@ -1,0 +1,48 @@
+{
+  "steps": [
+    {
+      "step": "issues page shows pin link",
+      "ok": true,
+      "detail": "count=1"
+    },
+    {
+      "step": "navigated to pin form",
+      "ok": true,
+      "detail": "http://127.0.0.1:8597/projects/liveproj/issues/iss_5ead9bfd4897/pin"
+    },
+    {
+      "step": "all-blank submit returns 400",
+      "ok": false,
+      "detail": "status=303"
+    },
+    {
+      "step": "filled submit -> redirect to cases",
+      "ok": true,
+      "detail": "http://127.0.0.1:8597/projects/liveproj/cases"
+    },
+    {
+      "step": "cases page shows pinned case",
+      "ok": false,
+      "detail": "count=0"
+    },
+    {
+      "step": "issues page shows pinned pill, no more pin link",
+      "ok": true,
+      "detail": "pill_count=1 pin_link_count=0"
+    },
+    {
+      "step": "delete pinned case refused with 409",
+      "ok": true,
+      "detail": "status=409"
+    },
+    {
+      "step": "case still listed after refused delete",
+      "ok": false,
+      "detail": "count=0"
+    }
+  ],
+  "console_error_count": 1,
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ]
+}

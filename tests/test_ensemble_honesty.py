@@ -125,7 +125,8 @@ class _NamedFakeProvider(Provider):
     def available(self) -> bool:
         return self._has_credential
 
-    def see_video(self, path: Path, prompt: str, schema, options=None):
+    def see_video(self, path: Path, prompt: str, schema, options=None, *,
+                  prompt_file=None, fed_id=None):
         return VideoObservation(screens=[ObservedScreen(name="Login", t_start=0)])
 
 

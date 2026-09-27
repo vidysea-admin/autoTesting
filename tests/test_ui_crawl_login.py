@@ -215,7 +215,7 @@ def test_a_ui_started_crawl_maps_screens_behind_the_login_in_a_real_browser(
         project="demo", run_kind=ApprovalKind.CRAWL, target=f"{base}/app/dashboard.html",
         scope="local login fixture in the test suite", max_actions=60, wall_clock_s=120.0,
         granted_by="test", granted_at="2026-09-16", expires_at="2099-01-01",
-    ))
+    ).sign())
 
     response = TestClient(app).post("/projects/demo/explore", data={
         "max_screens": "10", "max_actions": "60", "wall_clock_s": "120", "max_depth": "4",

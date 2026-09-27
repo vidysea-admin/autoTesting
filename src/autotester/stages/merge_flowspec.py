@@ -164,12 +164,15 @@ def _answered_gap_ids(spec: FlowSpec) -> dict[str, str | None]:
     # `url_template` is the one place a URL becomes a screen-identity path
     # (coverage.md V1) — a request is judged answered by exactly the rule that
     # judged it unanswered, and it is idempotent, so a stored host-ful pattern
-    # and a fresh URL normalise to the same thing (AT-287).
+    # and a fresh URL normalise to the same thing (AT-287). `fold_index=True`
+    # (AT-618): `stages/coverage.py::_path_of` folds when it OPENS a gap, so
+    # this must fold identically when it CLOSES one, or an index-first gap
+    # never resolves even after the answering video lands.
     by_path: dict[str, str | None] = {}
     for screen in spec.screens:
         if not screen.url_pattern:
             continue
-        path = url_template(screen.url_pattern, keep_host=False)
+        path = url_template(screen.url_pattern, keep_host=False, fold_index=True)
         by_path.setdefault(path, screen.source_ref.source_id if screen.source_ref else None)
     return {
         content_id("gap", {"p": spec.project, "k": kind, "s": path}): source

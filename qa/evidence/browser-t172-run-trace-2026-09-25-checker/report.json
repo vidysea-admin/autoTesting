@@ -1,0 +1,18 @@
+{
+  "unit": "t172-run-trace",
+  "date": "2026-09-25",
+  "checker": "concurrent-checker",
+  "url": "http://127.0.0.1:8033/projects/demo/runs/run_ui_demo",
+  "server": "uv run uvicorn autotester.ui.app:app --host 127.0.0.1 --port 8033, run from the worktree with AUTOTESTER_ROOT pointed at a seeded scratch root",
+  "seed": "project 'demo' + run 'run_ui_demo' with trace.jsonl written via the unit's own core.trace.TraceWriter (one StageSpan, one LLMSpan), LLMSpan.fed_id deliberately built from a real secret value bound to a populated Redactor to prove the UI never surfaces it",
+  "result": {
+    "http_status": 200,
+    "trace_card_rendered": true,
+    "stage_row": ["ingest", "done", "3.00s"],
+    "llm_row": ["agent", "anthropic:claude-sonnet-5", "1.42s", "$0.0010"],
+    "raw_secret_in_dom": false,
+    "console_errors": 0,
+    "console_warnings": 0
+  },
+  "note": "This seed used an explicitly-populated Redactor passed to TraceWriter, matching the unit's own tests -- NOT the default StageContext auto-wiring (which the checker separately proved leaves the Redactor empty, see VERDICT). The UI panel itself is a correct read-only view over trace.jsonl; the redaction gap is upstream of this page, in how TraceWriter is constructed when a run is actually driven end to end."
+}

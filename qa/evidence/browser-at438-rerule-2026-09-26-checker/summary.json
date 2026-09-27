@@ -1,0 +1,21 @@
+{
+ "counts": {
+  "OLD": {
+   "FN": 26,
+   "FP": 0,
+   "total": 70
+  },
+  "C3": {
+   "FN": 2,
+   "FP": 6,
+   "total": 70
+  },
+  "MASTER": {
+   "FN": 2,
+   "FP": 6,
+   "total": 70
+  }
+ },
+ "u14b_old_yes_c3_no": [],
+ "u14b_old_yes_master_no": []
+}

@@ -38,14 +38,25 @@ def test_the_guard_recognises_the_shapes_it_exists_to_catch() -> None:
         "uv run pytest tests/test_x.py |& true",
         "echo pytest tests/test_x.py",                 # the word, not the program
         "true # pytest tests/test_x.py",               # a comment containing it
-        # AT-161 -- an ALWAYS_TRUE segment anywhere, not only as `|| true`:
-        # `;` and `&&` both let a TRAILING no-op decide the exit code, which
-        # a plain `any(_is_task_specific(seg))` over the segments never saw.
+        # AT-161 -- an ALWAYS_TRUE segment as the LAST `;`-group decides the
+        # exit code, which a plain `any(_is_task_specific(seg))` over a
+        # flattened split never saw.
         "uv run pytest tests/test_x.py; true",
-        "uv run pytest tests/test_x.py && true",
         "uv run pytest tests/test_x.py; :",
         "uv run pytest tests/test_x.py; exit 0",
-        "uv run pytest tests/test_x.py && exit 0",
+        # AT-359 -- the same `;` shape, but the trailing no-op is not one of
+        # the three ALWAYS_TRUE literals: any always-succeeding command
+        # (echo, a bare ls in an existing repo) as the LAST `;`-segment
+        # equally masks the real segment's exit code.
+        "uv run pytest tests/test_x.py; echo done",
+        "uv run pytest tests/test_x.py; ls",
+        # AT-359 cycle 2 (checker FAIL) -- `exit` terminates the shell
+        # immediately; a LEADING `exit 0` hides a task-specific segment
+        # behind it just as effectively as `|| true` does, across both
+        # separators. A TRAILING `exit 0` (below, in `accepted`) is fine --
+        # nothing follows it to hide.
+        "exit 0 && uv run pytest tests/test_x.py",
+        "exit 0; uv run pytest tests/test_x.py",
     ]
     for command in rejected:
         assert not is_capable_of_failing(command), f"accepted an unfailable check: {command!r}"
@@ -62,6 +73,13 @@ def test_the_guard_recognises_the_shapes_it_exists_to_catch() -> None:
         "uv run python src/autotester/tools/verify.py",
         "uv run pytest tests/test_a.py tests/test_b.py",
         "uv run python -m pytest tests/test_x.py",
+        # AT-359 -- `&&` propagates the FIRST failure, so a trailing
+        # ALWAYS_TRUE segment can never mask an earlier task-specific
+        # segment's failure the way a trailing `;`-segment can. These two
+        # were wrongly rejected under AT-161's flattened ;/&& split; real
+        # shell semantics accepts them.
+        "uv run pytest tests/test_x.py && true",
+        "uv run pytest tests/test_x.py && exit 0",
     ]
     for command in accepted:
         assert is_capable_of_failing(command), f"rejected a legitimate check: {command!r}"

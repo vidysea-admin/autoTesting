@@ -174,3 +174,49 @@ def test_a_screen_learned_from_a_video_is_not_a_permanent_gap() -> None:
     results = [make_result("case_1", "https://demo.test/students/99")]
 
     assert diff_coverage(spec, results) == []
+
+
+# -- AT-618: the index.html fold must hold at every coverage seam, not just
+#    node identity (screen_identity.node_from already folded) ---------------
+
+def test_diff_crawl_folds_an_index_html_node_against_a_slash_pattern() -> None:
+    """`coverage._path_of` must fold identically to `screen_identity.node_from`
+    and `urls.screen_url_pattern` — before AT-618 it did not, so a crawl node
+    whose `url_example` ends in `index.html` was reported as a gap against a
+    spec screen pinned at the folded `/`, even though both are the same page."""
+    spec = make_spec("/")
+    assert diff_crawl(spec, [make_node("/index.html")]) == []
+
+
+def test_index_first_crawl_then_a_slash_visit_is_not_a_gap() -> None:
+    """AT-618, reproduced end to end the way the checker measured it: node
+    identity already folded (`screen_identity.node_from`), but
+    `explore_merge.screen_from` derived `Screen.url_pattern` from whichever
+    node's unfolded `url_example` the dedupe happened to keep — so an
+    index-first crawl persisted `Screen.url_pattern == '/index.html'`, and a
+    run that only ever visited '/' was reported as a false CoverageGap even
+    though the crawl and the run saw the same page."""
+    from autotester.schema.screen_graph import PageObservation
+    from autotester.stages.explore_merge import screen_from
+    from autotester.stages.screen_identity import node_from
+
+    node = node_from(PageObservation(url="https://app.test/index.html"), "crawl_1", "pathlynks",
+                     depth=0)
+    spec = FlowSpec(project="pathlynks", screens=[screen_from(node)])
+    results = [make_result("case_1", "https://app.test/")]
+
+    assert diff_coverage(spec, results) == []
+
+
+def test_slash_first_crawl_then_an_index_html_visit_is_not_a_gap() -> None:
+    """The same seam, the other order — coverage.md V1 requires both sides to
+    normalise the same way regardless of which form the crawl saw first."""
+    from autotester.schema.screen_graph import PageObservation
+    from autotester.stages.explore_merge import screen_from
+    from autotester.stages.screen_identity import node_from
+
+    node = node_from(PageObservation(url="https://app.test/"), "crawl_1", "pathlynks", depth=0)
+    spec = FlowSpec(project="pathlynks", screens=[screen_from(node)])
+    results = [make_result("case_1", "https://app.test/index.html")]
+
+    assert diff_coverage(spec, results) == []

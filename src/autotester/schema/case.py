@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from autotester.core.ids import content_id
 from autotester.schema.base import Artifact
@@ -30,6 +30,30 @@ class Case(Artifact):
     rubric_ref: str | None = None
     script_ref: str | None = None
     status: CaseStatus = CaseStatus.PROPOSED
+    pinned: bool = Field(
+        default=False,
+        description="AT-585: born from a confirmed Issue (stages/issues.py::"
+                     "pin_issue_as_case). A pinned case is included in every "
+                     "regression run (it is just another row `list_cases()` "
+                     "returns — no run-time filtering exists to bypass) and "
+                     "`ProjectStore.delete_case` refuses to remove it. This is "
+                     "deliberately NOT a priority system: T-178 (p0-p3 + human "
+                     "pruning before LLM spend) is expected to subsume `pinned` "
+                     "with `priority == p0` once it lands, at which point this "
+                     "flag becomes redundant and can be retired in that unit.",
+    )
+    pinned_issue_id: str | None = Field(
+        default=None,
+        description="Traceability to the Issue this case was pinned from. "
+                     "Never a new CaseClass member -- D-005/D-014 keep "
+                     "CaseClass closed; Issue stays a separate artifact.",
+    )
+
+    @model_validator(mode="after")
+    def _pinned_issue_id_needs_the_flag(self) -> Case:
+        if self.pinned_issue_id and not self.pinned:
+            raise ValueError("pinned_issue_id is set but pinned is False")
+        return self
 
     def model_post_init(self, _context: object) -> None:
         if not self.id:

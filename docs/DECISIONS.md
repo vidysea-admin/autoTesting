@@ -974,3 +974,220 @@ register seven units for the add-ons and competitor features Umesh chose.
 **Approved-by:** Umesh -- AskUserQuestion option "Haan, Umesh approve (Recommended)", 2026-09-24 (qa/gates/d042-deep-agents.md).
 
 **Links:** D-041; D-002; T-167; T-170; T-172; T-175; T-177; T-179; T-180; T-181; qa/gates/d042-deep-agents.md; umesh/operating-brain/wiki/patterns/agentic-architecture-standard.md; umesh/operating-brain/wiki/concepts/krishnaik/deep-agents.md
+
+## D-043 | 2026-09-25 | type: decision | status: ACTIVE
+
+**What:** Scope core-invariants.md C8's prompt-location line to the T-175 migration. C8 said "Prompts
+live in `src/autotester/prompts/*.md` as versioned files, never inline string literals." Since T-175
+merged (9b3fd5e), four prompts -- grade, expand-case, ingest-video, video-issues -- live as
+`src/autotester/skills/<name>/SKILL.md` and are loaded through `providers.base.load_skill_prompt`;
+the remaining prompts (e.g. relitigation_v1.md, agent_fix_v1.md) still live in `prompts/*.md`. C8 now
+names both locations. The invariant's substance is unchanged: every prompt is a versioned file, never
+an inline string literal.
+
+**Why:** D-041 (Approved-by Umesh, 2026-09-24) decided prompts become SKILL.md (point 1 "Skills:
+SKILL.md"; point 6 "T-175 | prompts become SKILL.md"), but its Changes-authorized did not name
+qa/contracts/core-invariants.md, so the contract was left describing a location the four migrated
+prompts no longer use. The t175 checker ruled the migration authorized (not a C8 violation) and
+proposed scoping the prose; under the Lab Protocol a contract edit needs an authorizing entry, so this
+entry records the consequence of D-041 rather than a new direction. It weakens nothing: the
+never-inline rule and the Provider seam are untouched, and the loader fails loudly on a missing or
+malformed skill (verified in the t175 verdict), so a prompt can never silently become empty.
+
+**Result:** core-invariants.md C8 prompt line names `prompts/*.md` and `skills/<name>/SKILL.md` as
+the two versioned-file locations, plus one amendment-log row. No src/ or test change. doctor clean.
+
+**Changes-authorized:** qa/contracts/core-invariants.md (C8 prompt-location line + one amendment-log
+row, by the checker). No enforcement path.
+
+**Links:** D-041; T-175; qa/verdicts/t175-prompt-skills.md; AT-563.
+
+## D-044 | 2026-09-25 | type: decision | status: ACTIVE
+
+**What:** Scope execute.md E4's evidence clause to the case being run. E4 said the returned
+`RawResult` carries "every `Evidence` the session recorded". Since at576-577 merged (8e50efc), the
+serial route reuses one `BrowserSession` across several cases, and `run_case` returns only the
+evidence recorded from its own start index (`evidence_start`, AT-577). The network assertion reads
+the same scope (AT-578). E4 now reads "every `Evidence` recorded during this case".
+
+**Why:** The old wording, read literally, requires exactly the defect AT-577 fixed: case 2's result
+carrying case 1's screenshots, so a judge grades on another case's pages. The at576-577 builder
+reported the stale wording through qa/feedback-inbox.md, and the checker PASSed the unit (cycle 2)
+with the per-case scope proven in a real browser. Under the Lab Protocol a contract edit needs an
+authorizing entry. This entry records the consequence of that fix and gives no new direction. It
+tightens the criterion: a result that carries evidence from outside its own case now violates E4.
+
+**Result:** qa/contracts/execute.md E4 evidence clause reworded, plus one amendment-log row. No src/
+or test change. doctor clean.
+
+**Changes-authorized:** qa/contracts/execute.md (E4 evidence clause + one amendment-log row, by the
+checker). No enforcement path.
+
+**Links:** AT-577; AT-578; qa/verdicts/at576-577-serial-runs.md (cycle 2 PASS); merge 8e50efc.
+
+## D-045 | 2026-09-26 | type: decision | status: ACTIVE
+
+**What:** Add two tightening criteria from the checker's goal-coverage review of the 2026-09-25 counselor-tool meeting.
+(1) qa/contracts/execute.md E6: a case whose class names an execution condition (VIEWPORT_MOBILE, LOCALE_I18N) must
+run under that condition, or be recorded as not run. It must never produce a PASS from a default-condition run.
+(2) qa/contracts/report-export.md RE6: both exports carry, for every failed or inconclusive verdict, each failure's
+criterion, reason and fix_hint, plus the case's own steps as repro, verbatim from the stored artifacts.
+
+**Why:** Both close gaps where AutoTester currently misleads the people it reports to.
+- **AT-581:** mobile and locale cases are generated but run at a hard-coded 1366x850 desktop viewport in the default
+  locale (browser/launch.py:30), so a PASS on them is a false pass. That is exactly the false-positive the north star
+  counts.
+- **AT-582:** the judge already writes a reason and a fix_hint (schema/verdict.py:54-62), but the developer-facing
+  exports drop them. The meeting asked for exactly this: "tell the development team what broke and how to fix it".
+
+Both only add duties (RE1's "verbatim, never recomputed" still holds for the new fields), and neither weakens an
+existing criterion. So this records a tightening, not a new direction. The direction-changing items from the same
+review (user personas plus advisory UX judging; run video) are HUMAN_GATEs for Umesh, not part of this entry.
+
+**Result:** execute.md gains E6 and report-export.md gains RE6, each with one amendment-log row naming the issue that
+tracks the current gap (AT-581, AT-582). No src/ or test change. doctor clean.
+
+**Changes-authorized:** qa/contracts/execute.md (new E6 + one amendment-log row); qa/contracts/report-export.md (new
+RE6 + one amendment-log row); both by the checker. No enforcement path.
+
+**Links:** AT-581; AT-582; AT-583..AT-589 (same review); plan you-are-the-checker-cozy-stardust.md.
+
+## D-046 | 2026-09-26 | type: decision | status: ACTIVE
+
+**What:** Add core-invariants criterion C11: "Every third-party import is a declared dependency". It is checked by the new `autotester doctor` check `check_dependencies_declared` (src/autotester/doctor.py:142).
+
+**Why:** AT-130 showed that `google-genai` (and later `starlette`) were imported directly but resolved only as transitive dependencies of another package. One upstream change would have broken the provider layer with no warning. The at130-genai-dep unit made the rule machine-checked (checker PASS cycle 1, merged 235fdd5), but no contract named it, so a later edit could remove the check without failing any criterion. This is a tightening: it adds a duty and weakens nothing.
+
+**Result:** qa/contracts/core-invariants.md gains C11 plus one amendment-log row. The doctor check's known over-reach, which flags TYPE_CHECKING-only and try/except-ImportError optional imports as hard dependencies, is tracked as AT-590 and named in C11 as a known false-positive class, not a licence.
+
+**Changes-authorized:** qa/contracts/core-invariants.md (new C11 + one amendment-log row), by the checker. No enforcement path.
+
+**Links:** AT-130; AT-590; qa/verdicts/at130-genai-dep.md; merge 235fdd5.
+
+## D-047 | 2026-09-26 | type: decision | status: ACTIVE
+
+**What:** The checker authors qa/contracts/loop-status.md. It gives `autotester loop-status` its first contract, codifying four behaviours:
+- LS1: what `--strict` exits non-zero for.
+- LS2: every structured anomaly is rendered.
+- LS3: write-order corruption is report-only.
+- LS4: loop-status stays out of doctor.
+
+LS3 records Umesh's answer to qa/gates/at610-strict-out-of-order.md: "A, keep report-only", 2026-09-26, recorded in 7fce333.
+
+**Why:** Three units (at399, at424, at592) were judged against no contract that names loop-status. The at592 manifest says so and asks the checker to decide whether a contract is warranted. It is, because each of those units pinned an exit-code or rendering rule that a later unit could silently undo.
+
+The at610 answer is the fourth rule. `out_of_order` is counted over file order, but liveness is judged from the sorted credible ticks (loop_status.py:245 vs :251), so write-order corruption never hides an outage. Gating `--strict` on it would add a false alarm, for example two sessions with skewed clocks, and no safety.
+
+LS1, LS2 and LS4 describe behaviour already shipped and tested (tests/test_loop_status_integrity.py), so they add no new duty. LS3 pins a behaviour the code already has; the maker's unit at610-strict-out-of-order-pin adds the test. None of this weakens an existing criterion.
+
+**Result:** New file qa/contracts/loop-status.md, ACTIVE, with an init amendment-log row. No src/ or test change by the checker. AT-610 closes when the pinning unit passes and merges.
+
+**Changes-authorized:** qa/contracts/loop-status.md (new contract, authored by the checker). No enforcement path.
+
+**Links:** AT-610; AT-592; AT-424; AT-399; AT-368; qa/gates/at610-strict-out-of-order.md; 7fce333; unit at610-strict-out-of-order-pin.
+
+## D-048 | 2026-09-26 | type: decision | status: ACTIVE
+
+**What:** Umesh answered 12 open HUMAN_GATEs in one sitting on 2026-09-26, through AskUserQuestion in the checker session. The checker raised them at his request ("jo jo chaiyee mujhe properly raise krkee maang lee"). Each answer is recorded verbatim in its gate file. This entry authorizes the changes they imply.
+
+**Tests and detectors**
+- **at438 = a+b+c.** U14(b) is judged against the pre-unit detector. The checker re-scores cycle 3 on that baseline. AT-453 becomes its own unit, capped at 2 cycles. AT-454 is a documented known limitation.
+- **at416 = B.** The held both-directions candidate (wave/at408-416-scroll-reach) becomes a checkable unit. It needs real-Chromium Mode D plus the 50-shape scroll-invariance corpus. This is not the checker's recommendation (A); Umesh chose B.
+
+**ERP**
+- **erp-credentials = provide.** Umesh enters a TEST account himself in the UI. The keys are verified by name only, never by value.
+- **t135 = B.** One Analyze re-run on erp, approved for that single vision call.
+
+**Product direction**
+- **meeting-user-persona-ux-judging = A.** An advisory UX track that never changes PASS/FAIL.
+- **meeting-run-video-scope = A.** Record video on FAIL or inconclusive only, keep the last 20, and mask secrets as in screenshots.
+
+**Process**
+- **at383 = C.** Session-start hook now; the shared sweep routine later.
+- **at147 = C.** An expiry date means the end of that day, for new approvals only.
+- **at218 = 2.** Every new guard ships with a recorded falsification proof.
+- **commit-before-verdict = C.** Unit branch before check; merge to master only after a PASS.
+- **at520 = 3.** scripts/ stays outside the numeric caps and the duplicate-definition check.
+- **at516 = (c).** A stale evidence spec stays byte-intact and gets a "stale on purpose" tag.
+
+**Why:** These are product-direction and process choices that only the Approver can make. Several had waited since 2026-09-09. Writing all twelve down in one entry lets the maker build from them and the checker fold contract criteria against a single authorizing record, instead of from chat memory.
+
+**Result:**
+- All 12 gate files carry a dated Answered line.
+- The maker turns them into goal tasks: at416-B check, AT-453 unit, at147-C, at383-A hook, at516-c tagging, a persona/UX track, run video, the t135 Analyze re-run, and T-122 once the keys are present.
+- The checker folds the matching contract criteria. Criteria for units not yet built are folded when each unit's contract is written.
+
+**Changes-authorized:**
+- qa/hooks/mc-sessionstart.ps1: call `autotester loop-status --strict` at session start and print its report (at383 part A). This is an enforcement path.
+- qa/contracts/core-invariants.md, by the checker:
+  - C2: an explicit sentence that scripts/ is deliberately outside the caps (at520).
+  - C7: new guards carry a recorded falsification proof (at218).
+  - C10: unit branch before check, merge only after a PASS (commit-before-verdict).
+- qa/contracts/loop-status.md: an LS5 for the session-start consumer, once it is built.
+- qa/contracts/consent.md: the at147 end-of-day expiry for new approvals.
+- New or existing contracts for the persona/UX track and run video, written by the checker when their goal tasks exist.
+- The at516 tagging rule, in the contract that owns evidence specs.
+- The src/ and test changes each of those units needs, through the normal maker-checker handshake.
+
+**Approved-by:** Umesh (AskUserQuestion answers, checker session, 2026-09-26; the at383 option he chose names the session-start hook explicitly)
+
+**Links:** qa/gates/{at438-u14b-baseline, at416-clip-vs-reach-direction, erp-credentials, meeting-user-persona-ux-judging, meeting-run-video-scope, at383-loop-status-consumer, at147-expiry-end-of-day, at218-vacuous-guard-class, commit-before-verdict, at520-scripts-line-cap, at516-evidence-spec-splitting-policy, t135-url-pattern-data-migration}.md; AT-438; AT-453; AT-454; AT-416; AT-379; AT-583; AT-584; AT-587; AT-383; AT-368; AT-147; AT-150; AT-218; AT-520; AT-488; AT-516; T-122; T-145; T-135; D-047
+
+## D-049 | 2026-09-26 | type: decision | status: ACTIVE
+
+**What:** The checker amends qa/contracts/ui.md U14 to carry out Umesh's at438 gate answer, a+b+c (D-048):
+- U14(b): "pre-change detector" now means the detector at the unit's branch point, the parent commit before its first cycle. It never means a failed or committed earlier cycle of the same unit.
+- U14(c): the disclosed blind set gains AT-454, a display:contents child slotted through a mode:"closed" shadow root that is reported although it does not paint. It is filed, never charged.
+
+Under this baseline, at438-display-contents cycle 3 (9fc937d) is re-ruled PASS. AT-453 is split out as its own unit, capped at 2 cycles (gate option b), and stays open and charged. It is not added to the blind set.
+
+**Why:** Cycles 2 and 3 were charged under U14(b) against the cycle-1 probe c687b73. That probe itself FAILED (AT-442, high) and could never ship. The gate asked which baseline U14(b) means, and Umesh answered (a), the pre-unit detector.
+
+The checker re-measured in real headed Chromium (qa/evidence/browser-at438-rerule-2026-09-26-checker/): 70 layouts, run against 3 detector versions pulled from git.
+- Against c687b73^, cycle 3 and master drop zero texts the old detector reported.
+- False negatives: OLD 26, C3 2, MASTER 2. The remaining 2 are AT-453's A3/A4, which OLD also misses.
+- visual_order.js on master is byte-identical to 9fc937d.
+- An adversarial skeptic tried 16+ more shapes and could not refute this.
+
+This narrows what U14(b) charges. A later cycle may now lose ground an earlier rejected cycle of the same unit had gained, provided it never falls behind pre-unit master. That narrowing is named here deliberately, because it is exactly what gate option (a) chose. AT-453 is not lost: option (b) keeps it as its own charged unit.
+
+**Result:**
+- qa/contracts/ui.md: U14(b) and U14(c) are amended, with an amendment-log row.
+- qa/verdicts/at438-display-contents.md: gains a cycle-3 re-ruling section.
+- Ledger:
+  - AT-438, AT-449 and AT-450 flip to fixed, since 9fc937d is an ancestor of master.
+  - AT-454 becomes wontfix, a documented limitation that needs CDP-level shadow inspection.
+  - AT-453 stays open for its own unit.
+
+**Changes-authorized:** qa/contracts/ui.md U14(b) and U14(c) wording plus the amendment log (checker). No enforcement path.
+
+**Links:** D-048; qa/gates/at438-u14b-baseline.md; AT-438; AT-442; AT-449; AT-450; AT-453; AT-454; 9fc937d; c687b73; qa/evidence/browser-at438-rerule-2026-09-26-checker/
+
+## D-050 | 2026-09-26 | type: decision | status: ACTIVE
+
+**What:** The checker writes two contracts that D-048 authorized:
+- qa/contracts/persona-ux-advisory.md for T-190, criteria PU1-PU9;
+- qa/contracts/run-video.md for T-191, criteria V1-V8.
+
+It also amends qa/contracts/report-export.md RE3 with one named exception. A kept run video (EvidenceKind.VIDEO, T-191) is linked from the exported HTML by a path relative to the run directory, never embedded. The HTML stays self-contained for everything else: screenshots are still base64-embedded, and the page still opens with no server or network.
+
+**Why:**
+- D-048 fixed Umesh's two gate answers:
+  - meeting-user-persona-ux-judging = A: an advisory UX track that never changes PASS/FAIL;
+  - meeting-run-video-scope = A: record on FAIL or INCONCLUSIVE only, keep the last 20, mask secrets as in screenshots.
+- D-048 authorized the checker to write these contracts once the goal tasks existed. T-190 and T-191 now exist.
+- Each contract was drafted against the code and then critiqued by a fresh agent that opened every cited file:line.
+- A 15-20 minute recording cannot sensibly be base64-embedded in a portable HTML report. RE3 predates video evidence and did not anticipate it. Leaving RE3 as written would make T-191's V8 ungradeable.
+
+The exception narrows RE3 for video only. It is named here as a deliberate narrowing, not a silent one. Screenshot embedding and every other RE3 property are unchanged.
+
+**Result:** Two new ACTIVE contracts, each with an init amendment-log row. report-export.md RE3 gains the video-link exception plus an amendment-log row. No src/ or test change by the checker.
+
+**Changes-authorized:**
+- qa/contracts/persona-ux-advisory.md (new);
+- qa/contracts/run-video.md (new);
+- qa/contracts/report-export.md RE3 (the video-link exception) and its amendment log.
+
+No enforcement path.
+
+**Links:** D-048; T-190; T-191; AT-583; AT-584; AT-587; qa/gates/meeting-user-persona-ux-judging.md; qa/gates/meeting-run-video-scope.md

@@ -1,0 +1,35 @@
+{
+  "unit": "at576-577-serial-runs",
+  "cycle_checked": 2,
+  "head": "332d216",
+  "date": "2026-09-25",
+  "checker": "claude-opus-session (checker seat)",
+  "instrument": "playwright MCP driving a real Chromium; app = branch worktree via scratchpad/moded_launch_at562.py on 127.0.0.1:8778; AUTOTESTER_ROOT = scratchpad/at562-moded-root; fixture tests/fixtures/regression_site on 127.0.0.1:46671",
+  "harness_patches_disclosed": [
+    "judge only: rr.LangChainFallbackProvider -> CheckerJudge (MockProvider subclass), PASS 1/1 for every case. No real model call, no API key.",
+    "plan NOT pinned: free RAM ~1.4 GB, so plan_parallel_run chose n=1 (bound_by=budget) itself -> the serial path."
+  ],
+  "fixture": "Homepage loads = ENTRY case (index.html = base_url) + Login with correct credentials + Login page loads; secret RD_PASSWORD filled via {{SECRET:...}}",
+  "run": "run-01M3BQW3AY01WTHE99ZMRMB92H",
+  "assertions": {
+    "AT-576_no_500": "POST /projects/rd/run 303",
+    "run_json": {"parallel_n": 1, "parallel_bound_by": "budget"},
+    "results_saved": 3,
+    "verdicts_saved": 3,
+    "screenshot_paths": {
+      "case_8c1ec91abecf (entry)": ["case_8c1ec91abecf/01-step01-navigate.png"],
+      "case_cf844a2b645c": ["01-step01-navigate.png", "02-step02-fill.png", "03-step03-fill.png", "04-step04-click.png"],
+      "case_rd_loginpage": ["05-step01-navigate.png"]
+    },
+    "distinct_paths": "6 of 6; 6 PNG files on disk for 6 captured steps",
+    "entry_case_bytes": "d08a32ac (the index page) != f3a69799 (the login page) -- the cycle-1 overwrite is gone",
+    "AT-577_evidence_scoped": "each case carries only its own evidence; each run-view card lists only its own steps",
+    "run_view_images": "12/12 load",
+    "html_export": "200, 6 embedded PNGs",
+    "secret_value_in_run_dir": false,
+    "secret_value_in_run_view_dom": false,
+    "console_errors_this_page": 0
+  },
+  "screenshots": ["run-view.png"],
+  "verdict_effect": "PASS"
+}

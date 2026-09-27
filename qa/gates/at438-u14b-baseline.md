@@ -29,4 +29,4 @@ already missed before the unit.
 Reply in chat, e.g. `at438 a b c`, or `at438 none: <why>`. The maker appends
 `Answered: <ISO> — <choice> — <where>` below before acting.
 
-Answered: (pending)
+Answered: 2026-09-26T22:34:22+05:30 — a + b + c — Umesh via AskUserQuestion in the checker session. (a) U14(b) is judged against the detector as it was BEFORE the unit started, never against the unit's own failed drafts; (b) the checker re-scores cycle 3 under that baseline and AT-438 closes on it, AT-453 splits into its own unit capped at 2 cycles; (c) AT-454 (closed shadow root) is accepted as a documented known limitation.

@@ -66,3 +66,5 @@ restate a number that rots.
 ## Answer
 
 _(unanswered — append `Answered: <ISO date> — <choice> — <where>` below before acting)_
+
+Answered: 2026-09-26T22:34:22+05:30 — B — Umesh via AskUserQuestion in the checker session. Re-run the normal Analyze pipeline on the erp project (one vision-model run, approved by this answer for that single run) so the fix is proven end-to-end on stored data; A (migrate_url_patterns.py --write) is not chosen.

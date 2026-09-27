@@ -106,4 +106,4 @@ also address).
 
 **Opened:** 2026-09-18 (AT-520 build unit, measured before proposing).
 
-**Answered:** not yet.
+**Answered:** 2026-09-26T22:34:22+05:30 — Option 3 — Umesh via AskUserQuestion in the checker session. scripts/ stays outside the numeric caps (300-line file, 50-line function) and the duplicate-definition check; visibility through docs/MAP.md (already shipped). AT-520's remaining half closes as decided; AT-488 is no longer a cap violation.

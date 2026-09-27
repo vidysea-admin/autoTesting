@@ -1,29 +1,31 @@
 """Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history
-and report views live in `ui/routes_report.py`.
+and report views live in `ui/routes_report.py`. Serial-vs-parallel case
+execution lives in `ui/run_execution.py` (AT-567 -- split out to keep this
+file under the C2 line cap).
 """
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 
 from autotester.browser.secrets import SecretStore
-from autotester.browser.session import BrowserSession
 from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
 from autotester.providers.langchain_fallback import LangChainFallbackProvider
 from autotester.schema.case import Case
 from autotester.schema.enums import Action
 from autotester.schema.project import Project
-from autotester.schema.run import RawResult, Run
-from autotester.schema.verdict import Verdict
+from autotester.schema.run import Run
+from autotester.schema.run_state import StageCheckpoint, StageName
 from autotester.stages.coverage import diff_coverage, queue_requests
-from autotester.stages.run_case_pipeline import run_and_grade_case
+from autotester.stages.orchestrate import StageContext
+from autotester.stages.parallel_run import ParallelPlan, plan_parallel_run
 from autotester.store.project_store import ProjectStore
 from autotester.ui.helpers import _load_project_or_404
+from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
 
 router = APIRouter()
 
@@ -39,24 +41,6 @@ def _is_entry_case(case: Case, project: Project) -> bool:
     pipeline)."""
     return bool(case.steps) and case.steps[0].action is Action.NAVIGATE \
         and case.steps[0].target == project.base_url
-
-
-def _run_entry_case(
-    case: Case, project: Project, secrets: SecretStore, run_dir: Path, slug: str,
-    judge: LangChainFallbackProvider, run_id: str, store: ProjectStore,
-) -> tuple[RawResult, Verdict]:
-    """A dedicated, wiped-before-every-run profile so an entry-screen case is
-    always exercised from a genuinely logged-out state -- order-independent
-    (no "run this kind last" ordering hack needed) and cross-run-independent
-    (no stale login survives from a previous run)."""
-    entry_paths = ProjectPaths(f"{slug}-entry-test")
-    shutil.rmtree(entry_paths.profile_dir, ignore_errors=True)
-    session = BrowserSession(project, secrets, run_dir, entry_paths)
-    session.start()
-    try:
-        return run_and_grade_case(case, session, judge, run_id, store)
-    finally:
-        session.close()
 
 
 def _require_declared_values(project: Project, secrets: SecretStore, slug: str) -> None:
@@ -77,12 +61,47 @@ def _require_declared_values(project: Project, secrets: SecretStore, slug: str) 
         ))
 
 
+def _execute_with_trace(
+    store: ProjectStore, run_id: str, secrets: SecretStore, project: Project,
+    cases: list[Case], entry_flags: list[bool], run_dir: Path, paths: ProjectPaths,
+    slug: str, judge: LangChainFallbackProvider,
+) -> ParallelPlan:
+    """AT-562/AT-564: build this run's `StageContext` with the project's real
+    `SecretStore` (RT6 — a real, redacted `trace.jsonl`), attach it to the
+    judge so its LLM calls join that trace (RT4/RT5), decide this run's width
+    (PR1), execute the cases at that width, and record one EXECUTE stage span
+    covering the whole batch."""
+    ctx = StageContext(store=store, run_id=run_id, secrets=secrets)
+    judge.trace = ctx.trace
+    plan = plan_parallel_run(project)
+
+    started = ctx.clock()
+    if plan.n > 1:
+        _run_cases_in_parallel(
+            cases, entry_flags, plan, project, secrets, run_dir, slug, judge, run_id, store
+        )
+    else:
+        _run_cases_serially(
+            cases, entry_flags, project, secrets, run_dir, paths, slug, judge, run_id, store
+        )
+    assert ctx.trace is not None
+    ctx.trace.record_stage(StageCheckpoint(
+        stage=StageName.EXECUTE, status="done", started=started, finished=ctx.clock(),
+    ))
+    return plan
+
+
 @router.post("/projects/{slug}/run")
 def trigger_run(slug: str) -> RedirectResponse:
     """A real, synchronous run: the request waits for the browser to finish
     every case before redirecting to the report (RU1-RU4 — v1's honest
-    boundary, no background job queue). Calls the exact same
-    `run_and_grade_case` (stages/run_case_pipeline.py) a CLI script would."""
+    boundary, no background job queue). Runs every case through the same
+    resilient pipeline (stages/run_case_pipeline.py) whether serial or
+    parallel (AT-574) -- a CLI script that wants the un-guarded, self-grading
+    path still calls `run_and_grade_case` directly.
+
+    AT-562/AT-564: this is the live entry point wired to the T-172/T-173
+    machinery those goal-coverage gaps named -- see `_execute_with_trace`."""
     store, project = _load_project_or_404(slug)
     cases = store.list_cases()
     if not cases:
@@ -99,25 +118,14 @@ def trigger_run(slug: str) -> RedirectResponse:
     run_dir = paths.run_dir(run_id)
     entry_flags = [_is_entry_case(c, project) for c in cases]
 
-    session: BrowserSession | None = None
-    if not all(entry_flags):
-        session = BrowserSession(project, secrets, run_dir, paths)
-        session.start()
-    try:
-        for case, is_entry in zip(cases, entry_flags, strict=True):
-            if is_entry:
-                result, verdict = _run_entry_case(
-                    case, project, secrets, run_dir, slug, judge, run_id, store
-                )
-            else:
-                assert session is not None
-                result, verdict = run_and_grade_case(case, session, judge, run_id, store)
-            store.save_result(run_id, result)
-            store.save_verdict(run_id, verdict)
-    finally:
-        if session is not None:
-            session.close()
-    store.save_run(Run(id=run_id, project=slug, case_ids=[c.id for c in cases]))
+    plan = _execute_with_trace(
+        store, run_id, secrets, project, cases, entry_flags, run_dir, paths, slug, judge
+    )
+
+    store.save_run(Run(
+        id=run_id, project=slug, case_ids=[c.id for c in cases],
+        parallel_n=plan.n, parallel_bound_by=plan.bound_by,
+    ))
     _ask_for_what_it_did_not_recognise(store, run_id)
     return RedirectResponse(f"/projects/{slug}/report", status_code=303)
 

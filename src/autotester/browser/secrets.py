@@ -14,6 +14,7 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
+from autotester.core import env as core_env
 from autotester.core.redact import PLACEHOLDER_RE, Redactor, assert_no_raw_secrets
 from autotester.schema.project import Project, SecretRef
 
@@ -219,9 +220,32 @@ class SecretStore:
         rather than mid-step."""
         return bool(self._values.get(key))
 
-    def redactor(self) -> Redactor:
-        """A `Redactor` that masks every value in .env, declared or not (AT-004)."""
-        return Redactor(self._all_values())
+    def redactor(self, *, exclude: frozenset[str] = frozenset()) -> Redactor:
+        """A `Redactor` that masks every value in .env, declared or not (AT-004),
+        except any literal value named in `exclude`.
+
+        `exclude` exists for exactly one caller: `ui/helpers.py`'s submission-
+        guard join check (AT-086/AT-087), which needs an exempt field's own
+        already-stored value, or a declared-public value, to sit inside a
+        joined string as CONTEXT without matching itself -- every other value
+        stays masked. No other caller passes `exclude`, so `scrub`,
+        `guard_prompt`, and every redaction path outside that one join check
+        are unchanged (C5)."""
+        values = {k: v for k, v in self._all_values().items() if v not in exclude}
+        return Redactor(values)
+
+    def public_values(self) -> frozenset[str]:
+        """Values of the explicitly declared-public `.env` keys
+        (`core.env.PUBLIC_ENV_KEYS`) -- but ONLY when no OTHER, non-public key
+        on this machine's `.env` holds the identical value.
+
+        AT-086's hard boundary: declaring one key public must never exempt a
+        DIFFERENT key's value merely because the two happen to collide -- a
+        value is "public" only when its sole source is a declared-public key."""
+        values = self._all_values()
+        public = {v for k, v in values.items() if k in core_env.PUBLIC_ENV_KEYS}
+        other = {v for k, v in values.items() if k not in core_env.PUBLIC_ENV_KEYS}
+        return frozenset(v for v in public if v and v not in other)
 
     def scrub_optional(self, text: str | None) -> str | None:
         """`redactor().scrub(text)`, passing `None`/empty text through unchanged.

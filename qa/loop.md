@@ -50,7 +50,10 @@ Stop (named terminal states — see maker/SKILL.md "THE CONTINUATION RULE"):
 - `STALLED` — 3 fix cycles exhausted on the only available unit → dispatch `/agent-debugger`
   once, report, `stop: true`.
 - `EXHAUSTED` — a tick/token bound hit → diagnose, `stop: true`, report the bound honestly.
-- `BLOCKED` — environment prevents execution (plan mode, permission denial) → `ScheduleWakeup` 300s.
+- `BLOCKED` — environment prevents execution (plan mode, permission denial) → `ScheduleWakeup` 300s,
+  **max 6 consecutive BLOCKED ticks** (~30 min), then `stop: true` and report the block to Umesh — a
+  standing block must not wake the loop every 5 minutes forever (AT-566, sweep 2026-09-25).
+  `BLOCKED (classifier)` follows the same cap.
 - `PAUSED` — `qa/.paused` exists → `stop: true`; only `/maker resume` lifts it.
 
 Human gate: exactly which actions stop and ask Umesh first, per the project's own standing rules

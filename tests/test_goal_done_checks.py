@@ -20,6 +20,7 @@ healthy.
 from __future__ import annotations
 
 import json
+import re
 import shlex
 from pathlib import Path
 
@@ -100,18 +101,48 @@ def _is_task_specific(segment: str) -> bool:
     return False
 
 
+def _is_bare_exit(segment: str) -> bool:
+    """`exit`/`exit N` terminates the shell immediately -- nothing after it,
+    across ANY separator, ever runs (AT-359 cycle 2)."""
+    try:
+        parts = shlex.split(segment)
+    except ValueError:
+        return False
+    return len(parts) in (1, 2) and parts[0] == "exit"
+
+
+def _truncate_after_first_exit(command: str) -> str:
+    """Scan segments left to right across `;`/`&&` and cut after the first
+    bare `exit`: `exit 0 && X` / `exit 0; X` both exit 0 without X ever
+    running -- AT-100's shape wearing `exit` (checker FAIL, cycle 1). A
+    trailing `exit` (e.g. `pytest x.py && exit 0`) is untouched."""
+    parts = re.split(r"(;|&&)", command)
+    for i in range(0, len(parts), 2):
+        if _is_bare_exit(parts[i].strip()):
+            return "".join(parts[:i + 1])
+    return command
+
+
 def is_capable_of_failing(command: str) -> bool:
     """Can this `done_check` distinguish done from not-started?
 
-    `||` disqualifies the whole command; so does an ALWAYS_TRUE segment
-    ANYWHERE (AT-161) — `;`/`&&` both let a trailing no-op decide the exit
-    code, invisible to a plain `any()` over segments."""
+    `||` disqualifies the command anywhere; a leading/mid-chain bare `exit`
+    hides everything after it (`_truncate_after_first_exit`). Otherwise `;`
+    and `&&` score differently (AT-359): a `;`-sequence's exit status is its
+    LAST group's alone; a `&&`-chain propagates the FIRST failure, so any
+    task-specific segment in the group is enough regardless of what
+    follows. AT-161's flatten-and-any() missed a `;`-terminated `echo`/`ls`
+    and over-rejected `&& true` chains."""
     if "||" in command:
         return False
-    segments = [s.strip() for s in command.replace("&&", ";").split(";") if s.strip()]
-    if not segments or any(seg in ALWAYS_TRUE for seg in segments):
+    command = _truncate_after_first_exit(command)
+    groups = [g.strip() for g in command.split(";") if g.strip()]
+    if not groups:
         return False
-    return any(_is_task_specific(seg) for seg in segments)
+    last_group_segments = [s.strip() for s in groups[-1].split("&&") if s.strip()]
+    if not last_group_segments:
+        return False
+    return any(_is_task_specific(seg) for seg in last_group_segments)
 
 
 def waiver_of(task: dict) -> str:
@@ -242,6 +273,9 @@ def test_revised_goal_contract_is_registered() -> None:
         "T-179": (["T-170", "T-172", "T-175"], tests + "test_agent_layer.py"),
         "T-180": (["T-179"], tests + "test_agent_subagents.py"),
         "T-181": (["T-180"], tests + "test_agent_gain.py"),
+        "T-182": ([], tests + "test_viewport_locale_enact.py"),
+        "T-183": ([], tests + "test_report_export_reason.py"),
+        "T-184": ([], tests + "test_pinned_regression.py"),
     }
     # No CLI `-q`: pyproject.toml's addopts already sets it, and stacking a second one makes
     # pytest -qq, which prints no summary line at all (AT-503/AT-522, measured 2026-09-18).
@@ -249,8 +283,8 @@ def test_revised_goal_contract_is_registered() -> None:
     actual = {key: (by_id[key]["deps"], by_id[key]["done_check"]["cmd"]) for key in expected}
     assert actual == expected
     progress = data["progress"]
-    # D-040: T-170, T-171; D-041: T-172..T-178; D-042: T-179..T-181
-    assert progress["total"] == len(data["tasks"]) == 67
+    # D-040: T-170, T-171; D-041: T-172..T-178; D-042: T-179..T-181; D-045: T-182..T-184
+    assert progress["total"] == len(data["tasks"]) == 70
     for key in ("done", "in_progress", "pending", "blocked"):
         assert progress[key] == sum(task["status"] == key for task in data["tasks"])
     assert progress["percent"] == round(100 * progress["done"] / progress["total"])

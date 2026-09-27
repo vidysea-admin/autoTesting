@@ -1,0 +1,28 @@
+{
+  "mode": "checker Mode D — real visible browser (playwright MCP) against the at086-087 worktree app, isolated AUTOTESTER_ROOT per run",
+  "date": "2026-09-25",
+  "unit": "at086-087-exemption",
+  "actor": "supervising checker (topology B), in-session — replaces the subagent's LIVE-BROWSER: SKIP",
+  "instrument": "uv run uvicorn autotester.ui.app:app from D:/autoTesting/.worktrees/at086-087-exemption (HEAD 83e5507 + verdict commits); run 1 on 127.0.0.1:8034, run 2 on 127.0.0.1:8035; the SHIPPED core.env.PUBLIC_ENV_KEYS = {PATHLYNKS_USER_LOGIN_URL} (not monkeypatched); dummy *.example.test values only — no real Pathlynks URL or credential",
+  "runs": [
+    {
+      "root_env": "PATHLYNKS_USER_LOGIN_URL=https://portal.example.test/login ; SOME_OTHER_URL=https://other.example.test/login",
+      "scenarios": [
+        {"id": "A", "did": "filled the real /onboard form (slug portal, base_url = the declared-public value, allowed_domains portal.example.test) and clicked submit", "expected": "accepted (AT-086: a declared-public .env value may be a project's own base_url)", "observed": "redirected to /projects/portal (project page rendered)", "pass": true},
+        {"id": "B", "did": "onboarded slug other with base_url = the value of an UNDECLARED key (SOME_OTHER_URL)", "expected": "refused; the value is not echoed back", "observed": "HTTP 400; body does not contain 'other.example.test/login'; message tells the operator to declare it and use {{SECRET:KEY}}", "pass": true}
+      ],
+      "console_errors": 1,
+      "console_error_explained": "'Failed to load resource: 400 (Bad Request) @ /onboard' — the browser logging the refused submission's status; expected for scenario B, not a page defect"
+    },
+    {
+      "root_env": "PATHLYNKS_USER_LOGIN_URL=https://portal.example.test/login ; GEMINI_API_KEY=https://portal.example.test/login (same value, undeclared secret key)",
+      "scenarios": [
+        {"id": "C", "did": "onboarded slug portal with base_url = the value shared by the declared-public key AND an undeclared secret key", "expected": "refused — a declared-public key exempts only a value that appears EXCLUSIVELY under declared-public keys", "observed": "HTTP 400; projects/ directory empty afterwards (nothing stored)", "pass": true}
+      ],
+      "console_errors": 1,
+      "console_error_explained": "same 400 resource log for the refused submission"
+    }
+  ],
+  "observation_not_this_unit": "Refusals render as a raw FastAPI JSON body ({\"detail\": ...}) instead of a themed page. Reproduced identically on master via TestClient (400, application/json), so pre-existing — already ledgered as AT-439 (open). Not charged to this unit.",
+  "verdict": "Mode D PASS — the AT-086 accept path, the undeclared-key refusal, and the security-critical collision refusal all behave correctly in a real browser with the shipped public-key list; the only console errors are the expected 400 logs of refused submissions."
+}
