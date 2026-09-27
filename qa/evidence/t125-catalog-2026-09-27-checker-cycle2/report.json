@@ -1,0 +1,38 @@
+{
+  "unit": "t125-catalog",
+  "cycle": 2,
+  "date": "2026-09-27",
+  "actor": "checker (fresh subagent, own browser, own fixture -- built independently of the maker's manifest fixture)",
+  "server": "uv run uvicorn autotester.ui.app:app (bound worktree D:/autoTesting/.worktrees/t125-catalog, port 8971), AUTOTESTER_ROOT pointed at an isolated scratch data dir under the checker's own scratchpad, never the bound tree's own projects/ data. Server killed afterward (taskkill), verified stopped.",
+  "fixtures": [
+    {
+      "project": "demo-hybrid",
+      "shape": "ONE flow ('flow_hybrid') that both CLICKs 'Sign up with Google' AND FILLs the product's own password field with {{SECRET:HYBRID_PASSWORD}}; a second, credential-free flow ('flow_other') exists so the OAuth-vs-other split is not vacuous. HYBRID_PASSWORD is declared but never set in .env.",
+      "why_this_shape": "Directly tests the dispatch's third attack scenario: 'a flow whose OAuth signal is incidental... does its password key vanish from the auth rows that need it?'",
+      "url": "/projects/demo-hybrid/catalog",
+      "http_status": 200,
+      "console_errors": 0,
+      "console_warnings": 0,
+      "screenshot": "hybrid-catalog.png",
+      "observed": "auth_wrong_creds and auth_expired_session BOTH render the green 'runnable' pill, NOT a missing-credential warning, even though HYBRID_PASSWORD -- the ONLY secret this project declares, and the only credential the product's own login/signup path uses -- is never set. The OAuth sign-up carry-over pack row correctly renders 'missing credential -- set HYBRID_PASSWORD in the repo-root .env'.",
+      "root_cause": "_oauth_signup_flow_ids(spec) classifies 'flow_hybrid' as an OAuth flow (it has a CLICK step naming Google), so it is excluded from other_ids. other_ids reduces to {'flow_other'}, which has no FILL/secret steps at all, so _auth_secret_keys(spec, only=other_ids) returns []. missing_auth becomes empty, so _entry_for()'s `if case_class in _AUTH_CLASSES and missing_auth_keys` guard is False and the row reports runnable=True. The credential requirement is not scoped narrowly -- it is silently dropped.",
+      "severity_judgement": "high -- worse than the cycle-1 defect it replaces: cycle 1 told the operator an irrelevant action (misleading but visible); this tells the operator NOTHING is wrong (silent), and the case will actually fail when run because {{SECRET:HYBRID_PASSWORD}} has no value to substitute.",
+      "filed_as": "ISS-t125-3"
+    },
+    {
+      "project": "demo-twologin",
+      "shape": "TWO ordinary (non-OAuth) login flows -- 'flow_consumer' needing {{SECRET:CONSUMER_PASSWORD}}, 'flow_admin' needing {{SECRET:ADMIN_TOKEN}} -- neither set.",
+      "why_this_shape": "Tests the dispatch's first attack scenario: 'a spec with two sign-in flows needing different keys -- does an auth row now name a union again, just a smaller one?'",
+      "url": "/projects/demo-twologin/catalog",
+      "http_status": 200,
+      "console_errors": 0,
+      "console_warnings": 0,
+      "screenshot": "twologin-catalog.png",
+      "observed": "auth_wrong_creds and auth_expired_session both render 'missing credential -- set CONSUMER_PASSWORD, ADMIN_TOKEN in the repo-root .env' -- a union across both non-OAuth flows, narrower than cycle 1's whole-project union (no OAuth-only key leaks in) but still not scoped to the one flow a given adversarial run would actually exercise.",
+      "root_cause": "The OAuth/non-OAuth split is the only scoping the fix performs; _entry_for() has no per-flow granularity for the generic auth classes -- 'other_ids' is treated as one undifferentiated scope ('the product's own credential form'), which is false when a project genuinely has more than one non-OAuth credential-consuming flow.",
+      "severity_judgement": "medium -- not misleading in the sinister way ISS-t125-2/ISS-t125-3 are (both named keys ARE genuinely needed by SOME flow this case class covers), and is architecturally inherent to CT2's one-row-per-CaseClass model, which the manifest explicitly flagged as a design question for the checker to rule on rather than a hidden defect.",
+      "filed_as": "documented finding, no new issue filed -- see verdict EXPLANATION"
+    }
+  ],
+  "verdict_contribution": "Confirms ISS-t125-2's original 2-flow/2-secret scenario is fixed (re-verified against the maker's own capability-coverage tests). But the OAuth-vs-other binary split the fix introduces has its own scoping failure mode (demo-hybrid) that is more dangerous than what it replaced -- a live regression this checker is filing as ISS-t125-3, keeping CT5/CT8 FAILing this cycle for a new reason."
+}
