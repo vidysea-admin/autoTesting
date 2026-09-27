@@ -4,10 +4,12 @@
 **Goal task:** T-125 — the test catalog: what applies, what is runnable, what is blocked and why
 (+ cheap->expensive ordering).
 **Date:** 2026-09-27
-**Fix cycle:** 2 of max 3
+**Fix cycle:** 3 of max 3 (the last)
 **Dual check:** no
-**Persona walk:** skip (backend catalog, no UI surface beyond a read-only table already covered
-by CT8-style tests)
+**Persona walk:** skip — **internal-tool audience**, not "no UI surface". ISS-t125-4 is right that
+my earlier wording was false: `ui/routes_catalog.py` IS a real UI route in this diff. The skip stands
+on the audience (an operator diagnostic table, not a Vidysea end-user screen) and the checker's own
+Mode D walk covered the page both cycles.
 **Issues addressed:** AT-588 (checker-sweep, 2026-09-26 meeting-review goal-coverage finding —
 "No standard test packs" for Google OAuth sign-up carry-over, month/year pickers, and Excel
 upload with column mapping).
@@ -325,5 +327,161 @@ confirmed the same cause independently.
   the at626 checker's own 1615s full-suite run confirmed it is the only failure on master.
 - **AT-588's ledger row stays `open`**, as the checker left it — the same code path was implicated
   in ISS-t125-2 and the checker owns that flip.
+
+
+---
+
+# Cycle 3 — my own cycle-2 fix caused a worse defect; this reverses its shape
+
+**Verdict answered:** `qa/verdicts/t125-catalog.md` (cycle 2, FAIL, 5/8), committed `5eb9cebf`.
+**Nothing in it is disputed.** ISS-t125-3 is a defect I introduced in cycle 2, and the checker's
+severity (`high`) is right: cycle 1's bug was visible and misleading, mine was **invisible**.
+
+## ISS-t125-3 — FIXED, by reversing the cycle-2 mistake rather than patching around it
+
+**What I got wrong, stated plainly.** ISS-t125-2 was a complaint about the **wording** of a blocked
+row — `auth_wrong_creds` told the operator to set a sign-up-only key. I fixed it by scoping the key
+list per flow, and then used that same narrowed list for **both** the wording *and* the
+blocked/runnable decision. Narrowing the wording was the fix; narrowing the gate was never asked
+for and was never safe. A single flow that both clicks "Sign up with Google" **and** fills the
+product's own password is classified OAuth, so under cycle 2 its key left the auth scope entirely,
+`missing_auth` came back empty, and `auth_wrong_creds` rendered a green `runnable` pill while the
+only secret the project declares was unset. The case would then fail for real at run time — which
+is exactly the failure mode AutoTester exists to prevent, shipped by AutoTester's own catalog.
+
+**The asymmetry that decides the fix.** Over-naming a key is noisy; under-naming one is invisible.
+So the two concerns are separated and only one of them is allowed to narrow:
+
+- **The gate never narrows.** Every `blocked`/`runnable` decision — CaseClass rows *and* the OAuth
+  pack — is taken against `_missing_keys(project, _auth_secret_keys(spec))`, i.e. every key the
+  approved spec declares. A flow being an OAuth flow can no longer remove a requirement.
+- **Only the wording is scoped**, via `name_keys`, falling back to the whole set when scoping would
+  empty it (an empty action reads as "nothing unblocks this row", a worse lie than a broad one).
+
+`_entry_for` and `_pack_entries` now take `blocking_keys` positionally and `name_keys` by keyword,
+so the distinction is visible at both call sites instead of living in one variable's name.
+
+**I applied it to the pack as well as the rows, which the issue did not ask for.** The pack had the
+same shape latent: its gate used the OAuth-scoped list, so an OAuth-signal flow whose credential is
+filled in a *different* flow would have claimed runnable with that key unset. Same one-line rule,
+so fixing only the reported half would have left a known twin in place. **Stated as a gap below:
+that twin is not independently tested** — the fixture that isolates it does not exist yet.
+
+## Also from the verdict, accepted without argument
+
+- **ISS-t125-4 (low).** My "no UI surface" persona-walk reason was false — `ui/routes_catalog.py` is
+  a real UI route in this diff. Corrected in the header to cite the **internal-tool audience**,
+  which is the defensible reason. No code change; the wording was the defect.
+- **The checker's 3/3 capability reproduction beat my own manifest.** I claimed the OAuth-only
+  fallback row could not be isolated; the checker found the narrower single-hunk edit
+  (`only=other_ids or None` → `only=other_ids`) that isolates it cleanly. Recorded because I was
+  wrong in the direction that flatters the maker — I called a row unfalsifiable rather than looking
+  harder. Cycle 3 removes that expression anyway (`only=other_ids`, with the fallback now explicit
+  as `missing_other or blocking`).
+
+## CT6 — unchanged, still gated, still not mine to decide
+
+`qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md` is unanswered, so CT6 cannot reach PASS this cycle
+either. The checker independently verified the conflict is real on both sides and found no missing
+fifth option. `tiers_to_run()` stays in place, unwired, docstring disclosure intact. **This unit
+cannot reach 8/8 on any cycle without Umesh's answer** — and cycle 3 is the last of three, which is
+a fact about the cap, not a reason to weaken a criterion to fit inside it.
+
+## How to verify (commands + expected)
+
+- `uv run pytest tests/test_catalog.py tests/test_catalog_packs.py tests/test_ui_catalog.py` → exit 0, **41 passed** (40 at cycle 2 + 1 new)
+- `uv run pytest` (full suite) → **1 failed, 2050 passed**, and the one failure is **AT-627**,
+  proven below to be pre-existing and not chargeable to this unit. Stated as the real
+  expectation rather than "exit 0", which would have been a false claim.
+- `uv run ruff check src tests scripts` → exit 0, `All checks passed!`
+- `uv run autotester doctor` → exit 0, `doctor: clean`
+- `wc -l src/autotester/stages/catalog.py tests/test_catalog_packs.py` → **300 and 300** — both now
+  exactly at the C2 cap (see the gap on file pressure below)
+
+## Actual outputs (maker's own run, in the bound worktree)
+
+```
+$ uv run pytest tests/test_catalog.py tests/test_catalog_packs.py tests/test_ui_catalog.py
+.........................................                                [100%]
+41 passed, 1 warning in 0.63s
+
+$ uv run pytest                      # full suite, in the bound worktree
+FAILED tests/test_flake_probe_real_process.py::test_run_once_kills_a_real_hung_process_and_its_real_grandchild
+1 failed, 2050 passed, 5 skipped, 32 xfailed, 15 warnings in 840.81s (0:14:00)
+
+$ uv run ruff check src tests scripts
+All checks passed!
+
+$ uv run autotester doctor
+doctor: clean
+```
+
+**The single failure is AT-627 (`low`, `open`), and I proved that rather than asserting it.** Its
+ledger row names this exact test and this exact mechanism: the spawned grandchild must write a pid
+file before `flake_probe.run_once`'s 10 s timeout kills the tree, and under CPU contention it is
+never scheduled in time, so `pid_file.read_text()` raises `FileNotFoundError` instead of reaching
+the kill-tree assertion. Observed failure is that `FileNotFoundError` from `pathlib.py:1044`.
+
+Two independent reasons it is not chargeable to this unit:
+
+1. **It reproduces on `master`, where none of this unit's changes exist** — `uv run pytest
+   tests/test_flake_probe_real_process.py` in the main checkout: `1 failed, 1 passed in 11.16s`,
+   same test, same error. A defect present without the diff is not caused by the diff.
+2. **Zero coupling.** This unit changes `stages/catalog.py` and `tests/test_catalog_packs.py`; the
+   failing test spawns real OS processes through `scripts/flake_probe.py` and imports nothing from
+   the catalog stage.
+
+The machine was genuinely loaded — a checker on another unit was running its own full suite
+concurrently — which is precisely AT-627's stated trigger. **The arithmetic also ties out against
+the checker's own cycle-2 run** (`2050 passed, 5 skipped, 32 xfailed, exit 0`): this unit adds
+exactly one test, so 2051 collected, 2050 passed, 1 failed.
+
+**A trap in my own command construction, recorded because it nearly produced a false green.** I ran
+the three verify commands as one grouped shell command, so the reported exit code was
+`autotester doctor`'s — `0` — while pytest inside it had failed. The harness said "exit code 0" and
+that was true of the group and false of the suite. I read the pytest summary line rather than
+trusting the group's status, which is the only reason this was caught; a future tick should run
+pytest as its own command so its exit code cannot be masked.
+
+## Capability coverage — cycle 3's new claim
+
+| capability (one line) | the check that covers it | the falsifying edit | observed (pasted runner output) |
+|---|---|---|---|
+| A credential requirement never disappears because the flow needing it also carries an OAuth signal — the blocked/runnable gate is taken against every key the spec declares | `tests/test_catalog_packs.py::test_a_hybrid_oauth_and_password_flow_still_blocks_the_auth_rows` | in `catalog()`, narrow the gate back to the scoped list: `_entry_for(cc, project, blocking, …)` → `_entry_for(cc, project, missing_other, …)` — single file, single hunk, reproducing cycle 2's exact mistake | GREEN before: `2 passed, 11 deselected in 0.11s` · RED after: `AssertionError: auth_wrong_creds claims runnable while HYBRID_PASSWORD is unset` / `assert True is False` / `2 failed, 11 deselected in 0.22s` — **the checker's own sentence from its live Mode D walk, reproduced as a unit assertion** · restored: `2 passed, 11 deselected in 0.09s` |
+
+**The second failing test is disclosed, not hidden.** That one hunk also reds
+`test_an_oauth_only_spec_still_names_its_keys_rather_than_nothing`, because both rows depend on the
+same non-narrowing gate — they are two consequences of one claim, not two claims. It is a
+single-hunk edit whose named test fails for the stated reason; it is not an isolating edit in the
+strict one-test sense, and I am not calling it one.
+
+**Where the perturbation ran.** `…/scratchpad/t125c3-falsify`, built with **`git archive`** rather
+than `tar` — an archive of a tree contains no `__pycache__` or `.pytest_cache` at all, so the
+`co_filename` artifact that made earlier units' tracebacks print the worktree path cannot recur by
+construction instead of by remembering to add an exclude. Verified empty of both caches, own fresh
+venv, proven to resolve its own source:
+`…\scratchpad\t125c3-falsify\src\autotester\stages\catalog.py`. Bound worktree verified intact
+afterwards — `git status --short` showed only this unit's two modified files and
+`_entry_for(cc, project, blocking` still present at :271.
+
+## Gaps stated, not hidden
+
+- **The pack-side twin is fixed but not independently tested.** The rows' hole had a real repro from
+  the checker; the pack's equivalent (an OAuth-signal flow whose credential is filled in a different
+  flow) is closed by the same one-line rule but has no fixture proving it, because both files are
+  now **exactly at the 300-line C2 cap** and I would not silently exceed it. The checker should
+  treat that row as reasoned, not demonstrated.
+- **File pressure is now the binding constraint on this unit, and it is a real signal.**
+  `catalog.py` and `test_catalog_packs.py` both sit at exactly 300. I trimmed comment prose to fit
+  rather than split mid-final-cycle, which is the smaller risk but not the better answer. The
+  responsibility split (the credential-scoping helpers are one concept: "which keys does this row
+  need") is filed in `qa/feedback-inbox.md` for the checker rather than attempted here.
+- **The union recurs, by contract shape, in a case the checker chose not to file.** Two ordinary
+  non-OAuth login flows needing different keys still produce a union in the *wording* — with one
+  row per `CaseClass` (CT2) the row is not about any single flow, so there is no "own flow" to scope
+  to. The gate is correct there; only the text is broad. Whether CT2's one-row-per-class shape
+  should change is a contract question I must not answer for my own unit.
+- **CT6 remains unmet and gated**, so this cycle claims 7/8 at best, not 8/8.
+- **`AT-588`'s ledger row stays `open`**, as the checker left it — the checker owns that flip.
 
 **Status: ready-for-check**

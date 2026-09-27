@@ -46,11 +46,10 @@ _NEEDS_WRITE_CLASSES = frozenset({CaseClass.DOUBLE_SUBMIT})
 def _auth_secret_keys(spec: FlowSpec, *, only: set[str] | None = None) -> list[str]:
     """`{{SECRET:KEY}}` keys referenced by a FILL step, in first-seen order.
 
-    `only` restricts the walk to those flow ids. ISS-t125-2: collecting across
-    every flow made each blocked row advertise the UNION of every unset key in
-    the project, so an `auth_wrong_creds` row told the operator to set a
-    sign-up-only token that has nothing to do with signing in — worse than
-    vague, because one of the two named actions is a no-op for that row.
+    `only` restricts the walk to those flow ids, and exists to WORD a blocked
+    row (ISS-t125-2: an unscoped union told an `auth_wrong_creds` row to set a
+    sign-up-only token, so one of its two named actions was always a no-op).
+    It must never decide WHETHER a row is blocked — see `catalog()`, ISS-t125-3.
     Never returns a value (C5) — only key names."""
     keys: list[str] = []
     for flow in spec.flows:
@@ -122,8 +121,7 @@ def _text_of(step: Step) -> str:
 def _oauth_signup_flow_ids(spec: FlowSpec) -> set[str]:
     """Ids of the flows that carry the Pack-1 signal: a CLICK/NAVIGATE step
     naming a Google OAuth sign-up. Per-flow rather than a whole-spec bool so a
-    blocked row can name the keys of the flow it is actually about
-    (ISS-t125-2)."""
+    blocked row can name the keys of the flow it is about (ISS-t125-2)."""
     ids: set[str] = set()
     for flow in spec.flows:
         for step in flow.steps:
@@ -183,7 +181,8 @@ def _blocked_pack(
 
 
 def _pack_entries(
-    project: Project, spec: FlowSpec | None, missing_oauth_keys: list[str]
+    project: Project, spec: FlowSpec | None, blocking_keys: list[str],
+    *, name_keys: list[str] | None = None,
 ) -> list[PackEntry]:
     """One `PackEntry` per `StandardPack` (AT-588): same blocking states as the
     CaseClass table (`no_flowspec` / `flowspec_not_approved`), plus a
@@ -210,8 +209,8 @@ def _pack_entries(
         if not detector(spec):
             entries.append(PackEntry(pack=pack, applicable=False, runnable=False))
             continue
-        if pack is StandardPack.OAUTH_SIGNUP_CARRYOVER and missing_oauth_keys:
-            action = "set " + ", ".join(missing_oauth_keys) + " in the repo-root .env"
+        if pack is StandardPack.OAUTH_SIGNUP_CARRYOVER and blocking_keys:
+            action = "set " + ", ".join(name_keys or blocking_keys) + " in the repo-root .env"
             entries.append(PackEntry(
                 pack=pack, applicable=True, runnable=False,
                 blocked_reason=BlockedReason.MISSING_CREDENTIAL, unblock_action=action,
@@ -222,11 +221,12 @@ def _pack_entries(
 
 
 def _entry_for(
-    case_class: CaseClass, project: Project, missing_auth_keys: list[str]
+    case_class: CaseClass, project: Project, blocking_keys: list[str],
+    *, name_keys: list[str] | None = None,
 ) -> CatalogEntry:
     tier = TIER_BY_CLASS[case_class]
-    if case_class in _AUTH_CLASSES and missing_auth_keys:
-        action = "set " + ", ".join(missing_auth_keys) + " in the repo-root .env"
+    if case_class in _AUTH_CLASSES and blocking_keys:
+        action = "set " + ", ".join(name_keys or blocking_keys) + " in the repo-root .env"
         return CatalogEntry(
             case_class=case_class, tier=tier, applicable=True, runnable=False,
             blocked_reason=BlockedReason.MISSING_CREDENTIAL, unblock_action=action,
@@ -255,19 +255,23 @@ def catalog(project: Project, spec: FlowSpec | None, store: ProjectStore | None 
         return _no_flowspec_catalog(project)
     if spec.review.status is not ReviewStatus.APPROVED:
         return _not_approved_catalog(project, spec)
-    # ISS-t125-2: two scopes, not one union. The OAuth pack is about the flow
-    # that signs up through Google; the generic auth classes are about the
-    # product's own credential form, i.e. every OTHER flow. A spec whose only
-    # flow is the OAuth one falls back to all of its keys rather than naming
-    # none — an empty action would read as "nothing unblocks this".
+    # The GATE never narrows; only the WORDING does (ISS-t125-3 — cycle 2
+    # scoped both, so a flow that BOTH clicks "Sign up with Google" and fills
+    # the product's own password lost its key from the auth rows entirely and
+    # they rendered runnable). Under-naming is invisible and ships a case that
+    # fails for real; over-naming is merely noisy. Hence: block against every
+    # key the spec declares, word with the scoped list, fall back to the whole
+    # set when scoping would empty it ("nothing unblocks this" is a worse lie).
     oauth_ids = _oauth_signup_flow_ids(spec)
     other_ids = {f.id for f in spec.flows} - oauth_ids
+    blocking = _missing_keys(project, _auth_secret_keys(spec))
     missing_oauth = _missing_keys(project, _auth_secret_keys(spec, only=oauth_ids))
-    missing_auth = _missing_keys(
-        project, _auth_secret_keys(spec, only=other_ids or None)
-    )
-    entries = [_entry_for(cc, project, missing_auth) for cc in CaseClass]
-    packs = _pack_entries(project, spec, missing_oauth)
+    missing_other = _missing_keys(project, _auth_secret_keys(spec, only=other_ids))
+    entries = [
+        _entry_for(cc, project, blocking, name_keys=missing_other or blocking)
+        for cc in CaseClass
+    ]
+    packs = _pack_entries(project, spec, blocking, name_keys=missing_oauth or blocking)
     return Catalog(project=project.slug, entries=entries, packs=packs)
 
 

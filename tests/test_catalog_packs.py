@@ -265,3 +265,36 @@ def test_an_oauth_only_spec_still_names_its_keys_rather_than_nothing(root: Path)
     entry = cat.entry(CaseClass.AUTH_WRONG_CREDS)
     assert entry is not None and entry.unblock_action is not None
     assert "GOOGLE_SIGNUP_TOKEN" in entry.unblock_action
+
+
+def test_a_hybrid_oauth_and_password_flow_still_blocks_the_auth_rows(root: Path) -> None:
+    """ISS-t125-3 — one flow is BOTH an OAuth flow and the credential source.
+
+    The checker's cycle-2 fixture, which cycle 2 got wrong: one flow both
+    clicks "Sign up with Google" and fills the product's own password. Cycle 2
+    read that whole flow as OAuth, so the auth rows showed a green `runnable`
+    pill while the only declared secret was unset — an invisible omission that
+    fails for real at run time, strictly worse than ISS-t125-2's over-naming."""
+    from autotester.schema.enums import CaseClass
+
+    hybrid = Flow(
+        id="flow_hybrid", name="Sign up", entry_screen="scr_signup",
+        steps=[Step(order=1, action=Action.CLICK, target="Sign up with Google"),
+               Step(order=2, action=Action.FILL, target="Password",
+                    value="{{SECRET:HYBRID_PASSWORD}}")],
+    )
+    browse = Flow(id="flow_browse", name="Browse", entry_screen="scr_login",
+                  steps=[Step(order=1, action=Action.NAVIGATE, target="https://demo.test/")])
+    project = _project(secrets=[SecretRef(key="HYBRID_PASSWORD", domains=["demo.test"])])
+    cat = catalog(project, _approved_spec(hybrid, browse), ProjectStore("demo", root))
+    for case_class in (CaseClass.AUTH_WRONG_CREDS, CaseClass.AUTH_EXPIRED_SESSION):
+        entry = cat.entry(case_class)
+        assert entry is not None
+        assert entry.runnable is False, (
+            f"{case_class.value} claims runnable while HYBRID_PASSWORD is unset"
+        )
+        assert entry.blocked_reason is BlockedReason.MISSING_CREDENTIAL
+        assert entry.unblock_action and "HYBRID_PASSWORD" in entry.unblock_action
+    pack = cat.pack(StandardPack.OAUTH_SIGNUP_CARRYOVER)
+    assert pack is not None and pack.runnable is False
+    assert pack.unblock_action and "HYBRID_PASSWORD" in pack.unblock_action
