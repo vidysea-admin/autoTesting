@@ -1,6 +1,284 @@
 # Verdict — t125-catalog
 
 **Date:** 2026-09-27
+**Cycle checked:** 3 of max 3 (the last)
+**Mode:** A (unit check), with Mode D (live browser, checker's own fixtures — two of them)
+**Checker:** fresh Claude Sonnet subagent, read-only toward the artifact, bound to
+`D:/autoTesting/.worktrees/t125-catalog` (branch `wave/t125-catalog`, HEAD `513a08c7`).
+**Answers:** `qa/verdicts/t125-catalog.md` cycle-2 body below (FAIL, 5/8, CT5/CT6/CT8), verdict
+commit `5eb9cebf`; and `qa/manifests/t125-catalog.md`'s "# Cycle 3" section.
+
+## VERDICT: FAIL — and the unit is now STALLED at the 3-cycle cap
+
+## SCOREBOARD: 5/8 criteria met (CT1-4, CT7 PASS; CT5 FAIL — new cause; CT6 GATED; CT8 FAIL — same new cause)
+
+| Criterion | Cycle 2 | Cycle 3 | Notes |
+|---|---|---|---|
+| CT1 pure/deterministic | PASS | PASS | Unchanged; re-confirmed. |
+| CT2 every CaseClass once | PASS | PASS | Unchanged. |
+| CT3 closed BlockedReason | PASS | PASS | Unchanged. |
+| CT4 no-FlowSpec blocks everything | PASS | PASS | Unchanged. |
+| CT5 missing-credential names the KEY, only when that case class needs it | FAIL | **FAIL (new cause)** | ISS-t125-3's exact repro is genuinely fixed. But the fix's mechanism (an unscoped, spec-wide gate) reintroduces a different, high-severity violation — see ISS-t125-5 below. |
+| CT6 tier ordering real in `routes_runs.py` | GATED | **GATED (unchanged)** | `qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md` is still unanswered by Umesh. Ruling stands: gated, not a maker failure. |
+| CT7 one Catalog/BlockedReason | PASS | PASS | Unchanged; re-confirmed. |
+| CT8 blocked row states reason + the ONE action that clears it | FAIL | **FAIL (same new cause)** | The named action for an ISS-t125-5 row does not, in truth, correspond to why that row can't run — it names an irrelevant secret. |
+
+## Attack #1 — re-walked ISS-t125-3 live, then hunted the opposite failure (found it: ISS-t125-5)
+
+**ISS-t125-3 re-walk, own fixture, independent of the maker's.** Built `demo-hybrid` (one flow both
+CLICKs "Sign up with Google" and FILLs `{{SECRET:HYBRID_PASSWORD}}`, unset, plus one unrelated
+credential-free flow) via a fresh Python probe (`.work/checker_probe1.py`-equivalent) and via a
+real browser walk (`uv run uvicorn`, isolated `AUTOTESTER_ROOT`). **Confirmed fixed**:
+`auth_wrong_creds`/`auth_expired_session` and the OAuth pack all correctly render "missing
+credential — set HYBRID_PASSWORD in the repo-root .env"; no false-green `runnable` pill.
+Screenshot: `qa/evidence/t125-catalog-2026-09-27-checker-cycle3/hybrid-catalog-refixed.png`.
+
+**Attacking the new rule ("the gate never narrows") for the opposite failure, per the dispatch's
+explicit instruction.** Built my own fixture (`demo-overblock`, independent of the maker's): a
+plain login flow FILLs `{{SECRET:DEMO_PASSWORD}}` (**SET** in `.env`) and a *separate* Google
+sign-up flow FILLs `{{SECRET:GOOGLE_SIGNUP_TOKEN}}` (**unset**, and irrelevant to logging in).
+
+**Result: `auth_wrong_creds` and `auth_expired_session` both render BLOCKED — "missing credential —
+set GOOGLE_SIGNUP_TOKEN in the repo-root .env" — even though the login form's own password is
+fully configured and the login case classes need nothing else.** The OAuth pack renders the same
+text (expected — that pack genuinely needs `GOOGLE_SIGNUP_TOKEN`), but the two login-only
+`CaseClass` rows should be `runnable=True` and are not. Live-walked at
+`GET /projects/demo-overblock/catalog` (screenshot:
+`qa/evidence/t125-catalog-2026-09-27-checker-cycle3/overblock-catalog.png`; full report:
+`qa/evidence/t125-catalog-2026-09-27-checker-cycle3/report.json`) and reproduced at the pure
+`catalog()` level (`.work/checker_probe1.py`).
+
+**Confirmed the bug is not OAuth-specific — it fires for ANY unrelated flow's secret.** A second
+fixture: login's `DEMO_PASSWORD` set, and a completely unrelated admin-import flow (no OAuth
+signal, no bearing on login at all) FILLs `{{SECRET:SFTP_KEY}}` (unset). `auth_wrong_creds` is
+still wrongly blocked, naming `SFTP_KEY` (`.work/checker_probe2.py`). A third fixture confirmed the
+same shape on the pack side: the OAuth pack's own secret is set, but the unrelated admin-import
+flow's `SFTP_KEY` is unset — the pack still wrongly blocks, naming `SFTP_KEY`
+(`.work/checker_probe3.py`).
+
+**Root cause.** `catalog()` (src/autotester/stages/catalog.py:267) now computes
+`blocking = _missing_keys(project, _auth_secret_keys(spec))` with **no `only=` restriction at
+all** — the union of every FILL-referenced secret key across *every* flow in the spec, OAuth and
+unrelated flows alike — and threads that same unscoped value as the **gate** (not just the
+wording) into both `_entry_for()` (line 271) and `_pack_entries()` (line 274) for every CaseClass
+and the OAuth pack. ISS-t125-3's asymmetry ("the gate never narrows") was right in spirit — an
+invisible under-block is worse than a noisy over-block — but the fix implements "never narrows" as
+"gate on literally every secret the spec declares, anywhere," which is a materially different and
+much more commonly-triggered failure than the one it replaced: **any project with more than one
+credential-consuming flow (a login flow plus an OAuth flow, or a login flow plus an unrelated
+admin/import flow) now has its login rows wrongly blocked by whichever of those OTHER flows'
+secrets happens to be unset.** This is not a rare edge case — a FlowSpec with an OAuth carry-over
+flow AND its own login form (exactly the AT-588 capability this unit ships) is the modal case, not
+the exception.
+
+**Filed as ISS-t125-5, severity high.** CT5 and CT8 both stay FAIL on this new ground. Verified
+`qa/issues.jsonl` for both changes: `ISS-t125-3` flipped to `status: verified` (its own literal
+repro is genuinely closed, independently re-derived by unit test, fresh probe, and live browser)
+with a `regression_check` note pointing at ISS-t125-5 for the mechanism's new defect; `ISS-t125-5`
+appended as a new open, high-severity issue.
+
+## Attack #2 — the pack-side twin: reasoned-but-untested is acceptable here
+
+The manifest discloses that the pack's mirror of ISS-t125-3 (an OAuth-signal flow whose credential
+is filled in a *different* flow) has no dedicated fixture, because both `stages/catalog.py` and
+`tests/test_catalog_packs.py` are at the exact 300-line C2 cap. **Ruling: acceptable, for a reason
+stronger than "the maker said so."** Reading the diff: `_pack_entries()` and `_entry_for()` are now
+called with the exact same shared `blocking` value (`catalog()` line 267, threaded to both call
+sites unmodified) — this is not two independently-varying implementations of the same idea, it is
+one computed value reused verbatim. My own probe3 (above) independently confirms the pack's
+behaviour tracks the rows' behaviour exactly, including sharing the SAME new defect (ISS-t125-5) —
+which is exactly what "the pack and the rows share one gate" predicts, and is further evidence the
+claim is not distinct enough to need its own isolating fixture. Given both files are genuinely at
+the line cap, I would not fail the unit over this specific gap alone.
+
+## Attack #3 — verifying the "two consequences of one claim" argument
+
+The manifest argues the single-hunk falsifying edit for the new hybrid test also reds
+`test_an_oauth_only_spec_still_names_its_keys_rather_than_nothing`, and that this is one claim
+(the gate/wording split), not two. **Reproduced independently** in a throwaway `git archive HEAD`
+copy (`.work/t125c3-falsify-check`, own venv, proven to resolve its own source before editing).
+Applied the exact single-hunk edit the manifest names (`_entry_for(cc, project, blocking, ...)` →
+`_entry_for(cc, project, missing_other, ...)`):
+
+```
+FAILED tests/test_catalog_packs.py::test_an_oauth_only_spec_still_names_its_keys_rather_than_nothing
+FAILED tests/test_catalog_packs.py::test_a_hybrid_oauth_and_password_flow_still_blocks_the_auth_rows
+2 failed, 11 passed in 1.05s
+```
+
+**Confirmed genuinely one claim, not a hidden second one.** Both fixtures share the exact condition
+that makes `missing_other` empty (the hybrid fixture's only "other" flow has no FILL step; the
+oauth-only fixture has no "other" flow at all) — the two tests are structurally coupled through
+that one shared computation, not two independent capabilities that happen to be tested together. I
+looked for a narrower isolating edit (as cycle 2's checker found one for a different claim) and did
+not find one: any edit that breaks the hybrid case's gate necessarily also empties `missing_other`
+in the oauth-only case. Coverage is adequate for what's claimed.
+
+## Attack #4 — CT6: ruling unchanged, GATED, not weakened to rescue the unit
+
+`qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md` re-read in full: still **OPEN**, unanswered by
+Umesh. `tiers_to_run()` is still unwired (`grep -rn "stages.catalog|tiers_to_run|Tier"
+src/autotester/ui/routes_runs.py` — no matches, re-confirmed). **Ruling: CT6 stays GATED**, exactly
+as cycle 2 ruled it — this is a genuine conflict between two ACTIVE contracts requiring a human
+decision, not a maker shortfall, and I am not amending CT6 or `ui-run.md` RU3 to manufacture a PASS
+for a unit at its cycle cap. That would be using contract ownership to rescue a unit against its
+own cap, which the dispatch explicitly forbids and I agree is the correct line.
+
+**Consequence, stated plainly:** even if CT6 were answered today, **this unit still cannot PASS
+this cycle** — ISS-t125-5 is a fresh, high-severity, live-confirmed CT5/CT8 violation found in the
+unit's own last cycle, and there is no cycle 4 in which to fix it. This is a STALLED-at-cap outcome
+on two independent grounds (CT6 gated, CT5/CT8 freshly failed), not one.
+
+## Attack #5 — the union that recurs by CT2's shape
+
+Confirmed via the existing `test_an_auth_row_does_not_advertise_a_signup_only_key`-style reasoning
+and the maker's own feedback-inbox entry: with exactly one row per `CaseClass` (CT2), two ordinary
+non-OAuth login flows needing different secrets still produce a union in the *wording* (there is no
+"this row's own flow" to scope to). **This is real and distinct from ISS-t125-5** — ISS-t125-5 is a
+gate-correctness bug (a row is wrongly blocked/not-blocked), this is a wording-precision limit (a
+row is correctly blocked but names more keys than strictly necessary). The maker correctly declined
+to act on it and filed it in `qa/feedback-inbox.md` as a CT2-shape question. **Ruling: this belongs
+in a gate file, not left as an inbox note**, because it is a genuine contract-shape question (does
+`CatalogEntry` need a per-flow dimension) with a real cost either way — but it does not block this
+cycle's verdict, since it was never claimed as fixed and does not by itself violate CT5/CT8 (the
+row's *decision* is correct there; only the wording is broad). Not opening a new gate file myself
+this cycle — the unit's fate is already decided by ISS-t125-5 and CT6, and manufacturing more
+open questions on a STALLED unit adds no value; noting it here so it is not lost.
+
+## Attack #6 — AT-627 exculpation, verified independently
+
+Ran `tests/test_flake_probe_real_process.py` alone in the bound worktree:
+
+```
+FAILED tests/test_flake_probe_real_process.py::test_run_once_kills_a_real_hung_process_and_its_real_grandchild
+FileNotFoundError: [Errno 2] No such file or directory: '...\child.pid'
+1 failed, 1 passed in 11.09s
+```
+
+Same mechanism as claimed (grandchild not scheduled in time to write its pid file before the 10s
+kill fires). Confirmed **pre-existing and unrelated**: `git log -1 --oneline -- tests/test_flake_probe_real_process.py`
+on both this branch and `master` points at `eb484154` (AT-495, 2026-09-18), well before this unit;
+`qa/issues.jsonl`'s `AT-627` entry (opened 2026-09-27 by a *different* unit's checker,
+`at621-exit-call-aliases`) documents the identical mechanism, already `status: open`, `severity:
+low`, with its own independent reproduction under machine load. **Exculpation accepted** — not
+chargeable to this unit.
+
+## Attack #7 — the trimmed-comments check: no reasoning lost
+
+`git diff 5eb9cebf..513a08c7 -- src/autotester/stages/catalog.py` read hunk-by-hunk. The comment
+edits shorten two docstrings by one line each (`_auth_secret_keys`, `_oauth_signup_flow_ids`) and
+*add* a new, more precise block comment in `catalog()` itself explaining the gate/wording split and
+naming ISS-t125-3 — if anything the net reasoning available to a future reader improved, not
+degraded. `tests/test_catalog_packs.py`'s diff is a pure addition (the new hybrid test); no existing
+comment was touched there. **No defect found on this attack.**
+
+## Verify commands re-run myself
+
+```
+$ uv run autotester doctor
+doctor: clean
+
+$ uv run ruff check src tests scripts
+All checks passed!
+
+$ uv run pytest tests/test_catalog.py tests/test_catalog_packs.py tests/test_ui_catalog.py
+41 passed, 1 warning in 0.87s
+
+$ wc -l src/autotester/stages/catalog.py tests/test_catalog_packs.py
+300 src/autotester/stages/catalog.py
+300 tests/test_catalog_packs.py
+```
+
+All match the manifest's pasted output. Did not re-run the full ~20-minute suite this cycle — the
+manifest's own full-suite run (`1 failed, 2050 passed`) was independently spot-checked via Attack
+#6 above (the one failure, reproduced and confirmed pre-existing/unrelated), and this cycle's
+verdict does not turn on anything the full suite alone would catch (ISS-t125-5 is demonstrated at
+both the unit and live-browser level). Ran `pytest` as its own command, not chained, per the
+dispatch's own warning about the manifest's earlier masked-exit-code trap.
+
+## LIVE-BROWSER: `qa/evidence/t125-catalog-2026-09-27-checker-cycle3/` (own fixtures, two projects, screenshots + report.json)
+
+`uv run uvicorn autotester.ui.app:app` from the bound worktree, `AUTOTESTER_ROOT` pointed at an
+isolated `.work/browser-root` scratch dir (never the bound tree's own `projects/`), seeded via a
+script calling the bound tree's real `Project`/`FlowSpec`/`ProjectStore` (read-only toward the
+tree; writes only to the scratch dir). Server killed afterward (`Stop-Process -Force`), confirmed
+down via a follow-up `curl` returning no response. `.work/browser-root` and the falsification
+scratch copy (`.work/t125c3-falsify-check`) deleted after use; `git status --short` at the repo
+root and in the bound worktree both confirmed clean of stray files (the only untracked path left is
+this cycle's own `qa/evidence/` directory, about to be committed).
+
+## Contract maintenance performed this check
+
+None. `qa/contracts/catalog.md`'s CT5 wording ("An approved FlowSpec whose case class needs a
+declared SecretRef...") already correctly requires per-case-class relevance — ISS-t125-5 is a code
+defect against that existing wording, not a contract gap. Status remains DRAFT (DRAFT→ACTIVE still
+requires a PASS, and this cycle is a FAIL).
+
+## Issues ledger updated this check
+
+- `ISS-t125-3` → `status: verified` (`fixed_date`/`verified_date` 2026-09-27) — its own literal
+  repro (same-flow OAuth+password hybrid) is genuinely fixed, independently re-derived three ways
+  (fresh probe, the shipped unit test, a live browser re-walk).
+- `ISS-t125-5` (NEW, high, open) — the gate-never-narrows fix's over-broad implementation blocks
+  login-only rows/the OAuth pack on any unrelated flow's unset secret.
+- `ISS-t125-1` (CT6) — unchanged, `open`, gated on Umesh.
+- `ISS-t125-2` — left `open`, unchanged (its own literal repro was already closed in cycle 2's
+  ledger note; the broader "which secrets are relevant to which row" question it originally raised
+  is now the subject of ISS-t125-5, a new issue rather than reopening this one, since the mechanism
+  changed completely between cycles).
+- `ISS-t125-4` — unchanged, `open`, low severity, wording-only.
+- **AT-588's ledger row stays `open`** — the exact code path implicated in ISS-t125-2/ISS-t125-3 is
+  now also implicated in ISS-t125-5, so this checker is not flipping it.
+
+## FAILURES
+
+- [CT5, CT8] sev: high · `catalog()`'s blocked/runnable gate for the generic `AUTH_CLASSES` rows
+  and the OAuth pack is the union of every FILL-referenced secret across every flow in the spec,
+  with no relevance restriction — any unset secret anywhere blocks rows that don't need it,
+  confirmed live for both an unrelated OAuth-only secret and a wholly unrelated non-auth flow's
+  secret · scope the gate to the flow(s) actually relevant to each row/pack's own concern, while
+  keeping ISS-t125-3's fix for the hybrid (hybrid should count as relevant to both) · issue:
+  ISS-t125-5
+- [CT6] sev: high, ruling: GATED not FAIL-on-maker · unchanged from cycle 2 · `qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md`
+  still unanswered · issue: ISS-t125-1
+
+## CAPABILITY-COVERAGE: cycle 3's 1 new row re-derived and confirmed one genuine claim (not two
+hidden ones) via an independent falsification in a throwaway copy (Attack #3). Cycle 2's 3/3 rows
+were not re-verified this cycle (unchanged code paths in that region; the new diff only touches the
+gate/wording split, reviewed hunk-by-hunk in Attack #7).
+
+## EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent — independent fresh session,
+no `ANTHROPIC_BASE_URL` override)
+
+## EXPLANATION
+
+Cycle 3 genuinely fixes what it set out to fix: the hybrid-flow invisible omission (ISS-t125-3) is
+closed, independently re-derived three separate ways including a live browser walk on my own
+fixture, and the "two consequences of one claim" defense for the pack-side gap holds up under my
+own falsification attempt. But the dispatch's central instruction — hunt for the opposite failure,
+because a deliberately-broadened gate creates exactly the kind of new blind spot cycle 2's fix did —
+found one, and it is not a narrow edge case: **any FlowSpec with more than one credential-consuming
+flow now has its login-only rows wrongly gated by whichever OTHER flow's secret happens to be
+unset**, which is precisely the shape of the AT-588 capability this unit exists to ship (a login
+form plus an OAuth carry-over flow, or plus an admin/import flow). This is a regression in
+generality, not a corner case: cycle 1's bug needed two flows; cycle 2's bug needed one hybrid flow;
+this bug fires on the ordinary, unremarkable case of "a project has more than one feature that
+needs a secret." Combined with CT6 remaining genuinely gated on a human decision that has not
+arrived, **this unit is STALLED at its 3-cycle cap without reaching PASS.** This is a legitimate,
+reportable outcome, not a checker failure to find a way through: `qa/contracts/` is not mine to
+weaken to manufacture a pass, and a fourth cycle is outside this unit's budget. The two live options
+from here are (a) Umesh grants an exception cycle to fix ISS-t125-5 specifically (a scoped, well
+-understood fix — restrict the gate to flows relevant to each row/pack's own concern, keeping the
+hybrid case covered), or (b) revert `513a08c7`+`72f71aa1` to the last state that was contract-clean
+on this axis and re-open T-125 as a fresh unit with a corrected design for "which secret belongs to
+which row" from the start, per this repo's CLAUDE.md regression-discipline note. Either way, this is
+Umesh's call, not mine or the maker's.
+
+---
+
+# Cycle 2 verdict (superseded by the above; preserved verbatim per the checker's supersede-not-delete rule)
+
+**Date:** 2026-09-27
 **Cycle checked:** 2
 **Mode:** A (unit check), with Mode D (live browser, own fixture)
 **Checker:** fresh Claude Sonnet subagent, read-only toward the artifact, bound to
