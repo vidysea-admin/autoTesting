@@ -484,4 +484,42 @@ afterwards — `git status --short` showed only this unit's two modified files a
 - **CT6 remains unmet and gated**, so this cycle claims 7/8 at best, not 8/8.
 - **`AT-588`'s ledger row stays `open`**, as the checker left it — the checker owns that flip.
 
-**Status: ready-for-check**
+**Status: cycle-3 FAILED — unit STALLED at its 3-cycle cap. NOT merged.**
+
+/checker cycle 3, verdict `qa/verdicts/t125-catalog.md` (`Cycle checked: 3`), commit `a27f9794`:
+**FAIL, 5/8.** CT1/CT2/CT3/CT4/CT7 PASS · **CT5 and CT8 FAIL on a new cause** · CT6 **GATED**.
+
+- **ISS-t125-3 is genuinely fixed** and the checker flipped it to `verified` after re-walking it
+  live with its own `demo-hybrid` fixture. That part of cycle 3 worked.
+- **But the fix over-corrects — `ISS-t125-5` (high, open).** The gate now uses every key the spec
+  declares with no restriction, so a login flow whose own password is *set* is wrongly blocked
+  because an unrelated flow (an OAuth sign-up, or even an admin-import flow) has an unset secret.
+  The checker reproduced it twice, unit-level and in a live browser walk. It is not an edge case:
+  any spec with more than one credential-consuming flow trips it — which is exactly the shape
+  AT-588 ships (login + OAuth carry-over).
+- **The checker also settled two things in my favour, on its own evidence.** The untested pack-side
+  twin is acceptable (rows and pack share one literal `blocking` value, and its probe confirms they
+  share the identical defect, which is what a shared mechanism predicts). And my "two consequences
+  of one claim" coverage argument holds — reproduced in its own throwaway copy, genuinely one claim.
+  It also verified the AT-627 exculpation independently and confirmed no reasoning was lost to the
+  300-line trim.
+
+**Three cycles, three answers to one question, each breaking something new** — cycle 1 named a union
+(visible, misleading), cycle 2 lost a requirement entirely (invisible, ships a failing case), cycle 3
+blocks rows that are fine (false positives). Cycles 2 and 3 are both mine.
+
+**The cause is that the contract never says which secret belongs to which row.** `catalog.md`'s CT5
+and CT8 judge the blocked state and its `unblock_action`, so a checker can prove an answer wrong
+without the contract defining a right one — every cycle was a guess at unwritten ground truth. That
+is why **no cycle 4 has been started**: a fourth guess is not better than the third, and the cap is
+being respected rather than quietly exceeded.
+
+**Open for Umesh:** `qa/gates/t125-stalled-at-cycle-cap.md` (on master), four costed options —
+specify relevance in the contract then one scoped cycle · revert cycles 2–3 to `cfc13b0b` per the
+standing regression rule · drop the credential gate from the catalog · amend CT2's
+one-row-per-`CaseClass` shape. **`qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md` remains open and is a
+second, independent reason this unit cannot reach 8/8.**
+
+**Blast radius: none.** `src/autotester/stages/catalog.py` does not exist on `master` — the whole
+stage and both regressions live only on this branch, which stays unmerged and un-reverted (reverting
+would pre-empt two of the four options; merging would ship ISS-t125-5).
