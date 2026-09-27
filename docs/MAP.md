@@ -175,7 +175,9 @@
 | `BlockedReason` (`schema/catalog.py`) | Why a `CatalogEntry` is not runnable. Closed by D-039 — exactly six |
 | `Tier` (`schema/catalog.py`) | Cheap -> expensive ordering (D-039). `routes_runs.py`'s tiered dispatch |
 | `CatalogEntry` (`schema/catalog.py`) | One `CaseClass`'s standing for one project: applicable, runnable, and |
-| `Catalog` (`schema/catalog.py`) | One project's whole catalog: every `CaseClass`, exactly once (CT2). |
+| `StandardPack` (`schema/catalog.py`) | A named flow pattern the team's own release checklist calls out, on top |
+| `PackEntry` (`schema/catalog.py`) | One `StandardPack`'s standing for one project. Reuses `BlockedReason` |
+| `Catalog` (`schema/catalog.py`) | One project's whole catalog: every `CaseClass`, exactly once (CT2), |
 | `CoverageGap` (`schema/coverage.py`) | A screen or route observed in a run but absent from the FlowSpec. |
 | `VideoRequest` (`schema/coverage.py`) | What the system asks a human to record, and why. |
 | `DialogEvent` (`schema/crawl.py`) | One JS dialog (`alert`/`confirm`/`prompt`/`beforeunload`) the observer saw. |

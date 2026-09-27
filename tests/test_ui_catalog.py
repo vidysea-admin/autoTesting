@@ -102,3 +102,41 @@ def test_page_reports_the_runnable_count(store: ProjectStore) -> None:
     # (default write_policy=read_only) -> 12 runnable
     assert "12" in response.text
     assert "15" in response.text
+
+
+# -- AT-588: standard packs render on the same page --------------------------
+
+
+def test_no_flowspec_page_blocks_every_pack_no_flowspec_too(store: ProjectStore) -> None:
+    response = TestClient(app).get("/projects/demo/catalog")
+    assert response.status_code == 200
+    assert response.text.count("no FlowSpec yet") >= 15 + 3  # 15 case classes + 3 packs
+
+
+def test_oauth_pack_renders_runnable_when_google_signup_step_present(
+    store: ProjectStore,
+) -> None:
+    store.save_flowspec(FlowSpec(
+        project="demo",
+        flows=[Flow(
+            id="flow_signup", name="Sign up", entry_screen="scr_signup",
+            steps=[
+                Step(order=1, action=Action.NAVIGATE, target="https://demo.test/signup"),
+                Step(order=2, action=Action.CLICK, target="Sign up with Google"),
+            ],
+        )],
+        review=Review(status=ReviewStatus.APPROVED),
+    ))
+    response = TestClient(app).get("/projects/demo/catalog")
+    assert response.status_code == 200
+    assert "OAuth sign-up carry-over" in response.text
+    assert "Excel column-mapping upload" in response.text
+
+
+def test_pack_not_applicable_renders_distinct_from_blocked(store: ProjectStore) -> None:
+    store.save_flowspec(FlowSpec(
+        project="demo", flows=[_auth_flow()], review=Review(status=ReviewStatus.APPROVED),
+    ))
+    response = TestClient(app).get("/projects/demo/catalog")
+    assert response.status_code == 200
+    assert "not applicable" in response.text

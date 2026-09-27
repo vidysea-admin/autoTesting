@@ -10,6 +10,8 @@ it reads. Same inputs on disk -> byte-identical `Catalog`, every call (CT1).
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import PLACEHOLDER_RE
@@ -19,10 +21,12 @@ from autotester.schema.catalog import (
     BlockedReason,
     Catalog,
     CatalogEntry,
+    PackEntry,
+    StandardPack,
     Tier,
 )
 from autotester.schema.enums import Action, CaseClass, ReviewStatus, WritePolicy
-from autotester.schema.flowspec import FlowSpec
+from autotester.schema.flowspec import FlowSpec, Step
 from autotester.schema.project import Project
 from autotester.store.project_store import ProjectStore
 
@@ -70,25 +74,133 @@ def _blocked(
     )
 
 
-def _no_flowspec_catalog(project: Project) -> Catalog:
-    action = (
+def _no_flowspec_action(project: Project) -> str:
+    return (
         f"record a source (video, doc, or URL) for '{project.slug}' and run INGEST "
         "(or explore it) to produce a FlowSpec"
     )
+
+
+def _not_approved_action(project: Project) -> str:
+    return f"review and approve the FlowSpec at /projects/{project.slug}/flowspec"
+
+
+def _no_flowspec_catalog(project: Project) -> Catalog:
+    action = _no_flowspec_action(project)
     entries = [
         _blocked(cc, applicable=False, reason=BlockedReason.NO_FLOWSPEC, action=action)
         for cc in CaseClass
     ]
-    return Catalog(project=project.slug, entries=entries)
+    return Catalog(project=project.slug, entries=entries, packs=_pack_entries(project, None, []))
 
 
-def _not_approved_catalog(project: Project) -> Catalog:
-    action = f"review and approve the FlowSpec at /projects/{project.slug}/flowspec"
+def _not_approved_catalog(project: Project, spec: FlowSpec) -> Catalog:
+    action = _not_approved_action(project)
     entries = [
         _blocked(cc, applicable=True, reason=BlockedReason.FLOWSPEC_NOT_APPROVED, action=action)
         for cc in CaseClass
     ]
-    return Catalog(project=project.slug, entries=entries)
+    return Catalog(project=project.slug, entries=entries, packs=_pack_entries(project, spec, []))
+
+
+# -- AT-588: standard packs on top of the generic CaseClass taxonomy --------
+
+
+def _text_of(step: Step) -> str:
+    """Lower-cased target+value+note, for keyword-based signal detection."""
+    return " ".join(filter(None, [step.target, step.value, step.note])).lower()
+
+
+def _has_oauth_signup_carryover(spec: FlowSpec) -> bool:
+    """Pack 1: a CLICK/NAVIGATE step naming a Google OAuth sign-up."""
+    for flow in spec.flows:
+        for step in flow.steps:
+            if step.action not in (Action.CLICK, Action.NAVIGATE):
+                continue
+            text = _text_of(step)
+            if "google" in text or "oauth" in text or "accounts.google.com" in text:
+                return True
+    return False
+
+
+def _has_date_picker_month_year(spec: FlowSpec) -> bool:
+    """Pack 2: a field typed date/month/year, or a step naming one."""
+    for screen in spec.screens:
+        for field in screen.fields:
+            if field.type.lower() in {"date", "month", "year"}:
+                return True
+    for flow in spec.flows:
+        for step in flow.steps:
+            text = _text_of(step)
+            if "date picker" in text or ("month" in text and "year" in text):
+                return True
+    return False
+
+
+def _has_excel_column_mapping(spec: FlowSpec) -> bool:
+    """Pack 3: an UPLOAD step naming a spreadsheet file."""
+    for flow in spec.flows:
+        for step in flow.steps:
+            if step.action is Action.UPLOAD and any(
+                ext in _text_of(step) for ext in (".xlsx", ".xls", ".csv", "excel")
+            ):
+                return True
+    return False
+
+
+_PACK_SIGNAL: dict[StandardPack, Callable[[FlowSpec], bool]] = {
+    StandardPack.OAUTH_SIGNUP_CARRYOVER: _has_oauth_signup_carryover,
+    StandardPack.DATE_PICKER_MONTH_YEAR: _has_date_picker_month_year,
+    StandardPack.EXCEL_COLUMN_MAPPING: _has_excel_column_mapping,
+}
+
+
+def _blocked_pack(
+    pack: StandardPack, *, applicable: bool, reason: BlockedReason, action: str
+) -> PackEntry:
+    return PackEntry(
+        pack=pack, applicable=applicable, runnable=False, blocked_reason=reason,
+        unblock_action=action,
+    )
+
+
+def _pack_entries(
+    project: Project, spec: FlowSpec | None, missing_auth_keys: list[str]
+) -> list[PackEntry]:
+    """One `PackEntry` per `StandardPack` (AT-588): same blocking states as the
+    CaseClass table (`no_flowspec` / `flowspec_not_approved`), plus a
+    missing-credential check on the OAuth pack (it signs in against a real
+    Google account). A pack whose structural signal is absent from the
+    approved spec is simply not applicable — that is not a block."""
+    if spec is None or not spec.flows:
+        action = _no_flowspec_action(project)
+        return [
+            _blocked_pack(p, applicable=False, reason=BlockedReason.NO_FLOWSPEC, action=action)
+            for p in StandardPack
+        ]
+    if spec.review.status is not ReviewStatus.APPROVED:
+        action = _not_approved_action(project)
+        return [
+            _blocked_pack(
+                p, applicable=detector(spec), reason=BlockedReason.FLOWSPEC_NOT_APPROVED,
+                action=action,
+            )
+            for p, detector in _PACK_SIGNAL.items()
+        ]
+    entries: list[PackEntry] = []
+    for pack, detector in _PACK_SIGNAL.items():
+        if not detector(spec):
+            entries.append(PackEntry(pack=pack, applicable=False, runnable=False))
+            continue
+        if pack is StandardPack.OAUTH_SIGNUP_CARRYOVER and missing_auth_keys:
+            action = "set " + ", ".join(missing_auth_keys) + " in the repo-root .env"
+            entries.append(PackEntry(
+                pack=pack, applicable=True, runnable=False,
+                blocked_reason=BlockedReason.MISSING_CREDENTIAL, unblock_action=action,
+            ))
+            continue
+        entries.append(PackEntry(pack=pack, applicable=True, runnable=True))
+    return entries
 
 
 def _entry_for(
@@ -124,10 +236,11 @@ def catalog(project: Project, spec: FlowSpec | None, store: ProjectStore | None 
     if spec is None or not spec.flows:
         return _no_flowspec_catalog(project)
     if spec.review.status is not ReviewStatus.APPROVED:
-        return _not_approved_catalog(project)
+        return _not_approved_catalog(project, spec)
     missing_auth_keys = _missing_keys(project, _auth_secret_keys(spec))
     entries = [_entry_for(cc, project, missing_auth_keys) for cc in CaseClass]
-    return Catalog(project=project.slug, entries=entries)
+    packs = _pack_entries(project, spec, missing_auth_keys)
+    return Catalog(project=project.slug, entries=entries, packs=packs)
 
 
 def tiers_to_run(cat: Catalog) -> list[Tier]:

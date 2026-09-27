@@ -12,7 +12,7 @@ from html import escape
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from autotester.schema.catalog import TIER_ORDER, Catalog, CatalogEntry
+from autotester.schema.catalog import TIER_ORDER, Catalog, CatalogEntry, PackEntry
 from autotester.stages.catalog import catalog as build_catalog
 from autotester.ui import theme
 from autotester.ui.helpers import _load_project_or_404
@@ -30,16 +30,41 @@ _REASON_LABEL = {
 """A human label distinct from the bare enum literal (CT8) — the row still
 also carries `entry.unblock_action`'s full, case-specific action text."""
 
+_PACK_LABEL = {
+    "oauth_signup_carryover": "OAuth sign-up carry-over",
+    "date_picker_month_year": "Month/year picker",
+    "excel_column_mapping": "Excel column-mapping upload",
+}
+"""AT-588: the three standard packs, given a readable name for the page."""
 
-def _status_cell(entry: CatalogEntry) -> str:
-    if entry.runnable:
+
+def _status_cell(*, runnable: bool, applicable: bool, blocked_reason: str | None,
+                  unblock_action: str | None) -> str:
+    if runnable:
         return theme.pill("runnable", "positive")
-    reason_key = entry.blocked_reason.value if entry.blocked_reason else ""
-    reason = _REASON_LABEL.get(reason_key, "blocked")
-    action = escape(entry.unblock_action) if entry.unblock_action else ""
+    if not applicable and blocked_reason is None:
+        return theme.pill("not applicable", "neutral")
+    reason = _REASON_LABEL.get(blocked_reason or "", "blocked")
+    action = escape(unblock_action) if unblock_action else ""
     return (
-        theme.pill(reason, "warning" if entry.applicable else "neutral")
+        theme.pill(reason, "warning" if applicable else "neutral")
         + (f"<div class='meta'>{action}</div>" if action else "")
+    )
+
+
+def _entry_status_cell(entry: CatalogEntry) -> str:
+    return _status_cell(
+        runnable=entry.runnable, applicable=entry.applicable,
+        blocked_reason=entry.blocked_reason.value if entry.blocked_reason else None,
+        unblock_action=entry.unblock_action,
+    )
+
+
+def _pack_status_cell(entry: PackEntry) -> str:
+    return _status_cell(
+        runnable=entry.runnable, applicable=entry.applicable,
+        blocked_reason=entry.blocked_reason.value if entry.blocked_reason else None,
+        unblock_action=entry.unblock_action,
     )
 
 
@@ -49,7 +74,18 @@ def _row(entry: CatalogEntry) -> str:
         f"<td>{escape(entry.case_class.value)}</td>"
         f"<td>{escape(entry.tier.value)}</td>"
         f"<td>{'yes' if entry.applicable else 'no'}</td>"
-        f"<td>{_status_cell(entry)}</td>"
+        f"<td>{_entry_status_cell(entry)}</td>"
+        "</tr>"
+    )
+
+
+def _pack_row(entry: PackEntry) -> str:
+    label = _PACK_LABEL.get(entry.pack.value, entry.pack.value)
+    return (
+        "<tr>"
+        f"<td>{escape(label)}</td>"
+        f"<td>{'yes' if entry.applicable else 'no'}</td>"
+        f"<td>{_pack_status_cell(entry)}</td>"
         "</tr>"
     )
 
@@ -60,6 +96,16 @@ def _table(cat: Catalog) -> str:
     return (
         "<div style='overflow:auto'><table><thead><tr>"
         "<th>Case class</th><th>Tier</th><th>Applicable</th><th>Status</th>"
+        f"</tr></thead><tbody>{rows}</tbody></table></div>"
+    )
+
+
+def _pack_table(cat: Catalog) -> str:
+    ordered = sorted(cat.packs, key=lambda p: p.pack.value)
+    rows = "".join(_pack_row(p) for p in ordered)
+    return (
+        "<div style='overflow:auto'><table><thead><tr>"
+        "<th>Standard pack</th><th>Applicable</th><th>Status</th>"
         f"</tr></thead><tbody>{rows}</tbody></table></div>"
     )
 
@@ -81,5 +127,6 @@ def catalog_page(slug: str) -> str:
         theme.breadcrumb(("Projects", "/"), (name, f"/projects/{slug}"), ("Catalog", None))
         + "<h1>Test catalog</h1>" + stats
         + theme.card(_table(cat), title=f"{name} catalog")
+        + theme.card(_pack_table(cat), title="Standard packs")
     )
     return theme.page(f"{name} · Catalog", body, active_slug=slug)

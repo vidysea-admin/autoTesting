@@ -84,14 +84,52 @@ class CatalogEntry(BaseModel):
     )
 
 
+class StandardPack(StrEnum):
+    """A named flow pattern the team's own release checklist calls out, on top
+    of the generic `CaseClass` taxonomy (AT-588, 2026-09-26 meeting review):
+    Google OAuth sign-up data carry-over, a month/year picker, and an Excel
+    upload with column mapping. Detected structurally from the `FlowSpec` in
+    `stages/catalog.py` — never guessed by a model (same discipline as
+    `CaseClass`)."""
+
+    OAUTH_SIGNUP_CARRYOVER = "oauth_signup_carryover"
+    DATE_PICKER_MONTH_YEAR = "date_picker_month_year"
+    EXCEL_COLUMN_MAPPING = "excel_column_mapping"
+
+
+class PackEntry(BaseModel):
+    """One `StandardPack`'s standing for one project. Reuses `BlockedReason`
+    (CT7: no second such enum lives in this repo) rather than inventing
+    pack-specific reasons. `applicable=False, blocked_reason=None` means the
+    FlowSpec simply does not contain this pattern — distinct from *blocked*,
+    where the pattern exists but the pack cannot run yet."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    pack: StandardPack
+    applicable: bool
+    runnable: bool
+    blocked_reason: BlockedReason | None = None
+    unblock_action: str | None = Field(
+        default=None,
+        description="human text naming the one action that clears blocked_reason; "
+                    "set exactly when blocked_reason is set",
+    )
+
+
 class Catalog(Artifact):
-    """One project's whole catalog: every `CaseClass`, exactly once (CT2)."""
+    """One project's whole catalog: every `CaseClass`, exactly once (CT2),
+    plus the AT-588 standard packs."""
 
     project: str
     entries: list[CatalogEntry] = Field(default_factory=list)
+    packs: list[PackEntry] = Field(default_factory=list)
 
     def entry(self, case_class: CaseClass) -> CatalogEntry | None:
         return next((e for e in self.entries if e.case_class == case_class), None)
+
+    def pack(self, pack: StandardPack) -> PackEntry | None:
+        return next((p for p in self.packs if p.pack == pack), None)
 
     @property
     def runnable_count(self) -> int:
