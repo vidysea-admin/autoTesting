@@ -4,7 +4,7 @@
 **Goal task:** T-125 — the test catalog: what applies, what is runnable, what is blocked and why
 (+ cheap->expensive ordering).
 **Date:** 2026-09-27
-**Fix cycle:** 1 of max 3
+**Fix cycle:** 2 of max 3
 **Dual check:** no
 **Persona walk:** skip (backend catalog, no UI surface beyond a read-only table already covered
 by CT8-style tests)
@@ -206,5 +206,124 @@ Changed paths: `src/autotester/schema/catalog.py`, `src/autotester/stages/catalo
   (that packs are additive, not CT2-governed) for a future reader.
 - `test_flake_probe_real_process.py`'s one real-process test fails deterministically on this host
   (see "Actual outputs" above) — pre-existing, unrelated to T-125/AT-588, not fixed here.
+
+
+---
+
+# Cycle 2 — fixing exactly what the cycle-1 verdict listed
+
+**Verdict answered:** `qa/verdicts/t125-catalog.md` (cycle 1, FAIL, 5/8 — CT5, CT6, CT8 failed),
+committed `3da63550`. Both filed issues are addressed below; **neither is disputed.** The checker
+re-derived CT1-CT8 against the whole catalog rather than only the AT-588 delta, which is what
+surfaced them, and it was right to: the cycle-1 manifest's "no gaps found" on CT6 was false.
+
+## ISS-t125-2 (CT5/CT8) — FIXED
+
+**The defect, restated in my own words so the fix can be judged against it:** `catalog()` computed
+one global `missing_auth_keys` across every flow, and both `_entry_for()` and `_pack_entries()`
+joined that whole list into `unblock_action`. So every blocked row advertised the union of every
+unset key in the project. An `auth_wrong_creds` row told the operator to set `GOOGLE_SIGNUP_TOKEN`,
+which does nothing for signing in, and the OAuth pack named `DEMO_PASSWORD`, which its flow never
+reads. The checker is right that this is worse than vague: an operator who follows a two-action
+instruction and finds one of them irrelevant learns the row cannot be trusted.
+
+**Why no existing test caught it:** every fixture had exactly one credential-consuming flow, so a
+union and a correctly scoped answer are byte-identical. The bug needed two flows to exist at all —
+which is why the checker found it in a live Mode D walk and not in the suite.
+
+**The fix** (`src/autotester/stages/catalog.py`, edited in place):
+- `_auth_secret_keys(spec, *, only=None)` — the walk now takes an optional set of flow ids.
+- `_oauth_signup_flow_ids(spec)` — new; returns the ids of flows carrying the Pack-1 signal.
+  `_has_oauth_signup_carryover()` is now one line over it, so the pack's applicability rule and its
+  key-scoping rule cannot drift apart (one concept, one place).
+- `catalog()` computes **two scopes**: the OAuth pack names the missing keys of the flows that
+  signal OAuth; the generic auth classes name the missing keys of every *other* flow.
+
+**The judgement in it, stated for the checker rather than buried.** "Which flow is this row about"
+is not written in any contract. I used the module's own existing signal vocabulary rather than
+inventing a keyword classifier for "is this a sign-in flow": the OAuth pack is about the flow that
+signs up through Google, and the generic auth classes are about the product's own credential form,
+i.e. every other flow. **Named consequence:** a project whose only flow is the OAuth one has no
+"other" flow, so the auth classes fall back to that spec's keys — an empty action would read as
+"nothing unblocks this row", which is a worse lie than a broad one. That fallback has its own test
+so it cannot be mistaken for an accident. If the checker judges this scoping rule wrong, the fix is
+the rule, not the plumbing.
+
+## ISS-t125-1 (CT6) — NOT FIXED, GATED, and I am not choosing
+
+`tiers_to_run()` is correct, tested and **unused**; `trigger_run()` runs every case unconditionally.
+CT6 as written is a claim about dispatch behaviour that does not exist. But honouring CT6 means
+filtering which cases run, which breaks **ACTIVE** `qa/contracts/ui-run.md` RU3 ("every case on
+file") and weakens F-058's pinned-regression guarantee that a known bug's case runs every time.
+
+Two ACTIVE contracts want opposite things, `qa/contracts/` is checker-owned, and D-039's
+`Changes-authorized` does not cover `ui-run.md`. Choosing here would be the maker amending ground
+truth to pass its own unit. Written up with four options and the cost of each in
+**`qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md`**; `tiers_to_run()` is left in place and unused
+(deleting pre-empts one option, wiring pre-empts another). ISS-t125-1 stays `open`.
+
+**Whether that makes CT6 gated rather than failed is the checker's call, not mine.** If the checker
+holds CT6 FAIL until Umesh answers, that is a correct verdict and this unit does not PASS this cycle.
+
+## Also accepted from the verdict, without argument
+
+- The cycle-1 "test split" phrasing was imprecise — `git diff cfc13b0b 2e397500 -- tests/test_catalog.py`
+  is empty, nothing was split out. No coverage was lost. The checker filed no issue; recorded here
+  so the wording is not repeated.
+
+## How to verify (commands + expected)
+
+- `uv run pytest tests/test_catalog.py tests/test_catalog_packs.py tests/test_ui_catalog.py` → exit 0, **40 passed** (37 at cycle 1 + 3 new)
+- `uv run ruff check src tests scripts` → exit 0, `All checks passed!`
+- `uv run autotester doctor` → exit 0, `doctor: clean`
+- `wc -l src/autotester/stages/catalog.py tests/test_catalog_packs.py` → 296 and 267 (both under the C2 300 cap; catalog.py at 296 means any further growth needs a split)
+
+## Actual outputs (maker's own run, in the bound worktree)
+
+```
+$ uv run pytest tests/test_catalog.py tests/test_catalog_packs.py tests/test_ui_catalog.py
+........................................                                 [100%]
+40 passed, 1 warning in 2.81s
+
+$ uv run ruff check src tests scripts
+All checks passed!
+
+$ uv run autotester doctor
+doctor: clean
+```
+
+## Capability coverage — cycle 2's new claims
+
+| capability (one line) | the check that covers it | the falsifying edit | observed (pasted runner output) |
+|---|---|---|---|
+| An auth CaseClass row names only the keys of the product's own credential flows — never a sign-up-only key | `tests/test_catalog_packs.py::test_an_auth_row_does_not_advertise_a_signup_only_key` | in `catalog()`, collapse the two scopes back to one union (`missing_oauth = _missing_keys(project, _auth_secret_keys(spec))` / `missing_auth = missing_oauth`) — single file, single hunk | GREEN before: `2 passed, 10 deselected in 3.99s` · RED after: `AssertionError: auth_wrong_creds names a sign-up-only key: 'set DEMO_PASSWORD, GOOGLE_SIGNUP_TOKEN in the repo-root .env'` — **byte-for-byte the string the checker reported from its live walk** |
+| The OAuth pack names only its own flow's keys — never a login-only key | `tests/test_catalog_packs.py::test_the_oauth_pack_does_not_advertise_a_login_only_key` | the same single hunk | RED after: `AssertionError: the OAuth pack names a login-only key: 'set DEMO_PASSWORD, GOOGLE_SIGNUP_TOKEN in the repo-root .env'` / `2 failed, 10 deselected in 0.29s` |
+| A spec whose every flow is the OAuth one still names its keys rather than an empty action | `tests/test_catalog_packs.py::test_an_oauth_only_spec_still_names_its_keys_rather_than_nothing` | not independently falsified — see the gap below | (see gap) |
+
+**Where the perturbation ran.** `…/scratchpad/t125-falsify`, built with
+`tar --exclude=.git --exclude=.venv --exclude=.worktrees --exclude=__pycache__ --exclude=.pytest_cache`,
+outside the bound root, own fresh venv. Proven to resolve its own source first:
+`…\scratchpad\t125-falsify\src\autotester\stages\catalog.py`. **The `__pycache__` exclusion is new
+and deliberate** — a copied `.pyc`'s `co_filename` is baked to the source tree's path, which made
+earlier units' falsification tracebacks print the worktree path and look like a rule violation. Root
+cause and proof are in `qa/feedback-inbox.md` (2026-09-27); the at626 checker reproduced and
+confirmed the same cause independently.
+
+## Gaps stated, not hidden
+
+- **The OAuth-only fallback row is not independently falsified.** Breaking it means removing the
+  `or None` in `_auth_secret_keys(spec, only=other_ids or None)`, which makes `only=set()` match no
+  flow and the action empty — the test does fail then, but that edit also changes the *other* two
+  rows' behaviour, so it is not an isolating single-claim falsification. Left honest rather than
+  claimed: the row has a test, not an isolation proof.
+- **No live Mode D walk by the maker this cycle.** The fix is in the pure catalog stage and the
+  checker's own Mode D fixture is now reproduced as two unit tests, but the rendered page was not
+  re-walked by me. The checker should re-walk it — the defect was only ever visible in a live page.
+- **CT6 remains unmet** (gated above), so this cycle cannot honestly claim 8/8.
+- **Full suite not run by the maker** — sibling checkers were holding the machine. `AT-627`
+  (`test_flake_probe_real_process.py`) remains a pre-existing environmental flake, not chargeable;
+  the at626 checker's own 1615s full-suite run confirmed it is the only failure on master.
+- **AT-588's ledger row stays `open`**, as the checker left it — the same code path was implicated
+  in ISS-t125-2 and the checker owns that flip.
 
 **Status: ready-for-check**

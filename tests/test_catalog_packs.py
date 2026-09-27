@@ -177,3 +177,91 @@ def test_packs_never_add_a_second_catalog_or_blocked_reason_definition() -> None
         text = path.read_text(encoding="utf-8")
         reason_defs += len(re.findall(r"^class BlockedReason\b", text, re.M))
     assert reason_defs == 1
+
+
+# -- ISS-t125-2: a blocked row names ITS OWN flow's key, not every unset key --
+
+
+def _two_flows_each_needing_a_different_secret() -> FlowSpec:
+    """The fixture no existing test built: one credential-consuming flow was
+    always tested alone, so a union could never be told from a scoped answer."""
+    login = Flow(
+        id="flow_login", name="Login", entry_screen="scr_login",
+        steps=[
+            Step(order=1, action=Action.NAVIGATE, target="https://demo.test/signin"),
+            Step(order=2, action=Action.FILL, target="Password",
+                 value="{{SECRET:DEMO_PASSWORD}}"),
+            Step(order=3, action=Action.CLICK, target="Sign in"),
+        ],
+    )
+    signup = Flow(
+        id="flow_signup", name="Sign up", entry_screen="scr_signup",
+        steps=[
+            Step(order=1, action=Action.CLICK, target="Sign up with Google"),
+            Step(order=2, action=Action.FILL, target="Token",
+                 value="{{SECRET:GOOGLE_SIGNUP_TOKEN}}"),
+        ],
+    )
+    return _approved_spec(login, signup)
+
+
+def _both_secrets_declared() -> Project:
+    return _project(secrets=[
+        SecretRef(key="DEMO_PASSWORD", domains=["demo.test"]),
+        SecretRef(key="GOOGLE_SIGNUP_TOKEN", domains=["demo.test"]),
+    ])
+
+
+def test_an_auth_row_does_not_advertise_a_signup_only_key(root: Path) -> None:
+    """ISS-t125-2, found in a live Mode D walk: `auth_wrong_creds` told the
+    operator to set GOOGLE_SIGNUP_TOKEN, which does nothing for signing in.
+    Naming a union is worse than naming nothing — one of the two actions is a
+    no-op for this row, so following it teaches the operator the row lies."""
+    from autotester.schema.enums import CaseClass
+
+    cat = catalog(_both_secrets_declared(), _two_flows_each_needing_a_different_secret(),
+                  ProjectStore("demo", root))
+    for case_class in (CaseClass.AUTH_WRONG_CREDS, CaseClass.AUTH_EXPIRED_SESSION):
+        entry = cat.entry(case_class)
+        assert entry is not None and entry.unblock_action is not None
+        assert entry.blocked_reason is BlockedReason.MISSING_CREDENTIAL
+        assert "DEMO_PASSWORD" in entry.unblock_action
+        assert "GOOGLE_SIGNUP_TOKEN" not in entry.unblock_action, (
+            f"{case_class.value} names a sign-up-only key: {entry.unblock_action!r}"
+        )
+
+
+def test_the_oauth_pack_does_not_advertise_a_login_only_key(root: Path) -> None:
+    """The same defect pointing the other way: the pack named DEMO_PASSWORD,
+    which the Google sign-up flow never reads."""
+    cat = catalog(_both_secrets_declared(), _two_flows_each_needing_a_different_secret(),
+                  ProjectStore("demo", root))
+    entry = cat.pack(StandardPack.OAUTH_SIGNUP_CARRYOVER)
+    assert entry is not None and entry.unblock_action is not None
+    assert entry.blocked_reason is BlockedReason.MISSING_CREDENTIAL
+    assert "GOOGLE_SIGNUP_TOKEN" in entry.unblock_action
+    assert "DEMO_PASSWORD" not in entry.unblock_action, (
+        f"the OAuth pack names a login-only key: {entry.unblock_action!r}"
+    )
+
+
+def test_an_oauth_only_spec_still_names_its_keys_rather_than_nothing(root: Path) -> None:
+    """The fallback branch, stated so it is not mistaken for an accident: when
+    every flow carries the OAuth signal there is no 'other' flow to scope the
+    generic auth classes to, and an empty action would read as 'nothing
+    unblocks this row'. It falls back to the spec's own keys."""
+    signup = Flow(
+        id="flow_signup", name="Sign up", entry_screen="scr_signup",
+        steps=[
+            Step(order=1, action=Action.CLICK, target="Sign up with Google"),
+            Step(order=2, action=Action.FILL, target="Token",
+                 value="{{SECRET:GOOGLE_SIGNUP_TOKEN}}"),
+        ],
+    )
+    from autotester.schema.enums import CaseClass
+
+    project = _project(secrets=[SecretRef(key="GOOGLE_SIGNUP_TOKEN", domains=["demo.test"])])
+    cat = catalog(project, _approved_spec(signup), ProjectStore("demo", root))
+    entry = cat.entry(CaseClass.AUTH_WRONG_CREDS)
+    assert entry is not None and entry.unblock_action is not None
+    assert "GOOGLE_SIGNUP_TOKEN" in entry.unblock_action
