@@ -4,9 +4,8 @@ that clears it.
 
 Contract: qa/contracts/catalog.md CT1-CT8 (D-039). Pure: reads only artifacts
 already on disk (the FlowSpec, declared `SecretRef`s, `.env` key presence,
-`write_policy`) — no `Provider` call, no network call, no write of anything
-it reads. Same inputs on disk -> byte-identical `Catalog`, every call (CT1).
-"""
+`write_policy`) — no `Provider` call, no network call, no write. Same inputs
+-> byte-identical `Catalog`, every call (CT1)."""
 
 from __future__ import annotations
 
@@ -36,27 +35,40 @@ _AUTH_CLASSES = frozenset({CaseClass.AUTH_WRONG_CREDS, CaseClass.AUTH_EXPIRED_SE
 
 # The one class whose whole purpose is a repeated MUTATING submit -- a
 # READ_ONLY project cannot run it (D-039 `needs_write_policy`). Every other
-# class either does not submit at all, or submits at most once, which is
-# already how the system runs a READ_ONLY case today (no other class is
-# blocked here: widening this set is a contract amendment, not a T-125 fix —
-# see catalog.md's no-fire list).
+# class submits at most once, which is already how a READ_ONLY case runs
+# today; widening this set is a contract amendment, not a T-125 fix (see
+# catalog.md's no-fire list).
 _NEEDS_WRITE_CLASSES = frozenset({CaseClass.DOUBLE_SUBMIT})
 
 
-def _auth_secret_keys(spec: FlowSpec, *, only: set[str] | None = None) -> list[str]:
+# Field names meaning "this FILL is a credential for signing in". Judged per
+# FILL step, never by partitioning flows: a flow can be BOTH a Google sign-up
+# and the product's own login (ISS-t125-3), and an unrelated import flow's
+# unset key must not block signing in (ISS-t125-5).
+_LOGIN_FIELD_WORDS = ("password", "passwd", "pwd", "passphrase", "username",
+                      "user name", "email", "e-mail", "login", "log in",
+                      "sign in", "signin", "otp")
+
+
+def _auth_secret_keys(
+    spec: FlowSpec, *, only: set[str] | None = None, login_fields: bool = False
+) -> list[str]:
     """`{{SECRET:KEY}}` keys referenced by a FILL step, in first-seen order.
 
-    `only` restricts the walk to those flow ids, and exists to WORD a blocked
-    row (ISS-t125-2: an unscoped union told an `auth_wrong_creds` row to set a
-    sign-up-only token, so one of its two named actions was always a no-op).
-    It must never decide WHETHER a row is blocked — see `catalog()`, ISS-t125-3.
-    Never returns a value (C5) — only key names."""
+    `only` restricts the walk to those flow ids (the OAuth pack's own scope).
+    `login_fields` keeps only keys filled into a credential-named field, and
+    GATES the generic auth rows. It matches `target`/`note`, never `value` —
+    the value IS the `{{SECRET:...}}` placeholder, so matching it would
+    re-admit every `*_PASSWORD`-shaped key. Never returns a value (C5)."""
     keys: list[str] = []
     for flow in spec.flows:
         if only is not None and flow.id not in only:
             continue
         for step in flow.steps:
             if step.action is not Action.FILL or not step.value:
+                continue
+            field = " ".join(filter(None, [step.target, step.note])).lower()
+            if login_fields and not any(w in field for w in _LOGIN_FIELD_WORDS):
                 continue
             for key in PLACEHOLDER_RE.findall(step.value):
                 if key not in keys:
@@ -77,8 +89,7 @@ def _blocked(
 ) -> CatalogEntry:
     return CatalogEntry(
         case_class=case_class, tier=TIER_BY_CLASS[case_class], applicable=applicable,
-        runnable=False, blocked_reason=reason, unblock_action=action,
-    )
+        runnable=False, blocked_reason=reason, unblock_action=action)
 
 
 def _no_flowspec_action(project: Project) -> str:
@@ -174,15 +185,12 @@ _PACK_SIGNAL: dict[StandardPack, Callable[[FlowSpec], bool]] = {
 def _blocked_pack(
     pack: StandardPack, *, applicable: bool, reason: BlockedReason, action: str
 ) -> PackEntry:
-    return PackEntry(
-        pack=pack, applicable=applicable, runnable=False, blocked_reason=reason,
-        unblock_action=action,
-    )
+    return PackEntry(pack=pack, applicable=applicable, runnable=False,
+                     blocked_reason=reason, unblock_action=action)
 
 
 def _pack_entries(
-    project: Project, spec: FlowSpec | None, blocking_keys: list[str],
-    *, name_keys: list[str] | None = None,
+    project: Project, spec: FlowSpec | None, blocking_keys: list[str]
 ) -> list[PackEntry]:
     """One `PackEntry` per `StandardPack` (AT-588): same blocking states as the
     CaseClass table (`no_flowspec` / `flowspec_not_approved`), plus a
@@ -198,10 +206,8 @@ def _pack_entries(
     if spec.review.status is not ReviewStatus.APPROVED:
         action = _not_approved_action(project)
         return [
-            _blocked_pack(
-                p, applicable=detector(spec), reason=BlockedReason.FLOWSPEC_NOT_APPROVED,
-                action=action,
-            )
+            _blocked_pack(p, applicable=detector(spec), action=action,
+                          reason=BlockedReason.FLOWSPEC_NOT_APPROVED)
             for p, detector in _PACK_SIGNAL.items()
         ]
     entries: list[PackEntry] = []
@@ -210,27 +216,24 @@ def _pack_entries(
             entries.append(PackEntry(pack=pack, applicable=False, runnable=False))
             continue
         if pack is StandardPack.OAUTH_SIGNUP_CARRYOVER and blocking_keys:
-            action = "set " + ", ".join(name_keys or blocking_keys) + " in the repo-root .env"
+            action = "set " + ", ".join(blocking_keys) + " in the repo-root .env"
             entries.append(PackEntry(
-                pack=pack, applicable=True, runnable=False,
-                blocked_reason=BlockedReason.MISSING_CREDENTIAL, unblock_action=action,
-            ))
+                pack=pack, applicable=True, runnable=False, unblock_action=action,
+                blocked_reason=BlockedReason.MISSING_CREDENTIAL))
             continue
         entries.append(PackEntry(pack=pack, applicable=True, runnable=True))
     return entries
 
 
 def _entry_for(
-    case_class: CaseClass, project: Project, blocking_keys: list[str],
-    *, name_keys: list[str] | None = None,
+    case_class: CaseClass, project: Project, blocking_keys: list[str]
 ) -> CatalogEntry:
     tier = TIER_BY_CLASS[case_class]
     if case_class in _AUTH_CLASSES and blocking_keys:
-        action = "set " + ", ".join(name_keys or blocking_keys) + " in the repo-root .env"
+        action = "set " + ", ".join(blocking_keys) + " in the repo-root .env"
         return CatalogEntry(
             case_class=case_class, tier=tier, applicable=True, runnable=False,
-            blocked_reason=BlockedReason.MISSING_CREDENTIAL, unblock_action=action,
-        )
+            blocked_reason=BlockedReason.MISSING_CREDENTIAL, unblock_action=action)
     if case_class in _NEEDS_WRITE_CLASSES and project.write_policy is WritePolicy.READ_ONLY:
         action = (
             f"raise '{project.slug}'s write_policy from read_only to test_account "
@@ -238,41 +241,37 @@ def _entry_for(
         )
         return CatalogEntry(
             case_class=case_class, tier=tier, applicable=True, runnable=False,
-            blocked_reason=BlockedReason.NEEDS_WRITE_POLICY, unblock_action=action,
-        )
+            blocked_reason=BlockedReason.NEEDS_WRITE_POLICY, unblock_action=action)
     return CatalogEntry(case_class=case_class, tier=tier, applicable=True, runnable=True)
 
 
 def catalog(project: Project, spec: FlowSpec | None, store: ProjectStore | None = None) -> Catalog:
     """The project's whole catalog: every `CaseClass`, exactly once (CT2).
 
-    `store` is accepted (per D-039's `catalog(project, spec, store)` shape)
-    but unused today — every fact this stage needs already lives on `project`
-    and `spec`; a store-backed fact (e.g. a persisted `RunApproval`) is a
-    future widening, not something this signature should have to change for.
-    """
+    `store` is accepted (per D-039's `catalog(project, spec, store)` shape) but
+    unused today — every fact this stage needs lives on `project` and `spec`; a
+    store-backed fact (e.g. a persisted `RunApproval`) is a future widening,
+    not something this signature should have to change for."""
     if spec is None or not spec.flows:
         return _no_flowspec_catalog(project)
     if spec.review.status is not ReviewStatus.APPROVED:
         return _not_approved_catalog(project, spec)
-    # The GATE never narrows; only the WORDING does (ISS-t125-3 — cycle 2
-    # scoped both, so a flow that BOTH clicks "Sign up with Google" and fills
-    # the product's own password lost its key from the auth rows entirely and
-    # they rendered runnable). Under-naming is invisible and ships a case that
-    # fails for real; over-naming is merely noisy. Hence: block against every
-    # key the spec declares, word with the scoped list, fall back to the whole
-    # set when scoping would empty it ("nothing unblocks this" is a worse lie).
+    # Each row is gated on the keys ITS OWN concern reads and worded with that
+    # same list, so gate and wording can no longer disagree (ISS-t125-2/5).
+    # Auth rows take the credential-named FILLs anywhere in the spec (a hybrid
+    # OAuth+password flow keeps its key, ISS-t125-3); the OAuth pack takes its
+    # own flows'. No recognisable credential field -> fall back to every
+    # declared key: "nothing unblocks this" is the worse lie.
+    login_keys = _auth_secret_keys(spec, login_fields=True)
+    all_missing = _missing_keys(project, _auth_secret_keys(spec))
+    missing_login = _missing_keys(project, login_keys) if login_keys else all_missing
     oauth_ids = _oauth_signup_flow_ids(spec)
-    other_ids = {f.id for f in spec.flows} - oauth_ids
-    blocking = _missing_keys(project, _auth_secret_keys(spec))
     missing_oauth = _missing_keys(project, _auth_secret_keys(spec, only=oauth_ids))
-    missing_other = _missing_keys(project, _auth_secret_keys(spec, only=other_ids))
-    entries = [
-        _entry_for(cc, project, blocking, name_keys=missing_other or blocking)
-        for cc in CaseClass
-    ]
-    packs = _pack_entries(project, spec, blocking, name_keys=missing_oauth or blocking)
-    return Catalog(project=project.slug, entries=entries, packs=packs)
+    entries = [_entry_for(cc, project, missing_login) for cc in CaseClass]
+    return Catalog(
+        project=project.slug, entries=entries,
+        packs=_pack_entries(project, spec, missing_oauth),
+    )
 
 
 def tiers_to_run(cat: Catalog) -> list[Tier]:

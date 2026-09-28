@@ -73,23 +73,16 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(title="AutoTester", lifespan=_lifespan)
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
-app.include_router(routes_cases.router)
-app.include_router(routes_project_edit.router)
-app.include_router(routes_runs.router)
-app.include_router(routes_report.router)
-app.include_router(routes_video.router)
-app.include_router(routes_flow_diagram.router)
-app.include_router(routes_crawls.router)
-app.include_router(routes_crawl_login.router)
-app.include_router(routes_credentials.router)
-app.include_router(routes_crawl_approval.router)
-app.include_router(routes_settings.router)
-app.include_router(routes_learn.router)
-app.include_router(routes_sources.router)
-app.include_router(routes_product_map.router)
-app.include_router(routes_issues.router)
-app.include_router(routes_live.router)
-app.include_router(routes_catalog.router)
+# Mount order is preserved exactly as it was written one-per-line (T-125: the
+# 17th router crossed C2's 300-line file cap, and a loop is cheaper than a
+# second app module). Order matters where two routers share a path prefix.
+for _routes in (
+    routes_cases, routes_project_edit, routes_runs, routes_report, routes_video,
+    routes_flow_diagram, routes_crawls, routes_crawl_login, routes_credentials,
+    routes_crawl_approval, routes_settings, routes_learn, routes_sources,
+    routes_product_map, routes_issues, routes_live, routes_catalog,
+):
+    app.include_router(_routes.router)
 
 
 @app.get("/favicon.ico", status_code=204)

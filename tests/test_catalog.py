@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from autotester.schema.catalog import BlockedReason, Tier
+from autotester.schema.catalog import BlockedReason, StandardPack, Tier
 from autotester.schema.enums import Action, CaseClass, ReviewStatus, WritePolicy
 from autotester.schema.flowspec import Flow, FlowSpec, Review, Step
 from autotester.schema.project import Project, SecretRef
@@ -251,3 +251,50 @@ def test_missing_credential_action_never_contains_the_real_env_value(root: Path)
     dumped = cat.model_dump_json()
     assert "hunter2" not in dumped
     assert "zebra_quilt" not in dumped
+
+
+# -- ISS-t125-5: the gate must not block on a credential the row never reads --
+
+def test_an_unrelated_flows_unset_secret_does_not_block_the_auth_rows(root: Path) -> None:
+    """ISS-t125-5 repro (b). DEMO_PASSWORD is SET; an admin-import flow's
+    SFTP_KEY is not. Cycle 3 gated the auth rows on every key declared anywhere
+    in the spec, so signing in reported blocked on a key login never reads."""
+    project = _project(secrets=[
+        SecretRef(key="DEMO_PASSWORD", domains=["demo.test"]),
+        SecretRef(key="SFTP_KEY", domains=["demo.test"]),
+    ])
+    (root / ".env").write_text("DEMO_PASSWORD=hunter2\n", encoding="utf-8")
+    admin = Flow(
+        id="flow_import", name="Admin import", entry_screen="scr_admin",
+        steps=[Step(order=1, action=Action.FILL, target="SFTP key",
+                    value="{{SECRET:SFTP_KEY}}")],
+    )
+    cat = catalog(project, _approved_spec(_auth_flow(), admin), ProjectStore("demo", root))
+    for case_class in (CaseClass.AUTH_WRONG_CREDS, CaseClass.AUTH_EXPIRED_SESSION):
+        entry = cat.entry(case_class)
+        assert entry is not None
+        assert entry.runnable is True, (
+            f"{case_class.value} blocked on a key login never reads: {entry.unblock_action!r}")
+
+
+def test_an_oauth_only_unset_secret_blocks_the_pack_not_the_login_rows(root: Path) -> None:
+    """ISS-t125-5 repro (a). The login password is SET; only the Google sign-up
+    token is missing -- the OAuth pack is the one row that token blocks."""
+    project = _project(secrets=[
+        SecretRef(key="DEMO_PASSWORD", domains=["demo.test"]),
+        SecretRef(key="GOOGLE_SIGNUP_TOKEN", domains=["demo.test"]),
+    ])
+    (root / ".env").write_text("DEMO_PASSWORD=hunter2\n", encoding="utf-8")
+    signup = Flow(
+        id="flow_signup", name="Sign up", entry_screen="scr_signup",
+        steps=[Step(order=1, action=Action.CLICK, target="Sign up with Google"),
+               Step(order=2, action=Action.FILL, target="Token",
+                    value="{{SECRET:GOOGLE_SIGNUP_TOKEN}}")],
+    )
+    cat = catalog(project, _approved_spec(_auth_flow(), signup), ProjectStore("demo", root))
+    entry = cat.entry(CaseClass.AUTH_WRONG_CREDS)
+    assert entry is not None
+    assert entry.runnable is True, f"login blocked on a signup token: {entry.unblock_action!r}"
+    pack = cat.pack(StandardPack.OAUTH_SIGNUP_CARRYOVER)
+    assert pack is not None and pack.runnable is False
+    assert pack.unblock_action and "GOOGLE_SIGNUP_TOKEN" in pack.unblock_action

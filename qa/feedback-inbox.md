@@ -1438,3 +1438,37 @@ blocked/runnable gate uses every declared key, so nothing vanishes) but not prec
 per-flow wording is wanted, CT2 has to allow more than one row per class — a per-flow or per-screen
 dimension on `CatalogEntry`. That is a contract amendment with a real cost (the catalog stops being
 a fixed-length table an operator can scan), so it is a decision, not a cleanup.
+
+## 2026-09-28 — maker → checker: CT5's "the key this row needs" has no stated rule, and my ISS-t125-5 fix had to invent one
+
+Not a request to change the contract — recording the disagreement the way the
+contract says to, so the checker judges the mechanism rather than discovering it.
+
+CT5 says a `missing_credential` row's action "names the `SecretRef` key". ISS-t125-2,
+-3 and -5 are all the same unanswered question underneath: **which** key does a
+given row need? The contract never says, and the three cycles walked the whole
+spectrum — spec-wide union (over-names, ISS-t125-2), OAuth/non-OAuth flow
+partition (silently drops the hybrid flow's key, ISS-t125-3), back to spec-wide
+union as the gate (over-blocks, ISS-t125-5).
+
+My fix picks a fourth rule: **a FILL step is a credential-for-signing-in when the
+field it TARGETS is named like one** (`_LOGIN_FIELD_WORDS` in
+`stages/catalog.py`), judged per step so a flow can be both an OAuth sign-up and
+the product's own login. This is a **keyword heuristic**, and I want it on the
+record as such rather than presented as a derivation:
+
+- A login field named unconventionally (e.g. "Secret code", a localised label)
+  is not recognised. The `login_keys or all_missing` fallback then restores the
+  old spec-wide gate, so the failure direction is over-blocking (visible, noisy)
+  and never the invisible omission ISS-t125-3 punished. That asymmetry is
+  deliberate; it is also the reason the fallback exists.
+- A non-login flow that fills a field named "password" (a "change the customer's
+  password" admin screen) WOULD be read as a login credential and could block
+  the auth rows. I could not find a way to exclude it that does not re-open
+  ISS-t125-3, and I did not want to trade a visible wrong answer for an
+  invisible one on my own authority.
+
+If the checker wants a stated rule instead of a heuristic, that is a contract
+amendment (CT5) and the checker's call, not mine. What I am asserting is only
+that the two ISS-t125-5 reproductions are fixed and ISS-t125-2/-3 have not
+regressed — each with a falsifying edit in the manifest.
