@@ -1,0 +1,24 @@
+{
+  "unit": "t125-catalog",
+  "cycle": 3,
+  "mode": "D (live browser, checker's own fixtures)",
+  "server": "uv run uvicorn autotester.ui.app:app --port 8971, AUTOTESTER_ROOT pointed at an isolated .work/browser-root (never the bound tree's own projects/)",
+  "fixtures": {
+    "demo-hybrid": "ISS-t125-3 re-walk: one flow both CLICKs 'Sign up with Google' and FILLs {{SECRET:HYBRID_PASSWORD}} (unset), plus one unrelated credential-free flow.",
+    "demo-overblock": "NEW checker-found fixture: a plain login flow FILLs {{SECRET:DEMO_PASSWORD}} (SET in .env) and a separate OAuth sign-up flow FILLs {{SECRET:GOOGLE_SIGNUP_TOKEN}} (unset, unrelated to login)."
+  },
+  "findings": [
+    {
+      "url": "/projects/demo-hybrid/catalog",
+      "result": "ISS-t125-3 CONFIRMED FIXED: auth_wrong_creds and auth_expired_session both render 'missing credential -- set HYBRID_PASSWORD in the repo-root .env'; the OAuth pack renders the same. No green false-runnable pill.",
+      "screenshot": "hybrid-catalog-refixed.png"
+    },
+    {
+      "url": "/projects/demo-overblock/catalog",
+      "result": "NEW REGRESSION (ISS-t125-5): auth_wrong_creds and auth_expired_session, AND the OAuth sign-up carry-over pack, all render 'missing credential -- set GOOGLE_SIGNUP_TOKEN in the repo-root .env' even though DEMO_PASSWORD (the project's actual login credential, the only thing AUTH_WRONG_CREDS/AUTH_EXPIRED_SESSION need) is fully set in .env. GOOGLE_SIGNUP_TOKEN belongs only to the unrelated OAuth sign-up flow. The login case classes are wrongly blocked, and the operator is told to set a key that does nothing to unblock testing login with wrong credentials.",
+      "screenshot": "overblock-catalog.png"
+    }
+  ],
+  "root_cause": "catalog()'s cycle-3 fix computes `blocking = _missing_keys(project, _auth_secret_keys(spec))` with no `only=` restriction at all -- i.e. the UNION of every FILL-referenced secret key across EVERY flow in the spec, OAuth and non-OAuth alike -- and uses that same unrestricted union as the gate for both the generic AUTH_CLASSES rows and the OAuth pack. Any unset secret anywhere in the FlowSpec, however unrelated to a given row, now blocks that row. Confirmed to also fire for a secret belonging to a flow with NO auth/OAuth signal at all (an unrelated admin-import flow's SFTP key), see .work/checker_probe2.py and .work/checker_probe3.py.",
+  "server_shutdown": "uvicorn background process killed after evidence capture; confirmed via a follow-up curl request that the port stopped answering"
+}

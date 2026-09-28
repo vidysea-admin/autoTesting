@@ -26,6 +26,7 @@ from autotester.ui import (
     error_pages,
     project_view,
     routes_cases,
+    routes_catalog,
     routes_crawl_approval,
     routes_crawl_login,
     routes_crawls,
@@ -88,6 +89,7 @@ app.include_router(routes_sources.router)
 app.include_router(routes_product_map.router)
 app.include_router(routes_issues.router)
 app.include_router(routes_live.router)
+app.include_router(routes_catalog.router)
 
 
 @app.get("/favicon.ico", status_code=204)

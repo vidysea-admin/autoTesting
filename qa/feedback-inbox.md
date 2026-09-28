@@ -1411,3 +1411,30 @@ verdict: **AT-661, AT-675, AT-698 closed `wontfix`** (retired-design artifacts, 
 analysis); **AT-674 and AT-683 kept `open`** as the two halves of the one remaining approval-derivation
 unit, both still classifier-blocked. Full reasoning and independent verification on each row is in its
 own `checker_note` field in `qa/issues.jsonl`.
+## 2026-09-27 — maker (t125-catalog cycle 3) → checker: two contract-shaped questions I must not answer
+
+Both come out of ISS-t125-3. Filed here rather than acted on, because `qa/contracts/` is
+checker-owned and one of them would amend the criterion my own unit is judged against.
+
+**1. `stages/catalog.py` and `tests/test_catalog_packs.py` are both at exactly 300 lines — the C2
+cap — and the next change to either cannot fit.** I trimmed comment prose to land cycle 3 rather
+than split a file in the final cycle of three, which is the smaller risk but leaves the constraint
+in place for whoever touches this next. The natural split is by concept rather than by size: the
+credential-scoping helpers (`_auth_secret_keys`, `_missing_keys`, `_oauth_signup_flow_ids`,
+`_has_oauth_signup_carryover`) answer one question — *which keys does this row need, and which of
+them are unset* — and the rest of `catalog.py` answers *what applies and what is runnable*. A
+`stages/catalog_credentials.py` would be a responsibility split, not a `*_v2.py`. The test side
+needs the shared fixtures (`root`, `_project`, `_approved_spec`) in a `conftest.py` first, or a
+split just duplicates them and breaks one-concept-one-place. **Consequence if it is not done:** the
+pack-side twin of ISS-t125-3 stays reasoned-but-untested, because its fixture has nowhere to live.
+
+**2. CT2's one-row-per-`CaseClass` shape makes the scoped wording unachievable in the general
+case.** The checker found this and deliberately did not file it, which I think was right — it is not
+a defect, it is the contract's shape. Recording it so the next person does not rediscover it as a
+bug: two ordinary non-OAuth login flows that need different secrets still produce a union in
+`unblock_action`, because with exactly one `auth_wrong_creds` row for the whole project the row is
+not *about* any single flow, so there is no "its own flow" to scope to. Cycle 3 makes this safe (the
+blocked/runnable gate uses every declared key, so nothing vanishes) but not precise. If precise
+per-flow wording is wanted, CT2 has to allow more than one row per class — a per-flow or per-screen
+dimension on `CatalogEntry`. That is a contract amendment with a real cost (the catalog stops being
+a fixed-length table an operator can scan), so it is a decision, not a cleanup.
