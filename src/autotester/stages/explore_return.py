@@ -11,6 +11,7 @@ Contract: qa/contracts/explore.md X3, X4 (the replay chain is bounded).
 
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING
 
 from autotester.browser.observe import observe
@@ -25,6 +26,35 @@ MAX_REPLAY_DEPTH = 3
 """How many discovering edges `return_to` will chain. Bounded because the
 chain is recursive and a crawl must always terminate (X4); three covers a
 modal over a tab over a page and stops well short of a loop."""
+
+RETURN_SETTLE_TOLERANCE_MS = 1500
+"""AT-335: extra, BOUNDED tolerance for a rung whose fingerprint check ran
+right after `settle()`'s fixed networkidle+500ms grace but before the page
+actually finished re-rendering. Measured live: the modal crawl lost the
+dismissed-dashboard screen about 1 run in 14 with this at zero -- every rung
+(go_back, goto, the replay click) checked the fingerprint exactly once, so a
+re-render that landed a little later than `settle`'s fixed grace read
+identically to 'landed on the wrong screen'. Polled at `_RETURN_POLL_S`
+rather than slept once, so the common case (already matches) still returns
+immediately; bounded so X4 still holds -- this is a ceiling, not a retry
+without one."""
+
+_RETURN_POLL_S = 0.15
+
+
+def _matches(rt: ExploreRuntime, node: ScreenNode,
+             timeout_ms: int = RETURN_SETTLE_TOLERANCE_MS) -> bool:
+    """Whether the browser is on `node` right now, tolerating a re-render
+    still in flight (AT-335). `settle()` already ran once before every call
+    site of this; this is the extra bounded window on top, polled instead of
+    checked once."""
+    deadline = time.monotonic() + timeout_ms / 1000
+    while True:
+        if _fingerprint(rt, node.depth) == node.id:
+            return True
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(_RETURN_POLL_S)
 
 
 def return_to(rt: ExploreRuntime, node: ScreenNode, *, depth: int = 0) -> bool:
@@ -48,11 +78,11 @@ def return_to(rt: ExploreRuntime, node: ScreenNode, *, depth: int = 0) -> bool:
             return True
         rt.session.go_back()
         rt.session.settle(timeout_ms=rt.bounds.settle_ms)
-        if _fingerprint(rt, node.depth) == node.id:
+        if _matches(rt, node):
             return True
         rt.session.goto(node.url_example)
         rt.session.settle(timeout_ms=rt.bounds.settle_ms)
-        if _fingerprint(rt, node.depth) == node.id:
+        if _matches(rt, node):
             return True
         replay_failed = _replay_discovery(rt, node, depth)
         if replay_failed is None:
@@ -96,7 +126,7 @@ def _replay_discovery(rt: ExploreRuntime, node: ScreenNode, depth: int) -> str |
     except Exception as exc:
         return (f"re-performing {edge.name or edge.target!r} raised "
                 f"{type(exc).__name__}: {exc}")
-    if _fingerprint(rt, node.depth) == node.id:
+    if _matches(rt, node):
         return None
     return f"re-performing {edge.name or edge.target!r} landed on a different screen"
 
