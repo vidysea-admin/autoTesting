@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from autotester.schema.catalog import BlockedReason, StandardPack, Tier
+from autotester.schema.catalog import BlockedReason, Catalog, CatalogEntry, StandardPack, Tier
 from autotester.schema.enums import Action, CaseClass, ReviewStatus, WritePolicy
 from autotester.schema.flowspec import Flow, FlowSpec, Review, Step
 from autotester.schema.project import Project, SecretRef
@@ -190,13 +190,21 @@ def test_every_case_class_has_exactly_one_tier() -> None:
     assert set(TIER_BY_CLASS) == set(CaseClass)
 
 
-def test_tiers_to_run_stops_before_an_unreachable_expensive_tier(root: Path) -> None:
-    """A blocked STATIC tier stops dispatch even though ADVERSARIAL has a
-    runnable entry (a real project: read-only, unapproved-adjacent secret
-    missing does not apply here -- use no-flowspec, whose STATIC entries are
-    all blocked, to construct the fixture without hand-building a Catalog)."""
-    project = _project(secrets=[SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])])
-    cat = catalog(project, None, ProjectStore("demo", root))  # every entry no_flowspec
+def _static_blocked_adversarial_runnable() -> Catalog:
+    """STATIC blocked while ADVERSARIAL is runnable — the only state that tells
+    a stopping `tiers_to_run` from a non-stopping one. Hand-built because
+    `catalog()` never blocks a STATIC class: the no-flowspec fixture these two
+    tests shared blocked EVERY tier, so both passed with `break` OR `continue`."""
+    return Catalog(project="demo", entries=[
+        CatalogEntry(case_class=CaseClass.HAPPY, tier=Tier.STATIC, applicable=True,
+                     runnable=False, blocked_reason=BlockedReason.NO_GROUND_TRUTH),
+        CatalogEntry(case_class=CaseClass.AUTH_WRONG_CREDS, tier=Tier.ADVERSARIAL,
+                     applicable=True, runnable=True)])
+
+
+def test_tiers_to_run_stops_before_an_unreachable_expensive_tier() -> None:
+    cat = _static_blocked_adversarial_runnable()
+    assert cat.runnable_in_tier(Tier.ADVERSARIAL)  # the expensive tier IS reachable
     assert tiers_to_run(cat) == []
 
 
@@ -208,14 +216,11 @@ def test_tiers_to_run_runs_static_then_behavioural_in_order(root: Path) -> None:
     assert order.index(Tier.STATIC) < order.index(Tier.BEHAVIOURAL)
 
 
-def test_tiers_to_run_observed_via_call_order_not_just_final_state(root: Path) -> None:
-    """CT6: 'observed via call order not just final state' -- a caller that
-    iterates `tiers_to_run`'s result and records each tier as it dispatches
-    it never records a tier the stop-rule should have skipped."""
-    project = _project(secrets=[SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])])
-    cat = catalog(project, None, ProjectStore("demo", root))
+def test_tiers_to_run_observed_via_call_order_not_just_final_state() -> None:
+    """CT6 'observed via call order not just final state': a caller recording
+    each tier as it dispatches never records one the stop-rule should skip."""
     dispatched: list[Tier] = []
-    for tier in tiers_to_run(cat):
+    for tier in tiers_to_run(_static_blocked_adversarial_runnable()):
         dispatched.append(tier)
     assert dispatched == []
     assert Tier.ADVERSARIAL not in dispatched
@@ -259,10 +264,8 @@ def test_an_unrelated_flows_unset_secret_does_not_block_the_auth_rows(root: Path
     """ISS-t125-5 repro (b). DEMO_PASSWORD is SET; an admin-import flow's
     SFTP_KEY is not. Cycle 3 gated the auth rows on every key declared anywhere
     in the spec, so signing in reported blocked on a key login never reads."""
-    project = _project(secrets=[
-        SecretRef(key="DEMO_PASSWORD", domains=["demo.test"]),
-        SecretRef(key="SFTP_KEY", domains=["demo.test"]),
-    ])
+    project = _project(secrets=[SecretRef(key="DEMO_PASSWORD", domains=["demo.test"]),
+                                SecretRef(key="SFTP_KEY", domains=["demo.test"])])
     (root / ".env").write_text("DEMO_PASSWORD=hunter2\n", encoding="utf-8")
     admin = Flow(
         id="flow_import", name="Admin import", entry_screen="scr_admin",
@@ -278,12 +281,9 @@ def test_an_unrelated_flows_unset_secret_does_not_block_the_auth_rows(root: Path
 
 
 def test_an_oauth_only_unset_secret_blocks_the_pack_not_the_login_rows(root: Path) -> None:
-    """ISS-t125-5 repro (a). The login password is SET; only the Google sign-up
-    token is missing -- the OAuth pack is the one row that token blocks."""
-    project = _project(secrets=[
-        SecretRef(key="DEMO_PASSWORD", domains=["demo.test"]),
-        SecretRef(key="GOOGLE_SIGNUP_TOKEN", domains=["demo.test"]),
-    ])
+    """ISS-t125-5 repro (a): login password SET, only the Google sign-up token missing."""
+    project = _project(secrets=[SecretRef(key="DEMO_PASSWORD", domains=["demo.test"]),
+                                SecretRef(key="GOOGLE_SIGNUP_TOKEN", domains=["demo.test"])])
     (root / ".env").write_text("DEMO_PASSWORD=hunter2\n", encoding="utf-8")
     signup = Flow(
         id="flow_signup", name="Sign up", entry_screen="scr_signup",
