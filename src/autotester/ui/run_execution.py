@@ -64,7 +64,24 @@ def _run_entry_case(
     both number screenshots from 01 and collide. `evidence_prefix = case.id`
     (AT-572's mechanism) nests this case's files under `run_dir/<case.id>/`."""
     entry_paths = ProjectPaths(f"{slug}-entry-test")
-    shutil.rmtree(entry_paths.profile_dir, ignore_errors=True)
+    profile = entry_paths.profile_dir
+    try:
+        try:
+            profile.lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            shutil.rmtree(profile)
+            try:
+                profile.lstat()
+            except FileNotFoundError:
+                pass
+            else:
+                raise OSError("profile remains after removal")
+    except OSError as exc:
+        error = f"Entry profile cleanup failed for {profile}: {type(exc).__name__}: {exc}"
+        result = RawResult(case_id=case.id, outcome=Outcome.ERRORED, error=error)
+        return result, grade_errored_result(case, result, judge, run_id, store)
     session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
     session.state.evidence_prefix = case.id
     session.start()

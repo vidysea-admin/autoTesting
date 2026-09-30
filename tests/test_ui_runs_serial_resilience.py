@@ -1,32 +1,27 @@
 """AT-574: the serial run route (`ui/routes_runs.py::_run_cases_serially`,
 the default path, `max_parallel=1`) called `run_and_grade_case` with no
 handling at all: one grader/provider exception, or one `run_case` crash,
-propagated out of `trigger_run` -> 500, the remaining cases never ran, the
-`Run` record was never saved, and the results already saved were orphaned.
-The shared `_run_entry_case` helper (used by both the serial and parallel
-routes) had the exact same unguarded shape.
+propagated out of `trigger_run` -> 500, orphaning results and skipping siblings.
 
-The parallel path already got `run_and_grade_case_resilient` in AT-573/
-AT-568 (`test_ui_runs_parallel_crash_recovery.py`, `test_run_case_pipeline_
-resilient.py`). These tests prove the serial loop and `_run_entry_case` now
-go through the same resilient path -- by faking `run_case` and `grade` (the
-two seams `run_and_grade_case_resilient` itself calls), never the resilient
-wrapper, so a pass here is evidence about the ROUTE's wiring, not a
-re-implementation of pipeline behaviour already covered elsewhere. Contract:
-qa/contracts/core-invariants.md C7; qa/contracts/parallel-run.md PR6 (the
-shape this generalizes to the serial path).
+Tests fake execution/grading seams, not resilient wrappers or route callers.
+Contracts: core-invariants C7; parallel-run PR6; ui-run entry-profile honesty.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
+
+import pytest
 from test_ui_runs import _approve_demo_runs
 from test_ui_runs_parallel_trace import _non_entry_case, client, scratch_root
 
+from autotester.core.paths import ProjectPaths
 from autotester.schema.case import Case
 from autotester.schema.enums import Action, CaseClass, CaseKind, Outcome, Result
 from autotester.schema.flowspec import Step
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Verdict
+from autotester.stages.parallel_run import ParallelPlan
 from autotester.store.project_store import ProjectStore
 
 __all__ = ["client", "scratch_root"]
@@ -55,10 +50,18 @@ def _entry_case() -> Case:
     )
 
 
-def _patch_common(monkeypatch):
+def _patch_common(monkeypatch, constructed=None):
     import autotester.ui.routes_runs as routes_runs_module
     from autotester.browser.session import BrowserSession
 
+    if constructed is not None:
+        original_init = BrowserSession.__init__
+
+        def tracked_init(self, *args, **kwargs):
+            original_init(self, *args, **kwargs)
+            constructed.append(self.paths.slug)
+
+        monkeypatch.setattr(BrowserSession, "__init__", tracked_init)
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
     monkeypatch.setattr(BrowserSession, "close", lambda self: None)
 
@@ -79,12 +82,7 @@ def _only_run_id(store: ProjectStore) -> str:
 def test_a_grader_crash_for_one_of_three_serial_cases_still_saves_every_case_and_the_run(
     client, scratch_root, monkeypatch,
 ) -> None:
-    """Variant 1: grading raises for the middle case only, AFTER `run_case`
-    already produced a real COMPLETED result for it. All three cases must
-    end up saved with a verdict, the crashed case's real COMPLETED result
-    must survive with an INCONCLUSIVE verdict (AT-573's own behaviour,
-    reached through the serial route for the first time here), its two
-    siblings keep PASS, and the Run itself must be saved (no 500)."""
+    """A grading crash preserves the real result, siblings and Run."""
     store, cases = _onboard_with_serial_cases(client, scratch_root, n=3)
     crash_id = cases[1].id
     _patch_common(monkeypatch)
@@ -127,11 +125,7 @@ def test_a_grader_crash_for_one_of_three_serial_cases_still_saves_every_case_and
 def test_a_run_case_crash_for_one_of_three_serial_cases_still_saves_every_case_and_the_run(
     client, scratch_root, monkeypatch,
 ) -> None:
-    """Variant 2: `run_case` itself raises for the middle case, before
-    `run_and_grade_case_resilient` ever captures a result for it. That case
-    must be reported as its own ERRORED result, graded through the same
-    `grade_errored_result` path the parallel route uses (AT-568), the other
-    two cases keep their real outcomes, and the Run must be saved (no 500)."""
+    """A serial execution crash must preserve sibling results and the Run."""
     store, cases = _onboard_with_serial_cases(client, scratch_root, n=3)
     crash_id = cases[1].id
     _patch_common(monkeypatch)
@@ -215,3 +209,89 @@ def test_an_entry_case_crash_still_saves_every_case_and_the_run(
     assert results[entry_case.id].outcome is Outcome.ERRORED
     assert results[other_case.id].outcome is Outcome.COMPLETED
     assert verdicts[other_case.id].result is Result.PASS
+
+
+def _entry_cleanup_fault(monkeypatch, profile, mode):
+    """Sabotage only the independently bound fixture-owned entry profile."""
+    import autotester.ui.run_execution as execution
+
+    original_lstat, original_remove = Path.lstat, execution.shutil.rmtree
+    inspections = []
+    if mode != "absent":
+        profile.mkdir(parents=True)
+
+    def inspect(path, *args, **kwargs):
+        if path == profile:
+            inspections.append(path)
+            if mode == "inspection" or (mode == "post-inspection" and len(inspections) > 1):
+                raise PermissionError("fixture inspection denied")
+        return original_lstat(path, *args, **kwargs)
+
+    def remove(path, *args, **kwargs):
+        if path == profile:
+            if mode == "raising":
+                raise PermissionError("fixture removal denied")
+            if mode == "leftover":
+                return None
+        return original_remove(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "lstat", inspect)
+    monkeypatch.setattr(execution.shutil, "rmtree", remove)
+    operation = "removal" if mode == "raising" else "inspection"
+    return "profile remains" if mode == "leftover" else f"fixture {operation} denied"
+
+
+@pytest.mark.parametrize("width", [1, 2])
+@pytest.mark.parametrize("mode", [
+    "raising", "leftover", "inspection", "post-inspection", "healthy", "absent",
+])
+def test_entry_cleanup_truth_and_siblings(client, scratch_root, monkeypatch, width, mode):
+    import autotester.stages.run_case_pipeline as pipeline
+    client._transport.raise_server_exceptions = False
+    store, siblings = _onboard_with_serial_cases(client, scratch_root, 2)
+    entry = store.add_case(_entry_case())
+    profile = ProjectPaths("demo-entry-test", scratch_root).profile_dir
+    assert profile.resolve().is_relative_to(scratch_root.resolve())
+    constructed, executed, callers = [], [], []
+    routes = _patch_common(monkeypatch, constructed)
+    selected = "_run_cases_serially" if width == 1 else "_run_cases_in_parallel"
+    original_caller = getattr(routes, selected)
+    def caller(*args, **kwargs):
+        callers.append(selected)
+        return original_caller(*args, **kwargs)
+    def execute(case, session):
+        executed.append(case.id)
+        return RawResult(case_id=case.id, outcome=Outcome.COMPLETED)
+    def grade(rubric, result, run_id, judge, run_dir=None, secrets=None, saved=pipeline.grade):
+        if result.outcome is Outcome.ERRORED:
+            return saved(rubric, result, run_id, judge, run_dir=run_dir, secrets=secrets)
+        return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
+                       grader_provider="mock")
+    monkeypatch.setattr(routes, selected, caller)
+    plan = ParallelPlan(width, width, width, "config", 99999, 8)
+    monkeypatch.setattr(routes, "plan_parallel_run", lambda *a, **k: plan)
+    monkeypatch.setattr(pipeline, "run_case", execute)
+    monkeypatch.setattr(pipeline, "grade", grade)
+    cause = _entry_cleanup_fault(monkeypatch, profile, mode)
+    _approve_demo_runs(scratch_root)
+    response = client.post("/projects/demo/run", follow_redirects=False)
+    assert response.status_code == 303, response.text
+    run_id = _only_run_id(store)
+    assert store.load_run(run_id).parallel_n == width
+    assert callers == [selected]
+    results = {r.case_id: r for r in store.load_results(run_id)}
+    verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
+    assert set(results) == set(verdicts) == {entry.id, *(c.id for c in siblings)}
+    failed = mode not in {"healthy", "absent"}
+    assert results[entry.id].outcome is (Outcome.ERRORED if failed else Outcome.COMPLETED)
+    assert (verdicts[entry.id].result is Result.PASS) is not failed
+    assert (entry.id in executed) is not failed
+    assert ("demo-entry-test" in constructed) is not failed
+    if failed:
+        assert str(profile) in results[entry.id].error
+        assert cause in results[entry.id].error
+        assert verdicts[entry.id].note == results[entry.id].error
+        assert verdicts[entry.id].result is Result.INCONCLUSIVE
+        assert verdicts[entry.id].grader_provider == "rule"
+    assert all(results[c.id].outcome is Outcome.COMPLETED for c in siblings)
+    assert all(verdicts[c.id].result is Result.PASS for c in siblings)
