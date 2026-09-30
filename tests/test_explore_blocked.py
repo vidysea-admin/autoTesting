@@ -27,7 +27,7 @@ from autotester.schema.enums import (
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
-from autotester.stages import explore_status
+from autotester.stages import explore_status, explore_traversal
 from autotester.stages.explore import run_crawl
 from autotester.store.project_store import ProjectStore
 
@@ -136,3 +136,71 @@ def test_login_precedence_over_abort_does_not_invent_a_bound(declared) -> None:
         login_case=case, login_signature="login", current_stop_reason="abandoned visits")
     assert status is (CrawlStatus.LOGIN_FAILED if declared else CrawlStatus.LOGIN_WALL)
     assert "bound fired" not in reason
+
+
+@pytest.mark.parametrize("case", ["aborted_error", "aborted_dialog", "queued", "max_actions"])
+def test_deferred_execution_is_finished_before_completeness_is_judged(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: str,
+) -> None:
+    """Injected states prove finalization ordering, not browser recovery mechanisms."""
+    original_drain = explore_traversal.drain_deferred
+    captured = []
+
+    def inject_then_drain(rt):
+        captured.append(rt)
+        node = next(iter(rt.nodes.values()))
+        if case.startswith("aborted_"):
+            changed = node.model_copy(update={"status": NodeStatus(case)})
+            rt.nodes[node.id] = changed
+            rt.store.add_node(changed)
+        elif case == "queued":
+            discovered = ScreenNode(
+                crawl_id=rt.crawl.id, project=rt.project.slug,
+                url_template="/deferred-discovery", url_example="https://app.test/deferred",
+                signature="fresh-deferred-discovery")
+            assert discovered.id not in rt.nodes
+            rt.nodes[discovered.id] = discovered
+            rt.store.add_node(discovered)
+            rt.frontier.queue.append(discovered.id)
+            rt.frontier.screens_found += 1
+        else:
+            rt.deferred.append((node.id, node.elements[0]))
+            rt.frontier.actions_used = rt.bounds.max_actions
+        original_drain(rt)
+
+    monkeypatch.setattr(explore_traversal, "drain_deferred", inject_then_drain)
+    crawl, store, page = crawl_it(tmp_path)
+    rt = captured[0]
+    assert rt.frontier_exhausted is False
+    if case.startswith("aborted_"):
+        assert crawl.status is CrawlStatus.ABORTED
+        assert crawl.stop_reason == f"abandoned visits: {case} (/)"
+    elif case == "queued":
+        assert crawl.status is CrawlStatus.STOPPED_BOUND
+        assert crawl.stop_reason == (
+            "destructive_last (1 screen(s) first reached by a destructive press "
+            "were recorded, not explored)")
+        assert next(n for n in store.list_nodes(crawl.id)
+                    if n.signature == "fresh-deferred-discovery").status is NodeStatus.QUEUED
+    else:
+        assert crawl.status is CrawlStatus.STOPPED_BOUND
+        assert crawl.stop_reason == "max_actions"
+        assert len(rt.deferred) == 1
+        assert rt.deferred[0][1].selector not in page.clicks
+
+
+@pytest.mark.parametrize("node_status", [NodeStatus.ABORTED_ERROR, NodeStatus.ABORTED_DIALOG])
+@pytest.mark.parametrize("completed", [True, False])
+def test_abandoned_visit_retains_failed_login_observation_qualifier(node_status, completed):
+    node = ScreenNode(crawl_id="c", project="p", url_template="/lost",
+                      url_example="https://app.test/lost", signature="lost", status=node_status)
+    case = Case(project="p", flow_id="login", kind=CaseKind.BEST, case_class=CaseClass.HAPPY,
+                title="login", steps=[Step(order=1, action=Action.NAVIGATE,
+                                           target="https://app.test/login")])
+    error = "RuntimeError: cannot observe"
+    status, reason = explore_status.terminal_status(
+        completed=completed, actions_used=2, denied=0, nodes=[node], edges=[],
+        login_case=case, login_signature=None, login_observe_error=error)
+    assert status is CrawlStatus.ABORTED
+    assert reason == (f"abandoned visits: {node_status.value} (/lost) -- login not judged: "
+                      f"could not observe the login page ({error})")

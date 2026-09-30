@@ -168,7 +168,8 @@ def terminal_status(*, completed: bool, actions_used: int, denied: int,
     if bounded:
         status = CrawlStatus.STOPPED_BOUND
     elif abandoned:
-        return CrawlStatus.ABORTED, "abandoned visits: " + ", ".join(sorted(abandoned))
+        status = CrawlStatus.ABORTED
+        current_stop_reason = "abandoned visits: " + ", ".join(sorted(abandoned))
     elif not completed:
         status = CrawlStatus.STOPPED_BOUND
     elif actions_used == 0 and denied > 0:  # AT-242
@@ -176,7 +177,8 @@ def terminal_status(*, completed: bool, actions_used: int, denied: int,
     else:
         status = CrawlStatus.COMPLETED
     reason = (f"{current_stop_reason} -- every reachable action was denied by policy"
-             if status is CrawlStatus.BLOCKED_NO_ACTIONS else None)
+             if status is CrawlStatus.BLOCKED_NO_ACTIONS else
+             current_stop_reason if status is CrawlStatus.ABORTED else None)
     if login_case is not None and login_observe_error is not None:  # AT-474
         base = reason or current_stop_reason
         reason = (f"{base} -- login not judged: could not observe the login page "
