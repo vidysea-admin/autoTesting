@@ -39,7 +39,7 @@ def test_revised_goal_contract_is_registered() -> None:
                   "tests/test_explore_traversal.py tests/test_persona_changes.py"),
         "T-166": (["T-125", "T-164", "T-165", "T-170"], tests + "test_eval_compiler.py"),
         "T-170": (["T-163"], tests + "test_network_assertions.py"),
-        "T-171": (["T-165"], tests + "test_permission_surface.py"),
+        "T-171": (["T-165"], tests + "test_permission_coverage.py"),
         "T-172": (["T-163"], tests + "test_run_trace.py"),
         "T-173": (["T-163"], tests + "test_parallel_run.py"),
         "T-174": (["T-125"], tests + "test_cli_mcp.py"),
