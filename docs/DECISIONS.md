@@ -1800,3 +1800,143 @@ agree again.
 No `docs/ARCHITECTURE.md` prose change. No enforcement-path file touched.
 
 **Links:** AT-710 - ISS-at710-1 - b385910f - D-057 - D-058 - D-059 - T-168
+
+## D-061 | 2026-09-30 | type: fix | status: ACTIVE
+
+**What:** Reopen AT-113 and T-165 completion acceptance after independent executable evidence
+proved that an abandoned seed still reports completed/frontier empty/success=true. Repair the
+existing runtime, legacy display and persona deletion-evidence seams under the reviewed plan.
+
+**Why:** The user's whole-portal breadth-first tester must distinguish exhausted actionable
+frontier from a queue drained after failed visits. Otherwise reports hide incomplete testing
+and stored learning may invent regressions. Preserve useful partial exploration and siblings,
+login precedence, actual named bounds, credential scoping and existing safety policy.
+
+**Result:** Independent real run_crawl fixture reproduced completed/0 actions/one aborted_error/
+success=true/issues=1; the actual fresh Pathlynks crawl agrees. Existing targeted baseline is
+32 passed, showing the missing assertion. T-165 reopened; isolated codex/at113-crawl-completion
+worktree created. Revised preimplementation plan explicitly approved by a fresh independent
+reviewer. Implementation, mutation evidence, headed browser validation and dual PASS remain
+pending; this entry is not a release or whole-goal completion claim.
+
+**Changes-authorized:** Existing source/tests named in .work/at113-completion-plan.md; .goal/goal.json
+T-165 status and resolution note. No architecture prose, schema, contract or enforcement change.
+
+**Links:** AT-113; T-165; T-145; qa/verdicts/sweep-2026-09-30-crawl-recovery.md;
+qa/evidence/sweep-2026-09-30-crawl-probe.py; .work/at113-completion-plan.md.
+
+## D-062 | 2026-10-06 | type: decision | status: ACTIVE
+
+**What:** Define T-196 L10's declarable citation claim as a visible bounded
+quotation from the cited decision's What section, with an equivalent strict
+JSON decision-claim marker. Require independently reviewed complete occurrence
+coverage; optional markers beside unrestricted authorization prose are insufficient.
+
+**Why:** D-060 deferred the form and rejected unmeasured keyword matching.
+Independent review found that a correct but irrelevant quotation could hide a
+wrong surrounding claim. Exact attribution plus coverage closes that loophole
+without pretending that textual matching proves operational authorization.
+
+**Result:** Authorizes checker-owned contract adoption only, not product PASS.
+Canonical form: `Decision claim D-001: "Exact quotation from What" <!-- decision-claim: {"id":"D-001","what":"Exact quotation from What"} -->`.
+Require same-line visible/JSON agreement, strict id/what fields, nonempty
+case-sensitive contiguous What quotation with whitespace-only normalization.
+Reject detached/malformed/conflicting markers and ambiguous decision bodies.
+Archive full entries may supply What; index summaries alone are unavailable.
+Preserve L9 foreign-entry and reasoned per-occurrence exemptions.
+Coverage reviews bind path, exact text, cited id and multiplicity; changes
+invalidate review. Independently classify every occurrence in the existing five
+globs, migrate mutable authorization claims, and record attributable historical
+reviews without rewriting immutable decision history. Unknown/disputed claims
+remain reported; ordinary-reference classifications require reasons/attribution.
+Added unclassified resolving claims must fail coverage even when L9 passes.
+Known wrong-subject examples remain test oracles; do not restore historical
+incorrect citations currently replaced by WP-DECISION placeholders.
+Keep T-196 critical; new feature uses active .3 tier L and dual final checks.
+No historical generic human-required alert substitutes for an explicit gate;
+the task's HUMAN-free-on-form condition applies once the form is adopted.
+
+**Changes-authorized:** qa/contracts/living-ledger.md L10 and its amendment log,
+checker-owned only. No L9 weakening, source/schema/enforcement/architecture edits,
+goal completion, runtime launch, production write, or release authorized here.
+
+**Links:** D-060; T-196; AT-710; AT-718; ISS-at710-1;
+qa/feedback-inbox.md (2026-10-06 design and independent coverage challenge).
+
+## D-063 | 2026-10-06 | type: decision | status: ACTIVE
+
+**What:** Adopt the account-derived authorization answer already given by Umesh
+for the Pathlynks USER run: provisioned declared credentials, exact target and
+allowed domains permit a newly derived signed LIVE_CASE grant. System bounds
+are positive finite operational brakes, not quantities a human must guess.
+
+**Why:** qa/gates/at674-approval-key-and-live-case-grant.md's Answer rejected
+manual count/key entry, but consent.md still excludes every auto-granting path.
+That mismatch must be resolved explicitly before implementation, not bypassed.
+Maintain unconditional verification and never sign or rescue loaded approval rows.
+
+**Result:** Authorizes checker-owned contract reconciliation and independently
+approved implementation in existing seams. Preserve exact project/kind/target,
+expiry, positive operational bounds, signatures and pre-action fail-closed checks.
+Only credentials actually referenced by the requested case set are preconditions;
+unused COUNSELLOR keys are not a USER-run gate. Credential substitution remains
+per-reference host-scoped at page.fill; no value enters a model/log/artifact.
+
+First-use key provisioning is an explicit preparation operation called by the
+authorized grant path, never by import/load/signature verification. Generate a
+random key only if none exists, preserve process overrides and stored keys,
+use the existing owner-only atomic env writer with serialized create-if-absent,
+and fail closed if signed historical state has lost its verification key.
+Keep legacy approvals unchanged. Derive grants only from validated current
+account/target/scope inputs; no wildcard, cross-project or adversarial auto-grant.
+
+Use one aggregate RunBudget across serial, entry and parallel case execution.
+Report any stopped/truncated run and its named operational brake, never as
+completed E2E. Recorded actions/evidence must be redacted; secret prior values
+are never copied into an audit log. Explicit human FlowSpec review, adversarial
+authorization, production promotion and model-spend gates are not removed.
+
+**Changes-authorized:** qa/contracts/consent.md purpose, auto-grant exclusion,
+new account-derived LIVE_CASE criterion and amendment log, checker-owned only;
+approved subsequent existing core consent/id, env writer, CLI grant-default,
+UI run/preflight, shared budget/executor and existing test seams. No enforcement
+path edits, new product module, blanket live-account writes or paid model run.
+Existing architecture prose remains unchanged unless separately authorized.
+
+**Approved-by:** Umesh — AT-674 direct Answer and 2026-10-06 instruction to continue
+with existing approvals; exact decision-entry file creation separately approved.
+
+**Links:** T-122; AT-674; AT-570; AT-651; D-018;
+qa/gates/pathlynks-user-account-first.md;
+qa/gates/at674-approval-key-and-live-case-grant.md;
+qa/contracts/consent.md CN1-CN10; qa/contracts/core-invariants.md C5/C12;
+qa/manifests/pathlynks-exact-host.md.
+
+## D-064 | 2026-10-06 | type: session | status: ACTIVE
+
+**What:** Record the bounded T-196 build checkpoint: independently reviewed
+citation inventory adoption, exact existing-file claim migrations and corrected
+foreign/doctor acceptance fixtures. This is a progress record, not task closure.
+
+**Why:** Real-tree attribution and causal test evidence must remain distinct from
+fixture green, and a cloud-feasibility discussion must not imply migration.
+
+**Result:** The corrected citation test file passed all 61 tests in 19.15s on
+SHA256 FDE194E9512684B270AC93F2CF41F34E06EB0422D0AAE5ABC0610226E3C4FDEC.
+Two current isolated foreign-exemption/doctor-caller proofs reached named assertions
+and restored byte-identically. At this recorded checkpoint, 721 independently
+reviewed rows were adopted; the earlier 613-row root binding check had zero errors.
+Remaining decision bodies and other five-glob records are not certified covered.
+Two gate claim migrations preserve original scope. Historical field/subject
+conflicts need an owner reconciliation choice, asked once; no exemption implemented.
+Latest measured free RAM666936KiB does not satisfy the existing4GiB acceptance
+headroom. No full suite, final checker verdict, browser/account/provider call,
+product PASS, new commit, push, deployment or cloud migration occurred.
+The objective remains58done/24pending. Verification/persistence gate is unpassed.
+
+**Changes-authorized:** none. No contract, architecture or enforcement change;
+no historical-disposition exception or retrospective operational permission.
+
+**Links:** T-196; qa/manifests/t196-citation-subject-check.md;
+qa/feedback-inbox.md (checkpoints D/E/F and independently approved fixture/gate plans);
+tests/test_citations.py; .goal/goal.json.

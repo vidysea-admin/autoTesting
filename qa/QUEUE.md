@@ -1,5 +1,29 @@
 # qa/QUEUE.md — checker sweep queue (top-3 recommended next units)
 
+2026-10-01 bounded Mode B full-goal triage — EXHAUSTED (partial seven-check sweep, not CLEAN).
+Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all older queue history below.
+
+## Current independent next units (supersedes obsolete recommendations below)
+
+| Priority | Unit | State and evidence |
+|---|---|---|
+| 1 | TODO: AT-733 logged-out entry-profile cleanup honesty | Existing `ui/run_execution.py:55::_run_entry_case`, suppressed wipe error at67 then browser startup at70; canonical open/high AT-733; C12/RU1/RU3. Existing-file red-first plan, no T-165/live-account dependency. |
+| 2 | TODO: T-125 catalog scoped cycle4 resume | D-051 answered; CT9 written; CT6 order-only stands under D-058 point2. Recover/identify existing branch artifact before fresh plan/checker; no discard/recreate/merge authorization. |
+| 3 | TODO: T-151 deterministic discovery/context | T-150 done; ai-target AI1/AI8 and D-017 named stages. Synthetic in-root fixtures first, ordinary independent plan/new-file scope validation; no real-target firing authorization. |
+
+AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
+
+---
+
+2026-09-30 bounded crawl-recovery sweep addendum (preserves previous queue):
+1. AT-113 / T-165 reopen: independently reproduced completed/0 actions/one aborted_error;
+   fix new and legacy completion truth, frontier exhaustion and persona deletion honesty first.
+2. Generic authenticated recovery using existing return_to/replay seams; truthful failure alone
+   does not satisfy authenticated end-to-end crawling.
+3. T-171 permission-surface coverage (carry the prior work/recovery priority).
+Report and proposed existing-file plan: `qa/verdicts/sweep-2026-09-30-crawl-recovery.md`.
+at673 cycle 3 is checked-PASS with matching verdict; ISS-at673-1 already owns detector debt.
+
 Refreshed by `/checker sweep` **2026-09-29T12:28Z** (system clock, `date -u`, not typed — AT-399), HEAD
 `ade87168` (D-057). Bound strictly to `D:/autoTesting`. **Single-agent sweep** — measured ceiling this tick
 2.81 GB free RAM, the same constraint the 2026-09-28T12:35 sweep stated, so the 3-shard split was not

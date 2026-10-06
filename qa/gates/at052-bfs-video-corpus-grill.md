@@ -60,5 +60,6 @@ logged-in app. This becomes Track 0 and lands first.
 each broken into individually contract-backed, checker-verified units.
 
 **Not granted by this answer:** no wildcard for `allowed_domains` (still the boundary the browser
-may not cross); no `CaseClass` enum expansion (D-005's REJECTED status stands — video-derived
-issues get their own `Issue` schema instead).
+may not cross); no `CaseClass` enum expansion; video-derived issues get their own `Issue` schema instead.
+
+Decision claim D-005: "`CaseClass` stays closed; `extra=\"forbid\"` stays." <!-- decision-claim: {"id":"D-005","what":"`CaseClass` stays closed; `extra=\"forbid\"` stays."} -->

@@ -109,8 +109,8 @@ plus the trainer truth sheet).
 
 - T-154 bounded adversarial pass and T-155 its tiered report — held pending a separate approval
   (Umesh, 2026-09-27). No probe traffic is sent in this push.
-- Regenerating tests instead of maintaining them (refused, D-041).
-- A differential base-vs-head oracle (deferred to Umesh, D-041).
+Decision claim D-041: "**Refused:** \"regenerate tests instead of maintaining them\" (docs/research/testsprite-2026-09.md §6)." <!-- decision-claim: {"id":"D-041","what":"**Refused:** \"regenerate tests instead of maintaining them\" (docs/research/testsprite-2026-09.md §6)."} -->
+Decision claim D-041: "**Deferred to Umesh:** the differential base-vs-head oracle (research item E). It needs two deployable builds of the app under test." <!-- decision-claim: {"id":"D-041","what":"**Deferred to Umesh:** the differential base-vs-head oracle (research item E). It needs two deployable builds of the app under test."} -->
 - Any run against a live user's credentials, or any write to production Mongo.
 
 ## Seeds

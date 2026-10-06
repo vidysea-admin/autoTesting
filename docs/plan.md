@@ -78,3 +78,46 @@ a UI surface. Audience is `internal-tool`, so a required walk covers 1–2 user 
    there stalls S3 and S4. Noticed as a STALLED stamp with a `qa/debug/` report.
 3. **The agent layer may not earn its place** — T-181 measures it against the plain pipeline, and a
    negative result means it is removed, not patched. Noticed in T-181's own bench numbers.
+
+## T-190 concrete PLAN proposal — 2026-10-06
+
+Status: proposed, not implementation-approved or shipped. This supplements unit10/R28;
+it does not replace the canonical goal dependencies or turn an advisory finding into a
+functional verdict. Product direction is already answered A in
+`qa/gates/meeting-user-persona-ux-judging.md`; do not ask that question again.
+The implementation/count preview and review receipts live in the existing
+`qa/manifests/t190-plan-preparation.md`.
+
+The contract's five required plan choices are:
+
+1. Use the project's configured functional judge through the existing Provider registry,
+   with a separate UX prompt/output schema. Preserve vendor/model/fallback order; the UI's
+   currently hardcoded provider is not evidence of correct configuration resolution.
+2. Proposed opt-in default:20 physical call attempts per run, serial across eligible cases,
+   failed attempts and retries spent. This is not a money/token ceiling. Enforce the shared
+   budget below retry/redirect/fallback dispatch; unsupported transport/output-limit
+   capabilities refuse before a call with a typed reason. Record exhausted remaining cases
+   as advisory skipped_budget; functional results remain unchanged. The numeric limit,
+   payload/output limits and complete installed-adapter wiring still need plan approval.
+3. Persist one typed `projects/<slug>/runs/<run_id>/ux_report.json`, separately from result
+   and verdict files. Include per-case findings, exact evidence path/step, severity, effective
+   conditions and safe error/skip status. Absent, malformed and incomplete are distinct;
+   exports must never turn a failed UX load into a completed empty report.
+4. Store typed personas in `projects/<slug>/user_personas.jsonl`; attach optional refs on
+   both Project and Case, case override first. Validate project-local ids, guard complete
+   snapshot values before persistence, and preserve refs during fixed-step construction.
+5. `ux_enabled=False` by default. Explicit opt-in snapshots run inputs, then performs one
+   read-only UX pass after functional results/verdicts persist, in stable case order. No
+   rerun of product actions; advisory failure must not abort functional reporting.
+
+Condition claims are evidence-local:measure each successful screenshot's capture interval,
+not merely equal start/end samples for the case. Unknown/unsupported locale or device
+conditions cannot support persona findings. Keep Verdict/Judgment and functional rubric
+construction untouched; require byte-identical functional verdicts with and without UX.
+
+Exact creation approval was requested once for the six proposed schema/stage/store/prompt/test
+paths listed in the manifest. It remains pending; no file is created by this proposal.
+The remaining implementation gate is a complete independently approved candidate patch/count
+proof plus installed-provider budget fidelity. These engineering obligations, full-suite,
+falsification, export/browser checks and final independent acceptance remain mandatory.
+No paid run, live write, contract change, architecture change or product PASS is authorized here.

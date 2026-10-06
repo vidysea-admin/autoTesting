@@ -10,10 +10,14 @@ leave intact).
 ## Purpose
 
 Consent used to be a habit: a `write_policy` default and a gate file a careful operator honoured.
-This makes it **a file a human writes once and a runner checks every time** — what may be touched,
-how much of it, until when, and who said so. The gate stands between an autonomous crawler and a
-live production ERP, so it is judged adversarially: the question is never "does the code look like
-it refuses", it is "can a check that ran for real get past it".
+This makes it **a signed approval a runner checks every time** — the exact project, kind, target,
+scope, expiry and operational bounds. Human-granted approvals remain supported. **D-063** adopts
+Umesh's AT-674 Answer for the Pathlynks USER run: provisioned declared credentials, the exact target
+and allowed domains authorize a newly derived `LIVE_CASE` grant under CN11. The human does not type
+counts or a signing key; positive finite bounds are system-selected operational brakes. This narrow
+derivation never bypasses the gate or repairs a loaded row. The gate is judged adversarially: the
+question is never "does the code look like it refuses", it is "can a check that ran for real get
+past it". CN1-CN10 retain their fail-closed obligations.
 
 ## Criteria
 
@@ -201,6 +205,53 @@ it refuses", it is "can a check that ran for real get past it".
   and an over-budget refusal; `grep` shows no truthiness guard on a bound in `RunBudget`.
   **Links:** AT-660; AT-570; AT-674; core-invariants C12.
 
+### CN11 — Account-derived LIVE_CASE grants preserve verification and bound the whole run
+- **Authority and identity (D-063; AT-674 Answer).** A newly minted grant derives only from validated
+  current provisioned account credentials declared by the project, the exact requested target and
+  allowed domains. Its `project`, `run_kind=LIVE_CASE`, `target` and `scope` match the requested run
+  exactly; scope records the validated account/domain scope without wildcards or widening. CN5's
+  slash/case/query distinctions still apply. No transfer across projects, kinds, targets or scopes.
+  No automatic `READ`, `CRAWL` or `ADVERSARIAL` grant follows from this criterion.
+- **Selected credentials only.** Preconditions inspect the keys actually referenced by the requested
+  case set. Missing, undeclared, unavailable or out-of-scope referenced credentials refuse before
+  browser actions. Unused COUNSELLOR keys never gate the USER run or provide a fallback identity.
+  Resolution remains per-`SecretRef` host-scoped at the existing browser substitution boundary; a
+  credential value never enters a grant, model, log or artifact (C5).
+- **Explicit first-use preparation.** Only the authorized grant path may call key provisioning;
+  imports, file loads and signature verification never create a key. Generate a random key only
+  when neither an effective process override nor a stored key exists. Preserve existing stored
+  keys, process overrides and unrelated env entries. Use the existing owner-only atomic env writer
+  with serialized create-if-absent: concurrent first uses converge on one persisted key and no
+  caller overwrites the winner. If signed historical state has lost its verification key, refuse
+  instead of generating a replacement and making that history unverifiable.
+- **New rows only; verification remains unconditional.** Never sign, re-sign, migrate, backfill or
+  rescue loaded approval rows. Mint a new signed, content-addressed row with an explicit unexpired
+  expiry obeying CN4 and validated identity/scope. Verify signature, content integrity, identity,
+  expiry, production requirements and bounds before any browser action at every execution entry
+  and at the existing seam. Missing or invalid inputs fail closed; no dev/fixture/localhost bypass.
+- **Operational brakes.** System-selected `max_actions`, `max_probes` and `wall_clock_s` are positive
+  and finite; CLI grant defaults are positive real bounds with invalid/nonpositive inputs rejected.
+  Bounds retain CN10's single meaning: zero never becomes unlimited. Record the actual limits;
+  do not invent a human consent ceiling or describe a default as measured product coverage.
+- **One aggregate budget.** Serial, entry/login and parallel case execution share one `RunBudget`
+  for the entire requested run, including executor actions, probes and elapsed wall time. No path,
+  worker, retry or case resets or bypasses its consumed totals. Stop on a brake, identify the brake
+  and record stopped/truncated truth; partial execution never reports completed E2E (C12).
+- **Redacted accountability.** Record performed actions, field changes and their prior values,
+  button presses, actual bounds and stop reasons in the existing report/trace surfaces after
+  redaction. Secret prior values are never copied into accountability records or screenshots.
+- **Remaining gates.** Human FlowSpec review, explicit adversarial authorization, production
+  promotion, project write policy and model-spend gates remain applicable. CN11 grants no blanket
+  live-account write, paid-model-run, production-write or release authority.
+- **Verify:** independently exercise the authorized grant through real preflight/seam checks with
+  synthetic credentials and a scratch env; refuse each identity/scope variant and invalid credential,
+  signature, expiry or bound. Prove unused role keys are irrelevant, loaded rows stay byte-intact,
+  concurrent first use preserves the winning key/other entries/overrides, and lost-key signed history
+  refuses without writes. Exercise serial/entry/parallel against the same budget, exceed each named
+  brake by a stated margin, and assert redacted stopped/truncated reports and trace records. Each
+  claimed guard has an isolated green-before/red-after/restored falsification under C7; acceptance
+  requires its own evidence, not this contract adoption.
+
 ## Out of scope / ignore (do not raise these as findings)
 
 - **Revocation.** Expiry only, for now. There is no `autotester revoke`; deleting the row is the
@@ -208,8 +259,9 @@ it refuses", it is "can a check that ran for real get past it".
 - **Gate 1 (`ApprovalKind.READ`) having no caller yet** — T-151's discovery scan is its unit.
 - **Gating `ingest` / `expand` / `run_case`** — T-122's live-case gate is a separate unit.
 - **A UI grant form.** CLI only; the credentials page is the right home and is not built here.
-- **Org-level / multi-project / wildcard approvals**, and **any auto-granting path whatsoever** —
-  the absence of one is the feature.
+- **Org-level / multi-project / wildcard approvals**, and **auto-granting outside CN11's
+  account-derived LIVE_CASE path** — D-063 authorizes only that narrow exception. Automatic READ,
+  CRAWL and ADVERSARIAL grants remain excluded.
 - The `production` field being unused by the crawl gate (recorded in CN7 as a boundary, tracked as
   AT-112 — not a fresh finding each check).
 - `approvals.jsonl` being deliberately hostile to hand-editing. It is a **stated exception** to
@@ -298,3 +350,13 @@ it refuses", it is "can a check that ran for real get past it".
   criterion and adds no obligation. **Changes-authorized:** qa/contracts/consent.md CN10 + Amendment
   log (this entry). No enforcement-path file touched. **Links:** AT-682; AT-660; AT-570;
   qa/contracts/core-invariants.md C6, C12(b).
+
+- 2026-10-06 · CRITICAL, authorized by **D-063** (Approved-by: Umesh; AT-674 direct Answer)
+  · checker-owned adoption by `/root/adopt_account_grant_contract`: Purpose and auto-grant exclusion
+  reconciled; **CN11** added for account-derived LIVE_CASE only. Records exact identity/scope,
+  selected credential preconditions, explicit serialized first-use key preparation with lost-key
+  refusal, unchanged loaded rows, positive finite brakes, one aggregate budget and redacted truthful
+  accountability. CN1-CN10 unchanged; other authorization, production and model-spend gates retained.
+  **Changes-authorized:** qa/contracts/consent.md Purpose, auto-grant exclusion, CN11 and this log.
+  Contract maintenance only: no product acceptance/PASS, runtime, credential write, commit or release.
+  **Links:** D-063; AT-674; T-122; qa/gates/pathlynks-user-account-first.md; core-invariants C5/C12.

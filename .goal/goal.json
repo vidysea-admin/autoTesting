@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-09-30T17:53:08",
+  "updated": "2026-10-07T01:27:01",
   "progress": {
-    "total": 81,
-    "done": 57,
+    "total": 82,
+    "done": 59,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 24,
+    "pending": 23,
     "current": "T-122",
-    "percent": 70
+    "percent": 72
   },
   "tasks": [
     {
@@ -821,7 +821,7 @@
         "cmd": "uv run pytest tests/test_discover.py",
         "expect_exit": 0
       },
-      "note": "D-017: signals by grep/file inspection, never a model. A model may NAME the system kind and may never choose which checks run. Every Signal cites a real file:line. Obsidian = structured markdown only (frontmatter + tags).",
+      "note": "D-017: signals by grep/file inspection, never a model. A model may NAME the system kind and may never choose which checks run. Every Signal cites a real file:line. Obsidian = structured markdown only (frontmatter + tags). | 2026-10-06: approved persistent reason-test hash FB6D18F8...57CD refreshed. Named MockProvider-only check unproven: uv empty-venv setup failed before collection; direct existing-interpreter session26032 interrupted without output/result. Created empty venv moved recoverably under .work; no dependency installation or PASS. See current maker manifest.",
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
@@ -1021,7 +1021,7 @@
         "cmd": "uv run pytest tests/test_explore_completeness.py tests/test_explore_traversal.py tests/test_persona_changes.py",
         "expect_exit": 0
       },
-      "note": "Complete means frontier exhausted; any safety/time/action/depth bound is named as incomplete with every denied, skipped and unreached control visible. | D-040 (2026-09-24): widened in place -- strategy bfs|hybrid (Crawljax idea port), fill-value replay, incremental crawl seeded from portal_persona.json, new/changed/missing/broken persona revisions. API assertions moved to T-170; permission surface to T-171. | Reopened 2026-09-30: independent checker reproduced AT-113, completed/frontier empty/success=true over an aborted_error seed and zero actions. CR5 completion and CR4 deletion-evidence truth need repair; qa/verdicts/sweep-2026-09-30-crawl-recovery.md. Prior verdict retained as history, not current completion proof.",
+      "note": "Complete means frontier exhausted; any safety/time/action/depth bound is named as incomplete with every denied, skipped and unreached control visible. | D-040 (2026-09-24): widened in place -- strategy bfs|hybrid (Crawljax idea port), fill-value replay, incremental crawl seeded from portal_persona.json, new/changed/missing/broken persona revisions. API assertions moved to T-170; permission surface to T-171. | Reopened 2026-09-30: independent checker reproduced AT-113, completed/frontier empty/success=true over an aborted_error seed and zero actions. CR5 completion and CR4 deletion-evidence truth need repair; qa/verdicts/sweep-2026-09-30-crawl-recovery.md. Prior verdict retained as history, not current completion proof. | 2026-10-06: approved contained typing recovery still misses shared bound recheck after eligibility/policy, before counters/_type_one. Existing private test function extended with four after_eligibility cases (original12 retained; source unchanged). Exact4-case runner extension asked once, awaiting answer; no RED/GREEN claimed. Evidence qa/manifests/at113-crawl-completion.md.",
       "attempts": 0,
       "created": "2026-09-10T05:58:09",
       "user_value": "high",
@@ -1058,7 +1058,7 @@
       "criticality": "high",
       "done_check": {
         "type": "cmd",
-        "cmd": "uv run pytest tests/test_permission_surface.py",
+        "cmd": "uv run pytest tests/test_permission_coverage.py",
         "expect_exit": 0
       },
       "note": "D-040: split from T-165. Writes only under write_policy=TEST_ACCOUNT + per-run RunApproval; destructive actions last; a blocked control never counts as covered.",
@@ -1404,7 +1404,7 @@
     {
       "id": "T-185",
       "title": "at416-B: re-check wave/at408-416-scroll-reach (merge master, fresh cycle, real-Chromium Mode D + 50-shape corpus)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "criticality": "critical",
@@ -1413,10 +1413,11 @@
         "cmd": "uv run pytest tests/test_browser_scroll_reach_at408_416.py",
         "expect_exit": 0
       },
-      "note": "AT-416/AT-408/AT-379; gate at416-clip-vs-reach-direction answer B (D-048). Branch built earlier, held on the gate.",
+      "note": "AT-416/AT-408/AT-379; gate at416-clip-vs-reach-direction answer B (D-048). Original requirement satisfied by existing merged independent cycle1PASS, qa/verdicts/at408-416-scroll-reach.md, and AT-731 historical done_check: 2 passed in 9.72s on 2026-09-29. 2026-10-06 read-only identity audit attributes three changed paths to separately checked-PASS T-186; nine relevant Git blobs unchanged. Task-id bookkeeping reconciliation, not a new runtime PASS. Root's extra fresh2PASS condition was an optional refresh plan, not the original task requirement, and is corrected. Preserve preparation/refusal history: frozen178-file/1.67MiB credential-free fixture export; preflight refused at767360KiB free; later1371236KiB below unchanged2GiBfloor; no container/browser/test launched today. Original coverage/timing follow-ups and final combined/live acceptance remain. Evidence qa/manifests/at408-416-scroll-reach.md.",
       "attempts": 0,
       "created": "2026-09-26T22:47:07",
-      "user_value": "normal"
+      "user_value": "normal",
+      "completed": "2026-10-06T15:47:19"
     },
     {
       "id": "T-186",
@@ -1502,7 +1503,7 @@
         "expect_exit": 0,
         "waiver": "no code or test exists yet for the UserPersona/UX-advisory track -- schema/user_persona.py and its test file are unbuilt, and the plan gate in qa/contracts/persona-ux-advisory.md (Plan-gate items 3-4) has not fixed the exact module/file layout, so a task-specific node id would be a guess, not a fact. Tighten this to the real test node the moment T-190 is built (AT-647/ISS-at638-remainder-2 is exactly the failure mode of guessing wrong)."
       },
-      "note": "gate meeting-user-persona-ux-judging answer A (D-048). Checker writes the contract once this task exists; maker PLAN gate (intent/spec/plan) before code.",
+      "note": "gate meeting-user-persona-ux-judging answer A (D-048). Contract persona-ux-advisory already exists; implementation pending. Concrete five-choice PLAN proposal added to docs/plan.md on2026-10-06, original advisory-only scope preserved. Exact six source/prompt/test paths creation consent requested once, pending. Parallel BUILDING helpers recorded 11 complete source-text candidates with actual stdlib AST/count/signature/header preservation checks; proposal only, product sources unchanged. Fresh AI-engineer installed-source review identifies Gemini auxiliary async-client construction/ownership gap needing a configuration-preserving seam. Existing qa/manifests/t190-plan-preparation.md records incomplete orchestration/budget/UI/test candidates and unresolved plan gate. No product runtime, acceptance, PASS, paid calls or livewrites authorized.",
       "attempts": 0,
       "created": "2026-09-26T22:47:07",
       "user_value": "high"
@@ -1605,10 +1606,11 @@
         "cmd": "uv run pytest tests/test_citations.py",
         "expect_exit": 0
       },
-      "note": "Split out of L9 by D-060 (checker 38930b1f, ISS-at710-1). NOT buildable yet: the declarable form for a citation's claimed subject must be designed and put in qa/contracts/living-ledger.md L10 by the checker first (maker leaning: grill, measure false-positive rate before any keyword matcher). Builds on at710's citations.py after at710 merges. HUMAN-free once the form exists.",
+      "note": "L10 form adopted; T196 remains BUILDING, not PASS. Current test SHA FDE194E9512684B270AC93F2CF41F34E06EB0422D0AAE5ABC0610226E3C4FDEC:61passed19.15s. Product scanner/schema/doctor unchanged;109 earlier affected-consumer passes and current whole-repo lint clean, not fullsuite. Independent inventory877 adopted rows across68paths:all35contracts,reviewed gates,decision headers and bodies through entry063,generated MAP/SNAPSHOT references. Fresh877-row root mechanical binding check zero errors; semantic acceptance/migration still incomplete. Canonical gate migrations at052/t191 independently plan-approved, scope preserved. Eight intermediate gap proofs and two current foreign/doctor-caller green-red-restored proofs recorded. Two early historical claims cannot meet What-only rule while history stays untouched; further historical mismatches recorded. Owner reconciliation choice requested once, no exemption implemented. Remaining complete five-glob review/migration, truthful historical disposition, contract/architecture authorizations where needed, full verification and two final blind checkers mandatory. Latest measured RAM2247396KiB (~2.14GiB);T1254GiB acceptance headroom not met. Docker daemon and dependency image available; fixed launchers do not yet establish a T185 execution route. No browser/account/provider/model traffic, product PASS,closure,new commit/push/deploy. Evidence qa/manifests/t196-citation-subject-check.md. Goal58done/24pending.",
       "attempts": 0,
       "created": "2026-09-30",
-      "user_value": "normal"
+      "user_value": "normal",
+      "criticality": "critical"
     }
   ],
   "decisions": [],
@@ -1929,6 +1931,13 @@
       "message": "T-122 needs review (high)",
       "task_id": "T-122",
       "acked": false
+    },
+    {
+      "ts": "2026-09-30T18:34:35",
+      "level": "critical",
+      "message": "T-196 is CRITICAL — human required",
+      "task_id": "T-196",
+      "acked": false
     }
   ],
   "preferences": {
@@ -1937,9 +1946,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.86,
-    "eta_days": 12.9
+    "velocity_per_day": 1.57,
+    "eta_days": 14.6
   },
-  "last_deterministic_tick": "2026-09-30T17:53:08",
+  "last_deterministic_tick": "2026-10-07T01:27:01",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }
