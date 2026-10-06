@@ -66,4 +66,7 @@ K2 live run with a non-mock judge; K9 `scripts/check_acceptance_comparison.py` +
 ## Review notes
 Preimplementation: qa/verdicts/t136-bench-foundation-plan-review.md (corrected plan APPROVE; its Warning was resolved: unknown-human oracle now None). Post-implementation senior review and checker verdict not yet dispatched (maker may not; requested of the orchestrator). The earlier scoped-baseline INCONCLUSIVE (qa/verdicts/t136-bench-foundation-scoped-cycle0.md, ctypes guard in a checker scratch runner) was an instrument fault; tests here ran plainly under uv with no guard.
 
-Status: ready-for-check
+Status: checked-PASS
+
+Verdict: qa/verdicts/t136-bench-foundation.md, cycle 0 (checker PASS commit 92047c37). T-136 stays pending: live acceptance is human-gated.
+Full suite owed: the t125 gate withholds it; it must run at the pre-push integration check before this branch reaches origin (ISS-t136-bench-foundation-3).
