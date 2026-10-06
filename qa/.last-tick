@@ -589,3 +589,424 @@ CLASSIFIER_OUTAGE 2026-09-28T13:57:14+00:00 (Agent x2 + Bash refused, no verdict
 2026-09-30T12:13:15Z ADVANCED: at673 c3 merged+closed (0b102e1e, bc25ad17); full pytest 4 failed/2170 passed, rerun of the 4 dispatched; at710 c1 FAIL (L9 wrong-subject) -> inbox ask; T-171 c2 checker dispatched
 2026-09-30T12:52:26Z ADVANCED: at710 c2 PASS merged (1e1705fd) + closed out (3fcfb4c2), AT-710 fixed, doctor clean, SNAPSHOT regenerated; T-196 added for L10; 4 suite failures = 2 flake, 2 need idle-box rerun (inbox); T-171 c2 checker still running; next: T-171 verdict, then W1 builds (T-176/T-179/T-125 c4) as RAM allows
 2026-09-30T13:06:17Z ADVANCED: T-171 c2 PASS merged (520c7e80), T-171 done + manifest closed. Full-suite verification dispatched. SERIAL: W1 builds (T-176/T-179/T-125 c4) wait on RAM ceiling (0.24 GB free < 2 GB floor) and on the full suite finishing (one suite at a time).
+2026-09-30T16:35:34Z ADVANCED: AT-113 private3342f89a current-SHA17/17 named mutations killed; baseline/restored72passed, hash identity equal. Full suite same33640 verified live; no second suite/browser launched. Doctor retains upstreamT171 missingledger, reasonconfirmation requested once. Fullgoal remains open; no PASS/push. ScheduleWakeup unavailable; active goal continuation and actual fullsuite remain, no armedloop claim.
+2026-09-30T22:40:36+05:30 ADVANCED AT-113 ready-for-check exact3342; primary checker dispatched; second spawn agent-limit blocked; no PASS or push; ScheduleWakeup unavailable
+2026-09-30T22:43:24+05:30 ADVANCED AT-113 cycle2 f9052150 explicit-only recovery tree-parent verified; two fresh checkers dispatched; no PASS merge push; ScheduleWakeup unavailable
+2026-09-30T22:44:30+05:30 ADVANCED cycle2 f905 pinned clean; checker-A fullsuite actual15904 live; checker-B independent cheap checks; next seed-recovery read-only planning dispatched; no PASS push; ScheduleWakeup unavailable
+2026-09-30T22:46:14+05:30 ADVANCED next bounded-recovery plan persisted existing scratch plan; A same15904 verifiedlive15percent; B ruffclean doctor-T171 baseline isolated; f905 frozen; no PASS push; ScheduleWakeup unavailable
+2026-09-30T22:49:23+05:30 ADVANCED independent A-B headed instruments preparednotlaunched; A same15904 polledrunning15percent no restart; B addedactual dialog-sibling crawl; sourcef905 unchanged; no PASS push; ScheduleWakeup unavailable
+2026-09-30T22:50:16+05:30 ADVANCED checker-A same15904 PID19096 live testtemp-progress verified despite buffered15percent; no restart; cycle2 exactf905 unchanged; no PASS push; ScheduleWakeup unavailable
+2026-09-30T22:51:27+05:30 ADVANCED checker-A15904 live25percent partialstate committed4c4d1963 no verdict; B39callerpass ownmutation60507 running; f905 clean no mergepush; ScheduleWakeup unavailable
+2026-09-30T22:52:45+05:30 ADVANCED A15904live25percent newtestprogress; B60507terminal anchorfailure notkill corrected46569live; independentbaseline2goalerrors reproduced; no PASS push; ScheduleWakeup unavailable
+2026-09-30T22:54:48+05:30 ADVANCED A15904verifiedlive25percent newerincrementaltest; Bownsixguard3419live no browser; baseline-doctor attribution ongoing; currentf905 frozen no PASSpush; ScheduleWakeup unavailable
+2026-09-30T22:56:54+05:30 ADVANCED Bsame3419verifiedlive baseline48pass boundmutation-restoredgreen; baseline ledger-goal outside-diff independentlytraced; A15904pollrequested no restart; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T22:57:41+05:30 ADVANCED A15904verifiedlive28percent instrument6negativeguards pass; B3419live qualifier4assertionfail restoreinprogress bound-loginrestored48pass; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T22:59:26+05:30 ADVANCED A15904live28percent newveiltest confirmsprogress; B3419live qualifierexactrestore48pass frontier5namedfail restorepending; orderingCLIremaining; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:01:34+05:30 ADVANCED A15904verifiedlive31percent; B3419terminal6namedkills restores48pass but initialthrowawaynewline divergence disclosed exactSHAreproof requested; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:03:19+05:30 ADVANCED A15904freshverifiedlive35percent realtypingtestprogress; Bexact3oraclekills caller24461live priorlogoverwrite disclosed upcomingseparateCRLFidentity proof; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:05:29+05:30 ADVANCED A15904verifiedlive54percent failuremarkers notyetattributed; B24461terminal exact4callerplus3oracle kills preserved separate finalidentitygreen sixguard78809live; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:06:47+05:30 ADVANCED A15904verifiedlive54percent hungbaseline-test-progress; B78809exactguardlive baseline48pass boundrestoredgreen; afterterminal Aheadedthen Bfull scheduled onlynotlaunched; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:08:51+05:30 ADVANCED A15904verifiedlive60percent incrdiffprogress; B78809live threeexactguards killed restored48pass frontierpending fullendidentitynotclaimed; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:09:44+05:30 ADVANCED sourcef905clean cycle2INPROGRESS; B78809live fiveexactguardsrestored48pass CLIfinalidentitypending; A15904samepollcell56inflight no restart; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:11:18+05:30 ADVANCED A15904verifiedlive98percent terminalsummarypending; B78809CLI namedkill finalrestore-endidentitylive notcountedfinal; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:13:43+05:30 ADVANCED A15904terminal15fail2221pass6skip newscrollfail attributionpending ownedcleanupbeforeModeD; Bexact13terminal fullheadedpending; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:14:36+05:30 ADVANCED Aownedcleanup readbackclean headed4020actuallyrunning; full15IDs newhidden-tall replaces skippedserial attributionpending; Bfullprepared no launch; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:16:54+05:30 ADVANCED primaryheaded4020 logSigningKeyMissing instrumentationgap identified correctionrequested ephemeral-local-only preservefailedlog; runtimeacceptance notclaimed; Bawaitlane no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:18:46+05:30 ADVANCED Aheaded69518terminal7scenarios cleanupportsclosed; newscrollbasepass unresolved; heavyreleased Bownfullsuite launchrequested; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:21:49+05:30 ADVANCED A92288terminal14namedbaselinefailures independentlyreproduced causesoutsideunitdiff ownedcleanupverified doctor27876T171only mutation49363live; B55836live15percent inventoryprogress; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:22:50+05:30 ADVANCED A49363verifiedlive6attributablekills finalhashrestorepending scrollC7setup-exception independentlyadjudicatednotbaselinefailure; B55836live15percent boundunchanged; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:24:58+05:30 ADVANCED A49363verifiedlive10of17 namedkills finalrestorepending ownheadedvisual-reopenchecked; B55836live depthboundtestprogress beyondbuffer15percent; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:26:39+05:30 ADVANCED A49363live11of17 partialc40c2a0d narrowlytracked; B55836live22percent exactCIMownedtreebound no cleanup; sourcef905 unchanged no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:27:27+05:30 ADVANCED A49363verifiedlive15of17 kills finaltwo-restore-hashpending; B55836verifiedlive25percent deferredtestprogress; sourcef905frozen no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:28:53+05:30 ADVANCED A49363live17of17namedkills finalrestoredrun-hashpending Aindexreserved narrowverdict; B55836live25percent ownprogress no verdictread; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:30:28+05:30 ADVANCED B55836freshverifiedlive25percent incrementaltestprogress no restart; A49363finalpollrequested indexreserved verdictpending; no PASSpush; ScheduleWakeup unavailable
+2026-09-30T23:32:16+05:30 ADVANCED primarycycle2PASS committedfb83b76b exactf905 readfileverified; B55836live28percent blind no dualPASS; nextseedplanfreshreviewdispatched readonly no sourceedits no push; ScheduleWakeup unavailable
+2026-09-30T23:38:15+05:30 AT113-cycle2-primary-PASS-secondary-same55836-poll-requested-next-recovery-bound-plan-review-dispatched-no-merge-no-push-ScheduleWakeup-unavailable
+2026-09-30T23:40:01+05:30 AT113-cycle2-f905-source-frozen-B55836-owner-poll-requested-stale-partial-header-correction-requested-next-unit-amendment-recorded-no-push
+2026-09-30T23:43:12+05:30 AT113-cycle2-verified-live-B55836-57percent-f905-frozen-next-unit-existing-red-test-plan-dispatched-no-merge-no-push
+2026-09-30T23:45:21+05:30 AT113-B55836-verified-live82percent-next-recovery-real-ladder-test-map-and-deferred-wording-approved-recorded-f905-frozen-no-push
+2026-09-30T23:48:46+05:30 AT113-B55836-terminal-exit1-15failed2222passed5skipped14xfailed-own-attribution-and-ModeD-pending-ancestry-path-inspection-recorded-no-push
+2026-09-30T23:50:01+05:30 AT113-B-owned-fullsuite-cleanup-readback-empty-baseline74963-running-serial403-approval-cause-under-independent-reproduction-browser-pending
+2026-09-30T23:51:44+05:30 AT113-B74963-baseline-terminal13fail6pass-plus2prior-goal-failures-cause-equality-pending-probe-control-flow-approved-runtime-pending
+2026-09-30T23:54:08+05:30 AT113-B14835-negative-terminal-intentional-malformed-identity-real-crawl-assertions-reached-owned-cleanup-portclosed-positive49254-launched
+2026-09-30T23:55:09+05:30 AT113-B49254-terminal-exit1-history-assertion-no-ModeD-PASS-owned-cleanup-portclosed-independent-diagnosis-requested-sourcefrozen
+2026-09-30T23:57:39+05:30 AT113-B31259-headed-terminal0-seven-scenarios-own-cleanup-identity4708-and-X4-depth-assessment-pending-no-finalPASS-no-push
+2026-09-30T23:59:09+05:30 AT113-cycle2-secondary-decisive-X4-maxdepth-runtime-failure-releaseheld-cycle3-readonly-plan-review-dispatched-no-push
+2026-10-01T00:02:31+05:30 AT113-cycle3-existing-blocked-tests-added-red-session10287-launched-first-runtime-assertion-fails-productionf905-unchanged
+2026-10-01T00:05:57+05:30 AT113-cycle3-approved-productionfix-focused5green-review-warning-testcoverage-addressing-wider81113-running-no-push
+2026-10-01T00:07:54+05:30 AT113-cycle3-fresh-seniorApprove-independent11green-fullruffclean-wider81113-doctor69492-mutations-active-no-push
+2026-10-01T00:08:56+05:30 AT113-cycle3-manifestbuilding-updated-wider81113-live-mutation50630-invalid-import-excluded-corrected21653-running-no-push
+2026-10-01T00:12:39+05:30 AT113-cycle3-085537cd-explicit3pathcheckpoint-wider102green-mutations4proven-freshblinddualcheckers-dispatched-Aheavylane-no-push
+2026-10-01T00:13:36+05:30 AT113-cycle3-source085537cd-trackedclean-Afull5983-running-initial-errors-under-diagnosis-Bcheaplane-no-push
+2026-10-01T00:15:24+05:30 AT113-cycle3-frozen085537cd-A5983-verifiedlive19percent-B94393-correctedfocusedlive-initialtmpfailures-notproof-ruffclean-doctorT171only
+2026-10-01T00:18:03+05:30 AT113-cycle3-A5983-verifiedlive50percent-browserprobe-reviewWarning-pinidentity-destination-cleanup-required-Bindependentmutations-restoredgreen-pending
+2026-10-01T00:19:24+05:30 AT113-cycle3-A5983-verifiedlive73percent-tempACLdiagnostic-notfinalattribution-browserreviewWarning-exactSHA-noisequeuechecks-Brestoredmutationsgreen
+2026-10-01T00:20:06+05:30 AT113-cycle3-A5983-verifiedlive79percent-browserprobe-thirdreview-dispatched-Bdepthbaseline97090-running-sourcefrozen-no-push
+2026-10-01T00:21:34+05:30 AT113-cycle3-A5983-verifiedlive88percent-Bdepthmutation-status-requested-baselineAextracted-source085537cdfrozen-no-push
+2026-10-01T00:23:10+05:30 AT113-A5983-naturalterminal-1333tmpACLerrors-fourIDsunretained-notacceptance-correctedloggedrunrequired-Bdepthmutationsrestored-reviewdispatchthreadlimit
+2026-10-01T00:24:36+05:30 AT113-cycle3-Acorrectedfull45628-actualrunning-logJUnit-isolatedtemp-sourcefrozen-Bfreshreviewactive-depthreruninstrumentsetupfailures-notPASS
+2026-10-01T00:25:25+05:30 AT113-cycle3-corrected45628-ownerpoll-requested-BownbrowserreviewApprove-amendments-rereviewpending-sourcefrozen-no-push
+2026-10-01T00:26:15+05:30 AT113-cycle3-sourcefrozen085537cd-A45628-ownerpoll-requested-Bownreview-fixtureorder-exactbadges-networks-correcting-no-push
+2026-10-01T00:27:03+05:30 AT113-A45628-freshverifiedlive15percent-no-terminal-inference-AamendedUIownershipreview-dispatched-Bfixturerereview-active-no-push
+2026-10-01T00:27:54+05:30 AT113-cycle3-A45628-authoritative-live15percent-no-restart-freshprocesscleanupreviewWarning-failclosedcreationtime-primaryfailure-required-no-push
+2026-10-01T00:28:39+05:30 AT113-cycle3-Bpersona-and-frontier-mutants-named2kills-restoredgreen-A45628-ownerfreshpoll-requested-sourcefrozen-no-push
+2026-10-01T00:30:32+05:30 AT113-A45628-verifiedlive25percent-noEF-fixturetimestampsadvance-Acleanupnegativeproofreview-dispatched-no-push
+2026-10-01T00:31:20+05:30 AT113-BexactSHA-content-normalized14of14-restore8of8-proven-A45628-ownerfreshpoll-requested-no-push
+2026-10-01T00:32:47+05:30 AT113-A45628-verifiedlive28percent-noEF-fixtureincrsame-advancing-Bpartialowned-verdict-evidence-requested-sourcefrozen-no-push
+2026-10-01T00:34:20+05:30 AT113-Bcycle3-INPROGRESS-independent79tests-eightmutations-specificdoctor-evidence-commitd6f4f47b-verified-A45628pollpending-no-push
+2026-10-01T00:36:12+05:30 AT113-A45628-verifiedlive28percent-crawllivefixture003526-Aamendedmutationrereview-dispatched-BexplicitINPROGRESScommit58973f6f-verified-no-push
+2026-10-01T00:37:01+05:30 AT113-Blogin-bound-qualifier-mutation-twoassertionkills-restoredgreen-Atyping-X4-hypothesis-unproven-mutationreview-twofixesrequired-no-push
+2026-10-01T00:38:28+05:30 AT113-cycle3-mutationreview-rawbytesapproved-actualassertionmarker-parser-required-A45628-ownerfreshpoll-requested-no-push
+2026-10-01T00:44:54+05:30 at113-cycle3-verified-live-45628-53pct-secondary-negative-evidence-recorded
+2026-10-01T00:45:59+05:30 at113-cycle3-verified-wait-45628-live53-hung-baseline-test-advancing
+2026-10-01T00:46:58+05:30 at113-cycle3-verified-live45628-57pct-log60-frozen085-next-plan-budget-review-dispatched
+2026-10-01T00:47:54+05:30 at113-verified-live45628-60pct-next-recovery-plan-current-budget-corrected
+2026-10-01T00:49:03+05:30 at113-verified-live45628-82pct-all-probe-reviews-approved-next-plan-approval-recorded
+2026-10-01T00:50:59+05:30 at113-full-log-summary24failed2223passed-owner-terminal-cleanup-confirmation-pending
+2026-10-01T00:51:53+05:30 at113-checker45628-terminal1-24failure-IDs-retained-typing-runtime-next
+2026-10-01T00:53:16+05:30 at113-typing42978-terminal-instrument-prerequisite-failure-diagnosis-review-dispatched
+2026-10-01T00:54:04+05:30 at113-independent-depth6912-terminal0-typingfixture-diagnosis-ownedcleanup-gap-retained
+2026-10-01T00:54:57+05:30 at113-typingfixture-fresh-approved-ui-negative-cleanup-proven-positive-case-instrument-review
+2026-10-01T00:56:28+05:30 at113-cycle3-definitive-headed-X4-failure43797-debugger-dispatched-no-release
+2026-10-01T00:58:26+05:30 at113-STALLED-cycle3-debug-complete-recovery-gate-open-mutation24001-live
+2026-10-01T00:59:26+05:30 at113-mutation24001-terminal-restored-single-kill-proven-B-heavy-lane-granted
+2026-10-01T01:00:38+05:30 at113-B92346-verified-live9pct-owned-descendants-tracked-Ainstrument-repairs-approved
+2026-10-01T01:01:40+05:30 at113-B92346-verified-live15pct-11baseline-failures-attributed-gated-typing-plan-recorded
+2026-10-01T01:02:29+05:30 at113-B92346-verified-live15pct-recovery-risk-review-dispatched-gate-unanswered
+2026-10-01T01:03:30+05:30 at113-B92346-verified-live15pct-riskreview-placement-plan-corrected-human-gate-pending
+2026-10-01T01:04:29+05:30 at113-stall-diagnosis-gate-manifest-committed53257860-B92346-verified-live15pct
+2026-10-01T01:05:49+05:30 at113-B92346-verified30s-wait-advanced25pct-prior-browser-generation-exited
+2026-10-01T01:07:10+05:30 at113-B92346-verified30s-live25-new-owned-browser-generation-goal-active
+2026-10-01T01:07:57+05:30 at113-B92346-verified30s-live-advanced28pct-recoverygate-pending
+2026-10-01T01:09:19+05:30 at113-B92346-verified30s-wait-live28pct-no-restart-currentFAIL-retained
+2026-10-01T01:10:17+05:30 at113-B92346-verified30s-live28pct-owned-generationtracked-gate-unanswered
+2026-10-01T01:11:10+05:30 at113-B92346-verified30s-live28pct-prior-owned-browser-exited
+2026-10-01T01:12:03+05:30 at113-B92346-verified30s-live28-newbrowser52176-source085-unchanged
+2026-10-01T01:13:22+05:30 at113-B92346-verified30s-live28pct-pending-final-no-restart
+2026-10-01T01:14:08+05:30 at113-B92346-verified30s-live-advanced31pct-currentFAIL-retained
+2026-10-01T01:15:38+05:30 at113-B92346-verified30s-live-advanced34pct-owned-generationtracked
+2026-10-01T01:16:49+05:30 at113-B92346-verified30s-live34pct-finalpending-sourcefrozen
+2026-10-01T01:17:42+05:30 at113-B92346-verified30s-live34pct-ownedgeneration13-terminalpending
+2026-10-01T01:18:38+05:30 at113-B92346-verified30s-live34pct-owned-python-descendants-recorded
+2026-10-01T01:19:17+05:30 at113-B92346-verified30s-live-advanced53pct-failuremarkers-unclassified
+2026-10-01T01:20:43+05:30 at113-B92346-verified30s-live53pct-owneddescendants15-terminalpending
+2026-10-01T01:21:31+05:30 at113-B92346-verified30s-live53pct-no-terminal-no-restart
+2026-10-01T01:22:29+05:30 at113-B92346-verified30s-live-advanced60pct-failures-unclassified
+2026-10-01T01:23:43+05:30 at113-B92346-verified30s-live-advanced73pct-terminalpending
+2026-10-01T01:24:54+05:30 at113-B92346-verified30s-live-advanced98pct-terminalnotyet
+2026-10-01T01:25:45+05:30 at113-B92346-terminal1-24failed2223passed-sourceidentity-bothphases-confirmed
+2026-10-01T01:27:11+05:30 at113-Areceipts6506f01e-verified-Bterminal-ownedcleanup11-readback0-browsernext
+2026-10-01T01:28:37+05:30 at113-Bheaded83967-terminal-instrument-slug-failure-fixture-review-dispatched
+2026-10-01T01:29:48+05:30 at113-Bfull-receipts7633e1e4-verified-headed83967-cleanup0-fixtureparse-repaired
+2026-10-01T01:30:39+05:30 at113-Bfixture-repair-reviewapproved-headed50052-actually-launched
+2026-10-01T01:31:26+05:30 at113-Bheaded50052-verified30s-live-ownedprocessreceipt1-results-pending
+2026-10-01T01:31:54+05:30 at113-Bheaded50052-terminal1-historyassertion-cause-unclassified-priorcrawlchecks-reached
+2026-10-01T01:33:43+05:30 at113-B50052-cleanupreadback0-unknownhistorycause-diagnostics-added-Aheavylane-granted
+2026-10-01T01:34:51+05:30 at113-AUIall5assertions-reached-networkgate-downloadabort-review-mutation64351-live
+2026-10-01T01:35:31+05:30 at113-A64351-verified-live-downloadreceipt-exclusion-plan-reviewed-negatives-required
+2026-10-01T01:36:38+05:30 at113-A64351-verifiedlive-depthmutation-credited-B22baselinefailures-reproduced-UIreview
+2026-10-01T01:37:10+05:30 at113-A64351-verifiedlive-frontiermutation-credited-UIreceipt-reviewapproved-Breceipts91e0ef02
+2026-10-01T01:41:40+05:30 verification-advanced-at113-fail-retained-b-headed-22602-live
+2026-10-01T01:43:16+05:30 at113-B22602-terminal1-DOM-proves-uppercase-warning-instrument-correction-review-needed
+2026-10-01T01:45:47+05:30 at113-B-baseline-two-timeout-checks17286-launched-ui-instrument-review-warning-addressing
+2026-10-01T01:48:34+05:30 at113-baseline24attributed-timeoutcleanup0-Breviewapproved-headed32222-launched
+2026-10-01T01:51:00+05:30 at113-B32222-terminal-ui-xlsx-bytechecks-reached-networkgate-unclassified-diagnostic-review-warning
+2026-10-01T01:52:30+05:30 at113-Breceipts3aae0217-verified-diagnostic-approved66373-launched-currentFAIL-retained
+2026-10-01T01:56:45+05:30 at113-downloadclassifier11-controls-implemented-primary-mutation-ownership-review-pending
+2026-10-01T01:58:53+05:30 at113-Aownership-reapproved-mutations10294-launched-B11purecontrols-terminalpass
+2026-10-01T02:01:40+05:30 at113-manifest24IDs-committed4ec14c7c-A10294-terminal-ownershipgap-Bbrowserlane-granted
+2026-10-01T02:03:21+05:30 at113-B59767-positive-terminal0-all9crawl-ui-xlsx-bytechecks-negative-next
+2026-10-01T02:06:26+05:30 at113-positive-negative-terminal-reconcile-bounded-fullgoal-sweep-dispatched
+2026-10-01T02:12:35+05:30 at113-dualFAIL-authoritative46274a7e-fullgoaltriage-c3137335-committed-nextAT733
+2026-10-01T02:14:57+05:30 at733-existingfile-plan-independentreview-dispatched-B46987-fillbound-actuallylaunched
+2026-10-01T02:16:50+05:30 at733-plan-freshapproved-B46987-independent-X4-productFAIL-terminal
+2026-10-01T02:20:08+05:30 at733-manifest-building-relitigation-exit0-maker-redfirst-dispatched-isolatedworktree
+2026-10-01T02:21:58+05:30 at113-canonicalproof-b5179fb8-verified-at733-branchpermission-narrowscope-retry
+2026-10-01T02:25:48+05:30 at733-redterminal6failed7passed-sourcebound-ownership0-sourcefixauthorized
+2026-10-01T02:27:15+05:30 at733-sourcefix-focusedgreen13-ownership0-lintformat-correction-beforefreeze
+2026-10-01T02:29:41+05:30 at733-finalgreen13-lint0-freshsourceAPPROVE-independent13-green-testcoverage-strengthening
+2026-10-01T02:32:09+05:30 at733-strengthened15green-reviewed-privatecandidate-narrowcommit-escalation-fullgates-next
+2026-10-01T02:36:08+05:30 at733-36134-verifiedlive16-fullruff0-doctor5red-blinddualcheckerprep-dispatched
+2026-10-01T02:40:33+05:30 at733-fullsuite-progress22-blindcheckers-prepared-baselineinspection-dispatched-noPASS-nopush
+2026-10-01T02:41:31+05:30 at733-progress25-doctor-ancestry-inspected-notwaived-t125-existingartifact-identified-preserved
+2026-10-01T02:43:21+05:30 at733-fullsuite-held-samehandle-doctor-independent-rerun-dispatched-t125-recovery-gap-recorded
+2026-10-01T02:44:16+05:30 at733-samehandle-pollrequested-independent-doctor85737-running-t125-CT9-declaredmapping-gap-recorded
+2026-10-01T02:45:48+05:30 at733-independent-doctor-baselinecandidate-exact5red-receipts-reread-notwaived-fullsuite36134-pollpending
+2026-10-01T02:47:22+05:30 at733-buildingmanifest-only-committed-bd2fe8f4-doctorbaseline-proof-preserved-blindB-instrumentprep-dispatched
+2026-10-01T02:48:37+05:30 at733-fullsuite-progress29-blindB-lockinstrument-written-freshreview-dispatched-backlog58done24pending
+2026-10-01T02:49:58+05:30 at733-blindB-instrument-reviewWARNING-duplicateidentity-gap-fixdispatched-fullsuite29-sourcefrozen
+2026-10-01T02:51:02+05:30 at733-fullsuite32-verifiedlog-blindB-correction-active-Aprepdispatch-threadlimit-noexecutionclaim
+2026-10-01T02:51:55+05:30 at733-Binstrument-freshAPPROVE-Aindependentprep-dispatched-fullsuite36134-verifiedlive32plus
+2026-10-01T02:52:42+05:30 at733-Binstrument-review-receipt-recorded-Aprep-active-fullsuite36134-pollrequested-noverdict
+2026-10-01T02:54:22+05:30 at733-fullsuite-log54-multiplefailures-unclassified-Ainstrumentreview-pending-maker-smokeprep-requested
+2026-10-01T02:56:49+05:30 at733-Ainstrument-amended-rereview-dispatched-fullsuite-samehandle-pollpending
+2026-10-01T02:57:30+05:30 at733-dual-independent-instruments-preparationAPPROVE-fullsuite36134-verifiedlive58-noacceptancePASS
+2026-10-01T02:58:10+05:30 at733-fullsuite-log61-blindB-headed-report-preparation-dispatched-noexecution-nopush
+2026-10-01T02:59:39+05:30 at733-fullsuite-verifiedlive-makerlock-instrument-authored-reviewdispatch-threadlimit-held-noexecution
+2026-10-01T03:01:10+05:30 at733-fullsuite-terminal1-27failed2185passed1error-ownershipgap-recorded-exactattribution-next-lockreview-dispatched
+2026-10-01T03:02:31+05:30 at733-terminal-attribution-progress-postgap3live-heavyheld-makerlockWARNING-Bheadedreview-dispatched
+2026-10-01T03:03:28+05:30 at733-finishbinding162-hashmatch0-BheadedreviewBLOCK-correctiondispatched-residualreadbackpending
+2026-10-01T03:04:58+05:30 at733-fullsuite-record-errors-inspected-citation-goaltotal-donecheck-baselineproofpending-lockamendment-active
+2026-10-01T03:05:57+05:30 at733-residual3-naturalabsence-confirmed-originalownershipgap-retained-baselineinputs-equal-locklauncherreview-pending
+2026-10-01T03:06:51+05:30 at733-currentlane-idle-residualabsent-locklauncherBLOCK-containedownershipplan-requested-Bheadedrereview-dispatched
+2026-10-01T03:07:54+05:30 at733-ownership-recovery-Microsoft-primary-factcheck-atomicjobcreation-gap-planpending-BheadedBLOCK
+2026-10-01T03:09:35+05:30 at733-atomicownership-plan-amended-Microsoftverified-reviewdispatch-threadlimit-awaitmakerprepcompletion
+2026-10-01T03:11:12+05:30 at733-atomicownership-planreviews-WARNING-accounting-timeout-finally-negatives-amendments-dispatched
+2026-10-01T03:11:53+05:30 at733-makerownership-plan-amended-rereview-dispatched-noimplementation-noruntime
+2026-10-01T03:12:50+05:30 at733-dualownership-plans-freshAPPROVE-scratchimplementation-dispatched-noruntime-noPASS
+2026-10-01T03:18:26+05:30 at733-B-implementation-review-BLOCK-cleanup-control-and-single-deadline-repair-dispatched-no-runtime-noPASS
+2026-10-01T03:19:27+05:30 at733-maker-scratch-implementation-ready-six-AST-checks-pass-fresh-review-dispatched-B-repair-running-no-runtime
+2026-10-01T03:21:47+05:30 at733-B-UV-cacheACL-beforelaunch-directvenv-ready-naturalpositive-delta-freshreview-no-control-proof
+2026-10-01T03:22:45+05:30 at733-both-corrected-instruments-fresh-rereview-old-controls-measured-unaccepted-noheaded-noPASS
+2026-10-01T03:26:29+05:30 at733-maker-smoke-terminal-beforeassertions-git128-identity87-zeroactive-B-approved-freshcontrols-granted
+2026-10-01T03:29:11+05:30 at733-manifest-recovery-plan-freshAPPROVE-strict87-scratchimplementation-dispatched-B-prerequisite-plan-pending
+2026-10-01T03:30:07+05:30 at733-B-acceptance-prerequisite-plan-freshAPPROVE-ownedlauncher-runner-implementation-dispatched-no-runtime
+2026-10-01T03:31:38+05:30 at733-frozencandidate-sourcehash-revalidated-maker-manifest-recovery-editing-B-prerequisite-implementation-active-no-runtime
+2026-10-01T03:32:39+05:30 at733-maker-manifest-implementation-freshAPPROVE-fourcontrols-two-tamper-runtime-granted-B-adaptation-review-next
+2026-10-01T03:34:02+05:30 at733-recovered-sixcontrols-terminal-proven-locksmoke-granted-B-adaptation-BLOCK-uncontainedvalidation-replan
+2026-10-01T03:35:10+05:30 at733-recovered-smoke-before-route-SigningKeyMissing-zeroactive-B-two-containedphase-recovery-plan-review
+2026-10-01T03:36:47+05:30 at733-signingfixture-plan-WARNING-wrongsignature-wrongtarget-controls-isolated-root-amendment-dispatched
+2026-10-01T03:37:46+05:30 at733-signingfixture-plan-amended-real-route-negative-controls-freshreview-dispatched-B-two-phase-editing
+2026-10-01T03:38:32+05:30 at733-signingfixture-plan-freshAPPROVE-implementation-dispatched-B-twophase-implementation-freshreview
+2026-10-01T03:39:10+05:30 at733-B-twophase-implementation-freshAPPROVE-acceptance-runtime-granted-maker-approved-signingimplementation-redispatched
+2026-10-01T03:40:12+05:30 at733-B-acceptance-terminal-prepytest-CRLF-LF-sourcebinding-mismatch-cleanjob-runner-correction-plan-review
+2026-10-01T03:40:34+05:30 at733-B-representation-correction-plan-freshAPPROVE-runner-only-edit-dispatched-signing-implementation-active
+2026-10-01T03:41:34+05:30 at733-B-acceptance-ownsession15908-verified-live-maker-signing-CODE-freshAPPROVE-runtime-held
+2026-10-01T03:42:53+05:30 at733-B-eightcase-acceptance-evidence-persisted-headed-failed-receipt-diagnosis-noUIcredit-maker-signing-approved-held
+2026-10-01T03:43:22+05:30 at733-headed-terminal-instrument-uppercase-prebrowser-fix-plan-review-maker-signinghash-sixcontrols-granted
+2026-10-01T03:43:49+05:30 at733-headed-oracle-perlayer-plan-freshAPPROVE-scratch-only-edit-dispatched-maker-sixcontrols-active
+2026-10-01T03:44:49+05:30 at733-six-signinghash-controls-rootreadback-proven-signingrefusal-locksmoke-granted-headed-oracle-code-review
+2026-10-01T03:45:35+05:30 at733-maker-real-lockroute-smoke-terminal0-twelveassertedrows-rootreadback-headed-approved-rerun-granted-baselineplan-next
+2026-10-01T03:46:18+05:30 at733-locksmoke-evidence-persisted-headed-prebrowser-CIM-snapshot-native1-diagnostic-plan-review-cleanjob
+2026-10-01T03:47:10+05:30 at733-baseline28-plan-freshAPPROVE-bounded-scratch-pytest-adaptation-dispatched-B-native-snapshot-plan-next
+2026-10-01T03:48:09+05:30 at733-native-snapshot-plan-freshAPPROVE-existingheaded-implementation-dispatched-baseline-pytest-adaptation-active
+2026-10-01T03:49:12+05:30 at733-baseline-attribution-implementation-ready-freshCODEreview-WMI-native-recovery-evidence-persisted
+2026-10-01T03:50:03+05:30 at733-attribution-CODE-WARNING-four-binding-exit-size-fixes-dispatched-nativeheaded-CODEreview-ready
+2026-10-01T03:50:37+05:30 at733-native-CODE-WARNING-control-dispatch-callercoverage-fixes-dispatched-baseline-corrections-active
+2026-10-01T03:51:46+05:30 at733-attribution-CODE-freshAPPROVE-sixcontrols-replay-granted-nativeheaded-control-corrections-pending
+2026-10-01T03:52:44+05:30 at733-control-replay-creationdenied-FAIL-live-readback-nowPIDabsent-no-retroPASS-retainedhandle-plan-next
+2026-10-01T03:53:26+05:30 at733-nativeheaded-controls-CODE-rereview-retainedhandle-cleanup-PLANreview-dispatched-no-runtime
+2026-10-01T03:54:00+05:30 at733-nativeheaded-CODE-freshAPPROVE-ownedruntime-granted-retainedhandle-PLAN-WARNING-negativecontrols-amend
+2026-10-01T03:54:31+05:30 at733-retainedhandle-plan-five-negatives-amended-freshreview-nativeheaded-approved-runtime-dispatch-revalidated
+2026-10-01T03:55:26+05:30 at733-nativecontrols-reached-headed-selfpipe-guard-preUI-failure-reviewed-scoped-plan-next-handlefix-implementation
+2026-10-01T03:56:07+05:30 at733-retainedhandle-CODEreview-dispatched-selfpipe-PLAN-WARNING-endpoint-auth-timeouts-amend
+2026-10-01T03:56:50+05:30 at733-retainedhandle-CODE-BLOCK-selfcertifying-controls-repair-dispatched-selfpipe-amendedPLAN-review
+2026-10-01T03:57:22+05:30 at733-authenticated-selfpipe-PLAN-freshAPPROVE-headed-scratchimplementation-dispatched-cleanup-guards-repair-active
+2026-10-01T04:00:31+05:30 at733-approved-cleanup-runtime-controls-dispatched-browser-selfpipe-fresh-code-review-active
+2026-10-01T04:02:37+05:30 at733-eleven-controls-terminal-presence-unverified-B-headed-approved-runtime-dispatched
+2026-10-01T04:03:50+05:30 at733-server-selfpipe-plan-and-cleanup-code-review-in-progress
+2026-10-01T04:05:09+05:30 at733-presence-control-attributed-cleanup-verified-newhash-controls-and-paired-attribution-dispatched
+2026-10-01T04:05:28+05:30 at733-guarded-controls-attribution-and-server-implementation-current-state-inspection
+2026-10-01T04:06:22+05:30 at733-source-tamper-race-held-server-code-approved-headed-runtime-dispatched
+2026-10-01T04:07:12+05:30 at733-exit-race-and-served-identity-plans-active
+2026-10-01T04:08:56+05:30 at733-servedidentity-and-exit-race-approved-plans-implementation-dispatched
+2026-10-01T04:09:17+05:30 at733-current-implementation-hashes-and-review-readiness-inspected
+2026-10-01T04:10:26+05:30 at733-both-instruments-implemented-fresh-code-reviews-dispatched-no-runtime
+2026-10-01T04:12:41+05:30 at733-browserclose-verified-jobbinding-unproven-sampling-controls-runtime-active
+2026-10-01T04:13:45+05:30 at733-descendant-positive-and-private-job-handshake-approved-implementation-dispatched
+2026-10-01T04:15:23+05:30 at733-descendantpositive-code-review-and-privatejob-implementation-active
+2026-10-01T04:16:16+05:30 at733-real87-positive-verified-finalhash-controls-and-paired-attribution-dispatched
+2026-10-01T04:16:41+05:30 at733-currenthash-control-results-and-handshake-implementation-inspection
+2026-10-01T04:17:44+05:30 at733-fifteen-controls-verified-baseline52068-live-handshake-fresh-review-dispatched
+2026-10-01T04:19:24+05:30 at733-exactjob-browser-source-proof-verified-cases-oracle-failure-diagnosis
+2026-10-01T04:19:55+05:30 at733-badge-oracle-plan-and-directpytest-code-reviews-active
+2026-10-01T04:21:51+05:30 at733-baseline74187-authoritative-revalidation-badge-implementation-review-prep
+2026-10-01T04:23:13+05:30 at733-baseline-six-tests-reached-own74187-live-badge-code-approved-runtime-held
+2026-10-01T04:23:32+05:30 at733-baseline-samehandle74187-revalidated-browser-approved-held
+2026-10-01T04:24:25+05:30 at733-baseline74187-timeout-cleaned-B-strictbadge-headed-runtime-dispatched
+2026-10-01T04:25:34+05:30 at733-blockedresource-and-ownedresidual-plan-current-evidence-inspection
+2026-10-01T04:26:56+05:30 at733-fontscope-pending-independent-completion-download-proof-work-active
+2026-10-01T04:27:51+05:30 at733-fontgate-pending-download-plan-approved-independent-completion-implementation
+2026-10-01T04:28:03+05:30 at733-independent-implementation-readiness-refresh-fontgate-pending
+2026-10-01T04:30:06+05:30 at733-redirector-chain-plan-approved-download-code-readiness-inspection
+2026-10-01T04:31:13+05:30 at733-download-code-approved-containedcontrols-plan-launchchain-implementation-active
+2026-10-01T04:31:32+05:30 at733-current-review-results-and-containedclassifier-plan-refresh
+2026-10-01T04:32:09+05:30 at733-nativechain-code-and-controls-only-plan-approved-implementations-dispatched
+2026-10-01T04:32:28+05:30 at733-control-implementation-currenthash-readiness-inspected
+2026-10-01T04:34:26+05:30 at733-final-containment-lane-revalidation-before-classifier-only-run
+2026-10-01T04:35:26+05:30 at733-classifier-controls-terminal0-validated-nativechain-baseline-dispatched
+2026-10-01T04:35:45+05:30 at733-nativechain-baseline-actualhandle-state-refresh
+2026-10-01T04:37:09+05:30 at733-nativechain-publication-failure-terminal-cleaned-independent-recovery-plans-dispatched
+2026-10-01T04:41:18+05:30 at733-publication-controls-code-approved-runtime-dispatched-negative-channel-plan-approved
+2026-10-01T04:42:07+05:30 at733-publication-fixtures-measured-sharing-positive-failed-diagnosis-dispatched
+2026-10-01T04:45:00+05:30 at733-publication-diagnostic-plan-approved-prepredicate-evidence-gap-recorded
+2026-10-01T04:47:09+05:30 at733-real-headed-four-negative-channels-measured-cleanup-verified
+2026-10-01T04:50:38+05:30 at733-publication-native-matrix-verified-a-oracle-gaps-plan-review
+2026-10-01T04:52:43+05:30 at733-a-code-approved-b-mutation-plan-approved-recovery-log-race-blocked
+2026-10-01T04:54:28+05:30 at733-recovery-plan-approved-a-selfpipe-dispatch-block-recorded
+2026-10-01T04:56:03+05:30 at733-a-dispatch-plan-approved-publisher-error-and-false-control-block
+2026-10-01T04:58:34+05:30 at733-seven-publisher-controls-verified-a-coordinator-implementation
+2026-10-01T05:01:15+05:30 at733-mutation-run-terminal-representation-rejection-not-credited
+2026-10-01T05:02:30+05:30 at733-authentic-junit-representation-plan-approved-correction-implementation
+2026-10-01T05:05:24+05:30 at733-independent-40node-mutation-proof-verified-a-coordinator-code-review
+2026-10-01T05:07:54+05:30 at733-mandatory-inspection-test-gaps-recorded-once-run-plan-approved
+2026-10-01T05:09:34+05:30 at733-b-mandatory-gap-plan-review-a-preimport-env-order-correction
+2026-10-01T05:10:34+05:30 at733-a-final-code-approved-phased-runtime-b-fixture-mismatch-plan-block
+2026-10-01T05:12:55+05:30 at733-measured-orphan-rollback-plan-approved-b-expanded-plan-approved
+2026-10-01T05:15:28+05:30 at733-rollback-six-and-seven-controls-verified-a-preoracle-live-53930
+2026-10-01T05:17:35+05:30 at733-exact-negative-completion-plan-approved-implementation
+2026-10-01T05:22:29+05:30 at733-expanded-checker-code-approved-exclusive-runtime
+2026-10-01T05:24:02+05:30 at733-expanded-session7470-live-routing-reconciled
+2026-10-01T05:25:59+05:30 at733-expanded-timeout-retained-a-controls-dispatched
+2026-10-01T05:27:28+05:30 at733-thirteen-controls-verified-six-a-prerequisites-dispatched
+2026-10-01T05:28:25+05:30 at733-a-negative-first-verified-b-optimization-approved
+2026-10-01T05:28:51+05:30 at733-native-seven-capture-failure-retained-diagnosis
+2026-10-01T05:30:09+05:30 at733-native-capture-race-evidence-narrowed
+2026-10-01T05:31:02+05:30 at733-known-exit-plan-approved-b-optimized-code-review
+2026-10-01T05:31:23+05:30 at733-optimized-b-code-approved-experiment-dispatched
+2026-10-01T05:32:35+05:30 at733-optimized-session7817-live-verified
+2026-10-01T05:34:03+05:30 at733-fullsuite-blockers-reverified-optimized-run-owned
+2026-10-01T05:35:22+05:30 at733-strict-capture-approved-b-traceback-plan-review
+2026-10-01T05:36:20+05:30 at733-strict-capture-thirteen-controls-reverified
+2026-10-01T05:37:43+05:30 at733-real-knownexit-proof-b-correction-approved-lane-held
+2026-10-01T05:39:15+05:30 at733-eleven-negatives-verified-bootstrap-failure-b-dispatched
+2026-10-01T05:40:03+05:30 at733-b-session72690-live-bootstrap-ordering-measured
+2026-10-01T05:42:47+05:30 at733-full-attribution-diagnosis-handshake-implementation
+2026-10-01T05:44:58+05:30 at733-bootstrap-code-approved-controls-dispatched-prefix-fix
+2026-10-01T05:45:57+05:30 at733-prefix-code-approved-a-session15159-live
+2026-10-01T05:47:10+05:30 at733-bootstrap-full-readback-b-session25766-live
+2026-10-01T05:50:16+05:30 at733-expanded204-accepted-a-knownexit-controls-dispatched
+2026-10-01T05:51:01+05:30 at733-remaining-criteria-reconciled-a-session24636-live
+2026-10-01T05:51:50+05:30 at733-latest-routing-current-a-controls-b-attribution
+2026-10-01T05:53:02+05:30 at733-all-knownexit-controls-verified-six-preoracle-dispatched
+2026-10-01T05:53:58+05:30 at733-phase2-session68529-live-first-refusal-verified
+2026-10-01T05:55:31+05:30 at733-fullgate-plan-block-revision-hung-owned
+2026-10-01T06:00:32+05:30 at733-authentic-a-dispatched-b-revised-plan-review
+2026-10-01T06:01:15+05:30 at733-authentic-a-git128-retained-recovery-plan
+2026-10-01T06:02:49+05:30 at733-process-local-recovery-plan-review-coverage-held
+2026-10-01T06:04:08+05:30 at733-scoped-env-and-git-preparation-implementation-approved
+2026-10-01T06:05:54+05:30 at733-env-code-approved-native-plan-and-fullgoal-audit
+2026-10-01T06:06:31+05:30 at733-current-routing-reconciled-preparation-code-pending
+2026-10-01T06:07:25+05:30 at733-prep-code-review-native-plan-rereview-fullgoal-gaps
+2026-10-01T06:08:35+05:30 at733-native-implementation-authorized-t125-existing-scope
+2026-10-01T06:10:17+05:30 at733-native-code-advancing-b-batch-plan-review-pending
+2026-10-01T06:11:12+05:30 at733-git-filter-framing-plan-block-correction
+2026-10-01T06:12:07+05:30 at733-b-correction-actual-followup-native-code-unreviewed
+2026-10-01T06:13:07+05:30 at733-native-code-review-b-corrected-batch-implementation
+2026-10-01T06:13:50+05:30 at733-native-code-block-orphan-handle-exit-ack-plan
+2026-10-01T06:14:44+05:30 at733-native-corrective-plan-rereview-b-batch-code
+2026-10-01T06:15:52+05:30 at733-b-batch-parser-implementation-diagnostic-binding
+2026-10-01T06:17:18+05:30 at733-fresh-fixture-absence-and-parser-cause-binding
+2026-10-01T06:18:07+05:30 at733-corrected-native-and-batch-code-dual-reviews
+2026-10-01T06:18:35+05:30 at733-native-readiness-race-code-block-plan
+2026-10-01T06:19:51+05:30 at733-readiness-fixture-native-observation-attribute-plan-review
+2026-10-01T06:20:30+05:30 at733-native-membership-fixture-plan-rereview
+2026-10-01T06:21:32+05:30 at733-routing-reconciled-fixed-targets-absent
+2026-10-01T06:22:27+05:30 at733-readiness-and-actual-attribute-code-reviews
+2026-10-01T06:23:12+05:30 at733-precheckout-and-fixture-order-code-blocks
+2026-10-01T06:24:19+05:30 at733-narrow-order-and-precheckout-implementation-approved
+2026-10-01T06:25:21+05:30 at733-native-code-approved-actual-controls-dispatched
+2026-10-01T06:25:56+05:30 at733-actual-native-control-av-failure-retained-diagnosis
+2026-10-01T06:27:18+05:30 at733-clone128-and-av-diagnostic-gaps-retained
+2026-10-01T06:28:36+05:30 at733-diagnostic-handle-bound-plan-refinement
+2026-10-01T06:29:28+05:30 at733-handle-image-and-git-failure-diagnostic-plan-reviews
+2026-10-01T06:30:36+05:30 at733-failclosed-diagnostic-stream-plan-review
+2026-10-01T06:34:09+05:30 at733-stage1-code-block-plan-repair-and-retention-build
+2026-10-01T06:35:14+05:30 at733-current-routing-reconciled-review-and-retention-live
+2026-10-01T06:36:58+05:30 at733-corrected-code-review-and-t125-existing-plan-audit
+2026-10-01T06:37:29+05:30 at733-per-api-code-block-scoped-plan-repair
+2026-10-01T06:38:20+05:30 at733-retention-code-review-and-native-plan-review
+2026-10-01T06:39:35+05:30 at733-retention-security-code-block-plan-repair
+2026-10-01T06:40:36+05:30 at733-recursive-code-review-and-shared-stderr-safety-plan
+2026-10-01T06:41:17+05:30 at733-approved-plan-omissions-fix-and-next-catalog-plan
+2026-10-01T06:43:06+05:30 at733-one-bounded-diagnostic-runtime-dispatched
+2026-10-01T06:44:04+05:30 at733-native-diagnostic-terminal-fail-no-retry-next-plan
+2026-10-01T06:45:02+05:30 at733-security-edge-fix-and-t125-cycle4-plan-review
+2026-10-01T06:46:07+05:30 at733-retention-code-approved-t125-budget-plan-revision
+2026-10-01T06:47:20+05:30 t125-cycle4-plan-approved-at733-diagnostic-closeout-pending
+2026-10-01T06:48:03+05:30 at733-zerooid-supported-cli-gap-bounded-plan
+2026-10-01T06:48:53+05:30 at733-one-zerooid-mode-plan-independent-review
+2026-10-01T06:50:29+05:30 at733-diagnostic-dispatcher-routing-plan-rereview
+2026-10-01T06:51:04+05:30 at733-one-zerooid-mode-approved-implementation
+2026-10-01T06:54:17+05:30 at733-one-zerooid-code-review-dispatched
+2026-10-01T06:54:46+05:30 at733-diagnostic-final-primary-and-label-code-block-fix
+2026-10-01T06:55:54+05:30 at733-diagnostic-bindings-labels-corrected-code-review
+2026-10-01T06:56:33+05:30 at733-one-zerooid-runtime-dispatched
+2026-10-01T06:58:00+05:30 t125-cycle4-isolated-maker-start-at733-frozen-held
+2026-10-01T06:58:51+05:30 t125-cycle4-clean-isolation-recovery-preparation-live
+2026-10-01T07:02:35+05:30 t125-phase1-red-review-and-ct1-gap-coverage-dispatched
+2026-10-01T07:03:38+05:30 t125-red-preparation-review-block-recorded-test-repair-live
+2026-10-01T07:05:04+05:30 t125-full-json-and-parallel-barrier-red-repairs-review-live
+2026-10-01T07:07:48+05:30 t125-scoped-red-evidence-recorded-phase2-maker-live
+2026-10-01T07:10:06+05:30 t125-phase2-helper-review-approval-correspondence-gap-repair-live
+2026-10-01T07:11:52+05:30 t125-phase2-integration-review-stale-oracles-and-navigation-repair-live
+2026-10-01T07:14:56+05:30 t125-136-fixture-tests-green-lint-repair-mutation-plan-live
+2026-10-01T07:17:10+05:30 t125-independent-mutation-baseline57-green-doctor-attribution-recovery-plan-live
+2026-10-01T07:18:32+05:30 t125-independent-two-mutation-kills-canonical-d061-append-authorized
+2026-10-01T07:19:45+05:30 t125-six-mutation-kills-d061-script-policy-block-safe-probe-live
+2026-10-01T07:20:44+05:30 t125-d061-canonical-recovered-eight-mutations-complete-five-resumed
+2026-10-01T07:21:31+05:30 t125-canonical-history-independently-verified-generated-doc-plan-approved
+2026-10-01T07:23:19+05:30 t125-nine-mutations-proven-four-live-native-egress-gate-confirmed
+2026-10-01T07:24:32+05:30 t125-eleven-exact-mutation-proofs-scratch-crlf-restore-authorized
+2026-10-05T15:06:17+05:30 approved-nine-batch-build-foundation-verification-resumed
+2026-10-05T15:08:51+05:30 foundation-restore-verification-live-t185-stale-backlog-t151-plan-dispatched
+2026-10-05T15:11:10+05:30 t125-restore73-green-generated-docs-doctor-one-ct6-proof-review-live
+2026-10-05T15:15:33+05:30 ADVANCED t125-generated-docs-receipt-persisted-ct6-checker-running-t151-plan-review
+2026-10-05T15:18:09+05:30 ADVANCED t125-ct6-proof-restored-doctor-clean-t171-ledger-prefilled-review-dispatched
+2026-10-05T15:19:24+05:30 ADVANCED t125-independent-ledger-review-approved-t151-concrete-plan-and-review-dispatched
+2026-10-05T15:20:35+05:30 ADVANCED ledger-neighbor24-green-t151-plan-on-disk-fresh-review-running
+2026-10-05T15:22:21+05:30 ADVANCED t151-isolated-worktree-created-approved-scanner-slice-maker-implementation-dispatched
+2026-10-05T15:23:26+05:30 ADVANCED t151-test-first-file-observed-independent-oracle-review-dispatched
+2026-10-05T15:25:05+05:30 ADVANCED t151-fullplan-approved-classifier-unlocked-aggregate-read-budget-gap-returned-to-maker
+2026-10-05T15:26:19+05:30 ADVANCED t15114-fixture-green-readbudget-sourcepath-red-proofs-recorded-classifier-review-dispatched
+2026-10-05T15:28:01+05:30 ADVANCED t151-enum-cycle-safe-adjustment-approved-ai-review-obligations-handed-to-maker
+2026-10-05T15:29:14+05:30 ADVANCED t151-classifier-source-review-four-safety-gaps-returned-fixcycle-active
+2026-10-05T15:30:20+05:30 ADVANCED t15123-fixture-green-classifier-repaired-fresh-ai-rereview-running
+2026-10-05T15:32:01+05:30 ADVANCED t151-root-red-causal-proof-repairs-observed-fresh-rereview-dispatched
+2026-10-05T15:33:18+05:30 ADVANCED t15131-fixture-green-ai-static-approved-scanner-review-dispatched
+2026-10-05T15:34:17+05:30 ADVANCED t151-scanner-three-boundary-fixes-dispatched-safe-lock-metadata-step-authorized
+2026-10-05T15:35:23+05:30 ADVANCED t151-boundary-regression-six-failures-rederived-revert-and-repair-dispatched
+2026-10-05T15:36:27+05:30 ADVANCED t151-regression-restored31-green-narrow-lockdiff-reviewed-latest-oracles-pending
+2026-10-05T15:38:19+05:30 ADVANCED t15132-green-scanner-static-repairs-approved-remaining-proof-oracles-dispatched
+2026-10-05T15:40:33+05:30 ADVANCED t15135-fixture74-neighbor-green-doctor-namecollision-reviewed-rename-approved
+2026-10-05T15:43:31+05:30 ADVANCED t151-independent-fixture-check-dispatched-bookkeeping-provenance-preparation
+2026-10-05T15:44:09+05:30 ADVANCED t151-checker-live-doctor-plan-live-bounded-full-goal-sweep-dispatched
+2026-10-05T15:45:00+05:30 ADVANCED t151-independent-four-C5-failures-readback-recorded-source-held-for-proof
+2026-10-05T15:48:52+05:30 ADVANCED t151-checker-terminal-written-findings-read-approved-repair-execution-granted
+2026-10-05T15:50:32+05:30 ADVANCED t151-four-probe-green-independent-source-review-dispatched-t190-evidence-gap-planning
+2026-10-05T16:00:43+05:30 ADVANCED t151-current-valid208-green-readback-independent-repair-rerun-prepared
+2026-10-05T16:01:32+05:30 ADVANCED t151-terminal208-green-readback-newfreeze-independent-repair-runtime-granted
+2026-10-05T16:03:00+05:30 ADVANCED t151-adapter-criticality-verified-closeout-plan-dispatched-independent-proof-active
+2026-10-05T16:13:05+05:30 ADVANCED t151-final115-path-inventory-hash-verified-localcheckpoint-execution-granted
+2026-10-05T16:20:29+05:30 T151 AI1 terminal 17 attributable kills and exact restore; group3 fresh review dispatched; T190 encoded-error guard proposal refined and pinned adapter inventory dispatched
+2026-10-05T16:21:48+05:30 ADVANCED T151 group3 approval and exclusive bounded execution grant persisted; group4 independent preparation dispatched; T190 adapter evidence inventory running. No PASS/push/browser waiver
+2026-10-05T16:22:31+05:30 ADVANCED T190 actual invoke anchor corrected from inspected source; T151 group3 scratch preparation active, group4/SDK source reviews active; pending dependencies rechecked
+2026-10-05T16:25:08+05:30 ADVANCED T151 group4 fresh review found opening-delimiter oracle and masked metadata proof gaps; held execution for exact revision. Group3 launched agent session7237; same-handle owner poll requested after root namespace observation failure. T190 inventory reviewed from disk
+2026-10-05T16:26:32+05:30 ADVANCED T151 stopped baseline evidence retained; fresh reviewer approved exact LF-byte scratch correction and bounded rerun dispatched; revised28-mutant AI8 plan sent for fresh review. Source frozen, no PASS
+2026-10-05T16:28:51+05:30 ADVANCED T151 corrected group3 session70304 owner-poll live:35green baseline,15 attributable kills so far. Group4 conceptual approval received exact hunk inventory dispatched; group5 fresh review dispatched. No unit PASS
+2026-10-05T16:30:24+05:30 ADVANCED T151 group5 conceptual approval and exact inventory prep dispatched; group4 exact28 inventory fresh review dispatched; group3 same70304 owner-poll live24kills and restore-between evidence inspected from incremental JSON
+2026-10-05T16:36:44+05:30 ADVANCED T151 group5 scratch37case artifact authored pending fresh review; caller21/27 conceptual approval received; actual ai-target contract inspected for landing scope, completion audit dispatched. No PASS or browser waiver
+2026-10-05T16:37:40+05:30 ADVANCED T151 actual AI8 end-to-end vault requirement rechecked; group5 actual scratch artifact review requested; group4 caller receipt conceptual proof approved but actual artifact/baseline still pending. No task closure
+2026-10-05T16:38:41+05:30 ADVANCED T151 group4 actual28hunk/34case scratch artifacts authored pending fresh review; completion audit measured groups2/3 closed bounded and identified finite residual matrix after4/5, no duplicate detector proof. Group5 artifact review underway
+2026-10-05T16:43:21+05:30 ADVANCED T151 group4 actual repaired artifact readiness approved; exact28/34 exclusive runtime dispatched and grant persisted. Group5 scratchrepair plan fresh review dispatched. No formal PASS
+2026-10-05T16:44:30+05:30 ADVANCED T151 group4 same24679 live, root incremental receipt34GREENbaseline and6assertionkills inspected; classification repair pending freshartifact; finite residual plan prep dispatched without runtime expansion
+2026-10-05T16:46:12+05:30 ADVANCED T151 same24679 ownerpoll live; independent Node JSON read18KILLED latestG4-18 restorednative0. PowerShell summary failed to enumerate live array, no zero-count claim. Classification freshreview pending
+2026-10-05T16:47:24+05:30 ADVANCED T151 group4 same24679 live; rootreceipt24kills allrestores0/wrongfailures0. Residual freshreviewblocked persistentS18 exception-only credit and file-root defender seam, QA revision dispatched. Classification approved awaits lane
+2026-10-05T16:50:06+05:30 ADVANCED T151 contextreport persistedhash independentlymatched; group5 actualsession2918 launched afterrelease exact29/37. Residual scratchimplementation reassigned foundation respecting reviewer readonlyrole, pending freshartifactreview
+2026-10-05T16:54:24+05:30 ADVANCED T151 telemetryoracle freshapproved pathonlyretrybinding pending; residualactualreview found3instrumentdefects freshrepairplan sent. PersistentC7 audit distinguishes5unproven functions from collateral setupfailures; designated priorproof unchanged
+2026-10-05T16:59:20+05:30 ADVANCED T151 classificationretry readinessapproved andactualgrant sent; residual15/15 artifactapproved waits exclusive lane. Complete19persistentfunction audit yields11boundedproofs/8strictgaps, QA ledger correction dispatched; reason testrepairplanapproved only
+2026-10-05T17:00:53+05:30 VERIFIED_WAIT T151 classificationretry same34279 ownerpoll live initial175binding; no baselineyet/absentdirectory nottermination. Persistent8functionledger persisted; testonlypatchpreview dispatched no sourceeditduringrun
+2026-10-05T17:02:33+05:30 ADVANCED T151 classificationretry same34279 baseline37GREEN+firstnamedkill/exactrestore; rootreceiptpresent and frozen testhash unchanged. Exactreasonpatchpreview independentlyreconstructed/approved300lines19funcs applyhelduntilfrozenrunrelease
+2026-10-05T17:03:33+05:30 ADVANCED T151 classification same34279 live rootreceipt37GREEN+3kills latestrestorepending; persistent8functioncontroller prep dispatched without applyingapprovedtestpatch. No PASS/fullsuite/push
+2026-10-05T17:04:35+05:30 VERIFIED_WAIT T151 same34279 ownerpollrequested rootincremental37baseline/3kills latestrestore0/wrong0; nextcontroller-only fullbinding-preserving drift performance plan dispatched, runningcontroller untouched
+2026-10-05T17:05:55+05:30 ADVANCED T151 persistent8proofcontroller prepared pendingrepairhash/nativegrant/review; next-only driftoptimization freshlyapproved and residual/persistentimplementation dispatched, live34279 untouched rootreceipt4kills latestrestorepending
+2026-10-05T17:11:06+05:30 ADVANCED T151: approved prompt present; classification stopped at G5-10 instrumentation, nine qualified kills/restores; checker persisting 175-source restoration and bounded residual handoff. No PASS/push/browser claim.
+2026-10-05T17:14:04+05:30 ADVANCED T151 policy proportional-verification/2026-10-05.1 check native0 targets4 drift0; stopped classifier nine qualified kills, restore37green, 175 identity audit pending; finite residual grant conditional on release, oracle repair proposal dispatched. No PASS/fullsuite/push. Hooks unverified; no scheduled continuation claimed.
+2026-10-05T17:17:20+05:30 ADVANCED T151 residual SAME42130 live baseline15green six qualified kills; classifier repair fresh review underway; no source edits/fullsuite/push/native/browser. Policy2026-10-05.1 drift0. Active goal remains24pending.
+2026-10-05T17:20:40+05:30 ADVANCED T151 residual42130 terminal0 fourteen qualified kills oneINCONCLUSIVE all15restoregreen175binding; sevenoracleassertionrepair APPROVE read, conditionalimplementationdispatched afterreportrelease; remaining20controller freshreview dispatched. Fullsuite0 noPASS/push/browser; goal24pending.
+2026-10-05T17:23:14+05:30 ADVANCED T151 seven scratchassertions applied actualCD0042... approvedpreviewmatched; remaining20controller plan independentlyAPPROVE rootread exactD1AF8699..., scopedimplementationdispatched. Residualreleased14kills1inconclusive15greenrestores. No runtimegrant/fullsuite/PASS/push/browser.
+2026-10-05T17:25:25+05:30 ADVANCED T151 actualremaining20controllerD1AF8699... andoracleCD0042... roothashmatched; freshposteditreview plus independenthistorical9receiptbinding dispatched under policychecknative0 drift0. Currentbacklog24pending verified; fullsuite/browser/nativegates unchanged noPASS/push.
+2026-10-05T17:28:37+05:30 ADVANCED T151 posteditreadinessAPPROVE andhistorical9qualification readfromdisk; freshremaining20runtimecheckerdispatched exactD1AF/CD00 source57db3f19; scopedgrantrecorded. NoPASS/fullsuite/nativebrowser/push;24pending.
+2026-10-05T17:30:11+05:30 ADVANCED T151 remaining20 actualexec44692 launchedUTC11:59:39.6889263Z; checker independentlyhashboundD1AF/CD00 source175 checkpointclean anduniquescratchabsent, initialGitbindinglive. Fullsuite0 noPASS/push/browser; guardfalsificationfollowupfiniteonly.
+2026-10-05T17:31:33+05:30 ADVANCED SAME44692 baseline37green G5-10intendedfiveassertionsplussevennewguardsverified19AssertionErrors zeroincidental; restore37green progressG14. Remaining20 live sourcefreeze noPASS/fullsuite/push/browser. Finitegenuinelynewguardplan dispatched policycheckdrift0.
+2026-10-05T17:33:26+05:30 ADVANCED SAME44692 17of20qualifiedkills all17restore37green manuallyreviewednominees; finite2newfilesetguardplanrecorded andfreshpersistentreasonplanreviewdispatched afterrootfoundnodiskapproval. No sourceeditwhilelive noPASS/fullsuite/browser/push.
+2026-10-05T17:36:03+05:30 ADVANCED T151 remaining20terminal0 all20intendedkills baseline20restores37green175exact restoration; evidencehashrootmatched historical9bridgequalified. Policymarkedblocksync.2checkdrift0. Persistenttestplanunappliednewmakerreadonlyfloor; noPASS/fullsuite/browser/push.
+2026-10-05T17:38:06+05:30 ADVANCED policy.2drift0 finite2newfilesetguardcheckerindependentlyAPPROVE virtualonlyproofexecuting; existingreason-test strengthening gate recordedandaskedonce noedit. Classification29boundedproofcomplete noformalPASS/fullsuite/browser/push. Goalactive24pending.
+2026-10-05T17:39:51+05:30 ADVANCED backlogfrontierrederived58done24pending eligible9 inclT179; read-onlyT179scopeinventorydispatched. Finiteguardprobe INCONCLUSIVE setupbeforecases0of2, diagnosedonlynoautomaticretry. Classification29scopedproofcomplete;testfloor/native/fullsuite/browsergatesunanswered noPASS/push.
+2026-10-05T17:56:07+05:30 --help
+2026-10-05T17:56:19+05:30 ADVANCED T136 corrected offline plan independently approved
+2026-10-05T18:01:43+05:30 ADVANCED T136 frozen source and corrected independent oracle
+2026-10-05T18:01:59+05:30 ADVANCED T136 source+oracle frozen; bounded baseline checker live; no fullsuite/browser/PASS/push
+2026-10-05T18:10:14+05:30 ADVANCED T136 console guard exact plan approved; checker scratch patch and finite policy proofs dispatched; real import closure independently under review; no runtime retry or PASS
+2026-10-06T19:34:10Z ADVANCED wave0-reconcile: attribution+baseline and worktree-inventory analysis dispatched (read-only); SERIAL: sweep waits on reconcile map (RAM ~3.9GB + same surfaces); builds wait on attribution (AT-733 and run-budget share ui/run_execution.py)
+2026-10-06T19:42:05Z ADVANCED wave0: backup .work/wave0-backup-20261006 (1.69MB patch, 42 untracked); split build dispatched (G1 exact-host, G23 d063-grant-budget, G4 t196 w/o doctor wiring, G-pin t171) + T-151 plan-approval checker; SERIAL: AT-733 waits on G23 (ui/run_execution.py); T-125 c4 waits on G23 (run_budget/parallel_run/routes_runs overlap); sweep waits on split (same tree)

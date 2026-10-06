@@ -1,5 +1,45 @@
 # Manifest — at408-416-scroll-reach
 
+## Goal reconciliation preparation — 2026-10-06
+
+T185 remains pending despite the existing merged cycle1PASS. Independent
+read-only audit matched branch ancestry and AT731 bookkeeping evidence;
+no rebuild/remerge is needed. Current done-check still requires two actual
+Chromium passes, not a missing-browser SKIP. Older PASS is retained with its
+recorded coverage/timing limitations, not restamped as fresh acceptance.
+Independent fixture-runtime plan APPROVE:qa/feedback-inbox.md heading
+"2026-10-06 T185 independent bounded fixture-runtime plan review"
+(Reviewer /root/build_t196_citation_checks). Manual image-based run needs no product/launcher
+or enforcement edit. Image sha256:
+e2dca6c5dd32e9c2a2c1ce2f3935363fd85eaa25625ce02b081b963d5ad0711f.
+Root created an isolated178-file,1755536-byte cache-free fixture export at
+.work/t185-fixture-runtime-55a0633c5fbd4326b604a70deffea5cf.
+Every copied file matched its source before/after freezing; sorted
+path|SHA256|size aggregate43230A705602324E2136F6C6BA2FC694E515CDD25BBA851F87229B97A0192944.
+No .env/profiles/projects were included; source reparse count0 and selected
+HTML external-asset references0. Frozen data is preparation only, not an
+executed or independently accepted product check. Runtime input screening,
+import binding and post-run identity checks remain required.
+Reviewed runtime floor:one1GiB-capped container plus1GiB host margin,
+fresh freeRAM>=2GiB. Latest measured963688KiB is below this floor; no
+container/browser launched. T125's separate4GiB controller guard unchanged.
+Require networknone/readonly/nonroot/capdrop/no-new-privileges, no ports,
+readonly export-only mount, bounded owned-container lifecycle/cleanup, and
+XML exactly2knownPASS/noSKIP before checker-owned goal reconciliation.
+No new verdict, task closure, commit/push or live-account evidence claimed.
+
+### Fresh runtime refusal — 2026-10-06
+
+The reviewed manual lifecycle's inline preflight returned exit1 with
+`T185 preflight below2GiB: 767360KiB`, before container creation or the
+120-second lifecycle clock. No browser/test ran and no container needed
+cleanup. A later read-only readiness sample was1371236KiB (about1.31GiB),
+still below the unchanged2GiB floor. Do not interpret either refusal as a
+product FAIL, a skipped test PASS, or permission to lower the resource guard.
+Resume the exact two-node fixture run only after a materially changed runtime
+meets the reviewed floor; repeated launch attempts on unchanged state are not
+progress. Cloud capability research did not create or migrate a task.
+
 **Unit:** AT-408, AT-416 — `reachOf`/`isReachable` (now `src/autotester/browser/visual_order_reach.js`)
 **Contract:** `qa/contracts/ui.md` U14(a) scroll-invariance floor, U14(b) north-star tie-break ·
 `qa/contracts/core-invariants.md` C2 (300-line cap), C7 (falsification)
@@ -326,4 +366,96 @@ are re-run clean against the final tree in "Verify" above.
   those depths, so this is a coverage gap, not a live defect.
 - `ISS-at408-416-2` (low) — this manifest's capability row 3 says "50 passed"; the real
   reproduced number is 32. The named failing shapes and the total were correct.
+
+## 2026-10-06 — read-only original-goal reconciliation finding
+
+Attribution: /root/build_t196_citation_checks; bookkeeping investigation only,
+not a new feature check, current runtime PASS, verdict, or Status change.
+
+Original duty is .goal/goal.json:1405-1416: re-check the already-built branch,
+merge master, a fresh cycle, own real-Chromium Mode D and the50-shape corpus.
+The existing independent cycle1 verdict satisfies that original duty:
+qa/verdicts/at408-416-scroll-reach.md:3-26 names checked code15e14023,
+own real browser/corpus and4/4 reproduced capability rows; this manifest:360
+records checked-PASS and merge. edbee6b2 is an ancestor of current HEAD
+(git merge-base --is-ancestor returned0). qa/issues.jsonl:741, AT-731, is
+the existing checker's explicit task-id bookkeeping finding and close-out
+direction, including a historical done-check2PASS; it is not a new feature
+requirement. No original contract/goal line found demands repeating that
+completed acceptance cycle on2026-10-06.
+
+Identity checked against edbee6b2 using git rev-parse commit:path and
+git hash-object --path path path. These are Git-normalized blob identities,
+not a claim that an old Windows checkout's raw CRLF bytes were recovered.
+Relevant inspected filter attributes were unspecified. No uncommitted edit
+was reported in these paths. Equal old/current Git blobs:
+
+| Field | Checked/current Git blob |
+|---|---|
+| browser/observe.py | 3e34563c48b9256e30b3f2eed822bf656717f0cf |
+| browser/visual_order_reach.js | fd085791b567d9c3a36157dcd60cbf1c00badedd |
+| test_browser_scroll_reach_at408_416.py | 8047091ff269c2a1bd7acdaefa2d4610e3c2617c |
+| test_browser_scroll_invariance.py | 6b664d10a270ad3156e12c44ec465457d4e46cb3 |
+| test_browser_unreadable.py | ea16aab30751c1aebc0cbbeac89b6add2a4be655 |
+| tests/conftest.py | e5ff4b8402fdf0b9f1dde251bd25c70401c39139 |
+| at416_card.html | b44ea1fd6c08da7502c65ce711845e5e0170bfb4 |
+| pyproject.toml | 9ecba7fb3b3ece6efd565db517b2110187b41b68 |
+| uv.lock | 19a815ccf1402a4a6a09c31af5db7310a22a02d7 |
+
+Known changed identities, not unexplained drift:
+- visual_order.js:7b4aa6d6faaef610c1c63b36c70ee81ab0d5d222 ->
+  3ddc4c557719fb88d06e16ee10fb2761de65da2d.
+- test_browser_visual_order.py:e82a651cfbab553d68e7dbc63e189d14dbfc5ef0 ->
+  b2bf67f3d1a27e26eb4e5425ad8941d8dcec0886.
+- cvcontents.html:cc6d05a9fbcf69866e75cc578a0d7304cd9a9811 ->
+  d5af04017a71d32102a8110a8e70546e244d67b9.
+git log attributes all three to031d1e92, the separately accepted T186
+details-content fix; that commit is an ancestor of HEAD (exit0).
+qa/verdicts/t186-details-content.md:7-11 records its own cycle1PASS;
+:37-38 independently runs U14's corpus+visual-order scope (68PASS/14xfail),
+and :170 records full suite2033PASS with3attributed residual failures.
+This successor does not invalidate or require rebuilding T185's accepted unit.
+
+Not proven here: current interpreter/browser/process environment equivalence,
+the whole current178-file import/export closure against historical code,
+any2026-10-06 runtime result, or absence of unrelated dirty-tree regressions.
+The recent RAM refusal and unrun test remain historical preparation evidence,
+not a product failure or a new PASS. Original verdict's full-suite4timing
+failures and carried C7 deeper-chain coverage/manifest-count findings remain
+explicitly open; nothing here closes them or waives combined-goal/live acceptance.
+
+Safe close-out finding: root can correct its own2026-10-06 goal-note condition
+that fresh2PASS is required for ORIGINAL T185 reconciliation: it arose from
+an optional current-runtime refresh plan, not Umesh's original goal/contract.
+Retain the preparation/refusal record and do not claim the refresh ran.
+The existing checker-directed AT-731 path is task-id reconciliation under
+the already checked-PASS cycle1 handshake and documented T186 successor,
+with root as sole goal writer, not a new feature PASS. The proposed goal CLI
+done --root D:/autoTesting --task-id T-185 only stamps bookkeeping; its
+cmd_done at D:/ai_os/.claude/skills/goal/scripts/goal_cli.py:23-38 does NOT
+run a test or validate a verdict. Root must cite the existing verdict/AT-731
+and preserve the pending follow-up findings before any status mutation.
+This helper supplies identity findings; the closure authority remains the
+existing independent checker verdict/direction, not a new maker verdict.
+
+### Task-id bookkeeping close-out — 2026-10-06
+
+Root, as sole goal writer, corrected its self-added optional refresh condition
+in the T-185 note without changing the original acceptance criteria, verdict,
+contracts, issue ledger or preparation/refusal history. Closure authority:
+existing independent cycle1 PASS and AT-731's explicit task-id direction above.
+
+Exact bookkeeping command actually executed:
+`D:/autoTesting/.venv/Scripts/python.exe -S -B D:/ai_os/.claude/skills/goal/scripts/goal_cli.py done --root D:/autoTesting --task-id T-185`
+
+Exit 0; output: `{ "ok": true, "task": "T-185", "percent": 72 }`.
+Fresh goal-store readback: total82, done59, pending23, in_progress0, blocked0;
+T-185 status done. Existing render_dashboard.write_dashboard regenerated
+`.goal/dashboard.html` from that same freshly loaded data. These are bookkeeping
+and generated-view results, not today's runtime test/browser evidence.
+
+No new feature PASS, acceptance launch, product source change, commit or push.
+Original coverage/timing follow-ups, AT-731's separate slug-lookup general fix,
+and final combined-goal/live-browser acceptance remain; the issue ledger is not
+silently marked closed. Batch1 still has T-125 and T-165 pending.
 

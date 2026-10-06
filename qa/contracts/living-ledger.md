@@ -165,7 +165,7 @@ citation. So the citation is checked, not trusted.
 - **Subject match is not part of this criterion's Verify:** the subject-match obligation is L10, split out under D-060.
 
 
-**L10 — a citing line's claimed subject must match the cited entry's **What:**.** Split out of L9 under D-060 (2026-09-30) so AT-710 closes against L9's Verify clause. **Status: not yet buildable: needs a declarable form for the claim; own unit; serves the same outcome as L9.** The text below is L9's former wrong-subject bullet, verbatim.
+**L10 — a citing line's claimed subject must match the cited entry's **What:**.** Split out of L9 under D-060 (2026-09-30) so AT-710 closes against L9's Verify clause. **Status: declarable form adopted under D-062 (2026-10-06); implementation and complete coverage remain unverified.** The text below is L9's former wrong-subject bullet, verbatim.
 
 > **Resolution is necessary and not sufficient -- the SUBJECT must match too (added 2026-09-28,
 >   AT-718).** Fixture (c) was written naming `D-056`, and on 2026-09-28 this seat appended a real
@@ -177,7 +177,70 @@ citation. So the citation is checked, not trusted.
 >   own **What:** field, and a mismatch is a violation in its own right. This is the C12 shape once
 >   more -- a green that the construction, not the code, produced. **Links:** AT-710; AT-711; AT-718.
 
-- **Verify:** a doctor fixture with three cases: (i) the cited id absent from `docs/DECISIONS.md` and `docs/archive/` (fires as an L9 dangling citation); (ii) the id present but the citing line's declared claim does not match that entry's **What:** (fires as a subject mismatch); (iii) the id present and the claim matching (does not fire). Case (ii) presupposes a machine-readable declared form for the claim, which is the first deliverable of the unit that builds L10. **Links:** AT-710; AT-718; ISS-at710-1; D-060.
+- **Canonical visible claim, not an optional annotation.** A mutable authorization claim uses
+  `Decision claim D-001: "Exact quotation from What" <!-- decision-claim: {"id":"D-001","what":"Exact quotation from What"} -->`.
+  The complete claim occupies one line, with optional surrounding whitespace only. The visible
+  quotation is a JSON string literal (including escapes for embedded quotation marks); the marker
+  contains exactly one strict JSON object with exactly the string fields `id` and `what`. Decode
+  both strings and require agreement after whitespace normalization. The visible id and marker id
+  must agree and match L9's citation syntax. Empty/whitespace-only quotations, duplicate JSON keys,
+  extra fields, duplicate/conflicting markers, detached markers, malformed declarations and extra
+  authorization prose on a canonical line are declaration violations. A marker cannot manufacture
+  its own prose citation: exclude its contents from occurrence enumeration, retaining the visible id.
+  A marker in a quoted example is not a live claim only when its occurrence has an independently
+  reviewed nonclaiming classification; examples never provide a whole-file exemption.
+- **Comparison boundary.** Collapse whitespace runs to one space and trim, with no other
+  normalization. The decoded claim must be a nonempty case-sensitive contiguous quotation from
+  that id's full entry's `**What:**` field. A What field ends at the next standalone top-level
+  `**Field:**` line or decision-entry boundary; nested/list formatting remains content. Inline
+  content after `**What:**` is included. A quote in Why, Result, another entry or an index summary
+  is not evidence. Missing/duplicate What fields or multiple full bodies for one id are unavailable
+  or ambiguous subjects and must report a violation, never select a convenient body. A partial
+  quotation proves textual attribution only, not that an operational action is authorized; coverage
+  review must reject a quotation selected to conceal a conflicting surrounding claim. No fuzzy
+  keyword, paraphrase, semantic model or hash-only comparison may replace this check.
+- **Archives and exemptions.** Full entries in `docs/DECISIONS.md` and `docs/archive/*.md` supply
+  What. An archive INDEX row can resolve L9 existence but cannot supply L10's subject; index-only
+  attribution reports subject unavailable. Preserve both L9 exemptions before local resolution or
+  comparison: entry-scoped foreign ids stay out of scope even if the numeric id exists locally;
+  reasoned nonclaiming exemptions stay per occurrence. L9 still checks ordinary local references.
+- **Coverage is mandatory, independently reviewed, and current.** Enumerate every visible citation
+  occurrence across L9's five globs, including structural headers and repeated occurrences. Bind
+  the reviewed inventory to relative path, exact line text, cited id, ordinal among that line's
+  same-id occurrences, and multiplicity of identical lines. An inventory row declares a kind
+  (structural header, ordinary reference, authorization claim, foreign entry, or nonclaiming), a
+  nonempty reason, reviewer attribution and a durable review reference. No automated prose inference
+  classifies claims. Missing, stale, ambiguous or duplicate/conflicting inventory rows report coverage
+  violations; changed text or added multiplicity invalidates review. An empty inventory cannot pass
+  a tree containing citations. Classifications are review evidence, not an arbitrary allow-list:
+  the checker independently challenges ordinary-reference/nonclaiming reasons against the actual
+  claim, and a maker's classification alone does not establish complete coverage.
+- **Migration and immutable history.** Every mutable current authorization claim must migrate to
+  the canonical visible form; unrestricted surrounding authorization prose remains an uncovered
+  claim even beside a valid marker. Immutable decision history is not rewritten: an attributable
+  occurrence-specific historical review records the claimed quotation and checks it against What;
+  unknown/disputed attribution remains reported. A historical review cannot silently reclassify a
+  wrong authorization as nonclaiming. Inventory plus canonical declarations and historical reviews
+  must cover the complete occurrence set before T-196 closes. Reconcile the actual seven historical
+  write-policy examples in the two L9 gate files; retain their wrong-subject fixtures and do not
+  restore incorrect ids now replaced by WP-DECISION placeholders. No whole-file exemption.
+- **Verify:** `uv run pytest tests/test_citations.py` and `uv run autotester doctor` must evidence
+  the following with file/line/id diagnostics: absent id gives L9 dangling (also with an empty log);
+  present unrelated What gives subject mismatch; exact matching canonical claim is clean; matching
+  archived full entry is clean; index-only subject is unavailable; quote only outside What fails;
+  whitespace variation is clean but changed case/punctuation/content fails; missing/duplicate What
+  or duplicate full bodies fails closed; malformed/detached/conflicting markers or visible/JSON
+  disagreement fails; existing foreign-entry and per-occurrence nonclaiming exemptions remain clean
+  while neighboring unexempted claims fail. Coverage fixtures must fail on an added unclassified
+  resolving authorization claim, changed reviewed text, increased identical-line multiplicity,
+  conflicting classifications and a valid irrelevant quote beside a wrong unrestricted claim.
+  Independently reviewed real-tree coverage and migration are acceptance evidence in addition to
+  fixtures, not inferred from L9's clean result. Named isolated falsifiers must turn each claimed
+  acceptance capability red, including swapping to an existing unrelated id, moving a quote into
+  Why, and removing coverage enforcement; restore the original bytes afterward. T-196 remains
+  critical: active new-feature policy .3 requires tier L and two blind final coordinator checks;
+  adopting this form is not implementation approval or either completion verdict.
+  **Links:** AT-710; AT-718; ISS-at710-1; D-060; D-062; T-196.
 
 
 ## Out of scope
@@ -286,3 +349,11 @@ only, later); Google-Sheet sync.
   as it stands. Additive; no clause weakened. **Changes-authorized:** qa/contracts/living-ledger.md
   Amendment log (this entry). No enforcement-path file touched. **Links:** AT-740; AT-718; AT-710; D-057.
 - 2026-09-30 - amend (split) - L9's wrong-subject bullet moved verbatim into new criterion L10 ("a citing line's claimed subject must match the cited entry's **What:**"), status not yet buildable (needs a declarable form for the claim; own unit); L9 keeps a one-line pointer and its Verify clause no longer has to cover the moved bullet, no other L9 sub-clause touched. Cause: at710 cycle 1 FAIL, ISS-at710-1 (verdict b385910f) - resolver yields 0 dangling citations and 9/9 capability rows reproduce; the bullet compares a citation's claim to the entry's What:, no machine-readable declared form exists, and the alternative (a `cites-for: D-NNN` keyword-overlap matcher) has an unmeasured false-positive rate. Obligation preserved in L10, weakened nowhere. **Changes-authorized:** D-060 (qa/contracts/living-ledger.md L9/L10 + Amendment log). No enforcement-path file touched. **Links:** AT-710; ISS-at710-1; b385910f; D-057; D-058; D-059; T-168.
+- 2026-10-06 - routine (tighten) - L10 declarable form adopted: bounded visible What quotation and
+  strict agreeing JSON marker, mandatory independently reviewed occurrence coverage and migration,
+  attributable immutable-history reviews, archive full-body comparison and fail-closed negative
+  oracles. Cause: independent contract review rejected optional markers beside unrestricted claims
+  as vacuous narrower success; Umesh approved T-196 and D-062 authorizes this checker-owned adoption.
+  L9 and all earlier invariants preserved. Implementation, real-tree coverage and dual final checks
+  remain unverified; no product PASS. **Changes-authorized:** D-062 (L10 + this amendment only).
+  **Links:** T-196; D-060; D-062; qa/feedback-inbox.md 2026-10-06 coverage challenge.

@@ -1,5 +1,26 @@
 # AT-113 — abandoned exploration cannot claim completion
 
+## Current pre-action gap preparation — 2026-10-06
+
+Read-only helper /root/build_aggregate_run_budget located the still-missing
+shared stop_reason recheck in the approved private candidate's
+explore_typing.py::type_form:after eligibility/policy checks, before counters
+and _type_one. The existing independently approved contained recovery plan
+and answered cycle-cap gate cover this behavioral target; previous FAIL stays.
+Root read the exact source/test/plan/gate before assigning one existing test
+function. Four after_eligibility cases were added to
+tests/test_explore_typing_guards.py; the original12 phase/reason cases and
+their assertions remain. File150lines,function39lines. SHA256
+C3262AE92266061782F4BDAB3DBB5C5A828C84D97F7F0D689AF9CEC3A121010F.
+Source unchanged from prior9082D1EFF48E95AFA622687D27FB8FF425C5EDE3C8B0FEB6535FD092FE7F71EE.
+New cases require zero typed/action counts and no fill/heartbeat/restoration
+when a bound latches during eligibility. No runtime RED or GREEN claimed.
+The existing Windows runner grant explicitly names12cases. Root requested
+the exact4case extension once; failing-first execution waits for that answer.
+Then apply the already-planned3line shared guard, run focused restored tests
+and its isolated falsification, retaining broader acceptance/dual-check duties.
+No new module, product PASS, cycle-cap bypass, task closure or push.
+
 ## Status: STALLED
 
 Fix cycle: 3

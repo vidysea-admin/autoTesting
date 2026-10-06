@@ -30,11 +30,13 @@ scope increase for THIS unit. That leaves a real tension for the two remaining d
   separate, wider-blast-radius refactor this unit was not scoped to do.
 - `qa/contracts/ui-report.md` UR3 ("stream the exact same file `export_html` would produce ...
   never a second, UI-only reimplementation of the export logic") and `qa/contracts/report-export.md`
-  RE3 (self-contained HTML, video linked not embedded, already carrying one named D-050 exception)
+  RE3 (self-contained HTML, video linked not embedded; named video exception quoted below)
   are both checker-owned. Rewriting the download's HTML bytes in the UI route after export --
   the only fix that avoids the line-cap problem -- sits in real tension with UR3's letter even
   though it would not touch the export's screenshots, styling, or case sections. A maker cannot
   self-authorize reading that tension as acceptable; only the checker amends its own contracts.
+
+Decision claim D-050: "It also amends qa/contracts/report-export.md RE3 with one named exception. A kept run video (EvidenceKind.VIDEO, T-191) is linked from the exported HTML by a path relative to the run directory, never embedded. The HTML stays self-contained for everything else: screenshots are still base64-embedded, and the page still opens with no server or network." <!-- decision-claim: {"id":"D-050","what":"It also amends qa/contracts/report-export.md RE3 with one named exception. A kept run video (EvidenceKind.VIDEO, T-191) is linked from the exported HTML by a path relative to the run directory, never embedded. The HTML stays self-contained for everything else: screenshots are still base64-embedded, and the page still opens with no server or network."} -->
 
 ## What this unit did instead
 
