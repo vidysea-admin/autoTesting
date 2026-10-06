@@ -261,7 +261,7 @@ def test_invalid_duration_is_refused_as_duration_validation(duration):
                                              ("human_oracle", Participant.AUTOTESTER),
                                              ("autotester", Participant.HUMAN)])
 def test_kind_participant_mismatch_is_refused(kind, participant):
-    with pytest.raises(ValueError, match="kind|participant"):
+    with pytest.raises(ValueError, match=r"kind|participant"):
         _trial(_live_corpus(), kind=kind, participant=participant)
 
 
@@ -275,14 +275,14 @@ def test_mismatched_corpus_id_is_refused_instead_of_scored() -> None:
 def test_duplicate_truth_ids_are_refused_instead_of_double_weighted() -> None:
     payload = _live_corpus().model_dump()
     payload["seeded_bugs"].append(payload["seeded_bugs"][0])
-    with pytest.raises(ValueError, match="duplicate|unique"):
+    with pytest.raises(ValueError, match=r"duplicate|unique"):
         BenchCorpus.model_validate(payload)
 
 
 def test_fixture_mode_cannot_claim_human_confirmed_truth() -> None:
     payload = _live_corpus().model_dump()
     payload["mode"] = "fixture"
-    with pytest.raises(ValueError, match="fixture|provenance"):
+    with pytest.raises(ValueError, match=r"fixture|provenance"):
         BenchCorpus.model_validate(payload)
 
 
