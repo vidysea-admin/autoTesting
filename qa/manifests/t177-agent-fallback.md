@@ -19,7 +19,7 @@ Source: branch `wave/t177-agent-fallback`, built on `origin/master` 7782df41. Co
 
 ## What changed (edited in place unless marked new)
 
-- `src/autotester/schema/agent_fallback.py` (new, 78 lines) — `FallbackAction`, `ActuatorResult` (all fields required, `actions` non-empty), `FallbackStatus` (resolved / unresolved / bound_exhausted / refused / malformed / failed; no PASS), `FallbackOutcome`. All `extra="forbid"`.
+- `src/autotester/schema/agent_fallback.py` (new, 75 lines) — `FallbackAction`, `ActuatorResult` (all fields required, `actions` non-empty), `FallbackStatus` (resolved / unresolved / bound_exhausted / refused / malformed / failed; no PASS), `FallbackOutcome`. All `extra="forbid"`.
 - `src/autotester/stages/agent_actuator.py` (new) — `ActionGuard` (the `vet` callable): step bound, wall-clock bound, destination check via `browser.session.check_destination` on both a navigate destination and the page an action lands on, `explore_safety.deny_reason` (deny-list and never-click), write kinds and Enter refused under `READ_ONLY`, `RunBudget.check(actions=1)` per action. `FallbackActuator.invoke` never raises; `parse_result` raises `MalformedActuatorResult`; a result reporting an action the guard never saw is refused. `outcome_evidence` renders the end as one DOM-evidence line.
 - `src/autotester/stages/browser_use_backend.py` (new) — `ProviderChatModel` (browser-use's chat-model protocol answered by `Provider.act`, with the caller's secret guard applied to every prompt) and `BrowserUseBackend` (vets each planned action in `register_new_step_callback`, before it runs; an unmapped browser-use action is refused; telemetry disabled).
 - `src/autotester/prompts/agent_fallback_v1.md` (new) — the task prompt, a file (CLAUDE.md rule).
