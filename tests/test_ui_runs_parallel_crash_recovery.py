@@ -67,7 +67,8 @@ def _patch_common(monkeypatch, fake_plan: ParallelPlan):
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     monkeypatch.setattr(routes_runs_module, "plan_parallel_run",
                         lambda project_, **kwargs: fake_plan)
     # AT-567: _run_cases_in_parallel/_run_and_grade_resilient now live in

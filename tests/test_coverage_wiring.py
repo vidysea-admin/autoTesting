@@ -97,7 +97,8 @@ def _run_with_urls(
                           grader_provider="mock")
         return result, verdict
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     # AT-567: _run_and_grade_resilient (and its call to run_and_grade_case_
     # resilient) now lives in ui/run_execution.py -- patch it there, where the
     # name is actually looked up at call time, not on routes_runs_module.

@@ -74,7 +74,7 @@ def _mock_generator(monkeypatch: pytest.MonkeyPatch, *, available: bool = True) 
     )] * 60})
     import autotester.ui.routes_learn as routes_learn_module
 
-    monkeypatch.setattr(routes_learn_module, "LangChainFallbackProvider", lambda: provider)
+    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
 
 
 # -- the review page ---------------------------------------------------------
@@ -220,7 +220,7 @@ def test_generate_when_the_model_fails_midway_is_refused_as_a_page_not_a_500(
     provider = _StarvedProvider(responses={"agent": []})  # empty queue -> ProviderError
     import autotester.ui.routes_learn as routes_learn_module
 
-    monkeypatch.setattr(routes_learn_module, "LangChainFallbackProvider", lambda: provider)
+    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
 
     response = client.post("/projects/demo/cases/generate", follow_redirects=False)
 

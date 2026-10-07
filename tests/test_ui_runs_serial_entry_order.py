@@ -60,7 +60,8 @@ def test_entry_cases_start_before_the_shared_session_starts(
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
 
     import autotester.stages.run_case_pipeline as pipeline_module
 

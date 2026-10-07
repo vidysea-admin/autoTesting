@@ -1,0 +1,261 @@
+"""LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach.
+
+T-202 / D-071 (4): Gemini, Claude, OpenAI, a local Ollama or any OpenAI-compatible
+endpoint, chosen by a model string -- `AUTOTESTER_MODEL=ollama/llama3`, or
+`litellm:<model>` in a project's `providers` -- with no per-vendor SDK code here.
+
+What it deliberately is NOT: `see_video` stays Gemini's (its Files API has no
+equivalent elsewhere); there is no `fallbacks=`/Router (the LangChain provider owns
+fallback chains); LiteLLM's own retries are off (`num_retries=0`) so every physical
+call is visible to `RunBudget`; the SDK only, never the LiteLLM proxy server.
+
+Keys live in the repo-root `.env` (loaded into `os.environ` by `core/env.py`) and
+reach LiteLLM as explicit `api_key=`/`api_base=` kwargs -- this module never writes a
+credential to `os.environ`. `assert_no_raw_secrets` runs before EVERY completion
+(the repair call included), over every `.env` value, on top of the stage-level guard.
+"""
+
+from __future__ import annotations
+
+import os
+import time
+from pathlib import Path
+from typing import Any, TypeVar
+
+from dotenv import dotenv_values
+from pydantic import BaseModel, ValidationError
+
+from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS
+from autotester.core.paths import repo_root
+from autotester.core.redact import assert_no_raw_secrets
+from autotester.providers.base import Provider, ProviderError
+from autotester.providers.images import image_url_parts
+from autotester.providers.litellm_schema import (
+    json_mode_instruction,
+    parse_answer,
+    request_options,
+)
+
+ModelT = TypeVar("ModelT", bound=BaseModel)
+
+MODEL_ENV = "AUTOTESTER_MODEL"
+_TIMEOUT_S = 120
+_PROVIDER_KEY_ENV = ("GEMINI_API_KEY", "GOOGLE_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY",
+                     "LITELLM_API_KEY")
+"""Vendor-key variables read from the PROCESS environment too: an exported key never
+passes through `.env`, so the `.env` scan alone would not know it (LL5)."""
+_CONFIG_KEYS = frozenset({MODEL_ENV, "LITELLM_API_BASE", "OLLAMA_BASE_URL", "OLLAMA_MODEL"})
+"""`.env` keys that are settings, not secrets: a model name or an endpoint URL in a
+prompt must not be refused as a leaked credential."""
+
+
+def _load_litellm() -> Any:
+    """Import the SDK lazily, so an unused or absent LiteLLM costs nothing. Two
+    flags are set first: PRODUCTION mode stops LiteLLM running `load_dotenv()` on
+    whatever `.env` it finds walking up from the cwd (a different file than the
+    repo-root one `core/env.py` loads, and it would bypass that loader's
+    test-process refusal); the local cost map stops an import-time fetch from
+    GitHub. Neither is a credential."""
+    os.environ.setdefault("LITELLM_MODE", "PRODUCTION")
+    os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")
+    import litellm
+
+    return litellm
+
+
+def _env_secret_values() -> list[str]:
+    """Every non-empty value in the repo-root `.env` that is not a setting: the
+    same "anything in .env is a secret" rule `SecretStore` applies at the stage."""
+    path = repo_root() / ENV_FILE
+    if not path.exists():
+        return []
+    skip = _CONFIG_KEYS | PUBLIC_ENV_KEYS
+    return [v for k, v in dotenv_values(path).items() if k and v and k not in skip]
+
+
+def _texts(messages: list[dict[str, Any]]) -> list[str]:
+    """Every text a request will carry (plain content and text parts alike)."""
+    out: list[str] = []
+    for message in messages:
+        content = message["content"]
+        if isinstance(content, str):
+            out.append(content)
+        else:
+            out.extend(p["text"] for p in content if p.get("type") == "text")
+    return out
+
+
+def _why(exc: ValueError) -> str:
+    """A short, content-free reason: pydantic's field paths and messages (never the
+    offending input value), or a plain 'not valid JSON'."""
+    if isinstance(exc, ValidationError):
+        return "; ".join(f"{'.'.join(str(p) for p in e['loc']) or 'answer'}: {e['msg']}"
+                         for e in exc.errors())
+    return "not valid JSON"
+
+
+class LiteLLMProvider(Provider):
+    """One explicit model, any vendor. `options`: `model` (else `AUTOTESTER_MODEL`),
+    and `secrets` (extra values the prompt guard must refuse, on top of `.env`)."""
+
+    id = "litellm"
+
+    def __init__(self, **options: Any) -> None:
+        super().__init__(**options)
+        self._model = str(options.get("model") or os.environ.get(MODEL_ENV) or "").strip()
+        if self._model:
+            self.options["model"] = self._model  # so `label` reads `litellm:<model>`
+        self._extra_secrets: list[str] = [str(v) for v in options.get("secrets") or []]
+
+    # -- availability ------------------------------------------------------
+    def _endpoint(self) -> dict[str, str]:
+        """`api_base`/`api_key` kwargs from the environment, only the ones set."""
+        base = os.environ.get("LITELLM_API_BASE")
+        if self._model.startswith(("ollama/", "ollama_chat/")):
+            base = os.environ.get("OLLAMA_BASE_URL") or base
+        key = os.environ.get("LITELLM_API_KEY")
+        return {**({"api_base": base} if base else {}), **({"api_key": key} if key else {})}
+
+    def _missing_keys(self) -> list[str]:
+        """Names of the credentials this model still needs ([] when none). An
+        explicit endpoint (self-hosted / OpenAI-compatible / Ollama) needs no key."""
+        endpoint = self._endpoint()
+        if "api_base" in endpoint:
+            return []
+        try:
+            env = _load_litellm().validate_environment(
+                model=self._model, api_key=endpoint.get("api_key"))
+        except Exception:
+            return ["an API key for this model"]
+        if env.get("keys_in_environment"):
+            return []
+        return list(env.get("missing_keys") or ["an API key"])
+
+    def unavailable_reason(self) -> str | None:
+        """Why this provider cannot serve a call right now, naming the model and the
+        one thing to set (never a key, a prompt or an endpoint value); None when ready.
+        The website's refusal pages show it (LL11)."""
+        if not self._model:
+            return (f"litellm has no model configured: set {MODEL_ENV} in .env (for example "
+                    "gemini/gemini-2.5-pro or ollama/llama3), or name it in the project as "
+                    "`litellm:<model>`")
+        missing = self._missing_keys()
+        if missing:
+            return (f"{self.label} is missing credentials: set {', '.join(missing)} in .env "
+                    "(or LITELLM_API_KEY / LITELLM_API_BASE for an OpenAI-compatible endpoint)")
+        return None
+
+    def available(self) -> bool:
+        return self.unavailable_reason() is None
+
+    def _require_ready(self) -> None:
+        reason = self.unavailable_reason()
+        if reason:
+            raise ProviderError(reason)
+
+    # -- roles -------------------------------------------------------------
+    def act(self, prompt: str, schema: type[ModelT] | None = None, *,
+            prompt_file: str | None = None, fed_id: str | None = None) -> Any:
+        return self._structured(prompt, schema, role="agent",
+                                prompt_file=prompt_file, fed_id=fed_id)
+
+    def judge(
+        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,
+        prompt_file: str | None = None, fed_id: str | None = None,
+    ) -> ModelT:
+        return self._structured(prompt, schema, role="judge", images=images,
+                                prompt_file=prompt_file, fed_id=fed_id)
+
+    # -- the call ----------------------------------------------------------
+    def _strategy(self) -> str:
+        """By capability, never by vendor name: response schema, else a forced tool,
+        else JSON mode with a repair retry."""
+        lit = _load_litellm()
+        for name, probe in (("schema", lit.supports_response_schema),
+                            ("tool", lit.supports_function_calling)):
+            try:
+                if probe(self._model):
+                    return name
+            except Exception:
+                continue
+        return "json"
+
+    def _guard(self, messages: list[dict[str, Any]]) -> None:
+        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]
+        values = [*_env_secret_values(), *exported, *self._extra_secrets]
+        try:
+            assert_no_raw_secrets("\n".join(_texts(messages)), values)
+        except ValueError:
+            raise ProviderError(
+                f"{self.label}: prompt withheld, a credential value reached it") from None
+
+    def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:
+        """A vendor failure, with the exception text kept only when it provably
+        echoes none of the prompt, the key or the endpoint (LL8)."""
+        text = str(exc)
+        echoed = any(t[:30] in text for t in _texts(messages) if t)
+        hidden = [v for v in self._endpoint().values() if v]
+        if echoed or any(v in text for v in hidden) or len(text) > 300:
+            text = "(details withheld)"
+        return f"{self.label} {role} call failed: {type(exc).__name__}: {text}"
+
+    def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,
+                  role: str, *, prompt_file: str | None, fed_id: str | None,
+                  retries: int = 0) -> Any:
+        """ONE physical `litellm.completion` call: guarded first, recorded after."""
+        self._guard(messages)
+        kwargs: dict[str, Any] = {
+            "model": self._model, "messages": messages, "num_retries": 0,
+            "timeout": _TIMEOUT_S, "drop_params": True, **self._endpoint(),
+            **request_options(strategy, self._model, schema)}
+        if role == "judge":
+            kwargs["temperature"] = 0
+        started = time.perf_counter()
+        try:
+            response = _load_litellm().completion(**kwargs)
+        except Exception as exc:
+            raise ProviderError(self._failure(role, exc, messages)) from None
+        usage = getattr(response, "usage", None)
+        self.record(
+            role, input_tokens=getattr(usage, "prompt_tokens", 0) or 0,
+            output_tokens=getattr(usage, "completion_tokens", 0) or 0,
+            prompt_file=prompt_file, fed_id=fed_id,
+            latency_s=time.perf_counter() - started, retries=retries)
+        try:
+            return response.choices[0].message
+        except (AttributeError, IndexError, TypeError):
+            raise ProviderError(f"{self.label} {role} call returned no message") from None
+
+    def _structured(
+        self, prompt: str, schema: type[ModelT] | None, *, role: str,
+        images: list[Path] | None = None,
+        prompt_file: str | None = None, fed_id: str | None = None,
+    ) -> ModelT:
+        if schema is None:
+            raise ProviderError(
+                f"{self.label} requires a schema for structured output (role={role})")
+        self._require_ready()
+        strategy = self._strategy()
+        text = prompt + (json_mode_instruction(schema) if strategy == "json" else "")
+        messages: list[dict[str, Any]] = [
+            {"role": "user", "content": image_url_parts(text, images)}]
+        meta = {"prompt_file": prompt_file, "fed_id": fed_id}
+        message = self._complete(messages, schema, strategy, role, **meta)
+        try:
+            return parse_answer(message, strategy, schema)
+        except ValueError as exc:
+            problem = _why(exc)
+            if strategy != "json":
+                raise ProviderError(self._unparsable(role, problem)) from None
+        messages += [
+            {"role": "assistant", "content": getattr(message, "content", None) or ""},
+            {"role": "user", "content": "That reply was not valid. Reply with ONE JSON object "
+                                        f"only, matching the schema. Problem: {problem}"}]
+        message = self._complete(messages, schema, strategy, role, retries=1, **meta)
+        try:
+            return parse_answer(message, strategy, schema)
+        except ValueError as exc:
+            raise ProviderError(self._unparsable(role, _why(exc))) from None
+
+    def _unparsable(self, role: str, problem: str) -> str:
+        return f"{self.label} {role} answer did not match the schema ({problem})"
