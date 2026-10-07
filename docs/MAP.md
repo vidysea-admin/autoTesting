@@ -56,6 +56,7 @@
 | `providers/gemini_schema.py` | Turn a Pydantic model into a schema Gemini's `response_schema` will accept. |
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `schema/agent_fallback.py` | Typed shapes for the browser-use fallback actuator (T-177, qa/contracts/agent-fallback.md). |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
@@ -88,9 +89,11 @@
 | `sources/email_register.py` | Registration for EMAIL sources: `register_email` -> `Source` rows. |
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
+| `stages/agent_actuator.py` | AGENT_ACTUATOR: the guards, bounds and typed boundary around an agent that drives a page. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
+| `stages/browser_use_backend.py` | BROWSER_USE_BACKEND: browser-use (MIT) as the `ActuatorBackend` for unknown screens (T-177). |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
@@ -175,6 +178,11 @@
 <!-- generated:schema -->
 | Model | Meaning |
 |---|---|
+| `FallbackActionKind` (`schema/agent_fallback.py`) |  |
+| `FallbackAction` (`schema/agent_fallback.py`) | One action the agent chose, as the guards see it (AF3). |
+| `ActuatorResult` (`schema/agent_fallback.py`) | What a backend returns after driving the page: the actions taken, what it observed and |
+| `FallbackStatus` (`schema/agent_fallback.py`) | How an invocation ended. Deliberately no PASS: only `grade.py` writes a verdict. |
+| `FallbackOutcome` (`schema/agent_fallback.py`) | The adapter's whole answer for one invocation. `reason` names the bound, the refusal or |
 | `AiSignalKind` (`schema/ai_target.py`) | Observed lexical facts; never runtime claims or check selection. |
 | `AiTargetKind` (`schema/ai_target.py`) | The four positive target kinds specified by the approved T-151 plan. |
 | `Classification` (`schema/ai_target.py`) | Strict naming response; evidence and checks are never model-controlled. |

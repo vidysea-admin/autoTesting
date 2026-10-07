@@ -22,9 +22,11 @@ from autotester.schema.case import Case
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import Evidence, RawResult
 from autotester.schema.verdict import Criterion, Rubric, Verdict
+from autotester.stages.agent_actuator import FallbackActuator
+from autotester.stages.agent_loop import AgentLoopResult, run_with_fallback
 from autotester.stages.execute import run_case
 from autotester.stages.grade import grade
-from autotester.stages.script_replay import run_scripted
+from autotester.stages.script_replay import Executor, run_scripted
 from autotester.store.project_store import ProjectStore
 
 GENERATOR = "stages.run_case_pipeline.default_rubric"
@@ -127,6 +129,36 @@ def _finalize_video(result: RawResult, verdict: Verdict, video_rel: str | None,
     result.evidence.append(Evidence(kind=EvidenceKind.VIDEO, path=video_rel, masked=True))
 
 
+def _record_repair(loop: AgentLoopResult, case: Case, store: ProjectStore) -> None:
+    """SR5's explicit, recorded act: a live run the agent repaired persists the corrected case
+    (content-addressed, so the same repair twice is one row, AL3) and says so as evidence. The
+    stored script is not touched here -- the corrected case's new steps hash simply makes the
+    next run record a fresh version."""
+    if not loop.fixed:
+        return
+    try:
+        store.add_case(loop.case)
+        note = f"agent repair: case {case.id} -> {loop.case.id} ({loop.iterations} fix(es))"
+    except (OSError, ValueError) as exc:  # a good repair is never failed by its bookkeeping
+        note = f"agent repair not persisted: {type(exc).__name__}: {exc}"
+    loop.result.evidence.insert(0, Evidence(kind=EvidenceKind.DOM, path=note))
+
+
+def fallback_executor(
+    agent: Provider, actuator: FallbackActuator | None, store: ProjectStore,
+) -> Executor:
+    """T-177/AF5: the production call site of `run_with_fallback`. An executor for
+    `run_scripted` that repairs a broken LIVE run through the agent loop. A replay is never
+    repaired by running it (SR5): it reports ERRORED and leaves the stored script alone."""
+    def execute(case: Case, session: BrowserSession) -> RawResult:
+        if getattr(session, "replaying", False):
+            return run_case(case, session)
+        loop = run_with_fallback(case, session, agent, actuator=actuator)
+        _record_repair(loop, case, store)
+        return loop.result
+    return execute
+
+
 def _judgeable(result: RawResult) -> bool:
     """Whether `grade()` would send this result to the judge (it settles the rest by rule)."""
     return result.outcome in (Outcome.COMPLETED, Outcome.ASSERTION_FAILED)
@@ -143,6 +175,7 @@ def _unjudged_replay(result: RawResult, run_id: str) -> Verdict:
 def run_and_grade_case(
     case: Case, session: BrowserSession, judge: Provider, run_id: str,
     store: ProjectStore | None = None, *, judge_replays: bool = True,
+    agent: Provider | None = None, actuator: FallbackActuator | None = None,
 ) -> tuple[RawResult, Verdict]:
     """Run `case` on `session`, then grade it against its persisted rubric —
     building and saving a `default_rubric` the first time one doesn't exist
@@ -153,11 +186,16 @@ def run_and_grade_case(
     script replays it (`result.used_script`), otherwise it runs live and records one.
     Grading is a separate stage and still happens by default. `judge_replays=False` is the
     zero-provider-call regression mode: a replayed run that finished is returned unjudged
-    (INCONCLUSIVE by rule, never a PASS) instead of spending a model call per case."""
+    (INCONCLUSIVE by rule, never a PASS) instead of spending a model call per case.
+
+    T-177: given an `agent`, a broken live run is repaired through `run_with_fallback`
+    (`fallback_executor`); with an `actuator` too, a screen the repair loop could not resolve
+    gets one bounded, guarded agent attempt. With neither (the default) nothing changes."""
     store = store or ProjectStore(case.project)
+    execute = fallback_executor(agent, actuator, store) if agent is not None else run_case
     session.begin_case_video(case.id)
     try:
-        scripted = run_scripted(case, session, store, run_case)
+        scripted = run_scripted(case, session, store, execute)
     finally:
         video_rel = session.end_case_video()
     result = scripted.result
@@ -173,6 +211,7 @@ def run_and_grade_case(
 
 def run_and_grade_case_resilient(
     case: Case, session: BrowserSession, judge: Provider, run_id: str, store: ProjectStore,
+    *, agent: Provider | None = None, actuator: FallbackActuator | None = None,
 ) -> tuple[RawResult, Verdict]:
     """Like `run_and_grade_case`, but a grader/provider exception that happens
     AFTER `run_case` already produced a real result never discards that
@@ -189,9 +228,10 @@ def run_and_grade_case_resilient(
     always returned; any exception raised while resolving the rubric or
     grading is caught, and it produces an `INCONCLUSIVE` verdict naming the
     grader failure instead of propagating."""
+    execute = fallback_executor(agent, actuator, store) if agent is not None else run_case
     session.begin_case_video(case.id)
     try:
-        result = run_scripted(case, session, store, run_case).result
+        result = run_scripted(case, session, store, execute).result
     finally:
         video_rel = session.end_case_video()
     try:
