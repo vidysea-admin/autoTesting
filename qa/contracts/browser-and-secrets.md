@@ -135,3 +135,6 @@ page and mocks.
   B1–B9 and B7 (product-screenshot masking) are unchanged; the value still never reaches a model, log,
   shared artifact, or product screenshot. Full scope lives in core-invariants.md C5's owner-only-editor
   exception. Found live by checker Mode D (AT-554); decided by Umesh (option A).
+- 2026-10-07 · routine (D-072 item 5, Approved-by Umesh) · refines the 2026-09-22 line above: the one authorized surface where a saved
+  value appears is now shown only to a user holding `credentials.view` (default Admin/CEO only), not to every operator of the page;
+  other users see set / not set. B1-B10 and B7 unchanged. See core-invariants.md C5 (amended 2026-10-07) and `auth.md` AU21.

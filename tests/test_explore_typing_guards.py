@@ -13,7 +13,9 @@ Contract: qa/contracts/explore.md X7, X10-b, V7b.
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
+import pytest
 from crawl_fake import make_project, make_session
 
 from autotester.browser.observe import PageObserver
@@ -22,6 +24,50 @@ from autotester.schema.enums import WritePolicy
 from autotester.store.project_store import ProjectStore
 
 TYPED_POLICY = SafetyPolicy(write_policy=WritePolicy.TEST_ACCOUNT, synthetic_typing=True)
+
+
+@pytest.mark.parametrize("reason", ["max_depth", "max_actions", "max_screens", "wall_clock_s"])
+@pytest.mark.parametrize(
+    "phase", ["before", "after_fill", "after_heartbeat", "after_eligibility"])
+def test_typing_stops_before_any_followup_when_bound_latches(monkeypatch, reason, phase):
+    """X4: retain the exact bound and perform no subsequent browser work."""
+    from autotester.stages import explore, explore_typing
+
+    calls = []
+    rt = SimpleNamespace(policy=TYPED_POLICY, stop_reason=None,
+                         frontier=SimpleNamespace(actions_used=0),
+                         bounds=CrawlBounds(), reached=phase == "before")
+    node = SimpleNamespace(elements=[SimpleNamespace(role="textbox"),
+                                    SimpleNamespace(role="combobox")])
+
+    def fill(*args):
+        calls.append("fill")
+        rt.reached = phase == "after_fill"
+
+    def beat(*args):
+        calls.append("heartbeat")
+        rt.reached = True
+
+    def eligible(el):
+        if phase == "after_eligibility":
+            rt.reached = True
+        return True
+
+    monkeypatch.setattr(explore, "stop_reason", lambda runtime: reason if runtime.reached else None)
+    monkeypatch.setattr(explore_typing.crawl_coverage, "is_candidate", lambda el: True)
+    monkeypatch.setattr(explore_typing, "typing_target_allowed", eligible)
+    monkeypatch.setattr(explore_typing, "_type_one", fill)
+    monkeypatch.setattr(explore_typing, "_heartbeat_due", lambda runtime: True)
+    monkeypatch.setattr(explore_typing, "heartbeat", beat)
+    monkeypatch.setattr(explore_typing, "return_to", lambda *args: calls.append("restore") or True)
+    before_action = phase in {"before", "after_eligibility"}
+    expected = [] if before_action else ["fill"]
+    if phase == "after_heartbeat":
+        expected.append("heartbeat")
+    assert explore_typing.type_form(rt, node) == (not before_action)
+    assert rt.frontier.actions_used == (not before_action)
+    assert rt.stop_reason == reason
+    assert calls == expected
 
 
 def _crawl(tmp_path: Path, **kwargs: object) -> tuple[object, Path]:

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-07T09:26:50.960596Z",
+  "run_id": "run-01M4ATYY74FJJNK62P3702JDZJ",
+  "case_id": "case_35b17ccece2d",
+  "result": "INCONCLUSIVE",
+  "scoreboard": "not judged: the grader failed after execution completed",
+  "criteria_met": 0,
+  "criteria_total": 0,
+  "failures": [],
+  "grader_provider": "rule",
+  "rubric_hash": "",
+  "note": "ProviderError: langchain-fallback has no configured provider (no API key/service found)",
+  "images_requested": 0,
+  "images_seen": 0
+}

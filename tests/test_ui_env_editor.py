@@ -231,3 +231,40 @@ def test_the_platform_url_is_editable_from_the_credentials_page(
     project = ProjectStore("demo", scratch_root).load_project()
     assert project.base_url == "https://demo.test/signin"
     assert project.allowed_domains == ["demo.test", "app.test"]
+
+
+def test_env_writer_normalizes_only_updated_keys(tmp_path: Path) -> None:
+    from autotester.browser.secrets import parse_env
+    from autotester.ui.env_editor import create_env_value_if_absent, set_env_values
+
+    path = tmp_path / ".env"
+    path.write_text("# keep\n export TARGET = 'old'\nTARGET='older'\n"
+                    "OTHER='one'\nOTHER='two'\n", encoding="utf-8")
+    assert set_env_values(path, {"TARGET": "new"}) is None
+    written = path.read_text(encoding="utf-8")
+    assert written.count("TARGET='new'") == 0  # renderer chooses double quotes
+    assert parse_env(written)["TARGET"] == "new"
+    assert "OTHER='one'\nOTHER='two'" in written and "# keep" in written
+    assert create_env_value_if_absent(path, "TARGET", lambda: "wrong") == "new"
+    assert path.read_text(encoding="utf-8") == written
+
+
+def test_env_lock_timeout_and_replace_failure_leave_original(tmp_path: Path, monkeypatch) -> None:
+    from autotester.ui.env_editor import _env_lock, create_env_value_if_absent, set_env_values
+
+    path = tmp_path / ".env"
+    set_env_values(path, {"ORIGINAL": "keep"})
+    before = path.read_bytes()
+    lock_path = Path(str(path.resolve()) + ".lock")
+    with _env_lock(path), pytest.raises(TimeoutError):
+        create_env_value_if_absent(path, "NEW", lambda: "value", timeout_s=0.03)
+    assert path.read_bytes() == before and lock_path.exists()
+    with monkeypatch.context() as patch:
+        def fail_replace(*_args):
+            raise OSError("synthetic replacement failure")
+        patch.setattr("autotester.ui.env_editor.os.replace", fail_replace)
+        with pytest.raises(OSError):
+            set_env_values(path, {"NEW": "value"})
+    assert path.read_bytes() == before and not list(tmp_path.glob(".env-*.tmp"))
+    assert create_env_value_if_absent(path, "NEW", lambda: "value") == "value"
+    assert lock_path.exists()

@@ -1,0 +1,270 @@
+[
+  {
+    "label": "repair-baseline",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\repair-baseline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\repair-baseline.xml"
+    ],
+    "exit": 0,
+    "tests": 77,
+    "errors": 0,
+    "failed": []
+  },
+  {
+    "label": "scan-output",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\scan-output-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\scan-output.xml"
+    ],
+    "exit": 1,
+    "tests": 77,
+    "errors": 0,
+    "failed": [
+      "test_secret_keys_tags_and_paths_are_scrubbed[base64-filename]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[hex-filename]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[folded-filename]",
+      "test_encoded_evidence_path_is_guarded",
+      "test_secret_refusal_paths_are_guarded"
+    ],
+    "function": "scan",
+    "anchor_count": 1,
+    "defends": "test_encoded_evidence_path_is_guarded",
+    "before_sha256": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "mutation_sha256": "fead80fb27a006ab9fdec81056f0986fbc75a93baf11701127a38048f35075f9",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "context-output",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\context-output-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\context-output.xml"
+    ],
+    "exit": 1,
+    "tests": 77,
+    "errors": 0,
+    "failed": [
+      "test_secret_keys_tags_and_paths_are_scrubbed[base64-metadata]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[hex-metadata]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[folded-metadata]",
+      "test_encoded_context_output_is_guarded"
+    ],
+    "function": "read_context",
+    "anchor_count": 1,
+    "defends": "test_encoded_context_output_is_guarded",
+    "before_sha256": "27e6c7eff266e15c87152b6e08ccb2a89b6a432b57c2ba5d7cc71b0c8666797a",
+    "mutation_sha256": "27fe4e14128b16f16fbe47d4de0d82f5c92f89c6f527c735ab6484a4604f0042",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "project-preflight",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\project-preflight-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\project-preflight.xml"
+    ],
+    "exit": 1,
+    "tests": 77,
+    "errors": 0,
+    "failed": [
+      "test_dirty_project_rejected_before_filesystem"
+    ],
+    "function": "approved_roots",
+    "anchor_count": 1,
+    "defends": "test_dirty_project_rejected_before_filesystem",
+    "before_sha256": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "mutation_sha256": "8b10d29c4864d89f5ba66c5d80de41d986a309bd0f39f97d827b7df60f8e5bb5",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "approval-exception",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\approval-exception-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\approval-exception.xml"
+    ],
+    "exit": 1,
+    "tests": 77,
+    "errors": 0,
+    "failed": [
+      "test_all_roots_are_preflighted_before_any_open[]",
+      "test_all_roots_are_preflighted_before_any_open[secret-token]",
+      "test_unapproved_secret_path_error_is_scrubbed",
+      "test_denial_class_and_formatted_chain_are_safe"
+    ],
+    "function": "approved_roots",
+    "anchor_count": 1,
+    "defends": "test_denial_class_and_formatted_chain_are_safe",
+    "before_sha256": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "mutation_sha256": "85c74a175c3a1abe32222e4f096bf0d042c5d733aea890e35607bbf09083ff68",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "root-filesystem",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\root-filesystem-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\root-filesystem.xml"
+    ],
+    "exit": 1,
+    "tests": 77,
+    "errors": 0,
+    "failed": [
+      "test_secret_keys_tags_and_paths_are_scrubbed[raw-missing]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[base64-missing]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[hex-missing]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[folded-missing]",
+      "test_filesystem_subclass_and_diagnostics[checker-repair-secret-longvalue-missing]",
+      "test_filesystem_subclass_and_diagnostics[Y2hlY2tlci1yZXBhaXItc2VjcmV0LWxvbmd2YWx1ZQ==-missing]"
+    ],
+    "function": "approved_roots",
+    "anchor_count": 1,
+    "defends": "test_filesystem_subclass_and_diagnostics[checker-repair-secret-longvalue-missing]",
+    "before_sha256": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "mutation_sha256": "fc3811360be1d29bd6acb4ce1acd8a6add11f16fa9ac3add47226abd03137d08",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "scan-filesystem",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\scan-filesystem-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\scan-filesystem.xml"
+    ],
+    "exit": 1,
+    "tests": 77,
+    "errors": 0,
+    "failed": [
+      "test_secret_keys_tags_and_paths_are_scrubbed[raw-scan_open]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[base64-scan_open]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[hex-scan_open]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[folded-scan_open]",
+      "test_filesystem_subclass_and_diagnostics[checker-repair-secret-longvalue-scan_open]",
+      "test_filesystem_subclass_and_diagnostics[Y2hlY2tlci1yZXBhaXItc2VjcmV0LWxvbmd2YWx1ZQ==-scan_open]"
+    ],
+    "function": "scan",
+    "anchor_count": 1,
+    "defends": "test_filesystem_subclass_and_diagnostics[checker-repair-secret-longvalue-scan_open]",
+    "before_sha256": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "mutation_sha256": "7ef19f7b18b7a4aa8713cd6907edea5c3f4e820362f40e676a984c4c4dd31588",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "context-filesystem",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\context-filesystem-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\context-filesystem.xml"
+    ],
+    "exit": 1,
+    "tests": 77,
+    "errors": 0,
+    "failed": [
+      "test_secret_keys_tags_and_paths_are_scrubbed[raw-context_open]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[base64-context_open]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[hex-context_open]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[folded-context_open]",
+      "test_filesystem_subclass_and_diagnostics[checker-repair-secret-longvalue-context_open]",
+      "test_filesystem_subclass_and_diagnostics[Y2hlY2tlci1yZXBhaXItc2VjcmV0LWxvbmd2YWx1ZQ==-context_open]"
+    ],
+    "function": "read_context",
+    "anchor_count": 1,
+    "defends": "test_filesystem_subclass_and_diagnostics[checker-repair-secret-longvalue-context_open]",
+    "before_sha256": "27e6c7eff266e15c87152b6e08ccb2a89b6a432b57c2ba5d7cc71b0c8666797a",
+    "mutation_sha256": "002df88d028eec96179fd0ec98a5312107e2c95e859c5440bd5aaa44f6721a92",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "repair-restored",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\repair-restored-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-repair-copy\\repair-restored.xml"
+    ],
+    "exit": 0,
+    "tests": 77,
+    "errors": 0,
+    "failed": []
+  }
+]

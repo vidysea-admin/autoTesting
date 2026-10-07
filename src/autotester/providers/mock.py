@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
 from autotester.providers.base import Provider, ProviderError
+from autotester.schema.ai_target import Classification
 from autotester.schema.observation import VisionOptions
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
@@ -52,6 +54,18 @@ class MockProvider(Provider):
 
     def act(self, prompt: str, schema: type[ModelT] | None = None, *,
             prompt_file: str | None = None, fed_id: str | None = None) -> Any:
+        if schema is Classification and not self.responses.get("agent"):
+            signals = json.loads(prompt.rsplit("\nSIGNALS_JSON\n", 1)[1])
+            kinds = {s["kind"] for s in signals}
+            agent = bool(kinds & {"agent_framework", "tool"})
+            orchestration = "orchestration" in kinds
+            kind = ("hybrid" if agent and orchestration else "agentic" if agent
+                    else "orchestration" if orchestration else "conversational")
+            self.responses.setdefault("agent", []).append(Classification(
+                system_kind=kind,
+                reason="Deterministic fixture naming from observed signals",
+                confidence=0.8,
+            ))
         return self._next("agent", prompt, prompt_file=prompt_file, fed_id=fed_id)
 
     def judge(

@@ -15,7 +15,10 @@ scope, expiry and operational bounds. Human-granted approvals remain supported. 
 Umesh's AT-674 Answer for the Pathlynks USER run: provisioned declared credentials, the exact target
 and allowed domains authorize a newly derived `LIVE_CASE` grant under CN11. The human does not type
 counts or a signing key; positive finite bounds are system-selected operational brakes. This narrow
-derivation never bypasses the gate or repairs a loaded row. The gate is judged adversarially: the
+derivation never bypasses the gate or repairs a loaded row. **D-068** widens that: provisioned
+credentials are the standing run approval for every non-adversarial run kind (`LIVE_CASE`, `CRAWL`,
+`READ`), so no per-run human approval is required where the project declares credentials; the signed
+row is minted automatically as an audit record. *Amended 2026-10-07 per D-068.* The gate is judged adversarially: the
 question is never "does the code look like it refuses", it is "can a check that ran for real get
 past it". CN1-CN10 retain their fail-closed obligations.
 
@@ -28,6 +31,10 @@ past it". CN1-CN10 retain their fail-closed obligations.
   explore`, the UI `POST /projects/{slug}/explore`, and a direct `run_crawl` call must all leave
   the project directory exactly as they found it when the run is refused. A criterion proven only
   on a path no operator uses is the maker's own "guard tested nowhere", inverted onto the proof.
+- **The approval may be human-granted or account-derived (CN11).** A project that declares provisioned
+  credentials in its `SecretRef[]` needs no per-run human approval for its declared target and
+  `allowed_domains`; a project that declares none, or a target/domain outside the declaration, still
+  refuses exactly as above. *Amended 2026-10-07 per D-068.*
 - **Verify:** `scripts/explore_proof.py`'s first invariant (real ungated crawl, assert no crawl
   directory was created) **and** a refused CLI/UI run leaving no `projects/<slug>/crawl/<id>/`.
 
@@ -94,7 +101,14 @@ past it". CN1-CN10 retain their fail-closed obligations.
   the alternative is URL normalisation, and every normaliser is a place where an approval silently
   grows. The operator pastes the target out of the refusal message, which always prints the exact
   string the runner will compare, so brittleness costs a copy-paste and buys unambiguity.
-- **Verify:** exactness probes over those four variants, all refused.
+- **Account-derived rows (CN11) are matched on the same exact (`project`, `run_kind`, `target`)
+  triple, and a row so matched covers any run of that triple, whatever case set minted it.** The row's
+  `scope` is the validated account/domain scope, not a case-set key. Exactness is unchanged: no
+  prefix, slash, case or query widening, and no match across projects, kinds or targets.
+  *Amended 2026-10-07 per D-068 (gate d063-cn5-vs-cn11, answered B).*
+- **Verify:** exactness probes over those four variants, all refused; plus an account-derived row
+  minted for one case set covering a different case set of the same triple, and still refusing a
+  different target.
 
 ### CN6 — Bounds are checked, not just existence
 - A run wider than its approval is refused with the shortfall named (`actions 150 > approved 20`).
@@ -205,13 +219,18 @@ past it". CN1-CN10 retain their fail-closed obligations.
   and an over-budget refusal; `grep` shows no truthiness guard on a bound in `RunBudget`.
   **Links:** AT-660; AT-570; AT-674; core-invariants C12.
 
-### CN11 — Account-derived LIVE_CASE grants preserve verification and bound the whole run
-- **Authority and identity (D-063; AT-674 Answer).** A newly minted grant derives only from validated
-  current provisioned account credentials declared by the project, the exact requested target and
-  allowed domains. Its `project`, `run_kind=LIVE_CASE`, `target` and `scope` match the requested run
-  exactly; scope records the validated account/domain scope without wildcards or widening. CN5's
-  slash/case/query distinctions still apply. No transfer across projects, kinds, targets or scopes.
-  No automatic `READ`, `CRAWL` or `ADVERSARIAL` grant follows from this criterion.
+### CN11 — Account-derived grants (credentials = standing run approval) preserve verification and bound the whole run
+- **Authority and identity (D-063; AT-674 Answer; widened by D-068).** Provisioned credentials are
+  the standing run approval. A newly minted grant derives only from validated current provisioned
+  account credentials declared by the project, the exact requested target and allowed domains. Its
+  `project`, `run_kind` (`LIVE_CASE`, `CRAWL` or `READ`) and `target` match the requested run exactly;
+  scope records the validated account/domain scope without wildcards or widening. CN5's
+  slash/case/query distinctions still apply. No transfer across projects, run kinds or targets; an
+  account-derived row may cover any run matching its (project, run_kind, target), whatever case set
+  minted it. **No per-run human approval is required** for such a run, crawl/explore included; the
+  row is still minted and HMAC-signed automatically as an audit record. No automatic `ADVERSARIAL`
+  grant follows from this criterion. Test accounts only. *Amended 2026-10-07 per D-068 (was: LIVE_CASE
+  only, scope matched to the case set, no automatic READ/CRAWL grant).*
 - **Selected credentials only.** Preconditions inspect the keys actually referenced by the requested
   case set. Missing, undeclared, unavailable or out-of-scope referenced credentials refuse before
   browser actions. Unused COUNSELLOR keys never gate the USER run or provide a fallback identity.
@@ -241,8 +260,9 @@ past it". CN1-CN10 retain their fail-closed obligations.
   button presses, actual bounds and stop reasons in the existing report/trace surfaces after
   redaction. Secret prior values are never copied into accountability records or screenshots.
 - **Remaining gates.** Human FlowSpec review, explicit adversarial authorization, production
-  promotion, project write policy and model-spend gates remain applicable. CN11 grants no blanket
-  live-account write, paid-model-run, production-write or release authority.
+  promotion, project write policy and model-spend gates remain applicable. The D-066 Origin/CSRF check
+  on state-changing UI routes remains required. CN11 grants no blanket live-account write,
+  paid-model-run, production-write or release authority.
 - **Verify:** independently exercise the authorized grant through real preflight/seam checks with
   synthetic credentials and a scratch env; refuse each identity/scope variant and invalid credential,
   signature, expiry or bound. Prove unused role keys are irrelevant, loaded rows stay byte-intact,
@@ -260,8 +280,9 @@ past it". CN1-CN10 retain their fail-closed obligations.
 - **Gating `ingest` / `expand` / `run_case`** — T-122's live-case gate is a separate unit.
 - **A UI grant form.** CLI only; the credentials page is the right home and is not built here.
 - **Org-level / multi-project / wildcard approvals**, and **auto-granting outside CN11's
-  account-derived LIVE_CASE path** — D-063 authorizes only that narrow exception. Automatic READ,
-  CRAWL and ADVERSARIAL grants remain excluded.
+  account-derived path** — D-063 and D-068 authorize only that exception (`LIVE_CASE`, `CRAWL`,
+  `READ`, where the project declares credentials). Automatic ADVERSARIAL grants remain excluded.
+  *Amended 2026-10-07 per D-068.*
 - The `production` field being unused by the crawl gate (recorded in CN7 as a boundary, tracked as
   AT-112 — not a fresh finding each check).
 - `approvals.jsonl` being deliberately hostile to hand-editing. It is a **stated exception** to
@@ -360,3 +381,14 @@ past it". CN1-CN10 retain their fail-closed obligations.
   **Changes-authorized:** qa/contracts/consent.md Purpose, auto-grant exclusion, CN11 and this log.
   Contract maintenance only: no product acceptance/PASS, runtime, credential write, commit or release.
   **Links:** D-063; AT-674; T-122; qa/gates/pathlynks-user-account-first.md; core-invariants C5/C12.
+
+- 2026-10-07 · CRITICAL, authorized by **D-068** (Approved-by: Umesh; chat answers recorded in
+  `qa/gates/d063-cn5-vs-cn11.md`, answered B) · checker-owned amendment: provisioned credentials are
+  the standing run approval. Purpose, CN1, CN5, CN11 and the auto-grant exclusion now cover
+  `LIVE_CASE`, `CRAWL` and `READ` with no per-run human approval; an account-derived row may cover any
+  (project, run_kind, target) match; rows are still minted and HMAC-signed automatically as an audit
+  record. Kept: test accounts only, `allowed_domains` scope, secrets never in prompts or logs (C5),
+  exact-target matching, unconditional signature/expiry/bounds verification, no automatic
+  ADVERSARIAL grant, the D-066 Origin/CSRF check. **Changes-authorized:** qa/contracts/consent.md
+  Purpose, CN1, CN5, CN11, out-of-scope bullet and this log. Contract maintenance only: no runtime
+  change. **Links:** D-068; D-063; D-066; D-018; T-145; qa/gates/d063-cn5-vs-cn11.md.

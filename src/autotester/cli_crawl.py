@@ -6,6 +6,7 @@ the same typer apps there, so the CLI surface a user sees is unchanged.
 
 from __future__ import annotations
 
+import math
 from datetime import date, datetime, time
 from pathlib import Path
 from typing import Any
@@ -101,16 +102,16 @@ def explore_cmd(
 
 
 def echo_crawl_summary(crawl: Any) -> None:
-    """The whole report a headless or CI run gets (AT-122).
-
-    `tool_failures` belongs here for the same reason it belongs in the
-    workbook: this line is the only place such a run learns the crawl could
-    not record part of what it saw. Dropping it under-reports as dishonestly
-    as folding it into `issues` over-reported."""
-    from autotester.stages.explore_status import displayed_status, is_success, skip_note
+    """The CI report, keeping crawler failures apart from product issues (AT-122)."""
+    from autotester.stages.explore_status import (
+        displayed_reason,
+        displayed_status,
+        is_success,
+        skip_note,
+    )
 
     typer.secho(
-        f"{crawl.id}: {displayed_status(crawl).value} ({crawl.stop_reason}) — "
+        f"{crawl.id}: {displayed_status(crawl).value} ({displayed_reason(crawl)}) — "
         f"{crawl.screens} screens, {crawl.edges} edges, {crawl.actions} actions, "
         f"{crawl.denied} denied, {crawl.issues} issues, "
         f"{crawl.tool_failures} tool failures{skip_note(crawl)}",  # CR5
@@ -238,23 +239,23 @@ def approve_cmd(
     scope: str = typer.Option(..., "--scope", help="what this run may touch, in your words"),
     granted_by: str = typer.Option(..., "--granted-by"),
     expires: str = typer.Option(..., "--expires", help="YYYY-MM-DD; consent is never open-ended"),
-    max_actions: int = typer.Option(0, "--max-actions"),
-    max_probes: int = typer.Option(0, "--max-probes"),
-    wall_clock: float = typer.Option(0.0, "--wall-clock", help="seconds"),
+    max_actions: int = typer.Option(200, "--max-actions", min=1),
+    max_probes: int = typer.Option(200, "--max-probes", min=1),
+    wall_clock: float = typer.Option(600.0, "--wall-clock", help="seconds", min=0.001),
     production: bool = typer.Option(
         False, "--production", help="required for an adversarial run against production"
     ),
 ) -> None:
     """Grant a human's approval for one kind of run against one target (D-018).
-
-    Content-addressed AND signed with an HMAC keyed from
-    `AUTOTESTER_APPROVAL_KEY` in the repo-root `.env` (AT-110): tamper-proof
-    against anyone who does not hold that key — not against an agent that can
-    edit the code (`core/consent.py`) which checks it.
+    HMAC-signed with the repo-root approval key: protects against row tampering,
+    not a party capable of rewriting the checker itself (AT-110).
     """
     from autotester.schema.approval import RunApproval
     from autotester.schema.enums import ApprovalKind
 
+    if not math.isfinite(wall_clock) or min(max_actions, max_probes, wall_clock) <= 0:
+        typer.secho("grant bounds must be positive and finite", fg=typer.colors.RED)
+        raise typer.Exit(1)
     store_ = ProjectStore(project)
     if store_.load_project() is None:
         typer.secho(f"no project '{project}' yet", fg=typer.colors.RED)
@@ -266,8 +267,7 @@ def approve_cmd(
         typer.secho(f"--kind must be one of: {allowed}", fg=typer.colors.RED)
         raise typer.Exit(1) from None
     _validate_grant(expires, target, store_.load_project())
-    # CN4 (at147 answered C, D-048): store the END of the day, offset-aware in
-    # local time -- never the bare date (shares `_local_now()` with `_validate_grant`).
+    # CN4: only NEW rows get an offset-aware end-of-day expiry (D-048).
     expires_at = _end_of_day(date.fromisoformat(expires)).isoformat()
     candidate = RunApproval(
         project=project, run_kind=run_kind, target=target, scope=scope,

@@ -164,3 +164,62 @@ def test_pr7_run_budget_try_consume_is_thread_safe_under_race() -> None:
         t.join()
 
     assert (accepted, budget.actions_used) == (50, 50)
+
+
+@pytest.mark.parametrize("axis", ["actions", "probes"])
+@pytest.mark.parametrize("amount", [-1, 0.5, float("nan"), float("inf"), True])
+def test_budget_spends_cannot_replenish_or_bypass(axis, amount):
+    budget = RunBudget(_approval(max_actions=2, max_probes=2))
+    assert budget.try_consume(actions=1, probes=1)
+    with pytest.raises(ValueError):
+        budget.try_consume(**{axis: amount})
+    assert budget.try_consume(actions=1, probes=1)
+    assert not budget.try_consume(**{axis: 1})
+    with pytest.raises(RuntimeError, match=f"max_{axis}"):
+        budget.check()  # a tripped live brake forbids even zero-spend continuation
+
+
+def test_budget_exact_deadline_and_positive_timeout(monkeypatch):
+    from autotester.stages import run_budget
+
+    clock = [10.0]
+    monkeypatch.setattr(run_budget.time, "monotonic", lambda: clock[0])
+    budget = RunBudget(_approval(wall_clock_s=1.0))
+    clock[0] = 10.75
+    assert 0 < budget.remaining_ms() <= 250
+    clock[0] = 11.0
+    assert not budget.try_consume()
+    assert budget.stop_reason == "wall_clock_s"
+    with pytest.raises(RuntimeError, match="wall_clock_s"):
+        budget.check()
+
+
+def test_explicit_budget_has_no_reservation_and_must_match_approval():
+    approval = _approval(max_actions=1)
+    budget = RunBudget(approval)
+    def spend(case, session):
+        assert session.budget is budget
+        assert budget.try_consume(actions=1)
+        return _ok(case, session)
+    results = run_cases([_case(0)], _plan(1), _isolated_factory([]), spend,
+                        approval=approval, budget=budget)
+    assert results[0].outcome is Outcome.COMPLETED and budget.actions_used == 1
+    with pytest.raises(ValueError, match="approval"):
+        run_cases([], _plan(1), _isolated_factory([]), _ok,
+                  approval=_approval(max_actions=2), budget=budget)
+
+
+def test_probe_contention_has_one_aggregate_last_slot():
+    budget = RunBudget(_approval(max_probes=2))
+    barrier = threading.Barrier(4)
+    accepted = []
+    def spend():
+        barrier.wait(timeout=5)
+        accepted.append(budget.try_consume(probes=1))
+    threads = [threading.Thread(target=spend) for _ in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=5)
+    assert all(not thread.is_alive() for thread in threads)
+    assert sorted(accepted) == [False, False, True, True] and budget.probes_used == 2

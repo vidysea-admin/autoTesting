@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-07T11:14:35.599434Z",
+  "id": "run-01M4B13T7QH17156NNK2PWGEYS",
+  "project": "pathlynks",
+  "trigger": "manual",
+  "case_ids": [
+    "case_cfa40e6b95c2"
+  ],
+  "usage": [],
+  "parallel_n": 1,
+  "parallel_bound_by": "config",
+  "bounds": {
+    "approval_id": "appr_d21f4d71de4d",
+    "max_actions": 4,
+    "max_probes": 80,
+    "wall_clock_s": 32.0
+  }
+}

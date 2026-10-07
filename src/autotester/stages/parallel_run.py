@@ -20,6 +20,7 @@ Contract: qa/contracts/parallel-run.md PR1-PR7.
 
 from __future__ import annotations
 
+import contextlib
 import ctypes
 import os
 import platform
@@ -142,6 +143,7 @@ RunFn = Callable[[Case, object], RawResult]
 
 def _run_one(
     case: Case, session_factory: SessionFactory, run_fn: RunFn, budget: RunBudget,
+    reserve: bool = True,
 ) -> RawResult:
     """One case, isolated: its own session (PR2), its own try/except so a
     crash is reported as ITS outcome and never propagates to a sibling (PR6).
@@ -153,12 +155,17 @@ def _run_one(
     out of `run_cases`' `[f.result() for f in futures]`, discarding every
     sibling's already-finished result instead of reporting just this case
     as ERRORED."""
-    if not budget.try_consume(actions=action_cost(case)):
+    if not budget.try_consume(actions=action_cost(case) if reserve else 0):
         return RawResult(case_id=case.id, outcome=Outcome.ERRORED,
-                          error="run budget exhausted before this case could start")
+                          error=f"run budget exhausted: {budget.stop_reason}")
     session: object | None = None
     try:
+        if not reserve:
+            budget.check_start()
         session = session_factory(case)
+        if not reserve:
+            session.budget = budget
+            budget.check()
         return run_fn(case, session)
     except Exception as exc:  # PR6: reported per case, never aborts the run
         return RawResult(case_id=case.id, outcome=Outcome.ERRORED,
@@ -167,12 +174,13 @@ def _run_one(
         if session is not None:
             close = getattr(session, "close", None)
             if callable(close):
-                close()
+                with contextlib.suppress(Exception):
+                    close()
 
 
 def run_cases(
     cases: list[Case], plan: ParallelPlan, session_factory: SessionFactory, run_fn: RunFn,
-    *, approval: RunApproval,
+    *, approval: RunApproval, budget: RunBudget | None = None,
 ) -> list[RawResult]:
     """Run `cases` at concurrency `plan.n` (PR1/PR3: `n=1` is exactly the
     serial baseline PR4/PR5 compare against -- one function, two widths, not
@@ -185,16 +193,21 @@ def run_cases(
     reached an unbounded run by passing nothing, and the one production caller
     (`ui/run_execution.py`) did exactly that. With no default there is nothing
     to omit, so a future caller cannot re-acquire unlimited by silence."""
-    budget = RunBudget(approval)
+    reserve = budget is None
+    if budget is not None and not budget.matches(approval):
+        raise ValueError("shared budget does not match approval")
+    budget = budget or RunBudget(approval)
     n = max(1, plan.n)
     with ThreadPoolExecutor(max_workers=n) as pool:
-        futures = [pool.submit(_run_one, case, session_factory, run_fn, budget) for case in cases]
+        futures = [pool.submit(_run_one, case, session_factory, run_fn, budget, reserve)
+                   for case in cases]
         return [f.result() for f in futures]
 
 
 def default_session_factory(
     project: Project, secrets: object, run_dir: object,
     session_cls: Callable[..., object] | None = None, *, record_video: bool = False,
+    budget: RunBudget | None = None,
 ) -> SessionFactory:
     """PR2, the real (non-fake) integration: each case gets its OWN
     `BrowserSession` against its OWN profile directory (`case.id`-scoped), so
@@ -218,12 +231,23 @@ def default_session_factory(
     build = session_cls or BrowserSession
 
     def _factory(case: Case) -> object:
+        if budget is not None:
+            budget.check_start()
         paths = ProjectPaths(f"{project.slug}-parallel-{case.id[:12]}")
         session = build(project, secrets, run_dir, paths, record_video=record_video)
+        if budget is not None:
+            session.budget = budget
         state = getattr(session, "state", None)
         if state is not None:
             state.evidence_prefix = case.id
         start = getattr(session, "start", None)
-        return start() if callable(start) else session
+        try:
+            return start() if callable(start) else session
+        except Exception:
+            close = getattr(session, "close", None)
+            if callable(close):
+                with contextlib.suppress(Exception):
+                    close()
+            raise
 
     return _factory

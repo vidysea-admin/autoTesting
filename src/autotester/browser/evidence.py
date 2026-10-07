@@ -13,8 +13,10 @@ so both `screenshot()` and `_record()` keep behaving as ordinary methods on
 
 from __future__ import annotations
 
+from autotester.browser import assertions
 from autotester.schema.enums import EvidenceKind
 from autotester.schema.run import Evidence
+from autotester.stages.run_budget import RunBudgetExceeded
 
 # CSS applied to secret inputs right before capture. Text becomes unreadable
 # without changing layout, so the screenshot still shows *where* the field is.
@@ -28,6 +30,33 @@ MASK_ATTR = "data-autotester-secret"
 class EvidenceMixin:
     """`screenshot()` and `_record()` -- mixed into `BrowserSession`."""
 
+    def _field_sample(self, target, locator: str, *, secret: bool) -> str:
+        """One bounded observation; never read known or unclassified secret values."""
+        assertions._probe(self)
+        if secret or locator in self.state.secret_locators:
+            return "[secret]"
+        try:
+            kind = target.get_attribute("type", **self._timeout())
+            self._timeout()
+            masked = target.get_attribute(MASK_ATTR, **self._timeout())
+            self._timeout()
+            if str(kind).lower() == "password" or masked is not None:
+                return "[secret]"
+            is_input = target.evaluate(
+                "el => ['INPUT', 'TEXTAREA'].includes(el.tagName)", **self._timeout())
+            self._timeout()
+            if is_input is not True:
+                return "unavailable"
+            value = target.input_value(**self._timeout())
+            self._timeout()
+            return (repr(self.secrets.redactor().scrub(value))
+                    if isinstance(value, str) else "unavailable")
+        except RunBudgetExceeded:
+            raise
+        except Exception:
+            self._timeout()
+            return "unavailable"
+
     def screenshot(self, label: str, *, step_order: int | None = None) -> Evidence:
         """Capture with every secret input masked first (B7). AT-036: under
         Xvfb, `Page.screenshot` intermittently raises a transient CDP
@@ -37,6 +66,7 @@ class EvidenceMixin:
         nests under `evidence_prefix` when set, so sibling cases sharing
         `run_dir` never collide."""
         self.page.add_style_tag(content=MASK_CSS)
+        self._timeout()
         self.state.screenshots += 1
         name = f"{self.state.screenshots:02d}-{label}.png"
         rel = f"{self.state.evidence_prefix}/{name}" if self.state.evidence_prefix else name
@@ -44,12 +74,13 @@ class EvidenceMixin:
         full.parent.mkdir(parents=True, exist_ok=True)
         path = str(full)
         try:
-            self.page.screenshot(path=path, full_page=False)
+            self.page.screenshot(path=path, full_page=False, **self._timeout())
         except Exception as exc:
             if "captureScreenshot" not in str(exc):
                 raise
-            self.page.wait_for_timeout(250)
-            self.page.screenshot(path=path, full_page=False)
+            self.page.wait_for_timeout(self._timeout(250).get("timeout", 250))
+            self.page.screenshot(path=path, full_page=False, **self._timeout())
+        self._timeout()
         return self._record(EvidenceKind.SCREENSHOT, rel, step_order=step_order, label=label)
 
     # -- evidence ---------------------------------------------------------------

@@ -11,11 +11,14 @@ terminal. Before this, `ui/app.py` could only view state the CLI had already pro
 
 ## Criteria
 
-- **RU1 — real synchronous run, no second execution path.** `POST /projects/{slug}/run` calls
-  the exact same `run_and_grade_case` (`stages/run_case_pipeline.py`) any CLI script would, via
-  a real `BrowserSession` — never a mock, never a second copy of run/grade logic. v1 is
-  synchronous (the request waits for the browser to finish) — a documented, honest boundary, not
-  an oversight; no background job queue in this unit.
+- **RU1 — a queued run, one real execution path, no second copy.** *(amended D-074, 2026-10-07; issue AT-789 as cited in the dispatch)*
+  `POST /projects/{slug}/run` does **not** run in the web request: per `hosting.md` HO16 (D-072)
+  the Test button returns a 303 at once and the run waits in the server queue (`queued`, then
+  `running`, then `done`/`failed`/`refused`/`interrupted`). When the run starts, the queue worker
+  calls the exact same `run_and_grade_case` (`stages/run_case_pipeline.py`) any CLI script would,
+  via a real `BrowserSession` — never a mock, never a second copy of run/grade logic. The former
+  "v1 is synchronous (the request waits for the browser to finish)" boundary is retired; queue
+  semantics (FIFO, caps, restart survival) are judged under HO16-HO18, not here.
 - **RU2 — honest failure before wasting a browser.** A project with zero cases → `400` before
   any browser starts. No AI provider configured (`LangChainFallbackProvider().available()` is
   `False`) → `400` before any browser starts. Both checked in that order.
@@ -30,8 +33,9 @@ terminal. Before this, `ui/app.py` could only view state the CLI had already pro
 
 ## No-fire list (out of scope for this contract)
 
-- A background job queue / async run status polling — a natural fast-follow once this
-  synchronous v1 is proven, not required here.
+- The queue itself, its caps, ordering and restart survival (`hosting.md` HO16-HO18); this
+  contract only requires that the queued run reaches the one real pipeline *(amended D-074,
+  2026-10-07: the former "background job queue is a fast-follow" line is superseded by D-072/HO16)*.
 - Report enrichment (run history, inline screenshots, download buttons) — plan §3c, a separate
   unit/contract.
 - The `/settings/providers` page itself — plan §3d, a separate unit/contract (RU4 only requires
@@ -49,3 +53,10 @@ terminal. Before this, `ui/app.py` could only view state the CLI had already pro
   is chosen per case, not what the criteria require. Checker-PASSed cycle 1
   (`qa/verdicts/at044-entry-case-profile-isolation.md`). Found by sweep: shipped with zero
   contract-side trace until now (AT-048).
+- 2026-10-07 · routine (correct; D-072 and `hosting.md` HO16 already decide it, D-074 date) · **RU1
+  reworded**: the run is queued, not synchronous. The Test button returns 303 immediately and the run
+  waits in the server queue (HO16); the synchronous v1 text pre-dated D-072 and now contradicted
+  HO16. RU2-RU4 unchanged (RU3's 303 redirect now describes the enqueue response; the saved results
+  and `Run` record are written by the worker). The one-real-pipeline requirement is unchanged. The
+  ledger row the dispatch calls AT-789 is a different open row today (T-178 TDD order); the stale-RU1
+  finding needs its own row from the sweep. **Links:** D-072; HO16; D-074.

@@ -32,6 +32,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from timing_scale import timing_scale
 
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
@@ -39,7 +40,7 @@ from autotester.core.paths import ProjectPaths
 from autotester.schema.project import Project
 
 SITE = Path(__file__).resolve().parent / "fixtures" / "login_site"
-_WAIT_S = 30.0
+_WAIT_S = 30.0 * timing_scale()
 
 
 def _skip_if_no_chromium() -> None:

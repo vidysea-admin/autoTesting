@@ -19,11 +19,12 @@ from autotester.browser.video import MAX_VIDEO_DURATION_S
 from autotester.providers.base import Provider
 from autotester.schema.base import Provenance
 from autotester.schema.case import Case
-from autotester.schema.enums import EvidenceKind, Result
+from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import Evidence, RawResult
 from autotester.schema.verdict import Criterion, Rubric, Verdict
 from autotester.stages.execute import run_case
 from autotester.stages.grade import grade
+from autotester.stages.script_replay import run_scripted
 from autotester.store.project_store import ProjectStore
 
 GENERATOR = "stages.run_case_pipeline.default_rubric"
@@ -126,23 +127,46 @@ def _finalize_video(result: RawResult, verdict: Verdict, video_rel: str | None,
     result.evidence.append(Evidence(kind=EvidenceKind.VIDEO, path=video_rel, masked=True))
 
 
+def _judgeable(result: RawResult) -> bool:
+    """Whether `grade()` would send this result to the judge (it settles the rest by rule)."""
+    return result.outcome in (Outcome.COMPLETED, Outcome.ASSERTION_FAILED)
+
+
+def _unjudged_replay(result: RawResult, run_id: str) -> Verdict:
+    return Verdict(
+        run_id=run_id, case_id=result.case_id, result=Result.INCONCLUSIVE,
+        scoreboard="not judged: replayed stored script, judging was not requested",
+        grader_provider="rule", note="replay never grades (C7); re-run with judging for a verdict",
+    )
+
+
 def run_and_grade_case(
     case: Case, session: BrowserSession, judge: Provider, run_id: str,
-    store: ProjectStore | None = None,
+    store: ProjectStore | None = None, *, judge_replays: bool = True,
 ) -> tuple[RawResult, Verdict]:
     """Run `case` on `session`, then grade it against its persisted rubric —
     building and saving a `default_rubric` the first time one doesn't exist
     for this `rubric_ref`. The single source of truth for "run one case,"
-    so a UI button and a CLI script call exactly the same path."""
+    so a UI button and a CLI script call exactly the same path.
+
+    T-176/SR1: execution goes through `run_scripted` -- a case with a still-valid stored
+    script replays it (`result.used_script`), otherwise it runs live and records one.
+    Grading is a separate stage and still happens by default. `judge_replays=False` is the
+    zero-provider-call regression mode: a replayed run that finished is returned unjudged
+    (INCONCLUSIVE by rule, never a PASS) instead of spending a model call per case."""
     store = store or ProjectStore(case.project)
     session.begin_case_video(case.id)
     try:
-        result = run_case(case, session)
+        scripted = run_scripted(case, session, store, run_case)
     finally:
         video_rel = session.end_case_video()
+    result = scripted.result
     rubric = _rubric_for(case, store)
-    verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
-                    secrets=session.secrets)
+    if scripted.mode == "replay" and not judge_replays and _judgeable(result):
+        verdict = _unjudged_replay(result, run_id)
+    else:
+        verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
+                        secrets=session.secrets)
     _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
     return result, verdict
 
@@ -167,7 +191,7 @@ def run_and_grade_case_resilient(
     grader failure instead of propagating."""
     session.begin_case_video(case.id)
     try:
-        result = run_case(case, session)
+        result = run_scripted(case, session, store, run_case).result
     finally:
         video_rel = session.end_case_video()
     try:

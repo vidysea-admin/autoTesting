@@ -22,6 +22,7 @@ from autotester.schema.case import Case
 from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.run import Run
 from autotester.schema.verdict import Verdict
+from autotester.stages.ux_advisory import add_ux_sheet, load_ux_state, ux_findings_html
 from autotester.store import ProjectStore
 
 _BADGE_COLOR = {
@@ -95,11 +96,10 @@ def _failure_rows(verdict: Verdict | None) -> list[tuple[str, str, str | None]]:
 def _repro_steps(case: Case | None, redactor: Redactor) -> list[str]:
     """The case's own steps, formatted as a plain-text repro recipe.
 
-    `redactor.scrub` runs over the formatted line before it reaches either
-    export (AT-594): a `{{SECRET:KEY}}` placeholder is not a known secret
-    VALUE, so it passes through untouched and exports as the placeholder,
-    never a resolved value; a step that somehow held a raw declared secret is
-    masked here, the same last-stop guarantee every other artifact gets."""
+    `redactor.scrub` runs over the formatted line before either export (AT-594): a
+    `{{SECRET:KEY}}` placeholder is not a known secret VALUE, so it exports as the placeholder,
+    never a resolved value; a step that somehow held a raw declared secret is masked here, the
+    same last-stop guarantee every other artifact gets."""
     if case is None:
         return []
     return [
@@ -120,6 +120,7 @@ def export_excel(
     cases = _case_lookup(store)
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
     redactor = _load_redactor(store)
+    ux = load_ux_state(store, run_id)
 
     wb = Workbook()
     ws = wb.active
@@ -135,10 +136,8 @@ def export_excel(
             for criterion_id, reason, fix_hint in _failure_rows(verdict)
         ) if detail else ""
         steps_text = "\n".join(_repro_steps(case, redactor)) if detail else ""
-        # AT-609: `Case.title` is operator-authored free text, not a step
-        # value -- nothing upstream guarantees it never carries a pasted raw
-        # secret, so it gets the same last-stop scrub every other exported
-        # field gets.
+        # AT-609: `Case.title` is operator free text with no upstream guarantee against a
+        # pasted raw secret, so it gets the same last-stop scrub as every exported field.
         case_title = redactor.scrub(case.title) if case else result.case_id
         ws.append([
             case_title,
@@ -154,6 +153,7 @@ def export_excel(
             steps_text,
         ])
     autosize_columns(ws)
+    add_ux_sheet(wb, ux, cases, redactor)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(out_path)
     return out_path
@@ -185,13 +185,13 @@ def png_base64(path: Path, allowed_root: Path, trusted_root: Path) -> str | None
 
 
 def _case_section(
-    store: ProjectStore, run_id: str, case: Case | None, result, verdict, redactor: Redactor
+    store: ProjectStore, run_id: str, case: Case | None, result, verdict, redactor: Redactor,
+    ux=(None, None),
 ) -> str:
     run_dir = store.paths.run_dir(run_id)
-    # AT-609: `Case.title` (the <h2>) and `Evidence.label` (the <figcaption>)
-    # are both operator-authored free text with no upstream guarantee against
-    # a pasted raw secret -- scrubbed here, the same last-stop rule the repro
-    # steps already get, before `escape` ever sees them.
+    # AT-609: `Case.title` (<h2>) and `Evidence.label` (<figcaption>) are operator free text
+    # with no upstream guarantee against a pasted raw secret -- scrubbed here, the same
+    # last-stop rule the repro steps get, before `escape` sees them.
     title = escape(redactor.scrub(case.title) if case else result.case_id)
     color = _BADGE_COLOR.get(verdict.result.value if verdict else "", "#6b7280")
     badge_text = escape(verdict.result.value) if verdict else escape(result.outcome.value)
@@ -211,7 +211,7 @@ def _case_section(
         f"<section><h2>{title} "
         f"<span class='badge' style='background:{color}'>{badge_text}</span></h2>"
         f"<p class='meta'>{scoreboard}{error}</p>"
-        f"{detail}"
+        f"{detail}{ux_findings_html(ux, result.case_id, redactor)}"
         f"<div class='shots'>{figures or no_shots}</div>"
         f"{video_html}"
         "</section>"
@@ -268,9 +268,10 @@ def export_html(
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
     results = store.load_results(run_id)
     redactor = _load_redactor(store)
+    ux = load_ux_state(store, run_id)
 
     sections = "".join(
-        _case_section(store, run_id, cases.get(r.case_id), r, verdicts.get(r.case_id), redactor)
+        _case_section(store, run_id, cases.get(r.case_id), r, verdicts.get(r.case_id), redactor, ux)
         for r in results
     )
     style = (

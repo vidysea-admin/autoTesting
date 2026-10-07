@@ -11,7 +11,8 @@ import pytest
 from crawl_fake import grant_crawl_approval, make_project, make_session
 
 from autotester.browser.observe import PageObserver
-from autotester.schema.enums import WritePolicy
+from autotester.schema.enums import CrawlStatus, WritePolicy
+from autotester.stages import explore, explore_status
 from autotester.stages.explore import run_crawl
 from autotester.store.project_store import ProjectStore
 
@@ -48,14 +49,15 @@ def test_a_node_the_crawl_cannot_return_to_files_an_issue_and_is_marked_aborted(
     issues = store.list_crawl_issues(crawl.id)
     assert any("could not return" in i.detail for i in issues)
     assert crawl.issues >= 1
+    assert crawl.status is CrawlStatus.ABORTED
+    assert "abandoned" in crawl.stop_reason and "aborted_error" in crawl.stop_reason
+    assert not explore_status.is_success(crawl)
 
 
 def test_a_node_lost_mid_exploration_is_marked_aborted_not_explored(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The other branch of the same bug: `return_to` failing AFTER at least one
-    candidate was tried used to fall through to `_mark(..., EXPLORED)` instead
-    of `ABORTED_ERROR` -- a node visited halfway looked fully explored."""
+    """A node lost after trying a candidate is abandoned, never complete."""
     from autotester.stages import explore_node
 
     real_return_to = explore_node.return_to
@@ -64,22 +66,26 @@ def test_a_node_lost_mid_exploration_is_marked_aborted_not_explored(
     def fail_second_return(rt: object, node: object) -> bool:
         if node.url_template == "/settings":
             calls_for_settings["n"] += 1
-            # The first call gets the crawl ONTO the node (entry return_to);
-            # every call after that -- once at least one action was tried --
-            # fails, simulating losing the screen mid-exploration.
+            # Entry succeeds; returning after the first action loses the screen.
             if calls_for_settings["n"] > 1:
                 return False
         return real_return_to(rt, node)
 
     monkeypatch.setattr(explore_node, "return_to", fail_second_return)
-    # ALLOW_WRITES so "Delete account" is an actual tried action on /settings
-    # (under READ_ONLY every candidate there is denied/skipped, so return_to
-    # is never called a second time and this scenario cannot arise at all).
+    # ALLOW_WRITES makes the destructive fixture action an actual tried control.
     project = make_project(WritePolicy.ALLOW_WRITES)
     session, _page = make_session(tmp_path, project)
     store = ProjectStore("demo", tmp_path)
     grant_crawl_approval(store, project)
 
+    exhausted = []
+    real_terminal = explore._terminal_status
+
+    def record_terminal(rt, completed, login_case):
+        exhausted.append(completed)
+        return real_terminal(rt, completed, login_case)
+
+    monkeypatch.setattr(explore, "_terminal_status", record_terminal)
     crawl = run_crawl(project, session, store, observer=PageObserver())
 
     nodes = store.list_nodes(crawl.id)
@@ -87,3 +93,8 @@ def test_a_node_lost_mid_exploration_is_marked_aborted_not_explored(
     assert settings.status.value == "aborted_error"
     issues = store.list_crawl_issues(crawl.id)
     assert any("lost this screen" in i.detail for i in issues)
+    assert crawl.status is CrawlStatus.ABORTED
+    assert "abandoned" in crawl.stop_reason and "aborted_error" in crawl.stop_reason
+    assert exhausted == [False]
+    assert any(n.status.value == "explored" and n.url_template == "/students/{id}"
+               for n in nodes), "an independent sibling was abandoned too"

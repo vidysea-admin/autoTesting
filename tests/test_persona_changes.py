@@ -198,14 +198,20 @@ def test_a_persona_written_before_this_unit_still_loads_and_classifies() -> None
 # --- CR5's interaction: a bound-truncated frontier may not claim `missing` ---
 
 
-def test_a_bound_truncated_crawl_never_reports_missing_only_unjudged() -> None:
+@pytest.mark.parametrize("status,exhausted", [
+    (NodeStatus.EXPLORED, False), (NodeStatus.ABORTED_ERROR, True),
+    (NodeStatus.ABORTED_DIALOG, True), (NodeStatus.SKIPPED_UNCHANGED, True),
+])
+def test_a_bound_truncated_crawl_never_reports_missing_only_unjudged(status, exhausted) -> None:
     """CR5/CR4: `missing` is "a genuine absence, NOT a bound-truncated frontier".
     A crawl that stopped early cannot tell a deleted screen from one it simply
     never got to, so it says so instead of inventing a finding."""
     diff = _classify(_persona(("/a", "sig-a"), ("/unreached", "sig-u")),
-                     [_node("/a", "sig-a")], exhausted=False)
+                     [_node("/a", "sig-a", status=status)], exhausted=exhausted)
     assert diff["missing_screens"] == []
     assert diff["missing_unjudged"] == ["/unreached"]
+    assert ("not judged (a bound, skipped-unchanged screen, or abandoned visit "
+            "left the crawl incomplete)") in persona_changes.describe(diff)
 
 
 def test_a_skipped_screen_is_evidence_of_nothing() -> None:

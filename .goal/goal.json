@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-07T01:27:01",
+  "updated": "2026-10-07T19:47:47",
   "progress": {
-    "total": 82,
-    "done": 59,
+    "total": 92,
+    "done": 64,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 23,
-    "current": "T-122",
-    "percent": 72
+    "pending": 28,
+    "current": "T-136",
+    "percent": 70
   },
   "tasks": [
     {
@@ -432,7 +432,7 @@
     {
       "id": "T-122",
       "title": "Track 0 tail: login case + first logged-in Pathlynks run (credentials present; ERP is the second product)",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "high",
       "deps": [
         "T-121"
@@ -446,7 +446,8 @@
       "attempts": 0,
       "created": "2026-09-07T17:15:41",
       "user_value": "high",
-      "criticality": "high"
+      "criticality": "high",
+      "completed": "2026-10-07T18:17:28"
     },
     {
       "id": "T-123",
@@ -811,7 +812,7 @@
     {
       "id": "T-151",
       "title": "Track C1: read-only target discovery + deterministic signals + classification (+ context folder as markdown)",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "high",
       "deps": [
         "T-150"
@@ -825,7 +826,8 @@
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
-      "criticality": "high"
+      "criticality": "high",
+      "completed": "2026-10-07T14:23:30"
     },
     {
       "id": "T-152",
@@ -1010,7 +1012,7 @@
     {
       "id": "T-165",
       "title": "Hybrid BFS+bounded-DFS traversal, frontier completeness, form-input replay, persona-seeded incremental crawl and change tracking (D-040)",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "critical",
       "deps": [
         "T-163",
@@ -1026,7 +1028,8 @@
       "created": "2026-09-10T05:58:09",
       "user_value": "high",
       "criticality": "critical",
-      "verdict_ref": "qa/verdicts/t165-crawl-traversal.md"
+      "verdict_ref": "qa/verdicts/t165-crawl-traversal.md",
+      "completed": "2026-10-07T16:04:36"
     },
     {
       "id": "T-170",
@@ -1208,7 +1211,7 @@
         "cmd": "uv run pytest tests/test_cli_mcp.py",
         "expect_exit": 0
       },
-      "note": "D-041; competitor F + Umesh MCP ask.",
+      "note": "D-041; competitor F + Umesh MCP ask. | D-071: Umesh approved the mcp SDK dependency ('mcp: haan'); CLI stays a first-class surface alongside MCP.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
       "user_value": "high"
@@ -1234,7 +1237,7 @@
     {
       "id": "T-176",
       "title": "Persist + replay generated script with semantic locators (get_by_role/label) and declared test-id priority (D-041)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-165"
       ],
@@ -1248,7 +1251,8 @@
       "note": "D-041; competitor A + C; wires existing Script/case.script_ref.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
-      "user_value": "high"
+      "user_value": "high",
+      "completed": "2026-10-07T18:32:59"
     },
     {
       "id": "T-177",
@@ -1283,7 +1287,7 @@
         "cmd": "uv run pytest tests/test_failure_bundle.py",
         "expect_exit": 0
       },
-      "note": "D-041; competitor D + H + G.",
+      "note": "D-041; competitor D + H + G. | Progress 2026-10-07: FB1-FB3 PASS (qa/verdicts/t178-failure-bundle.md); FB4 waits on Case.priority, FB5 waits on T-125; task stays pending.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
       "user_value": "high"
@@ -1493,7 +1497,7 @@
     {
       "id": "T-190",
       "title": "Advisory UX track: UserPersona (role, tech comfort, locale, device) + severity-scored UX findings that NEVER change PASS/FAIL (AT-583, AT-584)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "criticality": "high",
@@ -1506,7 +1510,8 @@
       "note": "gate meeting-user-persona-ux-judging answer A (D-048). Contract persona-ux-advisory already exists; implementation pending. Concrete five-choice PLAN proposal added to docs/plan.md on2026-10-06, original advisory-only scope preserved. Exact six source/prompt/test paths creation consent requested once, pending. Parallel BUILDING helpers recorded 11 complete source-text candidates with actual stdlib AST/count/signature/header preservation checks; proposal only, product sources unchanged. Fresh AI-engineer installed-source review identifies Gemini auxiliary async-client construction/ownership gap needing a configuration-preserving seam. Existing qa/manifests/t190-plan-preparation.md records incomplete orchestration/budget/UI/test candidates and unresolved plan gate. No product runtime, acceptance, PASS, paid calls or livewrites authorized.",
       "attempts": 0,
       "created": "2026-09-26T22:47:07",
-      "user_value": "high"
+      "user_value": "high",
+      "completed": "2026-10-07T19:47:47"
     },
     {
       "id": "T-191",
@@ -1610,6 +1615,169 @@
       "attempts": 0,
       "created": "2026-09-30",
       "user_value": "normal",
+      "criticality": "critical"
+    },
+    {
+      "id": "T-197",
+      "title": "TL-1 Video INGEST with human timestamp-pointers -> flow summary + 4-5 point confirm-list (CEO video-review skill shape: time|screen|seen|suggestion|severity)",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-197-team-loop.md",
+        "expect_exit": 0
+      },
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Extend stages/ingest.py + cli_video.py in place (`ingest run --pointers <file>`). Reference output: Karunn review doc 1FjABvhH… (full id in .work/google-ids-private.md); oracle .work/pathlynks-dev-videos-oracle-2026-10-07.md; sources src_e8fcdc4a15ce/src_44e2f1f6c64c/src_8540cc84081e.",
+      "criticality": "high"
+    },
+    {
+      "id": "T-198",
+      "title": "TL-2 Developer video intake: zip upload expanded safely to one source per video + `ingest fetch-drive <fileId>` over sources/drive.py (gws auth)",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-198-team-loop.md",
+        "expect_exit": 0
+      },
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. No new module: edit sources/drive.py, cli_video.py, ui/routes_sources.py upload. Measured 2026-10-07: gws `drive files get -o` only writes under CWD; register does not copy (stable path needed).",
+      "criticality": "high"
+    },
+    {
+      "id": "T-199",
+      "title": "TL-3 Bug loop: auto-file failures into PathLynks Tracker sheet, update on re-test, close on pass (stable bug key dedupe)",
+      "status": "pending",
+      "deps": [
+        "T-197"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-199-team-loop.md",
+        "expect_exit": 0
+      },
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Tracker sheet 1JvSez… (full id in .work/google-ids-private.md). Outward-facing team-sheet write => HUMAN_GATE before first live write; column mapping agreed with Umesh/Mamta. | WIDENED (D-071): generic for any project -- when a user supplies a tracker sheet for a project, the first run proposes a column mapping (title, severity, screen/page, status, assignee, date, screenshot link) and shows it to the user for confirmation; the first live write to that sheet is shown and confirmed before it happens; mapping stored per project.",
+      "criticality": "high"
+    },
+    {
+      "id": "T-200",
+      "title": "TL-4 Scheduled auto-test at a per-project configurable frequency",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-200-team-loop.md",
+        "expect_exit": 0
+      },
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Frequency field in schema/project.py; trigger reuses stages/parallel_run.py; must respect RunApproval (D-018).",
+      "criticality": "high"
+    },
+    {
+      "id": "T-201",
+      "title": "TL-5 Team on-demand 'Test' button; report delivered to whoever clicked",
+      "status": "pending",
+      "deps": [
+        "T-200"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-201-team-loop.md",
+        "expect_exit": 0
+      },
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Prerequisite AT-570: ui/routes_runs.py::trigger_run checks no RunApproval today; close it first or the button is an unapproved run path.",
+      "criticality": "high"
+    },
+    {
+      "id": "T-202",
+      "title": "Any-model provider: LiteLLM-backed Provider (Gemini, Anthropic, OpenAI, Ollama/local, any OpenAI-compatible) behind providers.base.Provider, chosen per project/role by config (D-071)",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-202-any-model-provider.md",
+        "expect_exit": 0
+      },
+      "note": "D-071: Umesh -- 'kisi bhi AI ki API se chala paaye, Gemini ya Ollama ya kuch bhi'. LiteLLM is the portable-core choice in the agentic-architecture standard; LangChain stays where it already is (langchain_fallback). New dependency litellm authorized by D-071 in this unit only. | Acceptance: A project can switch its model to Gemini, Claude, an OpenAI model or a local Ollama model by config alone, with no code change; the mock-provider suite and one real-provider smoke pass through the same seam; redaction gate (assert_no_raw_secrets) still runs before every call.",
+      "criticality": "high"
+    },
+    {
+      "id": "T-203",
+      "title": "Hosted website: AutoTester UI runs on a Linux/Ubuntu server for the Vidysea internal development and product teams (Docker image, service, HTTPS, persistent project store, AUTOTESTER_ALLOWED_ORIGINS set to the server URL) (D-071)",
+      "status": "pending",
+      "deps": [
+        "T-204"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-203-hosted-website.md",
+        "expect_exit": 0
+      },
+      "note": "D-071: Umesh -- 'abhi vidysea ki internal development team aur product team ke paas chalega, host properly website mai hoga', Linux/Ubuntu server. Server/host choice and DNS are a HUMAN_GATE before the first deploy. | Acceptance: A team member opens the server URL in a browser, signs in, onboards a project and runs a case; data survives a restart; the Origin/CSRF guard is configured for the server origin; no secret value is baked into the image.",
+      "criticality": "critical"
+    },
+    {
+      "id": "T-204",
+      "title": "Team login for the hosted UI: every page and API route requires an authenticated Vidysea team member before go-live; role-based authorization stays a later unit (D-066, D-070)",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-204-team-login.md",
+        "expect_exit": 0
+      },
+      "note": "D-066 noted real auth is required once the UI leaves localhost; D-070 makes it a go-live blocker. Mechanism (simple team password vs Google sign-in limited to the company domain) is a HUMAN_GATE. | Acceptance: An unauthenticated request to any UI page or state-changing route is refused; a signed-in team member gets through; credentials/sessions never appear in logs.",
+      "criticality": "high"
+    },
+    {
+      "id": "T-205",
+      "title": "G1 Group 10 headroom: one run launcher, router list out of ui/app.py, optional schedule/tracker fields on the project schema, team_store (docs/plan.md G1; R63, R65)",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "medium",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-205-g10-headroom.md",
+        "expect_exit": 0
+      },
+      "note": "Group 10 plan approved by Umesh 2026-10-07 (D-074, qa/gates/plan-approved-g10.md). Files per docs/plan.md G1: E ui/app.py, core/paths.py, schema/project.py, ui/routes_runs.py; N ui/routers.py, stages/run_launcher.py, store/team_store.py, schema/team_enums.py. | Acceptance: pytest + autotester doctor pass; routers register in the same order as before; manual run and trigger_run call the one launcher; AT-570 test; project.json round-trips with and without the new fields.",
+      "criticality": "medium"
+    },
+    {
+      "id": "T-206",
+      "title": "G10 Group 10 acceptance: end to end on Pathlynks (docs/plan.md G10; O8-O15, O6)",
+      "status": "pending",
+      "deps": [
+        "T-205",
+        "T-197",
+        "T-198",
+        "T-199",
+        "T-200",
+        "T-201"
+      ],
+      "base_criticality": "critical",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-206-g10-acceptance.md",
+        "expect_exit": 0
+      },
+      "note": "Evidence only, no code (D-074). Depends on units G2-G9; the hosted check waits on T-203 deploy. | Acceptance: end to end on Pathlynks with redacted videos, reviews, bugs, a schedule tick, a Test press, reports on the website and by email for a user who ticked it; review recall against the oracle as numbers; persona walks (dev, admin) in a live browser; Ubuntu run once T-203 deploys.",
       "criticality": "critical"
     }
   ],
@@ -1938,6 +2106,62 @@
       "message": "T-196 is CRITICAL — human required",
       "task_id": "T-196",
       "acked": false
+    },
+    {
+      "ts": "2026-10-07T08:23:28",
+      "level": "warn",
+      "message": "T-197 needs review (high)",
+      "task_id": "T-197",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-07T08:23:28",
+      "level": "warn",
+      "message": "T-198 needs review (high)",
+      "task_id": "T-198",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-07T08:23:28",
+      "level": "warn",
+      "message": "T-199 needs review (high)",
+      "task_id": "T-199",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-07T08:23:28",
+      "level": "warn",
+      "message": "T-200 needs review (high)",
+      "task_id": "T-200",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-07T08:23:28",
+      "level": "warn",
+      "message": "T-201 needs review (high)",
+      "task_id": "T-201",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-07T12:08:47",
+      "level": "warn",
+      "message": "T-202 needs review (high)",
+      "task_id": "T-202",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-07T12:08:47",
+      "level": "critical",
+      "message": "T-203 is CRITICAL — human required",
+      "task_id": "T-203",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-07T12:08:47",
+      "level": "warn",
+      "message": "T-204 needs review (high)",
+      "task_id": "T-204",
+      "acked": false
     }
   ],
   "preferences": {
@@ -1946,9 +2170,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.57,
-    "eta_days": 14.6
+    "velocity_per_day": 1.66,
+    "eta_days": 16.3
   },
-  "last_deterministic_tick": "2026-10-07T01:27:01",
+  "last_deterministic_tick": "2026-10-07T18:33:09",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }

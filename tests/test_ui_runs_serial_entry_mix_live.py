@@ -29,6 +29,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from run_approval_fixture import grant_live_case_approval
 
 RAM_FLOOR_MB = 3584.0  # 3.5 GB, this project's own convention (parallel_run.py's _RAM_FLOOR_MB)
 
@@ -82,6 +83,7 @@ def test_a_serial_run_mixing_an_entry_case_with_ordinary_cases_does_not_500(
     project = store.load_project()
     assert project is not None
     store.save_project(project.model_copy(update={"headed": False}))
+    grant_live_case_approval(store, project="rd", target=project.base_url)
 
     entry_case = store.add_case(Case(
         project="rd", flow_id="flow-home", kind=CaseKind.BEST, case_class=CaseClass.HAPPY,

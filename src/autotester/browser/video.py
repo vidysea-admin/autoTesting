@@ -96,9 +96,12 @@ class VideoMixin:
         fixtures."""
         if not getattr(self, "record_video", False) or self._context is None:
             return
+        self._timeout()
         old_page = self._page
         self._page = self._context.new_page()
+        self._timeout()
         self._page.add_init_script(_MASK_INIT_SCRIPT)
+        self._timeout()
         self._video_case_id = case_id
         if old_page is not None:
             with _ignore_close_errors():

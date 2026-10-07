@@ -21,12 +21,8 @@ class SourceKind(StrEnum):
 
 
 class Action(StrEnum):
-    """What a step does to the browser.
-
-    BACK/HOVER/PRESS_KEY/SCROLL discharge D-005's approved-but-unbuilt Action
-    amendment (D-014); they exist for the Track B explorer (`stages/explore.py`)
-    and are shared here rather than duplicated (C3).
-    """
+    """What a step does to the browser. BACK/HOVER/PRESS_KEY/SCROLL discharge D-005's approved
+    Action amendment (D-014) for the Track B explorer, shared here, not duplicated (C3)."""
 
     NAVIGATE = "navigate"
     CLICK = "click"
@@ -51,11 +47,8 @@ class CaseKind(StrEnum):
 
 
 class CaseClass(StrEnum):
-    """The edge-case taxonomy — the product's differentiator.
-
-    Expansion guarantees at least one case per applicable class per flow, so the
-    agent cannot drift to the happy path alone.
-    """
+    """The edge-case taxonomy, the differentiator: expansion guarantees at least one case per
+    applicable class per flow, so the agent cannot drift to the happy path alone."""
 
     HAPPY = "happy"
     AUTH_WRONG_CREDS = "auth_wrong_creds"
@@ -97,6 +90,14 @@ class Severity(StrEnum):
     S1 = "S1"  # blocks a core flow
     S2 = "S2"  # degrades a flow, workaround exists
     S3 = "S3"  # cosmetic or minor
+
+
+class TechComfort(StrEnum):
+    """T-190/PU1: a UserPersona's comfort with software; advisory UX only, never a criterion."""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
 
 
 class CaseStatus(StrEnum):
@@ -252,9 +253,8 @@ class Confidence(StrEnum):
 
 
 class TraversalStrategy(StrEnum):
-    """CR1 (crawl-traversal.md): how the frontier is ORDERED. `hybrid` still maps
-    the portal breadth-first and adds a bounded depth-first descent per workflow;
-    it invents no new bound (X4's four bounds are unchanged)."""
+    """CR1 (crawl-traversal.md): how the frontier is ORDERED. `hybrid` maps breadth-first and
+    adds a bounded depth-first descent per workflow; X4's four bounds are unchanged."""
 
     BFS = "bfs"
     HYBRID = "hybrid"

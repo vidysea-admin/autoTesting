@@ -21,7 +21,7 @@ from autotester.core.redact import PLACEHOLDER_RE
 from autotester.core.urls import screen_url_pattern
 from autotester.schema.case import Case
 from autotester.schema.crawl import Crawl
-from autotester.schema.enums import Action, CrawlStatus, EdgeOutcome
+from autotester.schema.enums import Action, CrawlStatus, EdgeOutcome, NodeStatus
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
 from autotester.stages.explore_safety import FORM_SUBMIT_REFUSED
 from autotester.stages.screen_identity import structural_signature
@@ -147,32 +147,38 @@ def terminal_status(*, completed: bool, actions_used: int, denied: int,
                     login_case: Case | None, login_signature: str | None = None,
                     login_observe_error: str | None = None,
                     current_stop_reason: str | None = None) -> tuple[CrawlStatus, str | None]:
-    """The status a finished crawl ends in, and a replacement stop reason when the
-    status needs one. The wall checks come first: a crawl stuck at the login page is
-    stuck whether its frontier emptied or a bound stopped it -- AT-480: when a bound
-    fired, the reason still names it (X4), and the wall sentence drops its "no link
-    led anywhere else" claim, since a bound can leave controls untried.
+    """The finished graph's status and any replacement reason. Login checks precede
+    actual named bounds, which precede abandoned visits (AT-113/AT-480).
 
     AT-474: when the login page's signature could not be observed AND X18(a) still could
     not be judged (`never_left_login` found nothing conclusive, even via the fill-target
     fallback), the status is never silently displayed as an unqualified success — its
     reason carries a named qualifier saying the check itself could not run."""
+    bounded = current_stop_reason in {"max_screens", "max_actions", "wall_clock_s", "max_depth"}
     bound_suffix = (f" -- the {current_stop_reason} bound fired before every control was tried"
-                    if not completed and current_stop_reason else "")
+                    if bounded else "")
     reason = never_left_login(nodes, login_case, login_signature)
     if reason is not None:
         return CrawlStatus.LOGIN_FAILED, reason + bound_suffix
     if login_case is None and is_login_wall(nodes, edges):
         wall_reason = LOGIN_WALL_REASON if completed else LOGIN_WALL_REASON_BOUND
         return CrawlStatus.LOGIN_WALL, wall_reason + bound_suffix
-    if not completed:
+    abandoned = [f"{n.status.value} ({n.url_template})" for n in nodes
+                 if n.status in {NodeStatus.ABORTED_ERROR, NodeStatus.ABORTED_DIALOG}]
+    if bounded:
+        status = CrawlStatus.STOPPED_BOUND
+    elif abandoned:
+        status = CrawlStatus.ABORTED
+        current_stop_reason = "abandoned visits: " + ", ".join(sorted(abandoned))
+    elif not completed:
         status = CrawlStatus.STOPPED_BOUND
     elif actions_used == 0 and denied > 0:  # AT-242
         status = CrawlStatus.BLOCKED_NO_ACTIONS
     else:
         status = CrawlStatus.COMPLETED
     reason = (f"{current_stop_reason} -- every reachable action was denied by policy"
-             if status is CrawlStatus.BLOCKED_NO_ACTIONS else None)
+             if status is CrawlStatus.BLOCKED_NO_ACTIONS else
+             current_stop_reason if status is CrawlStatus.ABORTED else None)
     if login_case is not None and login_observe_error is not None:  # AT-474
         base = reason or current_stop_reason
         reason = (f"{base} -- login not judged: could not observe the login page "
@@ -209,12 +215,31 @@ def displayed_status(crawl: Crawl, *, now: datetime | None = None) -> CrawlStatu
     # a previous crawl rather than by being refused. A crawl that skipped SOME
     # screens and really explored others is untouched; its incompleteness is
     # carried by `stop_reason` and by coverage never reading 100%.
+    if _recorded_error_reason(crawl) is not None:
+        return CrawlStatus.ABORTED
     if crawl.status is CrawlStatus.COMPLETED and crawl.actions == 0 and (
             crawl.denied > 0 or crawl.skipped_unchanged > 0):
         return CrawlStatus.BLOCKED_NO_ACTIONS
     if crawl.status is CrawlStatus.RUNNING and _heartbeat_stale(crawl, now or datetime.now(UTC)):
         return CrawlStatus.ABORTED
     return crawl.status
+
+
+def _recorded_error_reason(crawl: Crawl) -> str | None:
+    """Only persisted error holes qualify a legacy completion as incomplete.
+
+    A failed control is not proof that a whole node was abandoned. Issue counts,
+    absent coverage, low percentages and zero actions alone establish nothing.
+    """
+    if crawl.status is CrawlStatus.COMPLETED and crawl.coverage is not None and any(
+            hole.reason == "error" for hole in crawl.coverage.holes):
+        return "crawl incomplete: recorded controls were not exercised because of errors"
+    return None
+
+
+def displayed_reason(crawl: Crawl) -> str | None:
+    """The display qualifier, preserving the stored historical reason otherwise."""
+    return _recorded_error_reason(crawl) or crawl.stop_reason
 
 
 def skip_note(crawl: Crawl) -> str:

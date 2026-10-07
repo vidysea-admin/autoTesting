@@ -195,12 +195,16 @@ fixture-proven only. The ERP trust number is the first time AutoTester is measur
 ### M8 · Systematic exploration upgrades
 - [x] T-163 resumable learn-or-explore orchestrator + durable per-stage checkpoints (F-045, dual PASS) — ✅ live caller `autotester orchestrate` (AT-575, merged ec98b33)
 - [x] T-170 first-party API/network assertions (D-040 split from T-165) — F-047, checker PASS, merged 1fc7276
-- [x] T-165 hybrid BFS→bounded-DFS traversal + frontier completeness + form-input replay + persona-seeded
-      incremental crawl + change tracking — ✅ **D-040 dual PASS at cycle 2** (both checkers independent,
-      2026-09-27), contract `crawl-traversal.md` now **ACTIVE**, F-062/F-063, merged 162c3dc7.
-      **Disclosed residual:** two states at one URL where one is genuinely deleted is reported nowhere
-      (`ISS-t165-crawl-traversal-a8`) — passed because the only one-cycle closure would fabricate a
-      deletion on every SPA toggle; a sound one needs per-signature reachability, not presence.
+- [ ] T-165 hybrid BFS→bounded-DFS traversal + frontier completeness + form-input replay + persona-seeded
+      incremental crawl + change tracking — 🎯 **NOT DONE (corrected 2026-10-07; AT-744..756 sweep).**
+      The 2026-09-27 D-040 dual PASS at cycle 2 (F-062/F-063, merged 162c3dc7) was **reopened 2026-09-30**:
+      an independent checker reproduced AT-113 (crawl reports completed with an empty frontier while
+      the product still has unreached states). `at113-crawl-completion` cycle 3 **FAILed / STALLED**,
+      and **cycle 4 is pending** — its runtime blocker was lifted by D-070 (2026-10-07: the local visible
+      browser runs directly, sandbox-egress precondition dropped), but it has not run. goal.json has T-165
+      `pending`. Contract `crawl-traversal.md` stays ACTIVE; the claim "frontier exhausted" is what is unproven.
+      **Disclosed residual (separate from AT-113):** two states at one URL where one is genuinely deleted is
+      reported nowhere (`ISS-t165-crawl-traversal-a8`) — a sound closure needs per-signature reachability.
 - [ ] T-171 permission-surface coverage — every reachable control exercised or blocked-with-reason (D-040).
       **Unblocked by T-165 as of 2026-09-27; also waits on `at638-four-contract-files-authorization`.**
 - [x] T-173 parallel case execution — ✅ merged 626fa03 + live UI wiring ef1b043 (at562-564: per-case evidence, crash isolation; checker PASS c3 + Mode D). Open: AT-574 serial-path resilience, AT-570 RunApproval (T-122)
@@ -254,7 +258,7 @@ to exceed its declared scope. `write_policy` stays `read_only`.*
 2. Both intake modes work on a real target and beat-or-match a human tester (T-169).
 3. Every finding is evidence-backed and correctly classified; coverage shows untested branches.
 
-## Progress (from `.goal/goal.json`, 2026-09-27): **58 / 81 done (72%)**
+## Progress (from `.goal/goal.json`, 2026-10-07): **59 / 90 done (66%)**
 
 **Roadmap reconciliation, 2026-09-27:** this file previously read "47 / 70 done (67%)" and listed no
 tasks above T-184. `T-185..T-195` were in the machine backlog and absent here — **nine of the eleven
@@ -262,9 +266,8 @@ already done.** They are now in M6b. The roadmap was under-reporting the build b
 is the opposite of the failure mode this file exists to prevent, so the count is now derived from
 `.goal/goal.json` rather than maintained by hand.
 
-**Landed 2026-09-27:** T-165 hybrid BFS→bounded-DFS traversal + frontier completeness + form replay +
-persona-seeded incremental crawl (**D-040 dual PASS at cycle 2**, contract `crawl-traversal.md` now
-ACTIVE, F-062/F-063) · T-186, T-189, T-192, T-193, T-194, T-195, T-191 · `at438-answered-gate-remainder`
+**Landed 2026-09-27:** ~~T-165 hybrid BFS→bounded-DFS traversal~~ (**reopened 2026-09-30, not done** —
+see M8; AT-113 cycle 4 pending under D-070) · T-186, T-189, T-192, T-193, T-194, T-195, T-191 · `at438-answered-gate-remainder`
 · `at638-done-check-repair` · `.gitattributes` union-merge for the ledger.
 
 **Decisions taken 2026-09-27:** **D-051** T-125 proceeds by specifying flow relevance in
@@ -276,7 +279,7 @@ adversarial probe traffic against any real target still needs a separate per-run
 target and consent scope.
 
 **Critical path:** T-125 gates four tasks (T-152, T-166, T-174, T-178) and is the single highest-value
-unblock. T-171 and T-176 are newly free behind T-165. T-169 remains the definition of done and remains
+unblock. T-176 is free behind T-165 (T-171 has since landed). **Note (D-070, 2026-10-07):** T-125 and T-165 are runtime-unblocked. T-169 remains the definition of done and remains
 gated on inputs only Umesh supplies.
 
 **Write policy (D-053, 2026-09-27):** `ALLOW_WRITES` is the authorized **ceiling** on every target

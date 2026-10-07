@@ -105,7 +105,11 @@ def drain(rt: ExploreRuntime, node_id: str) -> bool:
 
 
 def _enqueue(rt: ExploreRuntime, new: ScreenNode, edge: ScreenEdge) -> None:
-    if new.id in rt.nodes or new.depth > rt.bounds.max_depth:
+    if new.id in rt.nodes:
+        return
+    if new.depth > rt.bounds.max_depth:
+        if rt.stop_reason is None:
+            rt.stop_reason = explore.stop_reason(rt) or "max_depth"
         return
     if rt.frontier.screens_found >= rt.bounds.max_screens:
         return
@@ -203,13 +207,8 @@ def _candidate_denial(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> b
 def _report_overlay(rt: ExploreRuntime, node: ScreenNode) -> None:
     """File ONE issue naming the controls this screen covered up (AT-227).
 
-    The failure this replaces was silent in the worst way: the crawl spent its
-    whole per-node budget clicking controls under a "How are you feeling
-    today?" veil, learned one screen, and still reported `status=completed`,
-    `issues=0` -- a blocked crawl indistinguishable from a complete one. The
-    veil's OWN controls are not obscured, so the crawl still gets past it by
-    ordinary means; what it must not do is pass over the obstruction without
-    saying it was there.
+    Report covered controls without hiding the obstruction; reachable overlay
+    controls remain candidates for ordinary exploration.
     """
     covered = [el for el in node.elements if el.visible and el.enabled and el.obscured]
     if not covered:

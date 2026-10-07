@@ -1,0 +1,61 @@
+{
+  "baseline": {
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\alias-independent-baseline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\alias-independent-baseline.xml"
+    ],
+    "exit": 0,
+    "failed": [],
+    "errors": 0
+  },
+  "red": {
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\alias-independent-red-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\alias-independent-red.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_noncyclic_alias_exact_refusal"
+    ],
+    "errors": 0
+  },
+  "restored": {
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\alias-independent-restored-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\alias-independent-restored.xml"
+    ],
+    "exit": 0,
+    "failed": [],
+    "errors": 0
+  },
+  "original_sha256": "f9269fdbc89a08e937e0195be4bd4dd7c5b4b8e13033252ed67b24fdd0e2afc8",
+  "mutation_sha256": "bfd17ad5d5935fdbc7eb2d8d31cb602f3bd25b2d71e2bf118547679dcaea5070",
+  "restored_exact": true
+}

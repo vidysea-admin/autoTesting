@@ -82,28 +82,20 @@ def _type_one(rt: ExploreRuntime, node: ScreenNode, el: object) -> ScreenEdge:
 
 
 def type_form(rt: ExploreRuntime, node: ScreenNode) -> int:
-    """X10-b's typing pre-pass (D-029): fill every eligible post-login form
-    field with a deterministic synthetic value BEFORE the click loop, so a
-    submit the click phase performs sees a filled form — the behaviour the
-    human asked to observe ("usse hota kya hai").
+    """X10-b: synthetic eligible-field typing before clicks; return typed count.
 
-    Gated by `typing_allowed` (the one boolean); each target re-checked by
-    `typing_target_allowed` (never a password field, never an upload). Every
-    typed action counts toward the per-node cap and `max_actions` (X4 bounds
-    bind typing exactly as they bind clicks; AT-533: one shared budget with
-    `visit_node`'s click loop, so the two passes together perform at most
-    `per_node_action_cap` actions on this node).
+    Recheck policy/targets (never passwords/uploads). Refusals retain AT-534
+    policy edges. Typing/clicks share AT-533's per-node and X4 action budgets;
+    every named bound stops subsequent typing, heartbeat and restoration.
+    """
+    from autotester.stages import explore
 
-    AT-534: when the gate refuses, each candidate typing target is recorded as
-    `DENIED_POLICY` / `TYPING_DISABLED` (NOT silently clicked by the click
-    loop — coverage then reads it as `policy:typing disabled`).
-
-    Returns how many were typed."""
     if not typing_allowed(rt.policy):
         return _record_typing_denials(rt, node)
     typed = 0
     for el in node.elements:
-        if rt.frontier.actions_used >= rt.bounds.max_actions:
+        if reason := explore.stop_reason(rt):
+            rt.stop_reason = reason
             return typed
         # AT-533: the pre-pass itself consumes the per-node budget — typing
         # stops when THIS node's shared cap is reached, before the click loop.
@@ -113,6 +105,9 @@ def type_form(rt: ExploreRuntime, node: ScreenNode) -> int:
             continue
         if not typing_allowed(rt.policy):  # re-check: the gate cannot be outlived
             return typed
+        if reason := explore.stop_reason(rt):  # X4: no FILL once any bound latched
+            rt.stop_reason = reason
+            return typed
         typed += 1
         rt.frontier.actions_used += 1
         try:
@@ -121,8 +116,14 @@ def type_form(rt: ExploreRuntime, node: ScreenNode) -> int:
             record_edge(rt, node, el,
                         Action.SELECT if el.role == "combobox" else Action.FILL,
                         EdgeOutcome.ERRORED, f"{type(exc).__name__}: {exc}")
+        if reason := explore.stop_reason(rt):
+            rt.stop_reason = reason
+            return typed
         if _heartbeat_due(rt):  # AT-483: typing shares the click loop's action budget,
             heartbeat(rt)       # so it must share the liveness heartbeat too
+        if reason := explore.stop_reason(rt):
+            rt.stop_reason = reason
+            return typed
         if not return_to(rt, node):
             add_issue(rt, node.id, IssueKind.NAVIGATION,
                       "could not return to this screen after typing — remaining "

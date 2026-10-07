@@ -28,6 +28,7 @@ class StageSpan(BaseModel):
     trace_id: str
     stage: StageName
     status: StageStatus
+    error: str | None = None
     started: datetime | None = None
     finished: datetime | None = None
     duration_s: float | None = None

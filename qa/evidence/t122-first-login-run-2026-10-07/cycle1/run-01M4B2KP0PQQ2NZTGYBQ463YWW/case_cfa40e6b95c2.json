@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-07T11:40:14.589990Z",
+  "case_id": "case_cfa40e6b95c2",
+  "outcome": "completed",
+  "used_script": false,
+  "iterations": 1,
+  "duration_s": 6.266,
+  "evidence": [
+    {
+      "kind": "url",
+      "path": "[REDACTED]:PATHLYNKS_USER_LOGIN_URL",
+      "masked": true
+    },
+    {
+      "kind": "screenshot",
+      "path": "case_cfa40e6b95c2/01-step01-navigate.png",
+      "step_order": 1,
+      "label": "step01-navigate",
+      "masked": true
+    },
+    {
+      "kind": "dom",
+      "path": "filled input[name=\"identifier\"] [secret] before=[secret] after=[secret]",
+      "step_order": 2,
+      "masked": true
+    },
+    {
+      "kind": "screenshot",
+      "path": "case_cfa40e6b95c2/02-step02-fill.png",
+      "step_order": 2,
+      "label": "step02-fill",
+      "masked": true
+    },
+    {
+      "kind": "dom",
+      "path": "filled input[name=\"password\"] [secret] before=[secret] after=[secret]",
+      "step_order": 3,
+      "masked": true
+    },
+    {
+      "kind": "screenshot",
+      "path": "case_cfa40e6b95c2/03-step03-fill.png",
+      "step_order": 3,
+      "label": "step03-fill",
+      "masked": true
+    },
+    {
+      "kind": "dom",
+      "path": "clicked button[type=\"submit\"]:has-text(\"Login\")",
+      "step_order": 4,
+      "masked": true
+    },
+    {
+      "kind": "dom",
+      "path": "assert visible_text: met (expected to contain 'Logout')",
+      "step_order": 4,
+      "masked": true
+    },
+    {
+      "kind": "dom",
+      "path": "assert visible_text: met (expected to contain 'Dashboard')",
+      "step_order": 4,
+      "masked": true
+    },
+    {
+      "kind": "screenshot",
+      "path": "case_cfa40e6b95c2/04-step04-click.png",
+      "step_order": 4,
+      "label": "step04-click",
+      "masked": true
+    }
+  ]
+}

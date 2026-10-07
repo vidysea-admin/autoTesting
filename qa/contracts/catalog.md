@@ -52,24 +52,33 @@ computes the table — no model call, no network call, no mutation of anything i
   this stage. (Falsifiable: an unset declared secret produces an entry whose text contains the key
   name; `assert_no_raw_secrets`/`Redactor.scrub` over the rendered page and the `Catalog` JSON finds
   nothing resembling the actual `.env` value.)
-- **CT6 — Cheap→expensive tier ordering is real, ordering only, and never skips a case.**
+- **CT6 — Cheap→expensive tier ordering is real, ordering and reporting only, and never skips a case.**
   (Narrowed 2026-09-29 by **D-057**, `Approved-by: Umesh`; the earlier wording — "STOPS before paying
   for a tier that has zero runnable entries" — filtered which cases execute and contradicted
-  `ui-run.md` RU3 and F-058.) `CaseClass.tier` places every class into
+  `ui-run.md` RU3 and F-058. Amended again 2026-10-07 per gate t125-ct6 answer A (**D-071**): the
+  cost-avoidance "stop before an expensive tier" half is removed outright, and prominent reporting of
+  cheap-tier failures is added.) `CaseClass.tier` places every class into
   `static < behavioural < adversarial`; the ordering is total (every class has exactly one tier).
-  The run trigger dispatches cases in tier order, `static` before `behavioural` before
-  `adversarial`, and **reports each tier's runnable count** (including a count of zero). It **never
-  omits a case that RU3 says runs**: the set of cases executed is identical with and without the
-  ordering, and a pinned case (F-058) runs every time whatever tier it is in. The ordering helper
-  (`stages/catalog.py::tiers_to_run()`) is an ordering input, not a filter. (Falsifiable, three
-  parts. (1) Ordering, observed via call order and not only final state: a fixture with runnable
-  `static`, `behavioural` and `adversarial` cases records dispatch `static → behavioural →
-  adversarial`. (2) Never skip: a fixture with a fully blocked or empty `static` tier and a runnable
-  `adversarial` case still RUNS the `adversarial` case, and the executed set equals
-  `store.list_cases()` (RU3). Sabotage: gate dispatch on the tier's runnable count, the old rule —
-  this fixture goes red on the executed-set assertion. (3) Reporting: the run record carries a
-  runnable count per tier, and the empty tier's count is `0`, not absent. A pinned `adversarial`
-  case in a run whose `static` tier is empty still runs.)
+  The run trigger (`ui/routes_runs.py::trigger_run`) dispatches **every** case on file, ordered
+  cheapest tier first (`static` before `behavioural` before `adversarial`), and **never skips a
+  tier**. The run report **surfaces cheap-tier failures first and prominently** (a failed `static`
+  case is listed above any `behavioural` or `adversarial` result, not buried in case-id order) and
+  **reports each tier's runnable count** (including a count of zero). It **never omits a case that
+  RU3 says runs**: the set of cases executed is identical with and without the ordering, and a
+  pinned case (F-058) runs every time whatever tier it is in. `stages/catalog.py::tiers_to_run()` is
+  an ordering input, not a filter. (Falsifiable, four parts, each driven through the run endpoint
+  (`POST` of the run trigger, then the run record and the rendered report), not only by calling
+  `tiers_to_run()` directly. (1) Ordering, observed via dispatch call order and not only final
+  state: a project with runnable `static`, `behavioural` and `adversarial` cases records dispatch
+  `static → behavioural → adversarial`. (2) Never skip: a project with a fully blocked or empty
+  `static` tier and a runnable `adversarial` case still RUNS the `adversarial` case, and the
+  executed set equals `store.list_cases()` (RU3). Sabotage: gate dispatch on the tier's runnable
+  count, the old rule — this fixture goes red on the executed-set assertion. (3) Reporting, counts:
+  the run record carries a runnable count per tier, and the empty tier's count is `0`, not absent.
+  (4) Reporting, prominence: with a failing `static` case and a failing `adversarial` case, the
+  rendered run report lists the `static` failure before the `adversarial` one, in a failures section
+  ahead of passing results; sabotage by sorting the report by case id turns this red. A pinned
+  `adversarial` case in a run whose `static` tier is empty still runs.)
 - **CT7 — One `Catalog`, reused, not duplicated (C3).** `schema/catalog.py::Catalog` and
   `BlockedReason` are the only such model/enum in the repo — this criterion is judged over every
   unit that touches `stages/ai_catalog.py` or any later Track-C catalog code: a second `Catalog`-
@@ -146,3 +155,11 @@ green→red-for-the-named-reason→revert→green. File/function caps (core-inva
   **Merge note:** the `wave/t125-catalog` branch carries its own 2026-09-27 amendment (the "Standard
   packs" section and a verify-command change, commit 3da63550) that is not on master; the two log
   tails will conflict on merge and both entries are to be kept.
+- 2026-10-07 · amend (Changes-authorized: D-071; gate `qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md`
+  answer A, Umesh, chat) · **CT6 amended** — "Amended 2026-10-07 per gate t125-ct6 answer A (D-071)".
+  The run trigger dispatches every case, cheapest tier first, never skips a tier; the cost-avoidance
+  "stop before an expensive tier" half is removed; cheap-tier failures must be surfaced first and
+  prominently in the run report. Verify rewritten to be checkable through the run endpoint (ordering
+  plus reporting), not only via `tiers_to_run()`. RU3 (`ui-run.md`) and F-058 unchanged. This
+  re-states D-057's order-only rule and adds the reporting requirement (part 4); it tightens, not
+  weakens. **Links:** D-071; D-057; T-125; ISS-t125-1; F-058; ui-run.md RU3.

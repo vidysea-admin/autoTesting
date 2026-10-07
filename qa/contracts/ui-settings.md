@@ -38,3 +38,8 @@ contract, not an extension of U3.
 - 2026-09-03 · init · contract created for the global AI/API provider settings page unit
   (plan §3d, US1-US4), checker-PASSed cycle 1 (`qa/verdicts/ui-settings-providers.md`,
   ledger F-026).
+- 2026-10-07 · routine (D-072 item 5, Approved-by Umesh) · **US2 is read together with D-034 and D-072.** "A real value is never
+  rendered" stands for every viewer who lacks the `credentials.view` permission (all but Admin/CEO by default): they see set / not set
+  only, in the body and after a POST. A holder of `credentials.view` keeps the D-034 show/hide behaviour (core-invariants.md C5). Writing
+  a key needs `settings.manage` and never echoes the old value. The closed key set in US1 gains `LITELLM_API_BASE`, `LITELLM_API_KEY`
+  and `AUTOTESTER_MODEL` with T-202 (`providers-litellm.md` LL15). Enforced by `auth.md` AU21.

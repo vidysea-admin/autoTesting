@@ -192,10 +192,18 @@ def test_every_span_is_redacted_before_it_is_persisted(tmp_path: Path) -> None:
         input_tokens=10, output_tokens=5, latency_s=0.1, retries=0,
         fallback_hops=0, fed_id=f"case-{secret_value}",
     )
+    writer.record_stage(StageCheckpoint(stage=StageName.EXECUTE, status="failed",
+                                        error=f"max_actions stopped {secret_value}"))
 
     raw = trace_path.read_text(encoding="utf-8")
     assert secret_value not in raw
     assert "REDACTED" in raw
+    failed = read_spans(trace_path)[-1]
+    assert isinstance(failed, StageSpan) and failed.status == "failed"
+    assert failed.error is not None and "max_actions" in failed.error
+    assert "REDACTED" in failed.error and secret_value not in failed.error
+    legacy = failed.model_dump(mode="json", exclude={"error"})
+    assert StageSpan.model_validate(legacy).error is None
 
 
 def test_redactor_assert_clean_raises_on_a_surviving_secret() -> None:

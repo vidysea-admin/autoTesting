@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-07T11:16:26.959369Z",
+  "run_id": "run-01M4B16YD6FQ0Q9YBHTCGTBJTX",
+  "case_id": "case_a21fdc0059fe",
+  "result": "PASS",
+  "scoreboard": "Criteria 1/1 met.",
+  "criteria_met": 1,
+  "criteria_total": 1,
+  "failures": [],
+  "grader_provider": "gemini",
+  "rubric_hash": "rub_71927ac6e2f6",
+  "note": "Evidence confirms end-to-end pipeline execution and credential boundary traversal on PathLynks product.",
+  "images_requested": 4,
+  "images_seen": 4
+}

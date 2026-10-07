@@ -71,23 +71,14 @@ def test_completed_is_reachable_only_with_a_stop_reason_that_says_frontier_empty
         assert crawl.stop_reason.startswith("frontier empty")
 
 
+@pytest.mark.parametrize("node_status,bound", [
+    (NodeStatus.EXPLORED, "max_actions"), (NodeStatus.ABORTED_ERROR, None),
+    (NodeStatus.ABORTED_DIALOG, None), (NodeStatus.ABORTED_ERROR, "max_actions"),
+])
 def test_a_bound_that_fires_mid_node_never_reads_as_an_exhausted_frontier(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, node_status, bound,
 ) -> None:
-    """AT-463, and the ONE shape that actually exercises the chokepoint.
-
-    Every other test here stops the crawl at the TOP of the traversal loop,
-    where `_bfs` returns early and the completeness line never runs at all. The
-    dangerous case is the other one: `_click_loop` spends the last action
-    partway through a screen and sets `stop_reason` itself, and the queue then
-    happens to empty in the same iteration. A drained queue is NOT an exhausted
-    frontier there — controls were left untried on the screen being visited.
-
-    Found by falsification: stubbing `rt.frontier_exhausted = True` left the
-    parametrized bound tests above entirely green, because none of them ever
-    reached the mutated line. A claim whose test cannot see the mutation is not
-    a tested claim.
-    """
+    """AT-463/AT-113: drain after a bound or abandoned visit is not exhaustion."""
     store = ProjectStore("p", tmp_path)
     project = Project(slug="p", name="p", base_url="https://app.test/")
     store.save_project(project)
@@ -103,19 +94,21 @@ def test_a_bound_that_fires_mid_node_never_reads_as_an_exhausted_frontier(
 
     def _bound_fires_partway_through(runtime: ExploreRuntime, _node: ScreenNode) -> None:
         """What `_click_loop` really does when a bound stops it mid-screen."""
-        runtime.frontier.actions_used = runtime.bounds.max_actions
-        runtime.stop_reason = "max_actions"
+        runtime.frontier.actions_used = runtime.bounds.max_actions if bound else 0
+        runtime.stop_reason = bound
+        runtime.nodes[_node.id] = _node.model_copy(update={"status": node_status})
 
     monkeypatch.setattr(explore_node, "visit_node", _bound_fires_partway_through)
 
     explore._bfs(rt)
 
     assert not rt.frontier.queue, "the queue did not drain -- the AT-463 shape was not built"
-    assert rt.stop_reason == "max_actions"
+    assert rt.stop_reason == bound if bound else "abandoned" in rt.stop_reason
     assert rt.frontier_exhausted is False, (
         "the queue emptied after a bound had already fired and the crawl called itself "
         "complete -- controls on the last screen were never tried")
-    assert explore._terminal_status(rt, rt.frontier_exhausted, None) is CrawlStatus.STOPPED_BOUND
+    expected = CrawlStatus.STOPPED_BOUND if bound else CrawlStatus.ABORTED
+    assert explore._terminal_status(rt, rt.frontier_exhausted, None) is expected
 
 
 def test_terminal_status_cannot_return_completed_when_the_frontier_was_not_exhausted() -> None:

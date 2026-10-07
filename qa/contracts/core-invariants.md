@@ -61,6 +61,11 @@ control of it. Every criterion below is a cheap rule now that was unaffordable t
   a captured **product** screenshot (B7 unchanged). Residual, accepted by D-034: the value is present
   in the local HTTP response/DOM and in any screenshot **of the settings/env page**, which must never
   be fed to a model or shared.
+  *Amended 2026-10-07 per D-072 (item 5):* on a hosted, multi-user server that surface is narrowed. A
+  saved value is rendered **only** to a user holding the `credentials.view` permission (by default only
+  the Admin/CEO group; `auth.md` AU21). Every other viewer sees "set" / "not set" and can still write a
+  new value without seeing the old one. The D-034 show/hide behaviour is unchanged for a holder of
+  `credentials.view`. A tightening of the exception, not a weakening of C5.
 - Any route that accepts a new raw credential value must treat it as secret immediately: before any
   same-request non-secret validator can echo or persist input, its prompt/artifact guard includes
   the union of pre-existing root secrets and all newly submitted values.
@@ -960,3 +965,6 @@ judgements and only the second was wrong.
   `marshal.loads(pyc[16:]).co_filename`), which suggested the recipe change and left it to the checker.
   Additive; no clause weakened. **Changes-authorized:** qa/contracts/core-invariants.md C12 + this
   entry. No enforcement-path file touched. **Links:** AT-626; AT-639.
+- 2026-10-07 · routine (D-072 item 5, Approved-by Umesh) · C5's owner-only-editor exception is narrowed to holders of the
+  `credentials.view` permission (default: Admin/CEO only); everyone else sees set / not set (`auth.md` AU21). Narrows where a value may
+  appear; B7 and the "never to a model, log, shared artifact or product screenshot" clauses are unchanged.

@@ -85,9 +85,9 @@ def host_of(url: str) -> str:
     return (parsed.hostname or "").lower()
 
 
-def _host_matches(host: str, domain: str) -> bool:
+def _host_matches(host: str, domain: str, include_subdomains: bool = True) -> bool:
     domain = domain.lower().lstrip(".")
-    return host == domain or host.endswith(f".{domain}")
+    return host == domain or (include_subdomains and host.endswith(f".{domain}"))
 
 
 class SecretStore:
@@ -190,7 +190,7 @@ class SecretStore:
             raise SecretScopeError(f"navigation target resolves to no usable host: {value!r}")
         for key in keys:
             ref = self._refs[key]
-            if not any(_host_matches(host, d) for d in ref.domains):
+            if not any(_host_matches(host, d, ref.include_subdomains) for d in ref.domains):
                 raise SecretScopeError(
                     f"'{key}' is scoped to {ref.domains or '[]'} and may not be used on '{host}'"
                 )
@@ -200,7 +200,7 @@ class SecretStore:
         ref = self._refs.get(key)
         if ref is None:
             raise UndeclaredSecret(f"'{key}' is not declared in project '{self._project.slug}'")
-        if not any(_host_matches(host, d) for d in ref.domains):
+        if not any(_host_matches(host, d, ref.include_subdomains) for d in ref.domains):
             raise SecretScopeError(
                 f"'{key}' is scoped to {ref.domains or '[]'} and may not be used on '{host}'"
             )

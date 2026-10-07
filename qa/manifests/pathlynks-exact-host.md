@@ -2,13 +2,14 @@
 
 Contract: qa/contracts/browser-and-secrets.md B2/B3; core-invariants C1-C7
 Goal task: T-122 prerequisite; AT-651 credential-scope component only
-Policy-Version: proportional-verification/2026-10-06.5
+Policy-Version: proportional-verification/2026-10-06.6
 Protocol hashes: maker 3F5A021B27A04447C87726929BAB9FA6245C1251A36E28E9CF5CA91DCCB4063B;
 checker 12C935F80B4344E1C7B43C7F2A3467B71D1923B8883A06D16B9D7E828CDB47E5
-Fix cycle: 0 of 2
+Fix cycle: 1 of 2
 Resumes: 0 of 2
-Phase: BUILDING
-Status: BUILDING
+Phase: READY
+Status: checked-PASS (cycle 1: qa/verdicts/d063-grant-budget.md A PASS, qa/verdicts/d063-grant-budget.b.md B PASS)
+Ship gates open: qa/gates/d063-self-grant-csrf.md, qa/gates/d063-cn5-vs-cn11.md (on master)
 Tier: L — auth/security credential scope
 Dual check: required — credential security
 Base: bd2fe8f4d9a9fa87552e8a3999eb27cb52f8addf
@@ -383,3 +384,8 @@ T196 current455-review identity doctor:exit1,1352coverage245declaration,
 2root-clutter(1599total). Older260-row counts above remain historical only.
 These governance diagnostics, and the remaining native/full-suite/live gates,
 are not T122 product verdicts. No real-account/browser/provider run or PASS.
+
+## Cycle 1 re-pin (stacked under wave/d063-grant-budget)
+
+Re-pinned from proportional-verification/2026-10-06.5 to 2026-10-06.6 and flipped BUILDING -> ready-for-check as part of the d063-grant-budget stack (checker finding F3). No claim above changed; the BUILDING-era "no commit" wording is historical. Verification evidence is carried by qa/manifests/d063-grant-budget.md (same branch stack).
+Metrics: start=2026-10-07 end=2026-10-07 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=0 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6

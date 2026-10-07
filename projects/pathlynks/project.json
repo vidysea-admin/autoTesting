@@ -8,33 +8,39 @@
     "vidysea.com"
   ],
   "write_policy": "read_only",
+  "max_parallel": 1,
+  "permitted_surface": [],
   "secrets": [
     {
       "key": "PATHLYNKS_COUNSELLOR_EMAIL",
       "domains": [
-        "vidysea.com"
+        "dev-new.vidysea.com"
       ],
+      "include_subdomains": false,
       "mask_in_screenshot": false
     },
     {
       "key": "PATHLYNKS_COUNSELLOR_PASSWORD",
       "domains": [
-        "vidysea.com"
+        "dev-new.vidysea.com"
       ],
+      "include_subdomains": false,
       "mask_in_screenshot": true
     },
     {
       "key": "PATHLYNKS_USER_EMAIL",
       "domains": [
-        "vidysea.com"
+        "pathlynks.vidysea.com"
       ],
+      "include_subdomains": false,
       "mask_in_screenshot": false
     },
     {
       "key": "PATHLYNKS_USER_PASSWORD",
       "domains": [
-        "vidysea.com"
+        "pathlynks.vidysea.com"
       ],
+      "include_subdomains": false,
       "mask_in_screenshot": true
     }
   ],
@@ -45,5 +51,5 @@
   },
   "headed": true,
   "description": "Vidysea's Pathlynks product (dev environment). Counsellor role logs in at dev-new.vidysea.com/login; the user/student role at pathlynks.vidysea.com/signin.",
-  "login_case_id": "case_35b17ccece2d"
+  "login_case_id": "case_cfa40e6b95c2"
 }

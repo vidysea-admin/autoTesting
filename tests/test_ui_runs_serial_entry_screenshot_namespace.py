@@ -41,7 +41,7 @@ class _RecordingPage:
     def add_style_tag(self, content: str) -> None:
         pass
 
-    def goto(self, url: str, wait_until: str = "") -> None:
+    def goto(self, url: str, wait_until: str = "", **kwargs) -> None:
         self.url = url
 
     def wait_for_load_state(self, state: str = "load", timeout: int = 0) -> None:
@@ -50,7 +50,7 @@ class _RecordingPage:
     def wait_for_timeout(self, timeout_ms: int) -> None:
         pass
 
-    def screenshot(self, path: str, full_page: bool = False) -> None:
+    def screenshot(self, path: str, full_page: bool = False, **kwargs) -> None:
         Path(path).write_bytes(self.url.encode())
 
 

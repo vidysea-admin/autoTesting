@@ -1,0 +1,343 @@
+[
+  {
+    "label": "baseline",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\baseline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\baseline.xml"
+    ],
+    "exit": 0,
+    "failed": [],
+    "errors": 0,
+    "tests": 64
+  },
+  {
+    "label": "dirty-signal",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\dirty-signal-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\dirty-signal.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_dirty_signal_is_refused_before_provider"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_dirty_signal_is_refused_before_provider",
+    "anchor_count": 1,
+    "source_before": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "source_mutated": "e21936eee861543eaaa955d72ce1753ce7de174ec710035520e6546663bf42b5",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "nonai-root",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\nonai-root-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\nonai-root.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_non_ai_encoded_root_secret_is_refused"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_non_ai_encoded_root_secret_is_refused",
+    "anchor_count": 1,
+    "source_before": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "source_mutated": "93e07f9b8d10d8cd26fe742dc08910efc4b9b1e4fd8fbb962a8897f41286cb89",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "scope-preflight",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\scope-preflight-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\scope-preflight.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_all_roots_are_preflighted_before_any_open[]",
+      "test_all_roots_are_preflighted_before_any_open[secret-token]"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_all_roots_are_preflighted_before_any_open[secret-token]",
+    "anchor_count": 1,
+    "source_before": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "source_mutated": "7820bf313e1bc5e8534fb2def5b6d3f4ce39351444681b2d2fd75abe6b644c80",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "physical-budget",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\physical-budget-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\physical-budget.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_rejected_files_still_consume_physical_read_budget"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_rejected_files_still_consume_physical_read_budget",
+    "anchor_count": 1,
+    "source_before": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "source_mutated": "f6656fb98f368cb9343815c90e1c735c14563a98d92f2ab8fb45635fb71590b7",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "scan-final-deadline",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\scan-final-deadline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\scan-final-deadline.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_file_bound_is_visible[wall_clock_s]",
+      "test_final_parser_overrun_is_not_complete[False]"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_final_parser_overrun_is_not_complete[False]",
+    "anchor_count": 1,
+    "source_before": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "source_mutated": "b4df7453356231f4897a757ca2b9a75ab01fa4a703085fd30d5080bfcd5b0f0a",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "context-final-deadline",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\context-final-deadline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\context-final-deadline.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_final_parser_overrun_is_not_complete[True]"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_final_parser_overrun_is_not_complete[True]",
+    "anchor_count": 1,
+    "source_before": "27e6c7eff266e15c87152b6e08ccb2a89b6a432b57c2ba5d7cc71b0c8666797a",
+    "source_mutated": "eb6eb9b25194e14d66b8266fb799b5f6645faffb7620c8e6600a9f544e7e55f0",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "yaml-alias",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\yaml-alias-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\yaml-alias.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_unsafe_or_excessively_nested_yaml_is_refused[x: &a [*a]]",
+      "test_noncyclic_alias_exact_refusal"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_noncyclic_alias_exact_refusal",
+    "anchor_count": 1,
+    "source_before": "27e6c7eff266e15c87152b6e08ccb2a89b6a432b57c2ba5d7cc71b0c8666797a",
+    "source_mutated": "5f1480952bf8c974cd5ad1202e994287c9ed160f45177e687fc9b15a033bdf37",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "classifier-strict",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\classifier-strict-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\classifier-strict.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_seeded_bad_classifier_output_is_never_overridden[string]",
+      "test_seeded_bad_classifier_output_is_never_overridden[bool]"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_seeded_bad_classifier_output_is_never_overridden[string]",
+    "anchor_count": 1,
+    "source_before": "0fecc124bb8657adb3c535b7090d761cd9a126e5fae892229ed7e45ad72221a6",
+    "source_mutated": "79fc226c27fb582e67e3640e380467283767c5f4571ae4451e7c324d541e0001",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "provider-error",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\provider-error-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\provider-error.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_provider_error_never_echoes_raw_secret"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_provider_error_never_echoes_raw_secret",
+    "anchor_count": 1,
+    "source_before": "7a1221ba2aa7b63b0c6a05efd3fcccd39b86b74c3b69e9b4b42e1872cc577c0f",
+    "source_mutated": "364cdc07e7449a3ba69f86d56aca82b20f79ca3fe7d64e4f7261a96e748adfe4",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "metadata-secret",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\metadata-secret-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\metadata-secret.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_context_is_metadata_only_and_secrets_are_scrubbed",
+      "test_secret_keys_tags_and_paths_are_scrubbed[raw-literal]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[raw-metadata]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[base64-literal]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[hex-literal]",
+      "test_secret_keys_tags_and_paths_are_scrubbed[folded-literal]"
+    ],
+    "errors": 0,
+    "tests": 64,
+    "defends": "test_context_is_metadata_only_and_secrets_are_scrubbed",
+    "anchor_count": 1,
+    "source_before": "27e6c7eff266e15c87152b6e08ccb2a89b6a432b57c2ba5d7cc71b0c8666797a",
+    "source_mutated": "0ba46967c104900b75b3568d2ab23b2b8616bc6ff240722466bd5b8ef294c9b4",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "restored",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "tests/test_checker_yaml.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\restored-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-rebind-copy\\restored.xml"
+    ],
+    "exit": 0,
+    "failed": [],
+    "errors": 0,
+    "tests": 64
+  }
+]

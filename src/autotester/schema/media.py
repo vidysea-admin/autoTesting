@@ -7,6 +7,7 @@ ffmpeg itself (A3 — the container has neither ffmpeg nor a GPU).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -92,6 +93,16 @@ class Transcript(Artifact):
             rel_end = min(seg.end, end) - offset_s
             lines.append(f"[{_fmt(rel_start)}-{_fmt(rel_end)}] {seg.text}")
         return "\n".join(lines)
+
+    def quotes(self, text: str, *, scrub: Callable[[str], str] | None = None) -> bool:
+        """True when `text` is said verbatim here (whitespace-normalised, case-folded) --
+        a quote, not a paraphrase (reconcile RC3). `scrub` also accepts the redacted
+        spelling, so a quote stored scrubbed still verifies on the next run."""
+        def norm(s: str) -> str:
+            return " ".join(s.casefold().split())
+        spoken = " ".join(seg.text for seg in self.segments)
+        heard = {norm(spoken), norm(scrub(spoken)) if scrub else norm(spoken)}
+        return bool(norm(text)) and any(norm(text) in h for h in heard)
 
 
 def _fmt(seconds: float) -> str:

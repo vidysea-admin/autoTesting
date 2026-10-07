@@ -25,6 +25,8 @@ qa/contracts/parallel-run.md PR6.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 from test_ui_runs import _approve_demo_runs
 from test_ui_runs_parallel_trace import _non_entry_case, client, scratch_root
 
@@ -95,7 +97,7 @@ def test_a_session_factory_crash_for_one_case_still_saves_every_case_and_the_run
         def factory(case):
             if case.id == crash_id:
                 raise RuntimeError("boom starting the session")
-            return object()
+            return SimpleNamespace(budget=kwargs["budget"])
         return factory
 
     def fake_run_and_grade_case_resilient(case_, session, judge_, run_id, store_):

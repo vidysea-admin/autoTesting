@@ -1,0 +1,4 @@
+Offline re-grades of RECORDED evidence with the real judge (gemini), default rubric, no browser, no production hit. Script: regrade.py
+A. falsified evidence (run-01M4B16YD6FQ0Q9YBHTCGTBJTX, assertion 'Zzz Absent Marker 9931' UNMET, outcome assertion_failed): PASS 6 / FAIL 0
+B. old stale-oracle evidence (run-01M4AV0R6AKHH1M7C77FW2SV22, 'YOUR PROGRESS' UNMET): FAIL 4 / PASS 2 (one sample's output line lost to a binary-grep artefact; counts from TALLY)
+The default rubric criterion is only "evidence consistent with: <case rationale>" and the rationale ("proves the credential boundary + execute/grade pipeline ...") does not mention the step expectations.

@@ -1,5 +1,24 @@
 # AT-113 — abandoned exploration cannot claim completion
 
+## Cycle 4 — contained recovery (2026-10-07)
+
+Status: checked-PASS
+Closed: 2026-10-07, verdict qa/verdicts/at113-crawl-completion.md cycle 4 PASS; merged to master via integrate/at113
+Fix cycle: 4 (one contained recovery, gate qa/gates/at113-cycle3-recovery.md answered 2026-10-05; runtime per D-070; no cycle 5)
+Brief rewrite: X4 is restated as "no browser operation (FILL, heartbeat, go_back/return_to, replay) runs after any named bound has latched". This applies to every site, not one call-site at a time (cycles 2 and 3 both FAILed X4).
+Resume: 0 of 2
+Policy-Version: proportional-verification/2026-10-06.6
+Tier: L (product code inside the critical X4 scope; form writes; timing)
+Dual check: not required. The earlier "required" line is superseded, because this is not a security/auth/tenancy or production-write trigger (narrowing rule).
+Source: 9f651068b40f6fed1b49887d19ea67902c60fe2c on codex/at113-crawl-completion (parent 085537cd).
+Change: `src/autotester/stages/explore_typing.py::type_form` rechecks `explore.stop_reason(rt)` in three places: after the eligibility/policy checks and before the counters and `_type_one`, after the FILL, and after the heartbeat. Each latches `rt.stop_reason` and returns. `tests/test_explore_typing_guards.py::test_typing_stops_before_any_followup_when_bound_latches` has 16 phase/reason cases.
+Builder evidence (maker, 2026-10-07):
+- focused: `uv run pytest tests/test_explore_typing_guards.py tests/test_explore_blocked.py tests/test_explore_node_recovery.py tests/test_crawl_status_surfaces.py tests/test_explore_completeness.py tests/test_explore_traversal.py tests/test_persona_changes.py` gives 126 passed (416 s).
+- `uv run ruff check src tests scripts`: All checks passed.
+- Falsification, run in a scratch copy and never in the bound tree: dropping the post-FILL and post-heartbeat guards turned `-k followup` from 16 passed to 8 failed / 8 passed; restoring them gave 16 passed again.
+Checker must run: the focused set above; `tests/test_crawl_inventory_live.py` in isolation (its load-only failure is AT-750/AT-757 timing, not X4); headed BFS and hybrid on the localhost X4 fixture (root -> /fill-child -> FILL #trigger -> /fill-out depth 2 -> must not FILL #second, max_depth=1); and one serial full `uv run pytest`, re-attributing the 24 baseline failures rather than waiving them.
+Metrics: start=2026-10-07T07:40Z end=2026-10-07T08:20Z wall_min=40 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=4 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6
+
 ## Current pre-action gap preparation — 2026-10-06
 
 Read-only helper /root/build_aggregate_run_budget located the still-missing
@@ -21,7 +40,7 @@ Then apply the already-planned3line shared guard, run focused restored tests
 and its isolated falsification, retaining broader acceptance/dual-check duties.
 No new module, product PASS, cycle-cap bypass, task closure or push.
 
-## Status: STALLED
+## Cycle 3 status (superseded by cycle 4 above): STALLED
 
 Fix cycle: 3
 Current cycle outcome: independent headed X4 FAIL on frozen 085537cd549a6aa0ce522aee3d9a6486f2874c83; max-cycle recovery disposition required. See qa/verdicts/at113-crawl-completion.md and qa/debug/at113-crawl-completion-cycle3.md. No release or full T-165 closure.

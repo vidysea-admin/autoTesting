@@ -19,6 +19,7 @@ import time
 import unicodedata
 
 import pytest
+from timing_scale import timing_scale
 
 from autotester.core import redact_encodings
 from autotester.core.redact import Redactor, assert_no_raw_secrets
@@ -140,9 +141,10 @@ def test_cjk_heavy_scan_stays_within_a_generous_multiple_of_ascii() -> None:
     cjk_time = _best_of(lambda: run(cjk_text))
 
     ratio = cjk_time / max(ascii_time, 1e-6)
-    assert ratio < 2.5, (
+    bound = 2.5 * timing_scale()
+    assert ratio < bound, (
         f"CJK-heavy 1 MB took {cjk_time:.2f}s vs ASCII {ascii_time:.2f}s "
-        f"({ratio:.2f}x, expected under 2.5x)"
+        f"({ratio:.2f}x, expected under {bound:g}x)"
     )
     # Absolute ceiling too, so a slow-but-proportional regression (both sides
     # got slower together) doesn't hide behind a fine ratio. Loose on purpose

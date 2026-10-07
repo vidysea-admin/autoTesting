@@ -28,7 +28,7 @@ from autotester.schema.screen_graph import ScreenNode
 from autotester.stages.coverage import diff_crawl, queue_requests, unreached_screens
 from autotester.stages.crawl_report import export_crawl_excel
 from autotester.stages.explore_merge import merge_screens
-from autotester.stages.explore_status import displayed_status, is_success
+from autotester.stages.explore_status import displayed_reason, displayed_status, is_success
 from autotester.stages.merge_flowspec import resolve_requests
 from autotester.store.project_store import ProjectStore
 from autotester.ui import crawl_view, theme
@@ -154,7 +154,7 @@ def crawls(slug: str) -> str:
             f"<tr><td><a href='/projects/{safe}/crawls/{escape(crawl_id)}'>"
             f"<code>{escape(crawl_id)}</code></a></td>"
             f"<td>{theme.pill(escape(displayed_status(crawl).value), _tone(crawl))}</td>"
-            f"<td>{escape(crawl.stop_reason or '—')}</td><td>{crawl.screens}</td>"
+            f"<td>{escape(displayed_reason(crawl) or '—')}</td><td>{crawl.screens}</td>"
             f"<td>{crawl.denied}</td><td>{crawl.issues}</td>"
             f"<td>{crawl.tool_failures}</td>"
             f"<td>{crawl.skipped_unchanged or '—'}</td>"  # CR5: a skip is not an exploration

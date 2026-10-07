@@ -22,6 +22,7 @@ import textwrap
 import time
 
 import pytest
+from timing_scale import timing_scale
 
 from autotester.core.redact import Redactor, assert_no_raw_secrets
 
@@ -189,7 +190,8 @@ def test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus() -> None:
         assert_no_raw_secrets(text, list(secrets.values()))
 
     elapsed = _best_of(run, repeats=1)
-    assert elapsed < 3.0, f"500 KB scan took {elapsed:.2f}s, expected under 3s"
+    bound = 3.0 * timing_scale()
+    assert elapsed < bound, f"500 KB scan took {elapsed:.2f}s, expected under {bound:g}s"
 
 
 def test_redact_scan_time_roughly_doubles_not_quadruples_with_input_size() -> None:

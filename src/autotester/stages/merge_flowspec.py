@@ -31,6 +31,7 @@ from autotester.schema.coverage import VideoRequest
 from autotester.schema.enums import RequestStatus, ReviewStatus
 from autotester.schema.flowspec import Conflict, Flow, FlowSpec, Review, Screen
 from autotester.stages.explore_merge import disagreement
+from autotester.stages.ingest import legacy_flow_id
 
 if TYPE_CHECKING:  # a stage names the store only in a signature (execute.py's convention)
     from autotester.store.project_store import ProjectStore
@@ -68,8 +69,13 @@ def _learned_url_patterns(existing: FlowSpec, incoming: FlowSpec) -> dict[str, s
 
 
 def _new_flows(existing: FlowSpec, incoming: FlowSpec) -> list[Flow]:
+    """Flows the spec does not hold yet. A saved flow keeps its pre-RC8 name-only
+    id (ids are never rewritten), so a re-ingest of the SAME recording -- same
+    name, same source -- is recognised through `legacy_flow_id` and not added twice."""
     known = {f.id for f in existing.flows}
-    return [f for f in incoming.flows if f.id not in known]
+    legacy = {(f.id, f.source_id) for f in existing.flows}
+    return [f for f in incoming.flows
+            if f.id not in known and (legacy_flow_id(f.name), f.source_id) not in legacy]
 
 
 def _conflicts_for(

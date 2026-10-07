@@ -18,7 +18,7 @@ from autotester.core.excel import autosize_columns
 from autotester.schema.crawl import Crawl, CrawlCoverage, CrawlIssue
 from autotester.schema.enums import EdgeOutcome, IssueKind
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
-from autotester.stages.explore_status import displayed_status
+from autotester.stages.explore_status import displayed_reason, displayed_status
 from autotester.store.project_store import ProjectStore
 
 # openpyxl refuses to write control characters (IllegalCharacterError). Live
@@ -44,7 +44,7 @@ def crawl_summary(crawl: Crawl) -> list[tuple[str, str]]:
         ("Crawl", crawl.id),
         ("Project", crawl.project),
         ("Status", displayed_status(crawl).value),  # X18(d): a legacy no-op is not success
-        ("Stopped because", crawl.stop_reason or "—"),
+        ("Stopped because", displayed_reason(crawl) or "—"),
         ("Write policy", crawl.policy.write_policy.value),
         ("Screens found", str(crawl.screens)),
         *coverage_rows(crawl),

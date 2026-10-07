@@ -9,14 +9,17 @@ endpoint, and one that is simply absent while the run starts anyway.
 
 from __future__ import annotations
 
-from datetime import datetime
+import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
-from autotester.core.consent import ApprovalRequired, require_approval
+from autotester.browser.secrets import SecretStore
+from autotester.core.consent import ApprovalRequired, prepare_account_grant, require_approval
 from autotester.schema.approval import RunApproval
 from autotester.schema.enums import ApprovalKind
+from autotester.schema.project import Project, SecretRef
 from autotester.store.project_store import ProjectStore
 
 NOW = datetime(2026, 9, 8, 12, 0, 0)
@@ -213,3 +216,50 @@ def test_the_grant_command_says_production_when_the_run_needs_it() -> None:
 
     assert "--production" in command
     assert "--max-probes 25" in command
+
+
+@pytest.mark.parametrize("mode", ["valid", "unused", "missing", "undeclared", "scope", "target",
+                                  "actions", "probes", "wall", "infinite", "overflow", "other",
+                                  "bigint"])
+def test_account_grant_is_new_exact_and_bounded(mode) -> None:
+    project = Project(slug="demo", name="Demo", base_url="https://demo.test/app",
+        allowed_domains=["demo.test"], secrets=[
+            SecretRef(key="USER", domains=["demo.test"], include_subdomains=False),
+            SecretRef(key="UNUSED", domains=["other.test"])])
+    values = {"USER": "synthetic-account-value"}
+    keys = {"USER"}
+    bounds = dict(actions=10, probes=20, wall_clock_s=30.0)
+    values = {} if mode == "missing" else values
+    keys = {"UNKNOWN"} if mode == "undeclared" else keys
+    if mode == "scope":
+        project.secrets[0].domains = ["sibling.test"]
+    if mode == "target":
+        project.base_url = "https://evil.test"
+    if mode in {"actions", "probes", "wall", "infinite", "overflow", "bigint"}:
+        field = {"wall": "wall_clock_s", "infinite": "wall_clock_s",
+                 "overflow": "wall_clock_s", "bigint": "wall_clock_s"}.get(mode, mode)
+        bounds[field] = {"infinite": float("inf"), "overflow": 1e300,
+                         "bigint": 10**1000}.get(mode, 0)
+    secrets = SecretStore(project, values)
+    if mode == "other":
+        secrets = SecretStore(project.model_copy(update={"slug": "other"}), values)
+    args = dict(kind=ApprovalKind.LIVE_CASE, account_keys=keys,
+                now=NOW.replace(tzinfo=UTC), **bounds)
+    historical = approval()
+    before = historical.model_dump_json()
+    if mode not in {"valid", "unused"}:
+        with pytest.raises((ApprovalRequired, ValueError)):
+            prepare_account_grant(project, secrets, **args)
+        assert historical.model_dump_json() == before
+        return
+    row = prepare_account_grant(project, secrets, **args)
+    assert row.project == project.slug and row.target == project.base_url
+    assert row.run_kind is ApprovalKind.LIVE_CASE
+    assert row.is_intact and row.is_signed_and_verified
+    assert row.production is False
+    assert not row.is_expired(args["now"])
+    scope = json.loads(row.scope)
+    assert scope["keys"] == ["USER"] and "cases" not in scope  # D-068: scope is not a case-set key
+    assert "synthetic-account-value" not in row.model_dump_json()
+    assert "UNUSED" not in row.scope
+    assert historical.model_dump_json() == before

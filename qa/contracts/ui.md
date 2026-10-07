@@ -313,6 +313,9 @@ covers project DETAIL and nothing covered the landing surface. AT-664.
   `ingest.py` from a UI button is a future enhancement.
 - CSRF protection on the POST forms — acceptable for a local single-operator tool; flagged as a
   known gap if this UI is ever exposed beyond localhost.
+  *Amended 2026-10-07 per D-072:* no longer true. The UI is going to a hosted server for the Vidysea teams, so every route sits behind
+  login and the D-066 Origin guard plus the Host allow-list (AT-758) (`auth.md` AU14-AU20), and the per-project credential editor of U3 and
+  U12 shows saved values only to `credentials.view` holders (`auth.md` AU21).
 
 ## Amendment log (append-only; git history is the version)
 

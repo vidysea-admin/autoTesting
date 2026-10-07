@@ -7,6 +7,8 @@ so a human can watch the exact second the system learned a step from.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.core.ids import content_id
@@ -68,6 +70,12 @@ class ExpectedState(BaseModel):
     network: list[str] = Field(default_factory=list, description="expected request patterns")
 
 
+FlowKind = Literal["ideal", "narrated", "variant"]
+"""`ideal` is a task's reference path; `narrated` walks the same path in another
+recording; `variant` diverges from it -- an "another possibility", not an error."""
+IdealBasis = Literal["crawl", "modal", "only"]
+
+
 class Step(BaseModel):
     """One browser action plus what it should produce."""
 
@@ -80,6 +88,9 @@ class Step(BaseModel):
     expected: ExpectedState = Field(default_factory=ExpectedState)
     source_ref: SourceRef | None = None
     note: str | None = None
+    screen_id: str | None = Field(default=None, description="the Screen this step acted on")
+    narration: str | None = Field(default=None, description="the presenter's words, verbatim")
+    on_screen_text: str | None = None
 
 
 class Screen(BaseModel):
@@ -96,6 +107,9 @@ class Screen(BaseModel):
     source_ref: SourceRef | None = Field(
         default=None, description="video second this screen was first learned from"
     )
+    video_only: bool = Field(
+        default=False, exclude_if=lambda v: not v,
+        description="reconcile found no crawl/spec screen for it -- learned from video alone")
 
 
 class Flow(BaseModel):
@@ -110,6 +124,15 @@ class Flow(BaseModel):
     preconditions: list[str] = Field(default_factory=list)
     steps: list[Step] = Field(default_factory=list)
     requires_auth: bool = False
+    kind: FlowKind | None = Field(default=None, description="set by reconcile (D-070)")
+    ideal_basis: IdealBasis | None = None
+    variant_of: str | None = Field(default=None, description="the ideal Flow.id it diverges from")
+    diverges_at: int | None = Field(default=None, description="Step.order of first divergence")
+
+    @property
+    def source_id(self) -> str | None:
+        """The recording this flow was learned from: its first sourced step."""
+        return next((s.source_ref.source_id for s in self.steps if s.source_ref), None)
 
 
 class Review(BaseModel):
@@ -161,3 +184,72 @@ class FlowSpec(Artifact):
 
     def screen(self, screen_id: str) -> Screen | None:
         return next((s for s in self.screens if s.id == screen_id), None)
+
+
+# -- reconcile (D-070 part 2): video knowledge graph -> product knowledge graph --
+Band = Literal["matched", "ambiguous", "new"]
+
+
+class ScreenJudgement(BaseModel):
+    """The judge's answer for ONE ambiguous screen pair -- the only call reconcile makes."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    same_screen: bool
+    confidence: float = Field(ge=0.0, le=1.0)
+    reason: str = ""
+
+
+class ScreenMatch(BaseModel):
+    """One canonical video screen scored against its best candidate (RC5)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    screen_id: str
+    candidate: str | None = Field(default=None, description="ScreenNode.id or Screen.id")
+    candidate_kind: Literal["crawl", "spec"] | None = None
+    route: float = 0.0
+    title: float = 0.0
+    elements: float = 0.0
+    total: float = 0.0
+    band: Band
+    decided_by: Literal["rules", "judge"] = "rules"
+    note: str | None = Field(default=None, description="why a row stayed ambiguous")
+
+
+class StepRef(BaseModel):
+    """A step the report points a human at: which flow, which step, which second."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    flow_id: str
+    order: int
+    source_ref: SourceRef | None = None
+    reason: str | None = None
+
+
+class Possibility(BaseModel):
+    """A variant flow -- another way the task was done, never an error (RC10)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    flow_id: str
+    ideal_flow_id: str
+    diverges_at: int | None = None
+    source_ref: SourceRef | None = None
+    quote: str | None = Field(default=None, description="verified narration at the divergence")
+
+
+class ReconcileReport(BaseModel):
+    """What reconcile decided, in a form a human can audit. No timestamps (RC11)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    matches: list[ScreenMatch] = Field(default_factory=list)
+    folded: dict[str, str] = Field(default_factory=dict, description="folded id -> canonical id")
+    unresolved_steps: list[StepRef] = Field(default_factory=list)
+    narration_unverified: list[StepRef] = Field(default_factory=list)
+    possibilities: list[Possibility] = Field(default_factory=list)
+    kinds: dict[str, int] = Field(default_factory=dict)
+    flows_in: int = 0
+    flows_out: int = 0

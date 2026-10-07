@@ -1,0 +1,325 @@
+[
+  {
+    "label": "baseline",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\baseline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\baseline.xml"
+    ],
+    "exit": 0,
+    "failed": [],
+    "errors": 0,
+    "tests": 35
+  },
+  {
+    "label": "dirty-signal",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\dirty-signal-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\dirty-signal.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_dirty_signal_is_refused_before_provider"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_dirty_signal_is_refused_before_provider",
+    "anchor_count": 1,
+    "source_before": "f82d548bb041818fdc3b5c83cdfc885607463a703a9ca190d8ebec27830088d5",
+    "source_mutated": "4e657edfb1663c229458a58354935c504f3b11edb136a2f5790ae8c857b52d4d",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "nonai-root",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\nonai-root-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\nonai-root.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_non_ai_encoded_root_secret_is_refused"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_non_ai_encoded_root_secret_is_refused",
+    "anchor_count": 1,
+    "source_before": "f82d548bb041818fdc3b5c83cdfc885607463a703a9ca190d8ebec27830088d5",
+    "source_mutated": "ae35de15f72c3badd24a21f6d9f1fc858ad2eaa2f7bacc9c85f1d778eeda25b9",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "scope-preflight",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\scope-preflight-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\scope-preflight.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_all_roots_are_preflighted_before_any_open"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_all_roots_are_preflighted_before_any_open",
+    "anchor_count": 1,
+    "source_before": "f82d548bb041818fdc3b5c83cdfc885607463a703a9ca190d8ebec27830088d5",
+    "source_mutated": "13d363f7bcbc49f698c82550fbc447f8f69ca3a236d514c716e20df1591bbf58",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "physical-budget",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\physical-budget-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\physical-budget.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_rejected_files_still_consume_physical_read_budget"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_rejected_files_still_consume_physical_read_budget",
+    "anchor_count": 1,
+    "source_before": "f82d548bb041818fdc3b5c83cdfc885607463a703a9ca190d8ebec27830088d5",
+    "source_mutated": "00deb5b72b668567ff7794871345ea337329e56667210b64797ce1469dced54d",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "scan-final-deadline",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\scan-final-deadline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\scan-final-deadline.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_file_bound_is_visible[wall_clock_s]",
+      "test_final_parser_overrun_is_not_complete[False]"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_final_parser_overrun_is_not_complete[False]",
+    "anchor_count": 1,
+    "source_before": "f82d548bb041818fdc3b5c83cdfc885607463a703a9ca190d8ebec27830088d5",
+    "source_mutated": "8658361c274ab8d11040828c24f021538622fd3e712f208001f108f55fc4f1cf",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "context-final-deadline",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\context-final-deadline-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\context-final-deadline.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_final_parser_overrun_is_not_complete[True]"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_final_parser_overrun_is_not_complete[True]",
+    "anchor_count": 1,
+    "source_before": "f9269fdbc89a08e937e0195be4bd4dd7c5b4b8e13033252ed67b24fdd0e2afc8",
+    "source_mutated": "0f8149d4cdfb69b056c7fedf8564cfe3b884d76258fa3c77a6ed6597335fb4b4",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "yaml-alias",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\yaml-alias-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\yaml-alias.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_unsafe_or_excessively_nested_yaml_is_refused[x: &a [*a]]"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_unsafe_or_excessively_nested_yaml_is_refused[x: &a [1]\\ny: *a]",
+    "anchor_count": 1,
+    "source_before": "f9269fdbc89a08e937e0195be4bd4dd7c5b4b8e13033252ed67b24fdd0e2afc8",
+    "source_mutated": "bfd17ad5d5935fdbc7eb2d8d31cb602f3bd25b2d71e2bf118547679dcaea5070",
+    "attributed": false,
+    "result": "INCONCLUSIVE"
+  },
+  {
+    "label": "classifier-strict",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\classifier-strict-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\classifier-strict.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_seeded_bad_classifier_output_is_never_overridden[string]",
+      "test_seeded_bad_classifier_output_is_never_overridden[bool]"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_seeded_bad_classifier_output_is_never_overridden[string]",
+    "anchor_count": 1,
+    "source_before": "0fecc124bb8657adb3c535b7090d761cd9a126e5fae892229ed7e45ad72221a6",
+    "source_mutated": "79fc226c27fb582e67e3640e380467283767c5f4571ae4451e7c324d541e0001",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "provider-error",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\provider-error-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\provider-error.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_provider_error_never_echoes_raw_secret"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_provider_error_never_echoes_raw_secret",
+    "anchor_count": 1,
+    "source_before": "f82d548bb041818fdc3b5c83cdfc885607463a703a9ca190d8ebec27830088d5",
+    "source_mutated": "adae1994b6fe7becfe70c79b18cf6f75d14f4b1dad952034e45e6272fd1d5885",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "metadata-secret",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\metadata-secret-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\metadata-secret.xml"
+    ],
+    "exit": 1,
+    "failed": [
+      "test_context_is_metadata_only_and_secrets_are_scrubbed",
+      "test_secret_keys_tags_and_paths_are_scrubbed"
+    ],
+    "errors": 0,
+    "tests": 35,
+    "defends": "test_context_is_metadata_only_and_secrets_are_scrubbed",
+    "anchor_count": 1,
+    "source_before": "f9269fdbc89a08e937e0195be4bd4dd7c5b4b8e13033252ed67b24fdd0e2afc8",
+    "source_mutated": "7be4a5f70736f6923b2ae72d3845e01f9ac6c14a8cb044bc48f9dd496b33662f",
+    "attributed": true,
+    "result": "KILLED"
+  },
+  {
+    "label": "restored",
+    "command": [
+      "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_discover.py",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\restored-temp",
+      "--junitxml=D:\\autoTesting\\.worktrees\\t151-target-discovery\\.work\\t151-checker-mutation-copy\\restored.xml"
+    ],
+    "exit": 0,
+    "failed": [],
+    "errors": 0,
+    "tests": 35
+  }
+]

@@ -16,7 +16,7 @@ from autotester.schema.enums import EdgeOutcome, NodeStatus
 from autotester.schema.flowspec import FlowSpec, Screen
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
 from autotester.stages.crawl_report import coverage_figure, crawl_summary, screens_by_reason
-from autotester.stages.explore_status import displayed_status, is_success
+from autotester.stages.explore_status import displayed_reason, displayed_status, is_success
 from autotester.stages.report_export import png_base64
 from autotester.ui import theme
 
@@ -71,7 +71,7 @@ def summary_stats(crawl: Crawl) -> str:
            if crawl.skipped_unchanged else "")
         + "</div>"
         + f"<p class='meta'>{theme.pill(escape(displayed_status(crawl).value), tone)} · "
-        + f"stopped: {theme.pill(escape(crawl.stop_reason or 'unknown'), tone)}"
+        + f"stopped: {theme.pill(escape(displayed_reason(crawl) or 'unknown'), tone)}"
         + f" · policy {theme.pill(escape(crawl.policy.write_policy.value), 'neutral')}</p>"
         + f"<p class='meta'>coverage: {escape(coverage_figure(crawl))}"
         + (f" · not exercised: {reasons}" if reasons else "")

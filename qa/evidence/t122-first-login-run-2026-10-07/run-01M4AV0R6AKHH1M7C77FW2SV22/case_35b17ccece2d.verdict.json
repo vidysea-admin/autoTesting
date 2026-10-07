@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-07T09:28:14.066043Z",
+  "run_id": "run-01M4AV0R6AKHH1M7C77FW2SV22",
+  "case_id": "case_35b17ccece2d",
+  "result": "FAIL",
+  "scoreboard": "Criteria 0/1 met. - c1 — Assertion for 'YOUR PROGRESS' failed on dashboard. Update assertion to match visible page text.",
+  "criteria_met": 0,
+  "criteria_total": 1,
+  "failures": [
+    {
+      "criterion_id": "c1",
+      "reason": "Expected text 'YOUR PROGRESS' was not found on the dashboard after login.",
+      "evidence_refs": [
+        "case_35b17ccece2d/04-step04-click.png"
+      ],
+      "fix_hint": "Update text assertion to match dashboard element."
+    }
+  ],
+  "grader_provider": "gemini",
+  "rubric_hash": "rub_71927ac6e2f6",
+  "images_requested": 4,
+  "images_seen": 4
+}

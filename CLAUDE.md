@@ -21,8 +21,9 @@ Plan of record: `C:/Users/Lenovo/.claude/plans/great-when-you-really-iridescent-
 | Open | When |
 |---|---|
 | `docs/SNAPSHOT.md` | every session start (the hook injects it) and before picking a unit — the whole project in one screen |
-| `docs/intent.md` | you need the numbered outcomes (O1–O7) a capability must serve, or a criterion cites `serves: intent#O*` |
-| `docs/spec.md` | you are deriving a contract criterion, or need the requirement (R1–R31) and the user types a flow touches |
+| `docs/intent.md` | you need the numbered outcomes (O1–O15) a capability must serve, or a criterion cites `serves: intent#O*` |
+| `docs/spec.md` | you are deriving a contract criterion, or need the requirement (R1–R65) and the user types a flow touches |
+| `docs/features/team-loop/intent.md` | you are building or checking Group 10 (T-197..T-201): the feature-level intent, outcomes O8-O15, its four user types and Umesh's 2026-10-07 answers |
 | `docs/plan.md` | you are picking the next unit or wave — the remaining units in dependency order, with what is held on a human gate |
 | `target.md` | you want the roadmap: what's shipped (✅) vs target (🎯), the milestone checklist, and the two-layer goal — open at session start to stay on track |
 | `docs/ARCHITECTURE.md` | you need where a concept lives, how stages fit, the data model, execution or security model |

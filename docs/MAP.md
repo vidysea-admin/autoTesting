@@ -13,6 +13,8 @@
 | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
 | `browser/evidence.py` | Screenshot capture and evidence-recording for `BrowserSession`. |
 | `browser/launch.py` | Playwright launch options for one project's persistent browser context. |
+| `browser/locator_derive.py` | Derive the most meaningful locator for an element that is on screen right now. |
+| `browser/locators.py` | Semantic locators: the target grammar and the session's one place that resolves it. |
 | `browser/observe.py` | Passive observation: enumerate a page's controls, capture console/network |
 | `browser/secrets.py` | The credential boundary. Secret values live here and nowhere else. |
 | `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |
@@ -54,6 +56,7 @@
 | `providers/gemini_schema.py` | Turn a Pydantic model into a schema Gemini's `response_schema` will accept. |
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
@@ -63,10 +66,11 @@
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
 | `schema/evidence_tombstone.py` | Sidecar tag for a unit's evidence spec whose `kills` node-ids moved out from |
+| `schema/failure_bundle.py` | Failure-bundle shapes (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
 | `schema/flowspec.py` | The FlowSpec — the system's understanding of the product under test. |
 | `schema/issue.py` | A video-derived issue — its own artifact, deliberately NOT a `CaseClass`. |
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
-| `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
+| `schema/ledger.py` | The feature ledger row and the relitigation verdict. Contract: qa/contracts/living-ledger.md. |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
@@ -76,6 +80,8 @@
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
+| `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
+| `schema/ux_report.py` | The advisory UX artifacts: `UXFinding`, `UXCaseOutcome`, `UXReport` (PU2). |
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
@@ -91,6 +97,8 @@
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
+| `stages/credential_files.py` | Which file names and suffixes hold credentials; they are refused without being opened. |
+| `stages/discover.py` | Inspect approved bounded file trees for deterministic, cited lexical signals. |
 | `stages/execute.py` | EXECUTE: run one case's steps in a real browser, producing a RawResult. |
 | `stages/expand.py` | EXPAND: FlowSpec -> Case[], covering every applicable CaseClass per flow. |
 | `stages/explore.py` | EXPLORE: a bounded, safety-gated BFS crawl of a (usually logged-in) app. |
@@ -105,6 +113,7 @@
 | `stages/explore_status.py` | How a finished crawl is judged, and how a stored one is shown (X16, X18). |
 | `stages/explore_traversal.py` | Which screen the crawl visits next — the frontier's ORDER, and nothing else. |
 | `stages/explore_typing.py` | The X10-b typing pre-pass (D-029): what the crawler types, and where it |
+| `stages/failure_bundle.py` | Assemble and load one atomic failure bundle (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
 | `stages/grade.py` | GRADE: an independent, stateless judge reads a Rubric + a RawResult's evidence. |
 | `stages/ingest.py` | INGEST: turn a video Source into a FlowSpec, provenance-tracked to the second. |
 | `stages/issues.py` | ISSUES: turn an adjudicated analysis into rows a human tester can read. |
@@ -119,19 +128,25 @@
 | `stages/portal_persona.py` | PORTAL PERSONA: promote per-crawl knowledge into the durable, cross-run |
 | `stages/portal_persona_view.py` | Render a `PortalPersona` as `knowledge.md` — a human-readable VIEW of the |
 | `stages/product_map.py` | PRODUCT MAP: fold every recording analysis into one navigable screen map. |
+| `stages/read_context.py` | Read approved Markdown as metadata only, never a vault graph or body corpus. |
+| `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
 | `stages/report_export.py` | Tester-style run reports: an Excel summary and a screen-by-screen HTML |
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
 | `stages/score.py` | SCORE: compare AutoTester's issues against a human tester's own sheet. |
-| `stages/screen_identity.py` | Screen identity: turn one `PageObservation` into a `ScreenNode`. |
+| `stages/screen_identity.py` | Screen identity: the rules that decide when two screens are one. |
+| `stages/script_replay.py` | SCRIPT_REPLAY: record a working live run's locators as a `Script`, then replay it for free. |
 | `stages/similarity_score.py` | How two bug reports are compared for `stages/score.py`'s T-136 scorer. |
 | `stages/synthetic_values.py` | The synthetic value generator (X10-b, D-029): what the crawler types. |
+| `stages/text_lines.py` | Number lines by  |
+| `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory. |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
+| `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
 | `ui/app.py` | Thin FastAPI viewer/editor over project files. Design principle 8: never a |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
@@ -166,6 +181,16 @@
 <!-- generated:schema -->
 | Model | Meaning |
 |---|---|
+| `AiSignalKind` (`schema/ai_target.py`) | Observed lexical facts; never runtime claims or check selection. |
+| `AiTargetKind` (`schema/ai_target.py`) | The four positive target kinds specified by the approved T-151 plan. |
+| `Classification` (`schema/ai_target.py`) | Strict naming response; evidence and checks are never model-controlled. |
+| `AiTarget` (`schema/ai_target.py`) | Source evidence plus classification, or an explicit non-AI outcome. |
+| `Signal` (`schema/ai_target.py`) | One observed lexical fact, never a claim about runtime behavior. |
+| `ScanLimits` (`schema/ai_target.py`) | Explicit finite limits on scanning and metadata parsing. |
+| `ReadScope` (`schema/ai_target.py`) | Caller-supplied project identity and approvals; no ambient credential loading. |
+| `ReadRefusal` (`schema/ai_target.py`) | Why an input was not read, keeping incompleteness explicit. |
+| `ContextDocument` (`schema/ai_target.py`) | Markdown metadata and an unpersisted Source reference, never body text. |
+| `Discovery` (`schema/ai_target.py`) | Read-only discovery receipt; classification is a separate pending operation. |
 | `AnalysedScreen` (`schema/analysis.py`) | An `ObservedScreen` two or more models agreed on (or the one model that |
 | `AnalysedIssue` (`schema/analysis.py`) | An `ObservedIssue` after cross-model merge — `id` is stamped by |
 | `JourneyStop` (`schema/analysis.py`) | One stop in a recording's end-to-end journey — reuses `ObservedScreen`'s |
@@ -180,7 +205,9 @@
 | `Case` (`schema/case.py`) | One generated or hand-written test case. |
 | `AgentFix` (`schema/case.py`) | The agent's proposed correction for one failing step. |
 | `ExpandedSteps` (`schema/case.py`) | One taxonomy class's proposed steps for a flow — `stages/expand.py`'s raw |
-| `Script` (`schema/case.py`) | A durable Playwright script produced once an agent gets a case working. |
+| `ScriptStep` (`schema/case.py`) | One recorded step's locator: what replay uses in place of the case step's own target. |
+| `ScriptInputs` (`schema/case.py`) | Everything that determines a script (SR2). Any difference makes it stale. |
+| `Script` (`schema/case.py`) | A durable, versioned record of how one case runs, produced by a live run that worked. |
 | `CoverageGap` (`schema/coverage.py`) | A screen or route observed in a run but absent from the FlowSpec. |
 | `VideoRequest` (`schema/coverage.py`) | What the system asks a human to record, and why. |
 | `DialogEvent` (`schema/crawl.py`) | One JS dialog (`alert`/`confirm`/`prompt`/`beforeunload`) the observer saw. |
@@ -194,6 +221,10 @@
 | `Crawl` (`schema/crawl.py`) | The envelope for one bounded BFS run — `stages/explore.py`'s output. |
 | `EvidenceTombstoneEntry` (`schema/evidence_tombstone.py`) | One `kills` node-id, named by file + bare function name (no parametrize |
 | `EvidenceTombstone` (`schema/evidence_tombstone.py`) | `qa/evidence/<slug>/mutations.stale.json` -- absent means untagged. |
+| `BundleFileKind` (`schema/failure_bundle.py`) |  |
+| `BundleSource` (`schema/failure_bundle.py`) | One screenshot offered to the assembler, stamped with its originating run. |
+| `BundleFile` (`schema/failure_bundle.py`) | One file inside a finished bundle. |
+| `BundleManifest` (`schema/failure_bundle.py`) | `manifest.json`: written last, so its presence plus matching hashes is completeness. |
 | `SourceRef` (`schema/flowspec.py`) | Where a piece of understanding came from — a video second, a doc line. |
 | `FieldConstraints` (`schema/flowspec.py`) | What the UI says a field accepts. Drives boundary/edge case generation. |
 | `InputField` (`schema/flowspec.py`) | One input on a screen. |
@@ -204,12 +235,15 @@
 | `Review` (`schema/flowspec.py`) | The human gate. A flowspec drives nothing until a person approves it. |
 | `Conflict` (`schema/flowspec.py`) | Sources disagreed. Flagged for a human — never silently merged. |
 | `FlowSpec` (`schema/flowspec.py`) | The reviewed understanding of one project's UI. |
+| `ScreenJudgement` (`schema/flowspec.py`) | The judge's answer for ONE ambiguous screen pair -- the only call reconcile makes. |
+| `ScreenMatch` (`schema/flowspec.py`) | One canonical video screen scored against its best candidate (RC5). |
+| `StepRef` (`schema/flowspec.py`) | A step the report points a human at: which flow, which step, which second. |
+| `Possibility` (`schema/flowspec.py`) | A variant flow -- another way the task was done, never an error (RC10). |
+| `ReconcileReport` (`schema/flowspec.py`) | What reconcile decided, in a form a human can audit. No timestamps (RC11). |
 | `Issue` (`schema/issue.py`) | One row of "what's wrong", derived from a video and (optionally) matched |
 | `IssueKind` (`schema/issue_kind.py`) | What kind of problem a crawl-detected `CrawlIssue` is. |
 | `FeatureEvent` (`schema/ledger.py`) | One dated event in the life of a feature: planned, live, updated, or retired. |
 | `RelitigationVerdict` (`schema/ledger.py`) | The judge's answer to "is this new unit a retired feature coming back?". |
-| `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
-| `CitationReview` (`schema/ledger.py`) | An inline inventory declaration, bound to exact visible occurrence content. |
 | `TranscriptSegment` (`schema/media.py`) | One spoken utterance, absolute seconds into the source video. |
 | `Transcript` (`schema/media.py`) | A video's narration. `from_sidecar` loads the exact shape the existing |
 | `MediaChunk` (`schema/media.py`) | One re-encoded chunk of a longer video. |
@@ -254,6 +288,14 @@
 | `ScreenMap` (`schema/screenmap.py`) | The product map: every learned screen plus the journeys that visited them. |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
+| `UserPersona` (`schema/user_persona.py`) | One kind of user the UX pass reads a run as. Advisory input only (PU4). |
+| `UXPolicy` (`schema/user_persona.py`) | Per-project switch and cap for the UX pass. Off by default (plan decision 5). |
+| `UXFinding` (`schema/ux_report.py`) | One advisory observation about one case, cited to real evidence. |
+| `UXDraft` (`schema/ux_report.py`) | What the model returns for one finding -- validated against the real evidence before it |
+| `UXJudgment` (`schema/ux_report.py`) | The provider's structured answer for one case (the `Provider.judge` schema). |
+| `UXCaseStatus` (`schema/ux_report.py`) | How one case's UX pass ended. Only `ANALYZED` can carry findings. |
+| `UXCaseOutcome` (`schema/ux_report.py`) | One case's advisory record: its status, why, and any findings. |
+| `UXReport` (`schema/ux_report.py`) | One run's advisory UX pass. `complete=False` means the pass was cut short; an absent |
 | `Criterion` (`schema/verdict.py`) | One checkable bar. If it can be argued about, it is not a criterion. |
 | `Rubric` (`schema/verdict.py`) | The grading contract for a case. More specific than the case itself. |
 | `Failure` (`schema/verdict.py`) | One unmet criterion, with the evidence that shows it. |

@@ -11,6 +11,7 @@ from pathlib import Path
 from autotester.core.paths import RepoDocs
 from autotester.providers.mock import MockProvider
 from autotester.schema.enums import Action
+from autotester.schema.flowspec import InputField
 from autotester.schema.observation import (
     ObservedFlow,
     ObservedScreen,
@@ -147,3 +148,21 @@ def test_prompt_is_read_from_a_file_and_carries_the_source_label(tmp_path: Path)
     prompt = build_ingest_prompt(source, docs)
     assert "login demo" in prompt
     assert "{{SOURCE_LABEL}}" not in prompt
+
+
+def test_ingest_video_wraps_observed_field_labels_as_inputfields(tmp_path: Path) -> None:
+    """A real video observation carries visible input LABELS (list[str]); FlowSpec
+    `Screen.fields` is list[InputField]. The conversion lives in `_to_screen`."""
+    source = make_source(tmp_path)
+    observation = VideoObservation(
+        screens=[ObservedScreen(name="Sign-up", t_start=0.0, signals=["Sign-up form visible"],
+                                fields=["Email", "Phone Number"])],
+    )
+    provider = MockProvider(responses={"vision": [observation]})
+
+    spec = ingest_video(source, "pathlynks", provider)
+
+    fields = spec.screens[0].fields
+    assert all(isinstance(f, InputField) for f in fields)
+    assert [(f.name, f.label) for f in fields] == [("Email", "Email"),
+                                                   ("Phone Number", "Phone Number")]

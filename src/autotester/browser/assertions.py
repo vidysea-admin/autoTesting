@@ -21,8 +21,18 @@ import contextlib
 
 from autotester.schema.enums import EvidenceKind
 from autotester.schema.flowspec import ExpectedState
+from autotester.stages.run_budget import RunBudgetExceeded
 
 POLL_MS = 250
+
+
+def _probe(session) -> None:
+    """One declared observation pass, shared by settle and assertion polling."""
+    budget = getattr(session, "budget", None)
+    if budget is not None:
+        budget.check(probes=1)
+
+
 def met(session, expected: ExpectedState) -> bool:
     """Whether the expectation holds right now (one probe, no waiting).
 
@@ -34,7 +44,8 @@ def met(session, expected: ExpectedState) -> bool:
     returning None on a read failure keeps the url branch fail-safe too,
     instead of the outer suppress swallowing the exception and falling
     through to `return True`."""
-    with contextlib.suppress(Exception):
+    _probe(session)
+    try:
         if expected.url:
             current = _page_url(session)
             if current is None or expected.url not in current:
@@ -52,6 +63,10 @@ def met(session, expected: ExpectedState) -> bool:
                 return False
         if expected.network and not all(_network_met(session, p) for p in expected.network):
             return False
+    except RunBudgetExceeded:
+        raise
+    except Exception:
+        return False
     return True
 
 
@@ -64,10 +79,15 @@ def assert_expected(session, expected: ExpectedState, *,
     consequence."""
     elapsed = 0
     while elapsed < timeout_ms and not met(session, expected):
+        delay = (session._timeout(min(POLL_MS, timeout_ms - elapsed)).get("timeout", POLL_MS)
+                 if getattr(session, "budget", None) is not None else POLL_MS)
         with contextlib.suppress(Exception):
-            session.page.wait_for_timeout(POLL_MS)
-        elapsed += POLL_MS
+            session.page.wait_for_timeout(delay)
+        if getattr(session, "budget", None) is not None:
+            session.budget.check()
+        elapsed += delay
 
+    _probe(session)
     evidence: list = []
     if expected.url:
         evidence.append(session._record(
@@ -138,6 +158,8 @@ def _page_url(session) -> str | None:
     and `_url_label`."""
     try:
         return session.page.url or ""
+    except RunBudgetExceeded:
+        raise
     except Exception:
         return None
 
@@ -157,12 +179,25 @@ def body_text(session) -> str | None:
     made an absent_text expectation read as met on a page the executor
     couldn't even see)."""
     try:
-        return session.page.locator("body").inner_text() or ""
+        timeout = session._timeout() if getattr(session, "budget", None) is not None else {}
+        body = session.page.locator("body").inner_text(**timeout) or ""
+        if getattr(session, "budget", None) is not None:
+            session.budget.check()
+        return body
+    except RunBudgetExceeded:
+        raise
     except Exception:
         return None
 
 
 def selector_exists(session, selector: str) -> bool:
-    with contextlib.suppress(Exception):
-        return session.page.locator(selector).count() > 0
+    try:
+        found = session.page.locator(selector).count() > 0
+        if getattr(session, "budget", None) is not None:
+            session.budget.check()
+        return found
+    except RunBudgetExceeded:
+        raise
+    except Exception:
+        pass
     return False

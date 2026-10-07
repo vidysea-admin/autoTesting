@@ -51,6 +51,7 @@ from autotester.ui.helpers import (
     _require_project_name,
     _require_reachable_base_url,
     _require_slug,
+    origin_guard_middleware,
 )
 from autotester.ui.routes_report import _run_counts
 
@@ -70,7 +71,7 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     yield                    # entry points agree on which credentials exist
 
 
-app = FastAPI(title="AutoTester", lifespan=_lifespan)
+app = FastAPI(title="AutoTester", lifespan=_lifespan, middleware=origin_guard_middleware())
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
 app.include_router(routes_cases.router)
 app.include_router(routes_project_edit.router)

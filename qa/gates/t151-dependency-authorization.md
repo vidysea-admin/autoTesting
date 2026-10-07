@@ -16,3 +16,5 @@ only the three modules (schema/ai_target.py, stages/discover.py, read_context.py
 - C: Hold T-151.
 
 **Answer format:** reply "T-151: A", "T-151: B" or "T-151: C".
+
+Answered: 2026-10-07T01:34:13Z — A — chat (Umesh): approve all three (pyyaml==6.0.3, the target-discovery prompt file, the mock.py act hunk). DECISIONS entry to follow.

@@ -1940,3 +1940,331 @@ no historical-disposition exception or retrospective operational permission.
 **Links:** T-196; qa/manifests/t196-citation-subject-check.md;
 qa/feedback-inbox.md (checkpoints D/E/F and independently approved fixture/gate plans);
 tests/test_citations.py; .goal/goal.json.
+
+## D-065 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Authorize three additions made by the T-151 target-discovery build that D-017 did not name:
+(1) the runtime dependency `pyyaml==6.0.3` in pyproject; (2) the new target-discovery prompt file;
+(3) the `act` hunk in `src/autotester/providers/mock.py`.
+
+**Why:** Umesh approved all three (gate answer "T-151: A"). PyYAML is a widely used, pinned dependency;
+the prompt is a file, as the design rules require; the mock hunk keeps the deterministic test provider
+in step with the provider interface. Rejected alternative: stdlib-only parsing (option B).
+
+**Result:** Gate answered; T-151 build may continue on branch codex/t151-target-discovery to
+ready-for-check. No code changed by this entry.
+
+**Changes-authorized:** pyproject.toml / uv.lock (add pyyaml==6.0.3) · the T-151 target-discovery
+prompt file under prompts/ · src/autotester/providers/mock.py `act` hunk. Nothing else; T-151 still
+reaches PASS only through /checker.
+
+**Approved-by:** Umesh — chat answer 2026-10-07 ("A: Teeno approve"), recorded in
+qa/gates/t151-dependency-authorization.md.
+
+**Links:** T-151; D-017; qa/gates/t151-dependency-authorization.md; qa/verdicts/t151-plan-approval.md.
+
+## D-066 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Two gate answers from Umesh. (1) T-196: L10 gains a sealed-record disposition for immutable
+history (gate t196-l10-coverage, option B). (2) D-063 self-grant: add an Origin/CSRF check on the
+state-changing UI routes (credential edits and run triggers) (gate d063-self-grant-csrf, option B);
+role-based authentication is deferred to a later unit.
+
+**Why:** (1) "logic badalte rehte hai, product evolve hota hai, purane ka acha part rakh kar later
+update kar sakte hai." Reviewing ~1200 occurrences in closed records one by one (option A) costs a
+lot and adds little; a hash-bound, self-invalidating seal keeps the rule strict for anything new or
+changed. (2) The CSRF check is a small change that closes the cross-site POST hole. Umesh noted the UI
+will run on a server URL after go-live, not localhost, so real auth is a required follow-up, not optional.
+
+**Result:** L10 amended by /checker on wave/t196-citation-subjects (2749e38d). The two disputed
+historical claims K1 (DECISIONS.md:80) and K2 (DECISIONS.md:209) remain open pending Umesh's ruling and
+are tracked as ISS-t196-citation-subjects-k1k2. The CSRF fix is not yet built; it rides the next
+d063-grant-budget fix cycle.
+
+**Changes-authorized:** qa/contracts/living-ledger.md L10 (sealed-record disposition, as committed in
+2749e38d) · src/autotester/ui/ state-changing routes (Origin/CSRF check) on the d063-grant-budget branch.
+
+**Approved-by:** Umesh — chat answers 2026-10-07, recorded in qa/gates/t196-l10-coverage.md and
+qa/gates/d063-self-grant-csrf.md.
+
+**Links:** T-196; D-062; D-063; D-064; qa/gates/t196-l10-coverage.md; qa/gates/d063-self-grant-csrf.md.
+
+## D-067 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Group 10 "Team loop" is added at top priority, ahead of groups 5–9 of the 2026-10-05
+nine-batch plan. It has five tasks: T-197 video INGEST with human timestamp-pointers and a confirm-list,
+T-198 developer video intake (zip upload and Drive fetch), T-199 a bug loop into the PathLynks
+Tracker sheet (file, update, close), T-200 scheduled auto-test at a configurable frequency, and T-201
+a team on-demand Test button with the report sent to the person who clicked. Developer demo videos
+are a first-class teaching source for the flow model and the future knowledge graph (T-166).
+
+**Why:** Umesh said on 2026-10-07 that the team is waiting on this ("team wait kar rahi hai bahut
+zor se"). In the 2026-10-06 meeting the CEO described his own video-review skill: approximate
+timestamps plus 2–3 pointers in, then a summary and 4–5 checks out. It cut a 3 h review to about
+30 min. His review of Navnit's three partner-portal videos (Drive doc 1FjABvhH…) is the target
+output shape and a ready human oracle. Developers who explain "how it is built and what it is for"
+on video give AutoTester the intended flow up front, instead of only what a crawl can infer.
+
+**Result:** goal.json now has 87 tasks, 28 pending: 23 of the original 24 plus these 5. All 9 old
+groups are still open; only T-185 has closed since 2026-10-05. Navnit's three videos (17:46, 33:33,
+16:18) were downloaded through gws, size-verified and registered as pathlynks sources
+src_e8fcdc4a15ce, src_44e2f1f6c64c and src_8540cc84081e. Himanshu's promised video had not arrived
+when this was written. Each new task still passes the maker PLAN gate before any code.
+
+**Changes-authorized:** .goal/goal.json (append T-197..T-201). No contract or ARCHITECTURE change;
+the PLAN gate authorizes those later.
+
+**Approved-by:** Umesh — chat answer 2026-10-07 ("New tasks, top priority").
+
+**Links:** T-197; T-198; T-199; T-200; T-201; T-166; AT-570; .work/pathlynks-dev-videos-oracle-2026-10-07.md.
+
+## D-068 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Three gate answers from Umesh. (1) cn5 (gate d063-cn5-vs-cn11): provisioned credentials are
+the run approval. When a project declares a credential pair in its SecretRef[], a run against that
+project's declared target and allowed_domains proceeds with no per-run human approval, for every run
+kind (live case and crawl/explore). An account-derived approval row may cover any (project, run_kind,
+target) match (option B). Approval rows are still minted and HMAC-signed automatically, as an audit
+record, not as a human step. (2) t196 disputed claims K1 (DECISIONS.md:80) and K2 (DECISIONS.md:209):
+an independent second confirmation runs first; then the record is corrected (option i). Umesh allows
+old entries to be changed or removed if that is needed; a correcting entry is the first route, and a
+direct edit to an old entry would still need its own entry with Approved-by, since the append-only
+hook stays. (3) Build order: all open groups run in parallel, scheduled only by real dependencies
+(the agent layer waits for the stages it wraps).
+
+**Why:** (1) "credentials de dena sabse bada approval hai" -- the account Umesh provisions already is
+the scope (D-053, qa/gates/write-policy-tier.md); repeated per-run approvals add a human step with
+no added safety. The test-account-only rule and the allowed_domains scope are unchanged. (2) "2nd
+confirmation le lo aur sabhi update kar do". (3) "parallelly all".
+
+**Result:** d063-grant-budget's next fix cycle drops the CN5 exclusion and keeps the D-066
+Origin/CSRF check. T-145 no longer needs a per-run human approval. No code changed by this entry.
+
+**Changes-authorized:** the qa/contracts rows holding CN5/CN11 and the explore pre-crawl approval
+criterion (checker-owned amendment) · src/autotester/core/consent.py and
+src/autotester/stages/explore_consent.py (credential-derived approval for every run kind) ·
+.goal/goal.json T-145 note (drop "per-run RunApproval required").
+
+**Approved-by:** Umesh — chat answers 2026-10-07, recorded in qa/gates/d063-cn5-vs-cn11.md and
+qa/gates/t196-l10-coverage.md.
+
+**Links:** T-145; T-196; D-018; D-053; D-063; D-066; qa/gates/d063-cn5-vs-cn11.md; qa/gates/t196-l10-coverage.md.
+
+## D-069 | 2026-10-07 | type: fix | status: ACTIVE
+
+**What:** Correct two historical citation claims, K1 and K2, without editing the old entries.
+K1 (D-006, DECISIONS.md:80): D-006 cites D-000 `Changes-authorized` for the append_decision.ps1
+UTF-8 fix. D-000 authorizes `scripts/append_decision.ps1` only at the file level, as enforcement
+wiring, and never names the UTF-8 fix. The fix was verified by /checker in the T-005 cycle-1 check
+(qa/feedback-inbox.md:111) and shipped in 2785312d. The authorization holds at the file level; the
+specific claim is imprecise. K2 (D-014, DECISIONS.md:209): D-014 item (1) attributes BACK to D-005.
+D-005 approved only HOVER, PRESS_KEY and SCROLL (DECISIONS.md:74). BACK is an additive amendment
+first authorized by D-014 itself (Approved-by: Umesh, plan.md section 4, plan.md:204). It was verified
+in qa/verdicts/track-b1-observation-primitives.md:117-120 and shipped in ce1b624b. The docstring at
+src/autotester/schema/enums.py:26 repeats the wrong "discharge D-005" attribution.
+
+**Why:** Umesh's ruling on the T-196 disputed claims (option i, after a second confirmation):
+"2nd confirmation le loo aur sabhi update krr doo". An independent second review confirmed both
+findings. A correcting entry fixes the record without breaking the append-only history. Editing
+D-006 and D-014 in place was not needed.
+
+**Result:** K1 and K2 now have a recorded disposition: both changes stand as authorized, and the
+attribution is corrected here. T-196 may treat ISS-t196-citation-subjects-k1k2 as resolvable once
+/checker records the disposition. The enums.py:26 docstring fix rides the next unit touching that file.
+
+**Changes-authorized:** src/autotester/schema/enums.py:26 docstring wording (BACK attributed to
+D-014, not D-005). Nothing else.
+
+**Approved-by:** Umesh — chat answer 2026-10-07, recorded in qa/gates/t196-l10-coverage.md.
+
+**Links:** T-196; D-000; D-005; D-006; D-014; D-068; ISS-t196-citation-subjects-k1k2; qa/gates/t196-l10-coverage.md.
+
+## D-070 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Umesh answered the open runtime gate and set direction for the video and team-loop work. Five parts:
+1. **Browser/full-suite runtime: option A, generalized.** AutoTester runs a local visible browser and the
+   full suite directly on whatever machine it is installed on. The native-egress sandbox precondition
+   recorded in `qa/gates/t125-fullsuite-browser-egress.md` and `qa/gates/t125-stalled-at-cycle-cap.md`
+   is dropped. The target is never Pathlynks-specific: any product given by URL plus the credentials
+   supplied for it (the boundary stays the supplied account's own rights, D-053/D-068). The test suite
+   keeps its own guards: no real credentials or `.env` values in tests, no paid model calls from tests,
+   and no external network from unit tests.
+2. **Video flows are reconciled by the system, not approved by a human.** There is no human-approval
+   dependency for video-derived flows. Each video yields its own knowledge graph: screens, actions, and
+   the flow the narrator says they are doing (speech is evidence of intent). It is re-mapped onto the
+   product knowledge graph built by the crawl. Every flow is kept: the ideal flow, each narrated flow
+   and each variant. Reports highlight where a video's path differs from the crawled or ideal one, as
+   an "another possibility" view for developers. The FlowSpec DRAFT review gate remains as a status
+   only, and it never blocks case generation from reconciled flows. Contract changes come through the
+   checker's inbox fold-in.
+3. **Group 10 scope widens to an in-product developer portal (T-198, being grilled).**
+   - Accounts with a role hierarchy that follows the company structure (CEO, developer, tester, admin,
+     sub-admin…).
+   - Users are mapped to projects. A developer uploads a video inside their project, and gets a
+     shareable URL to send by mail. Viewers with access watch it; others request access.
+   - Viewers leave timestamped comments on the video, Udemy-style, visible to everyone with access.
+   - The details come from the grill that is in progress.
+4. **Parked, must-have:** an in-product tracker with auto-validation, plus a Test button anyone can
+   press for a real-time run. Re-runs update the ledger and the tracker, log new issues and close fixed
+   ones. Optional sync to the team's Google/Excel sheet comes later (T-199 becomes the in-product
+   tracker first, sheet sync second).
+5. **Push:** everything built and validated (checker PASS) is committed and pushed. This restates D-007
+   and applies to the maker's own close-out merges as well.
+
+**Why:** In Umesh's words (chat, 2026-10-07): "Not only path links, but any of the account or website which
+is provided with the help of the URL ... along with the user credentials"; "it can run in any of the
+machine just via the browser"; "Don't make any human dependency ... the system should be intelligent
+enough"; "we can have like either n number of flows, but we have understanding of each and every
+flow"; "park it that it is a must and we must need to add"; "jo jo build hokrr validate hota jaa rha hai
+commit and push". The sandbox path had been BLOCKED-CAPABILITY since 2026-10-05 with no end in sight,
+and it held most of groups 3, 4, 6 and 7.
+
+**Result:** T-125 and T-165 (AT-113 cycle 4) are unblocked for runtime: the gate files carry
+`Answered: 2026-10-07` lines. The three Navnit videos already give a 38-screen, 4-flow DRAFT, which is
+now an input to the video-KG → product-KG reconciliation and not something waiting on a human. The
+group-10 grill continues with the developer-portal scope. The tracker loop is parked as a must-have.
+
+**Changes-authorized:** `qa/gates/t125-fullsuite-browser-egress.md`, `qa/gates/t125-stalled-at-cycle-cap.md`
+(Answered lines); `qa/feedback-inbox.md` (verbatim answers for the checker fold-in); `.goal/goal.json`
+(T-166 note, T-197..T-201 notes). No contract or ARCHITECTURE text is changed by this entry: those are
+folded in by `/checker`.
+
+**Approved-by:** Umesh — chat 2026-10-07 (answers to the five asks).
+
+**Links:** T-125; T-165; T-166; T-197; T-198; T-199; T-200; T-201; D-007; D-053; D-067; D-068; AT-113.
+
+## D-071 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Gate answers and go-live direction from Umesh. (1) t151: A, one narrow extra cycle (one
+scan-path deadline test; repair checker B only). (2) ct6: A, CT6 is amended to tier ordering and
+reporting, not skipping: every case runs, cheapest tier first, cheap failures shown first. RU3 and
+F-058 are unchanged. (3) T-174: the `mcp` SDK dependency is authorized. The CLI stays a first-class
+surface next to MCP. (4) Any-model provider: model calls must work with any AI API (Gemini, Claude,
+OpenAI, local Ollama, any OpenAI-compatible endpoint), chosen by config. New task T-202 adds a
+LiteLLM-backed Provider behind `providers.base.Provider`, and `litellm` is authorized in that unit.
+LangChain stays where it is already used. (5) T-199 widened: a generic tracker integration for any
+project, with a per-project column mapping proposed on first use and confirmed by the user, and the
+first live write shown and confirmed. (6) Go-live: AutoTester is hosted as a website on a
+Linux/Ubuntu server for the Vidysea internal development and product teams. New tasks T-203
+(hosting) and T-204 (team login, a go-live blocker; role-based authorization stays later).
+
+**Why:** Umesh, chat 2026-10-07: "mcp: haan … CLI bhi"; "kisi bhi AI ki API se chala paaye, Gemini ya
+Ollama ya kuch bhi"; "jab user dega kisi bhi project ke liye tracker tab usko"; "abhi Vidysea ki
+internal development team aur product team ke paas chalega, host properly website mai hoga". A
+server-hosted UI without login would let anyone with the URL run tests through the provisioned
+test account, so team login is required before go-live (D-066 already flagged it).
+
+**Result:** gate answers recorded in qa/gates/t151-cycle2-stalled.md and
+qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md. goal.json gains T-202, T-203 and T-204, and the T-199 and
+T-174 notes are updated. No product code changed by this entry.
+
+**Changes-authorized:** qa/contracts/catalog.md CT6 (checker-owned amendment to ordering and
+reporting) · pyproject.toml / uv.lock: `mcp` (T-174) and `litellm` (T-202) · .goal/goal.json
+(T-202..T-204 added, T-174 and T-199 notes) · tests/test_discover_hardening.py on
+codex/t151-target-discovery (one test).
+
+**Approved-by:** Umesh — chat answers 2026-10-07.
+
+**Links:** T-151; T-125; T-174; T-199; T-202; T-203; T-204; D-066; D-068; qa/gates/t151-cycle2-stalled.md; qa/gates/t125-ct6-tiered-dispatch-vs-ru3.md.
+
+## D-072 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Umesh answered every open go-live, Group 10 and unit gate in one sitting (chat, 2026-10-07):
+1. **T-122 login oracle: A.** The "YOUR PROGRESS" section was removed from the Pathlynks dashboard on purpose. Re-author the BEST login case's step-4 marker to a stable signed-in marker (the Logout control plus the dashboard heading), update `login_case_id`, and re-run.
+2. **New modules: yes to all.** This covers T-176 (`browser/locators.py`, `browser/locator_derive.py`, `stages/script_replay.py`), T-202 (the LiteLLM provider), T-203/T-204 (hosting, auth), the Group 10 split modules, T-190's six paths, and `agents/`. Every file stays at or under 300 lines with a one-job docstring, and the checker judges it.
+3. **Login (G3):** the simplest scheme, email and password. **Anyone can sign up**, and an admin can act on any account (disable, delete, change access). A new account starts with no access until an admin puts it in a group.
+4. **Access (Group 10 Q2):** AWS-IAM-like **groups with checkbox permissions**. The admin creates groups, ticks the permissions each group has, and adds users to groups. Permissions are additive, and the first account created becomes admin.
+5. **Secrets display (G4):** saved credential values are shown **only to admins**, which here means holders of a `credentials.view` permission that by default only the admin group has. Everyone else sees "set / not set".
+6. **Concurrency (G6):** a **server setting**, admin-configurable, sized to the server (default 2 concurrent browser runs server-wide, with one run per project at a time and the rest queued).
+7. **Server (G1/G2):** production is an **Ubuntu server**, and development continues on **Windows**. The code must run on both. Docker and Ubuntu are the deploy target, with a deploy guide. The domain comes later.
+8. **Reports:** shown on the website, plus email **by user preference** (a per-user checkbox).
+9. **Schedule:** a run starts on a button press, at a fixed time, or at a custom time the user selects, configured per project.
+10. **Videos:** the upload limit is admin-configurable, default **2 GB**. A **Google Drive video link** is also accepted, and the system fetches the video itself.
+11. **Script replay:** a replayed run is still graded by the judge (`judge_replays` stays True by default).
+12. **Host allow-list (AT-758):** extends the D-066 Origin guard. Every request's Host must be loopback, a host from `AUTOTESTER_ALLOWED_ORIGINS`, or an exact `AUTOTESTER_ALLOWED_HOSTS` entry. The hosted server must set one of these.
+
+**Why:** Everything open on the path to the hosted team MVP was waiting on these answers. Umesh asked to be asked properly, once, and answered every question. Open signup with admin moderation and default-no-access is the simplest scheme that still keeps outsiders away from credentials and runs.
+
+**Result:** Gates `qa/gates/t122-stale-login-oracle.md` and the new-module gates are answered. T-176 can merge. T-122, T-202, T-203, T-204 and Group 10 move to build. The checker amends contracts where these answers change a criterion: secrets display, the auth/roles contract for T-204, and the concurrency and schedule rows for T-203 and Group 10.
+
+**Changes-authorized:** new modules for T-176, T-202, T-203, T-204, Group 10 (T-197..T-201), T-190 and `agents/`; `src/autotester/ui/` auth, permission and group routes and middleware; the queue and concurrency setting in the run path; the Host allow-list in `ui/helpers.py` (AT-758); `.env.example` keys `AUTOTESTER_ALLOWED_HOSTS`, SMTP and run concurrency; the re-authored `projects/pathlynks` login case and `login_case_id`; the Docker and Ubuntu deploy files and guide.
+
+**Approved-by:** Umesh (chat, 2026-10-07)
+
+**Links:** D-066, D-068, D-071, T-122, T-176, T-197..T-204, AT-758..AT-761, qa/gates/t122-stale-login-oracle.md
+
+## D-073 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Create the new module `src/autotester/stages/reconcile.py` (about 250 lines). It reconciles
+video-derived flows into the product knowledge graph with no human approval step (D-070 part 2). It
+matches video screens to crawl screens by route, title or element signature, and sends ambiguous
+matches to a Provider judge: a score of 0.8 or more is matched, 0.5 to 0.8 is ambiguous. It keeps every
+flow and records divergences as "another possibility" alternatives in reports.
+
+**Why:** Every existing candidate module is at or near the 300-line cap, so the reconcile logic cannot
+be added in place without breaking the design rules. The design is RC1-RC10, recorded in
+`qa/feedback-inbox.md` (the "D-070 part 2 reconcile design" block).
+
+**Result:** The module is authorized. A contract `qa/contracts/reconcile.md` follows from the checker.
+
+**Changes-authorized:** `src/autotester/stages/reconcile.py` (new), plus in-place edits to the schema
+models needed for step-to-screen linkage. Changing `require_reviewed` in review.py is NOT authorized
+here; it is a separate L unit.
+
+**Approved-by:** Umesh (chat, 2026-10-07)
+
+**Links:** D-070; T-166
+
+## D-074 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Umesh answered five open questions in chat (2026-10-07):
+(a) **Group 10 plan approved.** Build units G1-G10 per `docs/plan.md` and `qa/gates/plan-approved-g10.md` (intent O8-O15, spec R32-R65, T-205 and T-206 as the new rows).
+(b) **Judge rule A.** A deterministic assertion that failed can never become PASS. For a run with a failed assertion the judge may only return FAIL or INCONCLUSIVE. This **amends D-032** (partial): the part of D-032 that let the judge weigh and overrule a recorded failed assertion is removed. The rest of D-032 (assertion evidence, `Outcome.ASSERTION_FAILED`, the executor never grading) stays in force, which is why this is an amendment and not a full Supersedes: `append_decision.ps1` computes a supersede as total, so a Supersedes line would retire all of D-032.
+(c) **Password hashing uses `argon2-cffi==25.1.0`.** It is the new dependency for T-204 AU1. The scrypt fallback is not used.
+(d) **The first admin is a fixed email**, set through `AUTOTESTER_FIRST_ADMIN_EMAIL`. Umesh sets the value in the server's `.env` at deploy time. With the variable unset, the hosted server must not auto-promote the first signup. Local dev keeps first-account-admin.
+(e) **Cookie Secure is off (`AUTOTESTER_COOKIE_SECURE=0`) only until the domain and HTTPS exist.** This is the default until then; Umesh can override it.
+
+**Why:** (a) Nothing in Group 10 could start without the plan being approved. (b) AT-773 measured 6 of 6 false PASSes in T-122, each one a run where a deterministic assertion had failed and the judge still said PASS. Failing closed is the safe direction: the worst case becomes an INCONCLUSIVE a human looks at, not a bug shipped as green. (c) argon2id is the current default recommendation for password hashing and pinning the version keeps the lock file reproducible. (d) First-signup-wins on a public-facing host lets whoever signs up first take admin; a fixed email removes that race. (e) Secure cookies are never sent over plain HTTP, so setting Secure before HTTPS exists would break every login.
+
+**Result:** Gate `qa/gates/plan-approved-g10.md` is answered. T-205 and T-206 are added to `.goal/goal.json` as tasks. The judge rule is authorized for build; the checker amends `qa/contracts/` rows that cite D-032 (execute and grade). Follow-up for T-204 (nothing is built yet: `src/autotester/auth/` does not exist, so no code auto-promotes today): `docs/plan.md` row 13 and `qa/contracts/auth.md` still say "first account becomes admin" and must be reworded to "first account becomes admin only in local dev; on the hosted server only the `AUTOTESTER_FIRST_ADMIN_EMAIL` account is promoted, and an unset variable promotes nobody". Cookie Secure must default from `AUTOTESTER_COOKIE_SECURE`.
+
+**Changes-authorized:** `src/autotester/stages/grade.py` and `src/autotester/stages/run_case_pipeline.py` (the judge rule); the `argon2-cffi==25.1.0` dependency in `pyproject.toml` and `uv.lock`; the Group 10 modules per `docs/plan.md` G1-G10; the first-admin and cookie-Secure env handling in `src/autotester/auth/` (new, T-204); `.env.example` keys `AUTOTESTER_FIRST_ADMIN_EMAIL` and `AUTOTESTER_COOKIE_SECURE`.
+
+**Approved-by:** Umesh (chat, 2026-10-07)
+
+**Links:** D-032, D-072, AT-773, T-204, T-205, T-206, qa/gates/plan-approved-g10.md
+
+## D-075 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** The `browser-use` dependency is authorized for T-177 (agent fallback), pinned exactly as
+`browser-use==0.5.9` (the same way litellm==1.104.0 and argon2-cffi==25.1.0 are pinned), with its
+anonymized telemetry disabled (`ANONYMIZED_TELEMETRY=false` set by AutoTester before the import,
+not left to the user's environment). `browser/session.py` gains a read-only `cdp_url` property so
+the browser-use backend can attach to the session AutoTester already opened. The UI wiring
+(`agent=`/`actuator=` into `run_and_grade_case` in ui/routes_runs.py) waits until T-203 and T-204
+land, to avoid a three-way conflict with the peer session's branches.
+
+**Why:** Umesh, chat 2026-10-07, answering the dependency question: "Approve, pin exact". The peer
+session (autotesting-07) flagged that no D-entry covered browser-use, unlike D-071 (litellm) and
+D-074 (argon2). Telemetry is turned off because Pathlynks screens and URLs must not reach a third
+party without per-use approval.
+
+**Result:** T-177 merges only after both dual-check coordinators PASS and the pin and telemetry
+change has had its repair check.
+
+**Changes-authorized:** pyproject.toml / uv.lock: `browser-use==0.5.9` (T-177) ·
+src/autotester/browser/session.py: read-only `cdp_url` property (T-177).
+
+**Approved-by:** Umesh — chat answer 2026-10-07.
+
+**Links:** T-177; D-071; D-074; qa/contracts/agent-fallback.md; qa/gates/at253-agent-fallback-wiring.md.
+
+## D-076 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Records the contract consequence of D-072 item 3 (a new account starts with no access), as written into `qa/contracts/auth.md` AU27 by the checker in commit 0f8c19d0 (D-074 amendment). AU27 states the safe default: a caller can grant only the permissions (key and scope) it already holds, and only members of the Admin/CEO group can change Admin/CEO membership, tick `users.manage`, `groups.manage`, `settings.manage` or `credentials.view`, or reset the password of an Admin/CEO account. No new product choice is being made: D-072 item 3 already decided that a new account has no access, and AU27 only closes the escalation path that a literal reading of AU8 and AU10 would leave open. D-074's own text states only items (a) to (e); the AU27 rule came from the dispatching brief, so this entry gives it a decisions record.
+
+**Why:** Without a record, AU27 cites "D-074 safe default" while D-074 does not contain it, which makes the criterion look like an invented requirement. A `users.manage` or `groups.manage` holder who is not an admin could otherwise promote themselves or another account to full access, which would undo the no-access default of D-072 item 3. Keeping the entry as a pure consequence, not a decision, lets Umesh veto it by superseding it if he wants a different rule.
+
+**Result:** `qa/contracts/auth.md` AU27 stays as written; its `serves:` line (D-074 safe default, D-072#4) is read as D-072 item 3 plus this entry. T-204 builds to AU27. No code change is authorized by this entry.
+
+**Links:** D-072 item 3, D-074, qa/contracts/auth.md AU27

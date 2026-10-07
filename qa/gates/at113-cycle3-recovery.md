@@ -36,3 +36,5 @@ preparation approve." Authorizes only freshly created zero-byte .env fixtures
 inside runner-owned temporary directories for affected mocked crawl tests.
 Real repo/project .env, non-empty fixture files, credentials, network/provider
 calls and browser launches remain blocked in this mocked-test runner.
+
+Answered: 2026-10-07 — option A (generalized): drop the native-egress sandbox precondition; local visible browser + full suite on any machine, against any product URL with its supplied credentials; test-suite guards kept (no real creds/.env, no paid calls, no external network in unit tests) — chat 2026-10-07, D-070

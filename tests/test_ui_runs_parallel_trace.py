@@ -52,43 +52,46 @@ def _non_entry_case(idx: int) -> Case:
     )
 
 
+@pytest.mark.parametrize("width", [1, 2])
+@pytest.mark.parametrize("stopped", [False, True])
 def test_a_real_run_writes_a_trace_with_at_least_one_span(
     client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch,
+    width: int, stopped: bool,
 ) -> None:
-    """AT-564: `trigger_run` must build a `StageContext` and write
-    `trace.jsonl` for a real run -- before this unit, nothing in `src/`
-    constructed a `StageContext` outside `stages/orchestrate*.py`, so this
-    endpoint (the only real CLI/UI run path) wrote no trace at all."""
+    """Real route trace reports aggregate truncation honestly at either width."""
     from autotester.browser.session import BrowserSession
     from autotester.providers.mock import MockProvider
-
     _onboard_demo(client)
     store = ProjectStore("demo", scratch_root)
     store.add_case(_non_entry_case(0))
 
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
     monkeypatch.setattr(BrowserSession, "close", lambda self: None)
-
     judge = MockProvider(model="mock")
 
     def fake_run_and_grade_case_resilient(case_, session, judge_, run_id, store_):
+        assert session.budget is not None
+        if stopped:
+            assert not session.budget.try_consume(actions=10**9)
         judge_.record(role="agent", input_tokens=3, output_tokens=3, fed_id=f"case-{case_.id}")
-        result = RawResult(case_id=case_.id, outcome=Outcome.COMPLETED)
-        verdict = Verdict(run_id=run_id, case_id=case_.id, result=Result.PASS,
+        result = RawResult(case_id=case_.id,
+                           outcome=Outcome.ERRORED if stopped else Outcome.COMPLETED)
+        verdict = Verdict(run_id=run_id, case_id=case_.id,
+                           result=Result.INCONCLUSIVE if stopped else Result.PASS,
                            grader_provider="mock")
         return result, verdict
-
     import autotester.ui.routes_runs as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
-
     monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", lambda: judge)
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
+    monkeypatch.setattr(routes_runs_module, "plan_parallel_run", lambda *a, **kw: ParallelPlan(
+        config_ceiling=width, measured_budget=width, n=width, bound_by="config",
+        free_ram_mb=99999.0, cpu_count=8))
 
     _approve_demo_runs(scratch_root)  # AT-570: the live_case approval a run now needs
     response = client.post("/projects/demo/run", follow_redirects=False)
     assert response.status_code == 303
-
     run_id = _only_run_id(store)
     trace_path = store.paths.run_trace(run_id)
     assert trace_path.exists()
@@ -96,41 +99,40 @@ def test_a_real_run_writes_a_trace_with_at_least_one_span(
              if ln.strip()]
     assert len(lines) >= 1
     assert all(ln["trace_id"] == run_id for ln in lines)
-    # the EXECUTE stage span _execute_with_trace itself records -- distinct
-    # from the LLM-call span the fake grading call also leaves behind
     stage_spans = [ln for ln in lines if ln.get("kind") == "stage"]
     assert [s["stage"] for s in stage_spans] == ["execute"]
-    assert stage_spans[0]["status"] == "done"
+    assert stage_spans[0]["status"] == ("failed" if stopped else "done")
+    if stopped:
+        assert "max_actions" in stage_spans[0]["error"]
 
 
+@pytest.mark.parametrize("account_run", [False, True])
 def test_a_declared_fake_secret_never_appears_raw_in_the_trace(
     client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch,
+    account_run: bool,
 ) -> None:
-    """AT-564/AT-561: `StageContext` must be built with the project's real
-    `SecretStore` (its `secrets=` param) -- without it, the auto-built trace
-    degrades to an unredacted `Redactor({})` and a real secret value would
-    reach `trace.jsonl` raw."""
+    """Real trace redacts declared values; referenced accounts ignore unused roles."""
     from autotester.browser.session import BrowserSession
     from autotester.providers.mock import MockProvider
-
     secret_value = "sk-fake-AT564-9f2c7a1b"
     (scratch_root / ".env").write_text(f"DEMO_FAKE_KEY={secret_value}\n", encoding="utf-8")
 
-    client.post("/onboard", data={
-        "slug": "demo", "name": "Demo", "base_url": "https://demo.test",
-        "allowed_domains": "demo.test",
-    })
+    client.post("/onboard", data={"slug": "demo", "name": "Demo",
+                                 "base_url": "https://demo.test", "allowed_domains": "demo.test"})
     store = ProjectStore("demo", scratch_root)
     project = store.load_project()
     assert project is not None
-    store.save_project(project.model_copy(update={"secrets": [SecretRef(key="DEMO_FAKE_KEY")]}))
-    store.add_case(_non_entry_case(0))
-
+    store.save_project(project.model_copy(update={"secrets": [
+        SecretRef(key="DEMO_FAKE_KEY", domains=["demo.test"], include_subdomains=False),
+        SecretRef(key="UNUSED_ROLE")]}))
+    case = _non_entry_case(0)
+    if account_run:
+        case = case.model_copy(update={"steps": [Step(
+            order=1, action=Action.FILL, target="#account", value="{{SECRET:DEMO_FAKE_KEY}}") ]})
+    store.add_case(case)
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
     monkeypatch.setattr(BrowserSession, "close", lambda self: None)
-
     judge = MockProvider(model="mock")
-
     def fake_run_and_grade_case_resilient(case_, session, judge_, run_id, store_):
         judge_.record(role="agent", input_tokens=3, output_tokens=3,
                       fed_id=f"leaked-{secret_value}")
@@ -138,22 +140,23 @@ def test_a_declared_fake_secret_never_appears_raw_in_the_trace(
         verdict = Verdict(run_id=run_id, case_id=case_.id, result=Result.PASS,
                            grader_provider="mock")
         return result, verdict
-
     import autotester.ui.routes_runs as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
-
     monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", lambda: judge)
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
-
     _approve_demo_runs(scratch_root)  # AT-570: the live_case approval a run now needs
     response = client.post("/projects/demo/run", follow_redirects=False)
     assert response.status_code == 303
-
     run_id = _only_run_id(store)
     raw = store.paths.run_trace(run_id).read_text(encoding="utf-8")
     assert secret_value not in raw
     assert "REDACTED" in raw
+    if account_run:
+        grant = store.list_approvals()[-1]
+        assert grant.is_signed_and_verified and grant.max_probes > 0
+        assert "DEMO_FAKE_KEY" in grant.scope and "UNUSED_ROLE" not in grant.scope
+        assert secret_value not in grant.model_dump_json()
 
 
 def test_run_records_parallel_n_and_bound_by_even_when_serial(

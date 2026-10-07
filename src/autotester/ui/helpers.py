@@ -16,8 +16,11 @@ import os
 import re
 import tempfile
 from pathlib import Path
+from urllib.parse import urlparse
 
 from fastapi import HTTPException
+from fastapi.responses import JSONResponse
+from starlette.middleware import Middleware
 
 from autotester.browser.secrets import host_of
 from autotester.browser.session import NavigationRefused, check_destination
@@ -47,6 +50,7 @@ __all__ = [
     "_require_safe_id",
     "_require_slug",
     "_reserved_temp_path",
+    "origin_guard_middleware",
 ]
 
 # Same shape as schema.project.Project.slug's own field pattern -- a slug is a
@@ -182,3 +186,68 @@ def _reserved_temp_path(suffix: str, directory: Path | None = None) -> Path:
     path = Path(tmp)
     path.unlink()
     return path
+
+
+_UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+_LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
+
+
+def _origin_allowed(origin: str) -> bool:
+    """D-066: loopback (the UI's default home) or an origin the operator listed in
+    `AUTOTESTER_ALLOWED_ORIGINS` (comma/space separated; the server URL after go-live).
+    Exact match only -- no wildcard. NOT "the Host the request named": a DNS-rebinding
+    page has Origin == Host == attacker, so the request cannot vouch for itself."""
+    origin = origin.strip().rstrip("/").lower()
+    listed = os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").replace(",", " ").split()
+    if origin in {o.rstrip("/").lower() for o in listed if o != "*"}:
+        return True
+    try:
+        parts = urlparse(origin)
+        return (parts.scheme in {"http", "https"} and parts.hostname in _LOOPBACK_HOSTS
+                and not parts.username and not parts.path and not parts.query)
+    except ValueError:
+        return False
+
+
+def origin_refusal(headers: dict[str, str]) -> str | None:
+    """Why this state-changing request is cross-site, or None when it may proceed.
+
+    A browser sends `Origin` on every cross-site POST (`Referer` and `Sec-Fetch-Site` are
+    the fallbacks), so a request carrying none of the three is not a browser, and CSRF is
+    a browser attack. Anything that does name an origin must be an allowed one."""
+    origin = headers.get("origin")
+    if origin is None and headers.get("referer"):
+        try:
+            referer = urlparse(headers["referer"])
+            origin = f"{referer.scheme}://{referer.netloc}"
+        except ValueError:
+            origin = headers["referer"]  # unparsable: refused below, never a 500
+    if origin is not None:
+        if _origin_allowed(origin):
+            return None
+        return f"cross-site request refused: origin {origin!r} is not allowed (D-066)"
+    if headers.get("sec-fetch-site", "same-origin") not in {"same-origin", "none"}:
+        return "cross-site request refused: Sec-Fetch-Site names another site (D-066)"
+    return None
+
+
+class _OriginGuard:
+    """ASGI middleware: refuse a cross-site state-changing request before any handler runs."""
+
+    def __init__(self, app) -> None:
+        self.app = app
+
+    async def __call__(self, scope, receive, send) -> None:
+        if scope["type"] == "http" and scope["method"] in _UNSAFE_METHODS:
+            headers = {k.decode("latin-1").lower(): v.decode("latin-1")
+                       for k, v in scope["headers"]}
+            refusal = origin_refusal(headers)
+            if refusal:
+                await JSONResponse({"detail": refusal}, status_code=403)(scope, receive, send)
+                return
+        await self.app(scope, receive, send)
+
+
+def origin_guard_middleware() -> list[Middleware]:
+    """The D-066 Origin/CSRF check for `FastAPI(middleware=...)`: one guard for every route."""
+    return [Middleware(_OriginGuard)]

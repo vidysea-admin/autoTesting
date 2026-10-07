@@ -1,0 +1,2 @@
+{"kind":"llm_call","trace_id":"run-01M4AV0R6AKHH1M7C77FW2SV22","provider":"gemini","role":"judge","prompt_file":"grade","input_tokens":5061,"output_tokens":2532,"latency_s":18.09107059999951,"cost":0.0,"retries":0,"fallback_hops":0,"fed_id":"case_35b17ccece2d","recorded_at":"2026-10-07T09:28:14.062035Z"}
+{"kind":"stage","trace_id":"run-01M4AV0R6AKHH1M7C77FW2SV22","stage":"execute","status":"done","error":null,"started":"2026-10-07T09:27:23.128462Z","finished":"2026-10-07T09:28:14.156480Z","duration_s":51.028018,"recorded_at":"2026-10-07T09:28:14.157482Z"}

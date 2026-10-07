@@ -1,5 +1,13 @@
 # qa/QUEUE.md — checker sweep queue (top-3 recommended next units)
 
+## Human-asked, above the TODO rows (2026-10-07 sweep consolidation)
+
+| Row | State |
+|---|---|
+| Group 10: T-197, T-198, T-199, T-200, T-201 | human-asked D-067 (Umesh, chat 2026-10-07, top priority); blocked on PLAN gate (intent -> grill -> spec -> plan) before any build. Not sweep findings. They have no contract, spec or intent coverage yet (expected: the PLAN gate authorizes it), and the pending tasks lack done_checks (AT-744, maker-owned, red suite test). Also absent from target.md and docs/plan.md (AT-729/AT-738 family). No code before `qa/gates/plan-approved.md` covers them. |
+
+No `HOLD:` line this sweep: no failure is traced, with evidence, to a checked-PASS feature's changed files.
+
 2026-10-01 bounded Mode B full-goal triage — EXHAUSTED (partial seven-check sweep, not CLEAN).
 Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all older queue history below.
 
@@ -12,6 +20,34 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 | 3 | TODO: T-151 deterministic discovery/context | T-150 done; ai-target AI1/AI8 and D-017 named stages. Synthetic in-root fixtures first, ordinary independent plan/new-file scope validation; no real-target firing authorization. |
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
+
+## Candidates (human picks) — 2026-10-07 sweep, report `qa/sweeps/2026-10-07-sweep.md`
+
+Candidates are never built until a human moves one out of this section with `approved: <date>`. Source: sharded Mode B (3 shards + consolidation), window 2aed300e..72fafe7c, working tree dirty.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: S1/S2 | Pending goal tasks T-197..T-201 have no done_check; `test_every_pending_task_actually_has_a_done_check` fails deterministically and keeps the suite red. Maker-owned and in progress; listed so it is not lost. | AT-744 (high) |
+| priority: S1/S2 | `data_boundary.py` exits 1 (adapter.json declares no `data_class`). Standing, accepted posture, wontfix, exemption recorded in `qa/contracts/core-invariants.md` (AT-365 list entry). NOT refiled. | AT-365 (wontfix) |
+| medium | AT-113 cycle 3 STALLED, gate answered 2026-10-05, no maker action since 2026-10-06 and no `qa/debug/at113-cycle3.md`. Reread the gate file before reopening. | AT-745 |
+| medium | One solo re-run on an idle tree for the 4 load-or-regression suite failures: `test_crawl_inventory_live` STOPPED_BOUND (possible AT-113-era regression), mc_sessionstart 60 s timeouts, redact_wrap_perf 3.83 s, `video_parallel_sweep` 'A never finished closing' (possible ISS-t191-run-video-1 regression). Not a HOLD. | AT-750, ISS-t151-target-discovery-6, AT-725 |
+| medium | RULING (checker, 2026-10-07): the AT-750 solo re-run found 4 load flakes, no regression. Loosen via ONE env-scaled helper `timing_scale()` (AUTOTESTER_TIMING_SCALE, default 1.0, clamp [1.0, 4.0], can only loosen): crawl_inventory_live:103 wall_clock_s 240, mc_sessionstart:142 timeout 60, redact_wrap_perf:192 bound 3.0 (the :209 scaling guard stays untouched), video_parallel_sweep:42 `_WAIT_S` 30; sweeps run with scale 2. Tier L protected change, one checker; load marker and keep-as-is rejected. Exact change and checker tests are in the ledger row. Not built until a human approves. | AT-757, AT-750, AT-725 |
+| medium | Gates showing ANSWERED without an `Answered:` line (at638, t125-stalled, pathlynks-user-account-first); t192 narrowed-command ratification is genuinely OPEN and Umesh's. | AT-746, AT-285 |
+| medium | `qa/feedback-inbox.md` is 5802 lines; about 20 sections from 2026-10-05/06 unfolded. Fold or archive. | AT-747 |
+| medium | T-136 truth sheet `ERP_Issues_Trainers.xlsx` missing on disk. | AT-752 |
+| medium | Roadmap and plan text stale against goal.json (target.md T-165 marked done while pending; T-120/T-150/T-171/T-185 unchecked; T-196..T-201 missing; plan.md 'draft', '26 remaining', 8 done tasks listed as remaining, T-165 shown buildable). Already filed, carried. | AT-729, AT-738, AT-642, AT-731 |
+| medium | Ledger debt carried: 459 of 508 fixed rows lack `regression_check`; 11 duplicate ids (AT-288..291, AT-547..552) unreconciled. | AT-634, AT-656, AT-676 |
+| low | `ui/routes_video.py` added after plan approval with no feature trio or Persona walk line (arguably T-191's fix cycle). | AT-748 |
+| low | Delegation ledger has no record rows since 2026-09-27 (~15 Claude-built units). | AT-749 |
+| low | Two `test_cli_harness_safety` failures were contamination by a concurrent `ingest prep`, not a CLI bug. | AT-751 |
+| low | CLAUDE.md 'Credentials' (AT-570 open, pre-D-068) and `explore.md:614` 'explicit per-run' need a D-entry before the edit. | AT-753 |
+| low | doctor not clean: root-clutter `at113-fixture-wn6g4n_e`, `pytest-of-unknown`; stale `docs/MAP.md`. | AT-756 |
+| low | `qa/loop.md` HUMAN_GATE example stale; three EXHAUSTED sweeps with the same top-3 and no unit closed (loop-spin). | AT-754, AT-755 |
+| low | `explore_node.py` sits at exactly 300 lines (cap), carried. | AT-567 |
+
+GRILL candidates (not rows to build): the three intent questions Q1/Q3/Q4 in `docs/intent.md` have been open over 7 days (Q1 row already below; Q3/Q4 listed with it); D-067 moved the goal, so either one GRILL for group-10 scope or accept the PLAN gate's own grill as that grill (Umesh decides).
+
+`ISS-ingest-fields-1` (high) was fixed and merged in 72fafe7c with checked-PASS cycle 0; it is in the ledger as `fixed`, nothing to do.
 
 ---
 

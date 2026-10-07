@@ -15,11 +15,16 @@ Contract: qa/contracts/parallel-run.md PR7; qa/contracts/consent.md CN10.
 
 from __future__ import annotations
 
+import math
 import threading
 import time
 
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
+
+
+class RunBudgetExceeded(RuntimeError):
+    """A named aggregate brake, never swallowed as a browser observation."""
 
 
 class RunBudget:
@@ -46,32 +51,80 @@ class RunBudget:
                 "RunBudget requires a RunApproval: a run with no approval is an unapproved "
                 "run, never an unlimited one (AT-570, core-invariants C12(b))"
             )
-        self._approval = approval
+        self._approval = approval.model_copy(deep=True)
+        for name in ("max_actions", "max_probes", "wall_clock_s"):
+            value = getattr(approval, name)
+            if not math.isfinite(value) or value < 0:
+                raise ValueError(f"invalid run budget {name}")
         self._lock = threading.Lock()
         self._actions_used = 0
         self._probes_used = 0
         self._start = time.monotonic()
+        self._stop_reason: str | None = None
 
     def try_consume(self, *, actions: int = 0, probes: int = 0) -> bool:
+        return self._consume(actions=actions, probes=probes, require_running=False)
+
+    def _consume(self, *, actions: int, probes: int, require_running: bool) -> bool:
+        for value in (actions, probes):
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ValueError("budget spends must be nonnegative integers")
         approval = self._approval
         with self._lock:
+            if require_running and self._stop_reason is not None:
+                return False
             # `<= 0` explicitly rather than `elapsed > granted`: `time.monotonic()`
             # has ~15ms resolution on Windows, so a strict comparison against 0.0
             # would refuse or allow depending on how fast the host is, and a
             # fail-closed rule that is only usually closed is not one.
-            if approval.wall_clock_s <= 0:
-                return False
-            if (time.monotonic() - self._start) > approval.wall_clock_s:
+            if (approval.wall_clock_s <= 0
+                    or time.monotonic() - self._start >= approval.wall_clock_s):
+                self._stop_reason = self._stop_reason or "wall_clock_s"
                 return False
             actions_after = self._actions_used + actions
             probes_after = self._probes_used + probes
             if actions_after > approval.max_actions:
+                self._stop_reason = self._stop_reason or "max_actions"
                 return False
             if probes_after > approval.max_probes:
+                self._stop_reason = self._stop_reason or "max_probes"
                 return False
             self._actions_used = actions_after
             self._probes_used = probes_after
             return True
+
+    def check(self, *, actions: int = 0, probes: int = 0) -> None:
+        if not self._consume(actions=actions, probes=probes, require_running=True):
+            raise RunBudgetExceeded(f"run budget exhausted: {self.stop_reason}")
+
+    def check_start(self) -> None:
+        self.check()
+        with self._lock:
+            if self._actions_used >= self._approval.max_actions:
+                self._stop_reason = self._stop_reason or "max_actions"
+        self.check()
+
+    def matches(self, approval: RunApproval) -> bool:
+        return self._approval == approval
+
+    def remaining_ms(self, requested: float = 30000) -> int:
+        self.check()
+        remaining = (self._approval.wall_clock_s - (time.monotonic() - self._start)) * 1000
+        if remaining < 1:
+            with self._lock:
+                self._stop_reason = self._stop_reason or "wall_clock_s"
+            raise RunBudgetExceeded("run budget exhausted: wall_clock_s")
+        if not math.isfinite(requested) or requested < 1:
+            raise ValueError("browser timeout must be positive and finite")
+        return max(1, int(min(requested, remaining)))
+
+    @property
+    def stop_reason(self) -> str | None:
+        return self._stop_reason
+
+    @property
+    def probes_used(self) -> int:
+        return self._probes_used
 
     @property
     def actions_used(self) -> int:

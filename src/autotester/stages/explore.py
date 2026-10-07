@@ -20,7 +20,7 @@ from autotester.browser.observe import PageObserver, observe
 from autotester.browser.session import BrowserSession, NavigationRefused
 from autotester.schema.case import Case
 from autotester.schema.crawl import Crawl, CrawlBounds, NoiseCount, SafetyPolicy
-from autotester.schema.enums import Action, CrawlStatus, Outcome, TraversalStrategy
+from autotester.schema.enums import Action, CrawlStatus, NodeStatus, Outcome, TraversalStrategy
 from autotester.schema.project import Project
 from autotester.schema.screen_graph import CrawlFrontier, ScreenNode
 from autotester.stages import (
@@ -48,6 +48,8 @@ def _now_iso() -> str:
 def stop_reason(rt: ExploreRuntime) -> str | None:
     """Which bound (if any) has been reached. Checked before every node and
     before every action, so a bound cannot be overshot by a whole node."""
+    if rt.stop_reason in {"max_screens", "max_actions", "wall_clock_s", "max_depth"}:
+        return rt.stop_reason
     if rt.frontier.screens_found >= rt.bounds.max_screens:
         return "max_screens"
     if rt.frontier.actions_used >= rt.bounds.max_actions:
@@ -166,15 +168,13 @@ def _bfs(rt: ExploreRuntime) -> None:
         rt.frontier.visited.append(node.id)
         rt.store.save_frontier(rt.crawl.id, rt.frontier)
     explore_traversal.drain_deferred(rt)  # PS2: destructive controls, crawl-global last
-    # The queue drained. That is an exhausted frontier ONLY if no bound had
-    # already fired: `_click_loop` sets `stop_reason` when a bound stops it
-    # mid-node (AT-463), which leaves controls untried on the last screen even
-    # though nothing is left to pop. Byte-equivalent to the string comparison
-    # `run_crawl` used to make, but structural -- a new stop reason (a skip
-    # note, a bound qualifier) can no longer silently turn it into "complete".
-    rt.frontier_exhausted = rt.stop_reason is None
-    rt.stop_reason = rt.stop_reason or explore_incremental.exhausted_reason(
-        rt.skipped_unchanged)
+    # Draining the queue after a bound or abandoned visit leaves controls untried.
+    abandoned = [f"{n.status.value} ({n.url_template})" for n in rt.nodes.values()
+                 if n.status in {NodeStatus.ABORTED_ERROR, NodeStatus.ABORTED_DIALOG}]
+    rt.frontier_exhausted = rt.stop_reason is None and not abandoned
+    rt.stop_reason = rt.stop_reason or (
+        "abandoned visits: " + ", ".join(sorted(abandoned)) if abandoned
+        else explore_incremental.exhausted_reason(rt.skipped_unchanged))
 
 
 def _login_failed_reason(rt: ExploreRuntime) -> str:

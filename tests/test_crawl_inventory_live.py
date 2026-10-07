@@ -19,6 +19,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from timing_scale import timing_scale
 
 from autotester.browser.observe import PageObserver
 from autotester.browser.secrets import SecretStore
@@ -100,7 +101,9 @@ def _reached_ids(nodes: list[ScreenNode]) -> set[str]:
     return {rid for rid, route in ROUTES.items() if _entered(route, nodes)}
 
 
-FULL = CrawlBounds(max_screens=40, max_actions=200, wall_clock_s=240.0, max_depth=6)
+FULL = CrawlBounds(
+    max_screens=40, max_actions=200, wall_clock_s=240.0 * timing_scale(), max_depth=6,
+)
 
 
 def test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused(

@@ -119,7 +119,8 @@ def _judged_exhausted(nodes: list[ScreenNode], frontier_exhausted: bool) -> bool
     has for a frontier that was not exhausted — never `missing`.
     """
     return frontier_exhausted and not any(
-        node.status is NodeStatus.SKIPPED_UNCHANGED for node in nodes)
+        node.status is NodeStatus.SKIPPED_UNCHANGED or node.status in BROKEN_STATUSES
+        for node in nodes)
 
 
 def classify(
@@ -195,7 +196,8 @@ def describe(diff: dict[str, list[str]]) -> str | None:
     labels = (("new_screens", "new"), ("changed_screens", "changed"),
               ("missing_screens", "missing"), ("broken_screens", "broken"),
               ("missing_unjudged",
-               "not judged (a bound or a skipped-unchanged screen left the crawl incomplete)"),
+               "not judged (a bound, skipped-unchanged screen, or abandoned visit "
+               "left the crawl incomplete)"),
               ("healthy_screens", "recovered"))
     parts = [f"{len(diff[field])} {label}" for field, label in labels if diff[field]]
     if not parts:

@@ -96,3 +96,5 @@ shipped scope. Each is a decision about what the product promises, not an implem
   exceeded, which is the whole point of having one.
 - T-125 stays `pending` in `.goal/goal.json`. The rest of the backlog continues; this gate blocks
   only this unit.
+
+Answered: 2026-10-07 — option A (generalized): drop the native-egress sandbox precondition; local visible browser + full suite on any machine, against any product URL with its supplied credentials; test-suite guards kept (no real creds/.env, no paid calls, no external network in unit tests) — chat 2026-10-07, D-070

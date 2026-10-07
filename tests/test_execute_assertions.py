@@ -17,12 +17,54 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from test_execute import LOGIN, make_case, session_with_fake_page
+from test_parallel_run import _approval
 
 from autotester.browser import assertions
 from autotester.schema.enums import Action, EvidenceKind, Outcome
 from autotester.schema.flowspec import ExpectedState, Step
 from autotester.stages.execute import run_case
+from autotester.stages.run_budget import RunBudget
+
+
+@pytest.mark.parametrize("brake", ["actions", "empty", "capture", "wait", "probes"])
+def test_executor_shared_brakes_stop_real_actions_and_final_completion(
+    tmp_path, monkeypatch, brake,
+):
+    from autotester.stages import run_budget
+
+    clock = [0.0]
+    monkeypatch.setattr(run_budget.time, "monotonic", lambda: clock[0])
+    session = session_with_fake_page(tmp_path)
+    session.budget = RunBudget(_approval(max_actions=1, max_probes=0, wall_clock_s=1))
+    page = session.page
+    shot = page.screenshot
+    def capture(**kwargs):
+        assert 0 < kwargs.pop("timeout") <= 1000
+        shot(**kwargs)
+        if brake == "capture":
+            clock[0] = 1.0
+    page.screenshot = capture
+    def wait(ms):
+        assert 0 < ms <= 1000
+        if brake == "wait":
+            clock[0] = 1.0
+    page.wait_for_timeout = wait
+    steps = [Step(order=1, action=Action.WAIT, target="", value="5000")]
+    if brake == "actions":
+        steps.append(Step(order=2, action=Action.WAIT, target="", value="5000"))
+    if brake == "probes":
+        steps = [Step(order=1, action=Action.ASSERT, target="", expected={"url": "login"})]
+    case = make_case([] if brake == "empty" else steps)
+    result = run_case(case, session)
+    if brake == "empty":
+        assert result.outcome is Outcome.COMPLETED and session.budget.actions_used == 1
+        result = run_case(case, session)
+    assert result.outcome is Outcome.ERRORED
+    reason = "max_probes" if brake == "probes" else (
+        "max_actions" if brake in ("actions", "empty") else "wall_clock_s")
+    assert reason in result.error and session.budget.actions_used == 1
 
 
 def test_an_unmet_declared_expectation_is_assertion_failed_with_evidence(

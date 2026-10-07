@@ -23,6 +23,7 @@ dependencies = [
     "pydantic>=2.13.5",
     "pydantic-settings>=2.15.0",
     "pymongo>=4.9.0",
+    "pyyaml==6.0.3",
     "python-dotenv>=1.2.3",
     "python-multipart>=0.0.32",
     "starlette>=1.6.0",  # AT-130 regression test: ui/routes_crawls.py, routes_issues.py and

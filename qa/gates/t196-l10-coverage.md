@@ -21,3 +21,5 @@ Two early historical claims are already flagged as failing the What-only boundar
 **Answer format:** reply "t196: A", "t196: B" or "t196: C".
 
 Answered: 2026-10-07T01:34:13Z — B — chat (Umesh): "logic badalte rehte hai, product evolve hota hai, purane ka acha part rakh kar later update kar sakte hai". Ruling on the 2 disputed historical claims still to be shown to Umesh.
+
+Answered (disputed claims K1/K2): 2026-10-07T03:17:22Z — i, after a second independent confirmation — chat (Umesh): "2nd confirmation le loo aur sabhi update krr doo … remove/delete if needed krr skte hai". Recorded as D-068.

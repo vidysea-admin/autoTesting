@@ -33,6 +33,8 @@ class ObservedStep(BaseModel):
     t_end: float | None = None
     on_screen_text: str | None = Field(default=None, description="visible text near the action")
     narration: str | None = Field(default=None, description="what the presenter said, if any")
+    screen: str | None = Field(default=None, description="the name of the screen this action "
+                               "happened on, exactly as named in `screens`")
 
 
 class ObservedFlow(BaseModel):

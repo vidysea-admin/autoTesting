@@ -1,11 +1,32 @@
-# Contract: qa/contracts/docker.md D6. profiles/ and projects/ are deliberately NOT listed here
-# -- they must reach the image build context normally (the compose bind mount is what actually
-# persists them at runtime; this file only controls what's copied in at build time).
-.venv/
-__pycache__/
-*.pyc
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
+# Contract: qa/contracts/docker.md D6 -- `.env`, `projects/` and `profiles/` are bind-mounted
+# from the host and must NOT be baked into the image (`docs/` is bind-mounted too, but it is public
+# and harmless to bake). The repo is public and the Dockerfile does `COPY . .`, so anything not
+# listed here (credentials, signed run approvals, browser login state, crawl data, live-session
+# snapshots) would ship inside every built image. Patterns use `**/` so nested copies match too.
+**/.venv/
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
 .git/
 .work/
+.worktrees/
+
+# Secrets and per-project state (D6).
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+**/projects/
+**/profiles/
+qa/evidence/
+
+# Dev-session residue: agent worktrees, live-session page snapshots, handoff notes, task state.
+.claude/
+.codex/
+.playwright-mcp/
+.handoffs/
+.goal/
+at113-fixture-*/
+pytest-of-*/

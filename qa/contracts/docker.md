@@ -53,6 +53,9 @@ inputs) — only the surrounding chrome changed. `qa/contracts/ui.md` U1–U5 al
 `.env`, `projects/`, `profiles/`, and `docs/` are bind-mounted from the host (not baked into the
 image or container-local), so `docker compose down && docker compose up` retains prior project
 data and browser login state exactly like restarting the app on the host does today.
+*Amended 2026-10-07 per D-072:* for the hosted server the same rule holds with one data volume (`AUTOTESTER_ROOT=/data`) that also holds
+the users, groups, settings and run queue; `.env`, `projects/`, `profiles/` and `.work/` stay out of the image (the `.dockerignore`
+rules of 2026-10-07, commit 770d228b, are now pinned by a test, `hosting.md` HO1-HO4).
 
 ## No-fire list
 
@@ -63,6 +66,10 @@ data and browser login state exactly like restarting the app on the host does to
   scope per `ui.md`'s existing no-fire list.
 - Remote/cloud deployment hardening (TLS, auth in front of the UI or noVNC, network policies) —
   explicitly out of scope; Umesh confirmed this is for local dev machine use only.
+  *Amended 2026-10-07 per D-072:* this line now describes **this contract's dev compose only**. Hosting on an Ubuntu server (prod
+  overlay, TLS, login in front of the UI and noVNC, Host/Origin allow-lists, server-wide run concurrency with one run per project, the
+  deploy guide) is covered by `hosting.md` (T-203) and `auth.md` (T-204). The dev `docker-compose.yml` still publishes 6080/8010 and runs
+  `x11vnc -nopw`, so it must not be used on a server (`hosting.md` HO7).
 - A JS framework, HTMX, or live-polling run views — `ui.md`'s no-fire list already rules these
   out; this unit's CSS-only wrapper needs none of them.
 
@@ -92,3 +99,7 @@ data and browser login state exactly like restarting the app on the host does to
   recovered in commit `55befd8`; see `qa/issues.jsonl` AT-055 — a global dispatch-protocol
   tightening recommendation for `checker/SKILL.md` was raised to Umesh separately, since that
   file sits outside this project's bound root).
+- 2026-10-07 · routine (D-072 items 6, 7, 12, Approved-by Umesh) · the dev-only no-fire line (TLS/auth out of scope) and D6 are read
+  together with `hosting.md` and `auth.md`: the dev compose is unchanged (D1-D5 hold, `hosting.md` HO38), while the hosted Ubuntu
+  deployment, the concurrency setting (default 2 runs server-wide, one per project, the rest queued, `hosting.md` HO15-HO20) and the
+  Host/Origin allow-lists (`auth.md` AU18-AU20) live in the new contracts. No docker.md criterion is weakened.

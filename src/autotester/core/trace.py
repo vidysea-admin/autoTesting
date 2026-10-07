@@ -41,6 +41,7 @@ class TraceWriter:
             duration = (checkpoint.finished - checkpoint.started).total_seconds()
         span = StageSpan(
             trace_id=self.trace_id, stage=checkpoint.stage, status=checkpoint.status,
+            error=checkpoint.error,
             started=checkpoint.started, finished=checkpoint.finished, duration_s=duration,
         )
         self._append(span.model_dump_json())

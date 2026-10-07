@@ -1,4 +1,9 @@
-"""Screen identity: turn one `PageObservation` into a `ScreenNode`.
+"""Screen identity: the rules that decide when two screens are one.
+
+A crawl visit becomes a `ScreenNode` (`node_from`); reconcile (D-073, contract
+reconcile.md RC4/RC5) folds FlowSpec screens that share a templated route and
+measures a video screen against a candidate on route, title and element labels,
+using the same normalised names the structural signature keys on.
 
 Contract: qa/contracts/explore.md X3 (once that contract exists, T-143).
 Deliberately structural — never URL-only (the prior attempt made every SPA
@@ -13,11 +18,14 @@ import re
 
 from autotester.core.ids import content_hash
 from autotester.core.urls import url_template
+from autotester.schema.flowspec import Flow, FlowSpec, Screen
 from autotester.schema.screen_graph import ElementRef, PageObservation, ScreenNode
 
 _WHITESPACE = re.compile(r"\s+")
 _DIGITS = re.compile(r"\d+")
 _PUNCTUATION = re.compile(r"[^\w\s]")
+_ROLE_WORDS = re.compile(r"(button|field|input|tab|tabs|dropdown|card|title|heading|link|"
+                         r"banner|box|section|textarea|icon|menu item)")
 
 
 def _normalise_name(name: str) -> str:
@@ -75,3 +83,63 @@ def node_from(
         name=observation.title or template, depth=depth,
         elements=observation.elements, discovered_by=discovered_by,
     )
+
+
+# -- reconcile: FlowSpec screens (RC4) and video-vs-candidate signals (RC5) ----
+def route_key(pattern: str | None) -> str | None:
+    """A screen's identity route, by the crawler's own `url_template` (ingest I7)."""
+    return url_template(pattern, keep_host=False, fold_index=True) if pattern else None
+
+
+def element_labels(names: list[str]) -> frozenset[str]:
+    """The signature's normalised-name half, minus role words a video label adds
+    ("Save button" -> "save"): a video reading carries no DOM role."""
+    out = (" ".join(_ROLE_WORDS.sub(" ", _normalise_name(n)).split()) for n in names)
+    return frozenset(label for label in out if label)
+
+
+def screen_labels(screen: Screen) -> frozenset[str]:
+    return element_labels([*screen.signals, *((f.label or f.name) for f in screen.fields)])
+
+
+def match_signals(route: str | None, title: str, labels: frozenset[str],
+                  c_route: str | None, c_title: str, c_labels: frozenset[str],
+                  ) -> tuple[float, float, float]:
+    """(route equal, title word Jaccard, share of the video's labels the candidate has)."""
+    words, c_words = (set(re.findall(r"[a-z0-9]+", t.casefold())) for t in (title, c_title))
+    r = 1.0 if route and route == c_route else 0.0
+    t = round(len(words & c_words) / len(words | c_words), 4) if words | c_words else 0.0
+    e = round(len(labels & c_labels) / len(labels), 4) if labels else 0.0
+    return r, t, e
+
+
+def fold_routes(screens: list[Screen]) -> tuple[list[Screen], dict[str, str]]:
+    """RC4: screens whose templated route is equal fold to the first of them (input
+    order). A screen with no `url_pattern` is never folded on route alone."""
+    first: dict[str, str] = {}
+    alias: dict[str, str] = {}
+    for screen in screens:
+        route = route_key(screen.url_pattern)
+        if route is not None and first.setdefault(route, screen.id) != screen.id:
+            alias[screen.id] = first[route]
+    return [s for s in screens if s.id not in alias], alias
+
+
+def rewrite_screen_refs(flow: Flow, alias: dict[str, str]) -> Flow:
+    """Point a flow's entry, exit and every step at the canonical screen ids."""
+    def to(ref: str | None) -> str | None:
+        return alias.get(ref, ref) if ref else ref
+    steps = [s.model_copy(update={"screen_id": to(s.screen_id)}) for s in flow.steps]
+    return flow.model_copy(update={"entry_screen": to(flow.entry_screen),
+                                   "exit_screen": to(flow.exit_screen), "steps": steps})
+
+
+def dangling_references(spec: FlowSpec) -> list[str]:
+    """Every flow reference to a screen id the spec does not hold, as `flow:where`."""
+    ids = {s.id for s in spec.screens}
+    found = []
+    for flow in spec.flows:
+        refs = [("entry", flow.entry_screen), ("exit", flow.exit_screen)]
+        refs += [(f"step{s.order}", s.screen_id) for s in flow.steps]
+        found += [f"{flow.id}:{where}" for where, ref in refs if ref and ref not in ids]
+    return found

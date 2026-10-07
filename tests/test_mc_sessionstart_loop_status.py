@@ -33,6 +33,7 @@ from pathlib import Path
 
 import pytest
 from test_mutation_check_judgement import _alive
+from timing_scale import timing_scale
 
 REPO = Path(__file__).resolve().parents[1]
 HOOK = REPO / "qa" / "hooks" / "mc-sessionstart.ps1"
@@ -139,7 +140,7 @@ def _run_hook(cwd: Path, env: dict[str, str]) -> subprocess.CompletedProcess[str
     return subprocess.run(
         ["powershell.exe" if shutil.which("powershell") else "pwsh",
          "-NoProfile", "-NonInteractive", "-File", str(HOOK)],
-        cwd=cwd, env=env, capture_output=True, text=True, timeout=60,
+        cwd=cwd, env=env, capture_output=True, text=True, timeout=60 * timing_scale(),
     )
 
 

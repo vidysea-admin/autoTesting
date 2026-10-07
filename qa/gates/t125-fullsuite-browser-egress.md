@@ -817,3 +817,5 @@ computed terminal0 afteractual1219 reconciliation; proposalonly no activepin
 change/manifest/export. Still requires human reducedscopechoice, runtimeapproval,
 viewerprovisioningchoice, fresh4GiB and boundreview/input/lane grants. Existing
 original1219pin05B123 remainsunchanged; complete-tree doctor/fullsuite separate.
+
+Answered: 2026-10-07 — option A (generalized): drop the native-egress sandbox precondition; local visible browser + full suite on any machine, against any product URL with its supplied credentials; test-suite guards kept (no real creds/.env, no paid calls, no external network in unit tests) — chat 2026-10-07, D-070

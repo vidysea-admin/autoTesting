@@ -13,7 +13,10 @@ import hashlib
 import hmac
 import json
 import os
+import secrets
 import time
+from collections.abc import Callable, Iterable
+from pathlib import Path
 from typing import Any
 
 _ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
@@ -49,6 +52,30 @@ def _signing_key() -> bytes:
             ".env before granting or verifying a signed approval (see .env.example)"
         )
     return key.encode("utf-8")
+
+
+def ensure_approval_key(
+    env_path: Path, historical_approvals: Callable[[], Iterable[Any]], *,
+    lock_timeout_s: float = 5.0,
+) -> None:
+    """Explicit grant preparation only; never rotate a lost historical key."""
+    from autotester.ui.env_editor import create_env_value_if_absent
+
+    if os.environ.get(APPROVAL_KEY_ENV):
+        return
+    def create_key() -> str:
+        try:
+            if any(row.signature for row in historical_approvals()):
+                raise SigningKeyMissing("signed approval history has lost its verification key")
+        except SigningKeyMissing:
+            raise
+        except Exception:
+            raise SigningKeyMissing(
+                "cannot validate approval history; refusing key creation") from None
+        return secrets.token_hex(32)
+    selected = create_env_value_if_absent(env_path, APPROVAL_KEY_ENV, create_key,
+                                          timeout_s=lock_timeout_s)
+    os.environ[APPROVAL_KEY_ENV] = selected
 
 
 def sign_payload(payload: Any) -> str:
