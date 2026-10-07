@@ -26,4 +26,4 @@ Bug closes after 2 consecutive passes. Email checkbox defaults off. "Custom time
 3. `org_id` on every row for a later multi-company move: PARKED, not built unless you say so.
 
 ## Answer
-_pending_ — reply "approve" (or list changes) for intent, spec and plan. On approval the maker writes the three `Answered:` lines and a D-entry, adds T-205/T-206 to `.goal/goal.json`, and sends the contract proposals to the checker.
+Approved -- Umesh, 2026-10-07 (chat), recorded as D-074.

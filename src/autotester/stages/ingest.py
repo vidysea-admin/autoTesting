@@ -11,13 +11,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from autotester.browser.secrets import SecretStore
 from autotester.core.ids import content_id, file_sha256
 from autotester.core.paths import RepoDocs
+from autotester.core.redact import Redactor
 from autotester.core.urls import screen_url_pattern
 from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.base import Provenance
 from autotester.schema.enums import ReviewStatus, SourceKind
-from autotester.schema.flowspec import Flow, FlowSpec, InputField, Screen, SourceRef, Step
+from autotester.schema.flowspec import Flow, FlowSpec, InputField, Screen, SourceRef, Step, StepRef
 from autotester.schema.media import Transcript
 from autotester.schema.observation import (
     ObservedFlow,
@@ -27,6 +29,7 @@ from autotester.schema.observation import (
     VisionOptions,
 )
 from autotester.schema.project import Source
+from autotester.stages.reconcile import verify_narration
 from autotester.store.project_store import ProjectStore
 
 SKILL_NAME = "ingest-video"  # skills/ingest-video/SKILL.md (T-175, was prompts/ingest_video_v1.md)
@@ -43,11 +46,10 @@ def build_ingest_prompt(source: Source, docs: RepoDocs,
                         transcript: Transcript | None = None) -> str:
     """The prompt, with the human's own narration injected as GROUND TRUTH.
 
-    A tester saying "this should be X" is the highest-value signal in a
-    recording and the one a vision model is least able to recover from pixels.
-    Injecting the existing transcript is also why the model is told to ALIGN to
-    it rather than re-transcribe: asked to do both, it paraphrases speech into
-    something plausible, and a paraphrased complaint is a fabricated one."""
+    A tester saying "this should be X" is the highest-value signal in a recording. The
+    model is told to ALIGN to the transcript, not re-transcribe: asked to do both, it
+    paraphrases speech into something plausible, and a paraphrased complaint is a
+    fabricated one."""
     template = load_skill_prompt(SKILL_NAME, skills_dir=docs.skills_dir)
     return (template
             .replace("{{SOURCE_LABEL}}", source.label or source.id)
@@ -184,25 +186,9 @@ def _to_flow(observed: ObservedFlow, source_id: str, screen_ids: dict[str, str])
 def load_sidecar(source: Source) -> Transcript | None:
     """The `<video>.transcript.json` sitting beside the recording, if there is one.
 
-    Found while fixing AT-125: `build_ingest_prompt` has taken a transcript
-    since T-131 and NO shipped caller passed one either, so `{{NARRATION}}`
-    always rendered "no speech detected" in production — the ground-truth block
-    was as dead as the vision options. Same defect, one file over, unfiled.
-
-    Loading is best-effort: a malformed sidecar must not stop an ingest, because
-    a reading with no narration is still worth having.
-
-    AT-133/AT-134 — the first version of this got BOTH halves wrong, and it is
-    the unit's own thesis reappearing inside the fix for it:
-
-    - It caught only `(OSError, ValueError)`, while `from_sidecar` raises
-      `AttributeError` on a non-object top level and `TypeError` on non-mapping
-      segments. The docstring promised best-effort and the code crashed.
-    - Returning `None` for an UNREADABLE sidecar made the prompt assert *"no
-      speech detected"* about a recording that demonstrably has speech. Silence
-      is a fine fallback when it is neutral; it is a defect when it is an
-      assertion the reader will believe. So the two cases are now distinct:
-      absent → assert silence, present-but-unreadable → say exactly that.
+    Best-effort: a malformed sidecar must not stop an ingest (AT-125, AT-133). An absent
+    sidecar asserts silence; a present-but-unreadable one says exactly that, because "no
+    speech detected" about a recording that has speech is a false statement (AT-134).
     """
     if source.path is None:
         return None
@@ -250,11 +236,8 @@ def verify_source_bytes(source: Source) -> None:
 def persist_ingest(store: ProjectStore, spec: FlowSpec, *, replace: bool = False) -> FlowSpec:
     """Write the FlowSpec, refusing to discard an APPROVED one (I6).
 
-    The old `ingest_video` returned a spec and persisted nothing, so learning
-    from a recording left no trace unless a caller remembered to save it -- and
-    no caller did. Persisting blindly would be the opposite bug: overwriting a
-    spec a human reviewed and approved throws away the review, not just the
-    data. `--replace` is how a human says they meant it."""
+    Persisting blindly would overwrite a spec a human reviewed and approved, throwing
+    away the review, not just the data. `--replace` is how a human says they meant it."""
     existing = store.load_flowspec()
     if existing is not None and existing.review.status is ReviewStatus.APPROVED and not replace:
         raise FlowSpecApproved(
@@ -268,10 +251,14 @@ def persist_ingest(store: ProjectStore, spec: FlowSpec, *, replace: bool = False
 def ingest_video(
     source: Source, project_slug: str, provider: Provider, docs: RepoDocs | None = None,
     *, transcript: Transcript | None = None, options: VisionOptions | None = None,
+    redactor: Redactor | None = None, dropped: list[StepRef] | None = None,
 ) -> FlowSpec:
     """Watch `source` (a video `Source`) and produce a fresh `FlowSpec` for
     `project_slug`. Does not merge with an existing `FlowSpec` — a human reviews
-    and merges via the review gate (T-065), which is a separate, later stage."""
+    and merges via the review gate (T-065), which is a separate, later stage.
+    AT-779 / RC3: a narration is saved only as a verbatim quote of `transcript`, scrubbed
+    by `redactor` (default: the project's own secrets); one that is not is dropped
+    and listed in `dropped` (AT-785)."""
     if source.path is None:
         raise ValueError(f"source {source.id} has no path to watch")
     verify_source_bytes(source)
@@ -279,8 +266,22 @@ def ingest_video(
     prompt = build_ingest_prompt(source, docs, transcript)
     observation = provider.see_video(Path(source.path), prompt, VideoObservation, options,
                                       prompt_file=SKILL_NAME, fed_id=source.id)
+    spec = flowspec_from_observation(observation, source.id, project_slug)
+    heard = {source.id: transcript} if transcript else {}
+    redactor = _project_redactor(project_slug) if redactor is None else redactor
+    checked = [verify_narration(f, heard, redactor) for f in spec.flows]
+    if dropped is not None:
+        dropped.extend(ref for _, refs in checked for ref in refs)
+    return spec.model_copy(update={"flows": [f for f, _ in checked]})
 
-    return flowspec_from_observation(observation, source.id, project_slug)
+
+def _project_redactor(slug: str) -> Redactor:
+    """The project's SecretStore redactor, or an empty one when it has no project yet."""
+    store = ProjectStore(slug)
+    project = store.load_project()
+    if project is None:
+        return Redactor({})
+    return SecretStore.load(project, store.paths.env_file, strict=False).redactor()
 
 
 def flowspec_from_observation(observation: VideoObservation, source_id: str,

@@ -32,6 +32,7 @@ from autotester.store.filestore import (
     write_json,
 )
 from autotester.store.request_store import RequestStoreMixin
+from autotester.store.run_store import RUN_AUX_FILES, RunStoreMixin
 
 
 class PinnedCaseError(RuntimeError):
@@ -39,18 +40,16 @@ class PinnedCaseError(RuntimeError):
     `update_case` first if it genuinely must go."""
 
 
-class ProjectStore(CrawlStoreMixin, RequestStoreMixin):
+class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
     """Load and save one project's artifacts as human-editable files (C6).
 
-    AT-024: `add_source`/`add_case`/`add_request` used to re-read their whole
-    collection (a full JSONL scan) on every single call to check idempotency —
-    O(n) per add, O(n^2) for n sequential adds in one loop (e.g. `expand.py`
-    adding a dozen-plus cases per flow). Each keeps a lazily-populated
-    in-memory id cache instead: the first add in a `ProjectStore`'s lifetime
-    still reads the file once, but every subsequent add in that same instance
-    is an O(1) set check. `list_*()` always reads fresh from disk — it must
-    reflect whatever is actually there, including anything written by another
-    process — only the add-time idempotency check is cached.
+    AT-024: `add_source`/`add_case`/`add_request` used to re-read their whole collection (a
+    full JSONL scan) on every call to check idempotency — O(n) per add, O(n^2) for n sequential
+    adds in one loop (e.g. `expand.py` adding a dozen-plus cases per flow). Each keeps a
+    lazily-populated in-memory id cache instead: the first add in a `ProjectStore`'s lifetime
+    still reads the file once, every later add in that instance is an O(1) set check. `list_*()`
+    always reads fresh from disk — it must reflect whatever is actually there, including
+    anything written by another process — only the add-time idempotency check is cached.
     """
 
     def __init__(self, slug: str, root: Path | None = None) -> None:
@@ -170,7 +169,7 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin):
         return [
             model
             for path in sorted(run_dir.glob("*.json"))
-            if path.name != "run.json" and not path.name.endswith(".verdict.json")
+            if path.name not in RUN_AUX_FILES and not path.name.endswith(".verdict.json")
             for model in [read_json(path, RawResult)]
             if model is not None
         ]

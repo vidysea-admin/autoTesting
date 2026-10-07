@@ -24,7 +24,9 @@ prompt built by `build_prompt` contains only the rubric's criteria/no-fire list 
 ### G2 — Deterministic outcomes never reach the judge
 `Outcome.BLOCKED_HITL` → `Result.BLOCKED` and `Outcome.ERRORED` → `Result.INCONCLUSIVE`, both
 without calling `judge.judge(...)` — there is nothing coherent to grade when the execution itself
-didn't complete. Only `Outcome.COMPLETED` results are sent to the judge.
+didn't complete. Only `Outcome.COMPLETED` results are sent to the judge. *(amended D-074,
+2026-10-07)* `Outcome.ASSERTION_FAILED` results (D-032) are also sent to the judge, under the
+restriction in G6; they are never graded by the executor.
 
 ### G3 — PASS requires cited evidence; an unevidenced or inconsistent judgment is rejected
 Before a judge's `Judgment` becomes the stage's `Verdict`, `_inconsistency` checks it against the
@@ -50,6 +52,20 @@ The grading prompt lives at `src/autotester/skills/grade/SKILL.md`, loaded by
 `prompts/grade_v1.md` no longer exists). Versioned per the project's
 "prompts are files" rule; `build_prompt` only fills placeholders, it never constructs prompt
 text inline in `grade.py`.
+
+### G6 — A failed deterministic assertion is never graded PASS (D-074 rule A)
+*(added D-074, 2026-10-07; amends the part of D-032 that let the judge overrule a failed assertion)*
+For a `RawResult` whose `outcome` is `Outcome.ASSERTION_FAILED`, or that carries any `assert <field>:
+unmet` evidence item, `grade()` returns only `Result.FAIL` or `Result.INCONCLUSIVE`. A judge
+`Judgment` of PASS for such a run is rejected and downgraded to `Result.INCONCLUSIVE` with a `note`
+naming the failed assertion (same path as the G3 `_inconsistency` downgrade), and the judge's PASS
+is never persisted as the stage's `Verdict`. The rule holds whatever the judge's confidence, rubric
+or provider, and whether the judge is real, mock or fallback. A run with no failed assertion is
+unaffected. `serves:` D-074(b), D-032, AT-773 (6 of 6 T-122 false PASSes were failed-assertion runs
+the judge passed). (Falsifiable: a case with a step expecting visible text that is absent,
+graded with a mock judge that returns PASS -> `Verdict.result` is `FAIL` or `INCONCLUSIVE`, never
+`PASS`; the same case with the assertion met and a PASS judge -> `PASS`. Mutation: remove the
+downgrade -> the first test fails.)
 
 ## No-fire list
 
@@ -90,3 +106,10 @@ text inline in `grade.py`.
   AT-670 was already spent by the t191 remap the same day, so the sweep row collided with it and was
   renumbered into the checker's new block (AT-690..AT-709). No criterion, claim or verification line
   changes. Appended rather than edited because this log is append-only. **Links:** AT-690; AT-664.
+- 2026-10-07 - routine (authorized by D-074 rule A, Umesh 2026-10-07; tightening only) - **G6 added**
+  (new id): a failed deterministic assertion can never be graded PASS; the judge may return only FAIL
+  or INCONCLUSIVE for that run. **G2** gained a pointer so it no longer reads as "only COMPLETED
+  reaches the judge" next to execute.md E1 (an `ASSERTION_FAILED` run does reach it, restricted).
+  Amends D-032 partially: the "judge may weigh and overrule a failed assertion" part is removed, the
+  rest of D-032 stands. Build authorized in `stages/grade.py` and `stages/run_case_pipeline.py`
+  (D-074 Changes-authorized). **Links:** D-074; D-032; AT-773; execute.md E1.

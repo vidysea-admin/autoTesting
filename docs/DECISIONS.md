@@ -2214,3 +2214,57 @@ here; it is a separate L unit.
 **Approved-by:** Umesh (chat, 2026-10-07)
 
 **Links:** D-070; T-166
+
+## D-074 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Umesh answered five open questions in chat (2026-10-07):
+(a) **Group 10 plan approved.** Build units G1-G10 per `docs/plan.md` and `qa/gates/plan-approved-g10.md` (intent O8-O15, spec R32-R65, T-205 and T-206 as the new rows).
+(b) **Judge rule A.** A deterministic assertion that failed can never become PASS. For a run with a failed assertion the judge may only return FAIL or INCONCLUSIVE. This **amends D-032** (partial): the part of D-032 that let the judge weigh and overrule a recorded failed assertion is removed. The rest of D-032 (assertion evidence, `Outcome.ASSERTION_FAILED`, the executor never grading) stays in force, which is why this is an amendment and not a full Supersedes: `append_decision.ps1` computes a supersede as total, so a Supersedes line would retire all of D-032.
+(c) **Password hashing uses `argon2-cffi==25.1.0`.** It is the new dependency for T-204 AU1. The scrypt fallback is not used.
+(d) **The first admin is a fixed email**, set through `AUTOTESTER_FIRST_ADMIN_EMAIL`. Umesh sets the value in the server's `.env` at deploy time. With the variable unset, the hosted server must not auto-promote the first signup. Local dev keeps first-account-admin.
+(e) **Cookie Secure is off (`AUTOTESTER_COOKIE_SECURE=0`) only until the domain and HTTPS exist.** This is the default until then; Umesh can override it.
+
+**Why:** (a) Nothing in Group 10 could start without the plan being approved. (b) AT-773 measured 6 of 6 false PASSes in T-122, each one a run where a deterministic assertion had failed and the judge still said PASS. Failing closed is the safe direction: the worst case becomes an INCONCLUSIVE a human looks at, not a bug shipped as green. (c) argon2id is the current default recommendation for password hashing and pinning the version keeps the lock file reproducible. (d) First-signup-wins on a public-facing host lets whoever signs up first take admin; a fixed email removes that race. (e) Secure cookies are never sent over plain HTTP, so setting Secure before HTTPS exists would break every login.
+
+**Result:** Gate `qa/gates/plan-approved-g10.md` is answered. T-205 and T-206 are added to `.goal/goal.json` as tasks. The judge rule is authorized for build; the checker amends `qa/contracts/` rows that cite D-032 (execute and grade). Follow-up for T-204 (nothing is built yet: `src/autotester/auth/` does not exist, so no code auto-promotes today): `docs/plan.md` row 13 and `qa/contracts/auth.md` still say "first account becomes admin" and must be reworded to "first account becomes admin only in local dev; on the hosted server only the `AUTOTESTER_FIRST_ADMIN_EMAIL` account is promoted, and an unset variable promotes nobody". Cookie Secure must default from `AUTOTESTER_COOKIE_SECURE`.
+
+**Changes-authorized:** `src/autotester/stages/grade.py` and `src/autotester/stages/run_case_pipeline.py` (the judge rule); the `argon2-cffi==25.1.0` dependency in `pyproject.toml` and `uv.lock`; the Group 10 modules per `docs/plan.md` G1-G10; the first-admin and cookie-Secure env handling in `src/autotester/auth/` (new, T-204); `.env.example` keys `AUTOTESTER_FIRST_ADMIN_EMAIL` and `AUTOTESTER_COOKIE_SECURE`.
+
+**Approved-by:** Umesh (chat, 2026-10-07)
+
+**Links:** D-032, D-072, AT-773, T-204, T-205, T-206, qa/gates/plan-approved-g10.md
+
+## D-075 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** The `browser-use` dependency is authorized for T-177 (agent fallback), pinned exactly as
+`browser-use==0.5.9` (the same way litellm==1.104.0 and argon2-cffi==25.1.0 are pinned), with its
+anonymized telemetry disabled (`ANONYMIZED_TELEMETRY=false` set by AutoTester before the import,
+not left to the user's environment). `browser/session.py` gains a read-only `cdp_url` property so
+the browser-use backend can attach to the session AutoTester already opened. The UI wiring
+(`agent=`/`actuator=` into `run_and_grade_case` in ui/routes_runs.py) waits until T-203 and T-204
+land, to avoid a three-way conflict with the peer session's branches.
+
+**Why:** Umesh, chat 2026-10-07, answering the dependency question: "Approve, pin exact". The peer
+session (autotesting-07) flagged that no D-entry covered browser-use, unlike D-071 (litellm) and
+D-074 (argon2). Telemetry is turned off because Pathlynks screens and URLs must not reach a third
+party without per-use approval.
+
+**Result:** T-177 merges only after both dual-check coordinators PASS and the pin and telemetry
+change has had its repair check.
+
+**Changes-authorized:** pyproject.toml / uv.lock: `browser-use==0.5.9` (T-177) ·
+src/autotester/browser/session.py: read-only `cdp_url` property (T-177).
+
+**Approved-by:** Umesh — chat answer 2026-10-07.
+
+**Links:** T-177; D-071; D-074; qa/contracts/agent-fallback.md; qa/gates/at253-agent-fallback-wiring.md.
+
+## D-076 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Records the contract consequence of D-072 item 3 (a new account starts with no access), as written into `qa/contracts/auth.md` AU27 by the checker in commit 0f8c19d0 (D-074 amendment). AU27 states the safe default: a caller can grant only the permissions (key and scope) it already holds, and only members of the Admin/CEO group can change Admin/CEO membership, tick `users.manage`, `groups.manage`, `settings.manage` or `credentials.view`, or reset the password of an Admin/CEO account. No new product choice is being made: D-072 item 3 already decided that a new account has no access, and AU27 only closes the escalation path that a literal reading of AU8 and AU10 would leave open. D-074's own text states only items (a) to (e); the AU27 rule came from the dispatching brief, so this entry gives it a decisions record.
+
+**Why:** Without a record, AU27 cites "D-074 safe default" while D-074 does not contain it, which makes the criterion look like an invented requirement. A `users.manage` or `groups.manage` holder who is not an admin could otherwise promote themselves or another account to full access, which would undo the no-access default of D-072 item 3. Keeping the entry as a pure consequence, not a decision, lets Umesh veto it by superseding it if he wants a different rule.
+
+**Result:** `qa/contracts/auth.md` AU27 stays as written; its `serves:` line (D-074 safe default, D-072#4) is read as D-072 item 3 plus this entry. T-204 builds to AU27. No code change is authorized by this entry.
+
+**Links:** D-072 item 3, D-074, qa/contracts/auth.md AU27

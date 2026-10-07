@@ -4,13 +4,13 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-07T18:33:09",
+  "updated": "2026-10-07T19:47:47",
   "progress": {
-    "total": 90,
-    "done": 63,
+    "total": 92,
+    "done": 64,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 27,
+    "pending": 28,
     "current": "T-136",
     "percent": 70
   },
@@ -1287,7 +1287,7 @@
         "cmd": "uv run pytest tests/test_failure_bundle.py",
         "expect_exit": 0
       },
-      "note": "D-041; competitor D + H + G.",
+      "note": "D-041; competitor D + H + G. | Progress 2026-10-07: FB1-FB3 PASS (qa/verdicts/t178-failure-bundle.md); FB4 waits on Case.priority, FB5 waits on T-125; task stays pending.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
       "user_value": "high"
@@ -1497,7 +1497,7 @@
     {
       "id": "T-190",
       "title": "Advisory UX track: UserPersona (role, tech comfort, locale, device) + severity-scored UX findings that NEVER change PASS/FAIL (AT-583, AT-584)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "criticality": "high",
@@ -1510,7 +1510,8 @@
       "note": "gate meeting-user-persona-ux-judging answer A (D-048). Contract persona-ux-advisory already exists; implementation pending. Concrete five-choice PLAN proposal added to docs/plan.md on2026-10-06, original advisory-only scope preserved. Exact six source/prompt/test paths creation consent requested once, pending. Parallel BUILDING helpers recorded 11 complete source-text candidates with actual stdlib AST/count/signature/header preservation checks; proposal only, product sources unchanged. Fresh AI-engineer installed-source review identifies Gemini auxiliary async-client construction/ownership gap needing a configuration-preserving seam. Existing qa/manifests/t190-plan-preparation.md records incomplete orchestration/budget/UI/test candidates and unresolved plan gate. No product runtime, acceptance, PASS, paid calls or livewrites authorized.",
       "attempts": 0,
       "created": "2026-09-26T22:47:07",
-      "user_value": "high"
+      "user_value": "high",
+      "completed": "2026-10-07T19:47:47"
     },
     {
       "id": "T-191",
@@ -1741,6 +1742,43 @@
       },
       "note": "D-066 noted real auth is required once the UI leaves localhost; D-070 makes it a go-live blocker. Mechanism (simple team password vs Google sign-in limited to the company domain) is a HUMAN_GATE. | Acceptance: An unauthenticated request to any UI page or state-changing route is refused; a signed-in team member gets through; credentials/sessions never appear in logs.",
       "criticality": "high"
+    },
+    {
+      "id": "T-205",
+      "title": "G1 Group 10 headroom: one run launcher, router list out of ui/app.py, optional schedule/tracker fields on the project schema, team_store (docs/plan.md G1; R63, R65)",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "medium",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-205-g10-headroom.md",
+        "expect_exit": 0
+      },
+      "note": "Group 10 plan approved by Umesh 2026-10-07 (D-074, qa/gates/plan-approved-g10.md). Files per docs/plan.md G1: E ui/app.py, core/paths.py, schema/project.py, ui/routes_runs.py; N ui/routers.py, stages/run_launcher.py, store/team_store.py, schema/team_enums.py. | Acceptance: pytest + autotester doctor pass; routers register in the same order as before; manual run and trigger_run call the one launcher; AT-570 test; project.json round-trips with and without the new fields.",
+      "criticality": "medium"
+    },
+    {
+      "id": "T-206",
+      "title": "G10 Group 10 acceptance: end to end on Pathlynks (docs/plan.md G10; O8-O15, O6)",
+      "status": "pending",
+      "deps": [
+        "T-205",
+        "T-197",
+        "T-198",
+        "T-199",
+        "T-200",
+        "T-201"
+      ],
+      "base_criticality": "critical",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-206-g10-acceptance.md",
+        "expect_exit": 0
+      },
+      "note": "Evidence only, no code (D-074). Depends on units G2-G9; the hosted check waits on T-203 deploy. | Acceptance: end to end on Pathlynks with redacted videos, reviews, bugs, a schedule tick, a Test press, reports on the website and by email for a user who ticked it; review recall against the oracle as numbers; persona walks (dev, admin) in a live browser; Ubuntu run once T-203 deploys.",
+      "criticality": "critical"
     }
   ],
   "decisions": [],

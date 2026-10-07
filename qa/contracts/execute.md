@@ -25,9 +25,12 @@ grade). `Action.ASSERT` evaluates the step's declared expectation (`url`/`visibl
 whose `expected` declares checkable fields the expectation is evaluated post-settle the same
 way. A bare ASSERT (nothing declared) stays harmless. `network` stays observer-derived and
 `visual_signal` stays the judge's (no-fire). The executor never grades: a declared expectation
-either held or did not — recorded as evidence — and `grade.py` still owns every verdict (C7:
-an `ASSERTION_FAILED` run reaches the judge, which weighs the recorded facts and may disagree
-with a wrongly-authored expectation).
+either held or did not — recorded as evidence — and `grade.py` still owns every verdict (C7).
+*(amended D-074 rule A, 2026-10-07)* An `ASSERTION_FAILED` run still reaches the judge with its
+recorded facts, but **a deterministic assertion that failed can never be graded PASS**: for such a
+run the judge may return only FAIL or INCONCLUSIVE (grade.md G6). The former "judge weighs the
+facts and may disagree with a wrongly-authored expectation" clause is removed; a wrongly authored
+expectation is corrected by editing the case, never overruled at grading time.
 
 ### E2 — Every step composes existing session primitives
 `run_case` dispatches each `Step.action` to a `BrowserSession` method
@@ -123,3 +126,9 @@ locale. (Current gap tracked by AT-581: `browser/launch.py:30` hard-codes 1366x8
   (VIEWPORT_MOBILE, LOCALE_I18N) must be enacted or reported not-run, never PASS on a default-condition run. Tightening
   only. The current code violates it (AT-581, high): the viewport is hard-coded and no locale is set. Source: the
   checker's goal-coverage review of the 2026-09-25 counselor-tool meeting.
+- 2026-10-07 · routine (authorized by D-074 rule A, Umesh 2026-10-07; tightening only) · **E1 amended**:
+  the C7 clause that said an `ASSERTION_FAILED` run "reaches the judge, which weighs the recorded facts
+  and may disagree with a wrongly-authored expectation" (the 2026-09-22 D-032 fold-in above) is
+  replaced. The run still reaches the judge, which may now return only FAIL or INCONCLUSIVE for it
+  (grade.md G6); a failed deterministic assertion is never graded PASS. The executor behaviour (four
+  observations, per-field `assert` evidence, never grading) is unchanged. **Links:** D-074; D-032; AT-773.

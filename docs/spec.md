@@ -137,7 +137,7 @@ are confirmed types.
 
 | concern | owner | Group 10 does |
 |---|---|---|
-| email+password sign-up, session, logout; first account becomes admin; admin can disable/delete/change any account | **T-204** | consumes an `authenticated_user()` dependency returning `{id, email, display_name}` |
+| email+password sign-up, session, logout; first admin is the `AUTOTESTER_FIRST_ADMIN_EMAIL` account on a hosted server and the first account only in local dev (`auth.md` AU7); admin can disable/delete/change any account | **T-204** | consumes an `authenticated_user()` dependency returning `{id, email, display_name}` |
 | groups, ticking permissions, adding users to groups, assigning users to projects, the permission engine (a key plus a `ResourceRef`, scopes `all`, `assigned`, `own`, `shared`), the `credentials.view` permission | **T-204** | uses the keys below; calls the engine on every route |
 | the admin screens for users, groups and project assignment | **T-204** | none |
 | Docker/Ubuntu deploy, deploy guide, HTTPS, persistent store, Host allow-list (AT-758) | **T-203** | none |
