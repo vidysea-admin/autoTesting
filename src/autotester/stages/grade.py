@@ -68,21 +68,31 @@ def _inconsistency(rubric: Rubric, judgment: Judgment) -> str | None:
 
 
 ASSERTION_RULE_NOTE = (
-    "judge answered PASS but the run's outcome is assertion_failed: a deterministic "
-    "assertion did not hold, and a failed assertion can never become PASS (D-074(b), "
-    "AT-773). Held as INCONCLUSIVE for a human to look at; judge scoreboard: {board!r}."
+    "judge answered PASS but a deterministic assertion did not hold ({failed}): a failed "
+    "assertion can never be graded PASS (D-074(b), qa/contracts/grade.md G6, AT-773). "
+    "Held as INCONCLUSIVE for a human to look at; judge scoreboard: {board!r}."
 )
+
+
+def _unmet_assertions(result: RawResult) -> list[str]:
+    """The `assert <field>: unmet (...)` labels the executor recorded (browser/assertions.py)."""
+    return [ev.path for ev in result.evidence
+            if ev.path.startswith("assert ") and ": unmet" in ev.path]
 
 
 def _assertion_guard(result: RawResult, judged: Result, scoreboard: str,
                      note: str | None) -> tuple[Result, str | None]:
-    """The one place D-074(b) is enforced (AT-773): an ASSERTION_FAILED run may end
-    FAIL or INCONCLUSIVE, never PASS. A judge PASS is downgraded to INCONCLUSIVE,
-    not FAIL: the judge contradicted a recorded fact, so either the product or the
-    expectation is wrong and only a human can say which. FAIL and INCONCLUSIVE
-    answers pass through untouched; a COMPLETED run is never touched."""
-    if result.outcome is Outcome.ASSERTION_FAILED and judged is Result.PASS:
-        return Result.INCONCLUSIVE, _joined(ASSERTION_RULE_NOTE.format(board=scoreboard), note)
+    """The one place G6 / D-074(b) is enforced (AT-773): a run whose outcome is
+    ASSERTION_FAILED, or that carries any unmet-assertion evidence, may end FAIL or
+    INCONCLUSIVE, never PASS. A judge PASS is downgraded to INCONCLUSIVE, not FAIL:
+    the judge contradicted a recorded fact, so either the product or the expectation
+    is wrong and only a human can say which. FAIL and INCONCLUSIVE answers pass
+    through untouched; a run with every assertion met is never touched."""
+    unmet = _unmet_assertions(result)
+    if judged is Result.PASS and (result.outcome is Outcome.ASSERTION_FAILED or unmet):
+        failed = "; ".join(unmet) or "outcome assertion_failed"
+        return Result.INCONCLUSIVE, _joined(
+            ASSERTION_RULE_NOTE.format(failed=failed, board=scoreboard), note)
     return judged, note
 
 

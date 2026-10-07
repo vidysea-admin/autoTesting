@@ -1,4 +1,4 @@
-"""AT-773 / D-074(b): a deterministic assertion that failed can NEVER become PASS.
+"""AT-773 / D-074(b), grade.md G6, execute.md E1: a failed deterministic assertion never PASSes.
 
 `grade()` is the one guard. A run whose outcome is ASSERTION_FAILED (the executor
 recorded an unmet declared expectation) may end FAIL or INCONCLUSIVE, never PASS,
@@ -42,7 +42,29 @@ def test_judge_pass_on_an_unmet_login_assertion_is_never_pass() -> None:
     assert judge.prompts, "the judge still sees the run; the guard is applied to its answer"
     assert verdict.result is not Result.PASS
     assert verdict.result is Result.INCONCLUSIVE
-    assert "D-074" in (verdict.note or "") and "assertion" in (verdict.note or "").lower()
+    assert "D-074" in (verdict.note or "") and UNMET in (verdict.note or "")
+
+
+def test_judge_pass_on_a_completed_run_carrying_unmet_assert_evidence_is_never_pass() -> None:
+    """G6 also covers any run that carries `assert <field>: unmet` evidence, even if its
+    outcome enum was not ASSERTION_FAILED (e.g. a network assertion recorded unmet)."""
+    result = _result(Outcome.COMPLETED)
+    result.evidence.append(Evidence(kind=EvidenceKind.NETWORK,
+                                    path="assert network: unmet ('/api/me')", step_order=2))
+    judge = MockProvider(responses={"judge": [_pass()]})
+    verdict = grade(_rubric(), result, "run_1", judge)
+
+    assert verdict.result is Result.INCONCLUSIVE
+    assert "assert network: unmet" in (verdict.note or "")
+
+
+def test_met_assertions_do_not_trigger_the_guard() -> None:
+    """Same case, assertion met (`assert visible_text: met`), judge PASS -> PASS."""
+    result = _result(Outcome.COMPLETED)
+    result.evidence.append(Evidence(kind=EvidenceKind.DOM,
+                                    path="assert visible_text: met ('X')", step_order=1))
+    judge = MockProvider(responses={"judge": [_pass()]})
+    assert grade(_rubric(), result, "run_1", judge).result is Result.PASS
 
 
 def test_judge_pass_on_a_completed_run_still_passes() -> None:
