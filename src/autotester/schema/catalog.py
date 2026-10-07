@@ -12,8 +12,9 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from autotester.schema.ai_check import AiCheckKind, AiCheckMethod
 from autotester.schema.base import Artifact
 from autotester.schema.enums import CaseClass
 
@@ -116,6 +117,33 @@ class PackEntry(BaseModel):
     )
 
 
+class AiCheckEntry(BaseModel):
+    """One Track C `AiCheckKind`'s standing for one AI target (T-152, ai-target.md AI4-AI5).
+    Reuses `BlockedReason` (CT7: no second enum). `applicable=False` means the target's kind
+    does not take this check, which is distinct from *blocked*: an applicable check that
+    cannot run always names its one reason and the one action that clears it."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: AiCheckKind
+    tier: Tier
+    method: AiCheckMethod
+    applicable: bool
+    runnable: bool
+    blocked_reason: BlockedReason | None = None
+    unblock_action: str | None = None
+
+    @model_validator(mode="after")
+    def _blocked_means_named(self) -> AiCheckEntry:
+        blocked = self.applicable and not self.runnable
+        if blocked != (self.blocked_reason is not None) or blocked != (
+                self.unblock_action is not None):
+            raise ValueError("a blocked check carries a reason and an action; no other does")
+        if self.runnable and not self.applicable:
+            raise ValueError("a check that does not apply cannot be runnable")
+        return self
+
+
 class Catalog(Artifact):
     """One project's whole catalog: every `CaseClass`, exactly once (CT2),
     plus the AT-588 standard packs."""
@@ -123,6 +151,18 @@ class Catalog(Artifact):
     project: str
     entries: list[CatalogEntry] = Field(default_factory=list)
     packs: list[PackEntry] = Field(default_factory=list)
+    ai_checks: list[AiCheckEntry] = Field(default_factory=list)
+    """Track C (T-152): empty for a web-only project; filled by `stages/ai_catalog.match`."""
+
+    def ai_check(self, kind: AiCheckKind) -> AiCheckEntry | None:
+        return next((c for c in self.ai_checks if c.kind == kind), None)
+
+    @property
+    def ai_runnable_count(self) -> int:
+        return sum(1 for c in self.ai_checks if c.runnable)
+
+    def runnable_ai_in_tier(self, tier: Tier) -> list[AiCheckEntry]:
+        return [c for c in self.ai_checks if c.tier == tier and c.runnable]
 
     def entry(self, case_class: CaseClass) -> CatalogEntry | None:
         return next((e for e in self.entries if e.case_class == case_class), None)
