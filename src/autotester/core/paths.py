@@ -148,6 +148,12 @@ class ProjectPaths:
     def source_analysis(self, source_id: str) -> Path:
         return self.source_dir(source_id) / "analysis.json"
 
+    def review_path(self, review_id: str) -> Path:
+        return self.dir / "reviews" / f"{review_id}.json"
+
+    def review_work_dir(self, review_id: str) -> Path:
+        return self.dir / "reviews" / review_id
+
     @property
     def issues(self) -> Path:
         return self.dir / "issues.jsonl"
