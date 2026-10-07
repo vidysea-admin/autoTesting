@@ -1,0 +1,29 @@
+import shutil, subprocess, sys, os, re
+from pathlib import Path
+base = Path("base")
+F = "src/autotester/providers/litellm_provider.py"
+rows = {
+ "f1_endpoint_only(the bug)": ("hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]",
+                      "hidden = [v for v in self._endpoint().values() if v]"),
+ "f2_drop_exported": ("        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]\n        return [*_env_secret_values(), *exported, *self._extra_secrets]",
+                      "        return [*_env_secret_values(), *self._extra_secrets]"),
+ "f3_drop_dotenv": ("return [*_env_secret_values(), *exported, *self._extra_secrets]",
+                    "return [*exported, *self._extra_secrets]"),
+ "f4_drop_extra": ("return [*_env_secret_values(), *exported, *self._extra_secrets]",
+                   "return [*_env_secret_values(), *exported]"),
+ "f5_guard_own_copy": ("_texts(messages)), self._secret_values())",
+                       "_texts(messages)), [*_env_secret_values(), *self._extra_secrets])"),
+}
+py = r"D:/autoTesting/.worktrees/t202-litellm/.venv/Scripts/python.exe"
+for name,(a,b) in [(k,v) for k,v in rows.items() if k.startswith("f5")]:
+    d = Path("row_"+name.split("_")[0])
+    if d.exists(): shutil.rmtree(d)
+    shutil.copytree(base, d)
+    p = d/F; s = p.read_text(encoding="utf-8")
+    assert a in s, name
+    p.write_text(s.replace(a,b,1), encoding="utf-8")
+    env = dict(os.environ, PYTHONPATH=str((d/"src").resolve()))
+    r = subprocess.run([py,"-m","pytest","tests/test_ck_probe.py","tests/test_litellm_guard.py","tests/test_ui_learn.py","-p","no:cacheprovider"],cwd=d,env=env,capture_output=True,text=True)
+    tail = [l for l in r.stdout.splitlines() if re.search(r"\d+ (passed|failed)", l)][-1:]
+    fails = sorted({m.split("[")[0] for m in re.findall(r"FAILED (\S+)", r.stdout)})
+    print(name, tail, fails)

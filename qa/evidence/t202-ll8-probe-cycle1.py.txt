@@ -1,0 +1,167 @@
+"""Checker-owned LL8 probes (own canaries), cycle 1. Lives only in a throwaway copy."""
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+
+import pytest
+from fastapi.testclient import TestClient
+from litellm_fake import install, no_network  # noqa: F401
+from pydantic import BaseModel, ConfigDict
+from test_run_case_pipeline import _case, _project, _session
+from test_ui_learn import _project as _learn_project
+from test_ui_learn import _spec
+from typer.testing import CliRunner
+
+from autotester.cli import app as cli_app
+from autotester.providers.base import ProviderError
+from autotester.providers.litellm_provider import LiteLLMProvider
+from autotester.schema.enums import ReviewStatus
+from autotester.stages.run_case_pipeline import run_and_grade_case_resilient
+from autotester.store.project_store import ProjectStore
+from autotester.ui.app import app
+
+
+@pytest.fixture(autouse=True)
+def _nn(request, monkeypatch):
+    if "learn_route" not in request.node.name:  # TestClient portal needs a socketpair
+        request.getfixturevalue("no_network")
+
+
+class Answer(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    verdict: str
+
+
+# (label, where the secret lives, env var name, canary)
+CASES = [
+    ("exp-gemini", "export", "GEMINI_API_KEY", "AIzaCKX-GEM-111"),
+    ("exp-google", "export", "GOOGLE_API_KEY", "AIzaCKX-GOO-222"),
+    ("exp-anthropic", "export", "ANTHROPIC_API_KEY", "sk-ant-CKX-333"),
+    ("exp-openai", "export", "OPENAI_API_KEY", "sk-CKX-OAI-444"),
+    ("exp-litellm", "export", "LITELLM_API_KEY", "ll-CKX-555"),
+    ("dotenv-anthropic", "dotenv", "ANTHROPIC_API_KEY", "sk-ant-CKX-DOT-666"),
+    ("dotenv-arbitrary", "dotenv", "MY_DB_PASSWORD", "pw-CKX-DOT-777-zzz"),
+    ("extra-option", "extra", "", "extra-CKX-888-secret"),
+]
+
+ECHOES = [
+    "401 at https://vendor.test/v1/models?key={c}",
+    "Incorrect API key provided: {c}",
+    "{c}",
+]
+
+
+def _setup(monkeypatch, tmp_path, kind, name, canary):
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    if kind == "export":
+        monkeypatch.setenv(name, canary)
+    elif kind == "dotenv":
+        (tmp_path / ".env").write_text(f"{name}={canary}\n", encoding="utf-8")
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("LITELLM_API_KEY", os.environ.get("LITELLM_API_KEY", "k-for-test"))
+
+
+def _provider(kind, canary, model="gemini/gemini-2.5-pro"):
+    opts = {"secrets": [canary]} if kind == "extra" else {}
+    return LiteLLMProvider(model=model, **opts)
+
+
+@pytest.mark.parametrize("echo", ECHOES)
+@pytest.mark.parametrize("label,kind,name,canary", CASES)
+def test_provider_direct(monkeypatch, tmp_path, label, kind, name, canary, echo):
+    install(monkeypatch, [RuntimeError(echo.format(c=canary))] * 3)
+    _setup(monkeypatch, tmp_path, kind, name, canary)
+    with pytest.raises(ProviderError) as info:
+        _provider(kind, canary).judge("an unrelated prompt", Answer)
+    assert canary not in str(info.value), label
+    with pytest.raises(ProviderError) as info2:
+        _provider(kind, canary).act("another prompt", Answer)
+    assert canary not in str(info2.value)
+
+
+@pytest.mark.parametrize("label,kind,name,canary", CASES)
+def test_learn_route(monkeypatch, tmp_path, label, kind, name, canary):
+    import autotester.ui.routes_learn as routes_learn_module
+
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store = _learn_project(tmp_path, spec=_spec(ReviewStatus.APPROVED))
+    install(monkeypatch, [RuntimeError(f"403 https://v.test/x?key={canary}")] * 60)
+    _setup(monkeypatch, tmp_path, kind, name, canary)
+    provider = _provider(kind, canary)
+    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
+    resp = TestClient(app).post("/projects/demo/cases/generate", follow_redirects=False)
+    assert resp.status_code == 400 and "could not complete" in resp.text
+    assert canary not in resp.text, label
+    assert store.list_cases() == []
+
+
+@pytest.mark.parametrize("label,kind,name,canary", CASES)
+def test_cli_expand(monkeypatch, tmp_path, label, kind, name, canary):
+    from test_expand_cli import _seed
+
+    install(monkeypatch, [RuntimeError(f"bad token {canary}")] * 60)
+    _setup(monkeypatch, tmp_path, kind, name, canary)
+    monkeypatch.setenv("AUTOTESTER_MODEL", "gemini/gemini-2.5-pro")
+    _seed(tmp_path)
+    if kind == "extra":
+        pytest.skip("`secrets` is a programmatic option; CLI cannot pass it")
+    res = CliRunner().invoke(cli_app, ["expand", "demo", "--provider", "litellm"])
+    out = res.output + (str(res.exception) if res.exception else "")
+    assert res.exit_code == 1 and "model call failed" in out, out
+    assert canary not in out, label
+
+
+@pytest.mark.parametrize("label,kind,name,canary", CASES)
+def test_run_path_verdict_and_saved_files(monkeypatch, tmp_path, label, kind, name, canary):
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store = ProjectStore("demo", tmp_path)
+    store.save_project(_project())
+    install(monkeypatch, [RuntimeError(f"auth failed: {canary}")] * 5)
+    _setup(monkeypatch, tmp_path, kind, name, canary)
+    judge = _provider(kind, canary)
+    result, verdict = run_and_grade_case_resilient(
+        _case(), _session(tmp_path), judge, "run_1", store)
+    blob = json.dumps(verdict.model_dump(mode="json")) + json.dumps(result.model_dump(mode="json"))
+    assert "ProviderError" in blob, blob
+    assert canary not in blob, label
+    for p in tmp_path.rglob("*"):
+        if p.is_file() and p.name != ".env":
+            try:
+                assert canary not in p.read_text(encoding="utf-8", errors="ignore"), p
+            except OSError:
+                pass
+
+
+def test_endpoint_userinfo_still_withheld(monkeypatch, tmp_path):
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    install(monkeypatch, [RuntimeError("conn refused https://u:pw-CKX-EP@models.internal/v1")])
+    monkeypatch.setenv("LITELLM_API_BASE", "https://u:pw-CKX-EP@models.internal/v1")
+    monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
+    with pytest.raises(ProviderError) as info:
+        LiteLLMProvider(model="openai/gpt-4o").judge("p", Answer)
+    assert "pw-CKX-EP" not in str(info.value)
+
+
+def test_benign_error_still_informative(monkeypatch, tmp_path):
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    install(monkeypatch, [RuntimeError("429 rate limit exceeded")])
+    monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
+    with pytest.raises(ProviderError) as info:
+        LiteLLMProvider(model="openai/gpt-4o").judge("p", Answer)
+    assert "429 rate limit exceeded" in str(info.value)
+
+
+def test_secret_set_is_single_source(monkeypatch, tmp_path):
+    """_guard and _failure must both call _secret_values (one set, no copy)."""
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    install(monkeypatch, [RuntimeError("x")])
+    monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
+    calls = []
+    p = LiteLLMProvider(model="openai/gpt-4o")
+    real = p._secret_values
+    monkeypatch.setattr(p, "_secret_values", lambda: (calls.append(1), real())[1])
+    with pytest.raises(ProviderError):
+        p.judge("p", Answer)
+    assert len(calls) == 2  # once in _guard, once in _failure
