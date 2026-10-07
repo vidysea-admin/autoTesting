@@ -1,0 +1,108 @@
+[
+  {
+    "strategy": "bfs",
+    "status": "stopped_bound",
+    "stop_reason": "max_depth",
+    "actions": 3,
+    "requests": [
+      "/",
+      "/favicon.ico",
+      "/fill-child",
+      "/",
+      "/fill-child",
+      "/log?field=trigger",
+      "/fill-out",
+      "/fill-child",
+      "/log?field=second"
+    ],
+    "after_fill_out_requests": [
+      "/fill-child",
+      "/log?field=second"
+    ],
+    "second_filled": true,
+    "trigger_filled": true,
+    "fill_child_loads": 3,
+    "nodes": [
+      [
+        "/",
+        0,
+        "explored"
+      ],
+      [
+        "/fill-child",
+        1,
+        "explored"
+      ]
+    ],
+    "edges": [
+      [
+        "navigate",
+        null,
+        "navigated"
+      ],
+      [
+        "fill",
+        null,
+        "navigated"
+      ],
+      [
+        "fill",
+        null,
+        "same_screen"
+      ]
+    ]
+  },
+  {
+    "strategy": "hybrid",
+    "status": "stopped_bound",
+    "stop_reason": "max_depth",
+    "actions": 3,
+    "requests": [
+      "/",
+      "/favicon.ico",
+      "/fill-child",
+      "/",
+      "/fill-child",
+      "/log?field=trigger",
+      "/fill-out",
+      "/fill-child",
+      "/log?field=second"
+    ],
+    "after_fill_out_requests": [
+      "/fill-child",
+      "/log?field=second"
+    ],
+    "second_filled": true,
+    "trigger_filled": true,
+    "fill_child_loads": 3,
+    "nodes": [
+      [
+        "/",
+        0,
+        "explored"
+      ],
+      [
+        "/fill-child",
+        1,
+        "explored"
+      ]
+    ],
+    "edges": [
+      [
+        "navigate",
+        null,
+        "navigated"
+      ],
+      [
+        "fill",
+        null,
+        "navigated"
+      ],
+      [
+        "fill",
+        null,
+        "same_screen"
+      ]
+    ]
+  }
+]

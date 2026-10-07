@@ -1,0 +1,88 @@
+[
+  {
+    "strategy": "bfs",
+    "status": "stopped_bound",
+    "stop_reason": "max_depth",
+    "actions": 2,
+    "requests": [
+      "/",
+      "/favicon.ico",
+      "/fill-child",
+      "/",
+      "/fill-child",
+      "/log?field=trigger",
+      "/fill-out"
+    ],
+    "after_fill_out_requests": [],
+    "second_filled": false,
+    "trigger_filled": true,
+    "fill_child_loads": 2,
+    "nodes": [
+      [
+        "/",
+        0,
+        "explored"
+      ],
+      [
+        "/fill-child",
+        1,
+        "explored"
+      ]
+    ],
+    "edges": [
+      [
+        "navigate",
+        null,
+        "navigated"
+      ],
+      [
+        "fill",
+        null,
+        "navigated"
+      ]
+    ]
+  },
+  {
+    "strategy": "hybrid",
+    "status": "stopped_bound",
+    "stop_reason": "max_depth",
+    "actions": 2,
+    "requests": [
+      "/",
+      "/favicon.ico",
+      "/fill-child",
+      "/",
+      "/fill-child",
+      "/log?field=trigger",
+      "/fill-out"
+    ],
+    "after_fill_out_requests": [],
+    "second_filled": false,
+    "trigger_filled": true,
+    "fill_child_loads": 2,
+    "nodes": [
+      [
+        "/",
+        0,
+        "explored"
+      ],
+      [
+        "/fill-child",
+        1,
+        "explored"
+      ]
+    ],
+    "edges": [
+      [
+        "navigate",
+        null,
+        "navigated"
+      ],
+      [
+        "fill",
+        null,
+        "navigated"
+      ]
+    ]
+  }
+]
