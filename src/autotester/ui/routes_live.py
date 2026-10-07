@@ -8,7 +8,10 @@ from datetime import UTC, datetime
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
+from autotester.auth.access import authorize
+from autotester.auth.context import current_principal
 from autotester.core.paths import repo_root
+from autotester.schema.auth import PermissionKey
 from autotester.ui import theme
 
 router = APIRouter()
@@ -54,11 +57,17 @@ def _newest_source_mtime() -> datetime:
 
 @router.get("/healthz")
 def healthz() -> dict[str, str | bool]:
-    """One HTTP call standing in for the `ps` + `find -newermt` archaeology
+    """AU16 (T-204): an unsigned-in caller (the container health check) gets only
+    `{"ok": true}`; the freshness detail below needs `settings.manage`.
+
+    One HTTP call standing in for the `ps` + `find -newermt` archaeology
     AT-085's checker had to do by hand: when this process started, and
     whether any `.py` file under `src/autotester` is newer than that. Reads no
     project state and loads no store -- same presentation-only invariant
     `/live` (D4) holds."""
+    who = current_principal()
+    if who is None or not authorize(who, PermissionKey.SETTINGS_MANAGE):
+        return {"ok": True}
     newest = _newest_source_mtime()
     return {
         "started_at": _PROCESS_STARTED_AT.isoformat(),
