@@ -3,6 +3,9 @@ viewer URL is configurable so an https server never embeds http://localhost:6080
 
 from __future__ import annotations
 
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -21,6 +24,20 @@ def test_healthz_watches_the_installed_package_not_the_data_root(
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
     assert routes_live.package_root() == Path(autotester.__file__).resolve().parent
     assert any(routes_live.package_root().rglob("*.py"))
+
+
+def test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere(
+    tmp_path: Path,
+) -> None:
+    """AT-787/HO3: `_SRC_ROOT` is fixed at import, so a monkeypatched env in this process cannot
+    prove it. A fresh interpreter started like the container (AUTOTESTER_ROOT=/data, no src there)
+    must still watch the installed package; a `repo_root()/src/autotester` revert reports the
+    data folder and goes red."""
+    code = "from autotester.ui import routes_live as r; print(r._SRC_ROOT)"
+    env = {**os.environ, "AUTOTESTER_ROOT": str(tmp_path)}
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                         env=env, cwd=tmp_path, timeout=60, check=True).stdout.strip()
+    assert Path(out) == Path(autotester.__file__).resolve().parent
 
 
 def test_live_view_defaults_to_the_local_novnc_url(monkeypatch: pytest.MonkeyPatch) -> None:

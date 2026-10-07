@@ -2,12 +2,13 @@
 
 ## Status: ready-for-check
 
-Goal task: T-203 · Branch: wave/t203-hosting · Base: origin/master 6f33ec8b (rebased) · Source: 61585fc2
+Goal task: T-203 · Branch: wave/t203-hosting · Base: origin/master 7782df41 (rebased in cycle 1; was 6f33ec8b) · Source: cycle 0 = 5eee9b6e (61585fc2 before the rebase), cycle 1 = the commit carrying this manifest
 Policy-Version: proportional-verification/2026-10-06.6
-Fix cycle: 0
+Fix cycle: 1
+Cycle checked before: 0 (FAIL, qa/verdicts/t203-hosting.md)
 Tier: L, single checker (new module, schema, config, deploy files).
 Executor: claude (maker build subagent). Contract: `qa/contracts/hosting.md` (HO1-HO38) plus D-071, D-072.
-Metrics: 24 files, +1609/-34 lines, 51 tests added (queue 20, UI queue 8, settings 11, config 5, deploy 7), affected set 213 passed, 15 mutations killed, 0 survived (one invalid mutant was replaced).
+Cycle 0 summary: 24 files, +1609/-34 lines, 51 tests added (queue 20, UI queue 8, settings 11, config 5, deploy 7), affected set 213 passed, 15 mutations killed, 0 survived (one invalid mutant was replaced).
 
 ## Verification run (affected tests only, no full suite)
 
@@ -15,6 +16,64 @@ Metrics: 24 files, +1609/-34 lines, 51 tests added (queue 20, UI queue 8, settin
 - `uv run ruff check src tests scripts` = `All checks passed!`
 - `uv run autotester doctor` = `doctor: clean` (docs/MAP.md regenerated with `autotester map`)
 - Docker daemon is down on this machine: `docker build`, `compose up`, HTTPS and every BUILD-HOST / SERVER-GATED row are NOT verified. The compose file is checked structurally (parsed YAML) only.
+
+## Fix cycle 1 (repair brief: AT-782..AT-786 blocking, AT-787 cheap)
+
+Executor: claude (maker build subagent). Rebased onto origin/master 7782df41 with no conflicts.
+Tier L unchanged. Not a docs-lane or test-lane merge: the fix touches product code and the
+protected `tests/conftest.py` fixture, so the repair checker applies.
+
+| Issue | Row | Fix (file) | Test (red before the fix, green after) |
+|---|---|---|---|
+| AT-782 | HO1 | test now asserts all six contract canaries plus the older six and `qa/evidence/`; matcher honours slash-containing directory rules (`tests/test_hosting_deploy.py`) | `test_dockerignore_keeps_secrets_and_project_state_out_of_the_image`, `test_the_canary_check_itself_notices_a_dropped_rule` |
+| AT-783 | HO2, HO11 | `load_repo_env` treats an EMPTY inherited value as unset (`src/autotester/core/env.py` `load_repo_env`, one condition); DEPLOY.md step 3 says so. `.env.example` is still copied, since empty keys are now harmless | `tests/test_env_loading.py::test_an_empty_inherited_value_does_not_shadow_the_data_env_file` (red before: 1 failed) |
+| AT-784 | HO11, HO13 | `docker/compose.prod.yml` `AUTOTESTER_DOMAIN` is `${AUTOTESTER_DOMAIN:-localhost}` (no `:?`); DEPLOY.md: removed the 6080 tunnel claim, Host allow-list described as shipping with AT-758 with `AUTOTESTER_ALLOWED_HOSTS` to be set, Origin guard described as it is (`ui/helpers.py _origin_allowed`), UFW-bypass note on step 8; `.env.example` comment corrected | `test_compose_needs_no_domain_unless_the_https_profile_is_used`, `test_deploy_guide_claims_only_what_the_compose_file_does` |
+| AT-785 | HO18 | `ui/run_queue.py`: new `_persist()` logs a failed queue-file write and never raises, used by `submit`, `recover` and `_finish`, so every started entry is launched; `_work` catches `BaseException` (SystemExit, CancelledError), records `interrupted` with the exception class, re-raises | `tests/test_run_queue_resilience.py`: full-disk test (red before), exit and cancelled-task tests (red before) |
+| AT-786 | HO38 | `tests/conftest.py _inline_run_queue`: runner crashes are re-raised out of the request; `RunRefused` stays quiet | `tests/test_ui_runs_queue.py::test_a_run_that_crashes_inside_the_suite_queue_fails_the_test_that_started_it`, `test_a_gate_refusal_inside_the_suite_queue_is_not_an_error`; the 3 named tests (`test_a_run_that_stays_on_known_routes_asks_for_nothing`, `test_a_run_on_a_project_with_no_flowspec_asks_for_nothing`, `test_ui_run_needs_no_human_approval_when_credentials_are_provisioned`) are in the affected set and green |
+| AT-787 (cheap part) | HO3, HO17 | none in src: two shipped guards | `test_two_members_pressing_test_in_the_same_instant_cannot_both_claim_the_last_slot` (widened-window harness, `limit()` sleeps 50 ms inside the claim); `test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere` (fresh interpreter with `AUTOTESTER_ROOT` elsewhere) |
+
+Design note (AT-785): a failed queue-file write is logged and scheduling carries on in memory,
+rather than rolling the press back. A press never leaves an entry `running` without a worker; the
+cost is that a restart right after such a failure forgets the unwritten state. The alternative
+(roll back and raise) would also have stranded older waiters with no kicker.
+
+### Verification (affected tests only, no full suite; policy .7)
+
+- Removed or renamed names: none (`_save` stays, `_persist` is added; no symbol, field or key removed), so no `git grep` expansion applies.
+- `uv run pytest tests/test_ui_runs*.py tests/test_credential_run_approval.py tests/test_coverage_wiring.py tests/test_ui_credential_safety.py tests/test_ui_origin_guard.py tests/test_ui_healthz.py tests/test_ui.py tests/test_run_queue.py tests/test_run_queue_resilience.py tests/test_ui_runs_queue.py tests/test_hosting_config.py tests/test_hosting_deploy.py tests/test_server_settings.py tests/test_env_loading.py` = `229 passed, 1 warning`
+- Importers of the changed `core/env.py` and every test that drives `/run` or `run_queue` (18 files from `git grep`, plus `tests/test_ui_credential_exemption_scope.py` and `tests/test_ui_error_pages.py`, `-m "not harness"`) = `196 passed, 1 warning`
+- `uv run ruff check src tests scripts` = `All checks passed!`
+- `uv run autotester doctor` = `doctor: clean`
+- Pre-fix red run of the new tests (5 failed, 31 passed over the 5 touched files) confirmed the tests reproduce AT-783, AT-785 and AT-786 before the code changed.
+- Docker daemon still down on this host: BUILD-HOST rows stay BLOCKED-CAPABILITY. `docker compose config` was not run by me; the compose change is guarded by a parsed-text test only.
+
+### Falsification, cycle 1 (each in its own throwaway copy of the tree, bound tree never touched)
+
+| Criterion / issue | Mutation | Before | After |
+|---|---|---|---|
+| HO1 / AT-782 | delete `**/.env.*` from `.dockerignore` | 1 passed | 1 failed |
+| HO2 / AT-783 | `os.environ.get(key)` back to `key in os.environ` | 1 passed | 1 failed |
+| HO11,13 / AT-784 compose | `${AUTOTESTER_DOMAIN:?set it}` restored | 1 passed | 1 failed |
+| HO11 / AT-784 guide | re-add `http://localhost:6080` to DEPLOY.md | 1 passed | 1 failed |
+| HO18 / AT-785 save | `_persist` calls `_save()` bare | 1 passed | 1 failed |
+| HO18 / AT-785 abort | abort recorded `DONE` again | 2 passed | 2 failed |
+| HO38 / AT-786 | fixture's re-raise disabled (`if False:`) | 1 passed | 1 failed |
+| HO17 / AT-787 lock | `self._lock = contextlib.nullcontext()` | 1 passed | 1 failed |
+| HO3 / AT-787 healthz | `_SRC_ROOT = repo_root()/src/autotester` | 1 passed | 1 failed |
+
+Runner: scratchpad `falsify.py` (copy per mutant, `PYTHONPATH=<copy>/src`, worktree interpreter).
+
+### Left open on purpose
+
+- AT-788 (T-203 rows still open: HO4, HO5, HO6 non-root, HO8, HO10 linux evidence, HO12, HO15 page, HO19 `project.run`, HO21 scoping, HO34-HO36): rows stay open, T-203 stays pending. Not this cycle's work.
+- AT-789 (`qa/contracts/ui-run.md` RU1 wording): contract, never edited by the maker; the checker amends it.
+- AT-787 remainder (Caddyfile redirect/TLS test, startup mode log, queue kick for a raised cap, Caddy body limit vs `server.env`, per-key `.env.example` comments): low, owned by later units.
+- Not run by me: the browser check of the queue panel (no hosted instance; Docker down). The cycle 0 verdict asks for it at the repair cycle, so the checker must run it against a local `uvicorn` instance.
+- Full suite: none run by the builder (policy .7). Trigger recorded for the checker: `full-suite trigger: tests/conftest.py edit` (already run once in cycle 0 on the earlier tree).
+
+Metrics: start=2026-10-07T18:58:00+05:30 end=2026-10-07T19:10:00+05:30 wall_min=12 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=9 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6
+
+(The cycle 0 manifest follows, unchanged except the header lines.)
 
 ## Coverage table (hosting.md)
 

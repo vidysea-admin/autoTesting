@@ -42,6 +42,10 @@ There are two, with different jobs. Neither is ever committed.
 | `/etc/autotester/server.env` | server settings (this guide) | on the host, mode 600 |
 | `<data>/.env` | provider keys and each project's test-account credentials | inside the data folder |
 
+Both start as a copy of `.env.example`, whose keys are empty. An empty value in `server.env`
+(for example `ANTHROPIC_API_KEY=`) does not block the real value in `<data>/.env`: the app
+treats an empty environment value as unset. Still, keep only server settings in `server.env`.
+
 ```bash
 sudo mkdir -p /etc/autotester /srv/autotester/data/projects /srv/autotester/data/profiles
 sudo cp .env.example /etc/autotester/server.env && sudo chmod 600 /etc/autotester/server.env
@@ -57,10 +61,13 @@ AUTOTESTER_ALLOWED_ORIGINS=https://<your-domain>
 AUTOTESTER_MAX_CONCURRENT_RUNS=2
 ```
 
-`AUTOTESTER_ALLOWED_HOSTS` and `AUTOTESTER_ALLOWED_ORIGINS` are **required** once the server is
-reachable by name: without them the Host allow-list (AT-758) and Origin guard (D-066) answer
-every request with 403. Put the model keys (`ANTHROPIC_API_KEY`, `GEMINI_API_KEY`) and
-`AUTOTESTER_APPROVAL_KEY` in `<data>/.env`.
+Set `AUTOTESTER_ALLOWED_ORIGINS` once the server is reachable by name: the Origin guard (D-066)
+refuses a state-changing request from any other origin. `AUTOTESTER_ALLOWED_HOSTS` belongs to
+the Host allow-list, which ships with AT-758 and is not in this release; set it anyway so the
+file is ready, and do not rely on it for protection until AT-758 is in your release.
+
+Put the model keys (`ANTHROPIC_API_KEY`, `GEMINI_API_KEY`) and `AUTOTESTER_APPROVAL_KEY` in
+`<data>/.env`.
 
 ### 4. Seed your projects (optional)
 
@@ -93,14 +100,18 @@ certificate itself, sets security headers, and limits request bodies to
 and `X-Forwarded-Proto`, and set `client_max_body_size` to the same upload limit.
 
 The live browser view (`/novnc/*`) answers 503 through Caddy until sign-in is enabled (T-204
-wires the check); on a trusted network use the SSH tunnel and `http://localhost:6080`.
+wires the check). Port 6080 is not published on the host, so there is no tunnel to it in this
+release; the live view is reachable only from inside the compose network until then.
 
 ### 8. Interim without a domain
 
 Over plain http to an IP, set in `server.env`: `AUTOTESTER_ALLOWED_HOSTS=<server-ip>`,
 `AUTOTESTER_ALLOWED_ORIGINS=http://<server-ip>:8000`, `AUTOTESTER_COOKIE_SECURE=0`, and start
-with `AUTOTESTER_BIND=0.0.0.0` (then `ufw allow from <your-office-ip> to any port 8000`). Passwords
-cross the network unencrypted in this mode: use it for a short trial only, and move to step 7.
+with `AUTOTESTER_BIND=0.0.0.0`. Docker publishes ports around UFW, so a `ufw` rule does not
+restrict port 8000: limit it in your cloud provider's firewall to your office address, or bind
+`AUTOTESTER_BIND` to one interface address. Passwords cross the network unencrypted in this
+mode: use it for a short trial only, and move to step 7. `docker compose -f docker/compose.prod.yml
+config` works without `AUTOTESTER_DOMAIN`; only the `https` profile needs it.
 
 ### 9. Backup and restore
 
@@ -149,8 +160,9 @@ Run as a service (pick one):
   "Run only when user is logged on", restart on failure.
 
 Settings go in the repo's `.env` (or system environment variables for the service):
-`AUTOTESTER_ALLOWED_HOSTS=<host-or-ip>` and `AUTOTESTER_ALLOWED_ORIGINS=https://<host>`.
-Without them every request from another machine gets 403.
+`AUTOTESTER_ALLOWED_ORIGINS=https://<host>` (state-changing requests from other origins are
+refused otherwise) and `AUTOTESTER_ALLOWED_HOSTS=<host-or-ip>` (read once the Host allow-list,
+AT-758, is in your release).
 
 Firewall: allow inbound TCP only for the port you serve on, from the networks that need it,
 for example `New-NetFirewallRule -DisplayName AutoTester -Direction Inbound -Protocol TCP

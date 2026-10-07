@@ -49,7 +49,10 @@ services:
       autotester:
         condition: service_healthy
     environment:
-      AUTOTESTER_DOMAIN: ${AUTOTESTER_DOMAIN:?set AUTOTESTER_DOMAIN to the server's DNS name}
+      # Interpolated even when this service is off, so it needs a default or `docker compose up`
+      # fails without a domain. `localhost` makes Caddy use its own local certificate: set the
+      # real DNS name before using the https profile (docker/DEPLOY.md step 7).
+      AUTOTESTER_DOMAIN: ${AUTOTESTER_DOMAIN:-localhost}
       AUTOTESTER_MAX_UPLOAD_BYTES: ${AUTOTESTER_MAX_UPLOAD_BYTES:-2147483648}
     ports:
       - "80:80"

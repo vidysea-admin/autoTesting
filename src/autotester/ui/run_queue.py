@@ -96,7 +96,7 @@ class RunQueue:
                                requested_by=requested_by, trigger=trigger)
             self._entries.append(entry)
             starts = self._take_startable()
-            self._save()
+            self._persist()
         self._launch(starts)
         return self._view(entry.id)
 
@@ -111,7 +111,7 @@ class RunQueue:
                     entry.reason = ("the server restarted while this run was in progress; "
                                     "it was not re-run -- press Test again")
             starts = self._take_startable()
-            self._save()
+            self._persist()
         self._launch(starts)
 
     def snapshot(self, project: str | None = None) -> list[QueueEntry]:
@@ -171,6 +171,9 @@ class RunQueue:
         except Exception as exc:
             status, reason = QueueStatus.FAILED, type(exc).__name__
             log.exception("run %s for project %s failed", entry.id, entry.project)
+        except BaseException as exc:  # SystemExit, CancelledError: cut off, so never `done`
+            status, reason = QueueStatus.INTERRUPTED, type(exc).__name__
+            raise
         finally:
             self._finish(entry, status, reason)
 
@@ -183,7 +186,7 @@ class RunQueue:
             for old in finished[:-KEEP_FINISHED]:
                 self._entries.remove(old)
             starts = self._take_startable()
-            self._save()
+            self._persist()
         self._launch(starts)
 
     def _load(self) -> list[QueueEntry]:
@@ -195,6 +198,15 @@ class RunQueue:
             log.warning("run queue file unreadable, starting empty: %s", exc)
             return []
         return list(stored.entries) if stored else []
+
+    def _persist(self) -> None:
+        """Write the queue file for the next restart. A failed write (full or read-only disk)
+        is logged, never raised: the caller has already marked entries `running` and must go
+        on to launch them, or they would hold a slot with no worker until a restart (AT-785)."""
+        try:
+            self._save()
+        except Exception:
+            log.exception("run queue file could not be written; scheduling continues in memory")
 
     def _save(self) -> None:
         if self._path is not None:

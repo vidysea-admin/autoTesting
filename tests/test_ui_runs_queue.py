@@ -161,3 +161,36 @@ def test_a_second_run_plans_against_the_ram_the_first_one_already_holds(
     routes_runs._plan_under_shared_budget(project, "run-b")     # run-a holds 2 contexts
     assert seen[0] == {"video_enabled": True}                   # identical to the old call
     assert 0 < seen[1]["free_ram_mb"] < 9000.0
+
+
+def test_a_run_that_crashes_inside_the_suite_queue_fails_the_test_that_started_it() -> None:
+    """AT-786: tests/conftest.py runs queued jobs inline so old UI tests keep their meaning.
+    The queue records a crash as `failed` and moves on, which let three of them stay green over
+    a run that never worked; the inline queue must re-raise so such a test goes red."""
+    queue = run_queue.get_queue()           # the autouse fixture's inline queue
+    original = run_queue._runner
+
+    def crashing(entry: object) -> None:
+        raise RuntimeError("the browser never opened")
+
+    run_queue.set_runner(crashing)
+    try:
+        with pytest.raises(RuntimeError, match="never opened"):
+            queue.submit("alpha")
+    finally:
+        run_queue._runner = original
+
+
+def test_a_gate_refusal_inside_the_suite_queue_is_not_an_error() -> None:
+    """A member whose credentials were deleted is refused with a reason: normal, not a crash."""
+    queue = run_queue.get_queue()
+    original = run_queue._runner
+
+    def refusing(entry: object) -> None:
+        raise run_queue.RunRefused("credentials are missing")
+
+    run_queue.set_runner(refusing)
+    try:
+        assert queue.submit("alpha").status is run_queue.QueueStatus.REFUSED
+    finally:
+        run_queue._runner = original

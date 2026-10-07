@@ -95,9 +95,9 @@ def _ignored(path: str, patterns: list[str]) -> bool:
         body = pat.lstrip("!")
         anywhere = body.startswith("**/")
         body = body.removeprefix("**/")
-        if body.endswith("/"):                      # a directory: any ancestor named so
-            names = parts[:-1] if anywhere else parts[:1]
-            hit = body.rstrip("/") in names
+        if body.endswith("/"):                      # a directory
+            name = body.rstrip("/")
+            hit = name in parts[:-1] if anywhere else path.startswith(name + "/")
         else:
             names = parts if anywhere else [path]
             hit = any(fnmatch.fnmatch(n, body) for n in names)
@@ -106,11 +106,47 @@ def _ignored(path: str, patterns: list[str]) -> bool:
     return ignored
 
 
+# hosting.md HO1 names these six; the older six are kept (git metadata, a nested .env, ...).
+_HO1_CANARIES = (".env", ".env.local", "projects/x/runs/r1/secret.txt", "profiles/x/Cookies",
+                 ".work/auth/users.json", ".work/audit.jsonl")
+_EXTRA_CANARIES = ("projects/pathlynks/project.json", "profiles/a/state.json", "nested/.env",
+                   ".work/run_queue.json", ".git/config", "qa/evidence/shot.png")
+
+
 def test_dockerignore_keeps_secrets_and_project_state_out_of_the_image() -> None:
+    """Someone builds the image on the server with `COPY . .`: every canary a leak would come
+    from must be ignored, and dropping any one rule (e.g. `**/.env.*`) must turn this red."""
     patterns = [ln.strip() for ln in (ROOT / ".dockerignore").read_text(encoding="utf-8")
                 .splitlines() if ln.strip() and not ln.startswith("#")]
-    for canary in (".env", "projects/pathlynks/project.json", "profiles/a/state.json",
-                   "nested/.env", ".work/run_queue.json", ".git/config"):
+    for canary in _HO1_CANARIES + _EXTRA_CANARIES:
         assert _ignored(canary, patterns), f"{canary} would ship in the image"
     assert not _ignored(".env.example", patterns)
     assert not _ignored("src/autotester/ui/app.py", patterns)
+
+
+def test_the_canary_check_itself_notices_a_dropped_rule() -> None:
+    """The matcher is only a guard if removing a rule changes its answer (AT-782)."""
+    patterns = [ln.strip() for ln in (ROOT / ".dockerignore").read_text(encoding="utf-8")
+                .splitlines() if ln.strip() and not ln.startswith("#")]
+    without = [p for p in patterns if p != "**/.env.*"]
+    assert _ignored(".env.local", patterns) and not _ignored(".env.local", without)
+
+
+def test_compose_needs_no_domain_unless_the_https_profile_is_used() -> None:
+    """AT-784: an operator following DEPLOY.md step 8 (no domain yet) runs `docker compose
+    config` / `up`. Compose interpolates every service, profile or not, so a required-variable
+    form (`${AUTOTESTER_DOMAIN:?...}`) on the caddy service fails the loopback path with rc=1."""
+    text = (ROOT / "docker" / "compose.prod.yml").read_text(encoding="utf-8")
+    assert re.search(r"\$\{AUTOTESTER_DOMAIN:-[^}]+\}", text)
+    assert "${AUTOTESTER_DOMAIN:?" not in text
+    assert _prod()["services"]["caddy"]["profiles"] == ["https"]
+
+
+def test_deploy_guide_claims_only_what_the_compose_file_does() -> None:
+    """AT-784: the guide once sent operators to an SSH tunnel to 6080, which compose only
+    `expose`s (nothing listens on the host), and described a Host allow-list (AT-758) that is
+    not in the code as if it answered 403 today."""
+    guide = (ROOT / "docker" / "DEPLOY.md").read_text(encoding="utf-8")
+    assert "http://localhost:6080" not in guide
+    assert "ships with AT-758" in guide
+    assert "AUTOTESTER_ALLOWED_HOSTS" in guide
