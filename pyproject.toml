@@ -14,6 +14,7 @@ dependencies = [
     "langchain-anthropic>=1.7.0",
     "langchain-core>=1.6.1",
     "langchain-google-genai>=4.4.0",
+    "mcp>=2.3.0",  # T-174/D-071: the AutoTester MCP server (mcp_server.py) imports it
     "google-genai>=2.22.0",  # AT-130/AT-268: providers/gemini.py and gemini_files.py
                               # import this directly; it was only a transitive dep
                               # of langchain-google-genai, undeclared for the one
@@ -51,6 +52,7 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 "src/autotester/cli.py" = ["B008"]  # typer.Option defaults are the framework idiom
 "src/autotester/cli_issues.py" = ["B008"]  # same idiom, same reason
+"src/autotester/cli_run.py" = ["B008"]  # same idiom, same reason
 
 [tool.mypy]
 python_version = "3.11"

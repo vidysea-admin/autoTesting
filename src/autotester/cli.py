@@ -9,6 +9,7 @@ import typer
 
 from autotester import cli_crawl, cli_issues, cli_loop, cli_orchestrate, cli_video, providers
 from autotester import doctor as doctor_module
+from autotester.cli_run import attach_commands
 from autotester.core.env import load_repo_env
 from autotester.core.paths import RepoDocs
 from autotester.ledger import render, store
@@ -289,6 +290,7 @@ app.command("explore")(cli_crawl.explore_cmd)
 app.command("approve")(cli_crawl.approve_cmd)
 report_app.command("crawl")(cli_crawl.report_crawl)
 app.command("orchestrate")(cli_orchestrate.orchestrate_cmd)
+attach_commands(app, report_app)
 
 
 def main() -> None:

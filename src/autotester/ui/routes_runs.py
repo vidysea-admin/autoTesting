@@ -20,6 +20,7 @@ from autotester.providers.langchain_fallback import LangChainFallbackProvider
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
 from autotester.schema.catalog import TIER_BY_CLASS, Catalog
+from autotester.schema.cli_output import ExitCode
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import Action, ApprovalKind
 from autotester.schema.project import Project
@@ -37,6 +38,15 @@ from autotester.ui.helpers import _load_project_or_404
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
 
 router = APIRouter()
+
+
+class RunNotStarted(HTTPException):
+    """A preflight refusal: nothing started. Still an HTTPException, so the UI route answers
+    exactly as before; `code` is what the CLI and the MCP server report (T-174, CM1)."""
+
+    def __init__(self, status_code: int, detail: str, code: ExitCode) -> None:
+        super().__init__(status_code, detail)
+        self.code = code
 
 
 def _is_entry_case(case: Case, project: Project) -> bool:
@@ -62,13 +72,13 @@ def _require_declared_values(
     })
     missing = sorted(key for key in keys if not secrets.has_value(key))
     if missing:
-        raise HTTPException(400, (
+        raise RunNotStarted(400, (
             f"{', '.join(missing)} has no value yet. Enter it on the project's "
             f"Credentials page (/projects/{slug}/env) before running."
             if len(missing) == 1 else
             f"these credentials have no value yet: {', '.join(missing)}. Enter them on the "
             f"project's Credentials page (/projects/{slug}/env) before running."
-        ))
+        ), ExitCode.USAGE)
     return keys
 
 
@@ -92,7 +102,7 @@ def _require_live_case_approval(
         return covering_approval(project, store, bounds, kind=ApprovalKind.LIVE_CASE,
                                  secrets=secrets, account_keys=account_keys or None)
     except ApprovalRequired as exc:
-        raise HTTPException(403, str(exc)) from exc
+        raise RunNotStarted(403, str(exc), ExitCode.RUN_REFUSED) from exc
 
 
 def _execute_with_trace(
@@ -138,6 +148,29 @@ def _execute_with_trace(
 
 @router.post("/projects/{slug}/run")
 def trigger_run(slug: str) -> RedirectResponse:
+    """The Run button: `run_project`, then redirect to the report."""
+    run_project(slug)
+    return RedirectResponse(f"/projects/{slug}/report", status_code=303)
+
+
+def _cases_or_refuse(store: ProjectStore, slug: str) -> list[Case]:
+    cases = store.list_cases()
+    if not cases:
+        raise RunNotStarted(400, f"project '{slug}' has no cases to run", ExitCode.USAGE)
+    return cases
+
+
+def plan_project_run(slug: str) -> list[str]:
+    """T-174 CM3: the case ids `run_project` WOULD run, tier by tier. Reads only -- no approval
+    is checked or minted, no provider is built, no browser opens, nothing is written."""
+    store, project = _load_project_or_404(slug)
+    cases = _cases_or_refuse(store, slug)
+    cat = catalog(project, store.load_flowspec(), store)
+    return [c.id for tier in tiers_to_run(cat) for c in cases
+            if TIER_BY_CLASS[c.case_class] == tier]
+
+
+def run_project(slug: str) -> Run:
     """A real, synchronous run: the request waits for the browser to finish
     every case before redirecting to the report (RU1-RU4 — v1's honest
     boundary, no background job queue). Runs every case through the same
@@ -148,14 +181,12 @@ def trigger_run(slug: str) -> RedirectResponse:
     AT-562/AT-564: this is the live entry point wired to the T-172/T-173
     machinery those goal-coverage gaps named -- see `_execute_with_trace`."""
     store, project = _load_project_or_404(slug)
-    cases = store.list_cases()
-    if not cases:
-        raise HTTPException(400, f"project '{slug}' has no cases to run")
+    cases = _cases_or_refuse(store, slug)
     judge = LangChainFallbackProvider()
     if not judge.available():
-        raise HTTPException(
-            400, "no AI provider is configured (set an API key in .env) -- cannot grade a run"
-        )
+        raise RunNotStarted(
+            400, "no AI provider is configured (set an API key in .env) -- cannot grade a run",
+            ExitCode.INFRASTRUCTURE)
     paths = ProjectPaths(slug)
     secrets = SecretStore.load(project, paths.env_file, strict=False)
     account_keys = _require_declared_values(project, secrets, slug, cases)
@@ -170,7 +201,7 @@ def trigger_run(slug: str) -> RedirectResponse:
         approval, cat,
     )
 
-    store.save_run(Run(
+    run = Run(
         id=run_id, project=slug, case_ids=[c.id for c in cases],
         parallel_n=plan.n, parallel_bound_by=plan.bound_by,
         catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
@@ -179,10 +210,11 @@ def trigger_run(slug: str) -> RedirectResponse:
         # visible to whoever reads run.json instead of silently honoured.
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
                           max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
-    ))
+    )
+    store.save_run(run)
     prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
     _ask_for_what_it_did_not_recognise(store, run_id)
-    return RedirectResponse(f"/projects/{slug}/report", status_code=303)
+    return run
 
 
 def _ask_for_what_it_did_not_recognise(store: ProjectStore, run_id: str) -> None:
