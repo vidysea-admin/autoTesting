@@ -19,6 +19,9 @@ from __future__ import annotations
 
 from html import escape
 
+from autotester.auth.access import authorize, visible_slugs
+from autotester.auth.context import current_principal
+from autotester.schema.auth import PermissionKey
 from autotester.store.project_store import ProjectStore
 from autotester.ui.helpers import _project_slugs
 from autotester.ui.theme_style import PAGE_STYLE
@@ -116,7 +119,8 @@ def _sidebar_html(active_slug: str | None) -> str:
     US1-US4) — the same `_project_slugs()`/`ProjectStore` lookup `index()`
     already uses, so this is never a second source of truth for what
     projects exist."""
-    slugs = _project_slugs()
+    who = current_principal()  # T-204 AU13: only what this account may view
+    slugs = _project_slugs() if who is None else visible_slugs(who, _project_slugs())
     if not slugs:
         links = "<p class='sidebar-empty'>No projects yet.</p>"
     else:
@@ -138,6 +142,24 @@ def _sidebar_html(active_slug: str | None) -> str:
     )
 
 
+def _account_html() -> str:
+    """T-204 AU25: the signed-in identity chip, the admin links this account may use,
+    and the sign-out control. Empty outside a signed-in request."""
+    who = current_principal()
+    if who is None or not who.user_id:
+        return ""
+    links = "".join(
+        f"<a href='{href}'>{label}</a>" for key, href, label in (
+            (PermissionKey.USERS_MANAGE, "/admin/users", "Users"),
+            (PermissionKey.GROUPS_MANAGE, "/admin/groups", "Groups"))
+        if authorize(who, key))
+    return (f"<div class='account-bar' style='display:flex;gap:10px;align-items:center;"
+            f"justify-content:flex-end;padding:4px 16px'>{links}"
+            f"<span class='pill' title='signed in'>{escape(who.display_name or who.email)}"
+            "</span><form method='post' action='/auth/logout' style='display:inline'>"
+            "<button class='btn btn-sm' type='submit'>Sign out</button></form></div>")
+
+
 def page(title: str, body: str, active_slug: str | None = None) -> str:
     """Wrap one route's HTML fragment in the shared stylesheet + nav +
     sidebar + main container. `title` and `body` must already be
@@ -147,6 +169,6 @@ def page(title: str, body: str, active_slug: str | None = None) -> str:
     the sidebar on a project-scoped page; omit it on a global page."""
     sidebar = _sidebar_html(active_slug)
     return (
-        f"<!doctype html><title>{title} — AutoTester</title>{PAGE_STYLE}{NAV}"
+        f"<!doctype html><title>{title} — AutoTester</title>{PAGE_STYLE}{NAV}{_account_html()}"
         f"<div class='layout'>{sidebar}<main>{body}</main></div>"
     )

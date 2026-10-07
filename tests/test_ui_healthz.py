@@ -21,8 +21,21 @@ from autotester.ui.app import app
 
 
 @pytest.fixture
-def client() -> TestClient:
+def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
+    """Signed in as the conftest admin (T-204 AU16: the detail needs settings.manage);
+    the scratch root keeps the session store out of the real repo."""
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path / "root"))
     return TestClient(app)
+
+
+def test_healthz_unsigned_in_gets_only_ok(monkeypatch: pytest.MonkeyPatch,
+                                          tmp_path: Path) -> None:
+    """AU16: the container health check needs no login and learns nothing else."""
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    monkeypatch.setenv("AUTOTESTER_TEST_NO_AUTO_LOGIN", "1")
+    resp = TestClient(app).get("/healthz")
+    assert resp.status_code == 200
+    assert resp.json() == {"ok": True}
 
 
 def test_healthz_reports_the_three_fields(client: TestClient) -> None:

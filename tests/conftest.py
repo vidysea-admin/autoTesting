@@ -184,3 +184,39 @@ def page_factory(serve_dir: Callable[[Path], str]):
     runner.stop()
 
 
+
+
+# -- T-204: every TestClient is signed in as the suite admin ----------------------
+#
+# Adding the login gate (auth.md AU16) makes every route need a session. One
+# session-scoped patch signs each TestClient request in as an admin in the test's own
+# scratch store (tests/auth_login_fixture.py), so no existing assertion changes.
+# The auth tests turn it off with AUTOTESTER_TEST_NO_AUTO_LOGIN=1.
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _signed_in_test_clients(tmp_path_factory: pytest.TempPathFactory) -> Iterator[None]:
+    import auth_login_fixture
+    from starlette.testclient import TestClient
+
+    from autotester.ui.auth_middleware import SESSION_COOKIES
+
+    original = TestClient.request
+    suite_auth_dir = str(tmp_path_factory.mktemp("suite-auth"))
+
+    def _request(self, method, url, *args, **kwargs):
+        if not auth_login_fixture.enabled():
+            return original(self, method, url, *args, **kwargs)
+        borrowed = not os.environ.get("AUTOTESTER_ROOT") and "AUTOTESTER_AUTH_DIR" not in os.environ
+        if borrowed:  # never the real repo's .auth/ store
+            os.environ["AUTOTESTER_AUTH_DIR"] = suite_auth_dir
+        try:
+            self.cookies.set(SESSION_COOKIES[1], auth_login_fixture.ensure_session())
+            return original(self, method, url, *args, **kwargs)
+        finally:
+            if borrowed:
+                os.environ.pop("AUTOTESTER_AUTH_DIR", None)
+
+    TestClient.request = _request
+    yield
+    TestClient.request = original
