@@ -11,7 +11,21 @@ Contract: qa/contracts/agent-fallback.md AF3/AF6. Two seams keep it inside the s
   offers that has no mapping here is refused, never guessed at.
 
 browser-use drives its own async Playwright, so it attaches to the already-open browser over CDP
-(`cdp_url`); it cannot take the sync `BrowserSession.page`. Product telemetry is switched off.
+(`BrowserSession.cdp_url`); it cannot take the sync `BrowserSession.page`.
+
+D-075: nothing leaves the box. browser-use 0.5.9 has two network-on-use switches, both read from
+the environment and both defaulting to ON: `ANONYMIZED_TELEMETRY` (PostHog, eu.i.posthog.com) and
+`BROWSER_USE_CLOUD_SYNC` (agent events to api.browser-use.com; it follows the telemetry switch
+unless set). They are FORCED off below at import, before browser-use is ever imported, whatever
+the user's environment says. Default extensions (a download from the Chrome store) are also
+off. browser-use also calls
+`load_dotenv()` in six of its modules at import, which would copy the repo `.env` (every
+project's credentials) into `os.environ`: `PYTHON_DOTENV_DISABLED=1` stops exactly that call and
+leaves AutoTester's own `core/env.py` loader (`dotenv_values`) untouched.
+
+Guards: the model seam takes a REQUIRED secret `guard` (browser-use puts the page URL and field
+values in its prompts); `for_session` defaults it to the session's secret scrubber. And X7: the
+page each step starts on (where the previous action landed) is re-checked before it acts.
 """
 
 from __future__ import annotations
@@ -36,17 +50,30 @@ K = FallbackActionKind
 _NAME_ATTRS = ("aria-label", "title", "placeholder", "value", "name")
 
 
+NO_NETWORK_ENV = {"ANONYMIZED_TELEMETRY": "false", "BROWSER_USE_CLOUD_SYNC": "false",
+                  "PYTHON_DOTENV_DISABLED": "1"}
+PROFILE = {"enable_default_extensions": False}  # kwargs for browser_use.BrowserSession
+
+
 def _load() -> None:
-    os.environ.setdefault("ANONYMIZED_TELEMETRY", "false")  # no product telemetry leaves the box
+    os.environ.update(NO_NETWORK_ENV)  # forced, not setdefault: the user's env must not win
+
+
+_load()  # at import, before any `browser_use` import (they are all lazy, below)
 
 
 class ProviderChatModel:
     """browser-use's `BaseChatModel`, answered by a `Provider` (text only; images are dropped)."""
 
     model = "provider-seam"
+    _verified_api_keys = True  # there is no key: the Provider owns its own credentials
 
-    def __init__(self, provider: Provider, guard: Callable[[str], str] = str) -> None:
+    def __init__(self, provider: Provider, guard: Callable[[str], str]) -> None:
         self._provider, self._guard = provider, guard
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: Any) -> Any:
+        return handler(Any)  # browser-use validates its settings with this: accept any object
 
     @property
     def provider(self) -> str:
@@ -133,13 +160,30 @@ def to_actions(output: Any, state: Any) -> Iterator[FallbackAction]:
 class BrowserUseBackend:
     """Drive the open browser at `cdp_url` with browser-use, vetting every action first."""
 
-    def __init__(self, provider: Provider, cdp_url: str,
-                 guard: Callable[[str], str] = str) -> None:
+    def __init__(self, provider: Provider, cdp_url: str, guard: Callable[[str], str],
+                 allowed_domains: list[str] | None = None) -> None:
         self.provider, self.cdp_url, self.guard = provider, cdp_url, guard
+        self.allowed_domains = allowed_domains or []
+
+    @classmethod
+    def for_session(cls, provider: Provider, session: Any,
+                    guard: Callable[[str], str] | None = None) -> BrowserUseBackend:
+        """Attach to the browser `session` already opened (D-075); never launch another.
+        `guard` defaults to the session's secret scrubber, never to the identity function."""
+        cdp_url = session.cdp_url
+        if cdp_url is None:
+            raise ActuatorError("the session exposes no CDP endpoint; "
+                                "construct BrowserSession(..., expose_cdp=True)")
+        domains = [f"*.{d}" for d in session.project.allowed_domains]  # browser-use's own check
+        return cls(provider, cdp_url, guard or session.secrets.redactor().scrub, domains)
 
     def run(self, task: str, vet: Vet, *, max_steps: int, timeout_s: float) -> object:
         with ThreadPoolExecutor(max_workers=1) as pool:  # never inside a caller's running loop
             return pool.submit(asyncio.run, self._drive(task, vet, max_steps, timeout_s)).result()
+
+    def _profile(self) -> dict[str, Any]:
+        domains = {"allowed_domains": self.allowed_domains} if self.allowed_domains else {}
+        return {**PROFILE, **domains}
 
     async def _drive(self, task: str, vet: Vet, max_steps: int, timeout_s: float) -> dict:
         _load()
@@ -151,6 +195,7 @@ class BrowserUseBackend:
 
         def on_step(state: Any, output: Any, _n: int) -> None:
             try:
+                getattr(vet, "landed", lambda _url: None)(state.url)  # X7, before acting
                 for action in to_actions(output, state):
                     vet(action)
                     taken.append(action)
@@ -160,7 +205,8 @@ class BrowserUseBackend:
                 raise
 
         agent = Agent(task=task, llm=ProviderChatModel(self.provider, self.guard),
-                      browser_session=BuSession(cdp_url=self.cdp_url), use_vision=False,
+                      browser_session=BuSession(cdp_url=self.cdp_url, **self._profile()),
+                      use_vision=False,
                       register_new_step_callback=on_step, max_failures=1)
         try:
             history = await asyncio.wait_for(agent.run(max_steps=max_steps), timeout_s)

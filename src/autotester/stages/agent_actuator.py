@@ -23,6 +23,7 @@ from typing import Protocol
 
 from pydantic import ValidationError
 
+from autotester.browser.secrets import host_of
 from autotester.browser.session import BrowserSession, NavigationRefused, check_destination
 from autotester.schema.agent_fallback import (
     ActuatorResult,
@@ -42,7 +43,13 @@ DEFAULT_WALL_CLOCK_S = 120.0
 _WRITE_KINDS = frozenset({FallbackActionKind.FILL, FallbackActionKind.SELECT,
                           FallbackActionKind.UPLOAD})
 _ELEMENT_KINDS = _WRITE_KINDS | {FallbackActionKind.CLICK}
-_SUBMIT_KEYS = frozenset({"enter", "return"})
+_MODIFIERS = frozenset({"control", "ctrl", "shift", "alt", "meta", "command", "cmd",
+                        "controlormeta"})
+_SAFE_KEYS = frozenset({"tab", "escape", "esc", "arrowup", "arrowdown", "arrowleft",
+                        "arrowright", "pageup", "pagedown", "home", "end"})
+"""Under read_only an agent may press only these (after stripping modifiers): none can submit,
+type or delete. An allow-list, not a deny-list of "enter": NumpadEnter, Control+Enter, a typed
+string ending in a newline and the unknown-key-is-typed fallback all slip past a deny-list."""
 
 Vet = Callable[[FallbackAction], None]
 
@@ -67,6 +74,13 @@ class ActuatorBackend(Protocol):
     """An agent that drives the page. It must call `vet(action)` before each action it takes."""
 
     def run(self, task: str, vet: Vet, *, max_steps: int, timeout_s: float) -> object: ...
+
+
+def only_safe_keys(value: str | None) -> bool:
+    """True when every key in `value` ('Shift+Tab', 'Tab Tab') is a navigation key."""
+    keys = (value or "").split()
+    mains = [[p for p in key.lower().split("+") if p not in _MODIFIERS] for key in keys]
+    return bool(keys) and all(len(m) == 1 and m[0] in _SAFE_KEYS for m in mains)
 
 
 def parse_result(raw: object) -> ActuatorResult:
@@ -115,6 +129,18 @@ class ActionGuard:
             raise ActionRefused(reason)
         self.vetted.append(action)
 
+    def landed(self, url: str | None) -> None:
+        """X7: the page the agent is on NOW must be inside the allowed domains. Called after
+        actions have run (redirects, open redirects, JS navigation, hrefless clicks); an
+        off-scope page is a blocked step -- the agent stops here and the run says so."""
+        try:
+            check_destination(self.project, url or "")
+        except NavigationRefused as exc:
+            reason = f"landed outside allowed domains: {exc}"
+            self.refusals.append(f"landed on {host_of(url or '') or 'an unparseable page'}: "
+                                 f"{reason}")
+            raise ActionRefused(reason) from exc
+
     def refusal(self, action: FallbackAction) -> str | None:
         """Why `action` must not run, or None. The order mirrors `explore_safety.deny_reason`."""
         if action.kind is FallbackActionKind.NAVIGATE and not action.url:
@@ -127,14 +153,25 @@ class ActionGuard:
         read_only = self.policy.write_policy is WritePolicy.READ_ONLY
         if read_only and action.kind in _WRITE_KINDS:
             return f"{action.kind.value} is a write; refused under read_only"
-        if read_only and action.kind is FallbackActionKind.PRESS_KEY \
-                and (action.value or "").lower() in _SUBMIT_KEYS:
-            return "enter can submit a form; refused under read_only"
+        if (read_only and action.kind is FallbackActionKind.PRESS_KEY
+                and not only_safe_keys(action.value)):
+            return (f"key {action.value!r} is not a navigation key and could submit or type; "
+                    "refused under read_only")
         if action.kind in _ELEMENT_KINDS:
             element = ElementRef(role=action.role, name=action.target, selector=action.target,
                                  is_form_submit=action.is_form_submit)
             return deny_reason(element, self.policy)
         return None
+
+
+def _landing_url(session: BrowserSession) -> str:
+    """Where the shared page really is after the agent finished. `page.url` alone can be stale
+    (the agent drove it over CDP while this thread was parked), so ask the page itself."""
+    page = session.page
+    try:
+        return str(page.evaluate("location.href"))
+    except Exception:
+        return str(page.url)
 
 
 class FallbackActuator:
@@ -158,6 +195,7 @@ class FallbackActuator:
         try:
             raw = self.backend.run(task, guard, max_steps=self.max_steps,
                                    timeout_s=self.wall_clock_s)
+            guard.landed(_landing_url(session))
             return self._finish(raw, guard)
         except BoundExhausted as exc:
             return self._ended(FallbackStatus.BOUND_EXHAUSTED, str(exc), guard)

@@ -8,6 +8,7 @@ into `session.py` so nothing else needs to know it moved.
 from __future__ import annotations
 
 import os
+import socket
 from pathlib import Path
 from typing import Any
 
@@ -25,8 +26,24 @@ only when a caller opts in via `record_video_dir` below -- this constant is
 never read unless recording is on."""
 
 
+CDP_HOST = "127.0.0.1"
+"""The only interface a Chrome DevTools endpoint is ever bound to (D-075, T-177 F3)."""
+
+
+def loopback_port() -> int:
+    """A free TCP port on `CDP_HOST`, chosen by the OS (never a fixed or guessable one)."""
+    with socket.socket() as probe:
+        probe.bind((CDP_HOST, 0))
+        return int(probe.getsockname()[1])
+
+
+def cdp_endpoint(port: int) -> str:
+    return f"http://{CDP_HOST}:{port}"
+
+
 def launch_options(
-    project: Project, paths: ProjectPaths, *, record_video_dir: Path | None = None
+    project: Project, paths: ProjectPaths, *, record_video_dir: Path | None = None,
+    cdp_port: int | None = None,
 ) -> dict[str, Any]:
     """Arguments for `launch_persistent_context` (B5): headed by default, own profile.
 
@@ -41,6 +58,10 @@ def launch_options(
     single-choke-point requirement) -- omitted by default, so every caller
     that does not pass it (crawl explorer, manual login, every existing test)
     is unchanged, no video, no behavior change (C2).
+
+    `cdp_port` (T-177 F3, D-075): when given, Chromium also serves DevTools on that port,
+    bound to `CDP_HOST` only, so the browser-use fallback can attach to THIS browser instead
+    of launching a second one. Omitted by default: no debug port exists unless a caller asks.
     """
     paths.profile_dir.mkdir(parents=True, exist_ok=True)
     slow_mo_ms = int(os.environ.get("AUTOTESTER_SLOW_MO_MS", "0") or "0")
@@ -61,6 +82,9 @@ def launch_options(
             "--disable-dev-shm-usage",
         ],
     }
+    if cdp_port is not None:
+        options["args"] += [f"--remote-debugging-address={CDP_HOST}",
+                            f"--remote-debugging-port={cdp_port}"]
     if record_video_dir is not None:
         record_video_dir.mkdir(parents=True, exist_ok=True)
         options["record_video_dir"] = str(record_video_dir)

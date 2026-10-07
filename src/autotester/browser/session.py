@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,9 +9,9 @@ from typing import Any
 
 from autotester.browser import assertions
 from autotester.browser.evidence import MASK_ATTR, MASK_CSS, EvidenceMixin
-from autotester.browser.launch import launch_options
+from autotester.browser.launch import cdp_endpoint, launch_options, loopback_port
 from autotester.browser.locators import LocatorMixin
-from autotester.browser.secrets import SecretStore, host_of
+from autotester.browser.secrets import SecretStore, bad_scheme, host_of
 from autotester.browser.video import VIDEO_DIR_NAME, VideoMixin
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import PLACEHOLDER_RE
@@ -55,9 +54,10 @@ def check_destination(project: Project, url: str) -> str:
     """Return the host if `url` is inside the project's domains, else raise (B6).
     AT-341: `url` can carry a resolved secret (AT-076), so the message never
     embeds `url` itself — only the already-extracted, never-secret HOST."""
-    host = host_of(url)
-    if not host or not project.allows_domain(host):
-        where = f"host {host!r}" if host else "an unparseable destination"
+    host, bad = host_of(url), bad_scheme(url)
+    if bad or not host or not project.allows_domain(host):
+        where = (f"scheme {bad!r} (only http and https)" if bad else
+                 f"host {host!r}" if host else "an unparseable destination")
         raise NavigationRefused(f"{where} is outside allowed domains {project.allowed_domains}")
     return host
 
@@ -67,14 +67,14 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
 
     def __init__(self, project: Project, secrets: SecretStore, run_dir: Path,
                  paths: ProjectPaths | None = None, *, observer: Any | None = None,
-                 record_video: bool = False) -> None:
+                 record_video: bool = False, expose_cdp: bool = False) -> None:
         self.budget: RunBudget | None = None
         self.project = project
         self.secrets = secrets
         self.paths = paths or ProjectPaths(project.slug)
         self.state = SessionState(run_dir=run_dir)
         self.observer = observer
-        self.record_video = record_video
+        self.record_video, self.expose_cdp, self._cdp_port = record_video, expose_cdp, None
         self._video_case_id: str | None = None
         self._video_scratch_id = uuid.uuid4().hex[:12]  # ISS-t191-run-video-1: isolates siblings
         self._playwright: Any = None
@@ -92,8 +92,10 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
         if self.budget is not None:
             self.budget.check_start()
             timeout = self._timeout()
+        self._cdp_port = loopback_port() if self.expose_cdp else None
         self._context = self._playwright.chromium.launch_persistent_context(
-            **launch_options(self.project, self.paths, record_video_dir=video_dir), **timeout
+            **launch_options(self.project, self.paths, record_video_dir=video_dir,
+                             cdp_port=self._cdp_port), **timeout
         )
         self._page = self._context.pages[0] if self._context.pages else self._context.new_page()
         self._timeout()
@@ -107,24 +109,23 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
             if self._context is not None:
                 self._context.close()
         finally:
-            self._context = self._page = None
+            self._context = self._page = self._cdp_port = None
             if self._playwright is not None:
                 self._playwright.stop()
                 self._playwright = None
             if self.record_video:
                 self._sweep_orphan_videos()
 
-    def _sweep_orphan_videos(self) -> None:
-        """Sweep only this session's video scratch, never a sibling's (V1)."""
-        scratch = self.state.run_dir / VIDEO_DIR_NAME / self._video_scratch_id
-        if scratch.is_dir():
-            shutil.rmtree(scratch, ignore_errors=True)
-
     def __enter__(self) -> BrowserSession:
         return self.start()
 
     def __exit__(self, *_exc: object) -> None:
         self.close()
+
+    @property
+    def cdp_url(self) -> str | None:
+        """Loopback DevTools endpoint of THIS browser, or None (not started / not exposed)."""
+        return cdp_endpoint(self._cdp_port) if self._context and self._cdp_port else None
 
     @property
     def page(self) -> Any:
