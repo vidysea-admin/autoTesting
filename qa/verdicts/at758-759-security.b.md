@@ -1,0 +1,61 @@
+# Verdict B (blind coordinator) - at758-759-security
+
+Date: 2026-10-07. Bound: D:/autoTesting (worktree D:/autoTesting/.worktrees/at758-759-security). Unit tip b9ce7983 (tree 4afe5be6), base af8f3218. Coordinator B of a dual check. Policy-Version: proportional-verification/2026-10-06.6. Resume: 1 of 2 (the brief was re-sent after a session-limit reset; that wait is blocked time).
+Blindness: I never opened coordinator A's verdict or evidence. Disclosure: one `sed -n 1,6p` glob over qa/checkpoints/*.md printed the first lines of A's checkpoint (a heading and a "Bound:" line only); no finding, verdict or evidence was in those lines.
+
+VERDICT: CONTINUE-NEEDED
+SCOREBOARD: criteria 1-5 evidenced as far as the instrument ran (see below); the mandatory full suite is NOT evidenced, so no PASS. Invariants not scored separately.
+TIER: L (security/auth: Host/Origin guard on every UI request, `ui/helpers.py` `_OriginGuard.__call__`; approval coverage `stages/explore_consent.py` `covering_approval`; protected conftest edit `tests/conftest.py:59`). Dual check confirmed.
+
+## Check plan (step 0)
+Logic changed -> affected tests + falsification. Security/auth -> attacker probes (live uvicorn, raw sockets, fuzz). Protected conftest edit -> justification run. No UI surface changed -> no Mode D, no persona walk (backend-only; a refused Host gets an empty 403). Full suite: mandatory once for a security L unit (policy .7); trigger `conftest edit` plus the guard now covering every UI request.
+
+## What I ran and found
+
+1. DNS rebinding, AT-758 (real uvicorn on 127.0.0.1:8765, `--http h11` and `--http httptools`, raw sockets, a seeded project with a saved credential, `GET /projects/demo/env`).
+   - 200 with the value for: `127.0.0.1:port`, `localhost:port`, `LOCALHOST:port`, `[::1]:port`, `localhost:` (empty port), a tab-led value, and a loopback Host plus `X-Forwarded-Host: evil.example` (the guard ignores XFH, correct).
+   - 403 and no value for: `evil.example`, `evil.example:port`, `localhost.evil.com`, `127.0.0.1.nip.io`, `localhost.` (trailing dot), `[::ffff:127.0.0.1]`, `localhost@evil.example`, `evil.example@localhost:port`, `localhost:80@evil.example`, empty Host, `localhost, evil.example`, `localhost:port:9`, `localhost:99999`, `localhost%2f...`, `localhost\@evil`, `localhost#.evil`, fullwidth `ｌocalhost`, `0.0.0.0`, `127.1`, `2130706433`, `127.0.0.2`, an evil Host with `X-Forwarded-Host` or `Forwarded: host=localhost`, and an absolute-form target with an evil Host.
+   - Absent Host: 400 under h11, 403 under httptools (never 200). Duplicate Host (loopback+evil in either order, mixed-case names): 400 under h11, 403 under httptools. So the guard's own duplicate check is reachable only under httptools and TestClient; h11 refuses first.
+   - No bypass found.
+2. Fuzz: 252,059 generated Host strings (atoms: loopback names, `@ : / ? # \ % [ ]`, whitespace, dots, ports, unicode dots) against a strict regex oracle. No string with a non-loopback hostname was accepted; the 179 accepted-but-not-in-oracle strings all have a loopback hostname plus an empty query/fragment/port or whitespace (browsers cannot send them). Origin fuzz: 166,275 strings, 106 lenient, all loopback hostnames with empty userinfo or a fragment (an Origin never carries a fragment). No non-loopback origin accepted.
+3. Origin, AT-760/761 (live): `http://localhost:PORT.evil.com` 403; duplicate Origin (loopback first or last) 403; `null` 403; `http://localhost@evil.example` 403; `http://localhost.evil.example` 403; cross-site Sec-Fetch-Site 403.
+4. AT-759 (throwaway copy, 115 tests of my own): a row minted for CRAWL, LIVE_CASE and READ, then the credential removed (value missing, value empty, `.env` deleted), the credential domain changed, the declaration dropped, or `allowed_domains` changed. Entry paths: `covering_approval`, `require_consent`, the `run_crawl` seam form (`require_consent` with a policy), CLI `_preflight_consent`, and the UI case-run gate `_require_live_case_approval`. All 64 non-skipped combinations were refused (ApprovalRequired / Exit / HTTPException) and minted no new row. A `base_url` change is not a bypass: the credential is still valid for the new target, so a new row is minted (D-068/CN11, unchanged). A human LIVE_CASE row still covers after each removal. A hand-signed account-derived ADVERSARIAL row is refused; a human ADVERSARIAL row still covers.
+   - Observation, contract-consistent, no finding: a row minted for key A is reused when A is removed and a different declared key B is provisioned, because CN5/CN11 say a row covers any run of the (project, kind, target) triple and the credential path re-validates B.
+   - Other direct `require_approval` callers: `stages/discover.py` (READ, target is a filesystem root, never matches a base_url row) and `scripts/check_crawl_approval.py` (diagnostic script, not a run entry).
+5. Falsification, each in its own copy (green before in the copy, edit, red after):
+   - host check removed: `1 passed` -> `1 failed` (the rebinding repro);
+   - Host port parse: `27 passed` -> `3 failed, 24 passed`;
+   - AT-759 fallback after credential unavailable `_require(rows, ..)`: `3 passed` -> `2 failed, 1 passed`;
+   - no-declaration branch `_require(rows, ..)`: `3 passed` -> `1 failed, 2 passed`;
+   - first pass (same copy method) also reddened: duplicate Origin count, duplicate Host count, Origin port parse, host lower(), empty-body 403, `human = []`, ADVERSARIAL in ACCOUNT_KINDS.
+   - Survivors, all non-blocking: (a) removing only `parts.username is not None` from `_host_allowed` leaves 27 tests green, so a Host like `x@localhost` is then accepted (hostname still loopback, no browser sends it): a test gap; (b) removing `if item != "*"` and the `not parts.hostname` clause also leave tests green, but both are equivalent mutants (a literal `*` entry only matches a Host of `*`; empty and trailing-dot hosts fail the exact lookup anyway).
+6. Protected conftest edit (`tests/conftest.py:59`, session autouse `_ui_test_host`): justified and hides no Host test. With the `setdefault` neutered in a copy, `tests/test_ui_runs.py` goes `6 passed` -> `5 failed, 1 passed` (every TestClient request names `testserver` and gets 403), so the fixture is what keeps the 52 UI test files meaningful. The real-default Host tests in `test_ui_origin_guard.py` all `monkeypatch.delenv("AUTOTESTER_ALLOWED_HOSTS")` first and then assert 403 for `testserver`, so they exercise the real default. No assertion was edited or weakened (the one edited existing line in `test_credential_run_approval.py` only gained a comment). Residual: `setdefault` leaves an operator-set `AUTOTESTER_ALLOWED_HOSTS` in place, so a hosted shell with that variable set fails UI tests loudly rather than hiding anything.
+7. Diff scope (4c): `git diff af8f3218 b9ce7983 --stat` touches the manifest, `helpers.py`, `explore_consent.py`, `conftest.py` and two test files; all are in "What changed". No function, class, route, test or config key is deleted or renamed. `_origin_allowed` is refactored onto `_listed` with the same behaviour plus the port check.
+8. Lint and doctor (suite worktree at b9ce7983): `uv run ruff check src tests scripts` -> `All checks passed!`; `uv run autotester doctor` -> `doctor: clean`. Line counts: app.py 300 (untouched), helpers.py 292, explore_consent.py 133, conftest.py 152, test_ui_origin_guard.py 209, test_credential_run_approval.py 300.
+
+## Why CONTINUE-NEEDED (mandatory evidence missing)
+The full suite is mandatory for this unit and is not evidenced:
+- Run 1 (`uv run pytest`, detached worktree at b9ce7983, started 16:14): the process disappeared at about 17:07 at 56% with no summary and no traceback (log `.work_pytest_run1_aborted.log` in the suite worktree). Before it vanished it showed 3 `F` at collection indices 524, 1300 and 1348, which I map by per-file collected counts to `tests/test_crawl_inventory_live.py`, `tests/test_mc_sessionstart_loop_status.py` (index 5 of 9) and `tests/test_media_real_ffmpeg.py` (index 0 of 2). The mapping is by position: likely, not proven.
+- Run 2 (`uv run pytest -rfE`, started 18:13): the process again disappeared silently at 727 tests (about 28%, in or next to `tests/test_env_loading.py`), exit 1, no summary. Run 2 had no `F` before it vanished.
+- Cause of both aborts: not proven. Both coincide with many other pytest sessions on the machine (several `.worktrees/*` venv pythons were running); an abrupt, summary-less end at different positions looks like an external kill, not a test failure. I filed no failure for it.
+- The pre-existing hang: `tests/test_mc_sessionstart_loop_status.py tests/test_media_real_ffmpeg.py tests/test_crawl_inventory_live.py` under `timeout 400` printed nothing (killed by the timeout) on both b9ce7983 and on a `git archive` of base af8f3218. It therefore reproduces on the base, is not caused by this unit, and is not counted against it (cause: the `test_crawl_inventory_live.py` hang the peer is fixing; I did not isolate which of the three files hangs).
+- Budget: even uninterrupted, the suite measured about 85 min here (12% per 10 min), above the L wall of 45 min.
+
+Remaining (copy into the next dispatch `Remaining:`):
+1. One uninterrupted full `uv run pytest` at b9ce7983 (no `-q`, no `-x`) on a quiet machine, with `tests/test_crawl_inventory_live.py` deselected by name and that hang recorded with its cause. Estimate 85-90 min wall; the maker should grant that wall (or a quiet window) because it exceeds the 45 min L budget by construction.
+2. Confirm the tests behind the 3 early `F`s (likely `test_mc_sessionstart_loop_status.py` [5] and `test_media_real_ffmpeg.py` [0]) fail the same way on base af8f3218; if they pass on base and fail on b9ce7983, that is a regression owned by this unit.
+
+Everything else on the plan (attacker probes, falsification, protected-fixture review, diff scope, lint, doctor) is complete and can be reused under the evidence identity in the checkpoint.
+
+CAPABILITY-COVERAGE: reproduced under my own single-hunk edits, 12 rows (see item 5); UNVERIFIED-by-checker (0)
+LIVE-BROWSER: not-applicable (backend-only: `ui/helpers.py` middleware and `stages/explore_consent.py`; no template or route changed)
+ISSUES-WRITTEN: none (dual coordinator)
+EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
+
+PROPOSED-ISSUE: {"severity":"low","type":"test-gap","title":"No test pins the userinfo clause of _host_allowed: removing `parts.username is not None` leaves tests/test_ui_origin_guard.py green (a Host `x@localhost` is then accepted)","file":"src/autotester/ui/helpers.py","fix":"add `evil.example@localhost` and `x@127.0.0.1:8000` to BAD_HOSTS"}
+PROPOSED-ISSUE: {"severity":"low","type":"hardening","title":"Duplicate Referer and Sec-Fetch-Site headers are still last-wins in origin_refusal (only Origin and Host are guarded for duplicates): a request with no Origin and Referer `https://evil.example/` then `http://localhost:PORT/` is accepted. Browsers cannot send a duplicate Referer, so low","file":"src/autotester/ui/helpers.py","fix":"extend the names.count check to referer and sec-fetch-site"}
+PROPOSED-ISSUE: {"severity":"low","type":"docs","title":"AUTOTESTER_ALLOWED_HOSTS is undocumented: access by a non-loopback name (hosted, LAN IP, docker via another name) now gets 403 on every request, and .env.example and docker-compose.yml say nothing (the manifest states this itself)","file":".env.example","fix":"document AUTOTESTER_ALLOWED_HOSTS next to AUTOTESTER_ALLOWED_ORIGINS before the T-203 deploy"}
+PROPOSED-ISSUE: {"severity":"medium","type":"process","title":"The full suite cannot finish inside the L wall (about 85 min vs 45) and aborted silently twice on a busy machine; tests/test_crawl_inventory_live.py hangs on base af8f3218 as well","file":"tests/test_crawl_inventory_live.py","fix":"fix or bound the hang (peer is on it); give a security L suite run a stated wall or a quiet window"}
+
+Resume: 1 of 2
+Metrics: start=2026-10-07T16:14:55+05:30 end=2026-10-07T18:56:00+05:30 wall_min=unavailable agent_min=unavailable blocked_min=unavailable suite_runs=2 repeat_runs=0 mutations=12 cycle=0 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-06.6
