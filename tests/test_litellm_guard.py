@@ -217,6 +217,40 @@ def test_neither_the_key_nor_the_endpoint_appears_in_an_error(
     assert "canary" not in text and "models.internal" not in text
 
 
+def test_an_exported_vendor_key_echoed_by_a_vendor_error_is_withheld(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """AT-790 (LL8): a vendor error that echoes a vendor-native key (here a Gemini
+    `?key=` URL) must not reach the ProviderError; only LITELLM_* was withheld."""
+    canary = "AIza-EXPORTED-CANARY-999"
+    install(monkeypatch, [RuntimeError(f"404 for https://vendor.test/v1/models?key={canary}")])
+    _with_key(monkeypatch)
+    monkeypatch.setenv("GEMINI_API_KEY", canary)
+    with pytest.raises(ProviderError) as info:
+        _provider("gemini/gemini-2.5-pro").judge("g", Answer)
+    assert canary not in str(info.value) and "gemini/gemini-2.5-pro" in str(info.value)
+
+
+def test_a_dotenv_value_echoed_by_a_vendor_error_is_withheld(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """AT-790 (LL8): any `.env` value, not only the LITELLM_* pair, is withheld."""
+    canary = "sk-ant-DOTENV-CANARY-777"
+    (tmp_path / ".env").write_text(f"ANTHROPIC_API_KEY={canary}\n", encoding="utf-8")
+    install(monkeypatch, [RuntimeError(f"auth failed for key {canary}")])
+    _with_key(monkeypatch)
+    with pytest.raises(ProviderError) as info:
+        _provider("anthropic/claude-sonnet-4-5").judge("g", Answer)
+    assert canary not in str(info.value)
+
+
+def test_an_extra_secret_echoed_by_a_vendor_error_is_withheld(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    install(monkeypatch, [RuntimeError(f"rejected login {SECRET}")])
+    _with_key(monkeypatch)
+    with pytest.raises(ProviderError) as info:
+        _provider(secrets=[SECRET]).judge("an unrelated prompt", Answer)
+    assert SECRET not in str(info.value)
+
+
 def test_unavailable_reason_names_the_model_and_the_variable_and_nothing_secret(
         monkeypatch: pytest.MonkeyPatch) -> None:
     install(monkeypatch, [], missing_keys=["OPENAI_API_KEY"])

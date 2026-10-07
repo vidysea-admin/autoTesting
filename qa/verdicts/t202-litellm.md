@@ -31,16 +31,16 @@ Mocks only: no external or paid call. The only sockets opened were loopback to a
 | Criterion | Result | Basis |
 |---|---|---|
 | LL1 spec grammar | MET | parse tests; 2 falsifications red |
-| LL2 one factory | MET | AST test, three-way TestClient tests, 2 falsifications red; the literal grep matches a comment at `ui/app.py:66` (AT-785, wording) |
+| LL2 one factory | MET | AST test, three-way TestClient tests, 2 falsifications red; the literal grep matches a comment at `ui/app.py:66` (AT-793, wording) |
 | LL3 validated or typed error | MET | 2 falsifications red |
 | LL4 roles | MET | falsification red |
 | LL5 guard before every call | MET | 4 provider tests red when the guard is removed, stage twin red when the stage call is removed |
 | LL6 no hidden retries | MET | falsification red; real-SDK probe showed 1 request on a 500 |
 | LL7 usage and trace | MET | falsification red |
-| LL8 endpoint and key handling | NOT MET | the error path withholds only `LITELLM_API_KEY`/`LITELLM_API_BASE`; a vendor-native key (exported `GEMINI_API_KEY` or any `.env` value) echoed by a vendor error reaches the ProviderError verbatim (AT-782) |
+| LL8 endpoint and key handling | NOT MET | the error path withholds only `LITELLM_API_KEY`/`LITELLM_API_BASE`; a vendor-native key (exported `GEMINI_API_KEY` or any `.env` value) echoed by a vendor error reaches the ProviderError verbatim (AT-790) |
 | LL9 Gemini dialect | MET | falsification red |
-| LL10 lazy, quiet | MET | 2 falsifications red; the telemetry wording is AT-785 |
-| LL11 availability and no-credentials error | MET for what exists | run and learn route refusals proven; the HO16 queue does not exist in this tree and the CLI line is generic (AT-784, ledger) |
+| LL10 lazy, quiet | MET | 2 falsifications red; the telemetry wording is AT-793 |
+| LL11 availability and no-credentials error | MET for what exists | run and learn route refusals proven; the HO16 queue does not exist in this tree and the CLI line is generic (AT-792, ledger) |
 | LL12 mock stays, no network | MET | falsification red; `test_providers`, `test_langchain_fallback`, `test_ensemble_honesty` are not in the diff |
 | LL13 dependency | MET | lock check, exact pin, additions only, falsification red |
 | LL14 design rules | MET | ruff, doctor, falsification red; module is 261 lines |
@@ -50,20 +50,20 @@ Mocks only: no external or paid call. The only sockets opened were loopback to a
 
 1. LL15 not built: a separate slice (plan unit 3), not a failure of LL1-LL14. T-202 stays open.
 2. LL16: human-gated by the contract; T-202's done_check stays open.
-3. LL11 partial: the queue does not exist yet and the CLI exits non-zero with a one-line message. Ledger row AT-784.
-4. Learn route 500 on a malformed spec: reproduced (500, plain text). LL1 requires only a typed error; not a criterion failure. Ledger row AT-783.
-5. Vertex `@` names: contract as written rejects them, so no failure. Ledger row AT-786, a product decision.
-6. `litellm.telemetry` absent: confirmed against the installed source and a real-SDK run (no telemetry mechanism, no non-loopback connection). Wording only, AT-785.
-7. Guard scan: floorless on every non-config `.env` value. A short value (`HEADLESS=1`) does false-refuse any prompt containing it, reproduced; it fails closed and cannot leak. The stage guard already behaves this way for the judge (AT-002), so the new surface is `act()` only. Ledger row AT-787. Leak direction: skipping `LITELLM_API_BASE` as config could let a userinfo-bearing URL through, but the explicit endpoint is also withheld in errors. No leak found on the prompt path.
+3. LL11 partial: the queue does not exist yet and the CLI exits non-zero with a one-line message. Ledger row AT-792.
+4. Learn route 500 on a malformed spec: reproduced (500, plain text). LL1 requires only a typed error; not a criterion failure. Ledger row AT-791.
+5. Vertex `@` names: contract as written rejects them, so no failure. Ledger row AT-794, a product decision.
+6. `litellm.telemetry` absent: confirmed against the installed source and a real-SDK run (no telemetry mechanism, no non-loopback connection). Wording only, AT-793.
+7. Guard scan: floorless on every non-config `.env` value. A short value (`HEADLESS=1`) does false-refuse any prompt containing it, reproduced; it fails closed and cannot leak. The stage guard already behaves this way for the judge (AT-002), so the new surface is `act()` only. Ledger row AT-795. Leak direction: skipping `LITELLM_API_BASE` as config could let a userinfo-bearing URL through, but the explicit endpoint is also withheld in errors. No leak found on the prompt path.
 8. Transitive lock packages: 36 added, none removed or bumped; consistent with D-071. Not a failure. The dependency review belongs to Umesh.
 9. The 12 retargeted tests: all 16 changed lines swap the patch target `LangChainFallbackProvider` to `for_role` (a lambda returning the same fake provider) or fix a docstring. No assertion deleted, weakened or reordered; no threshold or skip. Protected-change justification: accepted.
 
 ## Findings
 
 FAILURES:
-- [LL8] sev: high - a vendor error text that contains a vendor-native key or any `.env` value is returned in `ProviderError`. Reproduced: a fake SDK raising `RuntimeError("...?key=AIza-EXPORTED-CANARY-999")` with `GEMINI_API_KEY` exported, and `RuntimeError("auth failed for key sk-ant-DOTENV-CANARY-777")` with that value in `.env`, give messages containing both canaries (litellm_provider.py `_failure`, the `hidden` list built from `_endpoint()` only, read this check). The learn route prints the exception on its refusal page. Fix: reuse the `_guard` value set in `_failure` and add canary tests. issue: AT-782.
+- [LL8] sev: high - a vendor error text that contains a vendor-native key or any `.env` value is returned in `ProviderError`. Reproduced: a fake SDK raising `RuntimeError("...?key=AIza-EXPORTED-CANARY-999")` with `GEMINI_API_KEY` exported, and `RuntimeError("auth failed for key sk-ant-DOTENV-CANARY-777")` with that value in `.env`, give messages containing both canaries (litellm_provider.py `_failure`, the `hidden` list built from `_endpoint()` only, read this check). The learn route prints the exception on its refusal page. Fix: reuse the `_guard` value set in `_failure` and add canary tests. issue: AT-790.
 
-PROPOSED/FILED ledger rows (low): AT-783 learn route 500, AT-784 LL11 partial, AT-785 contract wording, AT-786 Vertex `@`, AT-787 short `.env` value false refusal, AT-788 30-character prompt-echo check.
+PROPOSED/FILED ledger rows (low): AT-791 learn route 500, AT-792 LL11 partial, AT-793 contract wording, AT-794 Vertex `@`, AT-795 short `.env` value false refusal, AT-796 30-character prompt-echo check.
 
 Scratch note (not a product finding): a first launch of my runner reused the shared scratchpad names `fals.py`, `fals.out` and `row0..row3`, so the maker's scratch copies of those may have been overwritten or removed. They were scratch only; my evidence lives in `scratchpad/ck-t202/`.
 
@@ -72,7 +72,7 @@ SCOREBOARD: 13/14 criteria met for the slice (LL8 not met; LL15, LL16 out of sli
 TIER: L (dependency pin `pyproject.toml:35`, credential guard `litellm_provider.py:_guard`; single checker)
 CAPABILITY-COVERAGE: 20/20 rows reproduced red, plus LL13 and LL14 red
 LIVE-BROWSER: not-applicable (the changed UI routes alter error handling only, no template or rendering change)
-ISSUES-WRITTEN: AT-782, AT-783, AT-784, AT-785, AT-786, AT-787, AT-788
+ISSUES-WRITTEN: AT-790, AT-791, AT-792, AT-793, AT-794, AT-795, AT-796
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
 EXPLANATION: Everything LL1-LL14 holds under my own falsifications and a real-SDK loopback run except LL8's "no key in any ProviderError": the error path withholds only the LITELLM_* values, so a vendor-native key echoed by a vendor error reaches the message and the learn page. The fix is small and local. The full suite did not finish inside the budget and is left for the repair cycle.
 Metrics: start=2026-10-07T18:49+05:30 end=2026-10-07T19:20+05:30 wall_min=31 agent_min=unavailable blocked_min=0 suite_runs=1 repeat_runs=0 mutations=22 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6

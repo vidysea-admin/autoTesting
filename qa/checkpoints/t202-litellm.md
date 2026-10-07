@@ -9,9 +9,9 @@ Completed checks (evidence identity: tree = d5c200b7 + qa ledger rows only; lock
 | lint | `ruff check src tests scripts` | passed |
 | doctor | `autotester doctor`; 337-line copy | clean / red |
 | real-SDK probe | litellm 1.104.0 vs loopback mock, `ck-t202/probe_real.py`, `probe_conn.py` | 1 request on 500, environ delta two flags, callbacks empty, loopback sockets only |
-| probes | `ck-t202/x1`, `x2` (learn 500, short .env false refusal, vertex @, vendor-key echo) | AT-782..AT-788 |
+| probes | `ck-t202/x1`, `x2` (learn 500, short .env false refusal, vertex @, vendor-key echo) | AT-790..AT-796 |
 | retargeted tests diff | `git diff 7782df41 d5c200b7` over the 12 files | no assertion weakened |
 
 Not completed (pending for the repair checker): the one full `uv run pytest`, started 2026-10-07 18:50 (no -q, no -x), about 38% at 19:16, log `D:/autoTesting/.work/t202-suite.log`. Reason: shared RAM and CPU with other checkers' suites; `D:/autoTesting/.work/suite.lock` was held by t190-ux and the checker was denied stopping its own process. One `F` was seen near 20%; node unidentified. Run once on the repaired tree.
 
-Repair checker should re-run: LL8 (AT-782 canary tests plus a falsification that empties the new withhold set), the affected tests for the fix diff, and the full suite.
+Repair checker should re-run: LL8 (AT-790 canary tests plus a falsification that empties the new withhold set), the affected tests for the fix diff, and the full suite.

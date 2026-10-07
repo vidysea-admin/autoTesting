@@ -180,21 +180,26 @@ class LiteLLMProvider(Provider):
                 continue
         return "json"
 
-    def _guard(self, messages: list[dict[str, Any]]) -> None:
+    def _secret_values(self) -> list[str]:
+        """The ONE secret-value set: `.env` values, exported vendor keys and the
+        `secrets` option. The prompt guard refuses these going out and `_failure`
+        withholds them coming back (LL5, LL8)."""
         exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]
-        values = [*_env_secret_values(), *exported, *self._extra_secrets]
+        return [*_env_secret_values(), *exported, *self._extra_secrets]
+
+    def _guard(self, messages: list[dict[str, Any]]) -> None:
         try:
-            assert_no_raw_secrets("\n".join(_texts(messages)), values)
+            assert_no_raw_secrets("\n".join(_texts(messages)), self._secret_values())
         except ValueError:
             raise ProviderError(
                 f"{self.label}: prompt withheld, a credential value reached it") from None
 
     def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:
         """A vendor failure, with the exception text kept only when it provably
-        echoes none of the prompt, the key or the endpoint (LL8)."""
+        echoes none of the prompt, the endpoint or any secret value (LL8)."""
         text = str(exc)
         echoed = any(t[:30] in text for t in _texts(messages) if t)
-        hidden = [v for v in self._endpoint().values() if v]
+        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]
         if echoed or any(v in text for v in hidden) or len(text) > 300:
             text = "(details withheld)"
         return f"{self.label} {role} call failed: {type(exc).__name__}: {text}"
