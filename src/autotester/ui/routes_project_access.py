@@ -31,6 +31,10 @@ def _people(title: str, emails: list[str]) -> str:
 def project_access_view(slug: str) -> str:
     _store, project = _load_project_or_404(slug)
     res = resource_for(slug)
+    who = current_principal()  # the team's emails are for those who manage access, not viewers
+    managing = (PermissionKey.PROJECT_ASSIGN, PermissionKey.ACCESS_APPROVE)
+    if who is None or not any(authorize(who, k, res) for k in managing):
+        raise HTTPException(403, "you do not have permission for this action")
     form = (
         f"<form method='post' action='/projects/{escape(slug)}/access'>"
         "<div class='field'><label for='email'>Account email</label>"
@@ -42,7 +46,7 @@ def project_access_view(slug: str) -> str:
         "name='change'><option value='add'>add</option><option value='remove'>remove"
         "</option></select></div><button class='btn' type='submit'>Save</button></form>"
     )
-    body = (theme.breadcrumb(("Projects", "/"), (escape(project.name), f"/projects/{slug}"),
+    body = (theme.breadcrumb(("Projects", "/"), (escape(project.name), f"/projects/{escape(slug)}"),
                              ("Access", None))
             + "<h1>Access</h1>"
             + theme.card(_people("Owner", [res.owner_email] if res.owner_email else [])

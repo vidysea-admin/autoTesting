@@ -8,17 +8,16 @@ change may leave the store without an enabled admin (AU9).
 
 from __future__ import annotations
 
-import os
 import sqlite3
 from datetime import datetime
 
-from autotester.auth import db
+from autotester.auth import access, db
+from autotester.auth.config import first_admin_email, public_facing
 from autotester.auth.passwords import hash_password, needs_rehash, verify_password
-from autotester.schema.auth import User
+from autotester.schema.auth import Principal, User
 
 MAX_EMAIL_LENGTH = 254
 MAX_DISPLAY_NAME = 80
-FIRST_ADMIN_ENV = "AUTOTESTER_FIRST_ADMIN_EMAIL"
 
 
 class AccountError(ValueError):
@@ -49,10 +48,14 @@ def _load(conn: sqlite3.Connection, user_id: int) -> User:
 
 
 def _becomes_first_admin(conn: sqlite3.Connection, address: str) -> bool:
-    """AU7: with no accounts yet, the signup becomes admin. With
-    AUTOTESTER_FIRST_ADMIN_EMAIL set, only that address can, while no admin exists."""
-    wanted = os.environ.get(FIRST_ADMIN_ENV, "").strip().lower()
+    """AU7 / D-074 (d): with AUTOTESTER_FIRST_ADMIN_EMAIL set, only that address can become
+    the first admin, while no admin exists. Unset: on a local loopback server the first
+    account becomes admin; on a hosted / non-loopback server nobody does (the CLI
+    `bootstrap-admin` creates the first admin)."""
+    wanted = first_admin_email()
     if not wanted:
+        if public_facing():
+            return False
         return conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
     admin = db.admin_group_id(conn)
     has_admin = admin is not None and conn.execute(
@@ -118,8 +121,9 @@ def list_users() -> list[User]:
 
 
 def _update(sql: str, args: tuple, user_id: int, end_sessions: bool,
-            deleting: bool = False) -> None:
+            deleting: bool = False, actor: Principal | None = None) -> None:
     with db.transaction() as conn:
+        access.require_may_touch(conn, actor, user_id)
         if conn.execute(sql, args).rowcount == 0:
             raise AccountError("no such account")
         if end_sessions:
@@ -127,22 +131,23 @@ def _update(sql: str, args: tuple, user_id: int, end_sessions: bool,
         db.ensure_an_admin_remains(conn, after_delete=deleting)
 
 
-def set_disabled(user_id: int, disabled: bool) -> None:
+def set_disabled(user_id: int, disabled: bool, actor: Principal | None = None) -> None:
     _update("UPDATE users SET disabled = ? WHERE id = ?", (int(disabled), user_id),
-            user_id, end_sessions=disabled)
+            user_id, end_sessions=disabled, actor=actor)
 
 
-def delete_user(user_id: int) -> None:
+def delete_user(user_id: int, actor: Principal | None = None) -> None:
     """Sessions, memberships and project relations go with the account (ON DELETE
     CASCADE), so a project it owned has no owner afterwards (AU8)."""
     _update("DELETE FROM users WHERE id = ?", (user_id,), user_id, end_sessions=False,
-            deleting=True)
+            deleting=True, actor=actor)
 
 
-def reset_password(user_id: int, password: str) -> None:
-    """Admin reset: a new hash and every existing session of that user revoked (AU8)."""
+def reset_password(user_id: int, password: str, actor: Principal | None = None) -> None:
+    """Admin reset: a new hash and every existing session of that user revoked (AU8).
+    Only an Admin/CEO member may reset an admin's password (P5)."""
     _update("UPDATE users SET password_hash = ? WHERE id = ?",
-            (hash_password(password), user_id), user_id, end_sessions=True)
+            (hash_password(password), user_id), user_id, end_sessions=True, actor=actor)
 
 
 def set_display_name(user_id: int, name: str) -> None:
@@ -153,14 +158,19 @@ def set_display_name(user_id: int, name: str) -> None:
             user_id, end_sessions=False)
 
 
-def set_user_groups(user_id: int, group_ids: list[int]) -> None:
-    """Replace the account's group memberships with exactly `group_ids`."""
+def set_user_groups(user_id: int, group_ids: list[int],
+                    actor: Principal | None = None) -> None:
+    """Replace the account's group memberships with exactly `group_ids`. With an `actor`
+    (P5): only an Admin/CEO member changes Admin/CEO membership, and a group may be added
+    only if the actor holds every permission it carries (users.manage alone never mints
+    more access than its holder has)."""
     with db.transaction() as conn:
         if conn.execute("SELECT 1 FROM users WHERE id = ?", (user_id,)).fetchone() is None:
             raise AccountError("no such account")
         known = {r["id"] for r in conn.execute("SELECT id FROM groups")}
         if not set(group_ids) <= known:
             raise AccountError("unknown group")
+        access.require_may_regroup(conn, actor, user_id, set(group_ids))
         conn.execute("DELETE FROM memberships WHERE user_id = ?", (user_id,))
         conn.executemany("INSERT INTO memberships (user_id, group_id) VALUES (?, ?)",
                          [(user_id, g) for g in sorted(set(group_ids))])

@@ -6,8 +6,6 @@ are argon2id m=64 MiB, t=3, p=4 with a per-hash random salt."""
 
 from __future__ import annotations
 
-from functools import lru_cache
-
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatchError
 
@@ -33,16 +31,15 @@ def hash_password(password: str) -> str:
     return _HASHER.hash(password)
 
 
-@lru_cache(maxsize=1)
-def _dummy_hash() -> str:
-    return _HASHER.hash("timing-equaliser-not-a-password")
+# Hashed once at import, not on the first unknown-email login (which would answer slower).
+_DUMMY_HASH = _HASHER.hash("timing-equaliser-not-a-password")
 
 
 def verify_password(stored_hash: str | None, password: str) -> bool:
     """True only on a match. An unknown account still pays one verify, so the
     response time does not reveal which emails have accounts."""
     try:
-        return _HASHER.verify(stored_hash or _dummy_hash(), password) and stored_hash is not None
+        return _HASHER.verify(stored_hash or _DUMMY_HASH, password) and stored_hash is not None
     except (VerifyMismatchError, VerificationError, InvalidHashError):
         return False
 

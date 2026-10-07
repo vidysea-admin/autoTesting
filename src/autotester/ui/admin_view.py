@@ -61,8 +61,10 @@ def permission_boxes(selected: set[str]) -> str:
             values = ([key.value] if not CATALOGUE[key]
                       else [f"{key.value}@{s.value}" for s in CATALOGUE[key]])
             boxes = "".join(
-                f"<label style='margin-right:10px'><input type='checkbox' name='permission' "
-                f"value='{v}'{' checked' if v in selected else ''}> "
+                f"<label for='perm-{v}' style='margin-right:10px'>"
+                f"<input type='checkbox' id='perm-{v}' name='permission' value='{v}' "
+                f"aria-label='{escape(v.replace('@', ' ').replace('.', ' '))}'"
+                f"{' checked' if v in selected else ''}> "
                 f"{escape(v.partition('@')[2] or 'on')}</label>" for v in values)
             items.append(f"<div><code>{key.value}</code>: {boxes}</div>")
         sections.append(f"<fieldset><legend>{escape(heading)}</legend>{''.join(items)}"

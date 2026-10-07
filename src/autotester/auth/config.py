@@ -10,6 +10,7 @@ import sys
 HOSTED_ENV = "AUTOTESTER_HOSTED"
 DISABLED_ENV = "AUTOTESTER_AUTH_DISABLED"
 COOKIE_SECURE_ENV = "AUTOTESTER_COOKIE_SECURE"
+FIRST_ADMIN_ENV = "AUTOTESTER_FIRST_ADMIN_EMAIL"
 _LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 
@@ -39,6 +40,16 @@ def auth_disabled() -> bool:
     return not hosted() and bind_host() in _LOOPBACK
 
 
+def public_facing() -> bool:
+    """Hosted, or bound to something other than loopback: anyone who can reach the server
+    can sign up, so the first signup must not be handed admin (D-074 (d))."""
+    return hosted() or bind_host() not in _LOOPBACK
+
+
+def first_admin_email() -> str:
+    return os.environ.get(FIRST_ADMIN_ENV, "").strip().lower()
+
+
 def check_startup() -> None:
     """Raise AuthConfigError on a configuration the gate must refuse (AU17, AU20)."""
     if os.environ.get(DISABLED_ENV, "").strip() == "1":
@@ -48,6 +59,11 @@ def check_startup() -> None:
                 "is not loopback")
         print(f"WARNING: {DISABLED_ENV}=1 -- login is OFF (loopback, single-user only)",
               file=sys.stderr)
+    if public_facing() and not first_admin_email():
+        print(f"WARNING: {FIRST_ADMIN_ENV} is not set on a hosted / non-loopback server: no "
+              "signup will be made an admin. Create the first admin with "
+              "`autotester auth bootstrap-admin --email <address> --password-stdin`, or set "
+              f"{FIRST_ADMIN_ENV} in the server's .env (D-074).", file=sys.stderr)
     if hosted() and not (os.environ.get("AUTOTESTER_ALLOWED_HOSTS", "").strip()
                          or os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").strip()):
         raise AuthConfigError(

@@ -15,17 +15,15 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from autotester.browser.secrets import parse_env
 from autotester.core.paths import repo_root
 from autotester.ui import theme
+from autotester.ui.credential_guard import PROVIDER_KEYS
 from autotester.ui.env_editor import InvalidEnvValue, set_env_value
 from autotester.ui.routes_credentials import can_view_credentials
 
 router = APIRouter()
 
 # The complete, closed set this page manages (US1) -- a new provider key is a
-# code change here, not a dynamic field.
-_PROVIDER_KEYS = (
-    "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY",
-    "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OPENAI_API_KEY",
-)
+# code change in ui/credential_guard.py, not a dynamic field.
+_PROVIDER_KEYS = PROVIDER_KEYS
 
 
 def _present_keys() -> dict[str, str]:

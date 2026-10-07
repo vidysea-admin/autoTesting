@@ -15,7 +15,7 @@ from autotester.auth.accounts import AccountError, authenticate, normalize_email
 from autotester.auth.config import cookie_secure
 from autotester.auth.context import current_principal
 from autotester.auth.passwords import WeakPassword
-from autotester.auth.ratelimit import login_limiter
+from autotester.auth.ratelimit import login_limiter, signup_limiter
 from autotester.auth.sessions import create_session, end_session, session_hours
 from autotester.ui import auth_view
 from autotester.ui.auth_middleware import SESSION_COOKIES, safe_next, session_token
@@ -24,6 +24,7 @@ router = APIRouter()
 
 _LOGIN_FAILED = "That email and password do not match an active account."
 _TOO_MANY = "Too many sign-in attempts. Wait a few minutes and try again."
+_TOO_MANY_SIGNUPS = "Too many sign-up attempts from this address. Wait a few minutes."
 
 
 def _signed_in(request: Request, user_id: int, has_access: bool, next_path: str) -> Response:
@@ -69,6 +70,10 @@ def auth_signup_form() -> str:
 @router.post("/auth/signup")
 def auth_signup_submit(request: Request, email: str = Form(""),
                        password: str = Form("")) -> Response:
+    address = request.client.host if request.client else "unknown"
+    if signup_limiter.blocked(address, address):
+        return HTMLResponse(auth_view.signup_page(_TOO_MANY_SIGNUPS), status_code=429)
+    signup_limiter.record_failure(address, address)  # every attempt counts: each costs one hash
     try:
         user = signup(email, password)
     except (AccountError, WeakPassword) as exc:

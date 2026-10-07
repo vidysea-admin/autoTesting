@@ -11,7 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from autotester.auth import accounts, groups
-from autotester.auth.ratelimit import login_limiter
+from autotester.auth.ratelimit import login_limiter, signup_limiter
 from autotester.schema.project import Project
 from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app
@@ -20,8 +20,7 @@ PASSWORD = "correct-horse-battery"
 ADMIN = "admin@team.test"
 _CLEARED = ("AUTOTESTER_AUTH_DIR", "AUTOTESTER_AUTH_DISABLED", "AUTOTESTER_HOSTED",
             "AUTOTESTER_FIRST_ADMIN_EMAIL", "AUTOTESTER_COOKIE_SECURE",
-            "AUTOTESTER_ALLOWED_HOSTS", "AUTOTESTER_ALLOWED_ORIGINS",
-            "AUTOTESTER_SESSION_HOURS")
+            "AUTOTESTER_ALLOWED_ORIGINS", "AUTOTESTER_SESSION_HOURS", "UVICORN_HOST")
 
 
 def gate_on(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
@@ -32,7 +31,11 @@ def gate_on(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("AUTOTESTER_TEST_NO_AUTO_LOGIN", "1")
     for name in _CLEARED:
         monkeypatch.delenv(name, raising=False)
+    # The Host allow-list (wave/at758-759-security) refuses a Host outside it, and TestClient
+    # names its host `testserver`: list it, so these tests pass with AND without that branch.
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "testserver")
     login_limiter.reset()
+    signup_limiter.reset()
     return root
 
 

@@ -20,7 +20,7 @@ from starlette.routing import Match
 
 from autotester.auth import audit, policy
 from autotester.auth.access import authorize, resource_for
-from autotester.auth.config import auth_disabled
+from autotester.auth.config import auth_disabled, cookie_secure
 from autotester.auth.context import CURRENT_PRINCIPAL
 from autotester.auth.sessions import resolve_session
 from autotester.schema.auth import PermissionKey, Principal, RouteRule, all_permissions
@@ -32,16 +32,24 @@ ANONYMOUS = Principal()
 
 
 def session_token(request: Request) -> str | None:
-    for name in SESSION_COOKIES:
+    """The session cookie value. Where login sets the Secure `__Host-` cookie (AU3), only
+    that name is read: accepting the plain name too would let a sibling subdomain or a
+    plain-HTTP response plant a session (cookie tossing), which is what the prefix stops."""
+    names = SESSION_COOKIES[:1] if cookie_secure(request.url.scheme) else SESSION_COOKIES
+    for name in names:
         if request.cookies.get(name):
             return request.cookies[name]
     return None
 
 
+MAX_NEXT_LENGTH = 2048
+
+
 def safe_next(value: str | None) -> str:
-    """A same-site relative path, or "/" (AU16: no absolute URL, `//host`, scheme)."""
+    """A same-site relative path of at most MAX_NEXT_LENGTH characters, or "/" (AU16: no
+    absolute URL, `//host`, scheme; a 100 KB value must not come back in a header)."""
     if (not value or not value.startswith("/") or value.startswith("//") or "\\" in value
-            or any(ord(c) < 32 for c in value)):
+            or len(value) > MAX_NEXT_LENGTH or any(ord(c) < 32 for c in value)):
         return "/"
     return value
 
@@ -123,6 +131,10 @@ class _AuthGate:
         async def _send(message) -> None:
             if message["type"] == "http.response.start":
                 status.append(message["status"])
+                if who is not None:  # P8: a signed-in page is never cached (Back after sign-out)
+                    headers = [h for h in message.get("headers", [])
+                               if h[0].lower() != b"cache-control"]
+                    message = {**message, "headers": [*headers, (b"cache-control", b"no-store")]}
             await send(message)
 
         try:
