@@ -44,25 +44,44 @@ PLACEHOLDER_RE = re.compile(r"\{\{SECRET:([A-Z0-9_]+)\}\}")
 
 # AT-780: heuristic masks for personal data that is NOT a declared secret. They are guesses,
 # so they only ever turn a value into a stable placeholder ("<email>", "<phone>", "<name>").
-_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+")
-_PHONE_RES = (  # international (+CC ...), Indian spaced, 10 digits with optional 0/91, US dashed
-    re.compile(r"(?<![\w+])\+\d{1,3}(?:[\s().-]*\d){7,14}(?!\w)"),
-    re.compile(r"(?<![\w+])(?:\+?91[\s-]?)?[6-9]\d{4}[\s-]\d{5}(?!\w)"),
+# Emails are found by scanning outward from each "@" (linear; a regex over a long unspaced run
+# with no "@" is quadratic). Local parts and hosts are Unicode-aware, so IDN addresses count.
+_LOCAL_STOP = frozenset("<>()[]{},;:\"\\/|=&?#`@")
+_HOST_STOP = _LOCAL_STOP | {"'"}
+_HOST_TRAIL = ".-_!"
+_PHONE_RES = (  # intl (+CC ..), Indian mobile (grouped), 10 digits, US, Indian STD landline
+    re.compile(r"(?<![\w+])\(?\+\d{1,3}(?:[\s().-]*\d){7,14}(?!\w)"),
+    re.compile(r"(?<![\w+])(?:\(?\+?91\)?[\s.-]*|0[\s.-]?)?\(?[6-9](?:\d{4}\)?[\s.-]\d{5}|"
+               r"\d{2}[\s.-]\d{3}[\s.-]\d{4}|\d{3}[\s.-]\d{3}[\s.-]\d{3}|\d(?:[\s.-]\d{2}){4})(?!\w)"),
     re.compile(r"(?<![\w+])(?:0|91)?\d{10}(?!\w)"),
     re.compile(r"(?<![\w+])\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?!\w)"),
+    re.compile(r"(?<![\w+])\(?0\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{4}(?!\w)"),
 )
-_NAME_WORD = re.compile(r"\b(?:name|surname)\b", re.I)
-_NOT_PERSON_NAME = re.compile(
-    r"\b(?:user|file|course|program(?:me)?|university|college|school|institution|company|"
-    r"organi[sz]ation|project|team|city|state|country|branch|subject|degree|board|module|folder|"
-    r"tag|role|domain|host|display|screen|campaign|event|test|report|group|class|product)"
-    r"[\s_-]*name\b", re.I)
-_PERSON_ROLE = re.compile(
-    r"\b(?:student|parent|guardian|father|mother|applicant|candidate|spouse|nominee|referee|"
-    r"counsell?or|child)\b", re.I)
+_DEV = r"ऀ-ॿ"  # Devanagari block: its vowel signs are not \w, so \b misreads them
+_ORG = (r"user|file|course|program(?:me)?|university|college|school|institution|institute|company|"
+        r"organi[sz]ation|project|team|city|state|country|branch|subject|degree|board|module|"
+        r"folder|tag|role|domain|host|display|screen|campaign|event|test|report|group|class|"
+        r"product|bank|business|plan|partner|service|scholarship|template|agreement|brand|"
+        r"department|exam|venue|location|portal|package|category|title")
+_NAME_WORD = re.compile(  # name, surname, fname/lname/mname, nombre, Hindi naam
+    rf"(?<![\w{_DEV}])(?:name|surname|[fml]name|fullname|nombre|नाम)(?![\w{_DEV}])",
+    re.I)
+_NOT_PERSON_NAME = re.compile(  # "<org> name", "name of <org>"; Hindi university/college/course/..
+    rf"\b(?:{_ORG})[\s-]*name\b|\bname[\s-]*of[\s-]*(?:the[\s-]*)?(?:{_ORG})\b|"
+    r"विश्वविद्यालय|"
+    r"कॉलेज|पाठ्यक्रम|"
+    r"कोर्स|स्कूल|बैंक|"
+    r"कंपनी", re.I)
+_PERSON_ROLE = re.compile(  # English roles; Hindi pita, mata, chhatra, abhibhavak
+    r"\b(?:student|parent|guardian|father|mother|dad|daddy|mom|mum|mummy|papa|mama|applicant|"
+    r"candidate|spouse|nominee|referee|counsell?or|child)\b|"
+    rf"(?<![\w{_DEV}])(?:पिता|माता|छात्र|"
+    rf"अभिभावक)(?![\w{_DEV}])", re.I)
 _NOT_A_NAME_FIELD = re.compile(
     r"\b(?:id|number|no|e-?mail|phone|mobile|contact|class|grade|year|count|search|filter|list|"
-    r"status|age|dob|birth|address|select|password)\b", re.I)
+    r"status|age|dob|birth|address|select|password|country|course|type|program(?:me)?|university|"
+    r"college|school|dashboard|consent|checkbox|tab|menu|link|button|bank|business|plan|intake|"
+    r"degree|level|portal)\b", re.I)
 
 
 class Redactor:
@@ -133,13 +152,31 @@ class Redactor:
         assert_no_raw_secrets(text, self._values)
 
 
+def _mask_emails(text: str) -> str:
+    """`<email>` for every local@host: widen left and right from each "@" -- linear in len(text)."""
+    at, n, pos, out = text.find("@"), len(text), 0, []
+    while at != -1:
+        lo, hi = at, at + 1
+        while lo > pos and not text[lo - 1].isspace() and text[lo - 1] not in _LOCAL_STOP:
+            lo -= 1
+        while hi < n and not text[hi].isspace() and text[hi] not in _HOST_STOP:
+            hi += 1
+        while hi > at + 1 and text[hi - 1] in _HOST_TRAIL:
+            hi -= 1
+        if lo < at < hi - 1 and text[at + 1].isalnum():
+            out += (text[pos:lo], "<email>")
+            pos = hi
+        at = text.find("@", max(hi, at + 1))
+    return "".join(out) + text[pos:] if out else text
+
+
 def mask_pii(text: str) -> str:
     """Replace email addresses and phone numbers in `text` with `<email>` / `<phone>`.
 
     Free text is never searched for names (too guessy); a person name is only masked where a
     field label says so -- see `mask_name_value`. Pure and idempotent, so output stays
     deterministic (RC11). A bare 10-digit run is treated as a phone number."""
-    text = _EMAIL_RE.sub("<email>", text)
+    text = _mask_emails(text)
     for pattern in _PHONE_RES:
         text = pattern.sub("<phone>", text)
     return text
@@ -166,6 +203,7 @@ def mask_name_value(label: str, value: str | None) -> str | None:
         return value
     if has_placeholder(value) or MASK in value:
         return value
+    label = re.sub(r"([a-z])([A-Z])", r"\1 \2", label).replace("_", " ")  # first_name, firstName
     named = bool(_NAME_WORD.search(label)) and not _NOT_PERSON_NAME.search(label)
     roled = bool(_PERSON_ROLE.search(label)) and not _NOT_A_NAME_FIELD.search(label)
     return "<name>" if named or roled else value
