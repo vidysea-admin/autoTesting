@@ -15,7 +15,7 @@ router list, the policy seam, the schema fields).
 
 | `hosting.md` row | what it already states | what this contract does with it |
 |---|---|---|
-| **HO22** | three modes, IANA timezone, DST-correct, invalid values refused and store nothing, `schedule.manage` to set | **Referenced, not repeated.** TS1 adds the model shape, persistence and the `schedule.manage` route policy; TS2 adds the pure `due()` function that makes HO22's DST claim checkable |
+| **HO22** | three modes, UTC or IST only (D-078), no DST, invalid values refused and store nothing, `schedule.manage` to set | **Referenced, not repeated.** TS1 adds the model shape, persistence and the `schedule.manage` route policy; TS2 adds the pure `due()` function that makes HO22's zone claim (UTC or IST, no DST) checkable |
 | **HO23** | enqueue through the queue, `trigger=schedule`, one entry per (project, slot) across two schedulers and a restart, one catch-up inside a 60 min grace window, else `missed` | **Referenced.** TS2 adds the marker mechanism, TS3 the catch-up arithmetic and its per-slot record, TS6 the "one launcher" proof |
 | **HO24** | the schedule has no more rights than its owner; owner disabled, deleted or without `project.run` pauses the schedule and records `refused`; deleting the project removes the schedule | **Referenced.** TS5 adds the approval gate (a different check from owner rights); TS1 carries only the delete-removes-markers clause that HO24 leaves open |
 
@@ -39,12 +39,12 @@ that the scheduler goes **through** it and never around it (TS6).
 - **TS1 — A schedule is a typed, bounded, persisted setting, and only `schedule.manage` changes it (R51).**
   `schema/schedule.py` defines `ScheduleConfig` (`extra="forbid"`): `mode` in `manual | fixed | custom`; `fixed` = one daily `HH:MM`;
   `custom` = one or more **one-off date-times** (each fires once, then is marked consumed) **and/or** one weekly rule (a non-empty weekday
-  set plus `HH:MM`), at least one of the two; `timezone` (IANA name; default `AUTOTESTER_TIMEZONE`, else `UTC`); `owner`; `paused`.
+  set plus `HH:MM`), at least one of the two; `timezone` (closed set `UTC` | `IST`, D-078; IST is the fixed +05:30 offset with no DST; default `AUTOTESTER_TIMEZONE` when it is `UTC` or `IST`, else `UTC`; any other value, an IANA city name included, is refused); `owner`; `paused`.
   `manual` is the default and **produces no slot**: a `manual` project is never enqueued by a tick, however many ticks run. No mode can
   yield more than one slot per local calendar day for one rule (so the "interval floor" of the proposal is structural, not a setting).
-  Invalid values are refused at save with a reason naming the field, and **nothing is stored** (HO22 states the list: `25:00`, unknown
-  zone, past one-off, empty weekday set; add `24:00`, `9:5`, a one-off in a DST gap with no resolution rule, a weekday outside 0-6, a
-  duplicate one-off). The value lives in `Project.schedule` (G1's field, `team-foundation.md` TF6); a `project.json` without it loads as
+  Invalid values are refused at save with a reason naming the field, and **nothing is stored** (HO22 states the list: `25:00`, a zone
+  other than UTC or IST (D-078: `America/New_York`, `Asia/Kolkata`, `ist`, a list), past one-off, empty weekday set; add `24:00`, `9:5`, a weekday outside 0-6, a
+  duplicate one-off). There is no DST in the supported zones, so there is no gap or fold to resolve (D-078). The value lives in `Project.schedule` (G1's field, `team-foundation.md` TF6); a `project.json` without it loads as
   `manual`. **The key:** `GET` of the schedule card needs `project.view`; every `POST` that creates, edits, pauses, resumes or deletes a
   schedule needs **`schedule.manage` on that project** (`auth.md` catalogue, scopes `all | assigned | own`), declared in this unit's
   route-policy dict (`team-foundation.md` TF4). No new permission key exists. A user without it gets 403 naming `schedule.manage`;
@@ -59,11 +59,9 @@ that the scheduler goes **through** it and never around it (TS6).
 
 - **TS2 — `due()` is pure, timezone-correct on both OSes, and a slot fires exactly once (R51, R52, R65).**
   `due(schedule, now, markers)` (in `stages/scheduler.py`) is a **pure function**: the clock and the marker view are arguments, it opens no
-  file and reads no environment. A table of cases returns the exact slot instants for: `UTC`; `Asia/Kolkata` (no DST); one DST zone
-  (`America/New_York`) across the **spring-forward day** (a `02:30` rule fires once, at the first valid instant) and the **fall-back day**
-  (a `01:30` rule fires once, not twice); a weekly rule across midnight; a one-off exactly at, one second before, and one second after
-  `now`. An unknown zone cannot reach `due()` (TS1 refused it). The zone database is available on Windows and Ubuntu: `tzdata` is
-  a declared dependency in `pyproject.toml` (Windows has no system zone data), and the same table runs green on both. The **claim marker**
+  file and reads no environment. A table of cases returns the exact slot instants for: `UTC`; `IST` (+05:30 fixed, no DST: a `09:00` rule is `03:30` UTC on every day of the year, D-078); a weekly rule across midnight, including the local-day versus UTC-day boundary for IST; a one-off exactly at, one second before, and one second after
+  `now`. An unsupported zone cannot reach `due()` (TS1 refused it). The two zones are fixed `datetime.timezone` offsets (D-078): no `zoneinfo`, no
+  zone database and no `tzdata` dependency, so the same table runs green on Windows and Ubuntu with nothing installed. The **claim marker**
   for a slot is created atomically with `os.open(path, O_CREAT | O_EXCL | O_WRONLY)` under the data root (R65: no `fcntl`, no `flock`,
   no `pwd`); the file name is `slot_key` made path-safe, and it is written **before** the enqueue. Two concurrent ticks for one slot
   produce **exactly one** claim, hence one queue entry; the loser records nothing and exits 0. Crash safety: a marker whose
@@ -73,7 +71,7 @@ that the scheduler goes **through** it and never around it (TS6).
   on Windows) against one project and counts queue entries == 1, then kills a tick between claim and enqueue (monkeypatched hook raising
   `SystemExit`) and re-ticks, counting still == 1. `serves:` intent#O12, spec R52, R65, `hosting.md` HO22, HO23.
   *Mutation:* create the marker with `exists()` then `write` (check-then-act) -> the two-process test fails; compute `now` inside `due()`
-  -> the injected-clock table fails; remove `tzdata` from `pyproject.toml` -> the Windows zone case fails (the check reads the manifest).
+  -> the injected-clock table fails; change the IST offset from +05:30 to +05:00 -> the IST table fails; let a third zone into `ScheduleZone` -> the TS1 refusal table fails.
 
 - **TS3 — A slot missed during downtime fires at most one catch-up, inside the grace window; the rest are recorded `missed`, never
   backfilled (R52).**

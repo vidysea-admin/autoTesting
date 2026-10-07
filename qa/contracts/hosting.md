@@ -133,8 +133,8 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
 
 - **HO22 — A per-project schedule with three modes.** A `ScheduleConfig` (`schema/`, `extra="forbid"`) per project has
   `mode` in `manual` (button only, the default), `fixed` (one preset daily time, a `HH:MM`), or `custom` (a time the user selects: a
-  one-off date-time, or a weekly set of weekdays + `HH:MM`). Each schedule stores an IANA timezone (default `AUTOTESTER_TIMEZONE`, else
-  UTC) and is DST-correct (a 02:30 slot on a spring-forward day fires once, not zero or twice). Invalid values (25:00, unknown zone,
+  one-off date-time, or a weekly set of weekdays + `HH:MM`). Each schedule stores a timezone that is **UTC or IST only** (IST = fixed +05:30, no DST; D-078; default `AUTOTESTER_TIMEZONE` when it is
+  UTC or IST, else UTC), so there is no DST to get wrong and no zone database is needed. Invalid values (25:00, a zone other than UTC or IST,
   past one-off, empty weekday set) are refused and store nothing. Setting a schedule needs `schedule.manage` on that project.
   `serves:` D-072#9. *LOCAL.*
 - **HO23 — The scheduler uses the queue and fires exactly once.** A due slot enqueues one entry (`trigger=schedule`,
