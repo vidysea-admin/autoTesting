@@ -23,3 +23,25 @@ Attribution: claude-sonnet-subagent checker (this file); sub-checker `ad3ebd6c28
 Docker rows (build, compose up, HTTPS, supervision, restart persistence, `docker diff`, `docker history`): BLOCKED-CAPABILITY, not run.
 Mode D browser check: not run (no hosted instance, shell denied).
 Evidence reuse at the repair cycle: queue claims keep their results unless `ui/run_queue.py`, `schema/run_queue.py`, `store/server_settings.py` or `schema/server_settings.py` change; re-run the five FAILURES and `tests/test_hosting_deploy.py`, `tests/test_run_queue.py`, the 21 UI run test files and the conftest fixture.
+
+# Cycle 1 (repair checker, single coordinator, 2026-10-07)
+
+Tree: branch wave/t203-hosting, code 9a644597 (fix on 6be74d89, base 7782df41 = origin/master, so no merge diff). Env: Windows 11, worktree `.venv` (uv), Docker client only, daemon down. Free RAM 4.1 GB at suite start (machine shared with ~12 other pytest runs).
+Attribution: claude-sonnet-subagent repair checker (this file); browser sub-checker a8f22cf47f5b1683d (findings in qa/evidence/browser-t203-hosting-2026-10-07-checker/); falsification runner scratchpad `falsify.py` (one copy per mutant, worktree interpreter, PYTHONPATH=<copy>/src).
+
+| Check | Command / scope | Result |
+|---|---|---|
+| Affected tests | manifest set (22 files incl. test_run_queue_resilience, test_env_loading), bound tree | 228 passed, 1 skipped (live Chromium RAM gate, AT-576), 63-78 s, twice |
+| Importers of the fix | 36 test files from `git grep "load_repo_env|core.env|run_queue|routes_runs|/run\b"`, `-m "not harness"` | 266 passed, 1 skipped |
+| HO1 falsification | drop each of 7 `.dockerignore` rules (`**/.env`, `**/.env.*`, `**/projects/`, `**/profiles/`, `.work/`, `qa/evidence/`, `.git/`), copy per mutant | all 7: green before, `1 failed` after |
+| HO2 | `or os.environ.get(key)` back to `key in os.environ` | `1 passed` -> `1 failed`; also fresh-interpreter probe: `ANTHROPIC_API_KEY=` and `AUTOTESTER_APPROVAL_KEY=` empty + `.env` with real values loads both, an explicit non-empty `GEMINI_API_KEY` still wins |
+| HO11/HO13 compose | real `docker compose -f docker/compose.prod.yml config` in a scratch copy with `.env.example` as server.env: no domain rc=0, https profile rc=0 (`AUTOTESTER_DOMAIN: localhost`), 8000 published on 127.0.0.1, 6080 only `expose`; mutant `:?` restored rc=1 `required variable AUTOTESTER_DOMAIN is missing` | MET; test mutant `1 passed` -> `1 failed` |
+| HO11/HO13 guide | re-add `http://localhost:6080`; "ships with AT-758" -> "is enforced by AT-758" | each `1 passed` -> `1 failed`. Claims read against code: `ui/helpers.py:195 _origin_allowed` reads `AUTOTESTER_ALLOWED_ORIGINS`; `ALLOWED_HOSTS` appears nowhere in src (also not on origin/master 7782df41); 6080 absent from `ports` |
+| HO18 | mutants `_persist` bare `_save()`, abort recorded DONE, abort swallowed (no re-raise), `finally` to `else` | each red on its named test (2 params or 1) |
+| HO18 probes | scratchpad probe785.py: real thread spawner with SystemExit, CancelledError, KeyboardInterrupt | each entry `interrupted` with class name, next waiter `done`, abort propagates |
+| HO18 restart after failed write | same probe, writes fail after alpha running + beta queued are saved | in memory both done; after restart alpha `interrupted`, beta re-launched (AT-790, low). Once any later write succeeds the file is whole (probe B) |
+| HO38 | crash injected in `_run_queued`, shipped conftest | the 3 named tests: 3 passed before, `3 failed` after. Same crash with the fixture's re-raise disabled: `3 passed` (the old weakness). New fixture test with re-raise disabled: red |
+| Browser | sub-checker, Playwright, own tab, 127.0.0.1:8767, scratch data root, seeded queue, no run started | see verdict LIVE-BROWSER |
+| Boot recovery | my own uvicorn (killed by its listening PID) on a scratch root with a `running` row, no request sent | file rewritten as `interrupted` at startup (lifespan `get_queue()`), so the sub-checker's "lazy on first report visit" remark is wrong |
+| Lint, doctor | `uv run ruff check src tests scripts`, `uv run autotester doctor` | All checks passed; doctor: clean |
+| Full suite | `uv run pytest --deselect tests/test_crawl_inventory_live.py`, suite lock acquired 19:29:29, log scratchpad/suite_c1.log | see verdict |
