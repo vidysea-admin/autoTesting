@@ -2,7 +2,7 @@
 
 Issue: AT-787 (T-178 row: "Nothing calls build_failure_bundle ..."); also unblocks AT-788 (end-to-end capture test)
 Goal task: T-178 (stays pending: FB4 and FB5 are not built)
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 Policy-Version: proportional-verification/2026-10-07.7
 Tier: M
