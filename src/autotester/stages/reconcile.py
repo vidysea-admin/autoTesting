@@ -16,7 +16,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from autotester.core.redact import Redactor, assert_no_raw_secrets
+from autotester.core.redact import Redactor, assert_no_raw_secrets, mask_name_value, mask_pii_obj
 from autotester.providers.base import Provider, ProviderError, load_skill_prompt
 from autotester.schema.flowspec import (
     Band,
@@ -91,14 +91,18 @@ def score_screen(screen: Screen, candidates: list[Candidate]) -> ScreenMatch:
 
 def build_judge_prompt(screen: Screen, flows: list[Flow], candidate: Candidate,
                        skills_dir: Path | None = None) -> str:
-    """The judge sees descriptions only -- never a transcript, screenshot or file (RC12)."""
-    actions = [{"action": str(s.action), "target": s.target, "value": s.value,
-                "said": s.narration} for f in flows for s in f.steps if s.screen_id == screen.id]
+    """The judge sees descriptions only -- never a transcript, screenshot or file (RC12).
+    Typed values and every other string have email / phone shapes masked, and a value typed
+    into a person-name field is masked whole (AT-780), before scrub and the secret gate."""
+    actions = [{"action": str(s.action), "target": s.target,
+                "value": mask_name_value(s.target, s.value), "said": s.narration}
+               for f in flows for s in f.steps if s.screen_id == screen.id]
     video = {"name": screen.name, "route": route_key(screen.url_pattern), "cues": screen.signals,
              "fields": [f.label or f.name for f in screen.fields], "actions": actions}
     kind, _, c_route, c_title, c_labels = candidate
     other = {"from": kind, "title": c_title, "route": c_route, "controls": sorted(c_labels)}
     template = load_skill_prompt(SKILL_NAME, skills_dir=skills_dir)
+    video, other = mask_pii_obj(video), mask_pii_obj(other)
     return (template.replace("{{VIDEO_SCREEN}}", json.dumps(video, sort_keys=True, indent=1))
             .replace("{{CANDIDATE}}", json.dumps(other, sort_keys=True, indent=1)))
 

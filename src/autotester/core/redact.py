@@ -33,11 +33,36 @@ __all__ = [
     "assert_no_raw_secrets",
     "fold_credential",
     "has_placeholder",
+    "mask_name_value",
+    "mask_pii",
+    "mask_pii_obj",
     "placeholder_keys",
 ]
 
 MASK = "[REDACTED]"
 PLACEHOLDER_RE = re.compile(r"\{\{SECRET:([A-Z0-9_]+)\}\}")
+
+# AT-780: heuristic masks for personal data that is NOT a declared secret. They are guesses,
+# so they only ever turn a value into a stable placeholder ("<email>", "<phone>", "<name>").
+_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+")
+_PHONE_RES = (  # international (+CC ...), Indian spaced, 10 digits with optional 0/91, US dashed
+    re.compile(r"(?<![\w+])\+\d{1,3}(?:[\s().-]*\d){7,14}(?!\w)"),
+    re.compile(r"(?<![\w+])(?:\+?91[\s-]?)?[6-9]\d{4}[\s-]\d{5}(?!\w)"),
+    re.compile(r"(?<![\w+])(?:0|91)?\d{10}(?!\w)"),
+    re.compile(r"(?<![\w+])\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?!\w)"),
+)
+_NAME_WORD = re.compile(r"\b(?:name|surname)\b", re.I)
+_NOT_PERSON_NAME = re.compile(
+    r"\b(?:user|file|course|program(?:me)?|university|college|school|institution|company|"
+    r"organi[sz]ation|project|team|city|state|country|branch|subject|degree|board|module|folder|"
+    r"tag|role|domain|host|display|screen|campaign|event|test|report|group|class|product)"
+    r"[\s_-]*name\b", re.I)
+_PERSON_ROLE = re.compile(
+    r"\b(?:student|parent|guardian|father|mother|applicant|candidate|spouse|nominee|referee|"
+    r"counsell?or|child)\b", re.I)
+_NOT_A_NAME_FIELD = re.compile(
+    r"\b(?:id|number|no|e-?mail|phone|mobile|contact|class|grade|year|count|search|filter|list|"
+    r"status|age|dob|birth|address|select|password)\b", re.I)
 
 
 class Redactor:
@@ -106,6 +131,44 @@ class Redactor:
         persisted. Reuses this Redactor's own loaded values, so a caller
         never has to hold the raw secrets separately just to gate on them."""
         assert_no_raw_secrets(text, self._values)
+
+
+def mask_pii(text: str) -> str:
+    """Replace email addresses and phone numbers in `text` with `<email>` / `<phone>`.
+
+    Free text is never searched for names (too guessy); a person name is only masked where a
+    field label says so -- see `mask_name_value`. Pure and idempotent, so output stays
+    deterministic (RC11). A bare 10-digit run is treated as a phone number."""
+    text = _EMAIL_RE.sub("<email>", text)
+    for pattern in _PHONE_RES:
+        text = pattern.sub("<phone>", text)
+    return text
+
+
+def mask_pii_obj(obj: Any) -> Any:
+    """`mask_pii` over every string inside dicts, lists and tuples."""
+    if isinstance(obj, str):
+        return mask_pii(obj)
+    if isinstance(obj, dict):
+        return {k: mask_pii_obj(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return type(obj)(mask_pii_obj(v) for v in obj)
+    return obj
+
+
+def mask_name_value(label: str, value: str | None) -> str | None:
+    """`<name>` when `label` names a person's name field and `value` is a word-like value.
+
+    A label counts when it says "name" (not course/file/university/... name) or names a person
+    role (student, parent, guardian, ...) without an id/number/email-style qualifier. A value
+    with no letters, or an existing secret placeholder or mask, is returned unchanged."""
+    if not value or not any(ch.isalpha() for ch in value):
+        return value
+    if has_placeholder(value) or MASK in value:
+        return value
+    named = bool(_NAME_WORD.search(label)) and not _NOT_PERSON_NAME.search(label)
+    roled = bool(_PERSON_ROLE.search(label)) and not _NOT_A_NAME_FIELD.search(label)
+    return "<name>" if named or roled else value
 
 
 def placeholder_keys(text: str) -> list[str]:
