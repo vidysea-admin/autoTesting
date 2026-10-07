@@ -2,8 +2,8 @@
 
 Issue: AT-787 (T-178 row: "Nothing calls build_failure_bundle ..."); also unblocks AT-788 (end-to-end capture test)
 Goal task: T-178 (stays pending: FB4 and FB5 are not built)
-Status: checked-PASS
-Fix cycle: 0
+Status: ready-for-check (cycle 1: AT-810 follow-up; cycle 0 was checked-PASS)
+Fix cycle: 1
 Policy-Version: proportional-verification/2026-10-07.7
 Tier: M
 Branch: wave/at787-bundle-wiring, built on wave/t177-agent-fallback with origin/master merged in.
@@ -50,3 +50,17 @@ uv run autotester doctor                                                        
 | W3 | log the error unredacted | 1 failed (secret in log) |
 | W4 | empty `Redactor({})` instead of the session's | 2 failed (planted secret in case note reaches case.json; log) |
 | W4 | trust unmasked screenshots | 1 failed (unmasked screenshot in window must give no bundle) |
+
+## Follow-up: AT-810
+
+Status: ready-for-check
+Fix cycle: 1
+Issue: AT-810 (checker, medium): `recorded_failing_step`'s step regex was unanchored, so an ERRORED error text that merely contained `step N (` named the wrong failing step.
+
+- Read first: `execute._error_text` (execute.py:151) writes `f"{type(exc).__name__}: step {step.order} ({step.action.value}): {exc}"` only for a replay or a `LocatorNotFound`; every other error is `f"{type(exc).__name__}: {exc}"`. The type name is `__name__`, so it is never dotted.
+- Fix (in place, `src/autotester/stages/failure_bundle.py`): `_STEP_IN_ERROR = re.compile(r"\w+: step (\d+) \(")` and `recorded_failing_step` now uses `.match` instead of `.search`, so only the leading `Type: step N (` prefix names a step. File is 272 lines.
+- Test (in place, `tests/test_failure_bundle_wiring.py`): `test_a_step_number_inside_the_message_is_not_the_failing_step`. A step-2 failure with error `timeout waiting for locator('text=step 3 (beta)')` gives failing_step 2 end to end and via `recorded_failing_step` (falls back to the first step with no screenshot); a genuine `LocatorNotFound: step 2 (click): ...` still gives 2; the existing `LocatorNotFound: step 3 (click): gone` case still gives 3.
+- Red first: before the fix the new test failed (`assert 3 == 2` on the bundle manifest); 15 passed, 1 failed.
+- Green: `uv run pytest tests/test_failure_bundle_wiring.py -p no:xdist` -> 16 passed; `uv run pytest tests/test_failure_bundle.py -p no:xdist` -> 12 passed; `uv run ruff check src tests scripts` -> All checks passed!
+- Falsification (throwaway copy in scratchpad, PYTHONPATH on the copy, regex reverted to `\bstep (\d+) \(` with `.search`): `test_a_step_number_inside_the_message_is_not_the_failing_step` FAILED (1 failed, 15 passed). The fix is what makes it green.
+- `qa/issues.jsonl`: AT-810 row only: status fixed, fixed_date 2026-10-07, resolution filled. The row held invalid JSON escapes (`\b \d \(` raw in evidence/fix_direction, line 823 failed `json.loads`); they were doubled so every row now parses.

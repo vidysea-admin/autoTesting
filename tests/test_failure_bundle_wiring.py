@@ -174,6 +174,22 @@ def test_recorded_failing_step_prefers_the_error_text_and_has_no_guess(tmp_path:
     assert recorded_failing_step(case, clean) is None
 
 
+def test_a_step_number_inside_the_message_is_not_the_failing_step(tmp_path: Path) -> None:
+    """AT-810: only execute._error_text's `Type: step N (action):` prefix names a step."""
+    inner = "timeout waiting for locator('text=step 3 (beta)')"
+    store, session = _env(tmp_path, broken=BASE + "two", error=inner)
+    result, _ = _run(store, session, _case(), _judge(Result.PASS))
+    assert "step 3 (" in (result.error or "")
+    assert load_bundle(_bundles(store)[0]).failing_step == 2  # not 3, lifted from the message
+    case = _case()
+    assert recorded_failing_step(case, result) == 2  # falls back to the first unshot step
+    genuine = result.model_copy(update={"error": f"LocatorNotFound: step 2 (click): {inner}"})
+    assert recorded_failing_step(case, genuine) == 2
+    shot1 = [e for e in result.evidence if e.step_order == 1]
+    no_prefix = result.model_copy(update={"error": f"RuntimeError: {inner}", "evidence": shot1})
+    assert recorded_failing_step(case, no_prefix) == 2
+
+
 # -- W3 --------------------------------------------------------------------------------------
 
 def test_a_bundle_error_changes_no_verdict_and_is_logged_redacted(

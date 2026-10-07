@@ -39,7 +39,9 @@ if TYPE_CHECKING:
     from autotester.store.project_store import ProjectStore
 
 _LOG = logging.getLogger(__name__)
-_STEP_IN_ERROR = re.compile(r"\bstep (\d+) \(")
+# AT-810: only the prefix execute._error_text writes (`Type: step N (action): ...`), matched at
+# the start; a `step N (` inside the message (a selector, page text) names nothing.
+_STEP_IN_ERROR = re.compile(r"\w+: step (\d+) \(")
 PARTIAL = ".partial"
 MANIFEST = "manifest.json"
 REQUIRED_KINDS = (BundleFileKind.CASE, BundleFileKind.VERDICT, BundleFileKind.RESULT,
@@ -119,7 +121,7 @@ def recorded_failing_step(case: Case, result: RawResult) -> int | None:
         return min(unmet)
     if result.outcome is not Outcome.ERRORED:
         return None
-    named = _STEP_IN_ERROR.search(result.error or "")
+    named = _STEP_IN_ERROR.match(result.error or "")
     if named and int(named.group(1)) in orders:
         return int(named.group(1))
     shot = {e.step_order for e in result.evidence if e.kind is EvidenceKind.SCREENSHOT}
