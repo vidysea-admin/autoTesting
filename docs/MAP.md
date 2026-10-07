@@ -36,6 +36,7 @@
 | `core/redact_fold.py` | Credential folding: normalise a string so a case, punctuation, homoglyph, |
 | `core/redact_wrap.py` | Whitespace normalisation for the exact-encoding needle search, and a |
 | `core/trace.py` | The redacted per-run trace: `TraceWriter` appends one JSON line per stage |
+| `core/upload_limit.py` | The ONE accessor for the admin upload limit (`max_upload_bytes`), read at request time. |
 | `core/urls.py` | URL templating: the identity input a crawled screen shares with the |
 | `doctor.py` | Design enforcement. Runs the rules that keep this repo readable. |
 | `ledger/checks.py` | Design rules over the project's RECORDS, as opposed to its source files. |
@@ -68,6 +69,7 @@
 | `schema/evidence_tombstone.py` | Sidecar tag for a unit's evidence spec whose `kills` node-ids moved out from |
 | `schema/failure_bundle.py` | Failure-bundle shapes (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
 | `schema/flowspec.py` | The FlowSpec — the system's understanding of the product under test. |
+| `schema/intake.py` | Shapes for video intake: zip limits, the per-member report, and where a source came from. |
 | `schema/issue.py` | A video-derived issue — its own artifact, deliberately NOT a `CaseClass`. |
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
 | `schema/ledger.py` | The feature ledger row and the relitigation verdict. Contract: qa/contracts/living-ledger.md. |
@@ -83,11 +85,16 @@
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
+| `sources/bounded_write.py` | One bounded, hashing copy for every intake path (zip member, Drive fetch). |
 | `sources/drive.py` | Google Drive folder listing + file fetch, and the OAuth device-flow token |
 | `sources/drive_register.py` | Registration for DRIVE sources: `register_drive` -> `Source` rows. |
+| `sources/drive_verify.py` | Drive fetch verification: bound the download, check size and md5, stage it, or remove it. |
 | `sources/email.py` | Parsing for EMAIL sources: `.eml`/`.mbox` LOCAL files only. |
 | `sources/email_register.py` | Registration for EMAIL sources: `register_email` -> `Source` rows. |
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
+| `sources/intake_commit.py` | Atomic video registration, the per-project intake lock, staging and orphan sweep. |
+| `sources/zip_intake.py` | Safe zip expansion: one video source per video member, everything else accounted for. |
+| `sources/zip_names.py` | Zip member-name vetting that behaves identically under Windows and Ubuntu path rules. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
@@ -236,6 +243,14 @@
 | `StepRef` (`schema/flowspec.py`) | A step the report points a human at: which flow, which step, which second. |
 | `Possibility` (`schema/flowspec.py`) | A variant flow -- another way the task was done, never an error (RC10). |
 | `ReconcileReport` (`schema/flowspec.py`) | What reconcile decided, in a form a human can audit. No timestamps (RC11). |
+| `IntakeOutcome` (`schema/intake.py`) | Exactly one of these per zip member that is listed (TI3). |
+| `IntakeStatus` (`schema/intake.py`) | Overall result. `partial` is never reported as `ok` (TI5). |
+| `ZipLimits` (`schema/intake.py`) | The archive-level caps beside the per-file one (which is the admin upload limit). |
+| `UploadOrigin` (`schema/intake.py`) | A file picked in the browser; `file_name` is the name the client sent. |
+| `ZipOrigin` (`schema/intake.py`) | A member of a zip: the archive's name and the member's path inside it. |
+| `DriveOrigin` (`schema/intake.py`) | A Google Drive file, by its id (never its name or a link carrying a token). |
+| `MemberResult` (`schema/intake.py`) | One row of the per-member table the CLI prints and the Add-videos page shows. |
+| `IntakeReport` (`schema/intake.py`) | What one zip intake did. `exit_code` is 0 only when nothing failed. |
 | `Issue` (`schema/issue.py`) | One row of "what's wrong", derived from a video and (optionally) matched |
 | `IssueKind` (`schema/issue_kind.py`) | What kind of problem a crawl-detected `CrawlIssue` is. |
 | `FeatureEvent` (`schema/ledger.py`) | One dated event in the life of a feature: planned, live, updated, or retired. |
