@@ -12,15 +12,18 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import re
 import shutil
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from autotester.core.ids import content_id
 from autotester.core.redact import Redactor
+from autotester.core.trace import read_spans
 from autotester.schema.case import Case
-from autotester.schema.enums import EvidenceKind
+from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.failure_bundle import (
     BundleFile,
     BundleFileKind,
@@ -31,6 +34,12 @@ from autotester.schema.run import RawResult
 from autotester.schema.trace import LLMSpan, StageSpan
 from autotester.schema.verdict import Verdict
 
+if TYPE_CHECKING:
+    from autotester.browser.session import BrowserSession
+    from autotester.store.project_store import ProjectStore
+
+_LOG = logging.getLogger(__name__)
+_STEP_IN_ERROR = re.compile(r"\bstep (\d+) \(")
 PARTIAL = ".partial"
 MANIFEST = "manifest.json"
 REQUIRED_KINDS = (BundleFileKind.CASE, BundleFileKind.VERDICT, BundleFileKind.RESULT,
@@ -95,8 +104,32 @@ def _check_one_run(run_id: str, case: Case, result: RawResult, verdict: Verdict,
                           f"{result.case_id}")
 
 
+def recorded_failing_step(case: Case, result: RawResult) -> int | None:
+    """AT-787/W2: the failing step the run itself recorded, or None when it recorded none.
+
+    In order: the first step whose own `assert ...: unmet` evidence the executor wrote; the
+    step an ERRORED error text names (`... step N (action): ...`, execute.py `_error_text`); the
+    first step of an ERRORED run that never got its post-step screenshot (E2). Never a guess
+    from the last screenshot -- that is `_failing_step`'s fallback when this returns None."""
+    orders = {s.order for s in case.steps}
+    unmet = [e.step_order for e in result.evidence if e.step_order in orders
+             and e.kind in (EvidenceKind.DOM, EvidenceKind.NETWORK)
+             and e.path.startswith("assert ") and "unmet" in e.path]
+    if unmet:
+        return min(unmet)
+    if result.outcome is not Outcome.ERRORED:
+        return None
+    named = _STEP_IN_ERROR.search(result.error or "")
+    if named and int(named.group(1)) in orders:
+        return int(named.group(1))
+    shot = {e.step_order for e in result.evidence if e.kind is EvidenceKind.SCREENSHOT}
+    return next((o for o in sorted(orders) if o not in shot), None)
+
+
 def _failing_step(case: Case, result: RawResult, requested: int | None) -> int | None:
     orders = [s.order for s in case.steps]
+    if requested is None:
+        requested = recorded_failing_step(case, result)
     if requested is None:
         seen = [e.step_order for e in result.evidence if e.step_order is not None]
         requested = max(seen) if seen else (orders[0] if orders else None)
@@ -207,3 +240,31 @@ def load_bundle(path: Path) -> BundleManifest:
     if missing:
         raise PartialBundleError(f"bundle lacks required parts: {missing}")
     return manifest
+
+
+def bundle_if_failed(case: Case, result: RawResult, verdict: Verdict, run_id: str,
+                     store: ProjectStore, session: BrowserSession) -> Path | None:
+    """AT-787: the run pipeline's one call site for `build_failure_bundle` (W1-W4).
+
+    Builds a bundle under `store.paths.bundles_dir(run_id)` only when the case ended FAIL or
+    its execution ERRORED (a grader-less ERRORED run is INCONCLUSIVE by rule yet is still a
+    failure); a PASS, BLOCKED, NOT_RUN or otherwise-INCONCLUSIVE run builds none. The secret
+    gates are the builder's own (`Redactor` scrub + `assert_clean`, masked-screenshot refusal).
+    Whatever goes wrong here is logged through the redactor and swallowed: a bundle is a
+    by-product and must never change a verdict or stop the run (W3)."""
+    if verdict.result is not Result.FAIL and result.outcome is not Outcome.ERRORED:
+        return None
+    try:
+        redactor = session.secrets.redactor()
+    except Exception as exc:
+        _LOG.warning("failure bundle for %s skipped: %s", case.id, type(exc).__name__)
+        return None
+    try:
+        return build_failure_bundle(
+            out_dir=store.paths.bundles_dir(run_id), run_id=run_id, case=case, result=result,
+            verdict=verdict, sources=sources_from_result(run_id, session.state.run_dir, result),
+            spans=read_spans(store.paths.run_trace(run_id)), redactor=redactor)
+    except Exception as exc:
+        _LOG.warning(redactor.scrub(f"failure bundle for {case.id} not built: "
+                                    f"{type(exc).__name__}: {exc}"))
+        return None

@@ -25,6 +25,7 @@ from autotester.schema.verdict import Criterion, Rubric, Verdict
 from autotester.stages.agent_actuator import FallbackActuator
 from autotester.stages.agent_loop import AgentLoopResult, run_with_fallback
 from autotester.stages.execute import run_case
+from autotester.stages.failure_bundle import bundle_if_failed
 from autotester.stages.grade import grade
 from autotester.stages.script_replay import Executor, run_scripted
 from autotester.store.project_store import ProjectStore
@@ -206,6 +207,7 @@ def run_and_grade_case(
         verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
                         secrets=session.secrets)
     _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
+    bundle_if_failed(case, result, verdict, run_id, store, session)  # AT-787: never raises
     return result, verdict
 
 
@@ -245,6 +247,7 @@ def run_and_grade_case_resilient(
             grader_provider="rule", note=f"{type(exc).__name__}: {exc}",
         )
     _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
+    bundle_if_failed(case, result, verdict, run_id, store, session)  # AT-787: never raises
     return result, verdict
 
 
