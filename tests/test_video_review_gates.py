@@ -19,7 +19,9 @@ from video_review_fakes import (
     transcript,
 )
 
-from autotester.schema.video_review import RedactionWindow
+from autotester.providers.anthropic import AnthropicProvider
+from autotester.providers.gemini import GeminiProvider
+from autotester.schema.video_review import RedactionWindow, ReviewReply
 from autotester.stages.video_review import (
     PointerErrors,
     ReviewRefused,
@@ -70,7 +72,7 @@ def test_redacted_frames_never_reach_the_provider_and_redaction_comes_first(tmp_
     win = RedactionWindow(start_s=120.0, end_s=180.0)
     p = RecordingProvider([reply_of([item()])] * 20, forbidden=[video], log=log)
     try:
-        r = run_review(paths, source, video, p, None, gate=lambda: None, windows=[win],
+        r = run_review(paths, source, video, p, None, gate=lambda: None, secrets={}, windows=[win],
                        probe_fn=lambda _x: (DURATION, 640, 360), frames_fn=FakeFrames)
     finally:
         FakeFrames.log = None
@@ -187,3 +189,54 @@ def test_review_lives_under_the_project_not_beside_the_video(tmp_path):
     r = run(tmp_path, RecordingProvider([reply_of([item()])] * 20))
     assert (tmp_path / "root" / "projects" / "p" / "reviews" / f"{r.id}.json").exists()
     assert not list(tmp_path.glob("*.json")) and r.source_id == SRC
+
+
+# ---------------------------------------------------------------- cycle 1 (checker F1, F2, F7)
+
+CANARY = "CANARY-SPOKEN-PASSWORD"
+
+
+def test_speech_inside_a_redaction_window_never_reaches_any_prompt(tmp_path):
+    """A tester spoke a password at 100-110 s and the reviewer blanked 90-120 s (F1, TV7.3)."""
+    tx = transcript((5.0, 8.0, "intro line"), (100.0, 110.0, CANARY),
+                    (118.0, 125.0, f"tail {CANARY}"), (85.0, 92.0, f"lead {CANARY}"),
+                    (80.0, 130.0, f"span {CANARY}"), (300.0, 304.0, "later line"))
+    p = RecordingProvider([reply_of([item()])] * 40)
+    run(tmp_path, p, tx, windows=[RedactionWindow(start_s=90.0, end_s=120.0)])
+    assert p.prompts and all(CANARY not in pr for pr in p.prompts)
+    assert any("intro line" in pr for pr in p.prompts), "speech outside the window is still shown"
+
+
+class _PricedLikeProduction(AnthropicProvider):
+    """The real class and the real default label ("anthropic"), only the network is replaced."""
+
+    def __init__(self) -> None:
+        super().__init__(api_key="test")
+        self.calls = 0
+
+    def judge(self, prompt, schema, images=None, *, prompt_file=None, fed_id=None):
+        self.calls += 1
+        self.record("judge", 50_000, 10_000)
+        return ReviewReply(summary="A flow.", items=[])
+
+
+class _GeminiLike(_PricedLikeProduction, GeminiProvider):
+    id = "gemini"
+
+
+@pytest.mark.parametrize("cls", [_PricedLikeProduction, _GeminiLike])
+def test_default_cost_function_binds_the_cap_for_real_provider_classes(tmp_path, cls):
+    """No injected cost_of: an unpriced real label must still stop at the cap (F2, TV7.4)."""
+    prov = cls()
+    r = run(tmp_path, prov, pointer_text="2:00-8:00", max_cost_usd=0.50)
+    assert prov.label in ("anthropic", "gemini")            # the unpriced production label
+    assert 1 <= prov.calls <= 3, prov.calls
+    assert r.status == "partial" and "spend cap" in (r.reason or "") and r.not_reviewed
+
+
+def test_secrets_is_a_required_argument_like_the_gate(tmp_path):
+    """A caller that forgets `secrets` is a TypeError, not an empty redactor (F7, C5)."""
+    video, source, paths = make_run(tmp_path)
+    with pytest.raises(TypeError):
+        run_review(paths, source, video, RecordingProvider(), None,  # type: ignore[call-arg]
+                   gate=lambda: None, probe_fn=lambda _x: (DURATION, 640, 360))

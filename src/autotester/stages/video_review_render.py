@@ -12,7 +12,7 @@ import html
 from autotester.schema.video_review import ConfirmItem, VideoReview
 from autotester.stages.video_review_prompt import clock
 
-HEAD = ("time", "screen", "seen", "suggestion", "severity", "origin", "status")
+HEAD = ("id", "time", "screen", "seen", "suggestion", "severity", "origin", "status")
 
 
 def _status(item: ConfirmItem) -> str:
@@ -26,8 +26,8 @@ def _row(item: ConfirmItem) -> list[str]:
     notes = [n for n in (item.narration_note, item.downgrade) if n]
     if notes:
         seen += f" [{'; '.join(notes)}]"
-    return [clock(item.time_s), item.screen, seen, item.suggestion, str(item.severity.value),
-            item.origin, _status(item)]
+    return [item.id, clock(item.time_s), item.screen, seen, item.suggestion,
+            str(item.severity.value), item.origin, _status(item)]
 
 
 def _lines(review: VideoReview) -> list[tuple[str, str]]:

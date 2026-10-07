@@ -116,7 +116,7 @@ def test_run_review_end_to_end_hands_the_provider_only_redacted_frames(bright_vi
     _, source, paths = make_run(tmp_path)
     p = RecordingProvider([reply_of([item(time_s=0.5, source_id=source.id)])] * 5,
                           forbidden=[bright_video])
-    r = run_review(paths, source, bright_video, p, None, gate=lambda: None,
+    r = run_review(paths, source, bright_video, p, None, gate=lambda: None, secrets={},
                    pointer_text="0:00-0:03", windows=[WIN])
     assert r.status == "ok" and p.calls >= 1
     assert p.frame_times and not any(1.0 <= t <= 2.0 for t in p.frame_times)
@@ -124,3 +124,30 @@ def test_run_review_end_to_end_hands_the_provider_only_redacted_frames(bright_vi
     assert all(work in x.parents for x in p.paths)
     assert (work / "redacted.mp4").is_file()
     assert any(s <= 1.0 and e >= 2.0 for s, e in r.not_reviewed)
+
+
+def test_blackout_verification_covers_the_whole_window(bright_video, tmp_path):
+    """A copy blacked out only 2-3 s must not pass for a 1-3 s window (F5, TV7.3)."""
+    partial = redact_video(bright_video, [RedactionWindow(start_s=2.0, end_s=3.0)],
+                           tmp_path / "partial.mp4")
+    with pytest.raises(RedactionError):
+        verify_blackout(partial, [RedactionWindow(start_s=1.0, end_s=3.0)], tmp_path)
+    full = redact_video(bright_video, [RedactionWindow(start_s=1.0, end_s=3.0)],
+                        tmp_path / "full.mp4")
+    verify_blackout(full, [RedactionWindow(start_s=1.0, end_s=3.0)], tmp_path)
+
+
+def test_blackout_verification_fails_closed_when_a_frame_cannot_be_read(
+        bright_video, tmp_path, monkeypatch):
+    """ffmpeg cannot read a frame inside the recording: refuse, never skip silently (F5)."""
+    import autotester.media.redacted as mod
+
+    copy = redact_video(bright_video, [WIN], tmp_path / "copy.mp4")
+    monkeypatch.setattr(mod, "extract_frame", lambda *_a, **_k: False)
+    with pytest.raises(RedactionError):
+        verify_blackout(copy, [WIN], tmp_path)
+
+
+def test_a_window_entirely_past_the_end_has_nothing_to_hide(bright_video, tmp_path):
+    late = RedactionWindow(start_s=50.0, end_s=60.0)
+    verify_blackout(redact_video(bright_video, [late], tmp_path / "c.mp4"), [late], tmp_path)

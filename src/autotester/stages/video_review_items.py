@@ -22,9 +22,9 @@ from autotester.schema.video_review import (
 )
 from autotester.stages.video_review_prompt import NARRATION_NOTES, narration_state
 
-NARRATION_SLACK_S = 1.0
-"""A quote counts when its segment covers the item's second within this many seconds: a model
-cites whole seconds, speech starts and stops between them."""
+NARRATION_SLACK_S = 0.0
+"""A quote counts only when its segment covers the item's second (TV5): no slack, so speech
+that ends before, or starts after, the second is not narration of it."""
 _SEV_RANK = {Severity.S1: 0, Severity.S2: 1, Severity.S3: 2}
 MIN_LIST = 4
 """The oracle shows 4-5 rows; fewer is reported as fewer, never padded to reach it."""

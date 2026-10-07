@@ -7,13 +7,13 @@ text from a pointer or a transcript is scrubbed before it can leave the machine 
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from autotester.core.paths import RepoDocs
 from autotester.schema.media import Transcript
 from autotester.schema.video_pointer import PointerParse
-from autotester.schema.video_review import NarrationState
+from autotester.schema.video_review import NarrationState, RedactionWindow
 
 PROMPT_FILE = "video_review_v1.md"
 PLACEHOLDERS = ("{{SOURCE_ID}}", "{{DURATION}}", "{{FRAME_TIMES}}", "{{POINTERS}}",
@@ -40,6 +40,19 @@ def narration_state(transcript: Transcript | None) -> NarrationState:
     if transcript is not None and transcript.segments:
         return "speech"
     return "none"
+
+
+def visible_transcript(transcript: Transcript | None,
+                       windows: Sequence[RedactionWindow]) -> Transcript | None:
+    """The transcript minus every segment that touches a redaction window (TV7.3).
+
+    Speech spoken while a screen is blacked out may read that screen out loud, so the WHOLE
+    segment is dropped (clipping text by time would guess where the words fall)."""
+    if transcript is None or not windows:
+        return transcript
+    kept = [s for s in transcript.segments
+            if not any(s.end >= w.start_s and s.start <= w.end_s for w in windows)]
+    return transcript.model_copy(update={"segments": kept})
 
 
 def clock(seconds: float) -> str:

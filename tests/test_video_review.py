@@ -89,7 +89,8 @@ def test_unreadable_media_is_a_status_never_a_verified_looking_review(tmp_path, 
     video, source, paths = make_run(tmp_path)
     video.write_bytes(b"x" * size)
     p = RecordingProvider()
-    r = run_review(paths, source, video, p, None, gate=lambda: None, probe_fn=lambda _x: probe)
+    r = run_review(paths, source, video, p, None, gate=lambda: None, secrets={},
+                   probe_fn=lambda _x: probe)
     assert r.status == "unreadable" and r.reason and p.calls == 0 and not r.items
 
 
@@ -192,3 +193,31 @@ def test_prompt_template_carries_every_placeholder_and_a_lost_one_is_refused():
     assert "this save button does nothing" in out and "{{" not in out
     with pytest.raises(ValueError, match="NARRATION"):
         build_review_prompt(tpl.replace("{{NARRATION}}", ""), **kw)
+
+
+# ---------------------------------------------------------------- cycle 1 (checker F3, F4)
+
+@pytest.mark.parametrize(("segment", "second", "kept"), [
+    ((10.0, 12.0), 12.9, False),      # ends 0.9 s before the item
+    ((100.8, 104.0), 100.0, False),   # starts 0.8 s after the item
+    ((10.0, 12.0), 12.0, True),       # touches the item's second: overlap
+    ((100.0, 104.0), 100.0, True),
+    ((10.0, 12.0), 11.0, True),
+])
+def test_narration_must_strictly_overlap_the_items_second(tmp_path, segment, second, kept):
+    """The model cites a second just outside the speech it quotes (F3, TV5 'overlaps')."""
+    tx = transcript((*segment, "the quoted words"))
+    r = run(tmp_path, RecordingProvider([reply_of([item(
+        time_s=second, origin="narration", quote="the quoted words")])]), tx)
+    assert r.items[0].origin == ("narration" if kept else "suspected")
+
+
+def test_markdown_and_html_exports_carry_the_same_item_ids(tmp_path):
+    """The reviewer exports both formats and compares item ids (F4, TV10)."""
+    import re
+
+    items = [item(time_s=10 + i, seen=f"s{i}") for i in range(4)]
+    r = run(tmp_path, RecordingProvider([reply_of(items)]))
+    md_ids = set(re.findall(r"\bit_[0-9a-f]+\b", render_markdown(r)))
+    html_ids = set(re.findall(r'data-item-id="(it_[0-9a-f]+)"', render_html(r)))
+    assert md_ids == html_ids == {i.id for i in r.items} and len(md_ids) == 4

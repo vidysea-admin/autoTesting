@@ -1,7 +1,7 @@
 # G2 `t197-pointers-review` — pure core slice (T-197): pointers, typed review, redaction, id
 
 Status: ready-for-check
-Fix cycle: 0
+Fix cycle: 1
 Resume: 0 of 2
 Policy-Version: proportional-verification/2026-10-06.6
 Tier: M (multi-file behaviour, new shared schema modules, new stage modules; no hooks/config/CI/dependency/auth/prod-write)
@@ -21,7 +21,7 @@ Slice: PURE CORE ONLY. Criteria TV1-TV10 are covered to the extent stated under 
 - TV1: parser + count identity + 4th free pointer refused + `PointerErrors` (stage raises before any call). CLI exit code 2 / HTTP 422 mapping is owed with the CLI/route.
 - TV2: base grid 4 frames/min, pointer grid 12/min (named constants in `stages/video_review_plan.py`; the pointer grid contains the base grid, so with-pointers is a superset by construction). A single-second pointer is read as +-20 s. `not_reviewed` is the exact complement of analysed spans (frame covers up to the next planned frame; redaction windows and cap-dropped frames are unreviewed); named in plain words in the Markdown/HTML summary.
 - TV3/TV4: 0-5 items, overflow kept, rejected with reasons, `failed` and `unreadable` statuses (unreadable media is not persisted).
-- TV5: quote must be an exact substring (no case folding) of ONE segment within NARRATION_SLACK_S = 1.0 s of the item second. DECISION TO CONFIRM: the contract says "overlaps"; 1.0 s slack is mine. Set it to 0 if the checker wants strict overlap.
+- TV5: quote must be an exact substring (no case folding) of ONE segment whose span contains the item second (NARRATION_SLACK_S = 0.0, fix cycle 1 F3; touching at an endpoint counts, 0.9 s outside does not).
 - TV6: three narration states kept apart; per-item "no narration at this moment".
 - TV7 pure parts: redaction applied to a copy before any call, copy verified black inside each window (`RedactionError` -> `ReviewRefused`), only frames outside windows are sent and only PNGs under the review work dir, cap (`DEFAULT_MAX_COST_USD` 0.50, pointer-window frames analysed first) gives `partial` with leftover spans, `preview_review` makes zero calls, every prompt is scrubbed and passed through `assert_no_raw_secrets` for ALL batches before the first call. Frame analysis goes through `Provider.judge(images=[frames])`.
 - TV8: free text scrubbed before the prompt, whole review scrubbed before it is stored.
@@ -122,11 +122,20 @@ Slice: PURE CORE ONLY. Criteria TV1-TV10 are covered to the extent stated under 
   assert a new id; export both formats and compare item ids; request as a Tester with and without the video shared. *Mutation:* derive
   the id from a timestamp -> the same-id test fails.
 
+## Fix cycle 1 (verdict 7409cceb, 2026-10-07)
+- F1 (TV7.3, blocking): `video_review_prompt.visible_transcript` drops every segment that touches a redaction window; `run_review` builds all prompts, and `build_items` (quotes), from it. Test: canary segments inside, leading into, trailing out of and spanning the window are absent from every prompt, speech outside still shown.
+- F2 (TV7.4, blocking): `core/pricing.estimate_cost_conservative` charges an unpriced label the dearest known rate (`mock` stays free); `video_review.provider_cost` uses it. Tests drive the DEFAULT `cost_of` with real `AnthropicProvider` and `GeminiProvider` subclasses (label "anthropic"/"gemini", network replaced) and show the cap stops further calls with a `partial` review naming the spend cap. `estimate_cost` is unchanged (its other callers still read unknown as 0.0).
+- F3 (TV5): `NARRATION_SLACK_S = 0.0`; boundary tests: ends 0.9 s before and starts 0.8 s after are rejected, touching is kept.
+- F4 (TV10): Markdown and HTML both carry an `id` column; test compares the id sets of both exports with the stored items.
+- F5 (low): `media/redacted.verify_blackout` samples start, middle and end of every window (clamped to the recording, inset 0.1 s) from the probed duration; an unreadable frame or an unreadable copy raises `RedactionError`; only a window wholly past the end is skipped.
+- F7: `run_review(... secrets: dict[str, str])` is a required keyword like `gate` (test: omitting it is a TypeError).
+- Left open on purpose: F6 as noted in cycle 0; F8 needs a D-entry naming `media/redacted.py`, written by the coordinator.
+
 ## Evidence (builder, 2026-10-07; no full suite run, no real model call)
-- Affected tests: `uv run pytest tests/test_video_pointers.py tests/test_video_review.py tests/test_video_review_gates.py tests/test_video_review_redaction.py` -> 71 passed (run at 2026-10-07T15:25Z).
+- Affected tests: `uv run pytest tests/test_video_pointers.py tests/test_video_review.py tests/test_video_review_gates.py tests/test_video_review_redaction.py` -> 71 passed at cycle 0; cycle 1: 84 passed (same four files).
 - `uv run ruff check src tests`: All checks passed. `uv run autotester doctor`: doctor: clean (after `autotester map`).
 - Removed/renamed names: none (additions only). `git grep` not needed.
-- Falsification floor, run in a scratch copy (never the bound tree), each green before / red after / restored: TV1 parser skips bad lines; TV2 pointer windows only; TV2 drop not_reviewed rendering; TV3 truncate without overflow; TV4 skip time-range check; TV5 skip substring check; TV6 map unreadable to none; TV7 send redacted frames; TV7 skip redacted copy; TV7 ignore spend cap; TV7 gate skipped; TV8 skip final scrub; TV10 id from timestamp; TV10 reset human status. 14 of 14 OK.
+- Falsification floor, run in a scratch copy (never the bound tree), each green before / red after / restored: TV1 parser skips bad lines; TV2 pointer windows only; TV2 drop not_reviewed rendering; TV3 truncate without overflow; TV4 skip time-range check; TV5 skip substring check; TV6 map unreadable to none; TV7 send redacted frames; TV7 skip redacted copy; TV7 ignore spend cap; TV7 gate skipped; TV8 skip final scrub; TV10 id from timestamp; TV10 reset human status. 14 of 14 OK at cycle 0. Cycle 1, rerun for the changed criteria in a fresh copy: F1 keep-speech and F1 start-only-overlap, F2 old zero estimate and F2 fallback zero, F3 slack back to 1 s, F4 markdown drops id, F5 midpoint-only and F5 skip unreadable frame, F7 default secrets; 9 of 9 OK (the first F1 start-only mutant survived, so the test gained leading and spanning segments).
 - Contract mutations "pass the original path" and "compare permission by group name": the first is covered by `RecordingProvider(forbidden=[video])` plus the work-dir assertion, the second is owed with the gate.
 Checker must run: the four test files above, ruff, doctor; judge the owed list against the criteria it still has to close.
-Metrics: start=unavailable end=2026-10-07T15:25Z wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=14 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6
+Metrics: start=unavailable end=2026-10-07T15:25Z wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=23 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Protocol
 
 from autotester.media.frames import extract_frame, frame_name, is_complete_png
+from autotester.media.probe import probe
 from autotester.schema.video_review import RedactionWindow
 
 BLACK_LUMA = 10
@@ -76,17 +77,36 @@ def mean_luma(png: Path) -> float | None:
     return float(raw[0]) if raw else None
 
 
+def _samples(w: RedactionWindow, duration: float) -> list[float]:
+    """Start, middle and end of the part of `w` inside the recording (inset 0.1 s off the edges
+    so a keyframe boundary cannot read as a gap). Empty when the window is past the end."""
+    if w.start_s >= duration:
+        return []
+    lo, hi = w.start_s, min(w.end_s, duration)
+    inset = min(0.1, (hi - lo) / 2)
+    return [lo + inset, (lo + hi) / 2, hi - inset]
+
+
 def verify_blackout(derivative: Path, windows: list[RedactionWindow], scratch: Path) -> None:
-    """Raise `RedactionError` unless the derivative is black at the middle of every window."""
+    """Raise `RedactionError` unless the copy is black at the start, middle and end of every
+    window. A frame that cannot be read is a refusal, never a skip: only a window wholly past
+    the end of the recording is skipped, because there is nothing there to hide (F5, TV7.3)."""
+    duration = probe(derivative)[0]
+    if duration <= 0:
+        raise RedactionError("could not read the redacted copy to check the blackout")
     for i, w in enumerate(windows):
-        probe = scratch / f"verify_{i}.png"
-        if not extract_frame(derivative, (w.start_s + w.end_s) / 2, probe):
-            continue  # the window lies past the end of the recording: nothing there to hide
-        luma = mean_luma(probe)
-        probe.unlink(missing_ok=True)
-        if luma is None or luma > BLACK_LUMA:
-            raise RedactionError(
-                f"redaction window {w.start_s:g}-{w.end_s:g}s is not blacked out in the copy")
+        for j, t in enumerate(_samples(w, duration)):
+            still = scratch / f"verify_{i}_{j}.png"
+            if not extract_frame(derivative, t, still):
+                raise RedactionError(
+                    f"could not read the copy at {t:g}s to check redaction window "
+                    f"{w.start_s:g}-{w.end_s:g}s")
+            luma = mean_luma(still)
+            still.unlink(missing_ok=True)
+            if luma is None or luma > BLACK_LUMA:
+                raise RedactionError(
+                    f"redaction window {w.start_s:g}-{w.end_s:g}s is not blacked out in the "
+                    f"copy (at {t:g}s)")
 
 
 class RedactedFrames:

@@ -19,6 +19,21 @@ absent -- that provider's `id` becomes the winning tier's name after a call
 above once a call succeeds and need no separate entry."""
 
 
+FALLBACK_RATE_PER_1K: tuple[float, float] = (
+    max(r[0] for r in _RATES_PER_1K.values()), max(r[1] for r in _RATES_PER_1K.values()))
+"""The dearest known rate. A spend CAP must not read an unpriced label as free (TV7.4)."""
+
+
+def estimate_cost_conservative(label: str, input_tokens: int, output_tokens: int) -> float:
+    """Like `estimate_cost`, but an unpriced label is charged `FALLBACK_RATE_PER_1K`, so a cap
+    built on it still binds. `mock` stays free; real provider ids are `anthropic` / `gemini`
+    with no model suffix unless one was configured, and those are NOT in the table."""
+    if label == "mock" or label in _RATES_PER_1K:
+        return estimate_cost(label, input_tokens, output_tokens)
+    in_rate, out_rate = FALLBACK_RATE_PER_1K
+    return round(input_tokens / 1000 * in_rate + output_tokens / 1000 * out_rate, 6)
+
+
 def estimate_cost(label: str, input_tokens: int, output_tokens: int) -> float:
     """`label` is `Provider.label`. Unknown label -> 0.0, never a raise."""
     rates = _RATES_PER_1K.get(label)

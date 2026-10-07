@@ -19,7 +19,7 @@ from pydantic import ValidationError
 
 from autotester.core.ids import content_hash, content_id, file_sha256
 from autotester.core.paths import ProjectPaths
-from autotester.core.pricing import estimate_cost
+from autotester.core.pricing import estimate_cost_conservative
 from autotester.core.redact import Redactor, assert_no_raw_secrets
 from autotester.media.probe import probe
 from autotester.media.redacted import FrameSource, RedactedFrames, RedactionError
@@ -50,6 +50,7 @@ from autotester.stages.video_review_prompt import (
     clock,
     load_template,
     narration_state,
+    visible_transcript,
 )
 from autotester.store.filestore import read_json, write_json
 
@@ -74,7 +75,8 @@ class PointerErrors(ValueError):
 
 
 def provider_cost(provider: Provider) -> float:
-    return sum(estimate_cost(provider.label, u.input_tokens, u.output_tokens)
+    """Spend so far. An unpriced label is charged the dearest known rate, never zero (TV7.4)."""
+    return sum(estimate_cost_conservative(provider.label, u.input_tokens, u.output_tokens)
                for u in provider.usage)
 
 
@@ -196,8 +198,8 @@ def _prompter(source_id: str, duration: float, parse: PointerParse,
 
 
 def run_review(paths: ProjectPaths, source: Source, video: Path, provider: Provider,
-               transcript: Transcript | None, *, gate: ReviewGate, pointer_text: str = "",
-               windows: Sequence[RedactionWindow] = (), secrets: dict[str, str] | None = None,
+               transcript: Transcript | None, *, gate: ReviewGate, secrets: dict[str, str],
+               pointer_text: str = "", windows: Sequence[RedactionWindow] = (),
                max_cost_usd: float = DEFAULT_MAX_COST_USD, refresh: bool = False,
                known_sources: set[str] | None = None,
                probe_fn: Callable[[Path], tuple[float, int, int]] = probe,
@@ -221,7 +223,7 @@ def run_review(paths: ProjectPaths, source: Source, video: Path, provider: Provi
     stored = load_review(paths, rid)
     if stored is not None and stored.status == "ok" and not refresh:
         return stored
-    redactor = Redactor(secrets or {})
+    redactor = Redactor(secrets)
     plan = plan_frames(duration, parse)
     hidden = [(w.start_s, w.end_s) for w in wins]
     sendable = [t for t in plan.times if not in_any(t, hidden)]
@@ -229,7 +231,8 @@ def run_review(paths: ProjectPaths, source: Source, video: Path, provider: Provi
         frames = frames_fn(video, paths.review_work_dir(rid), wins)
     except RedactionError as exc:
         raise ReviewRefused(f"redaction check failed: {exc}") from exc
-    prompt_for = _prompter(source.id, duration, parse, transcript, redactor, secrets or {})
+    shown_tx = visible_transcript(transcript, wins)   # speech inside a window never leaves (TV7.3)
+    prompt_for = _prompter(source.id, duration, parse, shown_tx, redactor, secrets)
     batches = order_batches(sendable, plan)
     for times in batches:
         prompt_for(times)  # secret gate for EVERY prompt before the first call (TV7, C5)
@@ -261,7 +264,7 @@ def _assemble(rid: str, source: Source, duration: float, sha: str, tx: str, pars
         return _finish(base, redactor)
     items, overflow, rejected = build_items(
         [i for r in run.replies for i in r.items], review_id=rid, duration_s=duration,
-        known_sources=known, transcript=transcript,
+        known_sources=known, transcript=visible_transcript(transcript, wins),
         pointer_lines={p.line_no for p in parse.parsed}, scrub=redactor.scrub)
     reason = run.failure or run.stopped
     base.update(status="partial" if reason else "ok", reason=reason,

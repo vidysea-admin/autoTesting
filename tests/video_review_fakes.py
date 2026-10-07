@@ -101,6 +101,7 @@ def run(tmp_path: Path, provider: Provider, tx: Transcript | None = None, **kw: 
         ) -> VideoReview:
     video, source, paths = make_run(tmp_path)
     kw.setdefault("gate", lambda: None)
+    kw.setdefault("secrets", {})
     kw.setdefault("probe_fn", lambda _p: (DURATION, 640, 360))
     kw.setdefault("frames_fn", FakeFrames)
     return run_review(paths, source, video, provider, tx, **kw)
