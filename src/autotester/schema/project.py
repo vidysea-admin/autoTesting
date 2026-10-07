@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
+from autotester.schema.tracked_bug import DEFAULT_CLOSE_PASSES
 
 DEFAULT_VISION_PROVIDER = "gemini"
 """AT-550: the vision provider `vision_ensemble()` substitutes when the
@@ -141,6 +142,11 @@ class Project(Artifact):
         default=1, ge=1,
         description="ceiling on concurrently-running cases (T-173/D-041); the run's actual N "
                     "is min(this, a measured RAM/CPU budget) -- see stages/parallel_run.py",
+    )
+    bug_close_passes: int = Field(
+        default=DEFAULT_CLOSE_PASSES, ge=1,
+        description="TB2/R44: consecutive evidenced PASS verdicts that close a tracked bug "
+                    "(`schema/tracked_bug.py::DEFAULT_CLOSE_PASSES`); stored per project",
     )
     permitted_surface: list[PermittedControl] = Field(
         default_factory=list,

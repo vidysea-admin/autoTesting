@@ -83,6 +83,15 @@ class ProjectPaths:
         return self.dir / "requests.jsonl"
 
     @property
+    def bugs(self) -> Path:
+        """The tracked-bug store (T-199a/TB1): one row per bug, upserted by `bug_key`."""
+        return self.dir / "bugs.jsonl"
+
+    def bug_run_marker(self, run_id: str) -> Path:
+        """Written LAST when a run's verdicts have all been applied to the bugs (TB6)."""
+        return self.dir / "bug_runs" / f"{run_id}.json"
+
+    @property
     def knowledge(self) -> Path:
         return self.dir / "knowledge.md"
 

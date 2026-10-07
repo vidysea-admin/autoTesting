@@ -80,6 +80,7 @@
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
+| `schema/tracked_bug.py` | A tracked bug: one failure the team owns, however many runs re-report it (TB1). |
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
@@ -92,6 +93,7 @@
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
+| `stages/bug_loop.py` | BUG LOOP: move tracked bugs by graded verdicts, and nothing else (T-199a, TB2-TB4, TB6). |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
@@ -284,6 +286,9 @@
 | `ScreenMap` (`schema/screenmap.py`) | The product map: every learned screen plus the journeys that visited them. |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
+| `BugStatus` (`schema/tracked_bug.py`) |  |
+| `TrackedBug` (`schema/tracked_bug.py`) | One bug and its lifecycle. `applied` holds every verdict ref already counted, which |
+| `ProcessedRun` (`schema/tracked_bug.py`) | Marker that run R was fully processed. No timestamp: re-writing it is byte-stable. |
 | `Criterion` (`schema/verdict.py`) | One checkable bar. If it can be argued about, it is not a criterion. |
 | `Rubric` (`schema/verdict.py`) | The grading contract for a case. More specific than the case itself. |
 | `Failure` (`schema/verdict.py`) | One unmet criterion, with the evidence that shows it. |

@@ -32,6 +32,7 @@ from autotester.schema.enums import CaseClass, CaseKind, IssueOrigin
 from autotester.schema.flowspec import Step
 from autotester.schema.issue import Issue
 from autotester.schema.project import Source
+from autotester.schema.tracked_bug import BugStatus, TrackedBug
 from autotester.store.project_store import PinnedCaseError, ProjectStore
 
 ISSUE_COLUMNS = [
@@ -106,6 +107,21 @@ def derive_issues(analysis: VideoAnalysis, source: Source, project: str) -> list
         )
         for issue in analysis.issues
     ]
+
+
+def bug_from_issue(issue: Issue) -> TrackedBug:
+    """T-199a TB1/TB5: the ONE place a bug key is derived from an `Issue`.
+
+    A video-found bug's key is its `Issue.id` fingerprint -- content-addressed over project,
+    source, screen, category, time bucket and title, so re-analysing the same recording never
+    mints a second bug and no run id, path or screenshot hash can enter it. The bug opens at
+    the issue's discovery time; only `stages/bug_loop.py` moves its status from there (R44).
+    """
+    return TrackedBug(
+        bug_key=issue.id, project=issue.project, title=issue.title, screen=issue.screen,
+        severity=issue.severity, status=BugStatus.OPEN,
+        first_seen=issue.created_at, last_seen=issue.created_at,
+    )
 
 
 def pin_issue_as_case(
