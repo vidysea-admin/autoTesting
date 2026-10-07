@@ -45,3 +45,5 @@ Attribution: claude-sonnet-subagent repair checker (this file); browser sub-chec
 | Boot recovery | my own uvicorn (killed by its listening PID) on a scratch root with a `running` row, no request sent | file rewritten as `interrupted` at startup (lifespan `get_queue()`), so the sub-checker's "lazy on first report visit" remark is wrong |
 | Lint, doctor | `uv run ruff check src tests scripts`, `uv run autotester doctor` | All checks passed; doctor: clean |
 | Full suite | `uv run pytest --deselect tests/test_crawl_inventory_live.py`, suite lock acquired 19:29:29, log scratchpad/suite_c1.log | see verdict |
+| Full suite (resume 1) | `uv run pytest --deselect tests/test_crawl_inventory_live.py`, bound tree 9a644597, log scratchpad/suite_c1.log, lock 19:29:29-20:04:36 | EXIT 1: `1 failed, 2707 passed, 5 skipped, 2 deselected, 14 xfailed in 2093.70s`; the one failure is `test_redact_wrap_perf` (3.24 s vs 3 s bound under host load), passes alone on the bound tree (6.2 s) and twice on base 7782df41 (6.8 s, 8.1 s); unit touches no redact code; AT-793 |
+Final: PASS (slice), verdict qa/verdicts/t203-hosting.md addendum; no merge, no push (coordinator order).

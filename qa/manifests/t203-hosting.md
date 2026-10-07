@@ -1,6 +1,6 @@
 # Manifest — t203-hosting (run queue, server settings, Docker/Ubuntu deploy, Windows notes)
 
-## Status: ready-for-check
+## Status: checked-PASS (slice)
 
 Goal task: T-203 · Branch: wave/t203-hosting · Base: origin/master 7782df41 (rebased in cycle 1; was 6f33ec8b) · Source: cycle 0 = 5eee9b6e (61585fc2 before the rebase), cycle 1 = the commit carrying this manifest
 Policy-Version: proportional-verification/2026-10-06.6

@@ -1,9 +1,9 @@
 # Verdict: t203-hosting (cycle 1, repair checker, single checker)
 
-Checked: 2026-10-07. Bound to `D:/autoTesting/.worktrees/t203-hosting`, branch `wave/t203-hosting`, code 9a644597 (fix on 6be74d89; base 7782df41 = current origin/master, so there is no merge diff). Policy-Version: proportional-verification/2026-10-06.6 (the .7 rules apply too). Cycle checked: 1. Resume: 0 of 2 (first dispatch of cycle 1).
+Checked: 2026-10-07. Bound to `D:/autoTesting/.worktrees/t203-hosting`, branch `wave/t203-hosting`, code 9a644597 (fix on 6be74d89; base 7782df41 = current origin/master, so there is no merge diff). Policy-Version: proportional-verification/2026-10-06.6 (the .7 rules apply too). Cycle checked: 1. Resume: 0 of 2 (first dispatch of cycle 1), completed by Resume: 1 of 2 below.
 Checkpoint: qa/checkpoints/t203-hosting.md. Authority: D-072. Contract: qa/contracts/hosting.md. The cycle-0 verdict is at qa/verdicts/t203-hosting.r0-1.md.
 
-VERDICT: CONTINUE-NEEDED
+VERDICT: PASS (see the Resume 1 addendum at the end; the sections above are the first dispatch, written while the suite was running)
 SCOREBOARD: the 5 failed criteria (HO1, HO2/HO11, HO11/HO13, HO18, HO38) are all MET on my own evidence; the one mandatory check not yet complete is the single full suite (running, 36% when this was written). All other rows keep their cycle-0 ruling (MET / legitimately deferred / BLOCKED-CAPABILITY).
 TIER: L (concurrency in `src/autotester/ui/run_queue.py`, config in `docker/compose.prod.yml` and `.env.example`, env loading in `src/autotester/core/env.py`, protected edit `tests/conftest.py`). Single checker: no security/auth/tenancy or production-write trigger.
 
@@ -72,3 +72,23 @@ EXECUTOR: claude (maker build subagent) (checker: claude-sonnet-subagent, with 1
 EXPLANATION: All five cycle-0 failures are fixed and each was re-run end to end with falsification in its own copy; the AT-785 fix opens no blocking hole (a restart inside a disk-failure window can misreport and re-run an entry: AT-790, low). The only mandatory evidence left is the one full suite, which is running but cannot finish inside the 45-minute wall, so this is CONTINUE-NEEDED, not a FAIL; PASS needs that suite's clean summary and nothing else.
 full-suite trigger: tests/conftest.py edit (protected change, run once here, in progress).
 Metrics: start=2026-10-07T19:10:32+05:30 end=2026-10-07T19:50:00+05:30 wall_min=40 agent_min=55 blocked_min=0 suite_runs=1 repeat_runs=0 mutations=18 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6
+
+## Addendum: cycle 1, Resume: 1 of 2 (2026-10-07, suite result)
+
+The one full suite finished: `uv run pytest --deselect tests/test_crawl_inventory_live.py` (no -q, no -x, bound tree, tree unchanged since 27556170, code 9a644597), lock held 19:29:29 to 20:04:36, `EXIT 1`:
+
+`1 failed, 2707 passed, 5 skipped, 2 deselected, 14 xfailed, 15 warnings in 2093.70s (0:34:53)`
+
+The single failure is `tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus`: `AssertionError: 500 KB scan took 3.24s, expected under 3s` (test line 194), a wall-clock bound, on a host running about a dozen other pytest runs (free RAM 1.8 GB at the time). Not caused by this unit:
+- the unit changes no redact code (`git diff 7782df41 --stat` over `src` shows no redact file);
+- re-run alone it passes: 18 passed in 6.2 s on the bound tree, and 18 passed twice (6.8 s, 8.1 s) on a `git archive` of base 7782df41 in a scratch copy.
+So the suite is clean for this unit. Filed as AT-793 (low, unscaled timing bound, same family as AT-757/AT-772). `tests/test_crawl_inventory_live.py` stays deselected by name (pre-existing hang), as the brief said. No `harness` re-selection was needed.
+
+All mandatory evidence is now in: five failed rows MET with falsification, affected tests green, browser check done (disclosed gap on queued/running states), full suite run once with no failure caused by this unit. Docker rows remain BLOCKED-CAPABILITY and the T-203 rows in AT-788 stay open, so this is a slice PASS: manifest flipped to `checked-PASS (slice)`, AT-782..AT-786 flipped `open -> fixed`. T-203 is NOT marked done (T-204 dependency, AT-788).
+
+Merge note (coordinator's order d063, then at758-759, then T-204, then T-203): I did not merge and did not push master. Everything is committed only on `wave/t203-hosting`. Ledger ids on this branch (AT-787..789 from cycle 0, AT-790..793 from cycle 1) collide with master's AT-787..798 and must be renumbered after master's highest id at merge; `qa/issues.jsonl` is `merge=union`, so check that no id appears twice before the push.
+
+VERDICT: PASS
+SCOREBOARD: HO1, HO2, HO11, HO13, HO18, HO38 (the failed rows) met; every other row keeps its cycle-0 ruling (met, legitimately deferred, or BLOCKED-CAPABILITY). Slice PASS only.
+ISSUES-WRITTEN: AT-793 (this addendum); AT-790, AT-791, AT-792 (first dispatch)
+Metrics: start=2026-10-07T19:10:32+05:30 end=2026-10-07T20:10:00+05:30 wall_min=45 agent_min=70 blocked_min=15 suite_runs=1 repeat_runs=2 mutations=18 cycle=1 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-06.6
