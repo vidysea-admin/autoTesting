@@ -2,7 +2,7 @@
 
 Issue: AT-787 (T-178 row: "Nothing calls build_failure_bundle ..."); also unblocks AT-788 (end-to-end capture test)
 Goal task: T-178 (stays pending: FB4 and FB5 are not built)
-Status: ready-for-check (cycle 1: AT-810 follow-up; cycle 0 was checked-PASS)
+Status: checked-PASS
 Fix cycle: 1
 Policy-Version: proportional-verification/2026-10-07.7
 Tier: M
@@ -53,7 +53,7 @@ uv run autotester doctor                                                        
 
 ## Follow-up: AT-810
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Issue: AT-810 (checker, medium): `recorded_failing_step`'s step regex was unanchored, so an ERRORED error text that merely contained `step N (` named the wrong failing step.
 
