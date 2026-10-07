@@ -47,6 +47,12 @@ def create_session(user_id: int) -> str:
     return token
 
 
+def _drop_expired(digest: str, now: str) -> None:
+    with db.transaction() as conn:
+        conn.execute("DELETE FROM sessions WHERE token_hash = ? AND expires_at <= ?",
+                     (digest, now))
+
+
 def resolve_session(token: str | None) -> Principal | None:
     """The live principal for a cookie value, or None: unknown, expired, truncated,
     tampered, or the account is disabled. Never creates the store."""
@@ -60,6 +66,10 @@ def resolve_session(token: str | None) -> Principal | None:
             "AND u.disabled = 0", (_digest(token), now),
         ).fetchone()
         if row is None:
+            stale = conn.execute("SELECT 1 FROM sessions WHERE token_hash = ?",
+                                 (_digest(token),)).fetchone()
+            if stale is not None:  # a refused expired id: drop it (unknown ids cause no write)
+                _drop_expired(_digest(token), now)
             return None
         perms = frozenset(r["permission"] for r in conn.execute(
             "SELECT DISTINCT p.permission FROM memberships m JOIN group_permissions p "

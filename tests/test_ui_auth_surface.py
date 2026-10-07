@@ -100,6 +100,8 @@ def test_au17_disabled_flag_is_refused_when_hosted(root: Path,
 
 def test_au20_hosted_needs_an_allow_list(root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_HOSTED", "1")
+    monkeypatch.delenv("AUTOTESTER_ALLOWED_HOSTS", raising=False)  # the harness lists testserver
+    monkeypatch.delenv("AUTOTESTER_ALLOWED_ORIGINS", raising=False)
     with pytest.raises(AuthConfigError):
         check_startup()
     monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", "https://at.example")

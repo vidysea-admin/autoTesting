@@ -19,6 +19,7 @@ from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.env import load_repo_env
 from autotester.core.paths import ProjectPaths
+from autotester.schema.auth import PermissionKey
 from autotester.schema.project import Project, Source
 from autotester.store.project_store import ProjectStore
 from autotester.ui import (
@@ -74,15 +75,18 @@ def favicon() -> Response:
 def index() -> str:
     who = current_principal()
     slugs = _project_slugs() if who is None else visible_slugs(who, _project_slugs())
+    new = ("<a class='btn btn-primary' href='/onboard'>+ New project</a>"
+           if theme.may(PermissionKey.PROJECT_CREATE) else "")
     header = (
         "<div class='page-header'><div><h1>Projects</h1>"
         "<p class='subtitle'>Onboard a product once, then let AutoTester keep watching it.</p>"
-        "</div><a class='btn btn-primary' href='/onboard'>+ New project</a></div>"
+        f"</div>{new}</div>"
     )
     if not slugs:
         body = header + theme.empty_state(
-            "🧪", "No projects yet — onboard your first one to get started.",
-            "<a class='btn btn-primary' href='/onboard'>+ New project</a>",
+            "🧪", "No projects yet" + (" — onboard your first one to get started."
+                                      if new else " — ask an admin to share one with you."),
+            new,
         )
     else:
         cards = "".join(project_view.project_card(s) for s in slugs)

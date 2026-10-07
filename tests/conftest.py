@@ -153,6 +153,7 @@ def _signed_in_test_clients(tmp_path_factory: pytest.TempPathFactory) -> Iterato
     import auth_login_fixture
     from starlette.testclient import TestClient
 
+    from autotester.auth import audit
     from autotester.ui.auth_middleware import SESSION_COOKIES
 
     original = TestClient.request
@@ -162,14 +163,19 @@ def _signed_in_test_clients(tmp_path_factory: pytest.TempPathFactory) -> Iterato
         if not auth_login_fixture.enabled():
             return original(self, method, url, *args, **kwargs)
         borrowed = not os.environ.get("AUTOTESTER_ROOT") and "AUTOTESTER_AUTH_DIR" not in os.environ
-        if borrowed:  # never the real repo's .auth/ store
+        real_root = audit.repo_root
+        if borrowed:  # never the real repo's .auth/ store, nor its .work/audit.jsonl (P7)
             os.environ["AUTOTESTER_AUTH_DIR"] = suite_auth_dir
+            audit.repo_root = lambda: Path(suite_auth_dir)
         try:
-            self.cookies.set(SESSION_COOKIES[1], auth_login_fixture.ensure_session())
+            token = auth_login_fixture.ensure_session()
+            for name in SESSION_COOKIES:  # the plain and the Secure `__Host-` name (AU3)
+                self.cookies.set(name, token)
             return original(self, method, url, *args, **kwargs)
         finally:
             if borrowed:
                 os.environ.pop("AUTOTESTER_AUTH_DIR", None)
+                audit.repo_root = real_root
 
     TestClient.request = _request
     yield

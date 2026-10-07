@@ -26,20 +26,28 @@ from autotester.store.project_store import ProjectStore
 from autotester.ui.helpers import _project_slugs
 from autotester.ui.theme_style import PAGE_STYLE
 
-NAV = """
-<header class="topbar">
-  <a class="brand" href="/">
-    <span class="brand-mark">AT</span>
-    <span class="brand-name">AutoTester</span>
-  </a>
-  <nav>
-    <a href="/">Projects</a>
-    <a href="/onboard">+ New project</a>
-    <a href="/live" class="nav-live">● Live view</a>
-    <a href="/settings/providers">⚙ Settings</a>
-  </nav>
-</header>
-"""
+# (permission, href, label, extra class): shown only to an account that holds the key (AU25)
+_NAV_LINKS = (
+    (None, "/", "Projects", ""),
+    (PermissionKey.PROJECT_CREATE, "/onboard", "+ New project", ""),
+    (PermissionKey.LIVE_VIEW, "/live", "● Live view", " class=\"nav-live\""),
+    (PermissionKey.SETTINGS_MANAGE, "/settings/providers", "⚙ Settings", ""),
+)
+
+
+def may(key: PermissionKey | None) -> bool:
+    who = current_principal()
+    return key is None or who is None or authorize(who, key)
+
+
+def _nav_html() -> str:
+    """The top bar. A link the account would get a 403 on is not rendered."""
+    links = "".join(f"<a href=\"{href}\"{extra}>{label}</a>"
+                    for key, href, label, extra in _NAV_LINKS if may(key))
+    return ("<header class=\"topbar\"><a class=\"brand\" href=\"/\">"
+            "<span class=\"brand-mark\">AT</span><span class=\"brand-name\">AutoTester"
+            f"</span></a><nav>{links}</nav></header>")
+
 
 _BADGE_CLASS = {
     "PASS": ("badge-pass", "✓"), "FAIL": ("badge-fail", "✕"),
@@ -133,12 +141,13 @@ def _sidebar_html(active_slug: str | None) -> str:
                 f"<a class='sidebar-link{cls}' href='/projects/{escape(slug)}'>{name}</a>"
             )
         links = "".join(rows)
+    add = ("<a class='sidebar-add' href='/onboard'>+ New project</a>"
+           if may(PermissionKey.PROJECT_CREATE) else "")
     return (
         "<aside class='sidebar'>"
         "<div class='sidebar-header'>Projects</div>"
         f"<nav class='sidebar-nav'>{links}</nav>"
-        "<a class='sidebar-add' href='/onboard'>+ New project</a>"
-        "</aside>"
+        f"{add}</aside>"
     )
 
 
@@ -168,7 +177,8 @@ def page(title: str, body: str, active_slug: str | None = None) -> str:
     discipline (ui.md U5). `active_slug` highlights the current project in
     the sidebar on a project-scoped page; omit it on a global page."""
     sidebar = _sidebar_html(active_slug)
+    top = f"{_nav_html()}{_account_html()}"
     return (
-        f"<!doctype html><title>{title} — AutoTester</title>{PAGE_STYLE}{NAV}{_account_html()}"
+        f"<!doctype html><title>{title} — AutoTester</title>{PAGE_STYLE}{top}"
         f"<div class='layout'>{sidebar}<main>{body}</main></div>"
     )

@@ -180,17 +180,17 @@ def test_unset_key_owned_by_another_project_cannot_be_redeclared(
 ) -> None:
     first = client.post("/onboard", data={
         **_base(), "slug": "alpha", "name": "Alpha",
-        "credential_key": ["SHARED_PASSWORD"], "credential_value": [""],
+        "credential_key": ["ALPHA_BETA_PASSWORD"], "credential_value": [""],
         "credential_domains": ["demo.test"], "credential_description": ["password"],
     }, follow_redirects=False)
     second = client.post("/onboard", data={
-        **_base(), "slug": "beta", "name": "Beta",
-        "credential_key": ["SHARED_PASSWORD"], "credential_value": [""],
+        **_base(), "slug": "alpha-beta", "name": "Alpha Beta",
+        "credential_key": ["ALPHA_BETA_PASSWORD"], "credential_value": [""],
         "credential_domains": ["demo.test"], "credential_description": ["password"],
     }, follow_redirects=False)
     assert first.status_code == 303
     assert second.status_code == 400
-    assert not (root / "projects/beta").exists()
+    assert not (root / "projects/alpha-beta").exists()
 
 
 def test_existing_project_cannot_be_overwritten_by_reonboarding(

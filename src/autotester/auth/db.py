@@ -49,6 +49,11 @@ class LastAdmin(ValueError):
     """The change would leave no enabled Admin/CEO member who can manage users (AU9)."""
 
 
+class NotAllowed(ValueError):
+    """The acting account may not make this change (P5): it would grant what the actor
+    does not hold, or touch Admin/CEO without being a member."""
+
+
 def now_iso() -> str:
     return datetime.now(UTC).isoformat()
 

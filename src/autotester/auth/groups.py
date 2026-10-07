@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import sqlite3
 
-from autotester.auth import db
-from autotester.schema.auth import Group, parse_permission
+from autotester.auth import access, db
+from autotester.auth.defaults import ADMIN_SEED
+from autotester.schema.auth import Group, Principal, parse_permission
 
 MAX_GROUP_NAME = 64
 
@@ -64,9 +65,10 @@ def _set_permissions(conn: sqlite3.Connection, group_id: int, permissions: set[s
                      [(group_id, p) for p in sorted(permissions)])
 
 
-def create_group(name: str, permissions: list[str]) -> Group:
+def create_group(name: str, permissions: list[str], actor: Principal | None = None) -> Group:
     clean, perms = _clean_name(name), validate_permissions(permissions)
     with db.transaction() as conn:
+        access.require_may_grant(conn, actor, perms)
         if conn.execute("SELECT 1 FROM groups WHERE name = ?", (clean,)).fetchone():
             raise GroupError("a group with this name already exists")
         new_id = conn.execute("INSERT INTO groups (name) VALUES (?)", (clean,)).lastrowid
@@ -76,12 +78,26 @@ def create_group(name: str, permissions: list[str]) -> Group:
 
 
 def update_group(group_id: int, name: str, permissions: list[str],
-                 member_ids: list[int] | None = None) -> Group:
-    """Replace the name and ticks; with `member_ids`, the members too. One transaction."""
+                 member_ids: list[int] | None = None, actor: Principal | None = None) -> Group:
+    """Replace the name and ticks; with `member_ids`, the members too. One transaction.
+    With an `actor` (P5): only an Admin/CEO member edits Admin/CEO, and only permissions
+    the actor holds (never an admin-only key, unless admin) can be newly ticked or newly
+    handed to members."""
     clean, perms = _clean_name(name), validate_permissions(permissions)
     with db.transaction() as conn:
-        if conn.execute("SELECT 1 FROM groups WHERE id = ?", (group_id,)).fetchone() is None:
+        row = conn.execute("SELECT seed FROM groups WHERE id = ?", (group_id,)).fetchone()
+        if row is None:
             raise GroupError("no such group")
+        if row["seed"] == ADMIN_SEED:
+            access.require_admin(conn, actor, "edit the Admin/CEO group")
+        before = {r["permission"] for r in conn.execute(
+            "SELECT permission FROM group_permissions WHERE group_id = ?", (group_id,))}
+        access.require_may_grant(conn, actor, perms - before)
+        if member_ids is not None:
+            now = {r["user_id"] for r in conn.execute(
+                "SELECT user_id FROM memberships WHERE group_id = ?", (group_id,))}
+            if set(member_ids) - now:
+                access.require_may_grant(conn, actor, perms)
         if conn.execute("SELECT 1 FROM groups WHERE name = ? AND id != ?",
                         (clean, group_id)).fetchone():
             raise GroupError("a group with this name already exists")
@@ -99,10 +115,13 @@ def update_group(group_id: int, name: str, permissions: list[str],
                                          (group_id,)).fetchone())
 
 
-def delete_group(group_id: int) -> int:
+def delete_group(group_id: int, actor: Principal | None = None) -> int:
     """Delete the group; returns how many members lost it. Refused for Admin/CEO while
-    it is the last admin path (AU9)."""
+    it is the last admin path (AU9), and for a non-admin actor (P5)."""
     with db.transaction() as conn:
+        seed = conn.execute("SELECT seed FROM groups WHERE id = ?", (group_id,)).fetchone()
+        if seed is not None and seed["seed"] == ADMIN_SEED:
+            access.require_admin(conn, actor, "delete the Admin/CEO group")
         members = conn.execute("SELECT COUNT(*) FROM memberships WHERE group_id = ?",
                                (group_id,)).fetchone()[0]
         if conn.execute("DELETE FROM groups WHERE id = ?", (group_id,)).rowcount == 0:
