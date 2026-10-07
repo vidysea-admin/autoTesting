@@ -2,12 +2,16 @@
 
 Three modes (D-072 item 9): `manual` (button only, the default, produces no slot), `fixed`
 (one daily `HH:MM`) and `custom` (a time the user selects: one-off date-times and/or one weekly
-rule). Every time is a local wall-clock time in the schedule's IANA `timezone`; the instants the
+rule). Every time is a local wall-clock time in the schedule's `timezone`; the instants the
 scheduler fires at are derived by `stages/schedule_time.py`, never stored here.
 
-Vocabulary note: `ScheduleMode`, `SlotOutcome` and `SchedulerHealth` are Group 10 closed
-vocabularies. TF8 names `schema/team_enums.py` (G1) as their home; until that file exists they
-live here beside the only model that uses them, and move there as a pure relocation.
+Time zones (Umesh, 2026-10-07): a schedule supports only `UTC` and `IST` (a fixed +05:30
+offset). Neither has daylight saving, so there is no zone database, no `tzdata` dependency and
+no DST rule anywhere. Anything else is refused at save, naming the two allowed values.
+
+Vocabulary note: `ScheduleMode`, `SlotOutcome`, `SchedulerHealth` and `ScheduleZone` are Group 10
+closed vocabularies. TF8 names `schema/team_enums.py` (G1) as their home; until that file exists
+they live here beside the only model that uses them, and move there as a pure relocation.
 
 `ScheduleConfig.parse_for_save` is the one door for user input: it refuses bad values with a
 reason that names the field, so a caller can store nothing. Weekdays are Python's: 0 = Monday.
@@ -15,6 +19,7 @@ reason that names the field, so a caller can store nothing. Weekdays are Python'
 
 from __future__ import annotations
 
+import os
 import re
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -23,7 +28,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
-from autotester.core.localtime import LocalKind, UnknownZone, resolve_local, zone
+from autotester.core.localtime import resolve_local, zone
 
 TIMEZONE_ENV = "AUTOTESTER_TIMEZONE"
 MAX_ONE_OFFS = 50
@@ -34,6 +39,13 @@ class ScheduleMode(StrEnum):
     MANUAL = "manual"
     FIXED = "fixed"
     CUSTOM = "custom"
+
+
+class ScheduleZone(StrEnum):
+    """The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST."""
+
+    UTC = "UTC"
+    IST = "IST"
 
 
 class SlotOutcome(StrEnum):
@@ -64,21 +76,13 @@ class ScheduleInvalid(ValueError):
         self.reason = reason
 
 
-def default_timezone(environ: Mapping[str, str]) -> str:
-    """`AUTOTESTER_TIMEZONE` if it names a real zone, else UTC (a typo must not break saves)."""
+def default_timezone(environ: Mapping[str, str]) -> ScheduleZone:
+    """`AUTOTESTER_TIMEZONE` if it is `UTC` or `IST`, else UTC (a typo must not break saves)."""
     name = environ.get(TIMEZONE_ENV, "").strip()
-    if not name:
-        return "UTC"
-    try:
-        zone(name)
-    except UnknownZone:
-        return "UTC"
-    return name
+    return ScheduleZone(name) if name in set(ScheduleZone) else ScheduleZone.UTC
 
 
-def _env_default_timezone() -> str:
-    import os
-
+def _env_default_timezone() -> ScheduleZone:
     return default_timezone(os.environ)
 
 
@@ -124,7 +128,8 @@ class ScheduleConfig(BaseModel):
     one_offs: list[datetime] = Field(
         default_factory=list, description="naive local date-times; each fires once (mode custom)")
     weekly: WeeklyRule | None = None
-    timezone: str = Field(default_factory=_env_default_timezone, description="IANA zone name")
+    timezone: ScheduleZone = Field(
+        default_factory=_env_default_timezone, description="UTC or IST (+05:30, no DST)")
     owner: str | None = Field(default=None, description="user who last saved; requested_by")
     paused: bool = False
 
@@ -133,13 +138,12 @@ class ScheduleConfig(BaseModel):
     def _fixed_at(cls, v: str | None) -> str | None:
         return None if v is None else _check_hhmm(v, "fixed_at")
 
-    @field_validator("timezone")
+    @field_validator("timezone", mode="before")
     @classmethod
-    def _timezone(cls, v: str) -> str:
-        try:
-            zone(v)
-        except UnknownZone as exc:
-            raise ValueError(f"timezone: {exc}") from exc
+    def _timezone(cls, v: object) -> object:
+        if v not in [z.value for z in ScheduleZone]:
+            allowed = " or ".join(z.value for z in ScheduleZone)
+            raise ValueError(f"timezone: must be {allowed} (got {v!r})")
         return v
 
     @field_validator("one_offs")
@@ -181,18 +185,12 @@ class ScheduleConfig(BaseModel):
             raise ValueError("custom: takes one_offs and/or weekly, not fixed_at")
         if not self.one_offs and self.weekly is None:
             raise ValueError("custom: give at least one one-off time or a weekly rule")
-        tz = zone(self.timezone)
-        for stamp in self.one_offs:
-            if resolve_local(stamp, tz)[1] is LocalKind.GAP:
-                raise ValueError(
-                    f"one_offs: {stamp:%Y-%m-%d %H:%M} does not exist in {self.timezone} "
-                    "(clocks skip it); pick another time")
         return self
 
     def one_off_instants(self) -> list[datetime]:
         """UTC instants of the one-offs, in order."""
         tz = zone(self.timezone)
-        return [resolve_local(s, tz)[0] for s in self.one_offs]
+        return [resolve_local(s, tz) for s in self.one_offs]
 
     @classmethod
     def parse_for_save(cls, data: Mapping[str, Any], *, now: datetime) -> ScheduleConfig:

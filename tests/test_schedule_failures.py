@@ -15,7 +15,12 @@ from autotester.schema.schedule import (
     SlotOutcome,
     SlotRecord,
 )
-from autotester.stages.schedule_store import read_heartbeat, read_records, write_heartbeat
+from autotester.stages.schedule_store import (
+    append_record,
+    read_heartbeat,
+    read_records,
+    write_heartbeat,
+)
 from autotester.stages.scheduler import scheduler_health, tick_interval_from_env, tick_project
 
 SINCE = utc(2026, 10, 7, 12)
@@ -144,3 +149,51 @@ def test_a_corrupt_heartbeat_reads_as_never_ticked_not_as_healthy(tmp_path: Path
     path = tmp_path / "last_tick.json"
     path.write_text("{not json", encoding="utf-8")
     assert read_heartbeat(path) is None
+
+
+def _record(key: str = "p:fixed:2026-10-08T09:00Z") -> SlotRecord:
+    return SlotRecord(slot_key=key, project="p", mode="fixed", instant=NOW, recorded_at=NOW,
+                      outcome=SlotOutcome.ENQUEUED)
+
+
+def test_appending_a_second_record_for_one_slot_writes_nothing(tmp_path: Path) -> None:
+    """Two ticks finish the same crashed slot (re-drive race): the file keeps one line."""
+    path = tmp_path / "records.jsonl"
+    assert append_record(path, _record()) is True
+    assert append_record(path, _record()) is False
+    assert len(path.read_text(encoding="utf-8").splitlines()) == 1
+
+
+def test_a_duplicate_line_that_slipped_in_is_read_back_once(tmp_path: Path) -> None:
+    """The check-then-append window lost a race and two lines landed: readers see one."""
+    path = tmp_path / "records.jsonl"
+    line = _record().model_dump_json() + "\n"
+    other = _record("p:fixed:2026-10-09T09:00Z").model_dump_json() + "\n"
+    path.write_text(line + line + other, encoding="utf-8")
+    assert [r.slot_key for r in read_records(path)] == [
+        "p:fixed:2026-10-08T09:00Z", "p:fixed:2026-10-09T09:00Z"]
+
+
+def test_two_ticks_redriving_one_orphan_claim_leave_one_record(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Both ticks read the record file before either wrote (the race): still one record."""
+    import dataclasses
+
+    from autotester.stages import scheduler
+
+    deps, q = make_deps(tmp_path, "p", idempotent=True)
+
+    def die(_slot: object) -> str:
+        raise SystemExit(1)
+
+    with pytest.raises(SystemExit):
+        tick_project("p", daily(), NOW, dataclasses.replace(deps, enqueue=die), since=SINCE)
+    monkeypatch.setattr(scheduler, "read_records", lambda _p: [])  # both see "no record yet"
+    later = NOW + timedelta(minutes=5)
+    first = tick_project("p", daily(), later, deps, since=SINCE)
+    second = tick_project("p", daily(), later, deps, since=SINCE)
+    assert len(first) == 1
+    assert second == []  # the second re-driver wrote nothing and reports nothing
+    assert len(deps.records_path.read_text(encoding="utf-8").splitlines()) == 1
+    assert len(q) == 1

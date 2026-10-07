@@ -24,10 +24,10 @@ VALID = {
     "manual explicit": {"mode": "manual"},
     "fixed utc": {"mode": "fixed", "fixed_at": "09:00", "owner": "u1"},
     "fixed midnight": {"mode": "fixed", "fixed_at": "00:00", "owner": "u1"},
-    "fixed 23:59 kolkata": {
-        "mode": "fixed", "fixed_at": "23:59", "timezone": "Asia/Kolkata", "owner": "u1"},
-    "fixed new york": {
-        "mode": "fixed", "fixed_at": "02:30", "timezone": "America/New_York", "owner": "u1"},
+    "fixed 23:59 ist": {
+        "mode": "fixed", "fixed_at": "23:59", "timezone": "IST", "owner": "u1"},
+    "fixed utc explicit": {
+        "mode": "fixed", "fixed_at": "02:30", "timezone": "UTC", "owner": "u1"},
     "custom one-off": {"mode": "custom", "one_offs": ["2026-10-09T10:00"], "owner": "u1"},
     "custom weekly": {
         "mode": "custom", "weekly": {"weekdays": [0], "at": "08:15"}, "owner": "u1"},
@@ -73,9 +73,16 @@ INVALID = {
         "one_offs"),
     "past one-off": (
         {"mode": "custom", "one_offs": ["2026-10-07T11:59"], "owner": "u"}, "one_offs"),
-    "one-off in DST gap": (
-        {"mode": "custom", "one_offs": ["2027-03-14T02:30"], "owner": "u",
-         "timezone": "America/New_York"}, "one_offs"),
+    "iana zone new york": (
+        {"mode": "fixed", "fixed_at": "09:00", "owner": "u", "timezone": "America/New_York"},
+        "timezone"),
+    "iana zone kolkata": (
+        {"mode": "fixed", "fixed_at": "09:00", "owner": "u", "timezone": "Asia/Kolkata"},
+        "timezone"),
+    "lowercase ist": (
+        {"mode": "fixed", "fixed_at": "09:00", "owner": "u", "timezone": "ist"}, "timezone"),
+    "zone as a list": (
+        {"mode": "fixed", "fixed_at": "09:00", "owner": "u", "timezone": ["UTC"]}, "timezone"),
     "one-off with offset": (
         {"mode": "custom", "one_offs": ["2026-10-09T10:00:00+05:30"], "owner": "u"}, "one_offs"),
     "one-off with seconds": (
@@ -122,11 +129,26 @@ def test_manual_is_the_default_and_a_project_json_without_schedule_loads_as_manu
     assert cfg.weekly is None
 
 
-def test_default_timezone_follows_autotester_timezone_else_utc() -> None:
-    """An operator sets AUTOTESTER_TIMEZONE in .env; a typo there must not break every schedule."""
+def test_default_timezone_follows_autotester_timezone_when_it_is_utc_or_ist() -> None:
+    """An operator sets AUTOTESTER_TIMEZONE in .env; an unsupported value there must not break
+    every schedule, so it falls back to UTC."""
     assert default_timezone({}) == "UTC"
-    assert default_timezone({"AUTOTESTER_TIMEZONE": "Asia/Kolkata"}) == "Asia/Kolkata"
+    assert default_timezone({"AUTOTESTER_TIMEZONE": "IST"}) == "IST"
+    assert default_timezone({"AUTOTESTER_TIMEZONE": "UTC"}) == "UTC"
+    assert default_timezone({"AUTOTESTER_TIMEZONE": "America/New_York"}) == "UTC"
     assert default_timezone({"AUTOTESTER_TIMEZONE": "Not/AZone"}) == "UTC"
+
+
+def test_an_unsupported_zone_is_refused_naming_both_allowed_values() -> None:
+    """A user types America/New_York into the zone box (D-078: only UTC and IST)."""
+    with pytest.raises(ScheduleInvalid) as err:
+        ScheduleConfig.parse_for_save(
+            {"mode": "fixed", "fixed_at": "09:00", "owner": "u", "timezone": "America/New_York"},
+            now=NOW)
+    assert err.value.field == "timezone"
+    assert "UTC" in err.value.reason
+    assert "IST" in err.value.reason
+    assert "America/New_York" in err.value.reason
 
 
 def test_round_trip_is_lossless_for_a_saved_custom_schedule() -> None:

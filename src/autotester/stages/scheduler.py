@@ -166,20 +166,19 @@ def _fire(project: str, slot: Slot, intended: SlotOutcome, now: datetime, deps: 
 
 def _decide(project: str, now: datetime, deps: TickDeps, body: SlotClaim) -> SlotRecord | None:
     """Claim then record one slot. None when another tick won the claim."""
-    slot = Slot(body.slot_key, body.instant, body.mode)
-    if not claim(deps.claim_dir, slot.key, body):
+    if not claim(deps.claim_dir, body.slot_key, body):
         return None
     return _write(project, now, deps, body)
 
 
-def _write(project: str, now: datetime, deps: TickDeps, body: SlotClaim) -> SlotRecord:
+def _write(project: str, now: datetime, deps: TickDeps, body: SlotClaim) -> SlotRecord | None:
+    """Decide and record one claimed slot. None when its record was already written."""
     slot = Slot(body.slot_key, body.instant, body.mode)
     if body.intended is SlotOutcome.MISSED:
         rec = _record(slot, project, now, SlotOutcome.MISSED, superseded_by=body.superseded_by)
     else:
         rec = _fire(project, slot, body.intended, now, deps)
-    append_record(deps.records_path, rec)
-    return rec
+    return rec if append_record(deps.records_path, rec) else None
 
 
 def _rebuilt(deps: TickDeps, key: str, grace: timedelta) -> SlotClaim | None:
@@ -206,7 +205,9 @@ def _redrive(project: str, now: datetime, deps: TickDeps,
         body = body or _rebuilt(deps, key, grace)
         if body is None or (now - body.claimed_at).total_seconds() < after_s:
             continue
-        out.append(_write(project, now, deps, body))
+        rec = _write(project, now, deps, body)
+        if rec is not None:
+            out.append(rec)
     return out
 
 

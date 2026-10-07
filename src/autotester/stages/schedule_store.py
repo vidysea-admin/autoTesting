@@ -55,7 +55,14 @@ def list_claims(claim_dir: Path) -> dict[str, SlotClaim | None]:
     return out
 
 
-def append_record(path: Path, record: SlotRecord) -> None:
+def append_record(path: Path, record: SlotRecord) -> bool:
+    """Append one record unless its slot already has one. True when a line was written.
+
+    Idempotent per `slot_key`: a re-drive that races the original winner writes nothing. The
+    check-then-append has a tiny window, so `read_records` also keeps only the first record
+    per slot, and a duplicate line can never show twice."""
+    if any(r.slot_key == record.slot_key for r in read_records(path)):
+        return False
     path.parent.mkdir(parents=True, exist_ok=True)
     line = (record.model_dump_json() + "\n").encode("utf-8")
     fd = os.open(path, os.O_APPEND | os.O_CREAT | os.O_WRONLY)
@@ -63,20 +70,26 @@ def append_record(path: Path, record: SlotRecord) -> None:
         os.write(fd, line)
     finally:
         os.close(fd)
+    return True
 
 
 def read_records(path: Path) -> list[SlotRecord]:
-    """All records, oldest first. A torn line (power cut mid-append) is skipped, not fatal."""
+    """One record per slot, oldest first. A torn line (power cut mid-append) is skipped, not
+    fatal, and a second line for the same slot (a re-drive race) is ignored."""
     if not path.is_file():
         return []
     out: list[SlotRecord] = []
+    seen: set[str] = set()
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         try:
-            out.append(SlotRecord.model_validate_json(line))
+            rec = SlotRecord.model_validate_json(line)
         except ValidationError:
             continue
+        if rec.slot_key not in seen:
+            seen.add(rec.slot_key)
+            out.append(rec)
     return out
 
 

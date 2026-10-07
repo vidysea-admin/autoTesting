@@ -4,6 +4,7 @@ rest are recorded `missed`, never backfilled. Injected clock; nothing sleeps.
 
 from __future__ import annotations
 
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
@@ -12,7 +13,7 @@ from schedule_fakes import daily, make_deps, one_offs, utc
 from autotester.schema.schedule import SlotOutcome
 from autotester.stages import scheduler
 from autotester.stages.schedule_store import read_records
-from autotester.stages.scheduler import grace_from_env, tick_project
+from autotester.stages.scheduler import MAX_LOOKBACK, due, grace_from_env, tick_project
 
 
 def _outcomes(path: Path) -> list[str]:
@@ -155,3 +156,25 @@ def test_a_shorter_operator_grace_window_is_honoured(tmp_path: Path) -> None:
                  grace_minutes=30)
     assert len(q) == 0
     assert _outcomes(deps.records_path) == ["missed"]
+
+
+def test_a_schedule_saved_long_ago_never_looks_back_more_than_31_days() -> None:
+    """A schedule saved 100 days ago whose server was off the whole time: only the slots inside
+    the 31-day cap are examined (and all recorded `missed`), the older ones are not enumerated."""
+    now = utc(2026, 10, 8, 12)
+    d = due(daily(), now, set(), project="p", since=now - timedelta(days=100))
+    assert d.fire is None
+    assert len(d.missed) == 31
+    assert d.missed[0].slot.instant == utc(2026, 9, 8, 9)
+    assert d.missed[-1].slot.instant == utc(2026, 10, 8, 9)
+
+
+def test_tick_after_a_very_long_outage_records_at_most_the_capped_number_of_missed(
+    tmp_path: Path,
+) -> None:
+    deps, q = make_deps(tmp_path, "p")
+    now = utc(2026, 10, 8, 12)
+    out = tick_project("p", daily(), now, deps, since=now - timedelta(days=100))
+    assert len(q) == 0
+    assert len(out) == 31
+    assert min(r.instant for r in out) >= now - MAX_LOOKBACK

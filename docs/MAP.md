@@ -29,7 +29,7 @@
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
 | `core/excel.py` | Workbook presentation helpers shared by every Excel exporter. |
 | `core/ids.py` | Identifier generation. The ONLY place ids are minted. |
-| `core/localtime.py` | Zone lookup and DST-correct conversion of a local wall-clock time to a UTC instant. |
+| `core/localtime.py` | Fixed-offset time zones and local-to-UTC conversion for the scheduler. |
 | `core/paths.py` | Filesystem layout. The ONLY place project paths are constructed. |
 | `core/pricing.py` | Per-token cost estimates for LLM-call trace spans (D-041 phase 1, RT4). |
 | `core/redact.py` | Secret redaction. Every log line and stored artifact passes through here. |
@@ -279,6 +279,7 @@
 | `StageCheckpoint` (`schema/run_state.py`) | One stage's durable record within a run. |
 | `RunState` (`schema/run_state.py`) | The ledger for one run, keyed by `run_id` (`OR5`: one run_id, one lineage). |
 | `ScheduleMode` (`schema/schedule.py`) |  |
+| `ScheduleZone` (`schema/schedule.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
 | `SlotOutcome` (`schema/schedule.py`) | What a tick decided for one slot. A record carries exactly one of these. |
 | `SchedulerHealth` (`schema/schedule.py`) |  |
 | `ScheduleInvalid` (`schema/schedule.py`) | A value was refused at save. `field` names it; the caller stores nothing. |

@@ -1,9 +1,9 @@
 """Slot arithmetic: which UTC instants does a schedule mean to fire at, inside a window?
 
 Pure: no clock, no file, no environment. A schedule yields at most one instant per local
-calendar day per rule (so there is no interval floor to configure), every instant is on a
-whole minute, and DST is resolved by `core.localtime` (a gap fires at the clock jump, a
-repeated time fires on its first occurrence). `manual` and `paused` schedules yield nothing.
+calendar day per rule (so there is no interval floor to configure) and every instant is on a
+whole minute. Zones are the fixed offsets `UTC` and `IST` (`core.localtime`), so one local time
+is always exactly one instant. `manual` and `paused` schedules yield nothing.
 """
 
 from __future__ import annotations
@@ -19,7 +19,8 @@ def _hhmm(text: str) -> time:
 
 
 def _local_dates(start: datetime, end: datetime, tz: tzinfo) -> list[date]:
-    first = start.astimezone(tz).date() - timedelta(days=1)  # a gap/overlap can shift the day
+    # pad a day each side: the local date can differ from the UTC date
+    first = start.astimezone(tz).date() - timedelta(days=1)
     last = end.astimezone(tz).date() + timedelta(days=1)
     return [first + timedelta(days=i) for i in range((last - first).days + 1)]
 
@@ -34,12 +35,12 @@ def slot_instants(schedule: ScheduleConfig, start: datetime, end: datetime) -> l
     if schedule.mode is ScheduleMode.FIXED and schedule.fixed_at is not None:
         at = _hhmm(schedule.fixed_at)
         for day in _local_dates(start, end, tz):
-            found.add(resolve_local(datetime.combine(day, at), tz)[0])
+            found.add(resolve_local(datetime.combine(day, at), tz))
     elif schedule.mode is ScheduleMode.CUSTOM:
         found.update(schedule.one_off_instants())
         if schedule.weekly is not None:
             at = _hhmm(schedule.weekly.at)
             for day in _local_dates(start, end, tz):
                 if day.weekday() in schedule.weekly.weekdays:
-                    found.add(resolve_local(datetime.combine(day, at), tz)[0])
+                    found.add(resolve_local(datetime.combine(day, at), tz))
     return sorted(i for i in found if start <= i <= end)

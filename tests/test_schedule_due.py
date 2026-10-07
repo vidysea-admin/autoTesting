@@ -4,9 +4,7 @@ argument. Fake clock only; nothing here sleeps or reads the environment.
 
 from __future__ import annotations
 
-import tomllib
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 
 import pytest
 
@@ -33,32 +31,53 @@ def test_utc_daily_rule_yields_one_slot_per_day() -> None:
     assert got == [utc(2026, 10, 7), utc(2026, 10, 8), utc(2026, 10, 9)]
 
 
-def test_kolkata_has_no_dst_and_offset_is_five_thirty() -> None:
-    got = span(fixed("09:00", "Asia/Kolkata"), utc(2026, 1, 1), utc(2026, 8, 1))
+def test_ist_nine_oclock_is_0330_utc_every_day_of_the_year() -> None:
+    """IST is a fixed +05:30 with no DST: 09:00 IST is 03:30 UTC in January and in July."""
+    got = span(fixed("09:00", "IST"), utc(2026, 1, 1), utc(2026, 8, 1))
     assert len(got) > 200
     assert {g.time() for g in got} == {utc(2026, 1, 1, 3, 30).time()}
+    assert utc(2026, 1, 15, 3, 30) in got
+    assert utc(2026, 7, 15, 3, 30) in got
 
 
-def test_new_york_spring_forward_0230_fires_once_at_first_valid_instant() -> None:
-    """02:30 does not exist on 2026-03-08 in New York; the day fires once, at the 03:00 EDT jump
-    (07:00 UTC) = the first valid instant after the gap."""
-    got = span(fixed("02:30", "America/New_York"), utc(2026, 3, 7), utc(2026, 3, 10))
-    assert got == [utc(2026, 3, 7, 7, 30), utc(2026, 3, 8, 7, 0), utc(2026, 3, 9, 6, 30)]
+def test_both_supported_zones_give_known_instants_for_the_same_wall_time() -> None:
+    """A user saves 18:00 once as UTC and once as IST; the instants are 5h30m apart."""
+    window = (utc(2026, 10, 8), utc(2026, 10, 8, 23, 59))
+    assert span(fixed("18:00", "UTC"), *window) == [utc(2026, 10, 8, 18, 0)]
+    assert span(fixed("18:00", "IST"), *window) == [utc(2026, 10, 8, 12, 30)]
 
 
-def test_new_york_fall_back_0130_fires_once_not_twice() -> None:
-    """01:30 happens twice on 2026-11-01; the rule fires on the first occurrence only."""
-    got = span(fixed("01:30", "America/New_York"), utc(2026, 10, 31), utc(2026, 11, 3))
-    assert got == [utc(2026, 10, 31, 5, 30), utc(2026, 11, 1, 5, 30), utc(2026, 11, 2, 6, 30)]
+def test_ist_early_morning_slot_lands_on_the_previous_utc_date() -> None:
+    """IST 00:00 is 18:30 UTC the day before; IST 05:00 is 23:30 UTC the day before."""
+    got = span(fixed("00:00", "IST"), utc(2026, 10, 7), utc(2026, 10, 9))
+    assert got == [utc(2026, 10, 7, 18, 30), utc(2026, 10, 8, 18, 30)]
+    assert span(fixed("05:00", "IST"), utc(2026, 10, 7), utc(2026, 10, 8, 23, 59)) == [
+        utc(2026, 10, 7, 23, 30), utc(2026, 10, 8, 23, 30)]
 
 
-def test_weekly_rule_is_judged_on_the_local_calendar_day_across_midnight() -> None:
-    """Monday 00:30 in Kolkata is Sunday 19:00 UTC: the weekday follows the LOCAL date."""
+def test_ist_late_evening_slot_stays_on_the_same_utc_date() -> None:
+    assert span(fixed("23:59", "IST"), utc(2026, 10, 8), utc(2026, 10, 8, 23, 59)) == [
+        utc(2026, 10, 8, 18, 29)]
+
+
+def test_weekly_rule_is_judged_on_the_local_calendar_day_across_ist_midnight() -> None:
+    """Monday 00:30 IST is Sunday 19:00 UTC: the weekday follows the LOCAL (IST) date."""
     cfg = ScheduleConfig.model_validate({
-        "mode": "custom", "owner": "u1", "timezone": "Asia/Kolkata",
+        "mode": "custom", "owner": "u1", "timezone": "IST",
         "weekly": {"weekdays": [0], "at": "00:30"}})
     got = span(cfg, utc(2026, 10, 11), utc(2026, 10, 19))
-    assert got == [utc(2026, 10, 11, 19, 0), utc(2026, 10, 18, 19, 0)]  # Mondays 12 and 19
+    assert got == [utc(2026, 10, 11, 19, 0), utc(2026, 10, 18, 19, 0)]  # IST Mondays 12 and 19
+    sunday = cfg.model_copy(update={"weekly": cfg.weekly.model_copy(update={"weekdays": [6]})})
+    assert span(sunday, utc(2026, 10, 11), utc(2026, 10, 19)) == [utc(2026, 10, 17, 19, 0)]
+
+
+def test_a_utc_weekly_rule_does_not_shift_with_the_ist_date() -> None:
+    """The same Monday 00:30 rule in UTC fires at Monday 00:30 UTC."""
+    cfg = ScheduleConfig.model_validate({
+        "mode": "custom", "owner": "u1", "timezone": "UTC",
+        "weekly": {"weekdays": [0], "at": "00:30"}})
+    assert span(cfg, utc(2026, 10, 11), utc(2026, 10, 19, 1)) == [
+        utc(2026, 10, 12, 0, 30), utc(2026, 10, 19, 0, 30)]
 
 
 def test_manual_and_paused_schedules_produce_no_slot_however_long_the_window() -> None:
@@ -106,17 +125,3 @@ def test_due_takes_the_clock_as_an_argument_and_rejects_a_naive_clock() -> None:
     with pytest.raises(ValueError, match="timezone-aware"):
         due(fixed("09:00"), datetime(2026, 10, 8, 9, 0), set(), project="p",
             since=utc(2026, 10, 7))
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason="OWED: tzdata must be a declared dependency (TS2, Windows has no zone data) but a new "
-    "dependency needs a D-entry from Umesh; remove this xfail when pyproject lists tzdata",
-)
-def test_tzdata_is_a_declared_dependency_for_windows() -> None:
-    """Windows ships no IANA database, so zoneinfo needs the `tzdata` wheel (TS2)."""
-    toml = tomllib.loads(
-        (Path(__file__).resolve().parents[1] / "pyproject.toml").read_text(encoding="utf-8"))
-    names = {d.split(">")[0].split("=")[0].split("[")[0].strip().lower()
-             for d in toml["project"]["dependencies"]}
-    assert "tzdata" in names
