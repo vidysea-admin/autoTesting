@@ -56,6 +56,17 @@ def _approval_signing_key() -> Iterator[None]:
         os.environ.pop(_APPROVAL_KEY_ENV, None)
 
 
+@pytest.fixture(autouse=True)
+def _inline_run_queue(monkeypatch: pytest.MonkeyPatch) -> None:
+    """T-203: `POST /projects/<slug>/run` now enqueues and returns at once, so a test that asserts
+    the finished run would race a background thread. Every test therefore gets a fresh queue
+    whose worker runs the job inline, in the request; the queue's own scheduling (limit,
+    single-flight, queued state) is tested in `tests/test_run_queue.py` with a manual spawner."""
+    from autotester.ui import run_queue
+
+    monkeypatch.setattr(run_queue, "_QUEUE", run_queue.RunQueue(spawn=lambda job: job()))
+
+
 @pytest.fixture(scope="session")
 def serve_dir() -> Iterator[Callable[[Path], str]]:
     """Serve a directory over HTTP on an ephemeral localhost port.

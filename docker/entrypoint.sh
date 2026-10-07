@@ -11,10 +11,13 @@ set -euo pipefail
 # Removing any stale lock/socket from a prior run makes every start (fresh or restart) idempotent.
 rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
 
-Xvfb :99 -screen 0 1280x800x24 &
+# 1600x1000 > the 1366x850 browser viewport, so a watcher never sees a clipped window.
+Xvfb :99 -screen 0 "${AUTOTESTER_SCREEN:-1600x1000x24}" &
 sleep 1
 
-x11vnc -display :99 -forever -shared -nopw -quiet &
+# -localhost: the raw VNC port (5900) is reachable only from inside the container; the only
+# way in is websockify below, which a reverse proxy can gate.
+x11vnc -display :99 -forever -shared -nopw -localhost -quiet &
 sleep 1
 
 websockify --web=/usr/share/novnc 6080 localhost:5900 &

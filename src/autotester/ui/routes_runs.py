@@ -7,13 +7,14 @@ file under the C2 line cap).
 from __future__ import annotations
 
 from pathlib import Path
+from typing import NamedTuple
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 
 from autotester.browser.secrets import SecretStore
+from autotester.browser.video import VIDEO_OVERHEAD_MB
 from autotester.core.consent import ApprovalRequired
-from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import placeholder_keys
 from autotester.providers.langchain_fallback import LangChainFallbackProvider
@@ -23,16 +24,23 @@ from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import Action, ApprovalKind
 from autotester.schema.project import Project
 from autotester.schema.run import Run, RunBounds
+from autotester.schema.run_queue import QueueEntry
 from autotester.schema.run_state import StageCheckpoint, StageName
 from autotester.stages.coverage import diff_coverage, queue_requests
 from autotester.stages.explore_consent import covering_approval
 from autotester.stages.orchestrate import StageContext
-from autotester.stages.parallel_run import ParallelPlan, plan_parallel_run
+from autotester.stages.parallel_run import (
+    DEFAULT_PER_CONTEXT_MB,
+    ParallelPlan,
+    _free_ram_mb,
+    plan_parallel_run,
+)
 from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
 from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
 from autotester.ui.helpers import _load_project_or_404
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
+from autotester.ui.run_queue import QueueFull, RunRefused, get_queue, set_runner
 
 router = APIRouter()
 
@@ -93,6 +101,19 @@ def _require_live_case_approval(
         raise HTTPException(403, str(exc)) from exc
 
 
+def _plan_under_shared_budget(project: Project, run_id: str) -> ParallelPlan:
+    """PR1 for one run, planned one run at a time and net of what the other running runs were
+    already granted (hosting.md HO20): two runs starting together share one RAM budget instead of
+    each assuming the whole host is free. With nothing else running this is exactly the plain
+    `plan_parallel_run(project, video_enabled=True)` call."""
+    queue = get_queue()
+    with queue.planning(run_id) as reserved_mb:
+        extra = {"free_ram_mb": max(0.0, _free_ram_mb() - reserved_mb)} if reserved_mb else {}
+        plan = plan_parallel_run(project, video_enabled=True, **extra)
+        queue.grant(run_id, plan.n * (DEFAULT_PER_CONTEXT_MB + VIDEO_OVERHEAD_MB))
+    return plan
+
+
 def _execute_with_trace(
     store: ProjectStore, run_id: str, secrets: SecretStore, project: Project,
     cases: list[Case], entry_flags: list[bool], run_dir: Path, paths: ProjectPaths,
@@ -105,7 +126,7 @@ def _execute_with_trace(
     covering the whole batch."""
     ctx = StageContext(store=store, run_id=run_id, secrets=secrets)
     judge.trace = ctx.trace
-    plan = plan_parallel_run(project, video_enabled=True)
+    plan = _plan_under_shared_budget(project, run_id)
     budget = RunBudget(approval)
 
     started = ctx.clock()
@@ -128,14 +149,24 @@ def _execute_with_trace(
     return plan
 
 
-@router.post("/projects/{slug}/run")
-def trigger_run(slug: str) -> RedirectResponse:
-    """A real, synchronous run: the request waits for the browser to finish
-    every case before redirecting to the report (RU1-RU4 — v1's honest
-    boundary, no background job queue). Runs every case through the same
-    resilient pipeline (stages/run_case_pipeline.py) whether serial or
-    parallel (AT-574) -- a CLI script that wants the un-guarded, self-grading
-    path still calls `run_and_grade_case` directly.
+class _Prepared(NamedTuple):
+    store: ProjectStore
+    project: Project
+    cases: list[Case]
+    judge: LangChainFallbackProvider
+    paths: ProjectPaths
+    secrets: SecretStore
+    approval: RunApproval
+    entry_flags: list[bool]
+
+
+def _prepare_run(slug: str) -> _Prepared:
+    """Everything a run needs, with every gate evaluated (400/403 as `HTTPException`).
+
+    Called when the press arrives (so a refusal is immediate) and again when the queue starts the
+    run (hosting.md HO19: a queued run is not a way around the credential, provider or consent
+    gates). Runs every case through the same resilient pipeline
+    (stages/run_case_pipeline.py) whether serial or parallel (AT-574).
 
     AT-562/AT-564: this is the live entry point wired to the T-172/T-173
     machinery those goal-coverage gaps named -- see `_execute_with_trace`."""
@@ -152,15 +183,44 @@ def trigger_run(slug: str) -> RedirectResponse:
     secrets = SecretStore.load(project, paths.env_file, strict=False)
     account_keys = _require_declared_values(project, secrets, slug, cases)
     approval = _require_live_case_approval(project, store, cases, secrets, account_keys)
-    run_id = f"run-{ulid()}"
-    run_dir = paths.run_dir(run_id)
     entry_flags = [_is_entry_case(c, project) for c in cases]
+    return _Prepared(store, project, cases, judge, paths, secrets, approval, entry_flags)
 
+
+@router.post("/projects/{slug}/run")
+def trigger_run(slug: str) -> RedirectResponse:
+    """Queue a real run and return at once (RU1-RU4; T-203/D-072 G6 replaced v1's synchronous
+    wait). Validation and consent are checked now, so 400/403 come back immediately; the run
+    itself starts when the server-wide limit and the project's single-flight slot allow
+    (`ui/run_queue.py`), and the report page shows it as queued, then running."""
+    _prepare_run(slug)
+    try:
+        get_queue().submit(slug)
+    except QueueFull as exc:
+        raise HTTPException(429, str(exc)) from exc
+    return RedirectResponse(f"/projects/{slug}/report", status_code=303)
+
+
+def _run_queued(entry: QueueEntry) -> None:
+    """The queue's executor: re-check every gate, then run the whole project as run `entry.id`."""
+    try:
+        prepared = _prepare_run(entry.project)
+    except HTTPException as exc:
+        raise RunRefused(str(exc.detail)) from exc
+    _execute_and_record(prepared, entry.id)
+
+
+set_runner(_run_queued)
+
+
+def _execute_and_record(prepared: _Prepared, run_id: str) -> None:
+    """The body of a run, executed by the queue's worker: every case, then `run.json`."""
+    store, project, cases, judge, paths, secrets, approval, entry_flags = prepared
+    slug = project.slug
     plan = _execute_with_trace(
-        store, run_id, secrets, project, cases, entry_flags, run_dir, paths, slug, judge,
-        approval,
+        store, run_id, secrets, project, cases, entry_flags, paths.run_dir(run_id), paths, slug,
+        judge, approval,
     )
-
     store.save_run(Run(
         id=run_id, project=slug, case_ids=[c.id for c in cases],
         parallel_n=plan.n, parallel_bound_by=plan.bound_by,
@@ -171,7 +231,6 @@ def trigger_run(slug: str) -> RedirectResponse:
     ))
     prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
     _ask_for_what_it_did_not_recognise(store, run_id)
-    return RedirectResponse(f"/projects/{slug}/report", status_code=303)
 
 
 def _ask_for_what_it_did_not_recognise(store: ProjectStore, run_id: str) -> None:
