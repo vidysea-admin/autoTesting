@@ -12,7 +12,7 @@ from auth_harness import ADMIN, account, client, gate_on, login, user_id
 from fastapi.testclient import TestClient
 
 from autotester.auth import ratelimit
-from autotester.core.paths import auth_db_path
+from autotester.auth.db import auth_db_path
 from autotester.ui.app import app
 
 JSON = {"accept": "application/json"}

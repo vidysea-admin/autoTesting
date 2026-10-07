@@ -245,7 +245,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "", "/cases/new", "/cases", "/edit", "/flowspec", "/requests", "/sources",
         "/product-map", "/flow-diagram", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
-        "/issues/{issue_id}/pin", "/env", "/access")},
+        "/issues/{issue_id}/pin", "/env", "/access", "/catalog")},
     **{("GET", _P + t): ("project", "report.view") for t in (
         "/runs/{run_id}", "/report", "/report.xlsx", "/report.html")},
     ("GET", _P + "/runs/{run_id}/videos/{video_path:path}"): ("project", "video.view"),

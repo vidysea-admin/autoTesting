@@ -12,6 +12,7 @@ import pytest
 from auth_harness import ADMIN, PASSWORD, account, client, gate_on, login
 
 from autotester.auth import accounts
+from autotester.auth.db import auth_db_path
 from autotester.auth.ratelimit import (
     MAX_FAILURES_PER_ACCOUNT,
     WINDOW_SECONDS,
@@ -19,7 +20,6 @@ from autotester.auth.ratelimit import (
     login_limiter,
 )
 from autotester.auth.sessions import session_hours
-from autotester.core.paths import auth_db_path
 
 JSON = {"accept": "application/json"}
 
@@ -121,7 +121,8 @@ def test_au3_bad_cookie_is_refused_and_creates_nothing(root: Path, damage: str) 
     c = client(cookies={"at_session": value})
     assert c.get("/", headers=JSON).status_code == 401
     assert c.get("/", headers={"accept": "text/html"}).status_code == 302
-    assert _db().execute("SELECT COUNT(*) FROM sessions").fetchone()[0] == before
+    # creates nothing; a refused expired id may be purged (fix cycle 1), never added
+    assert _db().execute("SELECT COUNT(*) FROM sessions").fetchone()[0] <= before
 
 
 def test_au3_disable_takes_effect_on_the_next_request(root: Path) -> None:

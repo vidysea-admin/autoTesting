@@ -1,6 +1,6 @@
 """The auth store's SQLite file: connection, tables, one-time seeding, last-admin guard.
 
-One file (`core.paths.auth_db_path`, under `repo_root()`), stdlib `sqlite3`, foreign
+One file (`auth.db.auth_db_path`, under `repo_root()`), stdlib `sqlite3`, foreign
 keys on, every write inside `transaction()` (BEGIN IMMEDIATE), so two signups racing
 for "first account becomes admin" serialize on the store's own lock (AU7, AU24).
 """
@@ -15,8 +15,18 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from autotester.auth.defaults import ADMIN_SEED, DEFAULT_GROUPS
-from autotester.core.paths import auth_db_path
+from autotester.core.paths import repo_root
 from autotester.schema.auth import PermissionKey
+
+ENV_AUTH_DIR = "AUTOTESTER_AUTH_DIR"
+
+
+def auth_db_path() -> Path:
+    """The team-login store: `<repo root>/.auth/auth.sqlite3` (gitignored), or the directory
+    in `AUTOTESTER_AUTH_DIR` (test fixtures). pathlib only, so Windows and Ubuntu agree."""
+    override = os.environ.get(ENV_AUTH_DIR)
+    return (Path(override).resolve() if override else repo_root() / ".auth") / "auth.sqlite3"
+
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS meta (name TEXT PRIMARY KEY, value TEXT NOT NULL);
