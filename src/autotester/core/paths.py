@@ -93,6 +93,11 @@ class ProjectPaths:
         return self.dir / "portal_persona.json"
 
     @property
+    def user_personas(self) -> Path:
+        """T-190: advisory `UserPersona` rows, one per line (id-keyed)."""
+        return self.dir / "user_personas.jsonl"
+
+    @property
     def bench_dir(self) -> Path:
         return self.dir / "bench"
 
@@ -118,6 +123,10 @@ class ProjectPaths:
         """The redacted per-run trace (D-041 phase 1, RT1) -- `trace_id`
         equals `run_id`, never re-minted (RT2)."""
         return self.run_dir(run_id) / "trace.jsonl"
+
+    def run_ux_report(self, run_id: str) -> Path:
+        """T-190/PU2: the run's advisory UX findings -- beside, never in, a case result."""
+        return self.run_dir(run_id) / "ux_report.json"
 
     # -- Track A: video learning (D-014) ---------------------------------------
     def source_dir(self, source_id: str) -> Path:

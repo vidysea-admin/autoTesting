@@ -39,6 +39,68 @@ from autotester.store.project_store import ProjectStore
 __all__ = ["client", "scratch_root"]
 
 
+def _hold_static_siblings(monkeypatch, ids, events):
+    """Hold real fan-out workers inside their collaborator until explicitly released."""
+    import threading
+
+    import autotester.stages.run_case_pipeline as pipeline
+    both = threading.Barrier(2, timeout=5)
+    entered, release = threading.Event(), threading.Event()
+    run = pipeline.run_case
+
+    def held_run(case, session):
+        if case.id in ids:
+            if both.wait() == 0:
+                entered.set()
+            assert release.wait(5), "static worker was never released"
+        result = run(case, session)
+        events.append(("finished", case.id))
+        return result
+
+    monkeypatch.setattr(pipeline, "run_case", held_run)
+    return entered, release
+
+
+def test_real_width_two_joins_static_workers_before_later_tier_sessions(
+    client, scratch_root, monkeypatch,
+):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from test_ui_runs_serial_entry_order import _mixed_tier_cases, _patch_tier_execution
+    client.post("/onboard", data={"slug": "demo", "name": "Demo",
+                                "base_url": "https://demo.test", "allowed_domains": "demo.test"})
+    store = ProjectStore("demo", scratch_root)
+    cases = _mixed_tier_cases()
+    for case in cases:
+        store.add_case(case)
+    events = []
+    routes, _ = _patch_tier_execution(monkeypatch, events)
+    plan = ParallelPlan(config_ceiling=2, measured_budget=2, n=2,
+                        bound_by="config", free_ram_mb=99999.0, cpu_count=8)
+    monkeypatch.setattr(routes, "plan_parallel_run", lambda *a, **kw: plan)
+    static_ids = {cases[3].id, cases[4].id}
+    entered, release = _hold_static_siblings(monkeypatch, static_ids, events)
+    _approve_demo_runs(scratch_root)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        future = pool.submit(client.post, "/projects/demo/run", follow_redirects=False)
+        try:
+            assert entered.wait(5), "both static normal workers must actually overlap"
+            assert [value for kind, value in events if kind == "case"] == [cases[5].id]
+            assert not any(kind == "case" and value == cases[8].id for kind, value in events)
+            assert not future.done(), "request must wait for the static completion barrier"
+        finally:
+            release.set()
+        response = future.result(timeout=10)
+    assert response.status_code == 303, response.text
+    positions = {value: idx for idx, (kind, value) in enumerate(events) if kind == "finished"}
+    next_start = events.index(("case", cases[8].id))
+    assert max(positions[case_id] for case_id in static_ids) < next_start
+    next_driver = [idx for idx, item in enumerate(events)
+                   if item == ("session", "demo-entry-test")][1]
+    assert all(events.index(("close", f"demo-parallel-{case_id[:12]}")) < next_driver
+               for case_id in static_ids)
+
+
 def _onboard_with_parallel_cases(client, scratch_root, n: int, max_parallel: int):
     """Onboard `demo` with `n` non-entry cases and `max_parallel` configured."""
     client.post("/onboard", data={

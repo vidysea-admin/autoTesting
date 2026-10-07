@@ -19,7 +19,7 @@ from autotester.core.urls import screen_url_pattern
 from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.base import Provenance
 from autotester.schema.enums import ReviewStatus, SourceKind
-from autotester.schema.flowspec import Flow, FlowSpec, InputField, Screen, SourceRef, Step
+from autotester.schema.flowspec import Flow, FlowSpec, InputField, Screen, SourceRef, Step, StepRef
 from autotester.schema.media import Transcript
 from autotester.schema.observation import (
     ObservedFlow,
@@ -251,14 +251,14 @@ def persist_ingest(store: ProjectStore, spec: FlowSpec, *, replace: bool = False
 def ingest_video(
     source: Source, project_slug: str, provider: Provider, docs: RepoDocs | None = None,
     *, transcript: Transcript | None = None, options: VisionOptions | None = None,
-    redactor: Redactor | None = None,
+    redactor: Redactor | None = None, dropped: list[StepRef] | None = None,
 ) -> FlowSpec:
     """Watch `source` (a video `Source`) and produce a fresh `FlowSpec` for
     `project_slug`. Does not merge with an existing `FlowSpec` — a human reviews
     and merges via the review gate (T-065), which is a separate, later stage.
-
     AT-779 / RC3: a narration is saved only as a verbatim quote of `transcript`, scrubbed
-    by `redactor` (default: the project's own secrets); an unverifiable one is dropped."""
+    by `redactor` (default: the project's own secrets); one that is not is dropped
+    and listed in `dropped` (AT-785)."""
     if source.path is None:
         raise ValueError(f"source {source.id} has no path to watch")
     verify_source_bytes(source)
@@ -266,12 +266,13 @@ def ingest_video(
     prompt = build_ingest_prompt(source, docs, transcript)
     observation = provider.see_video(Path(source.path), prompt, VideoObservation, options,
                                       prompt_file=SKILL_NAME, fed_id=source.id)
-
     spec = flowspec_from_observation(observation, source.id, project_slug)
     heard = {source.id: transcript} if transcript else {}
     redactor = _project_redactor(project_slug) if redactor is None else redactor
-    flows = [verify_narration(f, heard, redactor)[0] for f in spec.flows]
-    return spec.model_copy(update={"flows": flows})
+    checked = [verify_narration(f, heard, redactor) for f in spec.flows]
+    if dropped is not None:
+        dropped.extend(ref for _, refs in checked for ref in refs)
+    return spec.model_copy(update={"flows": [f for f, _ in checked]})
 
 
 def _project_redactor(slug: str) -> Redactor:

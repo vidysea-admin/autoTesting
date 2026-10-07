@@ -256,6 +256,11 @@ past it". CN1-CN10 retain their fail-closed obligations.
   for the entire requested run, including executor actions, probes and elapsed wall time. No path,
   worker, retry or case resets or bypasses its consumed totals. Stop on a brake, identify the brake
   and record stopped/truncated truth; partial execution never reports completed E2E (C12).
+  *Amendment 2026-10-07 (T-125 integration):* Actions are spent per executed step through
+  `RunBudget.check(actions=...)`, never by a case-level pre-charge. A case refused by an exhausted
+  budget still persists its own ERRORED result and INCONCLUSIVE verdict naming the brake (its error
+  contains `run budget exhausted: <stop_reason>`); no case is skipped, and the EXECUTE stage is
+  recorded `failed`.
 - **Redacted accountability.** Record performed actions, field changes and their prior values,
   button presses, actual bounds and stop reasons in the existing report/trace surfaces after
   redaction. Secret prior values are never copied into accountability records or screenshots.
@@ -392,3 +397,10 @@ past it". CN1-CN10 retain their fail-closed obligations.
   ADVERSARIAL grant, the D-066 Origin/CSRF check. **Changes-authorized:** qa/contracts/consent.md
   Purpose, CN1, CN5, CN11, out-of-scope bullet and this log. Contract maintenance only: no runtime
   change. **Links:** D-068; D-063; D-066; D-018; T-145; qa/gates/d063-cn5-vs-cn11.md.
+
+- 2026-10-07 · routine (clarify) · checker-owned: the "One aggregate budget" criterion in CN11 gained an
+  amendment line recording how the merged code (d063 `RunBudget`) spends and reports the brake: actions
+  per executed step via `RunBudget.check(actions=...)`, no case-level pre-charge; a refused case still
+  persists ERRORED + INCONCLUSIVE naming the brake; no case skipped; EXECUTE stage `failed`. Adds no
+  obligation beyond the merged code and weakens none. **Changes-authorized:** qa/contracts/consent.md
+  CN11 "One aggregate budget" + this log. **Links:** T-125 integration rework; D-063.

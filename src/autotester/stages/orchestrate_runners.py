@@ -15,26 +15,32 @@ own typed artifact under the run's directory, and returns the reference (OR6):
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from pathlib import Path
 
 from autotester.core.paths import RepoDocs
 from autotester.providers.base import Provider
 from autotester.schema.crawl import Crawl
-from autotester.schema.flowspec import FlowSpec
+from autotester.schema.flowspec import FlowSpec, StepRef
 from autotester.schema.project import Project, Source
 from autotester.schema.run_state import StageName
 from autotester.schema.screen_graph import ScreenNode
+from autotester.stages.analyze_video import load_transcript
 from autotester.stages.explore_merge import merge_screens
 from autotester.stages.ingest import ingest_video
 from autotester.stages.merge_flowspec import merge_flowspec
 from autotester.stages.orchestrate import StageContext
+from autotester.stages.reconcile import narration_drop_report
 from autotester.store.filestore import read_json, write_json
 
 
 class MissingArtifact(RuntimeError):
     """A stage that needs the previous stage's artifact was handed no reference
     (or a reference to nothing) — the run cannot proceed and says so honestly."""
+
+
+_LOG = logging.getLogger(__name__)
 
 
 def _proposal_ref(ctx: StageContext, stage: StageName) -> str:
@@ -69,7 +75,11 @@ def make_ingest_runner(
 
     def _run(ctx: StageContext, prev_ref: str | None) -> str:
         provider.trace = ctx.trace  # D-041: this run's LLM calls join its own trace.jsonl
-        spec = ingest_video(source, project_slug, provider, docs)
+        dropped: list[StepRef] = []
+        spec = ingest_video(source, project_slug, provider, docs, dropped=dropped,
+                            transcript=load_transcript(ctx.store, source))  # AT-783
+        if report := narration_drop_report(dropped):  # AT-785: ids and a count, never text
+            _LOG.warning(ctx.secrets.redactor().scrub(report) if ctx.secrets else report)
         return _persist_proposal(ctx, StageName.INGEST, spec)
 
     return _run

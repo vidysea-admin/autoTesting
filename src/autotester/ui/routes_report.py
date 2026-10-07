@@ -1,5 +1,4 @@
-"""Run history, per-case screenshots, and portable downloads. Contract:
-qa/contracts/ui-report.md UR1-UR4."""
+"""Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4."""
 
 from __future__ import annotations
 
@@ -14,6 +13,7 @@ from starlette.background import BackgroundTask
 from autotester.core.trace import read_spans
 from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.trace import LLMSpan, StageSpan
+from autotester.stages.catalog import failures_first
 from autotester.stages.report_export import (
     export_excel,
     export_html,
@@ -38,17 +38,17 @@ def _run_counts(store: ProjectStore, run_id: str) -> dict[str, int]:
     return counts
 
 
-def _counts_stats(counts: dict[str, int]) -> str:
-    return "<div class='stat-row'>" + "".join(
+def _counts_stats(counts: dict[str, int], catalog_counts: dict[str, int] | None = None) -> str:
+    results = "<div class='stat-row'>" + "".join(
         theme.stat(str(v), theme.badge(escape(k))) for k, v in counts.items()
     ) + "</div>"
+    measured = "NOT_RECORDED" if catalog_counts is None else ", ".join(
+        f"{escape(tier)}: {count}" for tier, count in catalog_counts.items())
+    return results + f"<p>Catalog runnable-class counts — {measured}</p>"
 
 
 def _counts_badges(counts: dict[str, int]) -> str:
-    """Compact inline pills (a run-history row) rather than full-size stat
-    tiles — a stat tile's ~2rem number is meant for one page-level headline,
-    not repeated once per row (that's what made the run-history table read
-    as a wall of oversized, meaningless numbers)."""
+    """Compact result pills for run-history rows."""
     if not counts:
         return "<span class='meta'>no verdicts</span>"
     return "<div class='run-results'>" + "".join(
@@ -62,12 +62,8 @@ def _run_date(store: ProjectStore, run_id: str) -> str:
 
 
 def _step_flow(run_dir: Path, evidence: list, case_index: int, trusted_root: Path) -> str:
-    """The DFS-style trace Umesh asked for: the literal ordered sequence of
-    screens THIS case actually walked through — never every hypothetical
-    branch (that's the deferred, explicitly-descoped BFS/mindmap idea,
-    qa/feedback-inbox.md). Each thumbnail links to a same-page CSS-only
-    lightbox (`:target`) so the compact flow can still show full detail on
-    click, no JS needed."""
+    """The literal ordered screens THIS case walked (DFS trace, never every branch);
+    each thumbnail links to a same-page CSS-only `:target` lightbox, no JS."""
     shots = sorted(
         (s for s in evidence if s.kind is EvidenceKind.SCREENSHOT),
         key=lambda s: s.step_order if s.step_order is not None else 10**9,
@@ -97,8 +93,7 @@ def _step_flow(run_dir: Path, evidence: list, case_index: int, trusted_root: Pat
 
 
 def _video_section(slug: str, run_id: str, evidence: list) -> str:
-    """ISS-t191-run-video-2: `_step_flow` filters SCREENSHOT only -- a kept
-    VIDEO (T-191 V8) was never surfaced. Links, never embeds (RE3/D-050)."""
+    """ISS-t191-run-video-2: surface kept VIDEO evidence as links, never embeds (RE3/D-050)."""
     videos = [e for e in evidence if e.kind is EvidenceKind.VIDEO]
     return "".join(
         f"<p class='meta'>🎥 <a href='/projects/{escape(slug)}/runs/{escape(run_id)}/videos/"
@@ -119,9 +114,7 @@ def _failure_list(failures: list) -> str:
 
 
 def _trace_card(store: ProjectStore, run_id: str) -> str:
-    """RT7: a read-only VIEW over `trace.jsonl` — per-stage time, and per-LLM
-    -call latency/cost/model — never a second source of truth (core-invariants
-    C6). A run with no trace yet (or one from before D-041) renders nothing."""
+    """RT7: read-only VIEW over `trace.jsonl` (C6: never a second source); no trace -> nothing."""
     spans = read_spans(store.paths.run_trace(run_id))
     stage_rows = "".join(
         f"<tr><td>{escape(s.stage.value)}</td><td>{escape(s.status)}</td>"
@@ -156,6 +149,17 @@ def _unknown_run_page(slug: str, run_id: str) -> HTMLResponse:
     return HTMLResponse(theme.page("Run not found", body, active_slug=slug), status_code=404)
 
 
+def _sections(results: list, verdicts: dict, cases: dict, body) -> str:
+    """CT6(4): failures section first (cheap tier first), then every other result."""
+    def cards(pairs) -> str:
+        return "".join(theme.card(body(r, i), title=escape(
+            cases[r.case_id].title if r.case_id in cases else r.case_id)) for i, r in pairs)
+
+    failed, rest = failures_first(results, verdicts, cases)
+    heads = ("<h2>Failures</h2>", "<h2>Other results</h2>") if failed else ("", "")
+    return heads[0] + cards(failed) + heads[1] + cards(rest)
+
+
 @router.get("/projects/{slug}/runs/{run_id}", response_class=HTMLResponse)
 def run_view(slug: str, run_id: str) -> Response:
     store, _project = _load_project_or_404(slug)
@@ -169,6 +173,7 @@ def run_view(slug: str, run_id: str) -> Response:
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
     results = store.load_results(run_id)
     counts = _run_counts(store, run_id)
+    run = store.load_run(run_id)
 
     def _case_body(r, case_index: int) -> str:
         verdict = verdicts.get(r.case_id)
@@ -190,18 +195,14 @@ def run_view(slug: str, run_id: str) -> Response:
             f"{_video_section(slug, run_id, r.evidence)}"
         )
 
-    sections = "".join(
-        theme.card(_case_body(r, i), title=escape(cases[r.case_id].title if r.case_id in cases
-                                                  else r.case_id))
-        for i, r in enumerate(results)
-    )
+    sections = _sections(results, verdicts, cases, _case_body)
     body = (
         theme.breadcrumb(
             ("Projects", "/"), (safe_slug, f"/projects/{safe_slug}"),
             ("Report", f"/projects/{safe_slug}/report"), ("Run", None),
         )
         + f"<h1>Run <code>{safe_run_id}</code></h1>"
-        + (_counts_stats(counts) if counts else "")
+        + _counts_stats(counts, run.catalog_runnable_counts if run else None)
         + _trace_card(store, run_id)
         + (sections or theme.empty_state("📭", "No case results in this run yet."))
     )
@@ -262,9 +263,7 @@ def report(slug: str) -> str:
 
 
 def _no_runs_page(slug: str) -> HTMLResponse:
-    """A download link reached with nothing to export (AT-431). The report page
-    hides the buttons when there are no runs, so this is a bookmarked or shared
-    URL — it used to be a bare 500 from the exporter's uncaught ValueError."""
+    """A download URL reached with nothing to export (AT-431): once a bare 500."""
     safe_slug = escape(slug)
     body = theme.breadcrumb(
         ("Projects", "/"), (safe_slug, f"/projects/{safe_slug}"),

@@ -70,15 +70,14 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
 
 ### Accounts, passwords, sessions
 
-- **AU1 — Passwords are hashed with a vetted slow KDF, never stored or logged.** The stored value is an argon2id or bcrypt hash with a
-  per-user salt (argon2id memory >= 19 MiB and t >= 2, or bcrypt cost >= 12). No plaintext password, and no reversible form, exists in the
-  store, in any log line, the audit file, a response body, an error message or an exception text. Verification is constant-time.
-  *Dependency:* `uv.lock` has neither library today, and D-072 does not authorize one. A D-entry whose `Changes-authorized` names the
-  library must exist **before the unit's first commit**, and `pyproject.toml`/`uv.lock` change only for it. If Umesh declines a new
-  dependency, stdlib `hashlib.scrypt` (N >= 2^15, r=8, p=1) is the one accepted alternative, by routine amendment of this line.
-  `serves:` D-072#3, O7. *Re-derive:* unit test reads the raw store after signup with a canary password and asserts the canary is
-  absent from every file under the data root and from `caplog`; asserts the hash prefix is `$argon2id$` or `$2b$`; mutation: store the
-  password as given -> test fails.
+- **AU1 — Passwords are hashed with argon2id (`argon2-cffi==25.1.0`), never stored or logged.** *(amended D-074, 2026-10-07)* The stored
+  value is an argon2id hash with a per-user salt (memory >= 19 MiB and t >= 2). No plaintext password, and no reversible form, exists in
+  the store, in any log line, the audit file, a response body, an error message or an exception text. Verification is constant-time.
+  *Dependency:* D-074(c) authorizes `argon2-cffi==25.1.0` (pinned exactly) in `pyproject.toml` and `uv.lock`, and that is the only
+  dependency change this unit may make. bcrypt and the stdlib `hashlib.scrypt` fallback are **not** used (D-074(c)).
+  `serves:` D-074(c), D-072#3, O7. *Re-derive:* unit test reads the raw store after signup with a canary password and asserts the canary
+  is absent from every file under the data root and from `caplog`; asserts the hash prefix is `$argon2id$`; `uv.lock` pins
+  `argon2-cffi` at 25.1.0; mutation: store the password as given -> test fails.
 - **AU2 — Login does not reveal which half was wrong.** `POST /auth/login` with an unknown email, a wrong password, and a disabled
   account all return the same status and the same body text, and take comparable work (the unknown-email path still computes a hash
   against a dummy). A correct email + password creates a session and redirects to a same-site relative `next` or `/`.
@@ -109,18 +108,44 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   account. A new account has **no group**, and an authenticated user with an empty effective-permission set can reach only the
   "waiting for an admin" page and logout; every other route returns 403. That page says which role to ask (an administrator) and lists
   no users. `serves:` D-072#3, D-072#4. *Re-derive:* signup as user 2, request every non-public route from `app.routes`, assert 403.
-- **AU7 — The first account becomes admin, atomically.** When the user store is empty, the first signup is placed in Admin/CEO.
-  Two simultaneous first signups yield exactly one admin. Every later signup gets no group. Optional hardening (checker-derived, not in
-  D-072): when `AUTOTESTER_FIRST_ADMIN_EMAIL` is set, only that email may become the first admin and any other early signup gets no group.
-  `serves:` D-072#4. *Re-derive:* threaded double-signup test with a barrier; mutation: grant admin to every signup -> fails.
+- **AU7 — First admin: a fixed email on a hosted server, first account only in local dev, atomically.** *(amended D-074, 2026-10-07)*
+  "Hosted" is the AU17 test: `AUTOTESTER_HOSTED=1`, a non-loopback bind address, or a Secure session cookie in effect (AU3).
+  - **Hosted, `AUTOTESTER_FIRST_ADMIN_EMAIL` set:** only the signup whose email (trimmed, lowercased, like every email, AU6) equals that
+    value is placed in Admin/CEO, and only while Admin/CEO has no member. Every other signup gets no group, **including one that arrives
+    first**. Two simultaneous signups for it yield exactly one admin.
+  - **Hosted, `AUTOTESTER_FIRST_ADMIN_EMAIL` unset or empty:** nobody is auto-promoted, whatever the signup order. The server logs one
+    startup warning that names the variable and says the admin must be created through the CLI, then keeps starting (this is a warning,
+    not an AU17-style refusal). A CLI command (name fixed by the unit, listed in `docs/MAP.md`) creates or promotes an admin account
+    and works while the server is stopped or running; it is the only bootstrap path in this state.
+  - **Local development (loopback bind, not hosted):** unchanged: when the user store is empty the first signup is placed in Admin/CEO,
+    two simultaneous first signups yield exactly one admin, and every later signup gets no group.
+  - The warning and the CLI output never print a password or the email of any existing account other than the one just created.
+  `serves:` D-074(d), D-072#4. *Re-derive:* hosted + variable set: sign up another email first -> no group, then the named email ->
+  admin; hosted + unset: sign up first -> no group, startup log holds the warning, CLI creates an admin who can log in; local: the
+  threaded double-signup test with a barrier. Mutations: treat hosted as local -> the hosted tests fail; grant admin to every signup ->
+  fails; compare the email case-sensitively -> the case-variant test fails.
 - **AU8 — The admin can act on any account.** A holder of `users.manage` can list accounts, disable, enable, **delete**, reset a
   password (sets a new hash and revokes that user's sessions), change the display name, and add or remove group membership, for any
   account. A disabled or deleted user's next request fails and their login is refused with the AU2 text. Deleting a user keeps the audit
   rows that name them and does not delete projects they owned: ownership of those becomes "no owner" (visible only at `@all`).
-  A caller without `users.manage` gets 403 from every such route. `serves:` D-072#3.
+  A caller without `users.manage` gets 403 from every such route. Which targets and grants a `users.manage` holder may touch is further
+  limited by AU27 *(amended D-074, 2026-10-07)*. `serves:` D-072#3.
 - **AU9 — Last-admin protection.** The last enabled account in Admin/CEO cannot be disabled, deleted, removed from the group, or have
   the group's `users.manage` tick removed; the attempt is refused with a message and changes nothing. `serves:` D-072#3, D-072#4
   (checker-derived lockout guard). *Re-derive:* one admin, try each action; mutation: drop the guard -> fails.
+- **AU27 — No privilege escalation: grant only what you hold; the admin set is admin-only.** *(added D-074 safe default, 2026-10-07; the
+  rule comes from the dispatching brief, D-074's record states only a-e)* Row ID is new; AU8-AU10 keep theirs.
+  - A caller can grant, through any route (group tick, add to group, new group, default-group edit), only permissions (key **and**
+    scope) that the caller's own effective set already holds. A request that would grant more is refused (403), names the permission,
+    and stores nothing.
+  - **Only members of the Admin/CEO group** can: add or remove a member of Admin/CEO; tick `users.manage`, `groups.manage`,
+    `settings.manage` or `credentials.view` on any group; or reset the password of an account that is in Admin/CEO. A `users.manage`,
+    `groups.manage` or `settings.manage` holder who is not in Admin/CEO gets 403 on each of these, even for a permission they hold.
+  - AU9 (last-admin protection) is unchanged and still applies to an Admin acting on Admin.
+  - Each refused attempt is audited under AU22 (status 403, with `{actor, target, action}`) and holds no password or session value.
+  `serves:` D-074 safe default, D-072#4. *Re-derive:* a custom group holding `users.manage` + `groups.manage`: try each refused action
+  in turn and read the store before/after; an Admin does the same actions -> allowed; mutation: skip the held-permission check, or
+  skip the Admin-membership check -> the matching test fails.
 
 ### Groups and permissions
 
@@ -246,7 +271,7 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
 - No role or permission that skips `RunApproval`, `write_policy` or the credential boundary.
 - No stored credential value rendered to a viewer without `credentials.view`, on any page, API or export.
 - No change to `stages/`, `schema/` models other than the new auth/permission/settings models, or `providers/`.
-- No new dependency except the one hashing library named by a D-entry (AU1).
+- No new dependency except `argon2-cffi==25.1.0`, named by D-074(c) (AU1) *(amended D-074, 2026-10-07)*.
 - No `*_v2` / `*_new` files; files <= 300 lines; functions <= 50; one-job docstring per new module (D-072#2 authorizes the new
   modules under `ui/`, `schema/` and a store; the checker judges them against the doctor rules).
 
@@ -258,3 +283,13 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   (TL4/TL5 -> AU3), Origin guard before auth (TL13 -> AU18), no secret in logs (TL10 -> AU22), audit (TL11 -> AU22), hosted fail-closed
   startup (TL9 -> AU17/AU20), hosted secret display (TL12 -> AU21, now `credentials.view`-gated instead of hosted-only). Dropped:
   OIDC claim checks (TL6-TL8), `/auth/check` proxy hook (re-added by `hosting.md` HO12 as an authenticated route).
+- 2026-10-07 · routine (authorized by D-074, Umesh 2026-10-07; tightening only, no safety invariant weakened) · **AU1** now names
+  `argon2-cffi==25.1.0` / argon2id only (bcrypt and the scrypt fallback dropped; D-074(c) is the authorizing D-entry AU1 required).
+  **AU7** reworded (the dispatching brief called it AU8; AU8 is the admin-acts-on-accounts row and only gained a pointer to AU27): on a
+  hosted server (AUTOTESTER_HOSTED=1, non-loopback bind, or Secure cookie) only the `AUTOTESTER_FIRST_ADMIN_EMAIL` account is
+  auto-promoted; unset there means nobody is, with a startup warning and CLI bootstrap; local loopback keeps first-account-admin. This
+  turns the former "optional hardening" into a requirement and removes "first account becomes admin" as the hosted rule. **AU27 added**
+  (new id, no renumbering): grant only what you hold, and Admin-only control of Admin membership, `users.manage`, `groups.manage`,
+  `settings.manage`, `credentials.view` and admin password resets; AU9 unchanged. The no-fire dependency line now names the one
+  library. **Not changed here, follow-up:** `hosting.md` HO11 still says "first account = admin, AU7" and `docs/spec.md:140` still says
+  "first account becomes admin"; both need the same wording and are left to the checker that owns those files.

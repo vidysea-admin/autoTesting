@@ -119,6 +119,19 @@ computes the table — no model call, no network call, no mutation of anything i
   the two named sabotages — union the keys spec-wide, and add a keyword rule — each turn the named
   fixture red.)
 
+## Standard packs (AT-588, additive — recorded 2026-09-27)
+
+`schema/catalog.py` also defines `StandardPack` (a closed 3-value enum: `oauth_signup_carryover`,
+`date_picker_month_year`, `excel_column_mapping`) and `PackEntry` (`pack`, `applicable`,
+`runnable`, `blocked_reason: BlockedReason | None`, `unblock_action`), plus `Catalog.packs:
+list[PackEntry]`. `PackEntry` reuses `BlockedReason` rather than defining a second closed
+vocabulary — CT7 governs `PackEntry` exactly as it governs `CatalogEntry`: a second
+`BlockedReason`-shaped enum anywhere in `src/` is a CT7 failure. `packs` is additive and NOT
+governed by CT2 — a pack whose structural signal is absent from the FlowSpec is
+`applicable=False, blocked_reason=None` ("not applicable"), which is deliberately distinct from a
+blocked pack (`blocked_reason` set). CT5 and CT8's naming-the-action requirements apply to
+`PackEntry.unblock_action` exactly as they apply to `CatalogEntry.unblock_action`.
+
 ## Explicit no-fire list (do not raise these as findings)
 
 - T-152's `stages/ai_catalog.py::match()` is NOT built by this unit — CT7 governs it for when it
@@ -132,7 +145,7 @@ computes the table — no model call, no network call, no mutation of anything i
 
 ## How a unit is verified (adapter slot 1)
 
-`uv run pytest tests/test_catalog.py tests/test_ui_catalog.py` (bare, no CLI `-q`, AT-503) +
+`uv run pytest tests/test_catalog.py tests/test_catalog_packs.py tests/test_ui_catalog.py` (bare, no CLI `-q`, AT-503) +
 `uv run ruff check src tests scripts` + `uv run autotester doctor`, all exit 0; each CT criterion
 carries a capability-coverage row with a single-hunk falsifying edit reproduced
 green→red-for-the-named-reason→revert→green. File/function caps (core-invariants C2: ≤300 lines /

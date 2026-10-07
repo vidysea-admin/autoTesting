@@ -2233,3 +2233,71 @@ here; it is a separate L unit.
 **Approved-by:** Umesh (chat, 2026-10-07)
 
 **Links:** D-032, D-072, AT-773, T-204, T-205, T-206, qa/gates/plan-approved-g10.md
+
+## D-075 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** The `browser-use` dependency is authorized for T-177 (agent fallback), pinned exactly as
+`browser-use==0.5.9` (the same way litellm==1.104.0 and argon2-cffi==25.1.0 are pinned), with its
+anonymized telemetry disabled (`ANONYMIZED_TELEMETRY=false` set by AutoTester before the import,
+not left to the user's environment). `browser/session.py` gains a read-only `cdp_url` property so
+the browser-use backend can attach to the session AutoTester already opened. The UI wiring
+(`agent=`/`actuator=` into `run_and_grade_case` in ui/routes_runs.py) waits until T-203 and T-204
+land, to avoid a three-way conflict with the peer session's branches.
+
+**Why:** Umesh, chat 2026-10-07, answering the dependency question: "Approve, pin exact". The peer
+session (autotesting-07) flagged that no D-entry covered browser-use, unlike D-071 (litellm) and
+D-074 (argon2). Telemetry is turned off because Pathlynks screens and URLs must not reach a third
+party without per-use approval.
+
+**Result:** T-177 merges only after both dual-check coordinators PASS and the pin and telemetry
+change has had its repair check.
+
+**Changes-authorized:** pyproject.toml / uv.lock: `browser-use==0.5.9` (T-177) ·
+src/autotester/browser/session.py: read-only `cdp_url` property (T-177).
+
+**Approved-by:** Umesh — chat answer 2026-10-07.
+
+**Links:** T-177; D-071; D-074; qa/contracts/agent-fallback.md; qa/gates/at253-agent-fallback-wiring.md.
+
+## D-076 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Records the contract consequence of D-072 item 3 (a new account starts with no access), as written into `qa/contracts/auth.md` AU27 by the checker in commit 0f8c19d0 (D-074 amendment). AU27 states the safe default: a caller can grant only the permissions (key and scope) it already holds, and only members of the Admin/CEO group can change Admin/CEO membership, tick `users.manage`, `groups.manage`, `settings.manage` or `credentials.view`, or reset the password of an Admin/CEO account. No new product choice is being made: D-072 item 3 already decided that a new account has no access, and AU27 only closes the escalation path that a literal reading of AU8 and AU10 would leave open. D-074's own text states only items (a) to (e); the AU27 rule came from the dispatching brief, so this entry gives it a decisions record.
+
+**Why:** Without a record, AU27 cites "D-074 safe default" while D-074 does not contain it, which makes the criterion look like an invented requirement. A `users.manage` or `groups.manage` holder who is not an admin could otherwise promote themselves or another account to full access, which would undo the no-access default of D-072 item 3. Keeping the entry as a pure consequence, not a decision, lets Umesh veto it by superseding it if he wants a different rule.
+
+**Result:** `qa/contracts/auth.md` AU27 stays as written; its `serves:` line (D-074 safe default, D-072#4) is read as D-072 item 3 plus this entry. T-204 builds to AU27. No code change is authorized by this entry.
+
+**Links:** D-072 item 3, D-074, qa/contracts/auth.md AU27
+
+## D-077 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** The AGPL-licensed `pymupdf` package that `browser-use==0.5.9` (D-075) pulls in transitively
+is accepted as is. We do not strip, replace or vendor around it.
+
+**Why:** Umesh, chat 2026-10-07, answered "Accept AGPL" after T-177 checker A found the licence. The
+autoTesting repo is already public, so the AGPL source-disclosure duty is met for now. The risk
+applies only to a future closed, paid or customer-hosted build of AutoTester.
+
+**Result:** T-177 is not blocked on licensing. **Re-open trigger:** before AutoTester is sold,
+hosted for customers, or the repo is made private, this entry must be superseded, either by removing
+the dependency or by a fresh licence decision.
+
+**Changes-authorized:** none (pyproject/uv.lock pin already authorized by D-075).
+
+**Approved-by:** Umesh — chat answer 2026-10-07.
+
+**Links:** T-177; D-075; qa/verdicts/t177-agent-fallback.a.md.
+
+## D-078 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Umesh decided (chat, 2026-10-07) not to add the `tzdata` package. Schedules (Group 10 G5, team-schedule.md) support exactly two time zones: UTC and IST, the fixed +05:30 offset with no DST. Any other zone is refused with an error. The implementation uses fixed offsets (`datetime.timezone`), with no ZoneInfo and no zone database, so it behaves the same on Windows dev and Ubuntu prod.
+
+**Why:** Windows ships no IANA zone database, so a city zone such as America/New_York fails there without `tzdata`. Umesh chose not to take a new dependency. The team works in IST, and UTC covers the server.
+
+**Result:** The G5 schedule slice drops its DST handling and DST tests. The checker amends the qa/contracts/team-schedule.md timezone/DST wording to "UTC or IST only, no DST".
+
+**Changes-authorized:** `core/localtime.py`, `schema/schedule.py` and `stages/schedule_*.py` in the G5 slice. No change to pyproject.toml or uv.lock.
+
+**Approved-by:** Umesh (chat, 2026-10-07)
+
+**Links:** D-072 item 9, D-074, T-201 or the G5 schedule unit, qa/contracts/team-schedule.md

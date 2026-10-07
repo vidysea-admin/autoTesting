@@ -143,6 +143,12 @@ def verify_narration(flow: Flow, transcripts: dict[str, Transcript],
     return flow.model_copy(update={"steps": steps}), rejected
 
 
+def narration_drop_report(dropped: list[StepRef]) -> str | None:
+    """AT-785: count and step ids (`flow_id#order`) of dropped narrations, never the text."""
+    steps = ", ".join(f"{r.flow_id}#{r.order}" for r in dropped)
+    return f"{len(dropped)} narration(s) dropped as unverifiable: {steps}" if dropped else None
+
+
 def _path(flow: Flow) -> tuple[str | None, ...]:
     return (flow.entry_screen, *(s.screen_id for s in flow.steps), flow.exit_screen)
 

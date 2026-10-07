@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-07T18:33:09",
+  "updated": "2026-10-07T19:47:47",
   "progress": {
     "total": 92,
-    "done": 63,
+    "done": 65,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 29,
+    "pending": 27,
     "current": "T-136",
-    "percent": 68
+    "percent": 71
   },
   "tasks": [
     {
@@ -754,7 +754,7 @@
     {
       "id": "T-125",
       "title": "Test catalog: which case classes apply, which are runnable, which are blocked and why (+ cheap->expensive ordering)",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "low",
       "deps": [
         "T-124"
@@ -764,11 +764,12 @@
         "cmd": "uv run pytest tests/test_catalog.py tests/test_ui_catalog.py",
         "expect_exit": 0
       },
-      "note": "plan.md 5A. expand.py generates cases without saying which cannot actually run; a blocked entry must name the one action that unblocks it. | EXTEND (AT-588, meeting 2026-09-26): packs for OAuth sign-up carry-over, month/year pickers, Excel column-mapping upload.",
+      "note": "plan.md 5A. expand.py generates cases without saying which cannot actually run; a blocked entry must name the one action that unblocks it. | EXTEND (AT-588, meeting 2026-09-26): packs for OAuth sign-up carry-over, month/year pickers, Excel column-mapping upload. | Checked-PASS, dual check (D-051 cycle 4 + integration rework onto d063 aggregate RunBudget): qa/verdicts/t125-catalog.md (checker A, cd212a1e) and qa/verdicts/t125-catalog.b.md (checker B, 8992ced9).",
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
-      "criticality": "low"
+      "criticality": "low",
+      "completed": "2026-10-07T20:07:33"
     },
     {
       "id": "T-126",
@@ -1497,7 +1498,7 @@
     {
       "id": "T-190",
       "title": "Advisory UX track: UserPersona (role, tech comfort, locale, device) + severity-scored UX findings that NEVER change PASS/FAIL (AT-583, AT-584)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "criticality": "high",
@@ -1510,7 +1511,8 @@
       "note": "gate meeting-user-persona-ux-judging answer A (D-048). Contract persona-ux-advisory already exists; implementation pending. Concrete five-choice PLAN proposal added to docs/plan.md on2026-10-06, original advisory-only scope preserved. Exact six source/prompt/test paths creation consent requested once, pending. Parallel BUILDING helpers recorded 11 complete source-text candidates with actual stdlib AST/count/signature/header preservation checks; proposal only, product sources unchanged. Fresh AI-engineer installed-source review identifies Gemini auxiliary async-client construction/ownership gap needing a configuration-preserving seam. Existing qa/manifests/t190-plan-preparation.md records incomplete orchestration/budget/UI/test candidates and unresolved plan gate. No product runtime, acceptance, PASS, paid calls or livewrites authorized.",
       "attempts": 0,
       "created": "2026-09-26T22:47:07",
-      "user_value": "high"
+      "user_value": "high",
+      "completed": "2026-10-07T19:47:47"
     },
     {
       "id": "T-191",

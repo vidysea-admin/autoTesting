@@ -13,18 +13,20 @@ import typer
 from autotester import providers
 from autotester.core.paths import RepoDocs
 from autotester.schema.enums import ReviewStatus
+from autotester.schema.flowspec import StepRef
 from autotester.schema.observation import VisionOptions
+from autotester.stages.analyze_video import load_transcript
 from autotester.stages.ingest import (
     FlowSpecApproved,
     NotARecording,
     SourceChanged,
     ingest_video,
-    load_sidecar,
     persist_ingest,
     register_source,
 )
 from autotester.stages.media_prep import SourceNotPrepared, UnreadableRecording
 from autotester.stages.merge_flowspec import merge_flowspec, open_requests, resolve_requests
+from autotester.stages.reconcile import narration_drop_report
 from autotester.store.project_store import ProjectStore
 
 app = typer.Typer(help="Learn a product's screens and flows from a screen recording.")
@@ -198,12 +200,15 @@ def run_cmd(
     source = _require_source(store, project, source_id)
 
     prov = providers.get(provider, **({"model": model} if model else {}))
-    try:
-        spec = ingest_video(source, project, prov, RepoDocs(),
-                            transcript=load_sidecar(source), options=VisionOptions())
+    dropped: list[StepRef] = []
+    try:  # AT-784: the transcript media prep persisted counts when no sidecar exists
+        spec = ingest_video(source, project, prov, RepoDocs(), dropped=dropped,
+                            transcript=load_transcript(store, source), options=VisionOptions())
     except SourceChanged as exc:
         typer.secho(str(exc), fg=typer.colors.RED)
         raise typer.Exit(2) from None
+    if report := narration_drop_report(dropped):  # AT-785: ids and a count, never text
+        typer.secho(report, fg=typer.colors.YELLOW)
     if merge:
         _merge_into_reviewed(store, spec, source)
         return

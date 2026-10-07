@@ -8,6 +8,7 @@ from autotester.core.ids import content_id
 from autotester.schema.base import Artifact
 from autotester.schema.enums import Action, CaseClass, CaseKind, CaseStatus, Severity
 from autotester.schema.flowspec import Step
+from autotester.schema.user_persona import PERSONA_ID_PATTERN
 
 
 class Case(Artifact):
@@ -29,6 +30,11 @@ class Case(Artifact):
     severity: Severity = Severity.S2
     rubric_ref: str | None = None
     script_ref: str | None = None
+    user_persona_ref: str | None = Field(
+        default=None, pattern=PERSONA_ID_PATTERN,
+        description="T-190/PU1: advisory UserPersona override for this case, by id. By-reference "
+                    "like rubric_ref; not in compute_id and never read by grading (PU4)",
+    )
     status: CaseStatus = CaseStatus.PROPOSED
     pinned: bool = Field(
         default=False,
@@ -82,6 +88,7 @@ class Case(Artifact):
             case_class=self.case_class, title=self.title, rationale=self.rationale,
             preconditions=self.preconditions, steps=new_steps, severity=self.severity,
             rubric_ref=self.rubric_ref, script_ref=self.script_ref, status=self.status,
+            user_persona_ref=self.user_persona_ref,
         )
 
 

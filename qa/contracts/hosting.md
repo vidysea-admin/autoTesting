@@ -73,8 +73,9 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
   *BUILD-HOST.* `serves:` D-072#7.
 - **HO11 — The deploy guide exists and is exercised.** `docker/DEPLOY.md` (new path under the existing `docker/`) covers, in order: server
   prerequisites (Ubuntu LTS, Docker, UFW), the two env files, building on the server from a tag (the image never leaves the box; the repo
-  is public), seeding `projects/`, **creating the first account before the port is exposed to the team** (first account = admin, `auth.md`
-  AU7; use `AUTOTESTER_FIRST_ADMIN_EMAIL` or keep 80/443 closed until done), setting the Host/Origin keys, the interim without a domain
+  is public), seeding `projects/`, **creating the admin account before the port is exposed to the team** (on the hosted server the first admin is the
+  account whose email equals `AUTOTESTER_FIRST_ADMIN_EMAIL`, not the first account created; with it unset nobody is auto-promoted and
+  the admin is created through the CLI, `auth.md` AU7; keep 80/443 closed until done), setting the Host/Origin keys, the interim without a domain
   (HO13), backup and restore (HO36), upgrade, and rollback. It holds no secret and no real hostname beyond what Umesh accepts publishing.
   A checker follows the guide literally on a fresh Ubuntu container or VM and records the transcript. *BUILD-HOST* (container follow-
   through) + *SERVER-GATED* (the real server). `serves:` D-072#7.

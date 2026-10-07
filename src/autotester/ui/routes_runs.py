@@ -19,11 +19,13 @@ from autotester.core.redact import placeholder_keys
 from autotester.providers.langchain_fallback import LangChainFallbackProvider
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
+from autotester.schema.catalog import TIER_BY_CLASS, Catalog
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import Action, ApprovalKind
 from autotester.schema.project import Project
 from autotester.schema.run import Run, RunBounds
 from autotester.schema.run_state import StageCheckpoint, StageName
+from autotester.stages.catalog import catalog, tiers_to_run
 from autotester.stages.coverage import diff_coverage, queue_requests
 from autotester.stages.explore_consent import covering_approval
 from autotester.stages.orchestrate import StageContext
@@ -97,6 +99,7 @@ def _execute_with_trace(
     store: ProjectStore, run_id: str, secrets: SecretStore, project: Project,
     cases: list[Case], entry_flags: list[bool], run_dir: Path, paths: ProjectPaths,
     slug: str, judge: LangChainFallbackProvider, approval: RunApproval,
+    catalog_snapshot: Catalog | None = None,
 ) -> ParallelPlan:
     """AT-562/AT-564: build this run's `StageContext` with the project's real
     `SecretStore` (RT6 — a real, redacted `trace.jsonl`), attach it to the
@@ -107,18 +110,23 @@ def _execute_with_trace(
     judge.trace = ctx.trace
     plan = plan_parallel_run(project, video_enabled=True)
     budget = RunBudget(approval)
-
+    cat = catalog_snapshot if catalog_snapshot is not None else catalog(
+        project, store.load_flowspec(), store)
     started = ctx.clock()
-    if plan.n > 1:
-        _run_cases_in_parallel(
-            cases, entry_flags, plan, project, secrets, run_dir, slug, judge, run_id, store,
-            approval, budget=budget,
-        )
-    else:
-        _run_cases_serially(
-            cases, entry_flags, project, secrets, run_dir, paths, slug, judge, run_id, store,
-            budget=budget,
-        )
+    snapshot = list(zip(cases, entry_flags, strict=True))
+    for tier in tiers_to_run(cat):
+        tier_cases = [case for case, _ in snapshot if TIER_BY_CLASS[case.case_class] == tier]
+        tier_flags = [flag for case, flag in snapshot if TIER_BY_CLASS[case.case_class] == tier]
+        if plan.n > 1:
+            _run_cases_in_parallel(
+                tier_cases, tier_flags, plan, project, secrets, run_dir, slug, judge, run_id,
+                store, approval, budget=budget,
+            )
+        else:
+            _run_cases_serially(
+                tier_cases, tier_flags, project, secrets, run_dir, paths, slug, judge, run_id,
+                store, budget=budget,
+            )
     assert ctx.trace is not None
     ctx.trace.record_stage(StageCheckpoint(
         stage=StageName.EXECUTE, status="failed" if budget.stop_reason else "done",
@@ -152,18 +160,21 @@ def trigger_run(slug: str) -> RedirectResponse:
     secrets = SecretStore.load(project, paths.env_file, strict=False)
     account_keys = _require_declared_values(project, secrets, slug, cases)
     approval = _require_live_case_approval(project, store, cases, secrets, account_keys)
+    cat = catalog(project, store.load_flowspec(), store)
     run_id = f"run-{ulid()}"
     run_dir = paths.run_dir(run_id)
     entry_flags = [_is_entry_case(c, project) for c in cases]
 
     plan = _execute_with_trace(
         store, run_id, secrets, project, cases, entry_flags, run_dir, paths, slug, judge,
-        approval,
+        approval, cat,
     )
 
     store.save_run(Run(
         id=run_id, project=slug, case_ids=[c.id for c in cases],
         parallel_n=plan.n, parallel_bound_by=plan.bound_by,
+        catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
+                                 for tier in tiers_to_run(cat)},
         # CN10: what it ran under, reported not capped -- a 19-year wall clock is
         # visible to whoever reads run.json instead of silently honoured.
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,

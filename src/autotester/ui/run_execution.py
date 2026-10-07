@@ -151,7 +151,12 @@ def _run_cases_in_parallel(
     run_id: str, store: ProjectStore, approval: RunApproval,
     *, budget: RunBudget,
 ) -> None:
-    """Run entry cases serially, then isolate siblings under the SAME budget."""
+    """Run entry cases serially, then isolate siblings under the SAME budget.
+
+    The budget must be the one this approval bound, checked before ANY entry-leg
+    effect: an entry-only tier never reaches `run_cases`' own check (T-125)."""
+    if not budget.matches(approval):
+        raise ValueError("shared budget does not match approval")
     entry_cases = [c for c, is_entry in zip(cases, entry_flags, strict=True) if is_entry]
     normal_cases = [c for c, is_entry in zip(cases, entry_flags, strict=True) if not is_entry]
     _run_entry_cases(entry_cases, project, secrets, run_dir, slug, judge, run_id, store,
