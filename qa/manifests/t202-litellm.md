@@ -3,13 +3,13 @@
 Contract: qa/contracts/providers-litellm.md LL1-LL16 (this unit is PASS-able for LL1-LL14; LL15 and LL16 are not built, see Open items)
 Goal task: T-202 (D-071 authorizes `litellm`; D-072 item 2 authorizes the new modules)
 Policy-Version: proportional-verification/2026-10-06.6 (as the coordinator specified; the maker SKILL.md now shows .7, the checker should apply whichever the coordinator confirms)
-Fix cycle: 0 of 2
+Fix cycle: 1
 Phase: READY
 Tier: L — new third-party dependency, a secret-guard boundary, and a call-site change on the run and learn routes. Single checker.
 Dual check: no — single checker.
 Executor: claude-sonnet-subagent (maker build)
-Base: 7782df41 (origin/master at hand-off; rebased, fast-forward only)
-Branch: wave/t202-litellm (one commit; manifest included)
+Base: a77ed746 (origin/master after the cycle-1 rebase; was 7782df41)
+Branch: wave/t202-litellm (feature commit, checker cycle-0 commit, cycle-1 fix commit, this manifest update)
 
 ## Status: ready-for-check
 
@@ -44,6 +44,16 @@ Branch: wave/t202-litellm (one commit; manifest included)
 
 Falsification was run in throwaway copies of src, tests and scripts (the bound tree was never mutated). The runner and its output are in the session scratchpad; the checker should re-run its own. Note for LL12: the first version of that test was green for the wrong reason (the SDK failed on a missing key before it ever reached a socket); it was strengthened with a key plus the recorded-attempts assertion, and the mutation above is red against the strengthened test.
 
+## Fix cycle 1 (verdict: qa/verdicts/t202-litellm.md, cycle 0 FAIL on LL8)
+
+Finding AT-790 (was AT-782 in the verdict as first written): `_failure` withheld only the LITELLM_* values, so a vendor error echoing a vendor-native key reached `ProviderError` and the learn refusal page.
+
+- Fix, in place: `src/autotester/providers/litellm_provider.py` gains `LiteLLMProvider._secret_values()` (.env values, exported vendor keys, `secrets` option). `_guard` and `_failure` both read it, so there is one set and no copy. `_failure` withholds the text when any of those values, or the endpoint, appears in it.
+- Tests (red first, then green): `tests/test_litellm_guard.py` adds `test_an_exported_vendor_key_echoed_by_a_vendor_error_is_withheld` (GEMINI_API_KEY in a `?key=` URL), `test_a_dotenv_value_echoed_by_a_vendor_error_is_withheld` (ANTHROPIC_API_KEY from .env), `test_an_extra_secret_echoed_by_a_vendor_error_is_withheld`; `tests/test_ui_learn.py` adds `test_generate_failure_page_does_not_carry_a_vendor_echoed_key` (the route's refusal page, a real `LiteLLMProvider` over the fake SDK). Before the fix all four were red. A first draft of the extra-secret test passed by accident (prompt "g" is a substring of the error text, so the prompt-echo rule withheld it); the prompt was changed so only the new rule can satisfy it.
+- Falsification, one throwaway copy per row, named nodes, bound tree untouched (runner: scratchpad `fals202/run.py`): M0 no mutation: 5 green. M1 `_failure` withholds the endpoint only (the bug): 4 red. M2 `_secret_values` drops exported vendor keys: 2 red (guard exported test, learn page test). M3 drops .env values: 1 red. M4 drops extra secrets: 1 red.
+- Ledger id renumber (collision with the T-203 branch, which also used AT-782..789; origin/master now also holds 782..786 from other work): the T-202 rows moved to the next free ids after max(origin/master 786, wave/t203-hosting 789): AT-782->AT-790, 783->791, 784->792, 785->793, 786->794, 787->795, 788->796. References updated in `qa/issues.jsonl`, `qa/verdicts/t202-litellm.md` and `qa/checkpoints/t202-litellm.md`. Row statuses are untouched (the checker owns the ledger).
+- Not touched: `.work/t202-suite.log` and the other checker's suite. The full suite was not run (policy .6: affected tests only); the cycle-0 verdict leaves one full run for the repair checker, trigger: dependency manifest and lock change.
+
 ## Open items (not hidden)
 
 1. LL15 (settings keys, project Models card, "Test this model") is NOT built; plan unit 3.
@@ -62,7 +72,8 @@ Policy-Version: proportional-verification/2026-10-06.6
 Tier: L, single checker.
 Base / checked state: 7782df41 + the T-202 commit.
 Affected tests / full-suite trigger: no full suite run. Affected set, 412 passed before the final rebase (litellm x2, provider_factory, providers, langchain_fallback, ensemble_honesty, coverage_wiring, credential_run_approval, ui_credential_safety, ui, ui_learn, ui_runs and its 7 variants, ui_origin_guard, ui_error_pages, ui_sources, env_loading, expand, expand_cli, grade, cli_orchestrate, provider_record_concurrency, gemini_schema, run_trace, prompt_skills, cli_surface, cli_advice_resolves, cli_harness_safety); after the rebase onto 7782df41 an 84-test spot check (litellm x2, factory, ui_learn, ui_runs, providers) is green. The full-suite trigger is the checker's call.
-Metrics: start=2026-10-07 end=2026-10-07 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=3 mutations=14 cycle=0 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-06.6
+Fix cycle 1 scope: rebased onto origin/master a77ed746 first. `uv lock --check`: Resolved 118 packages, no change. `ruff check src tests scripts`: All checks passed. `autotester doctor`: clean. Affected tests, 138 passed (litellm guard and provider, provider_factory, providers, ui_learn, ui_runs, ui_credential_safety, credential_run_approval, coverage_wiring, ingest_narration). No full suite (trigger recorded above, for the repair checker).
+Metrics: start=2026-10-07 end=2026-10-07 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=4 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6
 
 ## How to verify (commands + expected)
 
