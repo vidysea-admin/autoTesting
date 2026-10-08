@@ -21,7 +21,7 @@ from autotester.stages.report_export import (
     valid_runs_newest_first,
 )
 from autotester.store.project_store import ProjectStore
-from autotester.ui import theme
+from autotester.ui import run_queue_view, theme
 from autotester.ui.helpers import (
     _load_project_or_404,
     _require_safe_id,
@@ -217,8 +217,9 @@ def report(slug: str) -> str:
         ("Projects", "/"), (safe_slug, f"/projects/{safe_slug}"), ("Report", None),
     )
     runs = valid_runs_newest_first(store)
+    queue = run_queue_view.queue_panel(slug)
     if not runs:
-        body = breadcrumb + "<h1>Report</h1>" + theme.empty_state(
+        body = breadcrumb + "<h1>Report</h1>" + queue + theme.empty_state(
             "📋", "no runs yet — run a case against this project to see a report here.",
         )
         return theme.page("Report", body, active_slug=slug)
@@ -256,8 +257,7 @@ def report(slug: str) -> str:
         f"<p class='subtitle'>Latest run <code>{safe_run_id}</code> · "
         f"<a href='/projects/{safe_slug}/runs/{safe_run_id}'>view case-by-case</a> · "
         f"{downloads}</p>"
-        f"{overview}"
-        f"{history}"
+        f"{overview}{queue}{history}"
     )
     return theme.page(f"Report — {safe_slug}", body, active_slug=slug)
 

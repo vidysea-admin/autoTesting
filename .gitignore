@@ -8,6 +8,7 @@ profiles/
 
 # Scratch, evidence, logs. Nothing here is a deliverable.
 .work/
+.auth/
 
 # Playwright MCP tool scratch (screenshots/console logs from live browser sessions)
 .playwright-mcp/

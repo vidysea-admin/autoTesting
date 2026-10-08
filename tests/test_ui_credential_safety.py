@@ -159,8 +159,8 @@ def test_a_run_is_refused_when_a_declared_credential_has_no_value(
         def available(self) -> bool:
             return True
 
-    import autotester.ui.routes_runs as routes_runs_module
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    import autotester.stages.run_launcher as run_launcher_module
+    monkeypatch.setattr(run_launcher_module, "for_role", lambda *a, **k: _AvailableProvider())
 
     response = client.post("/projects/demo/run")
 

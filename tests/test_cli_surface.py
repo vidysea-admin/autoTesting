@@ -39,6 +39,8 @@ from pathlib import Path
 
 import pytest
 from cli_walk import invocation_for, shipped_commands
+from litellm_fake import install, reply
+from litellm_fake import no_network as no_network
 from typer.testing import CliRunner
 
 from autotester.cli import app
@@ -235,3 +237,22 @@ def test_listing_sources_for_a_real_but_empty_project_succeeds(root: Path) -> No
     result = runner.invoke(app, ["ingest", "list", "demo"])
 
     assert result.exit_code == 0, result.output
+
+
+def test_cli_probe_success_is_typed_and_one_bounded_call(root, monkeypatch, no_network):
+    import json
+
+    fake = install(monkeypatch, [reply('{"answer":7}')])
+    result = runner.invoke(app, ["providers", "--probe", "litellm:openai/gpt-4o"])
+    assert result.exit_code == 0 and json.loads(result.output) == {"answer": 7}
+    assert len(fake.calls) == 1 and fake.calls[0]["num_retries"] == 0 and not no_network
+    assert "--probe" in runner.invoke(app, ["providers", "--help"]).output
+
+
+@pytest.mark.parametrize("spec", ["litellm:https://u:cli-canary@host/v1", "langchain-fallback"])
+def test_cli_probe_refusals_are_sanitized_nonzero_and_zero_calls(
+        root, monkeypatch, no_network, spec):
+    fake = install(monkeypatch, [])
+    result = runner.invoke(app, ["providers", "--probe", spec])
+    assert result.exit_code == 1 and "Traceback" not in result.output
+    assert "cli-canary" not in result.output and fake.calls == [] and not no_network

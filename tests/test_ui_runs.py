@@ -81,9 +81,9 @@ def test_run_refuses_when_no_ai_provider_is_configured(
         def available(self) -> bool:
             return False
 
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _UnavailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: _UnavailableProvider())
 
     response = client.post("/projects/demo/run", follow_redirects=False)
 
@@ -123,10 +123,10 @@ def test_run_executes_every_case_and_redirects_to_the_report(
                            grader_provider="mock")
         return result, verdict
 
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
 
@@ -151,7 +151,7 @@ def test_is_entry_case_matches_the_projects_own_base_url(scratch_root: Path) -> 
     from autotester.schema.enums import Action, CaseClass, CaseKind
     from autotester.schema.flowspec import Step
     from autotester.schema.project import Project
-    from autotester.ui.routes_runs import _is_entry_case
+    from autotester.stages.run_launcher import _is_entry_case
 
     project = Project(slug="demo", name="Demo", base_url="https://demo.test/signin",
                        allowed_domains=["demo.test"])
@@ -214,10 +214,10 @@ def test_entry_case_gets_an_isolated_wiped_profile_not_the_shared_one(
                            grader_provider="mock")
         return result, verdict
 
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
 

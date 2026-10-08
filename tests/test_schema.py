@@ -151,3 +151,53 @@ def test_secret_ref_rejects_lowercase_keys() -> None:
 def test_verdict_actionable_failure_requires_cited_failures() -> None:
     bare = Verdict(run_id="r", case_id="c", result=Result.FAIL)
     assert not bare.is_actionable_failure
+
+
+def test_team_project_metadata_roundtrips_and_source_identity_is_stable() -> None:
+    from autotester.schema.enums import SourceKind
+    from autotester.schema.project import Source
+
+    old = Project(slug="demo", name="Demo", base_url="https://demo.test")
+    assert old.schedule is None and old.tracker is None
+    current = old.model_copy(update={}).model_dump()
+    current.update(schedule={"mode": "manual", "timezone": "IST"},
+                   tracker={"sheet_url": "https://sheets.example.test/demo"})
+    project = Project.model_validate(current)
+    assert Project.model_validate_json(project.model_dump_json()) == project
+    source = Source(project="demo", kind=SourceKind.TEXT, text="fixed input")
+    enriched = Source(project="demo", kind=SourceKind.TEXT, text="fixed input",
+                      uploaded_by="fixture@example.test", origin="upload")
+    assert enriched.id == source.id
+    with pytest.raises(ValidationError):
+        Project.model_validate({**current, "schedule": {"timezone": "America/New_York"}})
+    with pytest.raises(ValidationError):
+        Project.model_validate({**current, "tracker": {"unexpected": True}})
+
+
+def test_old_run_defaults_team_metadata_to_none() -> None:
+    from autotester.schema.run import Run
+
+    run = Run.model_validate({"project": "demo", "id": "run-fixture"})
+    assert run.requested_by is None and run.slot_key is None and run.via is None
+
+
+def test_team_enum_concepts_have_one_home_and_legacy_trigger_is_unchanged() -> None:
+    import ast
+    from pathlib import Path
+
+    from autotester.schema.enums import Trigger
+    from autotester.schema.run_queue import QueueStatus as CompatibilityStatus
+    from autotester.schema.team_enums import QueueStatus
+
+    assert CompatibilityStatus is QueueStatus
+    assert [(value.name, value.value) for value in Trigger] == [
+        ("MANUAL", "manual"), ("CI", "ci"), ("SCHEDULE", "schedule")]
+    schema = Path(__file__).resolve().parents[1] / "src/autotester/schema"
+    concepts = {"SourceOrigin", "QueueStatus", "RunVia", "ScheduleMode", "SlotOutcome",
+                "DeliveryStatus"}
+    homes = {name: [] for name in concepts}
+    for path in schema.glob("*.py"):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if isinstance(node, ast.ClassDef) and node.name in concepts:
+                homes[node.name].append(path.name)
+    assert homes == {name: ["team_enums.py"] for name in concepts}

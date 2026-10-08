@@ -56,7 +56,7 @@ def _entry_case() -> Case:
 
 
 def _patch_common(monkeypatch):
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
     from autotester.browser.session import BrowserSession
 
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
@@ -66,7 +66,7 @@ def _patch_common(monkeypatch):
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: _AvailableProvider())
     return routes_runs_module
 
 

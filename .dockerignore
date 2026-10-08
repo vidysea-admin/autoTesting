@@ -11,6 +11,7 @@
 **/.ruff_cache/
 .git/
 .work/
+.auth/
 .worktrees/
 
 # Secrets and per-project state (D6).

@@ -201,7 +201,7 @@ def _ui(setup, monkeypatch: pytest.MonkeyPatch, provisioned: bool = True):
     from fastapi.testclient import TestClient
     from test_ui_runs_live_case_approval import _case
 
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as run_launcher_module
     import autotester.ui.run_execution as run_execution_module
     from autotester.browser.session import BrowserSession
     from autotester.schema.enums import Outcome, Result
@@ -222,7 +222,7 @@ def _ui(setup, monkeypatch: pytest.MonkeyPatch, provisioned: bool = True):
         return (RawResult(case_id=case_.id, outcome=Outcome.COMPLETED),
                 Verdict(run_id=run_id, case_id=case_.id, result=Result.PASS,
                         grader_provider="mock"))
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _Judge)
+    monkeypatch.setattr(run_launcher_module, "for_role", lambda *a, **k: _Judge())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient", fake)
     return store, TestClient(app)
 

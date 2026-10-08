@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
+from autotester.schema.schedule import ScheduleConfig
+from autotester.schema.team_enums import SourceOrigin
+from autotester.schema.tracker_binding import TrackerBinding
 from autotester.schema.user_persona import PERSONA_ID_PATTERN, UXPolicy
 
 DEFAULT_VISION_PROVIDER = "gemini"
@@ -102,6 +106,13 @@ class ProviderConfig(BaseModel):
         return not self._configured_vision_providers()
 
 
+class ProviderProbeAnswer(BaseModel):
+    """The fixed synthetic model connectivity canary, never project content."""
+
+    model_config = ConfigDict(extra="forbid")
+    answer: int = Field(strict=True)
+
+
 class Source(Artifact):
     """An immutable input the system learned from."""
 
@@ -115,6 +126,9 @@ class Source(Artifact):
     duration_s: float | None = None
     label: str | None = None
     notes: str | None = None
+    uploaded_by: str | None = None
+    uploaded_at: datetime | None = None
+    origin: SourceOrigin | None = None
     recorded_on: str | None = Field(
         default=None, description="ISO date, e.g. the Excel 'Date' column"
     )
@@ -175,6 +189,8 @@ class Project(Artifact):
                     "a Case's own ref overrides it. Never read by grading (PU4)",
     )
     ux_policy: UXPolicy = Field(default_factory=UXPolicy)
+    schedule: ScheduleConfig | None = None
+    tracker: TrackerBinding | None = None
 
     @field_validator("test_id_attributes")
     @classmethod

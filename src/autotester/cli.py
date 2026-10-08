@@ -7,8 +7,9 @@ from pathlib import Path
 
 import typer
 
-from autotester import cli_crawl, cli_issues, cli_loop, cli_orchestrate, cli_video, providers
+from autotester import cli_crawl, cli_loop, cli_orchestrate, providers
 from autotester import doctor as doctor_module
+from autotester.cli_subapps import flowspec_app, ledger_app, register_subapps, report_app
 from autotester.core.env import load_repo_env
 from autotester.core.paths import RepoDocs
 from autotester.ledger import render, store
@@ -22,26 +23,12 @@ from autotester.stages import review as review_stage
 from autotester.store import ProjectStore
 
 app = typer.Typer(help="AutoTester — AI automated end-to-end tester", no_args_is_help=True)
-ledger_app = typer.Typer(help="The feature ledger (docs/FEATURES.jsonl) — the only write path.")
-flowspec_app = typer.Typer(help="The FlowSpec review gate — nothing expands an unreviewed spec.")
-report_app = typer.Typer(help="Export a run as a portable tester report (Excel + HTML).")
-app.add_typer(ledger_app, name="ledger")
-app.add_typer(flowspec_app, name="flowspec")
-app.add_typer(report_app, name="report")
-app.add_typer(cli_video.app, name="ingest")
-app.add_typer(cli_issues.app, name="issues")
+register_subapps(app)
 
 
 @app.callback()
 def _bootstrap() -> None:
-    """Runs before every command.
-
-    AT-228: the web UI loaded the repo-root `.env` and the CLI did not, so
-    `autotester providers` reported `mock` while a working GEMINI_API_KEY sat on
-    disk -- and a HUMAN_GATE was filed against a blocker that did not exist. Two
-    entry points reading the same disk gave different answers to "does this
-    machine have credentials", and each was internally consistent, which is why
-    nobody noticed."""
+    """Load the same guarded repository environment as the UI before commands."""
     load_repo_env()
 
 
@@ -59,8 +46,18 @@ def doctor() -> None:
 
 
 @app.command("providers")
-def providers_check() -> None:
+def providers_check(
+    probe: str | None = typer.Option(None, "--probe", help="One synthetic model call"),
+    role: str = typer.Option("judge", "--role", help="Probe role: judge or agent"),
+) -> None:
     """Show which model providers have credentials present on this machine."""
+    if probe is not None:
+        try:
+            typer.echo(providers.probe_model(role=role, spec=probe).model_dump_json())
+        except ProviderError as exc:
+            typer.secho(str(exc), fg=typer.colors.RED)
+            raise typer.Exit(1) from None
+        return
     ready = providers.available_ids()
     typer.echo("available providers: " + (", ".join(ready) if ready else "none"))
 
@@ -196,7 +193,7 @@ def flowspec_request_edit(
 @app.command("expand")
 def expand_cases(
     project: str,
-    provider: str = typer.Option("langchain-fallback", "--provider"),
+    provider: str | None = typer.Option(None, "--provider"),
 ) -> None:
     """Generate this project's test cases from its APPROVED FlowSpec.
 
@@ -206,7 +203,8 @@ def expand_cases(
     Persisting is deliberately done here and not inside `expand()`:
     qa/contracts/expand.md's no-fire list makes that the caller's job."""
     store_ = ProjectStore(project)
-    if store_.load_project() is None:
+    configured_project = store_.load_project()
+    if configured_project is None:
         typer.secho(f"no project '{project}'", fg=typer.colors.RED)
         raise typer.Exit(1)
     spec = store_.load_flowspec()
@@ -214,12 +212,16 @@ def expand_cases(
         typer.secho(f"no flowspec for '{project}' yet — ingest a recording first",
                     fg=typer.colors.RED)
         raise typer.Exit(1)
-    model = providers.get(provider)
-    if not model.available():
-        typer.secho(f"provider '{provider}' has no credentials on this machine — "
-                    "`autotester providers` lists the ones that do", fg=typer.colors.RED)
-        raise typer.Exit(1)
     try:
+        if provider is None:
+            model = providers.for_role(configured_project, "agent")
+        else:
+            provider_id, options = providers.parse_spec(provider)
+            model = providers.get(provider_id, **options)
+        if not model.available():
+            raise ProviderError(providers.why_unavailable(model) or
+                                "provider has no credentials on this machine — "
+                                "`autotester providers` lists the ones that do")
         cases = expand_stage.expand(spec, model)
     except review_stage.FlowSpecNotReviewed as exc:
         typer.secho(str(exc), fg=typer.colors.YELLOW)

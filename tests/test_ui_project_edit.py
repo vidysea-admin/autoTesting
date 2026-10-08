@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from litellm_fake import install, reply
+from litellm_fake import no_network as block_network
 
 from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app
@@ -161,3 +163,56 @@ def test_project_page_links_to_its_settings(client: TestClient, scratch_root: Pa
     response = client.get("/projects/demo")
 
     assert "/projects/demo/edit" in response.text
+
+
+def test_models_save_round_trips_with_vision_ensemble_and_named_controls(client, scratch_root):
+    _onboard(client)
+    response = client.post("/projects/demo/edit", data={"name": "Revised",
+        "base_url": "https://demo.test", "allowed_domains": "demo.test",
+        "provider_judge": "litellm:openai/gpt-4o", "provider_agent": "mock",
+        "provider_vision": "gemini,anthropic"}, follow_redirects=False)
+    assert response.status_code == 303
+    project = ProjectStore("demo").load_project()
+    assert project.name == "Revised" and project.providers.judge == "litellm:openai/gpt-4o"
+    assert project.providers.vision_ensemble() == ["gemini", "anthropic"]
+    page = client.get("/projects/demo/edit").text
+    assert "Models" in page and "Test this model" in page and "screenshots" in page
+
+
+@pytest.mark.parametrize("bad", ["litellm:https://u:model-canary@host/v1", "gemini,anthropic"])
+def test_bad_model_saves_are_atomic_and_do_not_echo(client, scratch_root, bad):
+    _onboard(client)
+    before = (scratch_root / "projects/demo/project.json").read_bytes()
+    response = client.post("/projects/demo/edit", data={"name": "Changed",
+        "base_url": "https://demo.test", "allowed_domains": "demo.test", "provider_agent": bad})
+    assert response.status_code == 400 and "model-canary" not in response.text
+    assert (scratch_root / "projects/demo/project.json").read_bytes() == before
+
+
+def test_probe_is_fixed_synthetic_and_never_saves_project_data(
+        client, scratch_root, monkeypatch):
+    _onboard(client, name="Private-project-name-canary")
+    fake = install(monkeypatch, [reply('{"answer":7}')])
+    before = (scratch_root / "projects/demo/project.json").read_bytes()
+    with client:
+        attempts = block_network.__wrapped__(monkeypatch)
+        response = client.post("/projects/demo/models/probe", data={"role": "agent",
+                               "spec": "litellm:openai/gpt-4o"})
+    assert response.status_code == 200 and "answer 7" in response.text
+    assert len(fake.calls) == 1 and "Private-project-name-canary" not in str(fake.calls)
+    assert (scratch_root / "projects/demo/project.json").read_bytes() == before
+    assert not (scratch_root / "projects/demo/runs").exists() and not attempts
+
+
+@pytest.mark.parametrize("role,spec", [("vision", "litellm:openai/gpt-4o"),
+                                      ("judge", "litellm:https://u:probe-canary@host/v1"),
+                                      ("agent", "langchain-fallback")])
+def test_probe_refusals_are_400_with_zero_physical_calls(
+        client, scratch_root, monkeypatch, role, spec):
+    _onboard(client)
+    fake = install(monkeypatch, [])
+    with client:
+        attempts = block_network.__wrapped__(monkeypatch)
+        response = client.post("/projects/demo/models/probe", data={"role": role, "spec": spec})
+    assert response.status_code == 400 and "probe-canary" not in response.text
+    assert fake.calls == [] and not attempts

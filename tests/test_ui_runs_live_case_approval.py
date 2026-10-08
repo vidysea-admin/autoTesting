@@ -57,7 +57,7 @@ def _ready(client: TestClient, root: Path, monkeypatch: pytest.MonkeyPatch,
            n_steps: int = 1) -> ProjectStore:
     """An onboarded project with one runnable case, a stubbed browser and an
     available grader -- everything `trigger_run` needs EXCEPT an approval."""
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
     from autotester.browser.session import BrowserSession
 
@@ -77,7 +77,7 @@ def _ready(client: TestClient, root: Path, monkeypatch: pytest.MonkeyPatch,
                 Verdict(run_id=run_id, case_id=case_.id, result=Result.PASS,
                          grader_provider="mock"))
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient", fake_run_and_grade)
     return store
 
@@ -250,7 +250,7 @@ def test_the_parallel_path_receives_the_same_approval_as_its_budget(
     this route 500s instead of redirecting. Mid-run exhaustion is deliberately
     unreachable from here: the preflight already required the approval to cover
     the whole run, which is the better place for the refusal."""
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
 
     store = _ready(client, scratch_root, monkeypatch)
     store.add_case(_case(1))

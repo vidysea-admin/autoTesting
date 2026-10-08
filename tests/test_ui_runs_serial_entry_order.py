@@ -48,7 +48,7 @@ def test_entry_cases_start_before_the_shared_session_starts(
 
     starts: list[str] = []
 
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
     from autotester.browser.session import BrowserSession
 
     def fake_start(self):  # records WHICH session started, in call order
@@ -62,7 +62,7 @@ def test_entry_cases_start_before_the_shared_session_starts(
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: _AvailableProvider())
 
     import autotester.stages.run_case_pipeline as pipeline_module
 
@@ -101,7 +101,7 @@ def _mixed_tier_cases():
 def _patch_tier_execution(monkeypatch, events, clock=None):
     """Fake browser/judge collaborators; preserve trigger, dispatch and budgets."""
     import autotester.stages.run_case_pipeline as pipeline
-    import autotester.ui.routes_runs as routes
+    import autotester.stages.run_launcher as routes
     from autotester.browser.session import BrowserSession
     original_grade = pipeline.grade
     active = set()
@@ -144,7 +144,7 @@ def _patch_tier_execution(monkeypatch, events, clock=None):
     monkeypatch.setattr(BrowserSession, "close", close)
     monkeypatch.setattr(pipeline, "run_case", run)
     monkeypatch.setattr(pipeline, "grade", grade)
-    monkeypatch.setattr(routes, "LangChainFallbackProvider", Judge)
+    monkeypatch.setattr(routes, "for_role", lambda *a, **k: Judge())
     import autotester.ui.run_execution as execution
     monkeypatch.setattr(execution.shutil, "rmtree",
                         lambda path, **kw: events.append(("wipe", path)))

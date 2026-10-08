@@ -180,17 +180,41 @@ def test_unset_key_owned_by_another_project_cannot_be_redeclared(
 ) -> None:
     first = client.post("/onboard", data={
         **_base(), "slug": "alpha", "name": "Alpha",
-        "credential_key": ["SHARED_PASSWORD"], "credential_value": [""],
+        "credential_key": ["ALPHA_SHARED_PASSWORD"], "credential_value": [""],
         "credential_domains": ["demo.test"], "credential_description": ["password"],
     }, follow_redirects=False)
     second = client.post("/onboard", data={
         **_base(), "slug": "beta", "name": "Beta",
-        "credential_key": ["SHARED_PASSWORD"], "credential_value": [""],
+        "credential_key": ["ALPHA_SHARED_PASSWORD"], "credential_value": [""],
         "credential_domains": ["demo.test"], "credential_description": ["password"],
     }, follow_redirects=False)
     assert first.status_code == 303
     assert second.status_code == 400
     assert not (root / "projects/beta").exists()
+
+
+def test_legacy_foreign_owner_is_refused_even_inside_target_namespace(
+    client: TestClient, root: Path,
+) -> None:
+    """A synthetic old declaration cannot be stolen merely by matching the new prefix."""
+    from autotester.schema.project import Project, SecretRef
+
+    owner = ProjectStore("alpha", root)
+    owner.save_project(Project(slug="alpha", name="Alpha", base_url="https://demo.test",
+                               allowed_domains=["demo.test"], secrets=[
+                                   SecretRef(key="DEMO_SHARED_PASSWORD", domains=["demo.test"])]))
+    env = root / ".env"
+    env.write_bytes(b"UNRELATED_KEY=synthetic-sentinel\n")
+    before = {str(p): p.read_bytes() for p in (root / "projects").rglob("*") if p.is_file()}
+    response = client.post("/onboard", data=_base(
+        credential_key=["DEMO_SHARED_PASSWORD"], credential_value=[""],
+        credential_domains=["demo.test"], credential_description=["password"],
+    ), follow_redirects=False)
+    assert response.status_code == 400
+    assert "belongs to another project" in response.text
+    assert not (root / "projects/demo").exists()
+    assert {str(p): p.read_bytes() for p in (root / "projects").rglob("*") if p.is_file()} == before
+    assert env.read_bytes() == b"UNRELATED_KEY=synthetic-sentinel\n"
 
 
 def test_existing_project_cannot_be_overwritten_by_reonboarding(

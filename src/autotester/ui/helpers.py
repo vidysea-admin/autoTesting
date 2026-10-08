@@ -193,20 +193,50 @@ _LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
 
 
 def _origin_allowed(origin: str) -> bool:
-    """D-066: loopback (the UI's default home) or an origin the operator listed in
-    `AUTOTESTER_ALLOWED_ORIGINS` (comma/space separated; the server URL after go-live).
-    Exact match only -- no wildcard. NOT "the Host the request named": a DNS-rebinding
-    page has Origin == Host == attacker, so the request cannot vouch for itself."""
+    """Validate first, then allow loopback or an exact operator-listed origin."""
     origin = origin.strip().rstrip("/").lower()
-    listed = os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").replace(",", " ").split()
-    if origin in {o.rstrip("/").lower() for o in listed if o != "*"}:
-        return True
     try:
         parts = urlparse(origin)
-        return (parts.scheme in {"http", "https"} and parts.hostname in _LOOPBACK_HOSTS
-                and not parts.username and not parts.path and not parts.query)
+        _ = parts.port  # urlparse otherwise tolerates malformed and out-of-range ports.
+        if (parts.scheme not in {"http", "https"} or not parts.hostname
+                or parts.netloc.endswith(":") or any(c.isspace() for c in origin)
+                or parts.username is not None or parts.password is not None
+                or parts.path or parts.query or parts.fragment):
+            return False
     except ValueError:
         return False
+    listed = os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").replace(",", " ").split()
+    return (parts.hostname in _LOOPBACK_HOSTS
+            or origin in {o.rstrip("/").lower() for o in listed if o != "*"})
+
+
+def _host_allowed(host: str) -> bool:
+    """AU19: one valid authority, explicitly allowed independently of the request."""
+    if not host or any(c.isspace() or c in "/\\@?#," for c in host) or host.endswith(":"):
+        return False
+    try:
+        parts = urlparse("//" + host)
+        name, port = parts.hostname, parts.port
+        if not name:
+            return False
+        if name in _LOOPBACK_HOSTS:
+            return True
+        origins = os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").replace(",", " ").split()
+        if any(_origin_allowed(o) and urlparse(o).hostname == name for o in origins):
+            return True
+        listed = os.environ.get("AUTOTESTER_ALLOWED_HOSTS", "").replace(",", " ").split()
+        for entry in listed:
+            if entry == "*" or any(c in "/\\@?#" for c in entry) or entry.endswith(":"):
+                continue
+            try:
+                allowed = urlparse("//" + entry)
+                if allowed.hostname == name and (allowed.port is None or allowed.port == port):
+                    return True
+            except ValueError:
+                continue
+    except ValueError:
+        pass
+    return False
 
 
 def origin_refusal(headers: dict[str, str]) -> str | None:
@@ -225,23 +255,30 @@ def origin_refusal(headers: dict[str, str]) -> str | None:
     if origin is not None:
         if _origin_allowed(origin):
             return None
-        return f"cross-site request refused: origin {origin!r} is not allowed (D-066)"
+        return "cross-site request refused: origin is not allowed (D-066)"
     if headers.get("sec-fetch-site", "same-origin") not in {"same-origin", "none"}:
         return "cross-site request refused: Sec-Fetch-Site names another site (D-066)"
     return None
 
 
 class _OriginGuard:
-    """ASGI middleware: refuse a cross-site state-changing request before any handler runs."""
+    """Reject untrusted Host and cross-site mutations before auth or routing."""
 
     def __init__(self, app) -> None:
         self.app = app
 
     async def __call__(self, scope, receive, send) -> None:
-        if scope["type"] == "http" and scope["method"] in _UNSAFE_METHODS:
-            headers = {k.decode("latin-1").lower(): v.decode("latin-1")
-                       for k, v in scope["headers"]}
-            refusal = origin_refusal(headers)
+        if scope["type"] == "http":
+            raw = [(k.decode("latin-1").lower(), v.decode("latin-1"))
+                   for k, v in scope["headers"]]
+            hosts = [v for k, v in raw if k == "host"]
+            refusal = None
+            if len(hosts) != 1 or not _host_allowed(hosts[0]):
+                refusal = "request refused: Host is not allowed"
+            elif sum(k == "origin" for k, _ in raw) > 1:
+                refusal = "cross-site request refused: ambiguous Origin"
+            elif scope["method"] in _UNSAFE_METHODS:
+                refusal = origin_refusal(dict(raw))
             if refusal:
                 await JSONResponse({"detail": refusal}, status_code=403)(scope, receive, send)
                 return

@@ -1,24 +1,4 @@
-"""Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md.
-
-AT-058: getting the allowed domains wrong once made a project permanently
-unrunnable, and there was no route anywhere to change them — `routes_credentials`
-edits `.env` values only, never `project.json`. So a user who mistyped at
-onboarding had to either abandon the project or edit JSON by hand.
-
-Only the three fields a human can get wrong at onboarding are editable here:
-name, base_url, allowed_domains. The slug is the project's identity (it names
-the directory every artifact already lives under) and is deliberately NOT
-editable — renaming it would orphan runs, cases and the browser profile.
-
-This module also owns the project's `SecretRef` declarations (Track 0, Unit 0.1 of
-the 2026-09-07 plan; gate `qa/gates/at052-bfs-video-corpus-grill.md`).
-Until now nothing anywhere wrote `project.json::secrets`, so a project always
-declared zero credentials — which made `/projects/<slug>/env` render "This
-project declares no credentials" and reject every save. A logged-in test was
-therefore impossible to set up through the UI at all. Declaring a key here is
-what makes that page usable; the VALUE still only ever lives in the repo-root
-`.env`, written by `ui/env_editor.py`, and is never handled by this module.
-"""
+"""Edit project settings, model selection and scoped credential declarations."""
 
 from __future__ import annotations
 
@@ -30,8 +10,10 @@ from pydantic import ValidationError
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths
-from autotester.schema.project import Project, SecretRef
+from autotester.providers import ProviderError, parse_spec, probe_model
+from autotester.schema.project import Project, ProviderConfig, SecretRef
 from autotester.ui import theme
+from autotester.ui.credential_guard import refuse_foreign_key
 from autotester.ui.helpers import (
     _load_project_or_404,
     _refuse_unsafe_submission,
@@ -46,20 +28,23 @@ def build_secret_ref(
     project: Project, key: str, domains: str, description: str = "",
     *, mask_in_screenshot: bool = True,
 ) -> SecretRef:
-    """Build one scoped reference without ever including its submitted value in errors."""
+    """Build one scoped reference without ever including its submitted value in errors.
+    The key must be this project's own namespaced key (AU21, `refuse_foreign_key`)."""
     scope = [domain.strip() for domain in domains.split(",") if domain.strip()]
     if not scope:
         raise HTTPException(400, "name at least one host this credential may be typed into")
     if any(not project.allows_domain(domain.lower().lstrip(".")) for domain in scope):
         raise HTTPException(400, "credential scope must stay inside the project's allowed domains")
     try:
-        return SecretRef(
+        ref = SecretRef(
             key=key.strip(), description=description.strip() or None, domains=scope,
             mask_in_screenshot=mask_in_screenshot,
         )
     except ValidationError as exc:
         why = exc.errors()[0]["msg"]
         raise HTTPException(400, f"cannot declare this credential: {why}") from exc
+    refuse_foreign_key(project, ref.key)
+    return ref
 
 
 def parse_secret_rows(
@@ -149,6 +134,25 @@ def _secrets_card(safe_slug: str, project: Project) -> str:
     )
 
 
+def _model_controls(project: Project) -> str:
+    """Validated model fields and destination help in the existing settings form."""
+    fields = []
+    for role in ("judge", "agent", "vision"):
+        value = getattr(project.providers, role)
+        try:
+            parse_spec(value)
+        except ProviderError:
+            value = ""
+        fields.append(f"<div class='field'><label for='provider_{role}'>{role.title()}</label>"
+                      f"<input id='provider_{role}' name='provider_{role}' "
+                      f"value='{escape(value)}'></div>")
+    return theme.card("".join(fields) + "<p class='hint'>Use provider:model, for example "
+                      "litellm:openai/gpt-4o. The named vendor receives prompts and grading "
+                      "screenshots. A connectivity test does not measure judge quality. "
+                      "Vision keeps its video providers, optionally comma-separated.</p>",
+                      title="Models")
+
+
 @router.get("/projects/{slug}/edit", response_class=HTMLResponse)
 def edit_project_form(slug: str) -> str:
     _store, project = _load_project_or_404(slug)
@@ -165,6 +169,7 @@ def edit_project_form(slug: str) -> str:
         f"value='{escape(', '.join(project.allowed_domains))}' required>"
         "<span class='hint'>comma-separated — the browser will never navigate outside "
         "these. There is no wildcard: name every host you mean.</span></div>"
+        f"{_model_controls(project)}"
         "<button class='btn btn-primary' type='submit'>Save changes</button>"
     )
     form = f"<form method='post' action='/projects/{safe_slug}/edit'>{fields}</form>"
@@ -175,6 +180,13 @@ def edit_project_form(slug: str) -> str:
         "<p class='subtitle'>The slug never changes — every run, case and browser profile "
         "is filed under it.</p>"
         f"{theme.card(form)}"
+        f"<form method='post' action='/projects/{safe_slug}/models/probe'>"
+        "<label for='probe_role'>Role</label><select id='probe_role' name='role'>"
+        "<option value='judge'>Judge</option><option value='agent'>Agent</option></select>"
+        "<label for='probe_spec'>Model specification (blank uses saved settings)</label>"
+        "<input id='probe_spec' name='spec' placeholder='litellm:openai/gpt-4o'>"
+        "<button class='btn' type='submit'>Test this model</button>"
+        "<p class='hint'>One tiny synthetic request, no project data or screenshots.</p></form>"
         f"{_secrets_card(safe_slug, project)}"
     )
     return theme.page("Project settings", body, active_slug=slug)
@@ -186,6 +198,8 @@ def edit_project_submit(
     name: str = Form(...),
     base_url: str = Form(...),
     allowed_domains: str = Form(...),
+    provider_judge: str | None = Form(None), provider_agent: str | None = Form(None),
+    provider_vision: str | None = Form(None),
 ) -> RedirectResponse:
     store, project = _load_project_or_404(slug)
     _require_project_name(name)
@@ -193,9 +207,20 @@ def edit_project_submit(
     if not domains:
         raise HTTPException(400, "a project needs at least one allowed domain")
     _require_reachable_base_url(base_url, domains)
+    models = {role: value if value is not None else getattr(project.providers, role)
+              for role, value in (("judge", provider_judge), ("agent", provider_agent),
+                                  ("vision", provider_vision))}
+    try:
+        for role, value in models.items():
+            provider_id, _ = parse_spec(value)
+            if role != "vision" and "," in provider_id:
+                raise ProviderError("provider lists are supported only for vision")
+    except ProviderError as exc:
+        raise HTTPException(400, str(exc)) from None
     _refuse_unsafe_submission(
         [("the name", name), ("the base URL", base_url),
-         ("allowed domains", allowed_domains)],
+         ("allowed domains", allowed_domains),
+         *[(f"{role} model", v) for role, v in models.items()]],
         project, SecretStore.load(project, ProjectPaths(slug).env_file, strict=False),
         # AT-078/AT-087: re-saving this project's own stored value for EACH
         # field is a no-op, not a paste -- per-field, never cross-field.
@@ -208,8 +233,24 @@ def edit_project_submit(
 
     store.save_project(project.model_copy(update={
         "name": name.strip(), "base_url": base_url.strip(), "allowed_domains": domains,
+        "providers": ProviderConfig(**models),
     }))
     return RedirectResponse(f"/projects/{slug}", status_code=303)
+
+
+@router.post("/projects/{slug}/models/probe", response_class=HTMLResponse)
+def probe_project_model(slug: str, role: str = Form("judge"), spec: str = Form("")):
+    _store, project = _load_project_or_404(slug)
+    _refuse_unsafe_submission([("model specification", spec)], project,
+                             SecretStore.load(project, ProjectPaths(slug).env_file, strict=False))
+    try:
+        answer = probe_model(project, role=role, spec=spec or None)
+        detail, status = f"Synthetic model test succeeded: answer {answer.answer}.", 200
+    except ProviderError as exc:
+        detail, status = str(exc), 400
+    body = theme.card(f"<p>{escape(detail)}</p><a href='/projects/{escape(slug)}/edit'>"
+                      "Return to Models</a>", title="Test this model")
+    return HTMLResponse(theme.page("Model test", body, active_slug=slug), status_code=status)
 
 
 @router.post("/projects/{slug}/secrets")

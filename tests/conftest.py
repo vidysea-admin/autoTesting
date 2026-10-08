@@ -138,3 +138,81 @@ def page_factory(serve_dir: Callable[[Path], str]):
     runner.stop()
 
 
+@pytest.fixture(autouse=True)
+def _inline_run_queue(monkeypatch: pytest.MonkeyPatch) -> None:
+    """T-203: `POST /projects/<slug>/run` now enqueues and returns at once, so a test that asserts
+    the finished run would race a background thread. Every test therefore gets a fresh queue
+    whose worker runs the job inline, in the request; the queue's own scheduling (limit,
+    single-flight, queued state) is tested in `tests/test_run_queue.py` with a manual spawner.
+
+    A runner crash is RE-RAISED out of the request (AT-786): the real queue records it as
+    `failed` and carries on, which would let a test stay green over a run that never worked,
+    as every inline-run test did before this fixture existed. A gate refusal (`RunRefused`)
+    is a normal answer and stays quiet."""
+    from autotester.ui import run_queue
+
+    crashes: list[Exception] = []
+
+    def runner(entry: run_queue.QueueEntry) -> None:
+        try:
+            run_queue._registered_runner(entry)
+        except run_queue.RunRefused:
+            raise
+        except Exception as exc:
+            crashes.append(exc)
+            raise
+
+    def spawn(job: Callable[[], None]) -> None:
+        job()
+        if crashes:
+            first = crashes[0]
+            crashes.clear()
+            raise first
+
+    monkeypatch.setattr(run_queue, "_QUEUE", run_queue.RunQueue(spawn=spawn, runner=runner))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _signed_in_test_clients(tmp_path_factory: pytest.TempPathFactory) -> Iterator[None]:
+    import auth_login_fixture
+    from starlette.testclient import TestClient
+
+    from autotester.auth import audit
+    from autotester.ui.auth_middleware import SESSION_COOKIES
+
+    original = TestClient.request
+    original_init = TestClient.__init__
+    suite_auth_dir = str(tmp_path_factory.mktemp("suite-auth"))
+
+    def _init(self, *args, **kwargs):
+        if len(args) < 2 and "base_url" not in kwargs:
+            kwargs["base_url"] = "http://localhost"
+        original_init(self, *args, **kwargs)
+
+    def _request(self, method, url, *args, **kwargs):
+        if not auth_login_fixture.enabled():
+            return original(self, method, url, *args, **kwargs)
+        borrowed = not os.environ.get("AUTOTESTER_ROOT") and "AUTOTESTER_AUTH_DIR" not in os.environ
+        real_root = audit.repo_root
+        if borrowed:  # never the real repo's .auth/ store, nor its .work/audit.jsonl (P7)
+            os.environ["AUTOTESTER_AUTH_DIR"] = suite_auth_dir
+            audit.repo_root = lambda: Path(suite_auth_dir)
+        try:
+            token = auth_login_fixture.ensure_session()
+            for name in SESSION_COOKIES:  # the plain and the Secure `__Host-` name (AU3)
+                self.cookies.set(name, token)
+            return original(self, method, url, *args, **kwargs)
+        finally:
+            if borrowed:
+                os.environ.pop("AUTOTESTER_AUTH_DIR", None)
+                audit.repo_root = real_root
+
+    try:
+        TestClient.__init__ = _init
+        TestClient.request = _request
+        yield
+    finally:
+        TestClient.__init__ = original_init
+        TestClient.request = original
+
+

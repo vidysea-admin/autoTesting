@@ -20,8 +20,6 @@ Three surfaces close that loop:
   promise is visible to the human it is asking. A `VideoRequest` written to a
   file nothing renders is indistinguishable from not asking.
 
-Plain server-rendered HTML, no JS framework (ui.md's no-fire list), matching
-`routes_cases.py`.
 """
 
 from __future__ import annotations
@@ -33,8 +31,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths, RepoDocs
-from autotester.providers.base import ProviderError
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers import ProviderError, for_role, why_unavailable
 from autotester.schema.enums import ReviewStatus
 from autotester.stages import review as review_stage
 from autotester.stages.expand import expand
@@ -235,13 +232,16 @@ def generate_cases(slug: str):
             f"whatever the model guessed. It is currently {spec.review.status.value}.",
             _link(f"/projects/{slug}/flowspec", "Review it"))
 
-    provider = LangChainFallbackProvider()
-    if not provider.available():
+    try:
+        provider = for_role(project, "agent")
+        if not provider.available():
+            raise ProviderError(why_unavailable(provider) or
+                                "No provider on this machine has credentials")
+    except ProviderError as exc:
         return _refusal(
             slug, "No model provider configured",
-            "Generating cases needs a model. No provider on this machine has "
-            "credentials, so nothing was generated.",
-            _link(f"/projects/{slug}/env", "Add a credential"))
+            f"Generating cases needs a model. {exc}, so nothing was generated.",
+            _link("/settings/providers", "Check provider settings"))
 
     # AT-264: every OTHER refusal in this route is a themed page (AT-244's
     # own rule -- "a refusal an operator reaches by clicking is part of the

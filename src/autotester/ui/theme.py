@@ -19,24 +19,35 @@ from __future__ import annotations
 
 from html import escape
 
+from autotester.auth.access import authorize, visible_slugs
+from autotester.auth.context import current_principal
+from autotester.schema.auth import PermissionKey
 from autotester.store.project_store import ProjectStore
 from autotester.ui.helpers import _project_slugs
 from autotester.ui.theme_style import PAGE_STYLE
 
-NAV = """
-<header class="topbar">
-  <a class="brand" href="/">
-    <span class="brand-mark">AT</span>
-    <span class="brand-name">AutoTester</span>
-  </a>
-  <nav>
-    <a href="/">Projects</a>
-    <a href="/onboard">+ New project</a>
-    <a href="/live" class="nav-live">● Live view</a>
-    <a href="/settings/providers">⚙ Settings</a>
-  </nav>
-</header>
-"""
+# (permission, href, label, extra class): shown only to an account that holds the key (AU25)
+_NAV_LINKS = (
+    (None, "/", "Projects", ""),
+    (PermissionKey.PROJECT_CREATE, "/onboard", "+ New project", ""),
+    (PermissionKey.LIVE_VIEW, "/live", "● Live view", " class=\"nav-live\""),
+    (PermissionKey.SETTINGS_MANAGE, "/settings/providers", "⚙ Settings", ""),
+)
+
+
+def may(key: PermissionKey | None) -> bool:
+    who = current_principal()
+    return key is None or who is None or authorize(who, key)
+
+
+def _nav_html() -> str:
+    """The top bar. A link the account would get a 403 on is not rendered."""
+    links = "".join(f"<a href=\"{href}\"{extra}>{label}</a>"
+                    for key, href, label, extra in _NAV_LINKS if may(key))
+    return ("<header class=\"topbar\"><a class=\"brand\" href=\"/\">"
+            "<span class=\"brand-mark\">AT</span><span class=\"brand-name\">AutoTester"
+            f"</span></a><nav>{links}</nav></header>")
+
 
 _BADGE_CLASS = {
     "PASS": ("badge-pass", "✓"), "FAIL": ("badge-fail", "✕"),
@@ -116,7 +127,8 @@ def _sidebar_html(active_slug: str | None) -> str:
     US1-US4) — the same `_project_slugs()`/`ProjectStore` lookup `index()`
     already uses, so this is never a second source of truth for what
     projects exist."""
-    slugs = _project_slugs()
+    who = current_principal()  # T-204 AU13: only what this account may view
+    slugs = _project_slugs() if who is None else visible_slugs(who, _project_slugs())
     if not slugs:
         links = "<p class='sidebar-empty'>No projects yet.</p>"
     else:
@@ -129,13 +141,32 @@ def _sidebar_html(active_slug: str | None) -> str:
                 f"<a class='sidebar-link{cls}' href='/projects/{escape(slug)}'>{name}</a>"
             )
         links = "".join(rows)
+    add = ("<a class='sidebar-add' href='/onboard'>+ New project</a>"
+           if may(PermissionKey.PROJECT_CREATE) else "")
     return (
         "<aside class='sidebar'>"
         "<div class='sidebar-header'>Projects</div>"
         f"<nav class='sidebar-nav'>{links}</nav>"
-        "<a class='sidebar-add' href='/onboard'>+ New project</a>"
-        "</aside>"
+        f"{add}</aside>"
     )
+
+
+def _account_html() -> str:
+    """T-204 AU25: the signed-in identity chip, the admin links this account may use,
+    and the sign-out control. Empty outside a signed-in request."""
+    who = current_principal()
+    if who is None or not who.user_id:
+        return ""
+    links = "".join(
+        f"<a href='{href}'>{label}</a>" for key, href, label in (
+            (PermissionKey.USERS_MANAGE, "/admin/users", "Users"),
+            (PermissionKey.GROUPS_MANAGE, "/admin/groups", "Groups"))
+        if authorize(who, key))
+    return (f"<div class='account-bar' style='display:flex;gap:10px;align-items:center;"
+            f"justify-content:flex-end;padding:4px 16px'>{links}"
+            f"<span class='pill' title='signed in'>{escape(who.display_name or who.email)}"
+            "</span><form method='post' action='/auth/logout' style='display:inline'>"
+            "<button class='btn btn-sm' type='submit'>Sign out</button></form></div>")
 
 
 def page(title: str, body: str, active_slug: str | None = None) -> str:
@@ -146,7 +177,8 @@ def page(title: str, body: str, active_slug: str | None = None) -> str:
     discipline (ui.md U5). `active_slug` highlights the current project in
     the sidebar on a project-scoped page; omit it on a global page."""
     sidebar = _sidebar_html(active_slug)
+    top = f"{_nav_html()}{_account_html()}"
     return (
-        f"<!doctype html><title>{title} — AutoTester</title>{PAGE_STYLE}{NAV}"
+        f"<!doctype html><title>{title} — AutoTester</title>{PAGE_STYLE}{top}"
         f"<div class='layout'>{sidebar}<main>{body}</main></div>"
     )

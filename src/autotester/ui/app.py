@@ -13,34 +13,26 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
+from autotester.auth import policy
+from autotester.auth.access import set_owner, visible_slugs
+from autotester.auth.config import check_startup
+from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.env import load_repo_env
 from autotester.core.paths import ProjectPaths
+from autotester.schema.auth import PermissionKey
 from autotester.schema.project import Project, Source
 from autotester.stages.report_export import valid_runs_newest_first
 from autotester.store.project_store import ProjectStore
 from autotester.ui import (
     error_pages,
     project_view,
-    routes_cases,
-    routes_catalog,
-    routes_crawl_approval,
-    routes_crawl_login,
-    routes_crawls,
-    routes_credentials,
-    routes_flow_diagram,
-    routes_issues,
-    routes_learn,
-    routes_live,
-    routes_product_map,
+    routers,
     routes_project_edit,
-    routes_report,
-    routes_runs,
-    routes_settings,
     routes_sources,
-    routes_video,
     theme,
 )
+from autotester.ui.auth_middleware import auth_middleware
 from autotester.ui.env_editor import InvalidEnvValue, set_env_values, validate_env_values
 from autotester.ui.helpers import (
     _load_project_or_404,
@@ -66,28 +58,14 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     (which never runs lifespan unless used as a context manager) never leaks real
     .env values into the test process."""
     load_repo_env()          # AT-228: the one loader the CLI also uses, so both
+    check_startup()
     yield                    # entry points agree on which credentials exist
 
 
-app = FastAPI(title="AutoTester", lifespan=_lifespan, middleware=origin_guard_middleware())
+app = FastAPI(title="AutoTester", lifespan=_lifespan,
+              middleware=[*origin_guard_middleware(), *auth_middleware()])
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
-app.include_router(routes_cases.router)
-app.include_router(routes_project_edit.router)
-app.include_router(routes_runs.router)
-app.include_router(routes_report.router)
-app.include_router(routes_video.router)
-app.include_router(routes_flow_diagram.router)
-app.include_router(routes_crawls.router)
-app.include_router(routes_crawl_login.router)
-app.include_router(routes_credentials.router)
-app.include_router(routes_crawl_approval.router)
-app.include_router(routes_settings.router)
-app.include_router(routes_learn.router)
-app.include_router(routes_sources.router)
-app.include_router(routes_product_map.router)
-app.include_router(routes_issues.router)
-app.include_router(routes_live.router)
-app.include_router(routes_catalog.router)
+routers.include_all(app)
 
 
 @app.get("/favicon.ico", status_code=204)
@@ -158,16 +136,20 @@ def _portfolio_stats(slugs: list[str]) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
-    slugs = _project_slugs()
+    who = current_principal()
+    slugs = visible_slugs(who, _project_slugs()) if who else []
+    new = ("<a class='btn btn-primary' href='/onboard'>+ New project</a>"
+           if theme.may(PermissionKey.PROJECT_CREATE) else "")
     header = (
         "<div class='page-header'><div><h1>Projects</h1>"
         "<p class='subtitle'>Onboard a product once, then let AutoTester keep watching it.</p>"
-        "</div><a class='btn btn-primary' href='/onboard'>+ New project</a></div>"
+        f"</div>{new}</div>"
     )
     if not slugs:
         body = header + theme.empty_state(
-            "🧪", "No projects yet — onboard your first one to get started.",
-            "<a class='btn btn-primary' href='/onboard'>+ New project</a>",
+            "🧪", "No projects yet" + (" — onboard your first one to get started."
+                                      if new else " — ask an admin to share one with you."),
+            new,
         )
     else:
         cards = "".join(_project_card(s) for s in slugs)
@@ -259,6 +241,9 @@ async def onboard_submit(request: Request) -> RedirectResponse:
     _require_reachable_base_url(base_url, domains)  # guard new secrets before any echo path
     store = ProjectStore(slug)
     store.save_project(project)
+    who = current_principal()
+    if who and who.user_id:
+        set_owner(slug, who.user_id)
     for source in sources:
         store.add_source(source)
     set_env_values(env_path, values)
@@ -298,3 +283,6 @@ def project_detail(slug: str) -> str:
         f"{stats}{actions}"
     )
     return theme.page(name, body, active_slug=slug)
+
+policy.assemble(app, [(module.__name__, module.ROUTE_POLICY)
+                      for module in routers.POLICY_MODULES])

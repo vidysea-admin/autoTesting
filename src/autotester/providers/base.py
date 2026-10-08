@@ -99,6 +99,11 @@ class Provider(ABC):
         raise Unsupported(f"{self.id} does not support judging")
 
     # -- shared -------------------------------------------------------------
+    def probe(self, prompt: str, schema: type[ModelT], *, role: str,
+              prompt_file: str | None = None) -> ModelT:
+        """One bounded physical attempt, only when an implementation guarantees it."""
+        raise Unsupported(f"{self.id} does not support a single-attempt probe")
+
     @abstractmethod
     def available(self) -> bool:
         """True when credentials/binaries for this provider are present."""
@@ -107,6 +112,7 @@ class Provider(ABC):
         self, role: str, input_tokens: int = 0, output_tokens: int = 0, *,
         prompt_file: str | None = None, fed_id: str | None = None,
         latency_s: float = 0.0, retries: int = 0, fallback_hops: int = 0,
+        provider_label: str | None = None,
     ) -> None:
         """Accumulate usage so a run can report its cost, and — when a
         `TraceWriter` is attached (`self.trace`) — emit this call's LLM-call
@@ -130,7 +136,7 @@ class Provider(ABC):
             if not matched:
                 self.usage.append(
                     ProviderUsage(
-                        provider=self.id,
+                        provider=provider_label or self.id,
                         role=role,
                         calls=1,
                         input_tokens=input_tokens,

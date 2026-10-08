@@ -8,6 +8,18 @@
 <!-- generated:map -->
 | Module | One job |
 |---|---|
+| `auth/access.py` | The one authorization function (AU12) and the project relation data it reads. |
+| `auth/accounts.py` | Accounts: open signup, first-account admin, password check, admin account actions. |
+| `auth/audit.py` | The audit trail (AU22): one JSON line per state-changing request in |
+| `auth/config.py` | Auth startup configuration (AU3 cookie Secure rule, AU17 gate switch, AU20 hosted |
+| `auth/context.py` | The current request's principal, set by the auth middleware for the request's |
+| `auth/db.py` | The auth store's SQLite file: connection, tables, one-time seeding, last-admin guard. |
+| `auth/defaults.py` | The four seeded groups and their default ticks (auth.md "Default groups", AU11). |
+| `auth/groups.py` | IAM-style groups: create, rename, tick permissions, set members, delete (AU10). |
+| `auth/passwords.py` | Password hashing: argon2id via argon2-cffi, behind one hash/verify pair (AU1). |
+| `auth/policy.py` | The central route policy table (AU14, AU16): every route's required permission. |
+| `auth/ratelimit.py` | Login rate limit (AU5): 5 failures per account or 20 per client address inside a |
+| `auth/sessions.py` | Server-side sessions (AU3): a 256-bit random id in the cookie, only its SHA-256 in the |
 | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
 | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
 | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
@@ -20,10 +32,12 @@
 | `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |
 | `browser/video.py` | Per-case video recording for `BrowserSession` (T-191/AT-587). |
 | `cli.py` | Command line. Every action the UI offers is available here first. |
+| `cli_auth.py` | `autotester auth` -- break-glass account administration from the server shell (T-204). |
 | `cli_crawl.py` | Crawl commands — `autotester explore` and `autotester report crawl`. |
 | `cli_issues.py` | `autotester issues` — turn an analysis into the sheet a human tester reads. |
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
+| `cli_subapps.py` | Register the existing five CLI sub-apps through one extensible hook. |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
@@ -54,11 +68,15 @@
 | `providers/gemini.py` | Gemini provider: the `vision` role (video understanding), plus `agent`/`judge` |
 | `providers/gemini_files.py` | Upload a video to the Files API and wait until the service can actually read it. |
 | `providers/gemini_schema.py` | Turn a Pydantic model into a schema Gemini's `response_schema` will accept. |
+| `providers/images.py` | One job: turn a prompt plus screenshot files into OpenAI-style message content. |
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
+| `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
+| `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
+| `schema/auth.py` | Team login shapes (T-204, D-072; contract qa/contracts/auth.md): the closed permission |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
 | `schema/case.py` | A test case — one falsifiable claim about the product, plus how to check it. |
@@ -77,11 +95,16 @@
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
+| `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
 | `schema/scenario.py` | A written scenario list, and what compiling it produced (T-166, EC4/EC5). |
+| `schema/schedule.py` | Typed project schedule configuration; execution belongs to the later scheduler unit. |
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
+| `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
+| `schema/team_enums.py` | Group 10 closed vocabularies; pre-existing vocabularies remain in schema/enums.py. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
+| `schema/tracker_binding.py` | Typed optional external tracker binding; this seam performs no external operation. |
 | `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
 | `schema/ux_report.py` | The advisory UX artifacts: `UXFinding`, `UXCaseOutcome`, `UXReport` (PU2). |
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
@@ -139,6 +162,7 @@
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
+| `stages/run_launcher.py` | Prepare and execute a regression run once, enforcing credentials and covering consent. |
 | `stages/score.py` | SCORE: compare AutoTester's issues against a human tester's own sheet. |
 | `stages/screen_identity.py` | Screen identity: the rules that decide when two screens are one. |
 | `stages/script_replay.py` | SCRIPT_REPLAY: record a working live run's locators as a `Script`, then replay it for free. |
@@ -152,7 +176,12 @@
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory. |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
+| `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
+| `store/team_store.py` | Persist team records atomically and claim slots exclusively beneath the team data root. |
+| `ui/admin_view.py` | Markup for the admin pages: accounts, groups and the permission checkboxes (AU8, AU10). |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
+| `ui/auth_middleware.py` | The login gate (T-204, auth.md AU6/AU13/AU14/AU16/AU22): one ASGI middleware that |
+| `ui/auth_view.py` | Markup for the sign-in, sign-up and "waiting for an admin" pages (T-204). |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
 | `ui/credential_guard.py` | Credential-guard helpers: refuse a real secret typed into any UI text field. |
@@ -160,6 +189,10 @@
 | `ui/error_pages.py` | App-wide `HTTPException` -> HTML page, split out of `ui/app.py` to keep that |
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
+| `ui/routers.py` | The one list of routers the UI app serves (moved out of `ui/app.py` by T-204). |
+| `ui/routes_access_requests.py` | Empty Group 10 access_requests router and policy contribution, filled by its later unit. |
+| `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |
+| `ui/routes_auth.py` | Sign in, sign up, sign out and the waiting page (T-204, auth.md AU2-AU7). |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
 | `ui/routes_catalog.py` | The test catalog page: one row per `CaseClass`, a green runnable count, and |
 | `ui/routes_crawl_approval.py` | The crawl-approval card on the credentials page (D-018 consent, gate 2). |
@@ -167,17 +200,27 @@
 | `ui/routes_crawls.py` | The explorer, on screen: crawl history, one crawl's screen graph, its |
 | `ui/routes_credentials.py` | The credentials editor: values shown (editable, passwords masked with a |
 | `ui/routes_flow_diagram.py` | The BFS-style companion to `routes_report.py`'s DFS per-run step flow: |
+| `ui/routes_inbox.py` | Empty Group 10 inbox router and policy contribution, filled by its later unit. |
 | `ui/routes_issues.py` | Operator-facing video issue ledger and its human-compatible workbook. |
 | `ui/routes_learn.py` | The learning loop on screen — review the FlowSpec, generate cases, see the asks. |
 | `ui/routes_live.py` | Presentation-only noVNC page for watching the container's real browser, plus |
 | `ui/routes_product_map.py` | Product-map cards, recorded journeys, and guarded learned-frame serving. |
-| `ui/routes_project_edit.py` | Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md. |
+| `ui/routes_profile.py` | Empty Group 10 profile router and policy contribution, filled by its later unit. |
+| `ui/routes_project_access.py` | Who can reach one project: owner, assignees (project.assign) and shared-with |
+| `ui/routes_project_edit.py` | Edit project settings, model selection and scoped credential declarations. |
 | `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
-| `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
+| `ui/routes_runs.py` | Adapt UI presses and queue workers to the one FastAPI-free regression launcher. |
+| `ui/routes_schedule.py` | Empty Group 10 schedule router and policy contribution, filled by its later unit. |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
+| `ui/routes_team_run.py` | Empty Group 10 team_run router and policy contribution, filled by its later unit. |
+| `ui/routes_tracker.py` | Empty Group 10 tracker router and policy contribution, filled by its later unit. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
+| `ui/routes_video_portal.py` | Empty Group 10 video_portal router and policy contribution, filled by its later unit. |
+| `ui/routes_video_review.py` | Empty Group 10 video_review router and policy contribution, filled by its later unit. |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
+| `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
+| `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 <!-- /generated:map -->
@@ -202,6 +245,14 @@
 | `JourneyStop` (`schema/analysis.py`) | One stop in a recording's end-to-end journey — reuses `ObservedScreen`'s |
 | `VideoAnalysis` (`schema/analysis.py`) | One source's adjudicated understanding — screens, flows, the ordered |
 | `RunApproval` (`schema/approval.py`) | One human's authorisation for one kind of run against one target. |
+| `PermissionKey` (`schema/auth.py`) | The closed catalogue (auth.md "Permission catalogue"). |
+| `Scope` (`schema/auth.py`) |  |
+| `User` (`schema/auth.py`) | One account. The password hash never leaves the auth store's own modules. |
+| `Group` (`schema/auth.py`) | An IAM-style group: a name, its ticked permissions, and its members' ids. |
+| `ProjectRelation` (`schema/auth.py`) |  |
+| `ResourceRef` (`schema/auth.py`) | What `authorize` judges a scoped key against (auth.md Vocabulary). |
+| `Principal` (`schema/auth.py`) | Who makes the current request, resolved from a live server-side session. |
+| `RouteRule` (`schema/auth.py`) | One row of the central route policy table (AU14). |
 | `Provenance` (`schema/base.py`) | Who or what produced this artifact, and from what. |
 | `Artifact` (`schema/base.py`) | Common envelope: versioned, timestamped, attributable. |
 | `SeededBug` (`schema/bench.py`) | A deliberately introduced defect with known ground truth. |
@@ -282,6 +333,7 @@
 | `PortalPersona` (`schema/portal_persona.py`) | The durable, cross-run model of one product under test (PP1). A single |
 | `SecretRef` (`schema/project.py`) | A declared credential. Holds the KEY and its scope — never the value. |
 | `ProviderConfig` (`schema/project.py`) | Which provider serves each role. Roles are swappable per project. |
+| `ProviderProbeAnswer` (`schema/project.py`) | The fixed synthetic model connectivity canary, never project content. |
 | `Source` (`schema/project.py`) | An immutable input the system learned from. |
 | `Project` (`schema/project.py`) | Everything the system needs to test one product. |
 | `Evidence` (`schema/run.py`) | A file or value the grader may cite. Already redacted and masked. |
@@ -289,6 +341,8 @@
 | `RawResult` (`schema/run.py`) | One case's execution record. |
 | `RunBounds` (`schema/run.py`) | The `RunApproval` bounds a run ACTUALLY ran under (AT-660/CN10). |
 | `Run` (`schema/run.py`) | One regression run over a set of cases. |
+| `QueueEntry` (`schema/run_queue.py`) |  |
+| `RunQueueFile` (`schema/run_queue.py`) | The on-disk form (`<data root>/.work/run_queue.json`). |
 | `StageName` (`schema/run_state.py`) | The pipeline stages a run drives, in canonical order. |
 | `StageCheckpoint` (`schema/run_state.py`) | One stage's durable record within a run. |
 | `RunState` (`schema/run_state.py`) | The ledger for one run, keyed by `run_id` (`OR5`: one run_id, one lineage). |
@@ -296,6 +350,7 @@
 | `ScenarioSpec` (`schema/scenario.py`) | One declared scenario variant of a flow. Its own graph node and case set (EC4). |
 | `UncoveredBranch` (`schema/scenario.py`) | A scenario branch that produced no case, with the one reason why (EC5). |
 | `CompileResult` (`schema/scenario.py`) | What `stages/eval_compiler.py::compile_evals` produced. |
+| `ScheduleConfig` (`schema/schedule.py`) | Minimal persisted schedule seam, UTC and IST only (D-078). |
 | `ElementRef` (`schema/screen_graph.py`) | One interactive element found by `browser/enumerate.js`. |
 | `PageObservation` (`schema/screen_graph.py`) | One page-visit's raw material: its url/title and interactive elements. |
 | `ScreenNode` (`schema/screen_graph.py`) | One distinct screen the crawl found. Identity is structural |
@@ -305,8 +360,16 @@
 | `MappedScreen` (`schema/screenmap.py`) | One screen folded across every recording that showed it. |
 | `Journey` (`schema/screenmap.py`) | One recording's ordered path through screens. |
 | `ScreenMap` (`schema/screenmap.py`) | The product map: every learned screen plus the journeys that visited them. |
+| `ServerSettings` (`schema/server_settings.py`) | What the admin chose; absent fields keep the documented defaults. |
+| `SourceOrigin` (`schema/team_enums.py`) |  |
+| `QueueStatus` (`schema/team_enums.py`) |  |
+| `RunVia` (`schema/team_enums.py`) |  |
+| `ScheduleMode` (`schema/team_enums.py`) |  |
+| `SlotOutcome` (`schema/team_enums.py`) |  |
+| `DeliveryStatus` (`schema/team_enums.py`) |  |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
+| `TrackerBinding` (`schema/tracker_binding.py`) | A supplied sheet location, awaiting the later mapping and confirmation unit. |
 | `UserPersona` (`schema/user_persona.py`) | One kind of user the UX pass reads a run as. Advisory input only (PU4). |
 | `UXPolicy` (`schema/user_persona.py`) | Per-project switch and cap for the UX pass. Off by default (plan decision 5). |
 | `UXFinding` (`schema/ux_report.py`) | One advisory observation about one case, cited to real evidence. |

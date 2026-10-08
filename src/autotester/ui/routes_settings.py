@@ -6,6 +6,7 @@ and `providers/gemini.py`, not scoped to any one project.
 
 from __future__ import annotations
 
+import os
 from html import escape
 
 from fastapi import APIRouter, Form, HTTPException, Response
@@ -13,17 +14,17 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from autotester.browser.secrets import parse_env
 from autotester.core.paths import repo_root
+from autotester.providers import ProviderError, parse_spec
 from autotester.ui import theme
+from autotester.ui.credential_guard import PROVIDER_KEYS
 from autotester.ui.env_editor import InvalidEnvValue, set_env_value
+from autotester.ui.routes_credentials import can_view_credentials
 
 router = APIRouter()
 
 # The complete, closed set this page manages (US1) -- a new provider key is a
-# code change here, not a dynamic field.
-_PROVIDER_KEYS = (
-    "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY",
-    "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OPENAI_API_KEY",
-)
+# code change in ui/credential_guard.py, not a dynamic field.
+_PROVIDER_KEYS = PROVIDER_KEYS
 
 
 def _present_keys() -> dict[str, str]:
@@ -34,9 +35,11 @@ def _present_keys() -> dict[str, str]:
 @router.get("/settings/providers", response_class=HTMLResponse)
 def provider_settings_view() -> str:
     present = _present_keys()
+    show = can_view_credentials()  # T-204 AU21: values only for credentials.view
+    in_env = {k for k in _PROVIDER_KEYS if os.environ.get(k)}  # server env keys count as set
 
     def _status_cell(key: str) -> str:
-        return (theme.pill("● Set", "positive") if present.get(key)
+        return (theme.pill("● Set", "positive") if present.get(key) or key in in_env
                 else theme.pill("○ Not set", "neutral"))
 
     # 2026-09-21 UX amendment (Umesh, Approver): same as the credentials
@@ -48,7 +51,8 @@ def provider_settings_view() -> str:
             "this.textContent=i.type==='password'?'show':'hide';\">show</button>")
 
     def _row(key: str) -> str:
-        is_secret = key.endswith("_KEY")
+        is_secret = key.endswith("_KEY") or not show
+        shown = present.get(key, "") if show else ""
         input_type = "password" if is_secret else "text"
         return (
             f"<tr><td><code>{escape(key)}</code></td>"
@@ -57,8 +61,8 @@ def provider_settings_view() -> str:
             f"<input type='hidden' name='key' value='{escape(key)}'>"
             f"<td style='display:flex;gap:6px'>"
             f"<input type='{input_type}' name='value' "
-            f"value='{escape(present.get(key, ''))}' "
-            f"placeholder='new value' style='flex:1'>{_EYE if is_secret else ''}"
+            f"value='{escape(shown)}' "
+            f"placeholder='new value' style='flex:1'>{_EYE if show and is_secret else ''}"
             f"</td>"
             f"<td><button class='btn btn-sm' type='submit'>Save</button></td></form></tr>"
         )
@@ -80,7 +84,7 @@ def provider_settings_view() -> str:
 @router.post("/settings/providers")
 def provider_settings_submit(key: str = Form(...), value: str = Form("")) -> Response:
     if key not in _PROVIDER_KEYS:
-        raise HTTPException(400, f"'{key}' is not a known provider setting")
+        raise HTTPException(400, "not a known provider setting")
     if not value.strip():
         # Same wipe-guard as the per-project credentials editor: an empty
         # masked field means "nothing typed", never "erase" the stored key.
@@ -92,7 +96,9 @@ def provider_settings_submit(key: str = Form(...), value: str = Form("")) -> Res
                     title="Empty fields are ignored"))
         return HTMLResponse(theme.page("Provider key not saved", body), status_code=400)
     try:
+        if key == "AUTOTESTER_MODEL":
+            parse_spec(f"litellm:{value}")
         set_env_value(repo_root() / ".env", key, value)
-    except InvalidEnvValue as exc:
+    except (InvalidEnvValue, ProviderError) as exc:
         raise HTTPException(400, str(exc)) from exc
     return RedirectResponse("/settings/providers", status_code=303)

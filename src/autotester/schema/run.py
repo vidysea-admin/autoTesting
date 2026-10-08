@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from autotester.core.ids import run_id as _mint_run_id
 from autotester.schema.base import Artifact
 from autotester.schema.enums import EvidenceKind, Outcome, Trigger
+from autotester.schema.team_enums import RunVia
 
 
 class Evidence(BaseModel):
@@ -81,6 +82,9 @@ class Run(Artifact):
     id: str = Field(default_factory=_mint_run_id)
     project: str
     trigger: Trigger = Trigger.MANUAL
+    requested_by: str | None = None
+    slot_key: str | None = None
+    via: RunVia | None = None
     git_sha: str | None = None
     label: str | None = None
     case_ids: list[str] = Field(default_factory=list)

@@ -1,204 +1,85 @@
-"""Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history
-and report views live in `ui/routes_report.py`. Serial-vs-parallel case
-execution lives in `ui/run_execution.py` (AT-567 -- split out to keep this
-file under the C2 line cap).
-"""
+"""Adapt UI presses and queue workers to the one FastAPI-free regression launcher."""
 
 from __future__ import annotations
-
-from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 
-from autotester.browser.secrets import SecretStore
-from autotester.core.consent import ApprovalRequired
-from autotester.core.ids import ulid
-from autotester.core.paths import ProjectPaths
-from autotester.core.redact import placeholder_keys
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
-from autotester.schema.approval import RunApproval
-from autotester.schema.case import Case
-from autotester.schema.catalog import TIER_BY_CLASS, Catalog
-from autotester.schema.crawl import CrawlBounds
-from autotester.schema.enums import Action, ApprovalKind
-from autotester.schema.project import Project
-from autotester.schema.run import Run, RunBounds
-from autotester.schema.run_state import StageCheckpoint, StageName
-from autotester.stages.catalog import catalog, tiers_to_run
-from autotester.stages.coverage import diff_coverage, queue_requests
-from autotester.stages.explore_consent import covering_approval
-from autotester.stages.orchestrate import StageContext
-from autotester.stages.parallel_run import ParallelPlan, plan_parallel_run
-from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
-from autotester.stages.video_retention import prune_old_videos
-from autotester.store.project_store import ProjectStore
-from autotester.ui.helpers import _load_project_or_404
-from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
+from autotester.auth import accounts, db
+from autotester.auth.access import authorize, resource_for
+from autotester.auth.config import auth_disabled
+from autotester.auth.context import current_principal
+from autotester.schema.auth import PermissionKey, Principal, all_permissions
+from autotester.schema.enums import Trigger
+from autotester.schema.run_queue import QueueEntry
+from autotester.schema.team_enums import RunVia
+from autotester.stages import run_launcher
+from autotester.stages.parallel_run import (
+    DEFAULT_PER_CONTEXT_MB,
+    VIDEO_OVERHEAD_MB,
+    _free_ram_mb,
+)
+from autotester.stages.run_launcher import RunLaunchRefused, launch_run, prepare_run
+from autotester.ui.run_queue import QueueFull, RunRefused, get_queue, set_runner
 
 router = APIRouter()
-
-
-def _is_entry_case(case: Case, project: Project) -> bool:
-    """True when this case's first step navigates to the project's own
-    declared entry screen (`base_url`) -- e.g. a sign-in page. Such a case is
-    testing the entry screen itself, which only means something from a
-    genuinely logged-out state; the shared, persistently-authenticated
-    profile every other case reuses would make the entry screen never
-    appear (AT-044 -- exactly the staleness bug already fixed once for
-    `scripts/run_pathlynks_first_cases.py`, but never generalized into this
-    pipeline)."""
-    return bool(case.steps) and case.steps[0].action is Action.NAVIGATE \
-        and case.steps[0].target == project.base_url
-
-
-def _require_declared_values(
-    project: Project, secrets: SecretStore, slug: str, cases: list[Case] | None = None,
-) -> set[str]:
-    """Check referenced credentials before launch; unused roles never gate a run."""
-    keys = ({ref.key for ref in project.secrets} if cases is None else {
-        key for case in cases for step in case.steps
-        for text in (step.target, step.value or "") for key in placeholder_keys(text)
-    })
-    missing = sorted(key for key in keys if not secrets.has_value(key))
-    if missing:
-        raise HTTPException(400, (
-            f"{', '.join(missing)} has no value yet. Enter it on the project's "
-            f"Credentials page (/projects/{slug}/env) before running."
-            if len(missing) == 1 else
-            f"these credentials have no value yet: {', '.join(missing)}. Enter them on the "
-            f"project's Credentials page (/projects/{slug}/env) before running."
-        ))
-    return keys
-
-
-def _require_live_case_approval(
-    project: Project, store: ProjectStore, cases: list[Case],
-    secrets: SecretStore | None = None, account_keys: set[str] | None = None,
-) -> RunApproval:
-    """Pre-run D-018/CN11 gate (D-068): a covering human grant, else one derived from the
-    project's provisioned credentials -- reused if an earlier row covers the run, else minted.
-
-    Refuse before run-id/directory/browser creation, naming human-grant shortfalls.
-    System-derived action/probe/time brakes bound, never expand, account consent.
-    """
-    bounds = CrawlBounds(
-        max_actions=sum(action_cost(c) for c in cases),
-        wall_clock_s=wall_clock_request_s(cases),
-    )
-    try:
-        if any(case.project != project.slug for case in cases):
-            raise ApprovalRequired("case project differs from the requested project")
-        return covering_approval(project, store, bounds, kind=ApprovalKind.LIVE_CASE,
-                                 secrets=secrets, account_keys=account_keys or None)
-    except ApprovalRequired as exc:
-        raise HTTPException(403, str(exc)) from exc
-
-
-def _execute_with_trace(
-    store: ProjectStore, run_id: str, secrets: SecretStore, project: Project,
-    cases: list[Case], entry_flags: list[bool], run_dir: Path, paths: ProjectPaths,
-    slug: str, judge: LangChainFallbackProvider, approval: RunApproval,
-    catalog_snapshot: Catalog | None = None,
-) -> ParallelPlan:
-    """AT-562/AT-564: build this run's `StageContext` with the project's real
-    `SecretStore` (RT6 — a real, redacted `trace.jsonl`), attach it to the
-    judge so its LLM calls join that trace (RT4/RT5), decide this run's width
-    (PR1), execute the cases at that width, and record one EXECUTE stage span
-    covering the whole batch."""
-    ctx = StageContext(store=store, run_id=run_id, secrets=secrets)
-    judge.trace = ctx.trace
-    plan = plan_parallel_run(project, video_enabled=True)
-    budget = RunBudget(approval)
-    cat = catalog_snapshot if catalog_snapshot is not None else catalog(
-        project, store.load_flowspec(), store)
-    started = ctx.clock()
-    snapshot = list(zip(cases, entry_flags, strict=True))
-    for tier in tiers_to_run(cat):
-        tier_cases = [case for case, _ in snapshot if TIER_BY_CLASS[case.case_class] == tier]
-        tier_flags = [flag for case, flag in snapshot if TIER_BY_CLASS[case.case_class] == tier]
-        if plan.n > 1:
-            _run_cases_in_parallel(
-                tier_cases, tier_flags, plan, project, secrets, run_dir, slug, judge, run_id,
-                store, approval, budget=budget,
-            )
-        else:
-            _run_cases_serially(
-                tier_cases, tier_flags, project, secrets, run_dir, paths, slug, judge, run_id,
-                store, budget=budget,
-            )
-    assert ctx.trace is not None
-    ctx.trace.record_stage(StageCheckpoint(
-        stage=StageName.EXECUTE, status="failed" if budget.stop_reason else "done",
-        error=f"run budget exhausted: {budget.stop_reason}" if budget.stop_reason else None,
-        started=started, finished=ctx.clock(),
-    ))
-    return plan
+TRIGGERS = {RunVia.BUTTON: Trigger.MANUAL, RunVia.SCHEDULE: Trigger.SCHEDULE,
+            RunVia.API: Trigger.CI}
 
 
 @router.post("/projects/{slug}/run")
 def trigger_run(slug: str) -> RedirectResponse:
-    """A real, synchronous run: the request waits for the browser to finish
-    every case before redirecting to the report (RU1-RU4 — v1's honest
-    boundary, no background job queue). Runs every case through the same
-    resilient pipeline (stages/run_case_pipeline.py) whether serial or
-    parallel (AT-574) -- a CLI script that wants the un-guarded, self-grading
-    path still calls `run_and_grade_case` directly.
-
-    AT-562/AT-564: this is the live entry point wired to the T-172/T-173
-    machinery those goal-coverage gaps named -- see `_execute_with_trace`."""
-    store, project = _load_project_or_404(slug)
-    cases = store.list_cases()
-    if not cases:
-        raise HTTPException(400, f"project '{slug}' has no cases to run")
-    judge = LangChainFallbackProvider()
-    if not judge.available():
-        raise HTTPException(
-            400, "no AI provider is configured (set an API key in .env) -- cannot grade a run"
-        )
-    paths = ProjectPaths(slug)
-    secrets = SecretStore.load(project, paths.env_file, strict=False)
-    account_keys = _require_declared_values(project, secrets, slug, cases)
-    approval = _require_live_case_approval(project, store, cases, secrets, account_keys)
-    cat = catalog(project, store.load_flowspec(), store)
-    run_id = f"run-{ulid()}"
-    run_dir = paths.run_dir(run_id)
-    entry_flags = [_is_entry_case(c, project) for c in cases]
-
-    plan = _execute_with_trace(
-        store, run_id, secrets, project, cases, entry_flags, run_dir, paths, slug, judge,
-        approval, cat,
-    )
-
-    store.save_run(Run(
-        id=run_id, project=slug, case_ids=[c.id for c in cases],
-        parallel_n=plan.n, parallel_bound_by=plan.bound_by,
-        catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
-                                 for tier in tiers_to_run(cat)},
-        # CN10: what it ran under, reported not capped -- a 19-year wall clock is
-        # visible to whoever reads run.json instead of silently honoured.
-        bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
-                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
-    ))
-    prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
-    _ask_for_what_it_did_not_recognise(store, run_id)
+    """Preflight now, then queue and return 303; the worker repeats the live gates."""
+    try:
+        prepare_run(slug)
+    except RunLaunchRefused as exc:
+        raise HTTPException(exc.status_code, exc.detail) from exc
+    who = current_principal()
+    try:
+        get_queue().submit(slug, requested_by=who.email if who else None)
+    except QueueFull as exc:
+        raise HTTPException(429, str(exc)) from exc
     return RedirectResponse(f"/projects/{slug}/report", status_code=303)
 
 
-def _ask_for_what_it_did_not_recognise(store: ProjectStore, run_id: str) -> None:
-    """Turn this run's coverage gaps into video requests.
+def _worker_principal(requested_by: str | None) -> Principal | None:
+    """Current account and grants, never a permission snapshot from enqueue time."""
+    if requested_by == "local" and auth_disabled():
+        return Principal(user_id=0, email="local", permissions=frozenset(all_permissions()))
+    if not requested_by or not db.store_exists():
+        return None
+    user = accounts.find_user(requested_by)
+    if user is None or user.disabled:
+        return None
+    with db.reading() as conn:
+        permissions = frozenset(row["permission"] for row in conn.execute(
+            "SELECT DISTINCT p.permission FROM memberships m JOIN group_permissions p "
+            "ON p.group_id = m.group_id WHERE m.user_id = ?", (user.id,)))
+    return Principal(user_id=user.id, email=user.email, permissions=permissions)
 
-    AT-240: `diff_coverage`, `request_for` and `add_request` were each written,
-    each tested, and each called from nothing -- so across four real projects
-    not one `VideoRequest` had ever been created and the north star's "when it
-    meets a screen it does not know, it asks the human for a video instead of
-    guessing" had never once happened. A loop whose last link is missing is not
-    a slow loop, it is an open one.
 
-    Deliberately after `save_run`: a request is about a run that HAPPENED, and
-    failing to ask must never lose the run itself."""
-    spec = store.load_flowspec()
-    if spec is None:
-        return                      # nothing learned yet -> nothing is "unknown" (V2)
-    results = store.load_results(run_id)
-    queue_requests(store, diff_coverage(spec, results))
+def _plan_under_shared_budget(project, run_id):
+    """The queue adapter lends the launcher one plan from the shared server RAM budget."""
+    queue = get_queue()
+    with queue.planning(run_id) as reserved:
+        extra = {"free_ram_mb": max(0.0, _free_ram_mb() - reserved)} if reserved else {}
+        plan = run_launcher.plan_parallel_run(project, video_enabled=True, **extra)
+        queue.grant(run_id, plan.n * (DEFAULT_PER_CONTEXT_MB + VIDEO_OVERHEAD_MB))
+    return plan
+
+
+def _run_queued(entry: QueueEntry) -> None:
+    """Refuse revoked/disabled requesters before preparation or any browser side effect."""
+    who = _worker_principal(entry.requested_by)
+    if who is None or not authorize(who, PermissionKey.PROJECT_RUN, resource_for(entry.project)):
+        raise RunRefused("project.run permission is no longer available for this requester")
+
+    try:
+        launch_run(entry.project, run_id=entry.id, trigger=TRIGGERS[entry.trigger],
+                   requested_by=entry.requested_by, slot_key=entry.slot_key, via=entry.via,
+                   capacity=lambda project: _plan_under_shared_budget(project, entry.id))
+    except RunLaunchRefused as exc:
+        raise RunRefused(exc.detail) from exc
+
+
+set_runner(_run_queued)

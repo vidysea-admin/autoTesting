@@ -32,22 +32,21 @@ Teaching Sources pick INGEST (learn); credentials-only picks DISCOVER (bounded B
 | Concept | Lives in |
 |---|---|
 | All data shapes | `schema/` (one model per file) |
-| Closed vocabularies (actions, case classes, results, policies) | `schema/enums.py` |
-| The edge-case taxonomy | `schema/enums.py::CaseClass` + `KIND_BY_CLASS` |
+| Closed vocabularies and edge-case taxonomy | `schema/enums.py` (legacy Trigger, CaseClass + KIND_BY_CLASS); `schema/team_enums.py` (team concepts, QueueStatus re-exported by run_queue); `schema/auth.py::PermissionKey` (one permission catalogue) |
 | Artifact envelope (schema_version, created_at, provenance) | `schema/base.py::Artifact` |
 | Id minting, content hashing, file sha256 | `core/ids.py` |
 | Secret redaction + `{{SECRET:KEY}}` placeholders | `core/redact.py` |
 | The credential boundary (load `.env`, resolve per host, mask) | `browser/secrets.py::SecretStore` |
 | The visible browser (persistent profile, bounded navigation, masked capture, HITL) | `browser/session.py::BrowserSession` |
-| Persistence: atomic JSON/JSONL primitives + the per-project artifact facade | `store/filestore.py`, `store/project_store.py::ProjectStore` |
+| Persistence: atomic JSON/JSONL, project artifacts and team records/exclusive slot claims | `store/filestore.py`, `store/project_store.py::ProjectStore`, `store/team_store.py::TeamStore` |
 | Pathlynks: onboarding (login + knowledge.md) and the first real best/worst/edge run | `scripts/onboard_pathlynks.py`, `scripts/run_pathlynks_first_cases.py` |
 | Model calls (vision / agent / judge) | `providers/base.py::Provider` + registry in `providers/__init__.py` |
 | Design enforcement — rules over SOURCE (line caps, function length, duplicate concepts, root clutter), generated-doc freshness, router | `doctor.py`; rules over the project's RECORDS (ledger validity, qa/ handshake issue rows) in `ledger/checks.py` |
-| Commands | `cli.py` |
+| Commands and ordered sub-app registration (five legacy plus authorized auth bootstrap) | `cli.py`, `cli_subapps.py::register_subapps`, `cli_auth.py` |
 | Feature ledger rows (`docs/FEATURES.jsonl`) — the only write path | `ledger/store.py` |
 | Derived docs: generated sections of this file, `docs/SNAPSHOT.md`, decision index | `ledger/render.py` |
 | Relitigation gate (retired feature coming back?) — D-004 confidence-gated | `ledger/relitigation.py` + `prompts/relitigation_v1.md` |
-| Every path on disk: per-project (`ProjectPaths`) and repo-level docs (`RepoDocs`) | `core/paths.py` |
+| Every path on disk: ProjectPaths, RepoDocs, validated team components under the data root | `core/paths.py` (`team_component`, `team_path`) |
 | Running a case's steps in a browser, no judgement (that's grade.py) | `stages/execute.py::run_case` |
 | Judging a case's evidence against its rubric — stateless, evidence-only | `stages/grade.py::grade` |
 | Read-only backend assertions (Mongo) + manual one-time login + tester report export (Excel + HTML) + generic run+grade with a self-healing default rubric | `browser/db.py::ReadOnlyCollection`, `stages/manual_login.py`, `stages/report_export.py`, `stages/run_case_pipeline.py::run_and_grade_case` |
@@ -60,6 +59,8 @@ Teaching Sources pick INGEST (learn); credentials-only picks DISCOVER (bounded B
 | Self-extension: unseen route → CoverageGap → deduped VideoRequest, then a recording folded into the reviewed FlowSpec and the asks it answers closed | `stages/coverage.py::diff_coverage`, `stages/merge_flowspec.py::merge_flowspec`/`::resolve_requests` |
 | Resumable learn-or-explore run: entry-path choice (teach→INGEST / creds→DISCOVER), per-stage checkpoints over filestore artifacts, both paths PROPOSE into a DRAFT then stop at the review gate (D-036) | `stages/orchestrate.py::run_or_resume` + `stages/orchestrate_runners.py`, ledger `schema/run_state.py::RunState` |
 | Web UI: unified intake, masked .env editor, run/report views, shared visual theme (thin, no second store) | `ui/app.py` + `ui/env_editor.py` + `ui/theme.py::page` |
+| One guarded regression launcher; preflight/303 queue adapter and current-requester worker gates | `stages/run_launcher.py::launch_run`, `ui/routes_runs.py`, `ui/run_queue.py` |
+| Ordered routers/empty G10 stubs, fail-closed policy assembly and auth accounts/groups/scope/sessions | `ui/routers.py::include_all`, `auth/policy.py::assemble` (runtime default deny), `schema/auth.py`, `auth/`, `ui/auth_middleware.py` + auth/admin/access routes |
 | Docker: containerized app + virtual display + noVNC live-watch view (local dev only) | `Dockerfile`, `docker/entrypoint.sh`, `docker-compose.yml` |
 | Regression proof (break a fixture, confirm exactly that case FAILs) + bench (north star scorecard: seeded corpus, real trial vs human-oracle baseline) | `scripts/regression_proof.py`, `stages/bench.py::scorecard` |
 
@@ -114,14 +115,13 @@ Artifacts are plain files a human can open, edit, or delete:
 
 ```
 .env              all credentials from intake/editor, repo root (ignored) — see `.env.example`
-projects/<slug>/  project.json · sources/ · sources.jsonl · flowspec.json
-                  cases.jsonl · rubrics/ · scripts/ · runs/<run_id>/ · requests.jsonl · knowledge.md
+projects/<slug>/  project.json · sources/ · sources.jsonl · flowspec.json · cases.jsonl · rubrics/ · scripts/ · runs/<run_id>/ · requests.jsonl · knowledge.md
 profiles/<slug>/  persistent browser profile (ignored)
-.work/            scratch, logs, evidence in progress (ignored)
+.work/            scratch/logs/evidence; team/ holds validated records and encoded exclusive slot claims (ignored)
+.auth/            auth SQLite accounts/groups/sessions; data root, ignored from git/image
 ```
 
-The UI is a viewer/editor over these files, not a second source of truth.
-
+The UI uses the project/team stores; the auth store alone owns auth state. All paths honour AUTOTESTER_ROOT.
 ## Design rules (enforced by `autotester doctor`)
 
 - File ≤ 300 lines · function ≤ 50 lines · module docstring states its one job.

@@ -11,13 +11,53 @@ keeps working unchanged.
 
 from __future__ import annotations
 
+import re
 from urllib.parse import unquote_plus
 
 from fastapi import HTTPException
 
 from autotester.browser.secrets import SecretStore
+from autotester.core.paths import repo_root
 from autotester.core.redact import BIDI_OVERRIDES, PLACEHOLDER_RE
 from autotester.schema.project import Project
+from autotester.store.project_store import ProjectStore
+
+# The global provider keys (US1) -- server-wide, `settings.manage` only, never a project's.
+PROVIDER_KEYS = (
+    "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY",
+    "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OPENAI_API_KEY",
+    "LITELLM_API_BASE", "LITELLM_API_KEY", "AUTOTESTER_MODEL",
+)
+SERVER_PREFIX = "AUTOTESTER_"
+
+
+def key_namespace(slug: str) -> str:
+    """`pathlynks` -> `PATHLYNKS_`; `my-app` -> `MY_APP_` (a project's own key prefix)."""
+    return re.sub(r"[^A-Z0-9]+", "_", slug.upper()).strip("_") + "_"
+
+
+def refuse_foreign_key(project: Project, key: str, *, existing_own: bool = False) -> None:
+    """T-204 AU21, the ONE gate for every project credential declaration/update:
+    new keys must sit in the project's own namespace; existing own legacy keys may update,
+    must not be a server-wide key (provider keys, `AUTOTESTER_*`: Settings, `settings.manage`),
+    and must not already be declared by another project. Without it a `credentials.edit`
+    holder could write the shared `.env` (provider keys, the approval key, a neighbour's
+    password) or aim another project's secret at their own site."""
+    name = key.strip()
+    if name in PROVIDER_KEYS or name.startswith(SERVER_PREFIX):
+        raise HTTPException(403, "server-wide keys are managed under Settings "
+                                 "(settings.manage), not in a project")
+    legacy_update = existing_own and project.secret(name) is not None
+    if not legacy_update and not name.startswith(key_namespace(project.slug)):
+        raise HTTPException(400, f"a credential key for this project must start with "
+                                 f"{key_namespace(project.slug)}")
+    projects_dir = repo_root() / "projects"
+    slugs = (sorted(p.name for p in projects_dir.iterdir() if (p / "project.json").exists())
+             if projects_dir.exists() else [])
+    for slug in slugs:
+        other = ProjectStore(slug).load_project() if slug != project.slug else None
+        if other is not None and other.secret(name) is not None:
+            raise HTTPException(400, "that key belongs to another project")
 
 
 def _credential_variants(text: str) -> list[str]:

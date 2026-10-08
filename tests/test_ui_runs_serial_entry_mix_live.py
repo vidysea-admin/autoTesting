@@ -105,8 +105,8 @@ def test_a_serial_run_mixing_an_entry_case_with_ordinary_cases_does_not_500(
     judgment = Judgment(result="PASS", criteria_met=1, criteria_total=1)
     judge = MockProvider(model="mock", responses={"judge": [judgment] * 10})
 
-    import autotester.ui.routes_runs as routes_runs_module
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", lambda: judge)
+    import autotester.stages.run_launcher as routes_runs_module
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: judge)
 
     response = client.post("/projects/rd/run", follow_redirects=False)
 

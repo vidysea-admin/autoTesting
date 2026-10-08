@@ -131,3 +131,130 @@ def test_an_unparsable_origin_or_referer_is_refused_not_a_server_error(
     client: TestClient, headers: dict,
 ) -> None:
     assert client.post("/projects/nope/run", headers=headers).status_code == 403
+
+
+def _guard_reply(method: str, headers: list[tuple[str, str]]) -> tuple[list, list]:
+    import asyncio
+
+    from autotester.ui.helpers import _OriginGuard
+
+    reached, sent = [], []
+
+    async def handler(scope, receive, send):
+        reached.append("handler")
+        await send({"type": "http.response.start", "status": 200})
+        await send({"type": "http.response.body", "body": b"saved-fixture-secret"})
+
+    async def receive():
+        return {"type": "http.request", "body": b""}
+
+    async def send(message):
+        sent.append(message)
+
+    asyncio.run(_OriginGuard(handler)(
+        {"type": "http", "method": method,
+         "headers": [(k.encode(), v.encode()) for k, v in headers]}, receive, send))
+    return reached, sent
+
+
+@pytest.mark.parametrize("origin", ["http://localhost:8000.evil.com", "http://localhost:x",
+                                    "http://localhost:65536", "http://localhost:",
+                                    "http://[::1]evil", "http://[::1]:x",
+                                    "http://@localhost", "http://:@localhost"])
+def test_malformed_loopback_origin_refuses_even_when_explicitly_listed(
+    monkeypatch: pytest.MonkeyPatch, origin: str,
+) -> None:
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", origin)
+    reached, sent = _guard_reply("POST", [("Host", "localhost"), ("Origin", origin)])
+    assert reached == [] and sent[0]["status"] == 403
+    assert origin.encode() not in sent[-1]["body"]
+
+
+@pytest.mark.parametrize("origins", [(EVIL, "http://localhost"), ("http://localhost", EVIL)])
+def test_duplicate_origins_refuse_in_either_order_before_routing(origins: tuple) -> None:
+    reached, sent = _guard_reply("POST", [("Host", "localhost"),
+                                          *(('Origin', origin) for origin in origins)])
+    assert reached == [] and sent[0]["status"] == 403
+    assert b"saved-fixture-secret" not in sent[-1]["body"]
+
+
+@pytest.mark.parametrize("method", ["GET", "HEAD", "POST", "DELETE"])
+@pytest.mark.parametrize("host", ["evil.example", "localhost.evil.example",
+                                  "127.0.0.1.evil.io", "localhost:x", "localhost:",
+                                  "[::1]evil", "[::1]:x", "localhost:65536"])
+def test_host_guard_refuses_every_http_method_before_auth_or_handler(
+    monkeypatch: pytest.MonkeyPatch, method: str, host: str,
+) -> None:
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "*")
+    monkeypatch.delenv("AUTOTESTER_ALLOWED_ORIGINS", raising=False)
+    reached, sent = _guard_reply(method, [("Host", host)])
+    assert reached == [] and sent[0]["status"] == 403
+    assert host.encode() not in sent[-1]["body"]
+    assert b"saved-fixture-secret" not in sent[-1]["body"]
+
+
+@pytest.mark.parametrize("host", ["localhost", "LOCALHOST:8000", "127.0.0.1:12",
+                                  "[::1]", "[::1]:8000", "listed.example:443",
+                                  "origin.example:8000"])
+def test_loopback_and_explicitly_allowed_hosts_reach_handler(
+    monkeypatch: pytest.MonkeyPatch, host: str,
+) -> None:
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "LISTED.example:443")
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", "https://origin.example")
+    reached, sent = _guard_reply("GET", [("Host", host)])
+    assert reached == ["handler"] and sent[0]["status"] == 200
+
+
+@pytest.mark.parametrize("headers", [[("Host", "listed.example:80")],
+                                     [("Host", "localhost"), ("Host", "localhost")], []])
+def test_host_explicit_port_and_unambiguous_single_header_are_required(
+    monkeypatch: pytest.MonkeyPatch, headers: list,
+) -> None:
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "listed.example:443")
+    monkeypatch.delenv("AUTOTESTER_ALLOWED_ORIGINS", raising=False)
+    reached, sent = _guard_reply("GET", headers)
+    assert reached == [] and sent[0]["status"] == 403
+
+
+@pytest.mark.parametrize("style", ["omitted", "positional", "keyword", "explicit-default"])
+def test_fixture_localhost_default_preserves_explicit_urls_and_host(style: str) -> None:
+    expected = "http://localhost" if style == "omitted" else "https://explicit.example"
+    if style == "positional":
+        client = TestClient(app, expected, headers={"Host": "evil.example"})
+    else:
+        if style == "explicit-default":
+            expected = "http://testserver"
+        kwargs = {} if style == "omitted" else {"base_url": expected}
+        client = TestClient(app, **kwargs, headers={"Host": "evil.example"})
+    assert str(client.base_url).rstrip("/") == expected
+    assert client.headers["Host"] == "evil.example"
+    assert client.build_request("GET", "/", headers={"Host": "other.example"}).headers[
+        "Host"] == "other.example"
+
+
+@pytest.mark.parametrize(("method", "headers"), [
+    ("GET", [("Host", "evil.example")]),
+    ("POST", [("Host", "localhost.evil.example")]),
+    ("POST", [("Host", "localhost"), ("Origin", "http://localhost:x")]),
+    ("POST", [("Host", "localhost"), ("Origin", EVIL), ("Origin", "http://localhost")]),
+    ("POST", [("Host", "localhost"), ("Origin", "http://localhost"), ("Origin", EVIL)]),
+])
+def test_bad_headers_precede_auth_and_leave_seeded_files_unchanged(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, method: str, headers: list,
+) -> None:
+    from auth_harness import ADMIN, account, gate_on, login, project
+
+    from autotester.ui import auth_middleware
+
+    root = gate_on(tmp_path, monkeypatch)
+    account(ADMIN)
+    signed = login(ADMIN)
+    project(root, "demo")
+    (root / ".env").write_bytes(b"DEMO_PASSWORD=saved-fixture-secret\n")
+    before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    monkeypatch.setattr(auth_middleware, "_principal", lambda _: pytest.fail("auth reached"))
+    reply = signed.request(method, "/projects/demo/env", headers=headers,
+                           data={"key": "DEMO_PASSWORD", "value": "attacker-canary"})
+    assert reply.status_code == 403
+    assert "saved-fixture-secret" not in reply.text and "attacker-canary" not in reply.text
+    assert {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()} == before

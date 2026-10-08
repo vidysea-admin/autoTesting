@@ -77,7 +77,7 @@ def _run_with_urls(
 ) -> None:
     """Press ▶ Run tests for real, with the browser faked out and the run's
     evidence saying it reached `urls`."""
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as run_launcher_module
     import autotester.ui.run_execution as run_execution_module
     from autotester.browser.session import BrowserSession
 
@@ -97,7 +97,7 @@ def _run_with_urls(
                           grader_provider="mock")
         return result, verdict
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(run_launcher_module, "for_role", lambda *a, **k: _AvailableProvider())
     # AT-567: _run_and_grade_resilient (and its call to run_and_grade_case_
     # resilient) now lives in ui/run_execution.py -- patch it there, where the
     # name is actually looked up at call time, not on routes_runs_module.

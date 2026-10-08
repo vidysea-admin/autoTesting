@@ -15,7 +15,7 @@ router list, the policy seam, the schema fields).
 
 | `hosting.md` row | what it already states | what this contract does with it |
 |---|---|---|
-| **HO22** | three modes, IANA timezone, DST-correct, invalid values refused and store nothing, `schedule.manage` to set | **Referenced, not repeated.** TS1 adds the model shape, persistence and the `schedule.manage` route policy; TS2 adds the pure `due()` function that makes HO22's DST claim checkable |
+| **HO22** | three modes, invalid values refused and store nothing, `schedule.manage` to set; its older IANA/DST wording is overridden by D-078 | **Referenced with D-078's UTC/IST-only rule.** TS1 adds the model shape, persistence and the `schedule.manage` route policy; TS2 adds pure `due()` over fixed offsets, no DST |
 | **HO23** | enqueue through the queue, `trigger=schedule`, one entry per (project, slot) across two schedulers and a restart, one catch-up inside a 60 min grace window, else `missed` | **Referenced.** TS2 adds the marker mechanism, TS3 the catch-up arithmetic and its per-slot record, TS6 the "one launcher" proof |
 | **HO24** | the schedule has no more rights than its owner; owner disabled, deleted or without `project.run` pauses the schedule and records `refused`; deleting the project removes the schedule | **Referenced.** TS5 adds the approval gate (a different check from owner rights); TS1 carries only the delete-removes-markers clause that HO24 leaves open |
 
@@ -39,11 +39,12 @@ that the scheduler goes **through** it and never around it (TS6).
 - **TS1 — A schedule is a typed, bounded, persisted setting, and only `schedule.manage` changes it (R51).**
   `schema/schedule.py` defines `ScheduleConfig` (`extra="forbid"`): `mode` in `manual | fixed | custom`; `fixed` = one daily `HH:MM`;
   `custom` = one or more **one-off date-times** (each fires once, then is marked consumed) **and/or** one weekly rule (a non-empty weekday
-  set plus `HH:MM`), at least one of the two; `timezone` (IANA name; default `AUTOTESTER_TIMEZONE`, else `UTC`); `owner`; `paused`.
+  set plus `HH:MM`), at least one of the two; `timezone` (**UTC or IST only**, IST fixed +05:30, no DST; default `AUTOTESTER_TIMEZONE`,
+  else `UTC`; an unsupported configured zone is refused); `owner`; `paused`.
   `manual` is the default and **produces no slot**: a `manual` project is never enqueued by a tick, however many ticks run. No mode can
   yield more than one slot per local calendar day for one rule (so the "interval floor" of the proposal is structural, not a setting).
   Invalid values are refused at save with a reason naming the field, and **nothing is stored** (HO22 states the list: `25:00`, unknown
-  zone, past one-off, empty weekday set; add `24:00`, `9:5`, a one-off in a DST gap with no resolution rule, a weekday outside 0-6, a
+  zone other than UTC/IST, past one-off, empty weekday set; add `24:00`, `9:5`, a weekday outside 0-6, a
   duplicate one-off). The value lives in `Project.schedule` (G1's field, `team-foundation.md` TF6); a `project.json` without it loads as
   `manual`. **The key:** `GET` of the schedule card needs `project.view`; every `POST` that creates, edits, pauses, resumes or deletes a
   schedule needs **`schedule.manage` on that project** (`auth.md` catalogue, scopes `all | assigned | own`), declared in this unit's
@@ -57,13 +58,13 @@ that the scheduler goes **through** it and never around it (TS6).
   pre-change `project.json`. *Mutation:* drop the `schedule.manage` check from the save route -> the 403 case fails; let `manual` produce a
   slot -> the "manual fires nothing" count fails.
 
-- **TS2 — `due()` is pure, timezone-correct on both OSes, and a slot fires exactly once (R51, R52, R65).**
+- **TS2 — `due()` is pure, UTC/IST-correct on both OSes, and a slot fires exactly once (R51, R52, R65; D-078).**
   `due(schedule, now, markers)` (in `stages/scheduler.py`) is a **pure function**: the clock and the marker view are arguments, it opens no
-  file and reads no environment. A table of cases returns the exact slot instants for: `UTC`; `Asia/Kolkata` (no DST); one DST zone
-  (`America/New_York`) across the **spring-forward day** (a `02:30` rule fires once, at the first valid instant) and the **fall-back day**
-  (a `01:30` rule fires once, not twice); a weekly rule across midnight; a one-off exactly at, one second before, and one second after
-  `now`. An unknown zone cannot reach `due()` (TS1 refused it). The zone database is available on Windows and Ubuntu: `tzdata` is
-  a declared dependency in `pyproject.toml` (Windows has no system zone data), and the same table runs green on both. The **claim marker**
+  file and reads no environment. A table of cases returns the exact slot instants for `UTC` and `IST` (fixed +05:30, no DST), including
+  daily and weekly rules across local/UTC midnight and a one-off exactly at, one second before, and one second after `now`.
+  Every other zone, including `Asia/Kolkata` and `America/New_York`, is refused by TS1 and cannot reach `due()`.
+  Offsets use `datetime.timezone`, with no ZoneInfo, zone database or `tzdata` dependency (D-078); the same table runs on Windows and Ubuntu.
+  The **claim marker**
   for a slot is created atomically with `os.open(path, O_CREAT | O_EXCL | O_WRONLY)` under the data root (R65: no `fcntl`, no `flock`,
   no `pwd`); the file name is `slot_key` made path-safe, and it is written **before** the enqueue. Two concurrent ticks for one slot
   produce **exactly one** claim, hence one queue entry; the loser records nothing and exits 0. Crash safety: a marker whose
@@ -73,7 +74,7 @@ that the scheduler goes **through** it and never around it (TS6).
   on Windows) against one project and counts queue entries == 1, then kills a tick between claim and enqueue (monkeypatched hook raising
   `SystemExit`) and re-ticks, counting still == 1. `serves:` intent#O12, spec R52, R65, `hosting.md` HO22, HO23.
   *Mutation:* create the marker with `exists()` then `write` (check-then-act) -> the two-process test fails; compute `now` inside `due()`
-  -> the injected-clock table fails; remove `tzdata` from `pyproject.toml` -> the Windows zone case fails (the check reads the manifest).
+  -> the injected-clock table fails; accept a third timezone -> TS1's unsupported-zone case fails.
 
 - **TS3 — A slot missed during downtime fires at most one catch-up, inside the grace window; the rest are recorded `missed`, never
   backfilled (R52).**
@@ -108,9 +109,9 @@ that the scheduler goes **through** it and never around it (TS6).
   module; the email follows the owner's own preference, `team-test-button.md` TT8). This gate is **in addition to** HO24 (owner's rights):
   an admin-owned schedule on an uncredentialed project is still blocked (AU15: no role skips an approval). A run that proceeds uses the
   approval's own bounds (`max_actions`, `wall_clock_s`); hitting one ends the run and names what it left unreached (O4); no extra
-  cooldown is built (gate `plan-approved-g10.md`). **Dependency:** the credential-derived `covering_approval` is the D-068 implementation
-  (branch `d063-grant-budget`). Until it lands this row is `BLOCKED-CAPABILITY`, never PASS, and TS1-TS4, TS6 and TS7 are
-  judged without it. *Evidence (LOCAL):* `tests/test_schedule_approval.py` — three fixtures (no `SecretRef`, `SecretRef` without a
+  cooldown is built (gate `plan-approved-g10.md`). **Dependency:** reuse the already-built D-068 credential-derived `covering_approval`
+  through TF2's single launcher gate; its availability is not a schedule acceptance verdict, and all refusal checks above remain mandatory.
+  *Evidence (LOCAL):* `tests/test_schedule_approval.py` — three fixtures (no `SecretRef`, `SecretRef` without a
   value, fully provisioned) through the real `tick` with a recording transport and a recording browser factory; assert the counters
   are 0 for the first two and the filesystem listing of the project's `runs/` is unchanged. `serves:` intent#O12, O7, spec R53,
   D-068, `consent.md` CN1, `hosting.md` HO24, `auth.md` AU15.
@@ -160,6 +161,7 @@ read-only with no editable control. Negative walks: an invalid time (inline refu
 - The baseline comparison between runs (T-167, `release-regression.md`); this contract only starts a run.
 - Report delivery content and the inbox (`team-test-button.md` TT7-TT9); recurring subscribers beyond the owner; per-user cooldowns.
 - Cron expressions, sub-daily intervals, holiday calendars.
+- Zones other than UTC/IST, DST rules, ZoneInfo and a zone-database/tzdata dependency (D-078).
 
 ## No-fire list (must NOT happen)
 
@@ -177,3 +179,9 @@ read-only with no editable control. Negative walks: an invalid time (inline refu
   Dropped as duplicates of governing rows or other contracts: proposal TS8 "off means off" (TS1/TS4 and HO24), TS9 report delivery
   (-> `team-test-button.md` TT7-TT9, `hosting.md` HO25-HO29), TS10 bounded spend (folded into TS5), TS12 persona walk (kept as the unnumbered
   walk above). Subscribers dropped (HO26: owner only).
+- 2026-10-08 · routine · TS1/TS2 and the HO22 boundary now state UTC or IST only, fixed +05:30 and no DST, refusing every other zone;
+  removed the superseded ZoneInfo/zone-database/tzdata and DST-test requirements. Authorizer: Umesh D-078 What / Result / Approved-by
+  (2026-10-07), explicitly directing this checker amendment; D-072 item 9 / D-074(a) retain the schedule modes. Reason: record the chosen
+  dependency-free cross-platform timezone contract, not accommodate an artifact failure. TS5's stale unbuilt D-068 dependency note is
+  corrected to existing-gate reuse per independent `/root/foundation_plan_review` PLAN APPROVE in `qa/feedback-inbox.md` (2026-10-08);
+  every no-credentials/no-network/no-run refusal remains required. Product remains BUILDING; no tests or feature PASS claimed here.

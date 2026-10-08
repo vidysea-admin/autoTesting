@@ -118,7 +118,7 @@ def _onboard_with_parallel_cases(client, scratch_root, n: int, max_parallel: int
 
 
 def _patch_common(monkeypatch, fake_plan: ParallelPlan):
-    import autotester.ui.routes_runs as routes_runs_module
+    import autotester.stages.run_launcher as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
     from autotester.browser.session import BrowserSession
 
@@ -129,7 +129,7 @@ def _patch_common(monkeypatch, fake_plan: ParallelPlan):
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda *a, **k: _AvailableProvider())
     monkeypatch.setattr(routes_runs_module, "plan_parallel_run",
                         lambda project_, **kwargs: fake_plan)
     # AT-567: _run_cases_in_parallel/_run_and_grade_resilient now live in

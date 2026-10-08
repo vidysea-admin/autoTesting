@@ -13,9 +13,13 @@ from html import escape
 from fastapi import APIRouter, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
+from autotester.auth.access import authorize
+from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.paths import ProjectPaths, repo_root
+from autotester.schema.auth import PermissionKey
 from autotester.ui import theme
+from autotester.ui.credential_guard import refuse_foreign_key
 from autotester.ui.env_editor import InvalidEnvValue, set_env_value
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
 from autotester.ui.routes_crawl_approval import _approvals_card, _crawl_approval_form
@@ -25,7 +29,14 @@ router = APIRouter()
 
 
 
-def _env_table(project: object, present: dict[str, str]) -> str:
+def can_view_credentials() -> bool:
+    """T-204 G4 / auth.md AU21: saved values render only for `credentials.view`.
+    Outside a request (no principal) nothing is rendered either."""
+    who = current_principal()
+    return who is not None and authorize(who, PermissionKey.CREDENTIALS_VIEW)
+
+
+def _env_table(project: object, present: dict[str, str], show_values: bool = False) -> str:
     """The editable credentials table. 2026-09-21 UX amendment (Umesh,
     Approver): the write-only masked editor read as "everything wipes on
     Save". The stored value is now shown IN the field (prefilled) so the
@@ -47,6 +58,9 @@ def _env_table(project: object, present: dict[str, str]) -> str:
     def _row(ref: object) -> str:
         key = ref.key  # type: ignore[attr-defined]
         is_secret = "_PASSWORD" in key or "_KEY" in key
+        shown = present.get(key, '') if show_values else ''  # AU21: no value, no length hint
+        if not show_values:
+            is_secret = True  # a write-only box: nothing to show or hide
         return (
             f"<tr><td>{escape(key)}</td>"
             f"<td>{_status_cell(key)}</td>"
@@ -54,8 +68,8 @@ def _env_table(project: object, present: dict[str, str]) -> str:
             f"<input type='hidden' name='key' value='{escape(key)}'>"
             f"<td style='display:flex;gap:6px'>"
             f"<input type='{'password' if is_secret else 'text'}' name='value' "
-            f"value='{escape(present.get(key, ''))}' "
-            f"placeholder='new value' style='flex:1'>{_EYE if is_secret else ''}"
+            f"value='{escape(shown)}' "
+            f"placeholder='new value' style='flex:1'>{_EYE if show_values and is_secret else ''}"
             f"</td>"
             f"<td><button class='btn btn-sm' type='submit'>Save</button></td></form></tr>"
         )
@@ -169,14 +183,18 @@ def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
     )
     name = escape(project.name)
     safe_slug = escape(slug)
-    table = _env_table(project, present)
+    show = can_view_credentials()
+    table = _env_table(project, present, show)
+    note = ("Saved values are shown here so you can verify and edit them. "
+            "They stay masked as ●●● until you press show." if show else
+            "Each key shows only whether it is set. Type a new value to replace it; "
+            "saved values are visible only to accounts with credentials.view.")
     body = (
         theme.breadcrumb(
             ("Projects", "/"), (name, f"/projects/{safe_slug}"), ("Credentials", None),
         )
         + "<h1>Credentials</h1>"
-        "<p class='subtitle'>Saved values are shown here so you can verify and edit them. "
-        "They stay masked as ●●● until you press show. They never leave this page — "
+        f"<p class='subtitle'>{note} They never leave this page — "
         "no prompt, log, or screenshot ever carries them.</p>"
         f"{theme.card(table)}"
         f"{_platform_url_card(slug, project)}"
@@ -194,6 +212,7 @@ def env_editor_submit(
     _store, project = _load_project_or_404(slug)
     if project.secret(key) is None:
         raise HTTPException(400, f"'{key}' is not a declared secret for '{slug}'")
+    refuse_foreign_key(project, key, existing_own=True)
     if not value.strip():
         # An empty field means "nothing typed", never "erase" — the input is a
         # masked write-only box (placeholder 'new value'), so a submit with
