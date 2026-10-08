@@ -24,11 +24,9 @@ pytestmark = pytest.mark.usefixtures("no_network")
 GOOD = {"verdict": "pass", "score": 3, "inner": {"note": "ok"}}
 SECRET = "hunter2-very-secret-value"
 
-
 class Inner(BaseModel):
     model_config = ConfigDict(extra="forbid")
     note: str
-
 
 class Answer(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -36,22 +34,18 @@ class Answer(BaseModel):
     score: int
     inner: Inner
 
-
 @pytest.fixture(autouse=True)
 def _isolated_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))  # no real .env in the guard
 
-
 def _provider(model: str = "openai/gpt-4o", **options: Any) -> LiteLLMProvider:
     return LiteLLMProvider(model=model, **options)
-
 
 def _with_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
 
 
 # -- LP7: secret egress ------------------------------------------------------
-
 def test_assert_no_raw_secrets_runs_before_every_call_including_the_repair(
         monkeypatch: pytest.MonkeyPatch) -> None:
     import autotester.providers.litellm_provider as mod
@@ -66,14 +60,12 @@ def test_assert_no_raw_secrets_runs_before_every_call_including_the_repair(
     _provider("ollama/llama3.2", secrets=[SECRET]).judge("the prompt", Answer)
     assert len(seen) == len(fake.calls) == 2 and "the prompt" in seen[0]
 
-
 def test_a_prompt_carrying_a_secret_never_reaches_litellm(monkeypatch: pytest.MonkeyPatch) -> None:
     fake = install(monkeypatch, [reply(json.dumps(GOOD))])
     _with_key(monkeypatch)
     with pytest.raises(ProviderError) as info:
         _provider(secrets=[SECRET]).judge(f"log in with {SECRET}", Answer)
     assert fake.calls == [] and SECRET not in str(info.value)
-
 
 def test_dotenv_values_are_guarded_without_any_option(tmp_path: Path,
                                                       monkeypatch: pytest.MonkeyPatch) -> None:
@@ -83,7 +75,6 @@ def test_dotenv_values_are_guarded_without_any_option(tmp_path: Path,
     with pytest.raises(ProviderError):
         _provider().judge(f"password is {SECRET}", Answer)
     assert fake.calls == []
-
 
 def test_a_vendor_error_never_echoes_the_prompt_or_the_key(monkeypatch: pytest.MonkeyPatch) -> None:
     prompt = "PRIVATE-PROMPT-TEXT about a student"
@@ -96,7 +87,6 @@ def test_a_vendor_error_never_echoes_the_prompt_or_the_key(monkeypatch: pytest.M
 
 
 # -- LP8: credentials only from the environment, as explicit kwargs ----------
-
 def test_key_and_base_become_explicit_kwargs_and_environ_is_untouched(
         monkeypatch: pytest.MonkeyPatch) -> None:
     fake = install(monkeypatch, [reply(json.dumps(GOOD))])
@@ -108,7 +98,6 @@ def test_key_and_base_become_explicit_kwargs_and_environ_is_untouched(
     assert fake.calls[0]["api_base"] == "http://models.internal:8000/v1"
     assert dict(os.environ) == before
 
-
 def test_ollama_reuses_ollama_base_url_and_needs_no_key(monkeypatch: pytest.MonkeyPatch) -> None:
     fake = install(monkeypatch, [reply(json.dumps(GOOD))])
     monkeypatch.setenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -119,7 +108,6 @@ def test_ollama_reuses_ollama_base_url_and_needs_no_key(monkeypatch: pytest.Monk
 
 
 # -- LP10: no telemetry, lazy import -----------------------------------------
-
 def test_no_callbacks_are_registered_and_telemetry_is_off(monkeypatch: pytest.MonkeyPatch) -> None:
     fake = install(monkeypatch, [reply(json.dumps(GOOD))])
     _with_key(monkeypatch)
@@ -207,7 +195,7 @@ def test_an_exported_vendor_key_is_guarded_though_it_is_not_in_dotenv(
 
 @pytest.mark.parametrize("role", ["judge", "agent"])
 @pytest.mark.parametrize("echo", ["full", "user", "password", "encoded", "decoded", "tail",
-                                  "class-name"])
+                                  "class-name", "schema-key", "tool-key", "json-key", "probe-key"])
 def test_neither_the_key_nor_the_endpoint_appears_in_an_error(
         monkeypatch: pytest.MonkeyPatch, no_network: list[object], role: str, echo: str) -> None:
     base = "http://user-canary:p%77-canary@models.internal:8000/v1"
@@ -215,23 +203,35 @@ def test_neither_the_key_nor_the_endpoint_appears_in_an_error(
     text = {"full": f"cannot reach {base} with key k-canary-key", "user": "user-canary",
             "password": "pw-canary", "encoded": "user-canary:p%77-canary",
             "decoded": "user-canary:pw-canary", "tail": "PRIVATE-TAIL-CANARY",
-            "class-name": "no vendor text"}[echo]
+            "class-name": "no vendor text"}.get(echo, "validation")
     failure = (type("CLASS-NAME-CANARY", (RuntimeError,), {})
                if echo == "class-name" else RuntimeError)
-    fake = install(monkeypatch, [failure(text)])
+    data = {**GOOD, "k-canary-key": base}
+    response = reply(tool_args=data) if echo == "tool-key" else reply(json.dumps(data))
+    fake = install(monkeypatch, [response, response] if echo.endswith("-key") else [failure(text)],
+                   response_schema=echo not in {"tool-key", "json-key"},
+                   function_calling=echo == "tool-key")
     monkeypatch.setenv("LITELLM_API_KEY", "k-canary-key")
     monkeypatch.setenv("LITELLM_API_BASE", base)
     provider = _provider("openai/served")
     with pytest.raises(ProviderError) as info:
-        getattr(provider, "act" if role == "agent" else "judge")(prompt, Answer)
+        if echo == "probe-key":
+            provider.probe(prompt, Answer, role=role)
+        else:
+            getattr(provider, "act" if role == "agent" else "judge")(prompt, Answer)
     assert not no_network, "the injected fake must make no socket attempt"
     text = str(info.value)
     assert "canary" not in text and "models.internal" not in text
     assert all(value not in text for value in ("p%77-canary", "pw-canary", "user-canary",
                "PRIVATE-TAIL-CANARY", "CLASS-NAME-CANARY", "k-canary-key", base))
-    assert "litellm:openai/served" in text and role in text
+    assert "litellm:openai/served" in text
+    assert "prompt withheld" in text if echo == "json-key" else role in text
     assert len(fake.calls) == provider.usage[0].calls == 1
-    assert provider.usage[0].input_tokens == provider.usage[0].output_tokens == 0
+    if echo.endswith("-key"):
+        assert (provider.usage[0].input_tokens, provider.usage[0].output_tokens) == (11, 7)
+        assert len(fake.responses) == 1
+    else:
+        assert provider.usage[0].input_tokens == provider.usage[0].output_tokens == 0
     assert info.value.__suppress_context__
 
 

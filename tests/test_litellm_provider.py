@@ -22,11 +22,9 @@ pytestmark = pytest.mark.usefixtures("no_network")
 GOOD = {"verdict": "pass", "score": 3, "inner": {"note": "ok"}}
 SECRET = "hunter2-very-secret-value"
 State = Enum("State", {"READY": "ready"})
-
 class Inner(BaseModel):
     model_config = ConfigDict(extra="forbid")
     note: str
-
 class Answer(BaseModel):
     model_config = ConfigDict(extra="forbid")
     verdict: str
@@ -34,17 +32,13 @@ class Answer(BaseModel):
     inner: Inner
     dated: date | None = None
     state: State | None = None
-
 @pytest.fixture(autouse=True)
 def _isolated_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))  # no real .env in the guard
-
 def _provider(model: str = "openai/gpt-4o", **options: Any) -> LiteLLMProvider:
     return LiteLLMProvider(model=model, **options)
-
 def _with_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
-
 @pytest.mark.parametrize("strategy", ["schema", "tool", "json"])
 @pytest.mark.parametrize("role", ["judge", "agent"])
 def test_schema_strategy_sends_response_format_and_returns_the_typed_object(
@@ -61,7 +55,6 @@ def test_schema_strategy_sends_response_format_and_returns_the_typed_object(
     kw = fake.calls[0]
     if strategy == "schema":
         assert kw["response_format"]["type"] == "json_schema" and "tools" not in kw
-
 def test_tool_strategy_forces_one_answer_tool(monkeypatch: pytest.MonkeyPatch) -> None:
     fake = install(monkeypatch, [reply(tool_args=GOOD)], response_schema=False)
     _with_key(monkeypatch)
@@ -70,7 +63,6 @@ def test_tool_strategy_forces_one_answer_tool(monkeypatch: pytest.MonkeyPatch) -
     kw = fake.calls[0]
     assert kw["tools"][0]["function"]["name"] == "answer" and "response_format" not in kw
     assert kw["tool_choice"]["function"]["name"] == "answer"
-
 def test_json_mode_repairs_once_and_counts_the_repair_as_a_physical_call(
         monkeypatch: pytest.MonkeyPatch) -> None:
     fenced = "```json\n" + json.dumps(GOOD) + "\n```"
@@ -81,7 +73,6 @@ def test_json_mode_repairs_once_and_counts_the_repair_as_a_physical_call(
     assert provider.judge("grade", Answer) == Answer.model_validate(GOOD)
     assert len(fake.calls) == 2
     assert provider.usage[0].calls == 2  # LP5: the repair is a counted call
-
 def test_unparsable_answer_raises_naming_model_and_role_never_a_partial_object(
         monkeypatch: pytest.MonkeyPatch) -> None:
     fake = install(monkeypatch, [reply("{ nope")])
@@ -93,17 +84,26 @@ def test_unparsable_answer_raises_naming_model_and_role_never_a_partial_object(
 @pytest.mark.parametrize("strategy", ["schema", "tool", "json"])
 @pytest.mark.parametrize("role", ["judge", "agent"])
 @pytest.mark.parametrize("data", [{"verdict": "pass"}, {**GOOD, "score": "3"},
-                                 {**GOOD, "score": True}])
-def test_schema_mismatch_is_an_error_not_a_coerced_answer(monkeypatch, strategy, role, data):
+                                 {**GOOD, "score": True}, {**GOOD, "MODEL-KEY-CANARY": 0},
+                                 {**GOOD, "https://endpoint-CANARY.test/v1": 0}])
+def test_schema_mismatch_is_an_error_not_a_coerced_answer(
+        monkeypatch, strategy, role, data, no_network):
     response = reply(tool_args=data) if strategy == "tool" else reply(json.dumps(data))
     fake = install(monkeypatch, [response, response], response_schema=strategy == "schema",
                    function_calling=strategy == "tool")
     _with_key(monkeypatch)
     provider = _provider()
     with pytest.raises(ProviderError, match=role) as info:
-        getattr(provider, "act" if role == "agent" else "judge")("grade", Answer)
+        getattr(provider, "act" if role == "agent" else "judge")(
+            "grade this nonsecret MODEL-KEY-CANARY", Answer)
     assert "openai/gpt-4o" in str(info.value)
     assert len(fake.calls) == provider.usage[0].calls == (2 if strategy == "json" else 1)
+    assert "MODEL-KEY-CANARY" not in str(info.value)
+    assert "https://endpoint-CANARY.test/v1" not in str(info.value)
+    assert info.value.__suppress_context__ and not no_network
+    if strategy == "json":
+        assert fake.calls[-1]["messages"][-1]["content"].endswith(
+            "Problem: schema validation failed")
 
 def test_json_mode_that_stays_broken_after_the_repair_raises(
         monkeypatch: pytest.MonkeyPatch) -> None:
@@ -204,15 +204,17 @@ def test_probe_is_one_bounded_attempt_for_every_strategy_and_role(monkeypatch, s
     assert provider.usage[0].provider == provider.label and provider.usage[0].calls == 1
 
 @pytest.mark.parametrize("content", [None, "", "broken", '{"answer":"7"}', '{"answer":true}',
-                                     '{"answer":7,"raw":"canary"}'])
+                                     '{"answer":7,"raw":"canary"}',
+                                     '{"answer":7,"MODEL-KEY-CANARY":0}'])
 def test_json_probe_rejects_bad_answers_without_the_ordinary_repair(monkeypatch, content):
     fake = install(monkeypatch, [reply(content), reply('{"answer":7}')],
                    response_schema=False, function_calling=False)
     provider = _provider()
-    with pytest.raises(ProviderError):
+    with pytest.raises(ProviderError) as info:
         provider.probe("synthetic", ProviderProbeAnswer, role="judge")
     assert len(fake.calls) == 1 and provider.usage[0].calls == 1
     assert len(fake.responses) == 1
+    assert "MODEL-KEY-CANARY" not in str(info.value) and info.value.__suppress_context__
 
 @pytest.mark.parametrize("probe", [False, True])
 def test_dispatched_transport_failure_is_counted_once_and_withholds_canaries(monkeypatch, probe):

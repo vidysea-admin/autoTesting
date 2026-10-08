@@ -87,11 +87,9 @@ def _texts(messages: list[dict[str, Any]]) -> list[str]:
 
 
 def _why(exc: ValueError) -> str:
-    """A short, content-free reason: pydantic's field paths and messages (never the
-    offending input value), or a plain 'not valid JSON'."""
+    """Fixed categories only: model-controlled locations/messages are untrusted."""
     if isinstance(exc, ValidationError):
-        return "; ".join(f"{'.'.join(str(p) for p in e['loc']) or 'answer'}: {e['msg']}"
-                         for e in exc.errors())
+        return "schema validation failed"
     return "not valid JSON"
 
 
