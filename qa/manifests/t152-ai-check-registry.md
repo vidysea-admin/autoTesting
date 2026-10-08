@@ -65,4 +65,7 @@ Not UI-touching. No page or route changed (`schema/ai_check.py`, `schema/catalog
 - No `docs/ARCHITECTURE.md` row (see above).
 - No `.goal/goal.json` / ledger edit: closing T-152 is the checker's.
 
-## Status: ready-for-check
+## Closeout
+Cycle0 independent PASS by `/root/check_t152` is preserved in qa/verdicts/t152-ai-check-registry.md and its matching checkpoint. Merged release attribution PASS by `/root/t152_release_integration` is qa/verdicts/t152-release-integration.md: checked cc4743e6, own114 affected passed, lint/doctor clean, one complete full-suite instrument initial RED with three unchanged-origin failures outside T152. This is not a clean-suite/live/deployment claim. Original ai_check.py whole hash differs because unjudged T153 types were removed; only judged enum ASTs and applicable inputs are identical. T153 is absent and not accepted.
+
+## Status: checked-PASS

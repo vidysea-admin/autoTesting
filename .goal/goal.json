@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-07T19:47:47",
+  "updated": "2026-10-08T14:39:50",
   "progress": {
     "total": 92,
-    "done": 66,
+    "done": 67,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 26,
+    "pending": 25,
     "current": "T-136",
-    "percent": 72
+    "percent": 73
   },
   "tasks": [
     {
@@ -833,7 +833,7 @@
     {
       "id": "T-152",
       "title": "Track C2: AI check registry + catalog matching (reuses T-125's Catalog, never a second one)",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "low",
       "deps": [
         "T-151",
@@ -844,11 +844,12 @@
         "cmd": "uv run pytest tests/test_ai_catalog.py",
         "expect_exit": 0
       },
-      "note": "Kind->checks is a literal table in code so a checker can re-derive it. Blocked entries name the missing fixture, never silently dropped.",
+      "note": "Kind->checks is a literal table in code so a checker can re-derive it. Blocked entries name the missing fixture, never silently dropped. Cycle0 independent PASS: qa/verdicts/t152-ai-check-registry.md; merged integration attribution PASS: qa/verdicts/t152-release-integration.md (full suite initial RED with unchanged-origin failures outside T152). Registry only; capture/report wiring and deployment remain separate.",
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "normal",
-      "criticality": "low"
+      "criticality": "low",
+      "completed": "2026-10-08T14:39:50"
     },
     {
       "id": "T-153",
