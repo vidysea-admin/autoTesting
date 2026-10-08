@@ -3,7 +3,7 @@
 Three structured-output strategies, picked by model capability, never by vendor
 name: `schema` (response_format json_schema), `tool` (one forced `answer`
 function), `json` (JSON mode + prompt, with one counted repair). Every one ends
-in `schema.model_validate`; a partial or coerced object is never returned.
+in strict JSON validation; a partial or coerced object is never returned.
 """
 
 from __future__ import annotations
@@ -85,4 +85,5 @@ def answer_text(message: Any, strategy: str) -> str:
 def parse_answer(message: Any, strategy: str, schema: type[ModelT]) -> ModelT:
     """Validate the model's answer against `schema`; ValueError (incl. pydantic's)
     on anything that is not exactly that shape."""
-    return schema.model_validate(loads_json(answer_text(message, strategy)))
+    parsed = loads_json(answer_text(message, strategy))
+    return schema.model_validate_json(json.dumps(parsed), strict=True)

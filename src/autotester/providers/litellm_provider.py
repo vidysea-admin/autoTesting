@@ -206,14 +206,8 @@ class LiteLLMProvider(Provider):
                 f"{self.label}: prompt withheld, a credential value reached it") from None
 
     def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:
-        """A vendor failure, with the exception text kept only when it provably
-        echoes none of the prompt, the endpoint or any secret value (LL8)."""
-        text = str(exc)
-        echoed = any(t[:30] in text for t in _texts(messages) if t)
-        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]
-        if echoed or any(v in text for v in hidden) or len(text) > 300:
-            text = "(details withheld)"
-        return f"{self.label} {role} call failed: {type(exc).__name__}: {text}"
+        """Keep only validated model/internal role; vendor text and type are untrusted."""
+        return f"{self.label} {role} call failed (details withheld)"
 
     def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,
                   role: str, *, prompt_file: str | None, fed_id: str | None,

@@ -205,17 +205,34 @@ def test_an_exported_vendor_key_is_guarded_though_it_is_not_in_dotenv(
     assert fake.calls == [] and "canary" not in str(info.value)
 
 
+@pytest.mark.parametrize("role", ["judge", "agent"])
+@pytest.mark.parametrize("echo", ["full", "user", "password", "encoded", "decoded", "tail",
+                                  "class-name"])
 def test_neither_the_key_nor_the_endpoint_appears_in_an_error(
-        monkeypatch: pytest.MonkeyPatch, no_network: list[object]) -> None:
-    base = "http://user:pw-canary@models.internal:8000/v1"
-    install(monkeypatch, [RuntimeError(f"cannot reach {base} with key k-canary-key")])
+        monkeypatch: pytest.MonkeyPatch, no_network: list[object], role: str, echo: str) -> None:
+    base = "http://user-canary:p%77-canary@models.internal:8000/v1"
+    prompt = "a harmless prefix long enough to avoid matching tail-only PRIVATE-TAIL-CANARY"
+    text = {"full": f"cannot reach {base} with key k-canary-key", "user": "user-canary",
+            "password": "pw-canary", "encoded": "user-canary:p%77-canary",
+            "decoded": "user-canary:pw-canary", "tail": "PRIVATE-TAIL-CANARY",
+            "class-name": "no vendor text"}[echo]
+    failure = (type("CLASS-NAME-CANARY", (RuntimeError,), {})
+               if echo == "class-name" else RuntimeError)
+    fake = install(monkeypatch, [failure(text)])
     monkeypatch.setenv("LITELLM_API_KEY", "k-canary-key")
     monkeypatch.setenv("LITELLM_API_BASE", base)
+    provider = _provider("openai/served")
     with pytest.raises(ProviderError) as info:
-        _provider("openai/served").judge("g", Answer)
+        getattr(provider, "act" if role == "agent" else "judge")(prompt, Answer)
     assert not no_network, "the injected fake must make no socket attempt"
     text = str(info.value)
     assert "canary" not in text and "models.internal" not in text
+    assert all(value not in text for value in ("p%77-canary", "pw-canary", "user-canary",
+               "PRIVATE-TAIL-CANARY", "CLASS-NAME-CANARY", "k-canary-key", base))
+    assert "litellm:openai/served" in text and role in text
+    assert len(fake.calls) == provider.usage[0].calls == 1
+    assert provider.usage[0].input_tokens == provider.usage[0].output_tokens == 0
+    assert info.value.__suppress_context__
 
 
 def test_an_exported_vendor_key_echoed_by_a_vendor_error_is_withheld(
