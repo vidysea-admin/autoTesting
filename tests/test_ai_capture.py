@@ -42,10 +42,8 @@ class _Clock:
         return self.t
 def _capture(check: AiCheckKind = AiCheckKind.GROUND_TRUTH_ANSWER, *, send=None,
              prompts=("capital of France?",), approvals=None, redactor=None, **kw: object):
-    return capture_run(
-        project=kw.pop("project", "demo"), endpoint=kw.pop("endpoint", URL),
-        check=check, prompts=list(prompts),
-        send=send or (lambda url, prompt: _reply()),
+    return capture_run(project=kw.pop("project", "demo"), endpoint=kw.pop("endpoint", URL),
+        check=check, prompts=list(prompts), send=send or (lambda url, prompt: _reply()),
         approvals=[_approval()] if approvals is None else approvals,
         redactor=redactor or Redactor({"KEY": SECRET}), clock=kw.pop("clock", _Clock()),
         now=NOW, **kw)
@@ -73,13 +71,16 @@ def test_capture_carries_no_judgement_field() -> None:
     assert not names & {"result", "verdict", "passed", "outcome", "score"}
     assert cap.unsent_prompts == 0
     assert AiCapture.model_validate_json(cap.model_dump_json()) == cap
-    for model, data in ((AiReply, {}), (AiExchange, {"prompt": "q"}),
-                        (AiCapture, {"project": "demo", "endpoint": URL,
-                                     "check": AiCheckKind.TOOL_USE})):
+    for model, data in ((AiReply, {}), (AiExchange, {"prompt": "q", "latency_s": 0.0}),
+            (AiCapture, {"project": "demo", "endpoint": URL, "check": AiCheckKind.TOOL_USE})):
         with pytest.raises(ValueError):
             model.model_validate({**data, "result": "pass"})
-    with pytest.raises(ValueError):
-        AiExchange(prompt="q", latency_s=-1)
+    for latency in (None, -1, float("nan"), float("inf"), -float("inf")):
+        data = {"prompt": "q", **({"latency_s": latency} if latency is not None else {})}
+        with pytest.raises(ValueError):
+            AiExchange.model_validate(data)
+    zero = AiExchange(prompt="q", latency_s=0.0)
+    assert AiExchange.model_validate_json(zero.model_dump_json()).latency_s == 0.0
     with pytest.raises(ValueError):
         AiCapture(project="demo", endpoint=URL, check=AiCheckKind.TOOL_USE, unsent_prompts=-1)
 def test_capturer_source_never_constructs_a_verdict_or_result() -> None:
@@ -229,18 +230,22 @@ def test_latency_is_computed_against_the_budget_in_code() -> None:
     assert judge.prompts == []
     with pytest.raises(ValueError, match="latency_budget_s"):
         _judge(cap, judge)
-
+    untimed = cap.model_dump(mode="json")
+    del untimed["exchanges"][0]["latency_s"]
+    with pytest.raises(ValueError):
+        AiCapture.model_validate(untimed)
+    zero = cap.model_copy(update={"exchanges": [AiExchange(prompt="q", status=200, latency_s=0)]})
+    assert _judge(zero, judge, latency_budget_s=0).result is Result.PASS
+    assert _judge(cap, judge, latency_budget_s=0).result is Result.FAIL
+    assert judge.prompts == []
 def test_a_failed_exchange_fails_the_latency_check() -> None:
     def send(url: str, prompt: str) -> AiReply:
         raise TimeoutError("slow")
     cap = _capture(AiCheckKind.LATENCY_BUDGET, send=send)
     assert _judge(cap, latency_budget_s=99).result is Result.FAIL
-
 def test_an_empty_capture_is_inconclusive_never_a_pass() -> None:
     cap = _capture(AiCheckKind.RESPONSE_SHAPE, prompts=[], expected_keys=["answer"])
     assert _judge(cap).result is Result.INCONCLUSIVE
-
-
 @pytest.mark.parametrize("check", [AiCheckKind.GROUND_TRUTH_ANSWER,
                                   AiCheckKind.TOOL_USE, AiCheckKind.HANDOFF_ORDER])
 def test_a_secret_in_the_target_response_never_reaches_the_judge_prompt(check) -> None:
@@ -254,12 +259,9 @@ def test_a_secret_in_the_target_response_never_reaches_the_judge_prompt(check) -
         assert "tools_called[0]: search, [REDACTED]:KEY" in prompt
     if check is AiCheckKind.HANDOFF_ORDER:
         assert "handoffs[0]: router > [REDACTED]:KEY > writer" in prompt
-
 def _by_hand(response: str) -> AiCapture:
     return AiCapture(project="demo", endpoint=URL, check=AiCheckKind.GROUND_TRUTH_ANSWER,
-                     exchanges=[AiExchange(prompt="q", response=response, status=200,
-                                           latency_s=0.1, is_json=False)])
-
+    exchanges=[AiExchange(prompt="q", response=response, status=200, latency_s=0.1, is_json=False)])
 @pytest.mark.parametrize("check", [AiCheckKind.GROUND_TRUTH_ANSWER,
                                   AiCheckKind.TOOL_USE, AiCheckKind.HANDOFF_ORDER])
 def test_a_hand_built_capture_is_scrubbed_again_at_the_judge(check) -> None:
@@ -279,7 +281,6 @@ def test_a_hand_built_capture_is_scrubbed_again_at_the_judge(check) -> None:
         assert "tools_called[0]: search, [REDACTED]:KEY" in judge.prompts[0][1]
     if check is AiCheckKind.HANDOFF_ORDER:
         assert "handoffs[0]: router > [REDACTED]:KEY > writer" in judge.prompts[0][1]
-
 @pytest.mark.parametrize("field", ["response", "tools_called", "handoffs", "reference", "rubric"])
 def test_a_hand_built_capture_with_an_encoded_secret_never_reaches_the_judge(field, monkeypatch):
     import autotester.stages.ai_judge as module
@@ -295,6 +296,5 @@ def test_a_hand_built_capture_with_an_encoded_secret_never_reaches_the_judge(fie
     with pytest.raises(CaptureWithheld):
         _judge(cap, judge, reference=reference)
     assert judge.prompts == []
-
 def test_module_exposes_no_second_grading_path() -> None:
     assert not hasattr(ai_capture, "grade")

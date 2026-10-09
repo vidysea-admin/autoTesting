@@ -51,7 +51,7 @@ class AiExchange(BaseModel):
     prompt: str
     response: str = ""
     status: int | None = None
-    latency_s: float = Field(default=0.0, ge=0)
+    latency_s: float = Field(ge=0, allow_inf_nan=False)
     tools_called: list[str] = Field(default_factory=list)
     handoffs: list[str] = Field(default_factory=list)
     is_json: bool = False
