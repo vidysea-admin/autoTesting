@@ -1,8 +1,8 @@
 # Manifest — T153 completion
 Contract: qa/contracts/ai-target.md AI6/AI7; qa/contracts/core-invariants.md C1-C12; qa/contracts/consent.md CN1-CN11; qa/contracts/grade.md G1-G6.
 Goal task: T-153 — existing pending feature, dependency T-152 public at ff7f4ff228dbe1f4f5c25e9819b08a55d1286b09.
-Status: BUILDING
-Phase: BUILDING
+Status: ready-for-check
+Phase: ready-for-check
 Fix cycle: 0
 Resumes: 0
 Retry: 0
@@ -387,3 +387,24 @@ Rubric lines:
 - Semantic judge quality remains UNVERIFIED until a frozen, human-labelled set is evaluated: start with 50 synthetic cases across the three judged checks, including paraphrases, contradictions, missing evidence, and embedded grading instructions. Require zero false PASS on contradicted/absent evidence and at least 95% agreement on judgeable cases.
 
 These are acceptance criteria, not executed results from this review.
+
+## CURRENT final readiness handoff — 2026-10-09T03:05:03Z
+
+Checked source commit: 544b95ceb25194bcb9abd208830caf8fe7c3b746, own codex/t153-completion branch, base ff7f4ff228dbe1f4f5c25e9819b08a55d1286b09. No merge/push/deploy. Subsequent changes are this manifest only. Earlier BUILDING/UNRUN paragraphs are chronological history; current receipts above supersede them without replacing their attribution.
+
+Current source187/a8fc; capture142146F6, judge1A8B76F9, grade80B9F206, approval-test26ACC642; conftest9BBB6A4B, pyproject4B56E19C, lock0F25D574 unchanged. Runtime CPython3.11.15 Windows, immutable canonicalA1; final affected invocation session52623 terminal0/358passed3deselected18.91s. Exact affected command is the recorded twelve-file union above (including ui_credential_safety, same explicit native exclusions), not a full suite. Original excluded native tests preserve their own earlier input identities; unchanged relevant core/discovery/fixture inputs permit impact-based reuse, never an a8fc native-rerun claim.
+
+Acceptance scope is the complete T153 capture/grade adapter, not real sender integration, account provisioning, a production endpoint, adversarial checks or empirical quality of a real semantic model. All applicable cross-cutting contracts remain binding; CN2/CN8/CN9/CN11 crawl/account entry-point obligations are unchanged dependencies, not newly implemented by this API component. AI5 is the already-closed registry task; AI6/AI7 are this feature's primary criteria. Grade-owned verdict/rule instrument, partial/empty handling, exact consent, safe final assembled prompt and unchanged SecretStore guards are in scope.
+
+Pre-check[AI6]: a8fcde0672affb368986d4207ce9147a948357496496a5ea1ee9f81ee680281f recorded final twelve-file affected command -> 358passed; capture-source no Verdict/Result construction and exact grade delegation tests included.
+Pre-check[AI7]: a8fcde0672affb368986d4207ce9147a948357496496a5ea1ee9f81ee680281f recorded final twelve-file affected command -> 358passed; synthetic raw/encoded inputs, replies, tool/handoff joins, reference/rubric/final prompt tests included.
+Pre-check[C5]: a8fcde0672affb368986d4207ce9147a948357496496a5ea1ee9f81ee680281f recorded final twelve-file affected command -> 358passed; safe refusal/transport category and both final secret guards included.
+Pre-check[Consent]: a8fcde0672affb368986d4207ce9147a948357496496a5ea1ee9f81ee680281f recorded final twelve-file affected command -> 358passed; exact signed, expiry/target/bounds/production refusals and requested finite/zero/positive controls included.
+Pre-check[C7]: a8fcde0672affb368986d4207ce9147a948357496496a5ea1ee9f81ee680281f recorded final twelve-file affected command plus attributable isolated guard-floor commands -> 358passed; original33 controls, three final assembled-prompt/budget/combined-guard floors and two finite/zero floors recorded above, only relevant unchanged identities reused.
+Pre-check[Design]: a8fcde0672affb368986d4207ce9147a948357496496a5ea1ee9f81ee680281f native-runtime.py ownedm docs; ruff check --no-cache src tests scripts -> terminal0, DESIGN RESULT0, relitigation rule/no-gate, All checks passed.
+
+Final lifecycle: independent SSE /root/review_t153_bound_repair Approve; fresh AI /root/review_t153_final_ai_cohort Approve, both static-only and incorporated into final check. Full suite is not builder work. Final coordinators derive their own mandatory security/integration scope under the full pinned native .8 pair; missing required evidence must remain explicitly unproven, never silently substituted with these supporting reviews. Relevant user proportional feature-check request and merged-head sharded integration requirement remain intact.
+
+Blind coordinator A owns qa/verdicts/t153-completion.md and qa/checkpoints/t153-completion.md; B owns corresponding .b.md paths. Neither sees the other's artifacts. Fix cycle0/resumes0; both required PASS before closure. Browser not applicable to this API-only diff. Root serializes native/doc launches and integration resources; each checker owns its own isolated copies and runtime evidence. No full suite at the builder stage. Historical .7 provenance remains disclosed unresolved; this handoff uses the complete attributable AC1D/AC56 .8 cohort, not that history.
+
+Metrics: start=2026-10-09T03:01:04Z end=2026-10-09T03:05:03Z wall_min=3.98 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=0 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-08.8
