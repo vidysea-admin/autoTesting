@@ -251,3 +251,50 @@ def test_no_overclaiming_tamper_proof_prose_remains_anywhere_in_src() -> None:
         if any(phrase in text for phrase in stale):
             offenders.append(str(path))
     assert offenders == []
+
+
+@pytest.mark.parametrize("requested", [float("nan"), float("inf"), -float("inf"), -1.0])
+def test_capture_refuses_invalid_bound_before_any_send(requested: float) -> None:
+    from autotester.core.redact import Redactor
+    from autotester.schema.ai_check import AiCheckKind, AiReply
+    from autotester.stages.ai_capture import capture_run
+
+    sent = []
+    endpoint = "https://capture.test"
+    approval = _granted(target=endpoint, run_kind=ApprovalKind.LIVE_CASE).sign()
+
+    def send(_endpoint: str, prompt: str) -> AiReply:
+        sent.append(prompt)
+        return AiReply(text="{}")
+
+    with pytest.raises(ValueError, match=r"^wall_clock_s must be finite and nonnegative$"):
+        capture_run(project="erp", endpoint=endpoint, check=AiCheckKind.RESPONSE_SHAPE,
+                    prompts=["one"], send=send, approvals=[approval], redactor=Redactor({}),
+                    wall_clock_s=requested, clock=lambda: 0.0)
+    assert sent == []
+
+
+@pytest.mark.parametrize("bound, expected", [(0.0, 0), (1.0, 1)])
+def test_capture_honors_zero_time_without_blocking_positive_bound(
+    bound: float, expected: int,
+) -> None:
+    from autotester.core.redact import Redactor
+    from autotester.schema.ai_check import AiCheckKind, AiReply
+    from autotester.stages.ai_capture import capture_run
+
+    sent = []
+    endpoint = "https://capture.test"
+    approval = _granted(target=endpoint, run_kind=ApprovalKind.LIVE_CASE,
+                        wall_clock_s=bound).sign()
+
+    def send(_endpoint: str, prompt: str) -> AiReply:
+        sent.append(prompt)
+        return AiReply(text="{}")
+
+    capture = capture_run(project="erp", endpoint=endpoint, check=AiCheckKind.RESPONSE_SHAPE,
+                          prompts=["one"], send=send, approvals=[approval], redactor=Redactor({}),
+                          wall_clock_s=bound, clock=lambda: 0.0)
+    assert sent == (["one"] if expected else [])
+    assert len(capture.exchanges) == expected and capture.unsent_prompts == 1 - expected
+    if not expected:
+        assert capture.exchanges == []

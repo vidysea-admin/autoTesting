@@ -9,6 +9,10 @@ from __future__ import annotations
 
 from enum import StrEnum
 
+from pydantic import BaseModel, ConfigDict, Field
+
+from autotester.schema.base import Artifact
+
 
 class AiCheckKind(StrEnum):
     """One behavioural check an AI target can be put through. Enum order is report order."""
@@ -25,3 +29,44 @@ class AiCheckMethod(StrEnum):
 
     COMPUTED = "computed"
     JUDGED = "judged"
+
+
+class AiReply(BaseModel):
+    """What an AI endpoint answered, as the transport seam hands it to the capturer."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    status: int | None = None
+    text: str = ""
+    tools_called: list[str] = Field(default_factory=list)
+    handoffs: list[str] = Field(default_factory=list)
+
+
+class AiExchange(BaseModel):
+    """One prompt and what was observed of its answer. Facts only: no verdict lives here (C7).
+    Every string has passed `Redactor.scrub` before it is stored (C5)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    prompt: str
+    response: str = ""
+    status: int | None = None
+    latency_s: float = Field(default=0.0, ge=0)
+    tools_called: list[str] = Field(default_factory=list)
+    handoffs: list[str] = Field(default_factory=list)
+    is_json: bool = False
+    missing_keys: list[str] = Field(default_factory=list)
+    error: str | None = Field(
+        default=None, description="fixed transport category, never exception text"
+    )
+
+
+class AiCapture(Artifact):
+    """A captured run of one check against one endpoint: observation, never judgement."""
+
+    project: str
+    endpoint: str
+    check: AiCheckKind
+    expected_keys: list[str] = Field(default_factory=list)
+    exchanges: list[AiExchange] = Field(default_factory=list)
+    unsent_prompts: int = Field(default=0, ge=0, description="prompts the wall clock cut off")
