@@ -365,6 +365,18 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-11 T-145 live-run review (checker, read-only, report `.work/pathlynks-report/`)
+
+Never built until a human moves one out of this section with `approved: <date>`. Findings about the product under test (Pathlynks) are not ledger rows and are listed in the checker's report only. Existing open rows that already cover a T-145 claim and were not duplicated: AT-773 (judge PASSes a failed assertion), AT-774 (retired cases are run), AT-840 (judge sends prompts and screenshots with no mask), AT-654 (no setting yields typing on production; this is why 11 typing actions were refused), AT-113 (screen the crawler cannot return to).
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security (data boundary) | Mask or guard `stages/expand.py::build_expand_prompt` before `provider.act`; the T-145 expand sent 42 step values (4 email-shaped, 2 phone-shaped) to the provider unmasked. Pairs with AT-840 (judge screenshots). | AT-890, AT-840 |
+| priority: S1/S2 (high) | One failed case must not take the rest of a tier down: 34 of the 37 inconclusive cases failed on a dead browser. Prove the cause with two passing shared-session cases first, then fix `browser/video.py` `end_case_video` and add a session restart. Without this a rerun still tests nothing. | AT-888 |
+| priority: S1/S2 (high) | Turn a crawl's screens into reviewable student flows so `expand` has something to expand, and warn before a run when no case's first target exists on the crawled surface. | AT-887 |
+| priority: security (consent record) | HUMAN_GATE for Umesh: is `pathlynks.vidysea.com` production? Approval `appr_ce61e4420ac9` is signed `production: false`; the gate file and the T-145 row say production, `project.json` says dev. Inert this run (no typing), live the moment typing is enabled. | AT-891, AT-654 |
+| medium | AT-226 precheck races a client-side redirect on a live session; `login_failed` carries no cause. | AT-889 |
+
 ## Candidates (human picks) — 2026-10-11 sweep (Mode B sharded, window 72fafe7c..4f8f5da1, master 057b6dbb)
 
 Never built until a human moves one out of this section with `approved: <date>`. **BACKSTOP RED** on 4f8f5da1 (2836 passed, 20 skipped, 4 failed, 4 shards, 2301 s): no `backstop:` stamp, so the next sweep with a changed tree is a backstop run again. **No `HOLD:` line:** no behavioural regression or security defect is traced to a checked-PASS feature's changed files. The one deterministic red (AT-792) is a stale test of a contract-conformant product; the other three are load-sensitive and unresolved (AT-750, AT-725, AT-858). `qa/checkpoints/baseline-reds.md` was not created (see AT-750). No new S1/S2 or security row this sweep; the carried S1/S2 rows below in the 2026-10-07 section stand (its first row, AT-744, is now fixed but see AT-853).
