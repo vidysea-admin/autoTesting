@@ -62,11 +62,11 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     scripts/run_pathlynks_first_cases.py) -- a plain `uvicorn`/docker process never
     sources .env on its own, so global provider keys (ANTHROPIC_API_KEY etc.) would
     otherwise be invisible to LangChainFallbackProvider() even though the file is
-    present on disk. A startup hook, not a module-level call, so TestClient(app)
-    (which never runs lifespan unless used as a context manager) never leaks real
-    .env values into the test process."""
-    load_repo_env()          # AT-228: the one loader the CLI also uses, so both
-    yield                    # entry points agree on which credentials exist
+    present on disk. A startup hook, not a module-level call, so TestClient(app) (which never
+    runs lifespan unless used as a context manager) never leaks real .env values into tests."""
+    load_repo_env()          # AT-228: the one loader the CLI also uses
+    routes_runs.get_queue()  # T-203/HO18: recover the persisted run queue at boot
+    yield
 
 
 app = FastAPI(title="AutoTester", lifespan=_lifespan, middleware=origin_guard_middleware())
