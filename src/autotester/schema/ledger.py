@@ -123,3 +123,38 @@ class CitationReview(BaseModel):
                 or not self.what.strip()):
             raise ValueError("historical What is only for attributed decision-history claims")
         return self
+
+
+class SealedRecord(BaseModel):
+    """One reviewed, hash-bound row covering the citations of a closed historical unit.
+
+    The enforcing code re-derives everything here and never generates `reason` or `reviewer`
+    (living-ledger L10): a seal covers a coverage obligation, it is not evidence of authority.
+    """
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    kind: Literal["sealed-record"]
+    path: str
+    scope: str = Field(pattern=r"^(file|entry:D-\d+)$")
+    sha256: str = Field(pattern=r"^[0-9a-fA-F]{64}$")
+    baseline: str = Field(pattern=r"^[0-9a-f]{7,40}$")
+    reason: str
+    reviewer: str
+    review_ref: str
+
+    @field_validator("path")
+    @classmethod
+    def _sealed_path_shape(cls, value: str) -> str:
+        path = PurePosixPath(value)
+        if (not value.endswith(".md") or "\\" in value or path.is_absolute()
+                or ".." in path.parts or path.as_posix() != value):
+            raise ValueError("sealed path must be a normalized relative markdown path")
+        return value
+
+    @field_validator("reason", "reviewer", "review_ref")
+    @classmethod
+    def _sealed_nonempty(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("seal reason, attribution and evidence cannot be blank")
+        return value

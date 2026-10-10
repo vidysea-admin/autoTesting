@@ -256,6 +256,15 @@ def check_docs_routed(root: Path) -> list[Violation]:
     return out
 
 
+NON_BLOCKING = frozenset({"decision-citation-sealed", "decision-citation-known-disputed"})
+"""Informational rows: reported and counted, but they alone do not fail doctor (L10)."""
+
+
+def blocking(violations: list[Violation]) -> list[Violation]:
+    """The violations that make doctor exit nonzero."""
+    return [v for v in violations if v.rule not in NON_BLOCKING]
+
+
 def run(root: Path | None = None) -> list[Violation]:
     """All checks, in reporting order."""
     from autotester.ledger.checks import (
@@ -264,7 +273,7 @@ def run(root: Path | None = None) -> list[Violation]:
         check_ledger,
         check_qa_issue_rows,
     )
-    from autotester.ledger.citations import check_decision_citations
+    from autotester.ledger.citations import check_citation_subjects, check_decision_citations
     from autotester.ledger.evidence_specs import check_stale_evidence_specs
 
     base = root or repo_root()
@@ -275,6 +284,7 @@ def run(root: Path | None = None) -> list[Violation]:
                   check_ledger, check_qa_issue_rows, check_adapter_pytest_q,
                   check_goal_pytest_q, check_stale_evidence_specs,
                   check_generated_fresh,
-                  check_architecture_budget, check_docs_routed, check_decision_citations):
+                  check_architecture_budget, check_docs_routed, check_decision_citations,
+                  check_citation_subjects):
         violations.extend(check(base))
     return violations

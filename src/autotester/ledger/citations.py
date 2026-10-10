@@ -21,6 +21,8 @@ from itertools import pairwise
 from pathlib import Path
 
 from autotester.doctor import Violation
+from autotester.ledger import seals
+from autotester.ledger.review_block import current_reviews, strict_object
 from autotester.schema.ledger import CitationReview, DecisionClaim
 
 CITING_GLOBS = ("qa/gates/*.md", "qa/contracts/*.md", "qa/manifests/*.md",
@@ -32,9 +34,6 @@ _FOREIGN_LOG = re.compile(r"decisions[/\\]log\.md", re.IGNORECASE)
 _CLAIM_COMMENT = re.compile(r"<!--\s*decision-claim:.*?(?:-->|$)", re.DOTALL)
 _CANONICAL = re.compile(r'Decision claim (D-\d+): ("(?:[^"\\]|\\.)*") '
                         r'<!-- decision-claim: (\{.*\}) -->')
-_REVIEW = re.compile(r"<!-- citation-review: (\{.*\}) -->")
-_BEGIN = "<!-- BEGIN T196 CURRENT CITATION REVIEWS -->"
-_END = "<!-- END T196 CURRENT CITATION REVIEWS -->"
 
 NON_CLAIMING: dict[tuple[str, str, str], str] = {
     ("qa/contracts/living-ledger.md", "already cites `D-088` twice", "D-088"):
@@ -109,12 +108,6 @@ def check_decision_citations(root: Path) -> list[Violation]:
     return out
 
 
-def _strict_object(pairs: list[tuple[str, object]]) -> dict:
-    if len({key for key, _ in pairs}) != len(pairs):
-        raise ValueError("duplicate JSON keys")
-    return dict(pairs)
-
-
 def _quote_text(value: str) -> str:
     return " ".join(value.split())
 
@@ -147,60 +140,11 @@ def _decision_subjects(root: Path) -> dict[str, list[str | None]]:
     return dict(subjects)
 
 
-def _review_evidence(root: Path, row: CitationReview) -> bool:
-    target, separator, line_no = row.review_ref.rpartition(":")
-    target = target if separator else row.review_ref
-    if separator and (not line_no.isdigit() or int(line_no) < 1):
-        return False
-    relative = Path(target)
-    if (relative.is_absolute() or "\\" in target or ":" in target or
-            ".." in relative.parts or relative.as_posix() != target):
-        return False
-    path = (root / relative).resolve()
-    if not path.is_relative_to(root.resolve()) or not path.is_file():
-        return False
-    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-    if separator:
-        lines = lines[int(line_no) - 1:int(line_no)]
-    return any(row.reviewer in line and re.search(r"(?:Attribution|Reviewer):", line)
-               for line in lines)
-
-
-def _current_reviews(root: Path, out: list[Violation]) -> list[CitationReview]:
-    path = root / "qa/feedback-inbox.md"
-    lines = path.read_text(encoding="utf-8", errors="replace").splitlines() if path.exists() else []
-    begin, end = [i for i, line in enumerate(lines) if line == _BEGIN], [
-        i for i, line in enumerate(lines) if line == _END]
-    if not begin and not end:
-        return []
-    if len(begin) != 1 or len(end) != 1 or begin[0] >= end[0]:
-        out.append(Violation("decision-citation-coverage", "qa/feedback-inbox.md",
-                             "current review block must have one ordered BEGIN/END pair"))
-        return []
-    reviews = []
-    for index in range(begin[0] + 1, end[0]):
-        if not lines[index].strip():
-            continue
-        try:
-            match = _REVIEW.fullmatch(lines[index].strip())
-            if match is None:
-                raise ValueError("malformed citation-review comment")
-            row = CitationReview.model_validate(
-                json.loads(match[1], object_pairs_hook=_strict_object))
-            if not _review_evidence(root, row):
-                raise ValueError("review reference is unavailable or lacks reviewer attribution")
-            reviews.append(row)
-        except (ValueError, OSError) as error:
-            out.append(Violation("decision-citation-coverage", f"qa/feedback-inbox.md:{index + 1}",
-                                 f"invalid current review: {error}"))
-    return reviews
-
-
 def _canonical_claim(line: str) -> DecisionClaim:
     match = _CANONICAL.fullmatch(line.strip())
     if match is None:
         raise ValueError("requires one complete visible canonical Decision claim line")
-    claim = DecisionClaim.model_validate(json.loads(match[3], object_pairs_hook=_strict_object))
+    claim = DecisionClaim.model_validate(json.loads(match[3], object_pairs_hook=strict_object))
     if match[1] != claim.id or _quote_text(json.loads(match[2])) != _quote_text(claim.what):
         raise ValueError("visible id/quotation disagrees with decision-claim JSON")
     return claim
@@ -221,39 +165,18 @@ def _compare_quote(cid: str, quote: str | None, subjects: dict, location: str,
                              f"{cid} quotation does not match one available What subject"))
 
 
-def _citation_line(ids: list[str], rel: str, number: int, line: str, rows: dict,
-                   subjects: dict, multiplicity: int, foreign: set, out: list[Violation]) -> None:
-    seen = Counter()
-    location = f"{rel}:{number}"
-    active = []
-    for cid in ids:
-        seen[cid] += 1
-        matches = rows.get((rel, line, cid, seen[cid]), [])
-        review = (matches[0] if len(matches) == 1 and matches[0].multiplicity == multiplicity
-                  else None)
-        if review is None:
-            out.append(Violation("decision-citation-coverage", location,
-                                 f"{cid} occurrence {seen[cid]} needs one current review"))
-        exempt = ((number, cid) in foreign or _declared(rel, line, cid) or
-                  (review is not None and review.kind == "nonclaiming"))
-        if review is not None and review.kind == "foreign-entry" and (number, cid) not in foreign:
-            out.append(Violation("decision-citation-coverage", location,
-                                 f"{cid} not a foreign entry"))
-        if review is not None and review.kind == "structural-header" and not re.match(
-                rf"^##\s+{re.escape(cid)}\b", line):
-            out.append(Violation("decision-citation-coverage", location,
-                                 f"{cid} not a structural header"))
-        if not exempt:
-            active.append((cid, review))
-    declaration = "decision-claim:" in line or "Decision claim" in line
-    if not active and ids:
-        return
-    claim = None
-    if declaration:
-        try:
-            claim = _canonical_claim(line)
-        except ValueError as error:
-            out.append(Violation("decision-citation-declaration", location, f"{ids}: {error}"))
+def _kind_checks(review: CitationReview, cid: str, line: str, number: int, where: str,
+                 foreign: set, out: list[Violation]) -> None:
+    if review.kind == "foreign-entry" and (number, cid) not in foreign:
+        out.append(Violation("decision-citation-coverage", where, f"{cid} not a foreign entry"))
+    if review.kind == "structural-header" and not re.match(rf"^##\s+{re.escape(cid)}\b", line):
+        out.append(Violation("decision-citation-coverage", where,
+                             f"{cid} not a structural header"))
+
+
+def _judge(active: list, claim: DecisionClaim | None, line: str, location: str,
+           subjects: dict, out: list[Violation]) -> None:
+    rel = location.rpartition(":")[0]
     for cid, review in active:
         if review is None or (review.kind != "authorization-claim" and claim is None):
             continue
@@ -262,34 +185,87 @@ def _citation_line(ids: list[str], rel: str, number: int, line: str, rows: dict,
                 _compare_quote(cid, None, subjects, location, out)
             continue
         quote = claim.what if claim is not None else review.what
+        label = seals.disputed_label(rel, line, cid, review.ordinal) if quote is None else None
+        if label:
+            out.append(Violation(
+                "decision-citation-known-disputed", location,
+                f"{cid} {label}: recorded known-disputed historical claim (D-069), non-blocking"))
+            continue
         _compare_quote(cid, quote, subjects, location, out)
+
+
+def _citation_line(ids: list[str], rel: str, number: int, line: str, rows: dict,
+                   subjects: dict, multiplicity: int, foreign: set, out: list[Violation],
+                   sealed: bool = False) -> int:
+    """Judge one source line; returns how many occurrences a valid seal alone covered."""
+    seen, covered = Counter(), 0
+    location = f"{rel}:{number}"
+    active = []
+    for cid in ids:
+        seen[cid] += 1
+        matches = rows.get((rel, line, cid, seen[cid]), [])
+        review = (matches[0] if len(matches) == 1 and matches[0].multiplicity == multiplicity
+                  else None)
+        if review is None and sealed:
+            covered += 1
+            continue
+        if review is None:
+            out.append(Violation("decision-citation-coverage", location,
+                                 f"{cid} occurrence {seen[cid]} needs one current review"))
+        else:
+            _kind_checks(review, cid, line, number, location, foreign, out)
+        if not ((number, cid) in foreign or _declared(rel, line, cid) or
+                (review is not None and review.kind == "nonclaiming")):
+            active.append((cid, review))
+    if not active and ids:
+        return covered
+    claim = None
+    if "decision-claim:" in line or "Decision claim" in line:
+        try:
+            claim = _canonical_claim(line)
+        except ValueError as error:
+            out.append(Violation("decision-citation-declaration", location, f"{ids}: {error}"))
+    _judge(active, claim, line, location, subjects, out)
+    return covered
+
+
+def _scan_file(path: Path, root: Path, ctx: dict, out: list[Violation]) -> int:
+    rel = path.relative_to(root).as_posix()
+    text = path.read_text(encoding="utf-8", errors="replace")
+    foreign = foreign_ids_by_line(text) if rel == "docs/DECISIONS.md" else set()
+    lines = text.splitlines()
+    counts, sealed_total = Counter(lines), 0
+    for number, (line, visible) in enumerate(zip(lines, _visible_lines(text), strict=False), 1):
+        ordinals, ids = Counter(), _CITATION.findall(visible)
+        for cid in ids:
+            ordinals[cid] += 1
+            ctx["seen"].add((rel, line, cid, ordinals[cid]))
+        sealed_total += _citation_line(
+            ids, rel, number, line, ctx["rows"], ctx["subjects"], counts[line], foreign, out,
+            seals.is_sealed(ctx["sealed"], rel, number))
+    return sealed_total
 
 
 def check_citation_subjects(root: Path) -> list[Violation]:
     """L10: strict visible claims plus current reviewed coverage, distinct from L9 existence."""
-    out = []
-    reviews = _current_reviews(root, out)
+    out: list[Violation] = []
+    reviews, seal_rows = current_reviews(root, out)
     rows = defaultdict(list)
     for row in reviews:
         rows[(row.path, row.line_text, row.id, row.ordinal)].append(row)
-    subjects, encountered = _decision_subjects(root), set()
+    ctx = {"rows": rows, "subjects": _decision_subjects(root), "seen": set(),
+           "sealed": seals.valid_seals(root, seal_rows, out)}
+    sealed_total = 0
     for glob in CITING_GLOBS:
         for path in sorted(root.glob(glob)):
-            rel = path.relative_to(root).as_posix()
-            text = path.read_text(encoding="utf-8", errors="replace")
-            foreign = foreign_ids_by_line(text) if rel == "docs/DECISIONS.md" else set()
-            lines = text.splitlines()
-            counts = Counter(lines)
-            pairs = zip(lines, _visible_lines(text), strict=False)
-            for number, (line, visible) in enumerate(pairs, 1):
-                ordinals = Counter()
-                ids = _CITATION.findall(visible)
-                for cid in ids:
-                    ordinals[cid] += 1
-                    encountered.add((rel, line, cid, ordinals[cid]))
-                _citation_line(ids, rel, number, line, rows, subjects, counts[line], foreign, out)
+            sealed_total += _scan_file(path, root, ctx, out)
     for key, values in rows.items():
-        if key not in encountered or len(values) != 1:
+        if key not in ctx["seen"] or len(values) != 1:
             out.append(Violation("decision-citation-coverage", key[0],
                                  f"{key[2]} stale, duplicate or conflicting current review"))
+    if sealed_total:
+        out.append(Violation(
+            "decision-citation-sealed", "qa/feedback-inbox.md",
+            f"{sealed_total} occurrence(s) covered by {len(ctx['sealed'])} path(s) of valid "
+            "sealed records (covered, not classified clean)"))
     return out

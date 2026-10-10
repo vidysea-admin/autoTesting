@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-152 [normal] Track C2: AI check registry + catalog matching (reuses T-125's Catalog, never a second one)
 - T-153 [high] Track C3: behavioural checks against a captured run, graded by the existing independent judge
 ## Last decisions (computed status)
-- D-070 2026-10-07 decision ACTIVE
-- D-071 2026-10-07 decision ACTIVE
 - D-072 2026-10-07 decision ACTIVE
 - D-073 2026-10-07 decision ACTIVE
 - D-074 2026-10-07 decision ACTIVE
+- D-075 2026-10-07 decision ACTIVE
+- D-076 2026-10-07 decision ACTIVE
