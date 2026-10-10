@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-10T23:57:03",
+  "updated": "2026-10-11T05:22:52",
   "progress": {
     "total": 92,
-    "done": 67,
+    "done": 68,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 25,
+    "pending": 24,
     "current": "T-136",
-    "percent": 73
+    "percent": 74
   },
   "tasks": [
     {
@@ -854,7 +854,7 @@
     {
       "id": "T-153",
       "title": "Track C3: behavioural checks against a captured run, graded by the existing independent judge",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "high",
       "deps": [
         "T-152"
@@ -864,11 +864,12 @@
         "cmd": "uv run pytest tests/test_ai_capture.py",
         "expect_exit": 0
       },
-      "note": "C7: the capturer never grades. Latency/schema computed in code, not judged. Every capture passes Redactor.scrub + assert_no_raw_secrets before reaching a judge.",
+      "note": "C7: the capturer never grades. Latency/schema computed in code, not judged. Every capture passes Redactor.scrub + assert_no_raw_secrets before reaching a judge. | Dual independent PASS cycle0: qa/verdicts/t153-behavioural-checks.a.md + qa/verdicts/t153-behavioural-checks.b.md; merged on master 349f3e97. No live probe has been run yet.",
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
-      "criticality": "high"
+      "criticality": "high",
+      "completed": "2026-10-11T05:22:30"
     },
     {
       "id": "T-154",
@@ -2193,9 +2194,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.59,
-    "eta_days": 15.7
+    "velocity_per_day": 1.61,
+    "eta_days": 14.9
   },
-  "last_deterministic_tick": "2026-10-10T23:57:03",
+  "last_deterministic_tick": "2026-10-11T05:22:52",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }
