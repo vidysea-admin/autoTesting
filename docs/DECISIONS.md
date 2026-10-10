@@ -2328,3 +2328,25 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-10; items 1-3 explicit, items 4-7 delegated to the assistant's recommendation)
 
 **Links:** D-079; D-052; D-053; D-048; D-007; core-invariants C10; T-122; T-136; T-145; T-169; O6; AT-733; AT-379; AT-416; AT-417; AT-345; AT-346; AT-355; AT-752; ISS-t192-url-pattern-heal-1; qa/gates/t192-narrowed-command-ratification.md; qa/gates/at355-guard-shape.md; qa/gates/at416-clip-vs-reach-direction.md; qa/gates/pathlynks-user-account-first.md; qa/contracts/bench.md K6-K9; qa/.paused
+
+## D-081 | 2026-10-10 | type: decision | status: ACTIVE
+
+**What:** Umesh answered the seven open human inputs in chat on 2026-10-10 and asked for the loop to resume now.
+1. **Pause lifted early.** Umesh chose "resume now" (AskUserQuestion, 2026-10-10) instead of waiting for the 2026-10-12 16:30 IST quota reset named in D-080 item 3. qa/.paused was removed by /maker resume on his instruction. If Sonnet subagents fail on quota, the loop re-pauses with that reason (.9-16c).
+2. **AutoTester's Pathlynks report comes first.** Umesh: "tu phle apni pathlynks ki report prepare krrkee de". The live crawl (T-145) and the generated report are produced and delivered to him before any human bug list exists. Consequence, recorded so it is not rediscovered: T-136 scores recall only on a list written without sight of AutoTester's report (AT-653, qa/contracts/bench.md K6-K9). A list Umesh writes after reading the report cannot produce that number. T-136 and T-169 stay pending until a list exists from a tester who has not seen the report, or one Umesh writes before opening it.
+3. **Run approvals: full approval.** Umesh: "full approvaal hai". This authorizes the maker to mint the signed per-run RunApproval rows (D-018) for the T-145 live bounded crawl of pathlynks.vidysea.com with the PATHLYNKS_USER_* test account, and for the T-154 bounded adversarial pass on the same target. T-154 is no longer held for a separate approval (supersedes the 2026-09-27 hold in docs/plan.md:85). Each run still writes its own signed row naming target and scope; the approval is the authority for the row, not a replacement for it.
+4. **T-203 host and DNS: later; host on this machine for now.** Umesh: "krr denge but tu phle sabb run tho krr and for that time iss system mai host krkee use krr". T-203 proceeds as a local deployment on the dev machine. The server host and DNS remain an open human input and gate only the hosted check of T-206.
+5. **Email sender: take the credentials from d:/erp.** The AWS SES SMTP values and sender identity used by d:/erp are copied into the repo-root .env under AutoTester-prefixed keys, never printed, never committed, and declared as SecretRef keys.
+6. **Drive identity: the existing gws CLI login** (the one the /doc-polisher skill uses). The live Drive fetch in T-198 shells out to gws; no token is copied into this repo.
+7. **Pathlynks Tracker sheet: no live write now.** Umesh: "vo in future hogaa abhi nhi". T-199 builds and proves a dry run only; the first live write stays a HUMAN_GATE.
+8. **D-080 items 4 to 7 ratified.** Umesh: "go". Pathlynks is the trust target, the stalled-unit calls stand, and the t192 gate answer A stands.
+
+**Why:** These were the inputs every remaining unit was waiting on. Umesh wants the product run end to end first, on this machine, with the Pathlynks report in his hands before he invests time in a manual list. Recording the answers on disk once stops the loop from re-asking them (the D-006 failure).
+
+**Result:** qa/.paused removed 2026-10-10. Gate files and goal.json notes are brought in line by the maker in the same tick. No run has been fired by this entry.
+
+**Changes-authorized:** qa/gates/ (new or amended gate files with Answered lines for items 2 to 7); .goal/goal.json (notes on T-136, T-145, T-154, T-198, T-199, T-203, T-204 only); docs/plan.md (Held / blocked table and the Group 10 HUMAN_GATE list only); qa/QUEUE.md (rows for the remaining units); projects/pathlynks/project.json (write_policy to allow_writes, already authorized by qa/gates/write-policy-tier.md); the gitignored repo-root .env (AutoTester-prefixed mail keys). No contract, no enforcement-path file and no dependency is authorized by this entry; src/ changes ride on each unit's own contract and checker PASS.
+
+**Approved-by:** Umesh (chat, 2026-10-10)
+
+**Links:** D-080; D-018; D-052; D-053; D-071; D-072; D-074; D-007; T-136; T-145; T-154; T-169; T-198; T-199; T-203; T-204; T-206; AT-653; qa/contracts/bench.md K6-K9; qa/gates/write-policy-tier.md; qa/gates/plan-approved-g10.md

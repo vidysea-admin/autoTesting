@@ -1,5 +1,347 @@
 # qa/QUEUE.md — checker sweep queue (top-3 recommended next units)
 
+## Approved 2026-10-10 (D-081): buildable rows, dependency order (added by d081-plan-refresh)
+
+Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below is `approved: 2026-10-10`. Rows are in dependency order; rows on separate lanes may run in parallel. Worktrees and branches named in a row are INPUTS to re-land unit by unit, never state to merge wholesale (D-080 item 1). Lanes follow `qa/adapter.json` `parallel.lanes` (code max 4, browser max 1). `unknown` marks a fact the repo does not state; the maker resolves it at plan time. Group 10 follows the wave order of `docs/plan.md` (G1; G2, G3, G4; G5, G6, G7; G8, G9; G10), with the T-203 re-land first because it and G1 both edit `ui/routes_runs.py` and `ui/app.py`.
+
+- [ ] t145-pathlynks-live-report - live bounded crawl of pathlynks.vidysea.com with the PATHLYNKS_USER_* test account, then cases, execution, grading and the exported report delivered to Umesh (FIRST ROW)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: live-run; criticality: critical (dual check)
+  files: projects/pathlynks/project.json (write_policy -> allow_writes, authorized by D-081 and qa/gates/write-policy-tier.md), projects/pathlynks/** (crawl, flowspec.json, cases, runs, signed RunApproval rows), qa/evidence/t145-*; no src/ change expected
+  schema: no
+  surface: production pathlynks.vidysea.com in a visible browser; CLI crawl, approve, run and report export; one report delivered to Umesh
+  consumes: repo-root .env keys PATHLYNKS_USER_LOGIN_URL/_EMAIL/_PASSWORD and AUTOTESTER_APPROVAL_KEY; qa/gates/d081-run-approvals.md; qa/gates/d081-pathlynks-report-first.md; qa/gates/write-policy-tier.md; D-018 per-run RunApproval; untracked projects/pathlynks/crawl/ and flowspec.json already on disk (decide reuse vs fresh crawl at plan time)
+  lanes: browser
+  after: none (T-122 and T-144 done)
+  owner: this row alone owns projects/pathlynks/**; no other row writes there until it closes
+  note: each run writes its own signed row naming target and scope (the approval is the authority for the row, not a replacement); the report goes to Umesh BEFORE any human bug list exists, so T-136 recall stays unavailable until an independent list exists
+
+- [ ] land-integrate-combined - re-land integrate/combined (at780-pii, at780-harden); on current master it fails doctor because stages/reconcile.py reaches 302 lines (limit 300)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: re-land; criticality: high
+  files: src/autotester/stages/reconcile.py (298 on master; split or trim to 300 or fewer), src/autotester/core/redact.py, tests/test_reconcile_pii.py, tests/test_redact_pii.py, docs/MAP.md (regenerate with `autotester map`)
+  schema: no
+  surface: internal pipeline (PII redaction in reconcile); no UI
+  consumes: branch integrate/combined (8 commits ahead of master) as INPUT only; qa/verdicts for at780-pii and at780-harden (dual PASS cycle 0; a matching cycle is needed on the new commit); D-080 item 1 (merge only the exact commit a checker PASS reviewed)
+  lanes: code
+  after: none
+  owner: stages/reconcile.py: this row; any other row touching reconcile.py waits
+  note: a fresh checker cycle on the re-landed commit; doctor, ruff and the affected tests must be clean
+
+- [ ] land-t203-hosting - re-land wave/t203-hosting as a LOCAL deployment (D-081 item 4); it conflicts with master in ui/routes_runs.py and reuses issue ids AT-782..AT-793, which must be renumbered
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: re-land; criticality: critical
+  files: Dockerfile, docker/Caddyfile, docker/DEPLOY.md, docker/compose.prod.yml, docker/entrypoint.sh, .env.example, .gitattributes, src/autotester/core/env.py, schema/run_queue.py, schema/server_settings.py, store/server_settings.py, ui/app.py, ui/routes_live.py, ui/routes_report.py, ui/routes_runs.py, ui/routes_sources.py, ui/run_queue.py, ui/run_queue_view.py, tests/conftest.py (protected file), tests/test_env_loading.py, test_hosting_config.py, test_hosting_deploy.py, test_run_queue.py, test_run_queue_resilience.py, test_server_settings.py, test_ui_runs_queue.py, docs/MAP.md, qa/issues.jsonl rows AT-782..AT-793 (renumber; the checker owns issue status)
+  schema: yes
+  surface: local run queue and server settings on the dev machine; Docker image and compose are deliverables, not deployed
+  consumes: branch wave/t203-hosting (6 commits ahead, slice PASS) as INPUT only; qa/contracts/hosting.md; D-081 item 4 (no server host or DNS needed); D-080 item 1
+  lanes: code
+  after: none (land BEFORE t205 so ui/routes_runs.py and ui/app.py are resolved once)
+  owner: ui/routes_runs.py, ui/app.py, core/env.py: this row first, then t205, then t204
+  note: ui/app.py is at the 300-line cap; keep the router-list move for t205 and resolve the conflict by taking master's app.py plus the minimum line the queue needs; the maker records the choice
+
+- [ ] t205-g10-headroom - G1 / T-205: one run launcher, router list out of ui/app.py, optional schedule and tracker fields; re-verify AT-570
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: refactor; criticality: medium
+  files: E src/autotester/ui/app.py, core/paths.py, schema/project.py, ui/routes_runs.py; N ui/routers.py, stages/run_launcher.py, store/team_store.py, schema/team_enums.py (or a split of schema/enums.py, checker rules)
+  schema: yes
+  surface: no user-facing change; routers register in the same order as before
+  consumes: docs/plan.md G1; qa/contracts/team-foundation.md; D-072 split-module authorization (each file 300 lines or fewer)
+  lanes: code
+  after: land-t203-hosting
+  owner: ui/app.py, ui/routes_runs.py, schema/project.py, core/paths.py: this row owns them until PASS; every Group 10 row after it edits them only after it lands
+
+- [ ] t197-pointers-review - G2 / T-197: video ingest with human timestamp pointers -> flow summary and a 4-5 point confirm-list
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: E src/autotester/cli_video.py, stages/ingest.py (hook only); N schema/video_pointer.py, schema/video_review.py, stages/video_pointers.py, stages/video_review.py, prompts/video_review_v1.md, cli_video_review.py, ui/routes_video_review.py, tests/test_video_pointers*.py (names unknown)
+  schema: yes
+  surface: CLI `ingest video --pointers`; admin review page (persona walk: admin)
+  consumes: qa/contracts/team-video-review.md; oracle .work/pathlynks-dev-videos-oracle-2026-10-07.md (13 rows); three redacted Navnit videos; per-use Gemini approval recorded 2026-10-07; D-072
+  lanes: code, browser
+  after: t205-g10-headroom
+  owner: cli_video.py: this row before t198a-zip-drive-intake
+
+- [ ] t198a-zip-drive-intake - G3 / T-198: safe zip expansion to one source per video; `ingest fetch-drive <fileId>` over sources/drive.py
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: E src/autotester/sources/drive.py, cli_video.py, ui/routes_sources.py, schema/project.py (Source.uploaded_by/at/origin); N sources/zip_intake.py, tests for zip-slip, symlink, device, bomb, nested-zip and corrupt-member fixtures (names unknown)
+  schema: yes
+  surface: zip and Drive-link upload on the sources page (persona walk: dev); CLI fetch-drive
+  consumes: qa/contracts/team-intake.md, hosting.md HO30-HO33; gws CLI login (qa/gates/drive-identity.md, answered); admin upload limit typed default 2 GB until the T-203 settings land; identity from a loopback-only stub until t204
+  lanes: code, browser
+  after: t205-g10-headroom; t197-pointers-review (cli_video.py)
+  owner: cli_video.py after t197; schema/project.py after t205; ui/routes_sources.py shared with land-t203-hosting (which lands first)
+  note: senior-software-engineer review is mandatory (zip handling is an attack surface); the live Drive fetch uses gws and no token is copied into the repo
+
+- [ ] t202-any-model-provider - T-202: LiteLLM-backed Provider behind providers.base.Provider (Gemini, Claude, OpenAI, Ollama, OpenAI-compatible chosen by config)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: N src/autotester/providers/ litellm module (file name unknown), providers/__init__.py (registry), pyproject.toml and uv.lock (litellm authorized in this unit only, D-071/D-072), tests/test_providers_litellm*.py (unknown)
+  schema: no
+  surface: provider config; `autotester providers` output
+  consumes: qa/contracts/providers-litellm.md; D-071; D-072 (new module authorization); worktrees t202-litellm and codex-t202-completion as INPUT only
+  lanes: code
+  after: none
+  owner: pyproject.toml and uv.lock: this row, t167 (langgraph), t174 (mcp), t179 (deepagents) each add a dependency; serialize them, one lock-file writer at a time
+
+- [ ] t204-team-login - T-204: email+password sign-up, sessions, groups with checkbox permissions, require_permission with scopes, credentials.view, admin screens
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: N auth, session, group and permission modules plus admin routes (names unknown; new modules authorized by D-072), E ui/routers.py (after t205), core/env.py (AUTOTESTER_FIRST_ADMIN_EMAIL), tests/test_auth*.py (unknown)
+  schema: yes
+  surface: sign-up, sign-in and admin screens for users, groups and assignment (persona walk: dev, tester); every page and state-changing route refuses unauthenticated requests
+  consumes: qa/contracts/auth.md; D-072; D-074 (first-admin rule); worktrees t204-auth and t204-b* as INPUT only
+  lanes: code, browser
+  after: t205-g10-headroom; land-t203-hosting (core/env.py)
+  owner: core/env.py after land-t203-hosting; ui/routers.py after t205
+  note: the login mechanism is NOT a HUMAN_GATE (answered by D-072)
+
+- [ ] t199a-bug-loop - G6 / T-199: in-product bug loop (stable bug key, transitions, stale, replayed runs count)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: E src/autotester/stages/issues.py (adapter, 58 lines at most); N schema/tracked_bug.py, stages/bug_loop.py, ui/routes_tracker.py, tests/test_bug_loop*.py (unknown)
+  schema: yes
+  surface: tracker page (persona walk: dev)
+  consumes: qa/contracts/team-bug-loop.md; docs/plan.md G6; the video-issue adapter needs t197 output
+  lanes: code, browser
+  after: t205-g10-headroom; t197-pointers-review
+  owner: stages/issues.py: this row
+
+- [ ] t199b-sheet-sync-dryrun - G8 / T-199: tracker sheet mapping and sync, DRY RUN ONLY (D-081 item 7); the first live write stays a HUMAN_GATE
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: critical
+  files: N schema/tracker_binding.py, stages/tracker_mapping.py, stages/tracker_sheet.py, prompts/tracker_mapping_v1.md, ui/routes_tracker_binding.py, cli_tracker.py, tests with a fake SheetClient (names unknown)
+  schema: yes
+  surface: mapping preview and confirm screen (persona walk: subadmin); zero live sheet writes
+  consumes: qa/contracts/team-bug-loop.md; fake SheetClient with two header layouts; the real Pathlynks Tracker sheet is NOT touched (qa/gates/t199-first-live-write.md, OPEN)
+  lanes: code, browser
+  after: t199a-bug-loop
+  owner: none beyond new files
+  note: PASS is proven on a fake sheet; task T-199 is not closed by this row until the live-write gate is answered or the checker amends the done_check
+
+- [ ] t201a-report-delivery - G4 / T-201: report delivery on the website inbox and by email behind a per-user checkbox
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: N schema/delivery.py, stages/report_delivery.py, delivery/inbox.py, delivery/email.py, ui/routes_inbox.py, tests (names unknown)
+  schema: yes
+  surface: inbox page and a notification-preference checkbox (persona walk: dev); email only when the user ticked it
+  consumes: qa/contracts/hosting.md HO25-HO29; AWS SES SMTP values copied from d:/erp into repo-root .env under AutoTester-prefixed keys (key names unknown until written; qa/gates/email-sender-credentials.md, answered); identity from the t204 stub until t204 lands
+  lanes: code, browser
+  after: t205-g10-headroom
+  owner: none beyond new files
+  note: email values are never printed or committed and are declared as SecretRef keys
+
+- [ ] t200-schedule - G5 / T-200: scheduled auto-test (manual, fixed or custom time) with single-flight and credential-derived approval
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: critical
+  files: N schema/schedule.py, stages/scheduler.py, cli_schedule.py, ui/routes_schedule.py, tests (names unknown); E schema/project.py
+  schema: yes
+  surface: schedule screen (persona walk: subadmin); enqueues on the run queue
+  consumes: qa/contracts/team-schedule.md, hosting.md HO22-HO24; the D-068 credential-derived approval implementation lives on branch d063-grant-budget (landed status unknown); run queue from land-t203-hosting
+  lanes: code, browser
+  after: t205-g10-headroom; t201a-report-delivery; land-t203-hosting (queue)
+  owner: schema/project.py after t205
+
+- [ ] t201b-test-button - G7 / T-201: team on-demand Test button, report to whoever pressed it
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: critical
+  files: E src/autotester/ui/project_view.py; N ui/routes_team_run.py, tests (names unknown); no queue code
+  schema: no
+  surface: Test button on the project page (persona walk: dev); an unauthenticated POST makes no run directory
+  consumes: qa/contracts/team-test-button.md; run queue (land-t203-hosting); identity (t204); delivery (t201a); launcher (t205)
+  lanes: code, browser
+  after: t201a-report-delivery; t200-schedule; t204-team-login; land-t203-hosting
+  owner: ui/project_view.py: this row
+
+- [ ] t198b-dev-portal - G9 / T-198: developer video portal (share, access requests, timestamped comments)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: N schema/video_share.py, stages/video_access.py, ui/routes_video_portal.py, ui/routes_access_requests.py, tests (names unknown); E ui/routes_video.py
+  schema: yes
+  surface: share link, request-access and comments (persona walk: dev, tester)
+  consumes: qa/contracts/team-intake.md; route-by-route permission table with the UI ignored; access.approve scopes own, assigned, all
+  lanes: code, browser
+  after: t198a-zip-drive-intake; t204-team-login
+  owner: ui/routes_video.py: this row
+  note: senior-software-engineer review is mandatory on the route table; ui/routes_video.py has no feature trio yet (AT-748)
+
+- [ ] t203-local-deploy - T-203 remainder after the slice lands: local deployment complete (queue, settings page, upload limit, tick timer, deploy guide); the hosted check waits on the real host
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: critical
+  files: unknown (depends on what the landed slice covers; the branch diff shows no tick-timer unit and no Settings route, so likely a new docker/ tick unit and E ui/routes_settings.py); docker/DEPLOY.md
+  schema: unknown
+  surface: runs on this machine for now (D-081 item 4); the Ubuntu server check is gated
+  consumes: qa/contracts/hosting.md HO1-HO38; qa/gates/t203-host-and-dns.md (OPEN for the real host and DNS)
+  lanes: code, browser
+  after: land-t203-hosting; t204-team-login
+  owner: ui/routes_settings.py: this row
+  note: the open host and DNS gate blocks only the hosted check of T-206, not this build
+
+- [ ] t206-g10-acceptance - G10 / T-206: Group 10 acceptance end to end on Pathlynks (evidence only)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: acceptance; criticality: critical
+  files: none (evidence only: qa/evidence/t206-*)
+  schema: no
+  surface: live browser persona walks on Pathlynks: redacted videos, reviews, bugs, a schedule tick, a Test press, reports on the website and by email
+  consumes: all Group 10 rows; qa/gates/t203-host-and-dns.md (the hosted and Ubuntu part stays gated); the live Tracker write is NOT part of it (gate open)
+  lanes: browser
+  after: t197-pointers-review; t198a-zip-drive-intake; t198b-dev-portal; t199a-bug-loop; t199b-sheet-sync-dryrun; t200-schedule; t201a-report-delivery; t201b-test-button; t203-local-deploy
+  owner: none
+
+- [ ] t153-track-c3-behavioural - T-153: Track C3 behavioural checks against a captured run, graded by the existing independent judge
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: unknown (candidates: src/autotester/schema/ai_check.py, stages/ai_catalog.py; the new capture module name is unknown); branch codex/t153-completion and worktrees t152-153, t153-checkB are INPUT only
+  schema: unknown
+  surface: AI-target checks; no UI
+  consumes: qa/contracts/ai-target.md; C7 (the capturer never grades); Redactor.scrub and assert_no_raw_secrets before any judge
+  lanes: code
+  after: none (T-152 done)
+  owner: unknown
+
+- [ ] t154-track-c4-adversarial - T-154: Track C4 bounded adversarial pass behind consent gate 2, against Pathlynks under the D-081 full approval
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: critical (dual check)
+  files: unknown (new probe-set files and stage; scripts/adversarial_proof.py is the done_check target and may not exist yet)
+  schema: unknown
+  surface: bounded adversarial probes at pathlynks.vidysea.com with the PATHLYNKS_USER_* account; probe cap, allowed_domains only, production named explicitly
+  consumes: qa/contracts/adversarial.md; qa/gates/d081-run-approvals.md (answered); D-017 (no Garak, PyRIT or DeepTeam); per-run signed RunApproval row; no approval means zero requests at the transport
+  lanes: code, browser
+  after: t153-track-c3-behavioural
+  owner: unknown
+  note: no longer held for a separate approval (D-081 item 3); each firing still needs its own signed row naming target and scope
+
+- [ ] t155-track-c5-report - T-155: Track C5 unified AI test report grouped by tier with judge reason strings
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: low
+  files: unknown (reuses core/excel.py autosize_columns; stages/report_export.py is 299 lines, so a new split module is likely)
+  schema: unknown
+  surface: report export
+  consumes: qa/contracts/ai-target.md; blocked checks render as blocked with a reason, never as passes
+  lanes: code
+  after: t154-track-c4-adversarial
+  owner: unknown
+
+- [ ] t178-failure-bundle - T-178 (FB4, FB5): case priority p0-p3 and human pruning of proposals before provider spend
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: E src/autotester/schema/case.py (priority), store/project_store.py (AT the 300-line cap: delete_case must still refuse pinned cases, so a split is needed), stages/failure_bundle.py (209 lines), stages/review.py or expand.py (proposal staging; exact file unknown), tests/test_failure_bundle*.py (unknown); worktrees t178 and codex-t178-completion are INPUT only
+  schema: yes
+  surface: case-list priority selector; proposal approve and prune step (persona walk: dev)
+  consumes: qa/contracts/failure-bundle.md FB4, FB5 (FB1-FB3 already in); qa/contracts/review-gate.md
+  lanes: code, browser
+  after: none (T-125 done)
+  owner: store/project_store.py: this row
+
+- [ ] t174-cli-mcp - T-174: CLI contract (--output json, documented exit codes, --dry-run) plus the AutoTester MCP server
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: E src/autotester/cli.py (295 lines, near cap); N CLI modules and MCP entry point (names unknown); pyproject.toml and uv.lock (mcp SDK authorized by D-071); worktrees t174 and codex-t174-* are INPUT only
+  schema: unknown
+  surface: CLI exit codes, JSON output, MCP tools
+  consumes: qa/contracts/cli-mcp.md; D-071
+  lanes: code
+  after: none (T-125 done)
+  owner: cli.py: this row; pyproject.toml and uv.lock: serialize with t202
+
+- [ ] t177-browser-use-fallback - T-177: browser-use fallback actuator for unknown screens; revive agent_loop.run_with_fallback
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: E src/autotester/stages/agent_loop.py; N actuator module (name unknown); possible pyproject.toml dependency (unknown); worktrees t177 and t177f are INPUT only
+  schema: unknown
+  surface: unknown screens driven with typed outputs
+  consumes: qa/contracts/agent-fallback.md AF1-AF6; qa/gates/at253-agent-fallback-wiring.md; T-176 script replay (done)
+  lanes: code, browser
+  after: none (T-176 done)
+  owner: stages/agent_loop.py: this row
+
+- [ ] t167-langgraph-regression - T-167: release-triggered visible-browser regression on LangGraph 1.x with consent via interrupt() and crash-resume
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: critical
+  files: E src/autotester/stages/orchestrate.py and orchestrate_runners.py; a new graph module is possible (unknown); pyproject.toml and uv.lock (langgraph 1.x); worktree t167 is INPUT only
+  schema: unknown
+  surface: release trigger; consent interrupt (persona walk: release-manager)
+  consumes: qa/contracts/release-regression.md, orchestrator.md; the agentic architecture standard (LangGraph 1.x)
+  lanes: code, browser
+  after: none (T-166 and T-110 done)
+  owner: stages/orchestrate.py: this row; pyproject.toml and uv.lock: serialize with t202
+
+- [ ] t168-damage-control-report - T-168: unified damage-control report (regression diff, API failures, workflows, screenshots)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: unknown (report layer; stages/report_export.py is 299 lines, so a split module is likely)
+  schema: unknown
+  surface: operator-readable report; blocked or unvisited never renders as pass (persona walk: lead)
+  consumes: qa/contracts/damage-control-report.md
+  lanes: code, browser
+  after: t167-langgraph-regression
+  owner: unknown
+
+- [ ] t179-deep-agents-lead - T-179: Deep Agents lead tester wrapping existing stages as tools
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: N src/autotester/agents/ package (module names unknown); pyproject.toml and uv.lock (deepagents; gate d042 answered 2026-09-24)
+  schema: unknown
+  surface: agent layer; guards live in the tools, not the model
+  consumes: qa/contracts/agent-layer.md; qa/gates/d042-deep-agents.md (answered)
+  lanes: code
+  after: none (T-170, T-172, T-175 done)
+  owner: agents/: this row, then t180, then t181; pyproject.toml and uv.lock: serialize with t202
+
+- [ ] t180-subagents - T-180: subagents (explorer, test-designer, runner, independent grader with no action tools)
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: feature; criticality: high
+  files: N and E under src/autotester/agents/ (names unknown)
+  schema: unknown
+  surface: agent layer
+  consumes: qa/contracts/agent-layer.md; C7
+  lanes: code
+  after: t179-deep-agents-lead
+  owner: agents/: after t179
+
+- [ ] t181-agent-gain-measured - T-181: agent guardrails and measured gain vs the plain pipeline on a fixture
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: measurement; criticality: high
+  files: src/autotester/agents/ plus schema/bench.py and stages/bench.py (E, exact edits unknown)
+  schema: unknown
+  surface: bench numbers on a fixture; per-run token and cost budget enforced
+  consumes: qa/contracts/agent-layer.md; qa/contracts/bench.md
+  lanes: code
+  after: t180-subagents
+  owner: agents/ and bench: after t180
+  note: a negative measured gain means the layer is removed, not patched (docs/plan.md risk 4)
+
+- [ ] t196-l10-citation-subject - T-196: doctor rule L10, a citing line's claimed subject must match the cited entry's What:
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: governance; criticality: critical
+  files: unknown (doctor rule in src/autotester/doctor.py or a rule module, plus tests); worktrees t196-citation-subjects and codex-t196-completion and qa/gates/t196-l10-coverage.md are INPUT only
+  schema: no
+  surface: autotester doctor output
+  consumes: qa/contracts/living-ledger.md; qa/gates/t196-l10-coverage.md; D-068 (decision citations)
+  lanes: code
+  after: none
+  owner: src/autotester/doctor.py: this row
+
+- [ ] at733-bounded - AT-733 re-planned as ONE bounded unit with a cycle cap (D-080 item 6): a silent profile-cleanup failure must not let a logged-out entry case run logged in
+  approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
+  class: fix; criticality: high (dual check, false-PASS prevention)
+  files: E src/autotester/ui/run_execution.py (_run_entry_case; the wipe error is suppressed with ignore_errors, then browser startup), tests/test_*run_execution* (unknown); candidate branch codex/at733-entry-cleanup (6e0134b7, NOT merged) is INPUT only
+  schema: no
+  surface: UI run of a logged-out entry case
+  consumes: qa/contracts/ui-run.md RU1/RU3 (entry-profile amendment); core-invariants C7 and C12; AT-733 stays open in qa/issues.jsonl (the checker sets status)
+  lanes: code
+  after: none
+  owner: ui/run_execution.py: this row
+  note: cycle cap: 2 fix cycles at most (the normal cap), then STALLED to a human; the old open-ended unit at733-entry-cleanup is stopped and is not a precedent
+
+Not buildable (open human gates; kept out of the buildable list):
+
+- [!] t136-bench-scoring - NOT BUILDABLE: T-136 (recall, FP rate, time on Pathlynks) is held on the OPEN gate qa/gates/t136-independent-human-list.md. It needs a human bug list written by a tester who has not seen AutoTester's report, or by Umesh before he opens it (D-081 item 2; AT-653; bench.md K6-K9). A list written after the report yields FP rate but not recall.
+- [!] t169-two-mode-acceptance - NOT BUILDABLE: T-169 depends on T-136 (same open gate), T-145 and T-168. Held on qa/gates/t136-independent-human-list.md.
+
+---
+
 ## Human-asked, above the TODO rows (2026-10-07 sweep consolidation)
 
 | Row | State |

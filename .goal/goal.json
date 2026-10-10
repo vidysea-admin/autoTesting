@@ -4,7 +4,7 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-08T14:39:50",
+  "updated": "2026-10-10T23:57:03",
   "progress": {
     "total": 92,
     "done": 67,
@@ -603,7 +603,7 @@
         "cmd": "uv run python scripts/check_acceptance_comparison.py pathlynks",
         "expect_exit": 0
       },
-      "note": "GROUND TRUTH CHANGED 2026-09-27 (Umesh): a human tester working in PARALLEL on the same product, NOT a pre-written truth sheet. ERP_Issues_Trainers.xlsx leaves this task's critical path entirely (it was also absent from disk and from its own former done_check path). The check is the comparison artifact approved on AT-281: both columns filled, every item classified match/miss/false-positive, recall + FP rate + wall-clock computed by schema/bench.py, and Umesh's signed verdict line -- completeness asserted mechanically, PASS/FAIL judgement his. AT-653 IS BINDING HERE: Umesh authors his findings AFTER reading AutoTester's report (\"tu apne side ki reports de dee mai humn side ki bnaa krr de dungaa baad mai\"), so the artifact MUST carry an ordering field and an independent-vs-prompted mark per human item, recall computed from the independent subset only, and MUST emit 'recall: unavailable (ordering not recorded)' rather than a number with absent provenance -- bench.py treats recall as optional, never defaulting to 0.0. done_check names scripts/check_acceptance_comparison.py, which does NOT exist yet: the check fails honestly until the artifact is built. Maker: if you chose another script name, correct this cmd -- goal.json is your surface and this row was written by the checker on Umesh's instruction. | 2026-09-27 RE-SCOPED to Pathlynks (Umesh 2026-09-24 target.md:145 \"prove it on Pathlynks first\", applied 2026-09-27 on his direct instruction after the maker's write was blocked by the harness classifier; D-052, D-053). ERP becomes the second product.",
+      "note": "GROUND TRUTH CHANGED 2026-09-27 (Umesh): a human tester working in PARALLEL on the same product, NOT a pre-written truth sheet. ERP_Issues_Trainers.xlsx leaves this task's critical path entirely (it was also absent from disk and from its own former done_check path). The check is the comparison artifact approved on AT-281: both columns filled, every item classified match/miss/false-positive, recall + FP rate + wall-clock computed by schema/bench.py, and Umesh's signed verdict line -- completeness asserted mechanically, PASS/FAIL judgement his. AT-653 IS BINDING HERE: Umesh authors his findings AFTER reading AutoTester's report (\"tu apne side ki reports de dee mai humn side ki bnaa krr de dungaa baad mai\"), so the artifact MUST carry an ordering field and an independent-vs-prompted mark per human item, recall computed from the independent subset only, and MUST emit 'recall: unavailable (ordering not recorded)' rather than a number with absent provenance -- bench.py treats recall as optional, never defaulting to 0.0. done_check names scripts/check_acceptance_comparison.py, which does NOT exist yet: the check fails honestly until the artifact is built. Maker: if you chose another script name, correct this cmd -- goal.json is your surface and this row was written by the checker on Umesh's instruction. | 2026-09-27 RE-SCOPED to Pathlynks (Umesh 2026-09-24 target.md:145 \"prove it on Pathlynks first\", applied 2026-09-27 on his direct instruction after the maker's write was blocked by the harness classifier; D-052, D-053). ERP becomes the second product. | D-080 item 4 / D-081 item 2 (2026-10-10): scored on Pathlynks; the ERP truth sheet is not on the critical path. AutoTester's Pathlynks report is delivered first, so a list Umesh writes after reading it cannot yield recall (AT-653, bench.md K6-K9). T-136 stays pending and is NOT buildable until an independent list exists: written by a tester who has not seen the report, or by Umesh before he opens it (qa/gates/t136-independent-human-list.md, OPEN).",
       "attempts": 0,
       "created": "2026-09-07T17:15:41",
       "user_value": "high",
@@ -725,7 +725,7 @@
         "cmd": "uv run python scripts/check_crawl_approval.py pathlynks",
         "expect_exit": 0
       },
-      "note": "No 2FA on test accounts (Umesh 2026-09-07); real user accounts are never used. Target is production pathlynks.vidysea.com -- no staging; dev-new.vidysea.com is a PREPOD environment (Umesh 2026-09-27) and is NOT modelled as a project yet (AT-651). WRITE TIER: no longer READ_ONLY -- Umesh authorized ALLOW_WRITES on every target including production (qa/gates/write-policy-tier.md, D-053). The supplied account's permissions are the boundary and they are his to set; a run is NOT scoped narrower than them on an agent's initiative -- doing so makes the report incomplete, not the run safe (O4). projects/pathlynks/project.json must be flipped to allow_writes before this runs (maker's surface). [D-018/AT-100: done_check was {'cmd':'true'} -- a check that could not fail on the highest-risk task in the plan. Now asserts a finished crawl on disk AND an intact unexpired RunApproval covering its bounds.] [AT-100 second half: CRITICAL -> DUAL check, two blind checkers, both must PASS, per maker cycle step 7b.] Consent gate 2 existing is not permission to use it (D-052): each run needs its own RunApproval naming target and scope. | 2026-09-27 RE-SCOPED to Pathlynks (Umesh 2026-09-24 target.md:145 \"prove it on Pathlynks first\", applied 2026-09-27 on his direct instruction after the maker's write was blocked by the harness classifier; D-052, D-053). ERP becomes the second product.",
+      "note": "No 2FA on test accounts (Umesh 2026-09-07); real user accounts are never used. Target is production pathlynks.vidysea.com -- no staging; dev-new.vidysea.com is a PREPOD environment (Umesh 2026-09-27) and is NOT modelled as a project yet (AT-651). WRITE TIER: no longer READ_ONLY -- Umesh authorized ALLOW_WRITES on every target including production (qa/gates/write-policy-tier.md, D-053). The supplied account's permissions are the boundary and they are his to set; a run is NOT scoped narrower than them on an agent's initiative -- doing so makes the report incomplete, not the run safe (O4). projects/pathlynks/project.json must be flipped to allow_writes before this runs (maker's surface). [D-018/AT-100: done_check was {'cmd':'true'} -- a check that could not fail on the highest-risk task in the plan. Now asserts a finished crawl on disk AND an intact unexpired RunApproval covering its bounds.] [AT-100 second half: CRITICAL -> DUAL check, two blind checkers, both must PASS, per maker cycle step 7b.] Consent gate 2 existing is not permission to use it (D-052): each run needs its own RunApproval naming target and scope. | 2026-09-27 RE-SCOPED to Pathlynks (Umesh 2026-09-24 target.md:145 \"prove it on Pathlynks first\", applied 2026-09-27 on his direct instruction after the maker's write was blocked by the harness classifier; D-052, D-053). ERP becomes the second product. | D-080 item 4 / D-081 (2026-10-10): scored on Pathlynks, not ERP; ERP is the second product, parked. D-081 item 3: full approval, so the maker mints the signed per-run RunApproval row for this live bounded crawl with the PATHLYNKS_USER_* test account (each run still writes its own row naming target and scope). D-081 item 2: the crawl and the generated report are produced and delivered to Umesh FIRST, before any human bug list exists (qa/gates/d081-run-approvals.md, qa/gates/d081-pathlynks-report-first.md).",
       "attempts": 0,
       "created": "2026-09-07T17:15:41",
       "user_value": "high",
@@ -884,7 +884,7 @@
         "cmd": "uv run python scripts/adversarial_proof.py",
         "expect_exit": 0
       },
-      "note": "HIGHEST-RISK UNIT IN THE PLAN. Native file-defined probe sets; Garak/PyRIT/DeepTeam are NOT dependencies (D-017). No approval => zero requests sent, asserted at the transport. Probe cap, allowed_domains only, production named explicitly.",
+      "note": "HIGHEST-RISK UNIT IN THE PLAN. Native file-defined probe sets; Garak/PyRIT/DeepTeam are NOT dependencies (D-017). No approval => zero requests sent, asserted at the transport. Probe cap, allowed_domains only, production named explicitly. | D-081 item 3 (Umesh 2026-10-10, 'full approvaal hai'): NO LONGER HELD for a separate approval (supersedes the 2026-09-27 hold); the maker may mint the signed per-run RunApproval row (D-018) for the bounded adversarial pass on pathlynks.vidysea.com with the PATHLYNKS_USER_* test account. Each run still writes its own row naming target and scope; no row => zero requests at the transport. Builds after T-153 (qa/gates/d081-run-approvals.md).",
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
@@ -1646,8 +1646,8 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-198-team-loop.md",
         "expect_exit": 0
       },
-      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. No new module: edit sources/drive.py, cli_video.py, ui/routes_sources.py upload. Measured 2026-10-07: gws `drive files get -o` only writes under CWD; register does not copy (stable path needed).",
-      "criticality": "high"
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. No new module: edit sources/drive.py, cli_video.py, ui/routes_sources.py upload. Measured 2026-10-07: gws `drive files get -o` only writes under CWD; register does not copy (stable path needed). | D-081 item 6 (2026-10-10): Drive identity ANSWERED: the existing gws CLI login (the one /doc-polisher uses); the live Drive fetch shells out to gws and no token is copied into this repo (qa/gates/drive-identity.md). Email sender (D-081 item 5) gates only delivery/email.py, not this task.",
+      "criticality": "critical"
     },
     {
       "id": "T-199",
@@ -1663,7 +1663,7 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-199-team-loop.md",
         "expect_exit": 0
       },
-      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Tracker sheet 1JvSez… (full id in .work/google-ids-private.md). Outward-facing team-sheet write => HUMAN_GATE before first live write; column mapping agreed with Umesh/Mamta. | WIDENED (D-071): generic for any project -- when a user supplies a tracker sheet for a project, the first run proposes a column mapping (title, severity, screen/page, status, assignee, date, screenshot link) and shows it to the user for confirmation; the first live write to that sheet is shown and confirmed before it happens; mapping stored per project.",
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Tracker sheet 1JvSez… (full id in .work/google-ids-private.md). Outward-facing team-sheet write => HUMAN_GATE before first live write; column mapping agreed with Umesh/Mamta. | WIDENED (D-071): generic for any project -- when a user supplies a tracker sheet for a project, the first run proposes a column mapping (title, severity, screen/page, status, assignee, date, screenshot link) and shows it to the user for confirmation; the first live write to that sheet is shown and confirmed before it happens; mapping stored per project. | D-081 item 7 (Umesh 2026-10-10, 'vo in future hogaa abhi nhi'): build and prove a DRY RUN only (fake SheetClient, mapping preview, zero live writes). The first live write to the real Pathlynks Tracker stays an OPEN HUMAN_GATE (qa/gates/t199-first-live-write.md).",
       "criticality": "high"
     },
     {
@@ -1727,7 +1727,7 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-203-hosted-website.md",
         "expect_exit": 0
       },
-      "note": "D-071: Umesh -- 'abhi vidysea ki internal development team aur product team ke paas chalega, host properly website mai hoga', Linux/Ubuntu server. Server/host choice and DNS are a HUMAN_GATE before the first deploy. | Acceptance: A team member opens the server URL in a browser, signs in, onboards a project and runs a case; data survives a restart; the Origin/CSRF guard is configured for the server origin; no secret value is baked into the image.",
+      "note": "D-071: Umesh -- 'abhi vidysea ki internal development team aur product team ke paas chalega, host properly website mai hoga', Linux/Ubuntu server. D-081 item 4 (2026-10-10): proceeds as a LOCAL deployment on the dev machine; the real server host and DNS stay an open HUMAN_GATE (qa/gates/t203-host-and-dns.md) and now gate only the hosted check of T-206. | Acceptance: A team member opens the server URL in a browser, signs in, onboards a project and runs a case; data survives a restart; the Origin/CSRF guard is configured for the server origin; no secret value is baked into the image.",
       "criticality": "critical"
     },
     {
@@ -1742,8 +1742,8 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-204-team-login.md",
         "expect_exit": 0
       },
-      "note": "D-066 noted real auth is required once the UI leaves localhost; D-070 makes it a go-live blocker. Mechanism (simple team password vs Google sign-in limited to the company domain) is a HUMAN_GATE. | Acceptance: An unauthenticated request to any UI page or state-changing route is refused; a signed-in team member gets through; credentials/sessions never appear in logs.",
-      "criticality": "high"
+      "note": "D-066 noted real auth is required once the UI leaves localhost; D-070 makes it a go-live blocker. Mechanism ANSWERED by D-072 (2026-10-07): email and password with open sign-up, admin moderation and groups with checkbox permissions (qa/contracts/auth.md); no longer a HUMAN_GATE. | Acceptance: An unauthenticated request to any UI page or state-changing route is refused; a signed-in team member gets through; credentials/sessions never appear in logs.",
+      "criticality": "critical"
     },
     {
       "id": "T-205",
@@ -2164,6 +2164,27 @@
       "message": "T-204 needs review (high)",
       "task_id": "T-204",
       "acked": false
+    },
+    {
+      "ts": "2026-10-10T22:02:02",
+      "level": "critical",
+      "message": "T-206 is CRITICAL — human required",
+      "task_id": "T-206",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-10T23:57:03",
+      "level": "critical",
+      "message": "T-198 is CRITICAL — human required",
+      "task_id": "T-198",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-10T23:57:03",
+      "level": "critical",
+      "message": "T-204 is CRITICAL — human required",
+      "task_id": "T-204",
+      "acked": false
     }
   ],
   "preferences": {
@@ -2172,9 +2193,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.66,
-    "eta_days": 16.3
+    "velocity_per_day": 1.59,
+    "eta_days": 15.7
   },
-  "last_deterministic_tick": "2026-10-07T18:33:09",
+  "last_deterministic_tick": "2026-10-10T23:57:03",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }

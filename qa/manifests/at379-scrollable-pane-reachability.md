@@ -312,7 +312,7 @@ old; the consequence is new. The direction is the deliberate one — a false pos
 star's false-positive term, a false negative costs a missed credential — but calling a new cost an
 old one is the kind of disclosure error this unit has now been charged for twice.
 
-## Status: STALLED (3 of 3 fix cycles spent; verdict qa/verdicts/at379-scrollable-pane-reachability.md)
+## Status: superseded-by at408-416-scroll-reach (D-080 item 5b, 2026-10-10: closed as a unit, no further cycle; the remaining obligation was delivered by at408-416-scroll-reach, gate at416-clip-vs-reach-direction answered B, D-048, checker PASS qa/verdicts/at408-416-scroll-reach.md; AT-417 stays open and is not part of this. Was STALLED, 3 of 3 fix cycles spent; verdict qa/verdicts/at379-scrollable-pane-reachability.md)
 
 **What is still failing — AT-416 (high).** The running clip intersection added in cycle 3 to close
 AT-393 **re-opened AT-379**. The outer clip now binds against the glyph's *current position* rather
