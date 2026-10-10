@@ -55,4 +55,4 @@ exit_screen). No other test in the file had the stale assumption (`test_rc2_abse
   mutation. The RC3 reject-path guard is `tests/test_reconcile.py::test_rc3_narration_not_in_transcript_is_rejected_and_the_step_kept`,
   which under the same mutation goes `1 failed, 22 passed`. So RC3 stays guarded, by that test.
 
-Pre-check[RC3]: PRECHECK_SHA uv run pytest tests/test_reconcile_schema.py -p no:xdist -> 19 passed
+Pre-check[RC3]: d9972cbb uv run pytest tests/test_reconcile_schema.py -p no:xdist -> 19 passed
