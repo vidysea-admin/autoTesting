@@ -7,7 +7,7 @@
 **Date:** 2026-10-11
 **Fix cycle:** 0
 Branch: wave/land-t203-hosting · Base: master 3a16616c · Source: wave/t203-hosting code of 5eee9b6e + 9a644597 (checker PASS at 66f8b98c, qa/verdicts/t203-hosting.md); qa-only commits not carried
-Code commit under check: ebf2cf3d (this manifest is the only later change)
+Code commit under check: fddbf469 (ebf2cf3d plus a renumber of issue ids in text only; the manifest is the only later change)
 Executor: claude-sonnet-subagent (maker build subagent)
 
 **Dual check:** no (no security|auth|tenancy|prod-write trigger; the auth/tenancy half is T-204)
@@ -27,6 +27,8 @@ Tier: L (concurrency: run_queue slot accounting and lock; config: compose.prod.y
 Base / checked state: master 3a16616c + ebf2cf3d, clean tree
 Gate answers: qa/gates/t203-host-and-dns.md:13 `Answered (local-machine part only): 2026-10-10 - host locally for now - D-081`; line 11 (real server host and DNS) still open and blocks only HO34-HO36, not this unit. D-081 item 4. No Docker-dependent row is claimed.
 Affected tests / full-suite trigger: the brief section 6 set plus tests/test_ui_report.py, tests/test_ui_report_no_runs.py, tests/test_ui_sources.py (routes_report and routes_sources changed). The full suite is owed by the checker.
+Renumber note: after ebf2cf3d the coordinator found master's ledger runs to AT-861, so the 12 rows moved from AT-841..AT-852 to AT-862..AT-873 (same order, +21) in `qa/issues.jsonl`, the docstrings and comments of the files listed above, and this manifest. fddbf469 changes only ids in text: no behaviour and no issue status. The tagged Pre-check lines below ran on ebf2cf3d; only the untagged line below was re-run on fddbf469. Id map: AT-841..852 -> AT-862..873 (the earlier text above that says AT-841..AT-852 refers to the ids as renumbered in ebf2cf3d; read them +21).
+Pre-check: fddbf469 uv run pytest -p no:xdist tests/test_env_loading.py tests/test_hosting_config.py tests/test_hosting_deploy.py tests/test_run_queue_resilience.py tests/test_ui_runs_queue.py -> 38 passed, 1 warning in 46.73s t=55 (the five test files whose docstrings changed; ruff and doctor also re-run on fddbf469: clean)
 Pre-check[HO1]: ebf2cf3d uv run pytest tests/test_hosting_deploy.py -> 10 passed in 0.35s t=6 (LOCAL half; BUILD-HOST half BLOCKED-CAPABILITY, Docker daemon down)
 Pre-check[HO2]: ebf2cf3d uv run pytest tests/test_env_loading.py -> 6 passed in 31.00s t=42 (LOCAL empty-env shadow and scan half; docker inspect/logs BLOCKED-CAPABILITY)
 Pre-check[HO3]: ebf2cf3d uv run pytest tests/test_hosting_config.py tests/test_ui_healthz.py -> 13 passed, 1 warning t=13 (healthz package root only; container run BLOCKED-CAPABILITY)
