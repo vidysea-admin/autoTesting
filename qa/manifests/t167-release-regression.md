@@ -1,7 +1,7 @@
 # Manifest — t167-release-regression (T-167: LangGraph release-regression orchestrator)
 **Contract:** qa/contracts/release-regression.md RR1-RR6
 **Goal task:** T-167
-**Status:** ready-for-check
+**Status:** checked-PASS (dual, cycle 2: A qa/verdicts/t167-release-regression.r2.a.md, B qa/verdicts/t167-release-regression.r2.b.md; checked 1b6f07e7; merged 476666d6)
 **Date:** 2026-10-11
 **Fix cycle:** 2
 **Repair base:** 102a4b91
