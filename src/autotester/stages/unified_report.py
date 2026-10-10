@@ -6,7 +6,8 @@ T-167), first-party network evidence (T-170: run `RawResult.evidence`, crawl `li
 the run's verdicts and cases (`report_export`'s own RE1/RE6 helpers), the persona's revisions
 (`PortalPersona.history`, CR4) and the crawl's coverage rows (`crawl_report.crawl_summary`, DC1).
 It computes no figure of its own (DC2): a missing input becomes `unavailable: <reason>`, never an
-empty list that reads as clean (C12). The HTML is scrubbed with the project's `Redactor` last (DC4).
+empty list that reads as clean (C12). The report object is scrubbed with the project's
+`Redactor` before it is rendered (DC4).
 """
 
 from __future__ import annotations
@@ -196,15 +197,19 @@ def build_report(store: ProjectStore, run_id: str | None = None) -> UnifiedRepor
     rid = _pick_run(store, run_id)
     crawls = store.list_crawl_ids()
     crawl_id = crawls[0] if crawls else None
-    return UnifiedReport(
+    report = UnifiedReport(
         project=store.paths.slug, run_id=rid, regression=load_regression(store, rid),
         api=load_api(store, rid, crawl_id), workflows=load_workflows(store, rid),
         history=load_history(store), coverage=load_coverage(store, crawl_id))
+    # DC4: scrub the OBJECT, so the renderer never sees a secret in any form. `Redactor.scrub`
+    # matches exact bytes: after `render_html` HTML-escapes `& < > '` it would no longer match.
+    return UnifiedReport.model_validate(
+        _load_redactor(store).scrub_obj(report.model_dump(mode="json")))
 
 
 def unified_html(store: ProjectStore, run_id: str | None = None) -> str:
-    """The one artifact's text: rendered, then scrubbed of any declared secret value (DC4)."""
-    return _load_redactor(store).scrub(render_html(build_report(store, run_id)))
+    """The one artifact's text: rendered from a report already scrubbed of secrets (DC4)."""
+    return render_html(build_report(store, run_id))
 
 
 def export_unified_html(project_slug: str, run_id: str | None, out_path: Path,
