@@ -214,10 +214,15 @@ def expand_cases(
         typer.secho(f"no flowspec for '{project}' yet — ingest a recording first",
                     fg=typer.colors.RED)
         raise typer.Exit(1)
-    model = providers.get(provider)
-    if not model.available():
-        typer.secho(f"provider '{provider}' has no credentials on this machine — "
-                    "`autotester providers` lists the ones that do", fg=typer.colors.RED)
+    try:
+        provider_id, options = providers.parse_spec(provider)   # `litellm:<model>` works here too
+        model = providers.get(provider_id, **options)
+    except ProviderError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(1) from None
+    if why := providers.why_unavailable(model):                 # LL11: the same reason as the UI
+        typer.secho(f"{why} — `autotester providers` lists the ones that have credentials",
+                    fg=typer.colors.RED)
         raise typer.Exit(1)
     try:
         cases = expand_stage.expand(spec, model)

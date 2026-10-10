@@ -83,7 +83,8 @@ def test_run_refuses_when_no_ai_provider_is_configured(
 
     import autotester.ui.routes_runs as routes_runs_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _UnavailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _UnavailableProvider())
 
     response = client.post("/projects/demo/run", follow_redirects=False)
 
@@ -126,7 +127,8 @@ def test_run_executes_every_case_and_redirects_to_the_report(
     import autotester.ui.routes_runs as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
 
@@ -217,7 +219,8 @@ def test_entry_case_gets_an_isolated_wiped_profile_not_the_shared_one(
     import autotester.ui.routes_runs as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
 

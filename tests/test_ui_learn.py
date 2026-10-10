@@ -18,7 +18,9 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from litellm_fake import install
 
+from autotester.providers.litellm_provider import LiteLLMProvider
 from autotester.providers.mock import MockProvider
 from autotester.schema.case import ExpandedSteps
 from autotester.schema.enums import Action, ReviewStatus
@@ -74,7 +76,7 @@ def _mock_generator(monkeypatch: pytest.MonkeyPatch, *, available: bool = True) 
     )] * 60})
     import autotester.ui.routes_learn as routes_learn_module
 
-    monkeypatch.setattr(routes_learn_module, "LangChainFallbackProvider", lambda: provider)
+    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
 
 
 # -- the review page ---------------------------------------------------------
@@ -220,7 +222,7 @@ def test_generate_when_the_model_fails_midway_is_refused_as_a_page_not_a_500(
     provider = _StarvedProvider(responses={"agent": []})  # empty queue -> ProviderError
     import autotester.ui.routes_learn as routes_learn_module
 
-    monkeypatch.setattr(routes_learn_module, "LangChainFallbackProvider", lambda: provider)
+    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
 
     response = client.post("/projects/demo/cases/generate", follow_redirects=False)
 
@@ -229,6 +231,28 @@ def test_generate_when_the_model_fails_midway_is_refused_as_a_page_not_a_500(
     assert "Internal Server Error" not in response.text
     assert "AutoTester" in response.text
     assert store.list_cases() == [], "a partial failure must not leave partial cases"
+
+
+def test_generate_failure_page_does_not_carry_a_vendor_echoed_key(
+    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AT-790 (LL8). The route prints the ProviderError on its refusal page, so a
+    vendor error that echoes a vendor-native key must not get that far."""
+    canary = "AIza-ROUTE-CANARY-555"
+    store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+    install(monkeypatch, [RuntimeError(f"403 at https://vendor.test/x?key={canary}")] * 60)
+    monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
+    monkeypatch.setenv("GEMINI_API_KEY", canary)
+    provider = LiteLLMProvider(model="gemini/gemini-2.5-pro")
+    import autotester.ui.routes_learn as routes_learn_module
+
+    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
+
+    response = client.post("/projects/demo/cases/generate", follow_redirects=False)
+
+    assert response.status_code == 400 and "could not complete" in response.text
+    assert canary not in response.text
+    assert store.list_cases() == []
 
 
 def test_generate_on_an_unapproved_flowspec_is_refused_as_a_page_not_raw_json(

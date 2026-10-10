@@ -66,7 +66,8 @@ def _patch_common(monkeypatch):
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     return routes_runs_module
 
 
