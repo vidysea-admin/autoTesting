@@ -394,8 +394,8 @@ Falsification (L10; floor is 1, three run; throwaway copies of src, tests, docs,
 Falsify[L10]: tests/test_citation_seals.py green@14a9b465 (32 passed); seals.py `if _digest(unit[0]) != seal.sha256.lower():` -> `if False:` RED 3 failed (any_change[byte], any_change[append], changed_entry_invalidates_its_seal_but_not_the_neighbour); restored by discarding the copy.
 Additional (guidance): tests/test_citations.py green 61 passed; citations.py `if review is None:` coverage-append -> `if False:` RED 19 failed; same file, `_compare_quote` What comparison -> `if False:` RED 7 failed (quote-only-in-Why and subject-mismatch cases). The "swap to an existing unrelated id" falsifier was not run: the one attempt was a no-op mutant and is not evidence.
 
-Real-tree doctor, `uv run autotester doctor` on this branch after the merge: exit 1, 2272 violations printed
-(1896 decision-citation-coverage, 375 decision-citation-declaration, 1 stale-generated for SNAPSHOT), plus 2
+Real-tree doctor, `uv run autotester doctor` on this branch after the merge: exit 1, 2271 violations printed
+(1896 decision-citation-coverage, 375 decision-citation-declaration; 2272 before SNAPSHOT was regenerated), plus 2
 decision-citation-known-disputed rows (K1 docs/DECISIONS.md:80, K2 docs/DECISIONS.md:209) listed non-blocking,
 0 decision-citation-sealed rows (no seal exists yet). Of the coverage rows 1879 are "needs one current review"
 (1383 of them in qa/manifests and qa/verdicts) and 17 are stale review rows whose lines changed since review.
