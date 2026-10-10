@@ -17,7 +17,7 @@
 | `browser/locators.py` | Semantic locators: the target grammar and the session's one place that resolves it. |
 | `browser/observe.py` | Passive observation: enumerate a page's controls, capture console/network |
 | `browser/secrets.py` | The credential boundary. Secret values live here and nowhere else. |
-| `browser/session.py` | One real, visible browser session per project. Contract: browser-and-secrets.md B5-B9. |
+| `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |
 | `browser/video.py` | Per-case video recording for `BrowserSession` (T-191/AT-587). |
 | `cli.py` | Command line. Every action the UI offers is available here first. |
 | `cli_crawl.py` | Crawl commands — `autotester explore` and `autotester report crawl`. |
