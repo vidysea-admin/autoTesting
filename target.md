@@ -161,12 +161,14 @@ under-reporting the build.*
 
 ## THE PROOF (must clear before AutoTester counts as "working on a real product")
 
-### M7 · Real-product trust number — 🔒 human-gated, then 🎯
-*Umesh 2026-09-24: prove it on **Pathlynks first**; a second product's test account (ERP or any other)
-comes only after that — "not only erp". T-122/T-145/T-136 get re-scoped to "second product".*
-- [!] T-122 login case + first logged-in run on the second product — credentials after Pathlynks is proven
-- [!] T-145 live bounded READ_ONLY crawl of the second product — needs T-122 + consent (CRITICAL, dual-check)
-- [!] T-136 score recordings vs a trainer truth sheet → real recall/FP/time — **needs the truth sheet**
+### M7 · Real-product trust number — scored on **Pathlynks** (D-080 item 4, 2026-10-10)
+*Umesh 2026-09-24: prove it on **Pathlynks first**; ERP (or any other second product) is parked until
+Pathlynks is proven — "not only erp". T-122, T-145, T-136 and the finish line T-169 / O6 are scored on
+Pathlynks with the `PATHLYNKS_USER_*` test account (D-080 item 4; D-052 part 1 deferred the ERP credentials
+and truth sheet, it did not re-aim these tasks at ERP).*
+- [x] T-122 login case + first logged-in run on Pathlynks — done (`qa/verdicts/t122-first-login-run.md`, checker PASS cycle 1)
+- [ ] T-145 live bounded crawl of pathlynks.vidysea.com with the test account, then the generated report delivered to Umesh **first** (D-081 item 2) — full run approval given (D-081 item 3); each run writes its own signed RunApproval row (CRITICAL, dual-check)
+- [!] T-136 score AutoTester's Pathlynks report vs a human tester's bug list → real recall/FP/time — **held on an independent human list** (`qa/gates/t136-independent-human-list.md`): the list must come from a tester who has not seen the report, or from Umesh before he opens it (AT-653, bench.md K6-K9). The ERP truth sheet is not on this path
 - [ ] **T-136a (D-052, 2026-09-27): a fixture-derived trust number now** — build and review the
       recall / false-positive / time harness against a fixture product so it is proven before real
       inputs exist. Labelled **fixture-derived in `schema/bench.py`'s own fields**, never only in prose,
@@ -186,7 +188,7 @@ comes only after that — "not only erp". T-122/T-145/T-136 get re-scoped to "se
 - [x] AT-483 orphaned-crawl liveness — re-landed onto master (2d58215) after its 09-18 PASS never merged
 
 *Status truth: the plumbing is real, but everything downstream of a **learned** FlowSpec is
-fixture-proven only. The ERP trust number is the first time AutoTester is measured against a human.*
+fixture-proven only. The Pathlynks trust number is the first time AutoTester is measured against a human.*
 
 ---
 
@@ -254,7 +256,7 @@ to exceed its declared scope. `write_policy` stays `read_only`.*
 ---
 
 ## Definition of done (product-level)
-1. ERP trust number exists (T-136): real recall / false-positive / time vs the trainer truth sheet.
+1. Pathlynks trust number exists (T-136): real recall / false-positive / time vs a human tester's independent bug list (D-080 item 4; ERP is the parked second product).
 2. Both intake modes work on a real target and beat-or-match a human tester (T-169).
 3. Every finding is evidence-backed and correctly classified; coverage shows untested branches.
 

@@ -5,12 +5,15 @@ One `PortalPersona` model, persisted at `projects/<slug>/portal_persona.json`
 via the filestore; `knowledge.md` is a regenerated VIEW of it, never a second
 source of truth. Auth is described by field/domain SHAPE only — a `SecretRef`
 key, never a value (PP5). `history` is a dated, append-only trail of what each
-update changed (PP3).
+update changed (PP3). The knowledge graph (T-166, EC1) is this same persona's typed
+nodes and edges (`graph`) — JSON on the filestore, no graph database, no second schema.
 """
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from autotester.schema.base import Artifact
 
@@ -196,6 +199,74 @@ class PersonaRevision(BaseModel):
         return value
 
 
+NodeKind = Literal["screen", "control", "flow", "scenario", "case", "verdict", "api", "release"]
+EdgeKind = Literal["has_control", "leads_to", "visits", "calls", "variant_of", "traces_to",
+                   "targets", "verdict_of"]
+
+
+class GraphNode(BaseModel):
+    """One typed node of the knowledge graph (EC1). `id` is `<kind>:<ref>`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    kind: NodeKind
+    label: str = ""
+
+    @classmethod
+    def make(cls, kind: NodeKind, ref: str, label: str = "") -> GraphNode:
+        return cls(id=f"{kind}:{ref}", kind=kind, label=label or ref)
+
+
+class GraphEdge(BaseModel):
+    """One typed edge `src -> dst`; `label` tells parallel edges apart (e.g. the control)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: EdgeKind
+    src: str
+    dst: str
+    label: str = ""
+
+
+class KnowledgeGraph(BaseModel):
+    """Screen, control, flow, scenario, case, verdict, API and release nodes with typed
+    edges between them (D-041). Every edge endpoint is a node: a dangling edge is refused."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    nodes: list[GraphNode] = Field(default_factory=list)
+    edges: list[GraphEdge] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _edges_resolve(self) -> KnowledgeGraph:
+        ids = [n.id for n in self.nodes]
+        if len(set(ids)) != len(ids):
+            raise ValueError("duplicate node id in knowledge graph")
+        missing = {end for e in self.edges for end in (e.src, e.dst)} - set(ids)
+        if missing:
+            raise ValueError(f"edge endpoint is not a node: {sorted(missing)}")
+        return self
+
+    def node(self, node_id: str) -> GraphNode | None:
+        return next((n for n in self.nodes if n.id == node_id), None)
+
+    def add_node(self, node: GraphNode) -> None:
+        if self.node(node.id) is None:
+            self.nodes.append(node)
+
+    def add_edge(self, edge: GraphEdge) -> None:
+        for end in (edge.src, edge.dst):
+            if self.node(end) is None:
+                raise ValueError(f"edge endpoint is not a node: {end}")
+        if edge not in self.edges:
+            self.edges.append(edge)
+
+    def out(self, node_id: str, kind: EdgeKind | None = None) -> list[GraphNode]:
+        ends = [e.dst for e in self.edges if e.src == node_id and kind in (None, e.kind)]
+        return [n for n in (self.node(i) for i in ends) if n is not None]
+
+
 class PortalPersona(Artifact):
     """The durable, cross-run model of one product under test (PP1). A single
     artifact — `knowledge.md` is a regenerated view of it, not a second store."""
@@ -209,6 +280,7 @@ class PortalPersona(Artifact):
     gotchas: list[Gotcha] = Field(default_factory=list)
     screenshot_refs: list[str] = Field(default_factory=list)
     history: list[PersonaRevision] = Field(default_factory=list)
+    graph: KnowledgeGraph = Field(default_factory=KnowledgeGraph)
 
     def screen(self, screen_id: str) -> PersonaScreen | None:
         return next((s for s in self.screens if s.id == screen_id), None)

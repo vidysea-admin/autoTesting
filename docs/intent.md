@@ -141,5 +141,5 @@ for report delivery, Google Drive and Sheets through `gws`.
 - [ ] **Q6 (Group 10)** — Which Google identity the server uses to fetch pasted Drive links. Gates only
       the live Drive fetch.
 - [ ] PARKED: `org_id` on every row for a later multi-company move (Q1 follow-up; default: not built).
-- [ ] PARKED: which second product supplies the trust number — until Pathlynks is proven
-      (Umesh 2026-09-24: "not only erp").
+- [ ] PARKED: the second product (ERP or another) — the trust number is scored on Pathlynks (D-080 item 4,
+      2026-10-10); a second product waits until Pathlynks is proven (Umesh 2026-09-24: "not only erp").

@@ -2268,3 +2268,85 @@ src/autotester/browser/session.py: read-only `cdp_url` property (T-177).
 **Result:** `qa/contracts/auth.md` AU27 stays as written; its `serves:` line (D-074 safe default, D-072#4) is read as D-072 item 3 plus this entry. T-204 builds to AU27. No code change is authorized by this entry.
 
 **Links:** D-072 item 3, D-074, qa/contracts/auth.md AU27
+
+## D-077 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** The AGPL-licensed `pymupdf` package that `browser-use==0.5.9` (D-075) pulls in transitively
+is accepted as is. We do not strip, replace or vendor around it.
+
+**Why:** Umesh, chat 2026-10-07, answered "Accept AGPL" after T-177 checker A found the licence. The
+autoTesting repo is already public, so the AGPL source-disclosure duty is met for now. The risk
+applies only to a future closed, paid or customer-hosted build of AutoTester.
+
+**Result:** T-177 is not blocked on licensing. **Re-open trigger:** before AutoTester is sold,
+hosted for customers, or the repo is made private, this entry must be superseded, either by removing
+the dependency or by a fresh licence decision.
+
+**Changes-authorized:** none (pyproject/uv.lock pin already authorized by D-075).
+
+**Approved-by:** Umesh — chat answer 2026-10-07.
+
+**Links:** T-177; D-075; qa/verdicts/t177-agent-fallback.a.md.
+
+## D-078 | 2026-10-07 | type: decision | status: ACTIVE
+
+**What:** Umesh decided (chat, 2026-10-07) not to add the `tzdata` package. Schedules (Group 10 G5, team-schedule.md) support exactly two time zones: UTC and IST, the fixed +05:30 offset with no DST. Any other zone is refused with an error. The implementation uses fixed offsets (`datetime.timezone`), with no ZoneInfo and no zone database, so it behaves the same on Windows dev and Ubuntu prod.
+
+**Why:** Windows ships no IANA zone database, so a city zone such as America/New_York fails there without `tzdata`. Umesh chose not to take a new dependency. The team works in IST, and UTC covers the server.
+
+**Result:** The G5 schedule slice drops its DST handling and DST tests. The checker amends the qa/contracts/team-schedule.md timezone/DST wording to "UTC or IST only, no DST".
+
+**Changes-authorized:** `core/localtime.py`, `schema/schedule.py` and `stages/schedule_*.py` in the G5 slice. No change to pyproject.toml or uv.lock.
+
+**Approved-by:** Umesh (chat, 2026-10-07)
+
+**Links:** D-072 item 9, D-074, T-201 or the G5 schedule unit, qa/contracts/team-schedule.md
+
+## D-079 | 2026-10-08 | type: decision | status: ACTIVE
+**What:** The canonical AutoTester GitHub destination is now https://github.com/vidysea-admin/autoTesting (public, default branch master). Future ordinary pushes from D:/autoTesting and its linked worktrees use origin at this destination; remote.pushDefault is origin. The previous personal repository remains available as the legacy remote.
+**Why:** Umesh requested moving all currently published AutoTester code into the Vidysea organization so DevOps can use it for server deployment, and instructed this chat to carry out the migration. Keeping the existing master history preserves commit identities and avoids mixing uncommitted or unfinished branch work into the deployment branch.
+**Result:** Created the public organization repository and pushed master at 40e8f1047bc250ee745587ef9713efd26b28ef38: 2,167 commits and 1,984 tracked paths. The public GitHub branch and git ls-remote independently returned that same SHA. A scan of its 6,104 reachable blobs found no matches against 15 current configured secret values or six credential patterns; twelve positive/negative pattern controls passed. The shared origin fetch/push URLs and default push remote were updated and verified from the combined and hosting worktrees. Repository deployment workflows, repository webhooks and deployment records were all empty at migration time: automatic server deployment is not configured or claimed. Auth/provider repairs and other work on separate branches retain their existing checker/integration state.
+**Links:** Umesh's 2026-10-08 repository migration request and follow-up; source commit 40e8f1047bc250ee745587ef9713efd26b28ef38; https://github.com/vidysea-admin/autoTesting; D-007 standing push-on-PASS policy (retained); T-203 and T-204 go-live work (not closed by this operational migration).
+
+## D-080 | 2026-10-10 | type: decision | status: ACTIVE
+
+**What:** Umesh took seven process and scope decisions in chat on 2026-10-10. Items 1, 2 and 3 he decided explicitly. Items 4, 5, 6 and 7 he delegated ("for the rest, go with your recommendation"); their wording here is the assistant's and he has not yet read it.
+1. **origin/master is the single source of truth.** Uncommitted or unreviewed work in any Codex worktree (.worktrees/codex-ui-consistency, .worktrees/codex-live-product, .worktrees/codex-video-live, about 1,180 dirty files together, none of it covered by a matching-cycle checker PASS as measured on 2026-10-10) is NOT canonical. It reaches master only unit by unit, each unit on its own branch and merged only by the exact commit a checker PASS reviewed, with a matching Cycle checked (core-invariants C10, D-048 commit-before-verdict = C). Decision entries numbered D-080 and above that exist only inside those worktrees are not part of the history; they must be renumbered and re-authorized before they can land.
+2. **One orchestrator at a time.** The Codex heartbeat automation autotester-live-product-implementation is paused (its brief named codex-ui-consistency as the canonical checkout, which item 1 overrules). The Claude maker loop is the only orchestrator.
+3. **The maker loop stays paused (qa/.paused)** until the maker-checker tooling rewrite in D:/ai_os is committed and the Sonnet weekly quota resets (2026-10-12 16:30 IST per qa/.last-tick). Resume with /maker resume. This is a pause, not a stop of the goal.
+4. **The real-product trust number targets Pathlynks.** T-122, T-145, T-136 and the finish line T-169 / outcome O6 are scored on Pathlynks (the PATHLYNKS_USER_* test account), not on the ERP product. This is the reading of D-052 part 1: "held for a second product" deferred the ERP credentials and ERP truth sheet; it did not re-aim these tasks at ERP. T-122 is already done on Pathlynks (qa/verdicts/t122-first-login-run.md, checker PASS cycle 1). T-136 stays pending and held until a human tester's bug list for Pathlynks exists, produced in parallel per qa/contracts/bench.md K6-K9; the ERP_Issues_Trainers.xlsx truth sheet is not on the T-136 critical path. ERP remains the second product, parked until Pathlynks is proven.
+5. **Stalled units.** (a) at345-346-fold-coverage stays STALLED and parked, no extra cycle now (restates qa/gates/at355-guard-shape.md, answered 2026-09-11). (b) at379-scrollable-pane-reachability (STALLED at fix cycle 3 of 3) gets no further cycle and is closed as a unit; its remaining obligation was delivered by at408-416-scroll-reach (gate at416-clip-vs-reach-direction answered B, D-048; checker PASS qa/verdicts/at408-416-scroll-reach.md). AT-417 stays open and is not part of this decision.
+6. **Unit at733-entry-cleanup: the current open-ended unit is stopped.** It appeared in 208 of 549 ticks without reaching a verdict and closes no goal task. The private candidate branch codex/at733-entry-cleanup is not merged. The defect AT-733 (high, open: a silent profile-cleanup failure can let a logged-out entry case run logged in) is NOT accepted as risk; it stays open in qa/issues.jsonl and is re-planned after resume as one bounded unit with a cycle cap, not carried as a standing top-of-queue item.
+7. **Gate qa/gates/t192-narrowed-command-ratification.md: option A.** Running ingest map instead of Analyze is accepted as the discharge of the t135 gate answer B (D-048). No standing rule is created (option B was not chosen). The approved single vision call remains unspent.
+
+**Why:** Three Codex worktrees and the Claude maker loop were writing in parallel, with two sets of colliding D-080+ ids and a combined dirty tree that no checker has seen; a single reviewed trunk is what keeps the history auditable. The goal is slowed by units that burn ticks without closing a task (at733 in 208 of 549 ticks; at379 and at345-346 at the 3-cycle cap) and by a record that disagreed with itself on the trust-number product (target.md and docs/plan.md showed T-122/T-145/T-136 as held for ERP while goal.json, bench.md K6-K9 and the pathlynks-user-account-first gate already said Pathlynks). Pausing the loop avoids running on tooling that is mid-rewrite and on a quota that resets on 2026-10-12.
+
+**Result:** (1) Codex worktree changes are inputs to be re-landed unit by unit, not state to merge wholesale. On 2026-10-10 wave/t136-bench (t136-bench-foundation, checker PASS cycle 0) was merged to master with docs/MAP.md regenerated; doctor, ruff and the bench tests were clean. Two other branches hold a matching-cycle PASS but are NOT landed: integrate/combined (at780-pii and at780-harden, dual PASS cycle 0) because merged onto current master it fails doctor (stages/reconcile.py reaches 302 lines, limit 300), and wave/t203-hosting (slice PASS) because it conflicts with master in ui/routes_runs.py and reuses issue ids AT-782..AT-793. Both go back through the maker and a fresh checker cycle after resume. Root master was reset to origin/master after a backup (D:/autoTesting-backup-2026-10-10, local only); 18 issue rows (AT-745..AT-756, ISS-t151-target-discovery-1..6), two feedback-inbox sections and 13 tick lines that existed only in the stale root tree were restored verbatim. (2) The automation is paused; no second scheduler writes to this repo. (3) qa/.paused stays in place. (4) goal.json already matches; target.md M7, the docs/plan.md "Held / blocked" rows for T-122/T-145/T-136 and the docs/intent.md PARKED line are brought in line by the maker after resume; the checker re-scopes the AT-752 note. No contract change is needed. (5) and (6) The maker marks the two manifests and re-plans AT-733 in qa/QUEUE.md; the checker alone sets any issue status (AT-379 is expected to close as fixed via at408-416, not wontfix). (7) The checker closes ISS-t192-url-pattern-heal-1; an Answered line is added to the gate.
+
+**Changes-authorized:** docs/plan.md (Held / blocked table and T-122/T-145/T-136 wording only); target.md (M7 block and Definition of done item 1 wording only); docs/intent.md (the PARKED second-product line only); qa/QUEUE.md (AT-733 row re-planned as a bounded unit, with a pointer to this entry); qa/manifests/at379-scrollable-pane-reachability.md and qa/manifests/at733-entry-cleanup.md (status line only); qa/gates/t192-narrowed-command-ratification.md (Answered line); qa/issues.jsonl rows ISS-t192-url-pattern-heal-1, AT-379 and AT-752 by the checker only. No src/, no contract, no enforcement-path file, no dependency, no credential and no push is authorized by this entry.
+
+**Approved-by:** Umesh (chat, 2026-10-10; items 1-3 explicit, items 4-7 delegated to the assistant's recommendation)
+
+**Links:** D-079; D-052; D-053; D-048; D-007; core-invariants C10; T-122; T-136; T-145; T-169; O6; AT-733; AT-379; AT-416; AT-417; AT-345; AT-346; AT-355; AT-752; ISS-t192-url-pattern-heal-1; qa/gates/t192-narrowed-command-ratification.md; qa/gates/at355-guard-shape.md; qa/gates/at416-clip-vs-reach-direction.md; qa/gates/pathlynks-user-account-first.md; qa/contracts/bench.md K6-K9; qa/.paused
+
+## D-081 | 2026-10-10 | type: decision | status: ACTIVE
+
+**What:** Umesh answered the seven open human inputs in chat on 2026-10-10 and asked for the loop to resume now.
+1. **Pause lifted early.** Umesh chose "resume now" (AskUserQuestion, 2026-10-10) instead of waiting for the 2026-10-12 16:30 IST quota reset named in D-080 item 3. qa/.paused was removed by /maker resume on his instruction. If Sonnet subagents fail on quota, the loop re-pauses with that reason (.9-16c).
+2. **AutoTester's Pathlynks report comes first.** Umesh: "tu phle apni pathlynks ki report prepare krrkee de". The live crawl (T-145) and the generated report are produced and delivered to him before any human bug list exists. Consequence, recorded so it is not rediscovered: T-136 scores recall only on a list written without sight of AutoTester's report (AT-653, qa/contracts/bench.md K6-K9). A list Umesh writes after reading the report cannot produce that number. T-136 and T-169 stay pending until a list exists from a tester who has not seen the report, or one Umesh writes before opening it.
+3. **Run approvals: full approval.** Umesh: "full approvaal hai". This authorizes the maker to mint the signed per-run RunApproval rows (D-018) for the T-145 live bounded crawl of pathlynks.vidysea.com with the PATHLYNKS_USER_* test account, and for the T-154 bounded adversarial pass on the same target. T-154 is no longer held for a separate approval (supersedes the 2026-09-27 hold in docs/plan.md:85). Each run still writes its own signed row naming target and scope; the approval is the authority for the row, not a replacement for it.
+4. **T-203 host and DNS: later; host on this machine for now.** Umesh: "krr denge but tu phle sabb run tho krr and for that time iss system mai host krkee use krr". T-203 proceeds as a local deployment on the dev machine. The server host and DNS remain an open human input and gate only the hosted check of T-206.
+5. **Email sender: take the credentials from d:/erp.** The AWS SES SMTP values and sender identity used by d:/erp are copied into the repo-root .env under AutoTester-prefixed keys, never printed, never committed, and declared as SecretRef keys.
+6. **Drive identity: the existing gws CLI login** (the one the /doc-polisher skill uses). The live Drive fetch in T-198 shells out to gws; no token is copied into this repo.
+7. **Pathlynks Tracker sheet: no live write now.** Umesh: "vo in future hogaa abhi nhi". T-199 builds and proves a dry run only; the first live write stays a HUMAN_GATE.
+8. **D-080 items 4 to 7 ratified.** Umesh: "go". Pathlynks is the trust target, the stalled-unit calls stand, and the t192 gate answer A stands.
+
+**Why:** These were the inputs every remaining unit was waiting on. Umesh wants the product run end to end first, on this machine, with the Pathlynks report in his hands before he invests time in a manual list. Recording the answers on disk once stops the loop from re-asking them (the D-006 failure).
+
+**Result:** qa/.paused removed 2026-10-10. Gate files and goal.json notes are brought in line by the maker in the same tick. No run has been fired by this entry.
+
+**Changes-authorized:** qa/gates/ (new or amended gate files with Answered lines for items 2 to 7); .goal/goal.json (notes on T-136, T-145, T-154, T-198, T-199, T-203, T-204 only); docs/plan.md (Held / blocked table and the Group 10 HUMAN_GATE list only); qa/QUEUE.md (rows for the remaining units); projects/pathlynks/project.json (write_policy to allow_writes, already authorized by qa/gates/write-policy-tier.md); the gitignored repo-root .env (AutoTester-prefixed mail keys). No contract, no enforcement-path file and no dependency is authorized by this entry; src/ changes ride on each unit's own contract and checker PASS.
+
+**Approved-by:** Umesh (chat, 2026-10-10)
+
+**Links:** D-080; D-018; D-052; D-053; D-071; D-072; D-074; D-007; T-136; T-145; T-154; T-169; T-198; T-199; T-203; T-204; T-206; AT-653; qa/contracts/bench.md K6-K9; qa/gates/write-policy-tier.md; qa/gates/plan-approved-g10.md

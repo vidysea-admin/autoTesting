@@ -58,12 +58,14 @@
 | `providers/gemini_schema.py` | Turn a Pydantic model into a schema Gemini's `response_schema` will accept. |
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
 | `schema/case.py` | A test case — one falsifiable claim about the product, plus how to check it. |
+| `schema/catalog.py` | The test catalog: schema for `stages/catalog.py::catalog()`'s output. |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
@@ -79,6 +81,7 @@
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
+| `schema/scenario.py` | A written scenario list, and what compiling it produced (T-166, EC4/EC5). |
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
@@ -94,13 +97,16 @@
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
+| `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
+| `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
 | `stages/credential_files.py` | Which file names and suffixes hold credentials; they are refused without being opened. |
 | `stages/discover.py` | Inspect approved bounded file trees for deterministic, cited lexical signals. |
+| `stages/eval_compiler.py` | EVAL COMPILER: compile evals from the knowledge graph, the FlowSpec and a written scenario |
 | `stages/execute.py` | EXECUTE: run one case's steps in a real browser, producing a RawResult. |
 | `stages/expand.py` | EXPAND: FlowSpec -> Case[], covering every applicable CaseClass per flow. |
 | `stages/explore.py` | EXPLORE: a bounded, safety-gated BFS crawl of a (usually logged-in) app. |
@@ -119,6 +125,7 @@
 | `stages/grade.py` | GRADE: an independent, stateless judge reads a Rubric + a RawResult's evidence. |
 | `stages/ingest.py` | INGEST: turn a video Source into a FlowSpec, provenance-tracked to the second. |
 | `stages/issues.py` | ISSUES: turn an adjudicated analysis into rows a human tester can read. |
+| `stages/knowledge_graph.py` | KNOWLEDGE GRAPH: build the typed graph from the persona + FlowSpec, and resolve a |
 | `stages/manual_login.py` | Manual one-time login. Contract: qa/contracts/manual-login.md ML1-ML5. |
 | `stages/media_prep.py` | MEDIA PREP: make a recording readable — probe it, cut it, transcribe it. |
 | `stages/merge_flowspec.py` | Fold a freshly ingested FlowSpec into the reviewed one (Track A6, T-135). |
@@ -149,7 +156,7 @@
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory. |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
-| `ui/app.py` | Thin FastAPI viewer/editor over project files. Design principle 8: never a |
+| `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
 | `ui/credential_guard.py` | Credential-guard helpers: refuse a real secret typed into any UI text field. |
@@ -158,6 +165,7 @@
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
+| `ui/routes_catalog.py` | The test catalog page: one row per `CaseClass`, a green runnable count, and |
 | `ui/routes_crawl_approval.py` | The crawl-approval card on the credentials page (D-018 consent, gate 2). |
 | `ui/routes_crawl_login.py` | Which case a crawl logs in with — declared once on the project, shown before a crawl (X17). |
 | `ui/routes_crawls.py` | The explorer, on screen: crawl history, one crawl's screen graph, its |
@@ -168,7 +176,7 @@
 | `ui/routes_live.py` | Presentation-only noVNC page for watching the container's real browser, plus |
 | `ui/routes_product_map.py` | Product-map cards, recorded journeys, and guarded learned-frame serving. |
 | `ui/routes_project_edit.py` | Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md. |
-| `ui/routes_report.py` | Run history, per-case screenshots, and portable downloads. Contract: |
+| `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
@@ -183,6 +191,8 @@
 <!-- generated:schema -->
 | Model | Meaning |
 |---|---|
+| `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
+| `AiCheckMethod` (`schema/ai_check.py`) | Who decides a check: code from recorded facts, or the independent judge (C7). |
 | `AiSignalKind` (`schema/ai_target.py`) | Observed lexical facts; never runtime claims or check selection. |
 | `AiTargetKind` (`schema/ai_target.py`) | The four positive target kinds specified by the approved T-151 plan. |
 | `Classification` (`schema/ai_target.py`) | Strict naming response; evidence and checks are never model-controlled. |
@@ -210,6 +220,13 @@
 | `ScriptStep` (`schema/case.py`) | One recorded step's locator: what replay uses in place of the case step's own target. |
 | `ScriptInputs` (`schema/case.py`) | Everything that determines a script (SR2). Any difference makes it stale. |
 | `Script` (`schema/case.py`) | A durable, versioned record of how one case runs, produced by a live run that worked. |
+| `BlockedReason` (`schema/catalog.py`) | Why a `CatalogEntry` is not runnable. Closed by D-039 — exactly six |
+| `Tier` (`schema/catalog.py`) | Cheap -> expensive ordering (D-039). `routes_runs.py`'s tiered dispatch |
+| `CatalogEntry` (`schema/catalog.py`) | One `CaseClass`'s standing for one project: applicable, runnable, and |
+| `StandardPack` (`schema/catalog.py`) | A named flow pattern the team's own release checklist calls out, on top |
+| `PackEntry` (`schema/catalog.py`) | One `StandardPack`'s standing for one project. Reuses `BlockedReason` |
+| `AiCheckEntry` (`schema/catalog.py`) | One Track C `AiCheckKind`'s standing for one AI target (T-152, ai-target.md AI4-AI5). |
+| `Catalog` (`schema/catalog.py`) | One project's whole catalog: every `CaseClass`, exactly once (CT2), |
 | `CoverageGap` (`schema/coverage.py`) | A screen or route observed in a run but absent from the FlowSpec. |
 | `VideoRequest` (`schema/coverage.py`) | What the system asks a human to record, and why. |
 | `DialogEvent` (`schema/crawl.py`) | One JS dialog (`alert`/`confirm`/`prompt`/`beforeunload`) the observer saw. |
@@ -269,6 +286,9 @@
 | `TaughtFlow` (`schema/portal_persona.py`) | An end-to-end journey the product supports, carried durably with a stable |
 | `Gotcha` (`schema/portal_persona.py`) | One thing that bit us — a quirk of this product worth remembering. |
 | `PersonaRevision` (`schema/portal_persona.py`) | One dated entry in the persona's history: when it was updated and a |
+| `GraphNode` (`schema/portal_persona.py`) | One typed node of the knowledge graph (EC1). `id` is `<kind>:<ref>`. |
+| `GraphEdge` (`schema/portal_persona.py`) | One typed edge `src -> dst`; `label` tells parallel edges apart (e.g. the control). |
+| `KnowledgeGraph` (`schema/portal_persona.py`) | Screen, control, flow, scenario, case, verdict, API and release nodes with typed |
 | `PortalPersona` (`schema/portal_persona.py`) | The durable, cross-run model of one product under test (PP1). A single |
 | `SecretRef` (`schema/project.py`) | A declared credential. Holds the KEY and its scope — never the value. |
 | `ProviderConfig` (`schema/project.py`) | Which provider serves each role. Roles are swappable per project. |
@@ -282,6 +302,10 @@
 | `StageName` (`schema/run_state.py`) | The pipeline stages a run drives, in canonical order. |
 | `StageCheckpoint` (`schema/run_state.py`) | One stage's durable record within a run. |
 | `RunState` (`schema/run_state.py`) | The ledger for one run, keyed by `run_id` (`OR5`: one run_id, one lineage). |
+| `Branch` (`schema/scenario.py`) | One option of a scenario (the "yes" or the "no"): the data it changes in its flow |
+| `ScenarioSpec` (`schema/scenario.py`) | One declared scenario variant of a flow. Its own graph node and case set (EC4). |
+| `UncoveredBranch` (`schema/scenario.py`) | A scenario branch that produced no case, with the one reason why (EC5). |
+| `CompileResult` (`schema/scenario.py`) | What `stages/eval_compiler.py::compile_evals` produced. |
 | `ElementRef` (`schema/screen_graph.py`) | One interactive element found by `browser/enumerate.js`. |
 | `PageObservation` (`schema/screen_graph.py`) | One page-visit's raw material: its url/title and interactive elements. |
 | `ScreenNode` (`schema/screen_graph.py`) | One distinct screen the crawl found. Identity is structural |

@@ -17,6 +17,26 @@ from autotester.schema import (
     Verdict,
 )
 from autotester.schema.enums import Action, CaseClass, CaseKind, Result, WritePolicy
+from autotester.schema.run import Run
+
+
+def test_catalog_counts_roundtrip_zero_and_legacy_absence() -> None:
+    counts = {"static": 0, "behavioural": 2, "adversarial": 1}
+    run = Run(project="demo", catalog_runnable_counts=counts)
+    assert Run.model_validate_json(run.model_dump_json()).catalog_runnable_counts == counts
+    assert Run(project="demo").catalog_runnable_counts is None
+
+
+@pytest.mark.parametrize("counts", [
+    {}, {"static": 0, "behavioural": 0},
+    {"static": 0, "behavioural": 0, "adversarial": -1},
+    {"static": False, "behavioural": 0, "adversarial": 0},
+    {"static": 0.0, "behavioural": 0, "adversarial": 0},
+    {"static": 0, "behavioural": 0, "adversarial": 0, "extra": 0},
+])
+def test_catalog_counts_reject_malformed_measurements(counts) -> None:
+    with pytest.raises(ValidationError):
+        Run(project="demo", catalog_runnable_counts=counts)
 
 
 def make_step(order: int = 1, value: str | None = None) -> Step:

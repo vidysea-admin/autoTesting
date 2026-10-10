@@ -1,9 +1,6 @@
-"""Thin FastAPI viewer/editor over project files. Design principle 8: never a
-second source of truth — every route reads/writes through `ProjectStore`/
-`SecretStore` exactly like the CLI does. Contract: qa/contracts/ui.md U1-U5.
-The run trigger lives in `ui/routes_runs.py`, run history/report/downloads in
-`ui/routes_report.py`, the credentials editor in `ui/routes_credentials.py` —
-this module keeps only the project-list, onboarding and live-view pages.
+"""Thin FastAPI project-list, onboarding and live-view pages over project files.
+Every route uses ProjectStore/SecretStore like the CLI (ui.md U1-U5).
+Runs, reports and credentials live in their own route modules; never a second source of truth.
 """
 
 from __future__ import annotations
@@ -26,6 +23,7 @@ from autotester.ui import (
     error_pages,
     project_view,
     routes_cases,
+    routes_catalog,
     routes_crawl_approval,
     routes_crawl_login,
     routes_crawls,
@@ -89,6 +87,7 @@ app.include_router(routes_sources.router)
 app.include_router(routes_product_map.router)
 app.include_router(routes_issues.router)
 app.include_router(routes_live.router)
+app.include_router(routes_catalog.router)
 
 
 @app.get("/favicon.ico", status_code=204)
@@ -290,6 +289,7 @@ def project_detail(slug: str) -> str:
         "▶ Run tests</span>"
     )
     actions = project_view._actions_card(safe_slug, run_button, case_count)
+    actions += f"<p><a class='btn' href='/projects/{safe_slug}/catalog'>Test catalog</a></p>"
     body = (
         theme.breadcrumb(("Projects", "/"), (name, None))
         + f"<h1>{name}</h1>"
