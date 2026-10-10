@@ -34,14 +34,7 @@ app.add_typer(cli_issues.app, name="issues")
 
 @app.callback()
 def _bootstrap() -> None:
-    """Runs before every command.
-
-    AT-228: the web UI loaded the repo-root `.env` and the CLI did not, so
-    `autotester providers` reported `mock` while a working GEMINI_API_KEY sat on
-    disk -- and a HUMAN_GATE was filed against a blocker that did not exist. Two
-    entry points reading the same disk gave different answers to "does this
-    machine have credentials", and each was internally consistent, which is why
-    nobody noticed."""
+    """Load the same repository environment as the UI (AT-228)."""
     load_repo_env()
 
 
@@ -197,47 +190,54 @@ def flowspec_request_edit(
 def expand_cases(
     project: str,
     provider: str = typer.Option("langchain-fallback", "--provider"),
+    proposals: bool = typer.Option(False, "--proposals", help="Stage/list step-less proposals."),
+    approve: list[str] = typer.Option([], "--approve", help="Approve a saved proposal ID."),
+    prune: list[str] = typer.Option([], "--prune", help="Prune a saved proposal ID."),
+    by: str = typer.Option("", "--by", help="Human reviewer; required for decisions."),
 ) -> None:
-    """Generate this project's test cases from its APPROVED FlowSpec.
+    """Review/prune proposals, then generate only persisted human-approved cases.
 
-    AT-239: `stages/expand.py` -- the feature the ledger calls the
-    differentiator -- had no entry point at all, so across four real projects
-    49 of 52 cases were `happy` and not one had ever been generated (AT-250).
-    Persisting is deliberately done here and not inside `expand()`:
-    qa/contracts/expand.md's no-fire list makes that the caller's job."""
+    AT-239: persisting is this caller's job (expand.md no-fire); AT-260: a provider failure
+    discards every in-memory case, so nothing is persisted."""
     store_ = ProjectStore(project)
     if store_.load_project() is None:
         typer.secho(f"no project '{project}'", fg=typer.colors.RED)
         raise typer.Exit(1)
     spec = store_.load_flowspec()
     if spec is None:
-        typer.secho(f"no flowspec for '{project}' yet — ingest a recording first",
-                    fg=typer.colors.RED)
-        raise typer.Exit(1)
-    model = providers.get(provider)
-    if not model.available():
-        typer.secho(f"provider '{provider}' has no credentials on this machine — "
-                    "`autotester providers` lists the ones that do", fg=typer.colors.RED)
+        typer.secho(f"no flowspec for '{project}' yet — ingest a recording first", fg="red")
         raise typer.Exit(1)
     try:
-        cases = expand_stage.expand(spec, model)
-    except review_stage.FlowSpecNotReviewed as exc:
-        typer.secho(str(exc), fg=typer.colors.YELLOW)
+        rows = expand_stage.propose_cases(spec)
+        store_.stage_case_proposals(rows)
+        if set(approve) & set(prune):
+            raise ValueError("a proposal cannot be approved and pruned together")
+        for proposal_id in approve + prune:
+            store_.review_case_proposal(proposal_id, by=by, approved=proposal_id in approve)
+        if proposals or approve or prune:
+            ids = {p.id for p in rows}
+            for row in (p for p in store_.list_case_proposals() if p.id in ids):
+                typer.echo(f"{row.id} {row.status} {row.case_class.value}: {row.title}")
+            return
+        store_.preflight_case_proposals(spec)
+    except (ValueError, review_stage.FlowSpecNotReviewed) as exc:
+        typer.secho(f"{exc}; review with `autotester expand {project} --proposals`", fg="yellow")
         raise typer.Exit(1) from None
-    except ProviderError as exc:
-        # AT-260: expand() builds every flow's cases in memory and only
-        # returns once ALL flows succeed, so a provider failure partway
-        # through discards whatever had already been generated -- by
-        # construction, not by an extra step here. Stated plainly rather
-        # than left to a raw traceback: nothing was persisted.
-        typer.secho(f"{project}: model call failed, no cases persisted — {exc}",
-                    fg=typer.colors.RED)
+    model = providers.get(provider)
+    if not model.available():
+        typer.secho(f"provider '{provider}' has no credentials — run `autotester providers`",
+                    fg="red")
+        raise typer.Exit(1)
+    try:
+        cases = expand_stage.expand(spec, model, store=store_)
+    except (ValueError, review_stage.FlowSpecNotReviewed, ProviderError) as exc:
+        typer.secho(f"{project}: generation failed, no cases persisted — {exc}", fg="red")
         raise typer.Exit(1) from None
     new = sum(0 if store_.has_case(case.id) else 1 for case in cases)
     for case in cases:
         store_.add_case(case)
     typer.secho(f"{project}: {len(cases)} case(s) from {len(spec.flows)} flow(s), {new} new",
-                fg=typer.colors.GREEN)
+                fg="green")
 
 
 @app.command("login")

@@ -67,6 +67,11 @@ class ProjectPaths:
         return self.dir / "cases.jsonl"
 
     @property
+    def case_proposals(self) -> Path:
+        """Step-less candidates and their human review, separate from executable cases."""
+        return self.dir / "case_proposals.jsonl"
+
+    @property
     def rubrics_dir(self) -> Path:
         return self.dir / "rubrics"
 
@@ -271,15 +276,10 @@ class RepoDocs:
         found by a test driving the real CLI). Every prompt-reading stage was
         one environment variable away from the same failure.
 
-        An EXPLICIT `root` still wins: substituting a stub prompt tree is a
-        legitimate thing for a test to do, and the defect was never explicit
-        injection — it was the env var leaking into a path it does not own.
+        An EXPLICIT `root` still wins for a test's stub prompt tree.
 
-        AT-137: that fallback used to be the ONLY way to substitute a prompt
-        tree — an inferred side effect of passing `root`, not a named act.
-        Pass `prompts_dir=` explicitly instead when that is what's meant;
-        `root` alone still behaves exactly as before for every caller that
-        never adopts the explicit form (no behaviour change, C2)."""
+        AT-137: `prompts_dir=` is the explicit test override; `root` keeps its existing behavior.
+        """
         if self._prompts_dir_override is not None:
             return self._prompts_dir_override
         if self._root_given:
