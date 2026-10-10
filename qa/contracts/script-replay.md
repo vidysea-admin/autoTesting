@@ -1,7 +1,8 @@
 # Contract — script-replay (persist the generated script, replay it, locate by meaning)
 
-**Status:** **DRAFT** (authored by /checker 2026-09-29 under **D-041**, `Approved-by: Umesh` —
-Result names this file). Goes **ACTIVE** on T-176's first checker PASS.
+**Status:** **ACTIVE** (authored by /checker 2026-09-29 under **D-041**, `Approved-by: Umesh` —
+Result names this file). ACTIVE since 2026-10-11: T-176's first checker PASS is `qa/verdicts/t176-script-replay.md`
+(cycle 0, `VERDICT: PASS`, commit 5383a559, SR1-SR5).
 **Feature:** T-176 — persist a case's generated script, replay it with zero provider calls, locate
 elements by role / label before CSS, and honour a declared test-id attribute priority.
 **Serves:** intent O2 · spec R23.
@@ -98,3 +99,7 @@ fixture page and counts provider calls; none can pass on the current code.
   script generation is lifted by D-041 and this contract, so the two no longer disagree.
   DRAFT until T-176's first PASS. **Changes-authorized:** this file (named by D-041). No
   enforcement-path file touched. **Links:** D-041; T-176; R23; T-177.
+- 2026-10-11 - routine (status change only; no criterion changed) - **DRAFT -> ACTIVE.** The status line
+  set the condition "goes ACTIVE on T-176's first checker PASS". That PASS is on disk and on master:
+  `qa/verdicts/t176-script-replay.md` (cycle 0, commit 5383a559, SR1-SR5, 10/10 falsifications). Nothing was edited, added or weakened in any criterion; this records the
+  transition the header already promised. **Links:** T-176; qa/verdicts/.

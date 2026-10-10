@@ -1,10 +1,15 @@
 # Contract — adversarial (the bound a HELD capability must satisfy before it is built)
 
-**Status:** DRAFT, bounding a **HELD** capability. Goes DRAFT→ACTIVE on T-154's first checker PASS —
-and T-154 itself cannot begin without a separate Umesh approval (plan.md "Held / blocked", 2026-09-27:
-"build C1–C3, hold the adversarial pass for a separate approval; no probe traffic without a fresh
-decision"). This contract may therefore sit DRAFT for a long time; that is the intended shape, not a
-stall.
+**Status:** DRAFT. Goes DRAFT→ACTIVE on T-154's first checker PASS. *Amended 2026-10-11: T-154 is no
+longer HELD.* The separate approval the 2026-09-27 hold waited for (`docs/plan.md` "Held / blocked":
+"hold the adversarial pass for a separate approval; no probe traffic without a fresh decision") was
+given: D-081 item 3 (Umesh, chat 2026-10-10, "full approvaal hai"; gate
+`qa/gates/d081-run-approvals.md`, `Answered: 2026-10-10 - A`) authorizes the maker to mint the signed
+per-run `RunApproval` row for a bounded adversarial pass on the Pathlynks target with the
+`PATHLYNKS_USER_*` test account, and says T-154 "is no longer held for a separate approval". That
+authorizes the *rows*; each run still writes its own signed row naming target, scope and a probe count,
+and AD1-AD3 and AD6 bind every run. The build and the first live pass are therefore unblocked; this
+contract no longer sits DRAFT by design, only until T-154's first PASS.
 **Covers:** goal tasks T-154 (the bounded adversarial pass — AD1–AD6) and T-155 (its report — AD7's
 audit trail feeds it). **Owner:** /checker.
 **Source of truth for intent:** **D-018** (`docs/DECISIONS.md`), whose `Changes-authorized` line
@@ -20,8 +25,8 @@ for AD6/AD7 below).
 
 ## Purpose
 
-T-154 is, in the plan's own words, the highest-risk unit: it fires adversarial prompts at a real
-endpoint, which can cost money, trip a vendor's abuse system, or pollute a production log. D-018
+T-154 is, in the plan's own words, the highest-risk unit (since D-081 item 3 no longer held, but
+no less bounded): it fires adversarial prompts at a real endpoint, which can cost money, trip a vendor's abuse system, or pollute a production log. D-018
 already designs the single control point — a `RunApproval` naming the exact endpoint and a probe
 count at or above the planned run, refused otherwise, no exceptions for production. This contract
 exists so that bound is written down and checkable **before** anyone builds against it, per this
@@ -36,9 +41,18 @@ contract (T-150's manifest, cycle 1, confirms both).
 **[D-018, mirrors `consent.md` CN1]**
 - `adversarial.py` raises `ApprovalRequired` before a probe envelope, a connection to the target, or
   a `projects/<slug>/ai/adversarial/<run_id>/` directory exists.
-- **Verify (once T-154 exists):** mirrors CN1's own verify, applied to this new caller — a refused
-  run leaves the project directory exactly as it found it (no probe envelope, no connection, no
-  `adversarial/<run_id>/` directory created).
+- **The one permitted write on a refusal is AD7's row.** *(Reconciled 2026-10-11: AD1 said "exactly as
+  it found it" and AD7 requires a refusal to be recorded; both cannot hold literally.)* A refused run
+  creates no probe envelope, no connection, no `<run_id>/` directory and no capture or evidence file,
+  and changes nothing under the project **except** appending one line to
+  `projects/<slug>/ai/adversarial/refusals.jsonl` (creating that file and its parent directory if
+  absent). "No trace" here means no run artifact and no outward-facing effect; the refusal log is the
+  audit trail, not a trace of a run.
+- **Verify (once T-154 exists):** mirrors CN1's own verify, applied to this new caller — snapshot the
+  project tree, trigger a refusal through every shipped entry point, and assert the tree differs only
+  by `ai/adversarial/refusals.jsonl` gaining exactly one line (and, on the first refusal, that file
+  and its parent directory existing); no `<run_id>/` directory, no envelope and no connection
+  attempt (a stub transport records zero calls).
 
 ### AD2 — The approval must name the exact endpoint and a probe count at or above the planned run
 **[D-018 verbatim]**
@@ -104,8 +118,10 @@ attempts to be a unified report rather than a report that is silent about what w
 ## Explicit no-fire list (do not raise these as findings)
 
 - Building T-154 or T-155 themselves.
-- Sending any probe, including a single one, against a live target — forbidden to every unit that
-  checks against this contract, not only to the one that first builds it.
+- Sending any probe, including a single one, against a live target — forbidden to a *checker* and to
+  every unit's own tests (mock-seeded only). The one live bounded pass is the maker's run under its own
+  signed `RunApproval` row, authorized by D-081 item 3 and bound by AD1-AD3 and AD6; nothing in this
+  contract is itself that authorization.
 - Choosing the concrete `AiCheckKind`→probe mapping (T-152/T-153's job, `ai-target.md`).
 - Revocation of an adversarial approval (expiry only, same as `consent.md`).
 - A UI grant form for adversarial approvals.
@@ -130,3 +146,21 @@ attempts to be a unified report rather than a report that is silent about what w
   **ISS-t150-1** (low) recommending a requirement row be added to spec.md when T-154 is unblocked ·
   direction approved by Umesh via **D-018** and plan §5A; the checker authored the wording — the
   maker never writes a contract.
+
+- 2026-10-11 · owner-authorized (header) + routine (AD1/AD7 reconciliation) · **Header, Purpose and one
+  no-fire bullet corrected; AD1 and AD7 reconciled.** (1) The header said T-154 cannot begin without a
+  separate Umesh approval. D-081 item 3 (Umesh, 2026-10-10, "full approvaal hai"), recorded in
+  `qa/gates/d081-run-approvals.md` (`Answered: 2026-10-10 - A`), grants it and supersedes the
+  2026-09-27 plan hold; the header now says so and keeps the status DRAFT only until T-154's first
+  checker PASS. The no-fire bullet forbidding any live probe now distinguishes a checker/unit test
+  (forbidden) from the maker's one run under its own signed row (authorized by D-081 item 3, bound by
+  AD1-AD3 and AD6). No bound was loosened: the approval still has to name the exact endpoint and a probe
+  count at or above the plan (AD2), production needs `production=True` (AD3), the ceiling holds (AD6).
+  (2) AD1 ("a refused run leaves the project directory exactly as it found it") and AD7 ("a refusal is
+  written to refusals.jsonl") contradicted each other. D-018's text, the only decision on the subject,
+  says "the runner sends nothing and exits non-zero" and says nothing about a record, so it supports
+  neither reading against the other; both criteria were accepted at creation (AD7 for T-155's unified
+  report, `qa/briefs/t155-ai-report.md` P5). Reconciled in the way that keeps both: AD1 is scoped to run
+  artifacts and outward-facing effects, and AD7's one row is the single allowed write. The alternative
+  (no write on refusal, drop AD7 and T-155 P5) is a product choice for Umesh; it is not taken here.
+  **Links:** D-017; D-018; D-081; AD1; AD7; `qa/gates/d081-run-approvals.md`.

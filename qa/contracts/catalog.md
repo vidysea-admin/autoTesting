@@ -1,6 +1,8 @@
 # Contract — catalog (the test catalog: applicable, runnable, blocked-and-why)
 
-**Status:** DRAFT (goes DRAFT->ACTIVE on T-125's first checker PASS).
+**Status:** ACTIVE (2026-10-11; T-125's first checker PASS is the dual check `qa/verdicts/t125-catalog.md`
+(coordinator A, `VERDICT: PASS`, commit cd212a1e) and `qa/verdicts/t125-catalog.b.md` (coordinator B, `VERDICT: PASS`,
+commit 8992ced9)).
 **Feature:** `stages/catalog.py::catalog(project, spec, store) -> Catalog` — a pure, derived view
 over existing artifacts that says, per `CaseClass`, whether it is `applicable`, `runnable`, and
 when not runnable, the one `BlockedReason` (closed vocabulary) plus the action that clears it.
@@ -176,3 +178,7 @@ green→red-for-the-named-reason→revert→green. File/function caps (core-inva
   plus reporting), not only via `tiers_to_run()`. RU3 (`ui-run.md`) and F-058 unchanged. This
   re-states D-057's order-only rule and adds the reporting requirement (part 4); it tightens, not
   weakens. **Links:** D-071; D-057; T-125; ISS-t125-1; F-058; ui-run.md RU3.
+- 2026-10-11 - routine (status change only; no criterion changed) - **DRAFT -> ACTIVE.** The status line
+  set the condition "goes ACTIVE on T-125's first checker PASS". That PASS is on disk and on master:
+  `qa/verdicts/t125-catalog.md` (coordinator A, commit cd212a1e) and `qa/verdicts/t125-catalog.b.md` (coordinator B, blind, commit 8992ced9), both `VERDICT: PASS`, latest cycle (cycle 4, integration re-check). Nothing was edited, added or weakened in any criterion; this records the
+  transition the header already promised. **Links:** T-125; qa/verdicts/.

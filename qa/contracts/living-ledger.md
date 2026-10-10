@@ -165,7 +165,7 @@ citation. So the citation is checked, not trusted.
 - **Subject match is not part of this criterion's Verify:** the subject-match obligation is L10, split out under D-060.
 
 
-**L10 — a citing line's claimed subject must match the cited entry's **What:**.** Split out of L9 under D-060 (2026-09-30) so AT-710 closes against L9's Verify clause. **Status: declarable form adopted under D-062 (2026-10-06); implementation and complete coverage remain unverified.** The text below is L9's former wrong-subject bullet, verbatim.
+**L10 — a citing line's claimed subject must match the cited entry's **What:**.** Split out of L9 under D-060 (2026-09-30) so AT-710 closes against L9's Verify clause. **Status: declarable form adopted under D-062 (2026-10-06); sealed-record disposition added 2026-10-07 under the answered gate `qa/gates/t196-l10-coverage.md` (B); implementation and complete coverage remain unverified.** The text below is L9's former wrong-subject bullet, verbatim.
 
 > **Resolution is necessary and not sufficient -- the SUBJECT must match too (added 2026-09-28,
 >   AT-718).** Fixture (c) was written naming `D-056`, and on 2026-09-28 this seat appended a real
@@ -221,9 +221,74 @@ citation. So the citation is checked, not trusted.
   occurrence-specific historical review records the claimed quotation and checks it against What;
   unknown/disputed attribution remains reported. A historical review cannot silently reclassify a
   wrong authorization as nonclaiming. Inventory plus canonical declarations and historical reviews
-  must cover the complete occurrence set before T-196 closes. Reconcile the actual seven historical
-  write-policy examples in the two L9 gate files; retain their wrong-subject fixtures and do not
-  restore incorrect ids now replaced by WP-DECISION placeholders. No whole-file exemption.
+  must cover the complete occurrence set before T-196 closes; a valid sealed record (next bullet)
+  counts as a historical review for exactly the occurrences it covers. Reconcile the actual seven
+  historical write-policy examples in the two L9 gate files; retain their wrong-subject fixtures and
+  do not restore incorrect ids now replaced by WP-DECISION placeholders. No whole-file exemption
+  except a sealed record as defined next, which is a reviewed, hash-bound, self-invalidating row and
+  not an exemption.
+- **Sealed-record disposition (immutable history; added 2026-10-07, gate
+  `qa/gates/t196-l10-coverage.md` Answered B, Umesh).** Rationale he gave: logic and the product
+  evolve; keep the good part of what was done and update it later. It lets one reviewed row cover
+  the citation occurrences of a closed historical record instead of one row per occurrence. It
+  lowers review volume only; it never lowers what counts as a violation.
+  - **Sealed historical unit, precisely.** Only these can be sealed: (a) a whole file under
+    `qa/manifests/` or `qa/verdicts/` whose manifest `Status:` is terminal (`checked-PASS`,
+    `merged-no-check (docs-lane)`, `merged-no-check (test-lane)` or `STALLED`; a verdict is closed
+    when its same-slug manifest is), or (b) one full decision entry (the `## D-NNN` header line up
+    to, not including, the next `## D-` header line) in `docs/DECISIONS.md` or `docs/archive/*.md`.
+    Contracts, gates, `qa/feedback-inbox.md`, SNAPSHOT/MAP and every other file are living or
+    appended-to records and can never be sealed.
+  - **Sealed row.** One inventory row of kind `sealed-record` with: `path`; `scope` (`file` or
+    `entry:D-NNN`); `sha256` of the unit's bytes with CRLF normalized to LF; `baseline` (a commit
+    sha); a nonempty `reason` stating why the unit is closed history; `reviewer` attribution (the
+    /checker or Umesh; a build or maker agent's own seal does not count, same independence as the
+    coverage bullet); and a durable `review_ref`. `reason` and `reviewer` are never generated or
+    defaulted by the code that enforces this criterion.
+  - **Doctor re-derives, never trusts the row.** It recomputes the hash from the working tree and
+    requires `baseline` to be an ancestor of HEAD, `git show <baseline>:<path>` (or the entry slice
+    of it) to hash to the recorded value, and the unit to be eligible above. A seal covers the L10
+    coverage obligation for every citation occurrence inside the unit, each still enumerated and
+    counted in a separate `sealed` total in the doctor output. A per-occurrence inventory row for an
+    occurrence in a sealed unit stays valid and keeps its own classification; the seal fills only
+    occurrences with no row and never reclassifies one.
+  - **Any change invalidates the seal.** A hash mismatch (any byte, including an appended line), a
+    deleted or renamed unit, an ineligible path, a missing baseline or a missing or duplicate or
+    conflicting sealed row for the same unit reports a coverage violation, and every occurrence in
+    the unit is unreviewed until an independent re-review records a new row. New occurrences, changed
+    occurrences and occurrences in any unsealed file fail exactly as before.
+  - **No inference, no subject pass.** Doctor never chooses what to seal, never infers a subject
+    and never reads a seal as evidence that any claim is true or authorized. A sealed occurrence is
+    covered, not classified clean: nothing may cite sealed text as authority.
+  - **Known-disputed historical claims: ruled by Umesh (D-068 item 2, option i, corrected by D-069);
+    the seal does NOT cover them.** Two early claims in `docs/DECISIONS.md` cannot truthfully satisfy the What-only
+    boundary while unchanged. The gate answer B did not rule on them; the ruling came later (below). (K1) The D-006 body at
+    `docs/DECISIONS.md:80` says the UTF-8 change to `scripts/append_decision.ps1` was "authorized
+    by D-000 `Changes-authorized`"; D-000's What adopts the Lab Protocol generally and does not
+    name the appender or UTF-8 scope, so the claim leans on D-000's Changes-authorized field, not
+    its What. (K2) The D-014 body at `docs/DECISIONS.md:209`, first `D-005` occurrence (ordinal 1;
+    the second same-line occurrence is a separate, honestly quoted row), says it discharges D-005
+    items with `Action` += BACK, HOVER, PRESS_KEY, SCROLL; D-005's What lists HOVER, PRESS_KEY and
+    SCROLL but not BACK, so BACK is attributed to a decision that did not name it.
+    **Ruling (Umesh, chat 2026-10-07, option i after an independent second confirmation: "2nd
+    confirmation le loo aur sabhi update krr doo"; recorded in `qa/gates/t196-l10-coverage.md`
+    `Answered (disputed claims K1/K2)` and in D-068 item 2).** D-069 is the correcting entry. K1: the
+    authorization holds at file level (D-000 `Changes-authorized` covers `scripts/append_decision.ps1`
+    as enforcement wiring) but D-000 never names the UTF-8 fix, so D-006's specific claim is
+    imprecise. K2: BACK was first authorized by D-014 itself (Approved-by Umesh, `docs/plan.md`
+    section 4), not by D-005, whose What lists only HOVER, PRESS_KEY and SCROLL. Both changes stand as
+    authorized; the old entries D-006 and D-014 are NOT edited (append-only), so their two lines keep
+    their text. Consequently K1 and K2 are no longer an open item, and each is **dispositioned by the
+    correcting entry D-069** rather than reclassified clean. Doctor still lists them by path, id,
+    ordinal and exact line text as `decision-citation-known-disputed`, counted, **non-blocking** (they
+    alone do not make doctor exit nonzero); a seal can never cover them; nothing may cite D-006:80 or
+    D-014:209 as authority for the disputed point (cite D-069 instead). Any change to either line's
+    text, or any third disputed occurrence, is blocking. The condition "T-196 cannot receive a final
+    PASS while this item is open" is discharged by this ruling; T-196 still needs its own
+    implementation and complete-coverage evidence. The row `ISS-t196-citation-subjects-k1k2` in
+    `qa/issues.jsonl` is resolvable once this amendment is on master (the checker sets its status; the
+    maker does not). The `enums.py:26` docstring fix named in D-069 is not a criterion of this
+    contract.
 - **Verify:** `uv run pytest tests/test_citations.py` and `uv run autotester doctor` must evidence
   the following with file/line/id diagnostics: absent id gives L9 dangling (also with an empty log);
   present unrelated What gives subject mismatch; exact matching canonical claim is clean; matching
@@ -234,12 +299,25 @@ citation. So the citation is checked, not trusted.
   while neighboring unexempted claims fail. Coverage fixtures must fail on an added unclassified
   resolving authorization claim, changed reviewed text, increased identical-line multiplicity,
   conflicting classifications and a valid irrelevant quote beside a wrong unrestricted claim.
-  Independently reviewed real-tree coverage and migration are acceptance evidence in addition to
+  Sealed-record fixtures must show: an unchanged eligible sealed unit is clean and counted under
+  `sealed`; a one-byte edit, an appended line, a rename and a deletion each fail; a wrong hash, a
+  baseline that is not an ancestor or whose content hashes differently, a missing reason or
+  reviewer, a maker-attributed seal, a duplicate or conflicting seal, and a seal on a contract,
+  gate, inbox or SNAPSHOT path each fail; a new citation in an unsealed file fails; a seal beside a
+  per-occurrence row does not reclassify it; K1 and K2 are listed `known-disputed` and
+  non-blocking, a seal naming them is rejected, and editing either line or adding a third disputed
+  occurrence turns doctor red. Independently reviewed real-tree coverage and migration are acceptance evidence in addition to
   fixtures, not inferred from L9's clean result. Named isolated falsifiers must turn each claimed
   acceptance capability red, including swapping to an existing unrelated id, moving a quote into
-  Why, and removing coverage enforcement; restore the original bytes afterward. T-196 remains
-  critical: active new-feature policy .3 requires tier L and two blind final coordinator checks;
-  adopting this form is not implementation approval or either completion verdict.
+  Why, removing coverage enforcement, and removing the seal hash comparison; restore the original bytes afterward. T-196 remains
+  critical and tier L when its diff changes product code inside this criterion's scope. **Check
+  count (amended 2026-10-11): one final coordinator check, not two.** A dual check (two blind
+  coordinators) needs a cited trigger line in the manifest, `dual-trigger: security|auth|tenancy|
+  prod-write <path.ext:line>` (policy .8-3, as pinned by the manifest's `Policy-Version`). T-196
+  changes a read-only doctor check over repository text and writes nothing to production, so no such
+  trigger applies by default; if the final diff does introduce one, the manifest cites it and the
+  dual check follows. Criticality and tier L alone never trigger it. Adopting this form is not
+  implementation approval or a completion verdict.
   **Links:** AT-710; AT-718; ISS-at710-1; D-060; D-062; T-196.
 
 
@@ -357,3 +435,33 @@ only, later); Google-Sheet sync.
   L9 and all earlier invariants preserved. Implementation, real-tree coverage and dual final checks
   remain unverified; no product PASS. **Changes-authorized:** D-062 (L10 + this amendment only).
   **Links:** T-196; D-060; D-062; qa/feedback-inbox.md 2026-10-06 coverage challenge.
+- 2026-10-07 - amend (human-authorized) - L10 gains a sealed-record disposition for immutable
+  history: one reviewed, hash-bound `sealed-record` row per closed manifest, verdict or full decision
+  entry covers its citation occurrences; any hash change invalidates the seal; new, changed and
+  unreviewed occurrences still fail doctor; no subject inference. The two disputed historical claims
+  (D-006 body `docs/DECISIONS.md:80` citing D-000 Changes-authorized for the UTF-8 appender change;
+  D-014 body `docs/DECISIONS.md:209` first D-005 occurrence attributing BACK to D-005) are an explicit
+  open item pending Umesh's ruling: listed known-disputed, non-blocking, never sealable, and T-196
+  cannot final-PASS while open. Cause: T-196 gate `qa/gates/t196-l10-coverage.md` (doctor wiring
+  would fail with 1599 violations over ~1200 unreviewed occurrences in immutable records). No clause
+  weakened for any new, changed or live (contract, gate, inbox) text. **Changes-authorized:**
+  `qa/gates/t196-l10-coverage.md` Answered 2026-10-07T01:34:13Z, B (Umesh, chat); no D-entry yet
+  records it (docs/DECISIONS.md is outside this seat's write set; the maker should append one).
+  **Links:** T-196; D-060; D-062; qa/feedback-inbox.md 2026-10-07 fold-in.
+- 2026-10-11 - amend (owner-authorized, D-066 / D-068 / D-069) - **L10 sealed-record disposition brought
+  onto master** from the checker's commit 2749e38d on branch `wave/t196-citation-subjects`, text verbatim
+  (authority: D-066 item 1, gate `qa/gates/t196-l10-coverage.md` Answered B). Master carried no copy of it.
+  Two further edits in the same change. (1) **K1/K2 ruling recorded:** Umesh's option i (D-068 item 2,
+  corrected and dispositioned by D-069, gate `Answered (disputed claims K1/K2)` 2026-10-07T03:17:22Z)
+  replaces "open item pending Umesh's ruling". K1 and K2 stay listed, non-blocking, never sealable and
+  not citable as authority; the old entries are not edited; the "no final PASS while open" bar is
+  discharged. No clause weakened: a changed line or a third disputed occurrence is still blocking.
+  (2) **Check count reconciled with the current policy:** the "two blind final coordinator checks" wording
+  came from the superseded policy .3. Under the proportional-verification policy the manifest pins
+  (`Policy-Version` .9; checker SKILL "Dual check lint", rule .8-3), a dual check needs a cited
+  `dual-trigger: security|auth|tenancy|prod-write <path:line>`; criticality and tier L alone never
+  trigger one. L10 now says one final coordinator check unless that trigger is cited. This is the
+  policy's own rule applied to this contract, not a softening of any L10 acceptance criterion, but it
+  does reduce the check count, so it is listed in the 2026-10-11 contract-maintenance report for Umesh.
+  **Changes-authorized:** D-066 (L10 sealed-record text as committed in 2749e38d); D-068 item 2 and
+  D-069 (K1/K2). **Links:** T-196; D-060; D-062; D-066; D-068; D-069; ISS-t196-citation-subjects-k1k2.
