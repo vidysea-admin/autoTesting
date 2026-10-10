@@ -57,6 +57,23 @@ def _run_and_grade_resilient(
         return result, verdict
 
 
+def _wipe_entry_profile(profile: Path) -> None:
+    """Remove the entry profile and positively establish it is gone (RU5, C12).
+    An already-absent directory is success. A failed removal, a directory still
+    present, or an existence check that itself raises all propagate as `OSError`
+    (never `ignore_errors`, never `os.path.lexists`, which reads an error as
+    'absent'), so the caller never starts a browser on a logged-in profile."""
+    try:
+        with contextlib.suppress(FileNotFoundError):
+            shutil.rmtree(profile)
+        present = profile.exists()
+    except OSError as exc:
+        cause = f"{type(exc).__name__}: {exc}"
+        raise OSError(f"entry profile not removed: {profile} ({cause})") from exc
+    if present:
+        raise OSError(f"entry profile not removed: {profile} (still present after removal)")
+
+
 def _run_entry_case(
     case: Case, project: Project, secrets: SecretStore, run_dir: Path, slug: str,
     judge: LangChainFallbackProvider, run_id: str, store: ProjectStore,
@@ -70,10 +87,11 @@ def _run_entry_case(
     both number screenshots from 01 and collide. `evidence_prefix = case.id`
     (AT-572's mechanism) nests this case's files under `run_dir/<case.id>/`."""
     entry_paths = ProjectPaths(f"{slug}-entry-test")
-    shutil.rmtree(entry_paths.profile_dir, ignore_errors=True)
-    session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
-    session.state.evidence_prefix = case.id
+    session: BrowserSession | None = None
     try:
+        _wipe_entry_profile(entry_paths.profile_dir)  # AT-733 / RU5: fail closed, no browser
+        session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
+        session.state.evidence_prefix = case.id
         session.budget = budget
         budget.check_start()
         session.start()
@@ -83,8 +101,9 @@ def _run_entry_case(
                            error=secrets.redactor().scrub(f"{type(exc).__name__}: {exc}"))
         return result, grade_errored_result(case, result, judge, run_id, store)
     finally:
-        with contextlib.suppress(Exception):
-            session.close()
+        if session is not None:
+            with contextlib.suppress(Exception):
+                session.close()
 
 
 def _run_cases_serially(
