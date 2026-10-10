@@ -3,8 +3,8 @@
 **Goal task:** T-167
 **Status:** ready-for-check
 **Date:** 2026-10-11
-**Fix cycle:** 1
-**Repair base:** 667a0c64
+**Fix cycle:** 2
+**Repair base:** 102a4b91
 **Failed criteria:** RR2 (checker security finding: a hand-written `scope.json` under-declaring `max_actions` bypassed the approval bound)
 **Dual check:** required
 **dual-trigger:** security: src/autotester/core/consent.py:182 (`require_approval`, the signed-approval gate this unit calls before any graph invocation)
@@ -32,12 +32,13 @@ Metrics: start=unavailable end=2026-10-11 wall_min=unavailable agent_min=unavail
 
 ## Pre-checks (fix cycle 1, run on product commit 00f25489; touched: orchestrate_gate.py, release.py, new tests/test_release_gate.py)
 Pre-check[RR1]: 00f25489 `uv run pytest tests/test_regression_trigger.py -k rr1` -> 3 passed (plus tests/test_orchestrate.py 7 passed: OR1-OR5 still hold)
-Pre-check[RR2]: 00f25489 `uv run pytest tests/test_regression_trigger.py -k rr2` -> 5 passed; `uv run pytest tests/test_release_gate.py` -> 3 passed (under-declared scope refused, honest scope resumable, preflight order spy); tests/test_cli_release.py 4 passed
+Pre-check[RR2]: 7e09124a `uv run pytest tests/test_regression_trigger.py -k rr2` -> 5 passed; `uv run pytest tests/test_release_gate.py` -> 4 passed (adds the wall-clock-only under-declaration test, P2); tests/test_cli_release.py 4 passed
 Pre-check[RR3]: 00f25489 `uv run pytest tests/test_regression_trigger.py -k rr3` -> 4 passed
 Pre-check[RR4]: 00f25489 `uv run pytest tests/test_regression_trigger.py -k rr4` -> 3 passed
 Pre-check[RR5]: 00f25489 `uv run pytest tests/test_regression_trigger.py -k rr5` -> 1 passed; `uv run autotester doctor` -> doctor: clean
 Pre-check[RR6]: 00f25489 `uv run pytest tests/test_regression_trigger.py -k rr6` -> 2 passed
-Pre-check: 00f25489 `uv run pytest tests/test_release_gate.py tests/test_regression_trigger.py tests/test_cli_release.py tests/test_orchestrate.py tests/test_orchestrate_runners.py tests/test_cli_orchestrate.py tests/test_cli_orchestrate_resume.py tests/test_consent.py tests/test_parallel_run_approval.py tests/test_schema.py tests/test_store.py -p no:xdist` -> 137 passed
+Pre-check: 7e09124a `uv run pytest tests/test_cli_advice_resolves.py tests/test_release_gate.py tests/test_regression_trigger.py tests/test_cli_release.py tests/test_orchestrate.py tests/test_orchestrate_runners.py tests/test_cli_orchestrate.py tests/test_cli_orchestrate_resume.py tests/test_consent.py tests/test_parallel_run_approval.py tests/test_schema.py tests/test_store.py -p no:xdist` -> 168 passed
+Pre-check[suite guard]: 7e09124a `uv run pytest tests/test_cli_advice_resolves.py -p no:xdist` -> 30 passed (was: red on 102a4b91 with new [('cli_release.py','release'),('cli_release.py','release-log')])
 Regression (cycle 0, older sha, superseded by the line above): 00fae668 `uv run pytest tests/test_orchestrate_runners.py tests/test_cli_orchestrate.py tests/test_cli_orchestrate_resume.py tests/test_schema.py tests/test_store.py tests/test_consent.py tests/test_parallel_run_approval.py` -> 105 passed
 Lint: `uv run ruff check src tests scripts` -> All checks passed!
 
@@ -61,6 +62,13 @@ Cycle 1: `test_rr2_preflight_runs_before_any_disk_write_and_before_graph_invoke`
 - src/autotester/stages/release.py:86 lines — imports `plans_cost`; `_plan_cost` removed.
 - tests/test_release_gate.py (new, 83) — 3 tests, written first (the under-declared test was red before the fix).
 - ReleaseRecord, RegressionDiff and the store readers are untouched (T-168 contract unchanged).
+
+## Fix cycle 2: what changed (checker r1 FAIL: guard-test registry, plus P2)
+- Advice at src/autotester/cli_release.py:34 (`release-log`) and :36 (`release`) was verified by running the CLI parser (`autotester release --help`, `autotester release-log --help` resolve; `--run-id`, `--approve-by`, `--decline-by` exist on `release`), so the strings are correct and unchanged.
+- tests/test_cli_advice_resolves.py: `EXPECTED_SITES` gains `("cli_release.py","release")` and `("cli_release.py","release-log")`; `EXPECTED_SITE_COUNT` 19 -> 21. This is a guard test and the edit only ADDS entries (no wildcard, skip or range); the checker rules whether that is a protected test change.
+- tests/test_release_gate.py: new `test_rr2_an_under_declared_wall_clock_alone_is_refused` (approval covers 3 actions but only 8 s of wall clock, scope wall clock 8 s) pins the `max(scope.wall_clock_s, actions * WALL_CLOCK_PER_ACTION_S)` clause at orchestrate_gate.py:46-49.
+- Falsification (in place on committed 7e09124a, reverted by `git checkout`): registry entry `("cli_release.py","release-log")` removed -> `test_no_advice_site_can_vanish_unnoticed` red (AssertionError: advice sites changed), 29 passed 1 failed; restored -> 30 passed. Wall-clock `max(...)` replaced by `scope.wall_clock_s` -> the new test red (1 failed, 3 passed); restored -> green.
+- Product code unchanged this cycle; the P3 helper-import item (test_release_gate.py:12 imports from test_regression_trigger) is left, as it needs a shared fixture module.
 
 ## PROPOSED-ISSUE (not fixed this cycle, no ids)
 - PROPOSED-ISSUE: a flow dropped from the plan set is missing from the regression diff.
