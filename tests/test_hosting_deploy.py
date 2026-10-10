@@ -125,7 +125,7 @@ def test_dockerignore_keeps_secrets_and_project_state_out_of_the_image() -> None
 
 
 def test_the_canary_check_itself_notices_a_dropped_rule() -> None:
-    """The matcher is only a guard if removing a rule changes its answer (AT-841)."""
+    """The matcher is only a guard if removing a rule changes its answer (AT-862)."""
     patterns = [ln.strip() for ln in (ROOT / ".dockerignore").read_text(encoding="utf-8")
                 .splitlines() if ln.strip() and not ln.startswith("#")]
     without = [p for p in patterns if p != "**/.env.*"]
@@ -133,7 +133,7 @@ def test_the_canary_check_itself_notices_a_dropped_rule() -> None:
 
 
 def test_compose_needs_no_domain_unless_the_https_profile_is_used() -> None:
-    """AT-843: an operator following DEPLOY.md step 8 (no domain yet) runs `docker compose
+    """AT-864: an operator following DEPLOY.md step 8 (no domain yet) runs `docker compose
     config` / `up`. Compose interpolates every service, profile or not, so a required-variable
     form (`${AUTOTESTER_DOMAIN:?...}`) on the caddy service fails the loopback path with rc=1."""
     text = (ROOT / "docker" / "compose.prod.yml").read_text(encoding="utf-8")
@@ -143,7 +143,7 @@ def test_compose_needs_no_domain_unless_the_https_profile_is_used() -> None:
 
 
 def test_deploy_guide_claims_only_what_the_compose_file_does() -> None:
-    """AT-843: the guide once sent operators to an SSH tunnel to 6080, which compose only
+    """AT-864: the guide once sent operators to an SSH tunnel to 6080, which compose only
     `expose`s (nothing listens on the host), and described a Host allow-list (AT-758) that is
     not in the code as if it answered 403 today."""
     guide = (ROOT / "docker" / "DEPLOY.md").read_text(encoding="utf-8")

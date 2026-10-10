@@ -29,7 +29,7 @@ def test_healthz_watches_the_installed_package_not_the_data_root(
 def test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere(
     tmp_path: Path,
 ) -> None:
-    """AT-846/HO3: `_SRC_ROOT` is fixed at import, so a monkeypatched env in this process cannot
+    """AT-867/HO3: `_SRC_ROOT` is fixed at import, so a monkeypatched env in this process cannot
     prove it. A fresh interpreter started like the container (AUTOTESTER_ROOT=/data, no src there)
     must still watch the installed package; a `repo_root()/src/autotester` revert reports the
     data folder and goes red."""

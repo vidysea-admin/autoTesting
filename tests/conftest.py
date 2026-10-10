@@ -63,7 +63,7 @@ def _inline_run_queue(monkeypatch: pytest.MonkeyPatch) -> None:
     whose worker runs the job inline, in the request; the queue's own scheduling (limit,
     single-flight, queued state) is tested in `tests/test_run_queue.py` with a manual spawner.
 
-    A runner crash is RE-RAISED out of the request (AT-845): the real queue records it as
+    A runner crash is RE-RAISED out of the request (AT-866): the real queue records it as
     `failed` and carries on, which would let a test stay green over a run that never worked,
     as every inline-run test did before this fixture existed. A gate refusal (`RunRefused`)
     is a normal answer and stays quiet."""

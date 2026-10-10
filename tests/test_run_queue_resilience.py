@@ -1,4 +1,4 @@
-"""T-203 run queue under failure and contention (hosting.md HO17, HO18; AT-844, AT-846).
+"""T-203 run queue under failure and contention (hosting.md HO17, HO18; AT-865, AT-867).
 
 Scenarios: the data disk is full or read-only when a member presses Test; a run's worker is
 cut off by a process exit or a cancelled task; two members press Test for different projects in

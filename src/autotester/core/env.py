@@ -50,7 +50,7 @@ def load_repo_env(root: Path | None = None) -> list[str]:
     deliberate override and must not be silently replaced by a file. An EMPTY
     inherited value is not an override but a blank placeholder (a compose
     `env_file` copied from `.env.example` hands the container `KEY=""`), so it
-    counts as unset and the file's value loads (AT-842).
+    counts as unset and the file's value loads (AT-863).
 
     Returning the key names makes "which credentials does this machine have" a
     question a caller can answer and a test can assert, instead of something

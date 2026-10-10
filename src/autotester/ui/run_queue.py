@@ -203,7 +203,7 @@ class RunQueue:
     def _persist(self) -> None:
         """Write the queue file for the next restart. A failed write (full or read-only disk)
         is logged, never raised: the caller has already marked entries `running` and must go
-        on to launch them, or they would hold a slot with no worker until a restart (AT-844)."""
+        on to launch them, or they would hold a slot with no worker until a restart (AT-865)."""
         try:
             self._save()
         except Exception:

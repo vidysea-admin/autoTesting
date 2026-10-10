@@ -60,7 +60,7 @@ def test_an_already_exported_value_is_never_overwritten(tmp_path: Path, monkeypa
 def test_an_empty_inherited_value_does_not_shadow_the_data_env_file(
     tmp_path: Path, monkeypatch,
 ) -> None:
-    """AT-842: a server operator copies `.env.example` to `/etc/autotester/server.env`, so the
+    """AT-863: a server operator copies `.env.example` to `/etc/autotester/server.env`, so the
     compose `env_file` hands the container `ANTHROPIC_API_KEY=""`. That empty string must not
     block `<data>/.env`, where the real key lives."""
     monkeypatch.delenv(TEST_MARKER, raising=False)

@@ -164,7 +164,7 @@ def test_a_second_run_plans_against_the_ram_the_first_one_already_holds(
 
 
 def test_a_run_that_crashes_inside_the_suite_queue_fails_the_test_that_started_it() -> None:
-    """AT-845: tests/conftest.py runs queued jobs inline so old UI tests keep their meaning.
+    """AT-866: tests/conftest.py runs queued jobs inline so old UI tests keep their meaning.
     The queue records a crash as `failed` and moves on, which let three of them stay green over
     a run that never worked; the inline queue must re-raise so such a test goes red."""
     queue = run_queue.get_queue()           # the autouse fixture's inline queue
