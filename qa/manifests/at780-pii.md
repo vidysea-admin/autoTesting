@@ -8,7 +8,7 @@
 **Dual check:** no
 **Tier:** L (changes `core/redact.py`, security-relevant)
 **Base:** origin/master 7782df41, branch `wave/at780-pii`
-**Status:** checked-PASS
+**Status:** checked-PASS (reviewed at its own commit on base 7782df41; merged head re-check owed by land-integrate-combined)
 Policy-Version: proportional-verification/2026-10-07.7
 Metrics: start=2026-10-07 end=2026-10-07 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=1 mutations=5 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-07.7
 

@@ -91,9 +91,7 @@ def score_screen(screen: Screen, candidates: list[Candidate]) -> ScreenMatch:
 
 def build_judge_prompt(screen: Screen, flows: list[Flow], candidate: Candidate,
                        skills_dir: Path | None = None) -> str:
-    """The judge sees descriptions only -- never a transcript, screenshot or file (RC12).
-    Typed values and every other string have email / phone shapes masked, and a value typed
-    into a person-name field is masked whole (AT-780), before scrub and the secret gate."""
+    """Descriptions only, PII-masked (AT-780): never a transcript, screenshot or file (RC12)."""
     actions = [{"action": str(s.action), "target": s.target,
                 "value": mask_name_value(s.target, s.value), "said": s.narration}
                for f in flows for s in f.steps if s.screen_id == screen.id]

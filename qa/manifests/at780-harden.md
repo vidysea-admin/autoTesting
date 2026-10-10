@@ -6,7 +6,7 @@
 **Fix cycle:** 0
 **Tier:** L (security)
 **Base:** branch `wave/at780-pii` @ 13f37c3c; this branch `wave/at780-harden`
-**Status:** checked-PASS
+**Status:** checked-PASS (reviewed at its own commit on base 7782df41; merged head re-check owed by land-integrate-combined)
 Policy-Version: proportional-verification/2026-10-07.7
 Metrics: start=2026-10-07 end=2026-10-07 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=1 mutations=16 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-07.7
 
