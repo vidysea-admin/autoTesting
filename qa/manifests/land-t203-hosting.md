@@ -1,6 +1,6 @@
 # Manifest — land-t203-hosting (re-land of the T-203 hosting slice as a local deployment, D-081 item 4)
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/land-t203-hosting.md, cycle 0, checked fddbf469; merged 82bc4954)
 
 **Contract:** qa/contracts/hosting.md (HO1-HO38; scope per qa/briefs/land-t203-hosting.md section 3)
 **Goal task:** T-203
