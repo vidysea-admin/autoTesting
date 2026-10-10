@@ -74,4 +74,4 @@ Not UI-touching — no surface changed. Changed paths: src/autotester/schema/ai_
 - The AI7 final-grade floor and the security/full-suite integration run are the two things the previous cycle's checkers could not complete; the builder pre-check above covers the floor in a copy, the checker owns the persisted one and the single last full suite.
 - Pre-check shas name the product commit ff901f72; the manifest/MAP commit on top changes no product file.
 
-## Status: ready-for-check
+## Status: checked-PASS (dual: A qa/verdicts/t153-behavioural-checks.a.md, B qa/verdicts/t153-behavioural-checks.b.md; cycle 0, checked 2653bbcb; merged 349f3e97)
