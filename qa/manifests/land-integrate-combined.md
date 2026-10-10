@@ -10,7 +10,7 @@ dual-trigger: security src/autotester/core/redact.py:173
 dual-trigger: security src/autotester/stages/reconcile.py:92
 **Base:** master @ 3a16616c (the brief named 4f8f5da1; master moved by docs-only commits, branch is from 3a16616c)
 **Head:** f210ddc2c1f7a486ce77bb89aeaeadc12c2cd8f4
-**Status:** ready-for-check
+**Status:** checked-PASS (dual: A qa/verdicts/land-integrate-combined.md, B qa/verdicts/land-integrate-combined.b.md; cycle 0, checked 23e694a9; merged fc0e95b0)
 Policy-Version: proportional-verification/2026-10-10.9
 Persona walk: skip (no UI surface: the diff touches only core/redact.py, stages/reconcile.py, tests/ and qa/ files; checkable with git diff --name-only master, which must list nothing under src/autotester/ui/ and no template or static file)
 Metrics: start=2026-10-11 end=2026-10-11 wall_min=unavailable agent_min=unavailable blocked_min=95 suite_runs=0 repeat_runs=1 mutations=5 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=0 mutants=0 defects_unit=0 defects_6c=0
