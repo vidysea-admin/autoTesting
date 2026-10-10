@@ -13,7 +13,7 @@ from html import escape
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from autotester.stages.unified_report import unified_html
+from autotester.stages.unified_report import ReportUnavailable, ReportUnreadable, unified_html
 from autotester.ui import theme
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id
 
@@ -27,7 +27,10 @@ def damage_report(slug: str, run: str | None = None) -> str:
         _require_safe_id(run, "run id")
     try:
         return unified_html(store, run)
-    except ValueError as exc:
+    except ReportUnreadable as exc:  # fixed text: field names only, never stored values (DC4)
+        body = "<h1>Damage-control report</h1>" + theme.empty_state("⚠️", escape(str(exc)))
+        return HTMLResponse(theme.page("Damage-control report", body, active_slug=slug), 500)
+    except ReportUnavailable as exc:
         body = "<h1>Damage-control report</h1>" + theme.empty_state(
             "📋", f"{escape(str(exc))} - run a case or a release first; nothing to report yet.")
         return theme.page("Damage-control report", body, active_slug=slug)

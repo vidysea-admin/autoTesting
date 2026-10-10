@@ -22,7 +22,11 @@ from autotester.core.paths import ProjectPaths
 from autotester.schema.release import ReleaseDecision, ReleaseRecord
 from autotester.schema.run_state import RunState
 from autotester.stages.release import ReleaseError, start_release
-from autotester.stages.unified_report import export_unified_html
+from autotester.stages.unified_report import (
+    ReportUnavailable,
+    ReportUnreadable,
+    export_unified_html,
+)
 from autotester.store.project_store import ProjectStore
 
 
@@ -102,7 +106,7 @@ def release_report_cmd(
     """Write the damage-control report: regression, API failures, workflows, change history."""
     try:
         path = export_unified_html(project, run_id, Path(out))
-    except ValueError as exc:
+    except (ReportUnavailable, ReportUnreadable) as exc:  # fixed text, never stored values (DC4)
         typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(1) from exc
+        raise typer.Exit(1) from None
     typer.secho(f"wrote {path}", fg=typer.colors.GREEN)

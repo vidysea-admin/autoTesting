@@ -17,6 +17,8 @@ from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from autotester.schema.crawl import Crawl
 from autotester.schema.enums import CrawlStatus, EvidenceKind, Outcome
 from autotester.schema.run import Evidence, RawResult
@@ -47,6 +49,52 @@ from autotester.stages.unified_report_render import render_html
 from autotester.store.project_store import ProjectStore
 
 _ROW = re.compile(r"^(?P<method>[A-Z]+) (?P<url>.+) -> (?P<status>-?\d+)$")
+_NAME = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,60}$")
+_STORED = re.compile(r"^(?P<path>.+?\.jsonl?)(?::\d+)?: ", re.S)
+
+
+class ReportUnavailable(ValueError):
+    """Nothing to report yet (no project / no run); the message is fixed text plus what the
+    caller typed, never stored data."""
+
+
+class ReportUnreadable(ValueError):
+    """A stored file could not be read into the report. The message is built from field NAMES
+    and the exception TYPE only (DC4/C5: pydantic's own text carries `input_value`)."""
+
+
+def _file_of(exc: Exception) -> str:
+    """The stored file named by `filestore.read_json`'s `<path>: <pydantic text>` wrapper: its
+    last two path parts only. Everything after the path is pydantic text and is dropped."""
+    found = _STORED.match(str(exc))
+    parts = re.split(r"[\\/]", found["path"])[-2:] if found else []
+    return "/".join(p for p in parts if _NAME.match(p)) or "a stored file"
+
+
+def _where(exc: Exception) -> str:
+    """Which file or fields failed, in general terms; never a value, never pydantic's text."""
+    if isinstance(exc, ValidationError):
+        names: list[str] = []
+        for err in exc.errors(include_input=False, include_url=False, include_context=False):
+            loc = ".".join(str(p) if isinstance(p, int) or _NAME.match(str(p)) else "?"
+                           for p in err["loc"][:4])
+            if loc and loc not in names:
+                names.append(loc)
+        return f"invalid field {', '.join(names[:5]) or '?'}"
+    if isinstance(exc, ValueError):
+        return f"{_file_of(exc)} is not valid"
+    return f"cause {type(exc).__name__}"
+
+
+def _unreadable(store: ProjectStore, exc: Exception) -> ReportUnreadable:
+    detail = _where(exc)
+    try:
+        detail = _load_redactor(store).scrub(detail)
+    except Exception:
+        detail = f"cause {type(exc).__name__}"
+    return ReportUnreadable(
+        f"a stored record of '{store.paths.slug}' could not be read ({detail}); "
+        "fix or remove the stored file, then run the report again")
 
 
 def _aware(moment: datetime) -> datetime:
@@ -60,12 +108,12 @@ def _pick_run(store: ProjectStore, run_id: str | None) -> str:
         known = (store.load_release_record(run_id) or store.load_results(run_id)
                  or store.load_run(run_id))
         if not known:
-            raise ValueError(f"no run '{run_id}' recorded for '{slug}'")
+            raise ReportUnavailable(f"no run '{run_id}' recorded for '{slug}'")
         return run_id
     found = [(_aware(r.scope.created_at), r.run_id) for r in store.list_release_records()]
     found += [(_run_sort_key(r)[0], r.id) for r in valid_runs_newest_first(store)]
     if not found:
-        raise ValueError(f"no runs exist yet for '{slug}'")
+        raise ReportUnavailable(f"no runs exist yet for '{slug}'")
     return max(found)[1]
 
 
@@ -193,7 +241,17 @@ def load_coverage(store: ProjectStore, crawl_id: str | None) -> CoverageSection:
 
 
 def build_report(store: ProjectStore, run_id: str | None = None) -> UnifiedReport:
-    """One report for one run: raises `ValueError` when the project has no run at all."""
+    """One report for one run. Raises `ReportUnavailable` when the project has no run at all and
+    `ReportUnreadable` (fixed text, no stored values) when any stored input fails to load."""
+    try:
+        return _assemble(store, run_id)
+    except ReportUnavailable:
+        raise
+    except Exception as exc:
+        raise _unreadable(store, exc) from None
+
+
+def _assemble(store: ProjectStore, run_id: str | None) -> UnifiedReport:
     rid = _pick_run(store, run_id)
     crawls = store.list_crawl_ids()
     crawl_id = crawls[0] if crawls else None
@@ -215,8 +273,12 @@ def unified_html(store: ProjectStore, run_id: str | None = None) -> str:
 def export_unified_html(project_slug: str, run_id: str | None, out_path: Path,
                         root: Path | None = None) -> Path:
     store = ProjectStore(project_slug, root)
-    if store.load_project() is None:
-        raise ValueError(f"no project '{project_slug}' yet")
+    try:
+        missing = store.load_project() is None
+    except Exception as exc:
+        raise _unreadable(store, exc) from None
+    if missing:
+        raise ReportUnavailable(f"no project '{project_slug}' yet")
     html = unified_html(store, run_id)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(html, encoding="utf-8")

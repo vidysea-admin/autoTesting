@@ -8,11 +8,14 @@ carries; neither its raw nor its HTML-escaped form may appear in the HTML or the
 from __future__ import annotations
 
 import html as htmllib
+import json
 import subprocess
 import sys
+import urllib.parse
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 from test_unified_report import REPO, _flows, _store
 from typer.testing import CliRunner
 
@@ -36,6 +39,7 @@ from autotester.schema.verdict import Failure, Verdict
 from autotester.stages import release, release_compare
 from autotester.stages.unified_report import build_report, load_workflows
 from autotester.store.project_store import ProjectStore
+from autotester.ui.app import app as ui_app
 
 S = "p&ss<w>o'rdQ9"
 runner = CliRunner()
@@ -117,3 +121,62 @@ def test_dc4_workflow_loader_scrubs_repro_steps_on_its_own(root: Path) -> None:
     steps = load_workflows(store, "rel1").cases[0].repro_steps
     assert steps and not any(form in line for line in steps for form in _forms())
 
+
+
+# ---- cycle 2 (F1): the ERROR path never echoes text built from stored data -------------------
+
+def _forms_all() -> list[str]:
+    return [*_forms(), urllib.parse.quote(S), urllib.parse.quote(S, safe="")]
+
+
+def _corrupt(store: ProjectStore, path: Path, field: str) -> None:
+    """Rewrite a stored file so `field` holds S where a bool/number is expected."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data[field] = S
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+
+def _corrupt_release(root: Path) -> None:
+    store = _seed_everywhere(root)
+    _corrupt(store, store.paths.run_release_record("rel1"), "finished")
+
+
+def _assert_clean(text: str) -> None:
+    for form in _forms_all():
+        assert form not in text, form
+
+
+def test_dc4_cli_error_path_does_not_echo_a_stored_secret(root: Path) -> None:
+    _corrupt_release(root)
+    result = runner.invoke(cli_app, ["release-report", "demo", "--out", str(root / "o.html")])
+    assert result.exit_code == 1
+    assert "input_value" not in result.output and "release.json" in result.output
+    _assert_clean(result.output + str(result.stderr_bytes or b"", "utf-8"))
+    assert not (root / "o.html").exists()
+
+
+def test_dc4_route_error_path_is_an_error_status_without_the_stored_secret(root: Path) -> None:
+    _corrupt_release(root)
+    page = TestClient(ui_app, raise_server_exceptions=False).get("/projects/demo/damage-report")
+    assert page.status_code >= 400, page.status_code
+    assert "input_value" not in page.text
+    _assert_clean(page.text)
+
+
+def test_dc4_build_report_failure_message_names_the_field_never_the_value(root: Path) -> None:
+    _corrupt_release(root)
+    with pytest.raises(ValueError) as caught:
+        build_report(ProjectStore("demo", root), None)
+    message = str(caught.value)
+    assert "release.json" in message and "input_value" not in message
+    _assert_clean(message)
+    assert caught.value.__cause__ is None and caught.value.__suppress_context__
+
+
+def test_dc4_unreadable_json_and_other_stored_files_fail_closed_without_the_secret(
+        root: Path) -> None:
+    store = _seed_everywhere(root)
+    store.paths.run_release_record("rel1").write_text(f'{{"run_id": "{S}" ', encoding="utf-8")
+    result = runner.invoke(cli_app, ["release-report", "demo", "--out", str(root / "o.html")])
+    assert result.exit_code == 1
+    _assert_clean(result.output)
