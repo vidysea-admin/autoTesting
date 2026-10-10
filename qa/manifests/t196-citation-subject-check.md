@@ -2,16 +2,16 @@
 
 Contract: qa/contracts/living-ledger.md L10; preserve L9 and core invariants C2/C7/C12.
 Goal task: T-196
-Policy-Version: proportional-verification/2026-10-06.5
+Policy-Version: proportional-verification/2026-10-10.9
 Protocol hashes: maker=3F5A021B27A04447C87726929BAB9FA6245C1251A36E28E9CF5CA91DCCB4063B checker=12C935F80B4344E1C7B43C7F2A3467B71D1923B8883A06D16B9D7E828CDB47E5
 Adapter: codex-native/2026-10-05.3; project coding, qa/adapter.json.
 Fix cycle: 0
 Resumes: 0
 Phase: BUILDING
 Status: BUILDING
-Tier: L — authority-claim governance validator; explicit L10 final dual-check requirement.
-Dual check: required — two blind final coordinators, not intermediate helper reviews.
-Base: bd2fe8f4d9a9fa87552e8a3999eb27cb52f8addf, master; shared dirty state preserved.
+Tier: L — config/CI (doctor.py::run is the verify gate; new check plus a blocking/non-blocking split) and data migration (mutable authorization claims); goal criticality critical.
+Dual check: no — policy .9 requires a real security|auth|tenancy|prod-write trigger and this unit has none (no auth, credentials or production write). The L10 text still says "two blind final coordinators" (written under .3); whether .9 supersedes that line is the checker's call at close-out.
+Base: master @ 3a16616cf2c99a63c8d763150a1ca6410dfc0acc merged into wave/t196-citation-subjects on 2026-10-11 (merge 14a9b465); earlier base bd2fe8f4.
 Manifest creation: Umesh approved this exact evidence path on 2026-10-06.
 Audience: internal developer/operator CLI; no new UI or portal behavior in this feature.
 
@@ -364,3 +364,55 @@ The two failures are expected on this branch and are not product defects: (a)
 citations name live only in the uncommitted main-tree docs/DECISIONS.md (same failure at the
 base state); (b) `test_l10_doctor_wiring_and_real_tree_pending_coverage` needs the held-back
 doctor.py wiring. Both clear when DECISIONS.md lands and the wiring is applied.
+
+
+## Code slice build, 2026-10-11 (build subagent, Fix cycle 0, policy .9)
+
+Status stays BUILDING: the code slice is complete and green on its own tests, but L10 cannot be met on the real
+tree until the checker track lands (listed below). Nothing here is a PASS claim.
+
+Workspace: worktree D:/autoTesting/.worktrees/t196-citation-subjects, branch wave/t196-citation-subjects.
+Nobody was writing there (newest file mtime 2026-10-07 21:25, nothing in the last 30 minutes). The uncommitted
+2026-10-07 work was committed first (6a0da470), then master 3a16616c was merged in (14a9b465). One conflict,
+docs/SNAPSHOT.md (generated), taken from master and regenerated. docs/MAP.md auto-merged and was regenerated clean.
+No edit to qa/contracts/, docs/DECISIONS.md, qa/issues.jsonl or qa/feedback-inbox.md.
+
+Code state on this branch (line counts): ledger/citations.py 271, ledger/seals.py 155, ledger/review_block.py 87,
+schema/ledger.py 160, doctor.py 290, cli.py 297, tests/test_citations.py 300, tests/test_citation_seals.py 178,
+tests/test_citation_known_disputed.py 108, tests/seal_fixtures.py 63. The five new files each exist because of the
+300-line cap (C2); the older line "No new product/test module" above is superseded by this.
+
+Pre-check[L10]: 14a9b465 uv run --offline pytest --noconftest -p no:cacheprovider tests/test_citations.py -> exit 0, 61 passed in 40.90s (code tree identical at the final commit; only this manifest and regenerated docs differ)
+Also on 14a9b465, one pytest process per command, env PYTEST_CURRENT_TEST=governance-tests PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 AUTOTESTER_APPROVAL_KEY=synthetic-governance-key:
+- tests/test_citation_seals.py -> 32 passed in 27.07s
+- tests/test_citation_known_disputed.py -> 7 passed in 4.75s
+- tests/test_doctor.py tests/test_ledger_checks.py tests/test_ledger.py tests/test_schema.py tests/test_product_map.py -> 114 passed in 32.79s
+- uv run ruff check src tests scripts -> All checks passed!
+Gate for RAM: tick.mjs --ceilings printed lane=code cap=0 from 00:35 to 01:04 IST; tests ran after it printed cap=1 then cap=2.
+
+Falsification (L10; floor is 1, three run; throwaway copies of src, tests, docs, qa under the session scratchpad, never the worktree; the worktree stayed clean):
+Falsify[L10]: tests/test_citation_seals.py green@14a9b465 (32 passed); seals.py `if _digest(unit[0]) != seal.sha256.lower():` -> `if False:` RED 3 failed (any_change[byte], any_change[append], changed_entry_invalidates_its_seal_but_not_the_neighbour); restored by discarding the copy.
+Additional (guidance): tests/test_citations.py green 61 passed; citations.py `if review is None:` coverage-append -> `if False:` RED 19 failed; same file, `_compare_quote` What comparison -> `if False:` RED 7 failed (quote-only-in-Why and subject-mismatch cases). The "swap to an existing unrelated id" falsifier was not run: the one attempt was a no-op mutant and is not evidence.
+
+Real-tree doctor, `uv run autotester doctor` on this branch after the merge: exit 1, 2272 violations printed
+(1896 decision-citation-coverage, 375 decision-citation-declaration, 1 stale-generated for SNAPSHOT), plus 2
+decision-citation-known-disputed rows (K1 docs/DECISIONS.md:80, K2 docs/DECISIONS.md:209) listed non-blocking,
+0 decision-citation-sealed rows (no seal exists yet). Of the coverage rows 1879 are "needs one current review"
+(1383 of them in qa/manifests and qa/verdicts) and 17 are stale review rows whose lines changed since review.
+This is the expected state before the checker track; it is NOT a code defect. WARNING for the orchestrator:
+`uv run autotester doctor` is the adapter verify command, so merging this branch into master before the checker
+track lands turns doctor red for every other unit. NON_BLOCKING covers only the sealed and known-disputed rows,
+as L10 specifies; no further softening was added because it would be an unauthorised change to L10.
+
+L10 parts the code satisfies (proven on controlled trees): canonical claim and strict JSON; What-only comparison
+and fail-closed missing/duplicate/index-only subjects; archive full entries; per-occurrence exemptions;
+coverage binding (path, line text, id, ordinal, multiplicity), stale/duplicate/conflicting rows, empty inventory;
+sealed-record mechanics (eligible units, hash re-derived, ancestor and baseline content, reviewer independence,
+duplicate/conflict, ineligible paths, any change invalidates, `sealed` count row); K1/K2 listed non-blocking,
+never sealable, an edit or a third disputed occurrence blocking; doctor wiring and exit on blocking only.
+L10 parts that wait on the checker: reviewed real-tree inventory and seal rows (reviewer /checker or Umesh) for
+the 1879 unreviewed occurrences and refresh of the 17 stale rows; canonical migration of mutable authorization
+claims in contracts, gates and docs; the K1/K2 amendment text in L10 and resolving ISS-t196-citation-subjects-k1k2;
+the .3-versus-.9 dual-check wording; the real-tree doctor going green (including the SNAPSHOT claims).
+
+Metrics: start=2026-10-10T19:01:00Z end=2026-10-10T19:49:08Z wall_min=unavailable agent_min=unavailable blocked_min=29 suite_runs=0 repeat_runs=0 mutations=4 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=0 mutants=0 defects_unit=0 defects_6c=0
