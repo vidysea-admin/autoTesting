@@ -10,7 +10,7 @@ Tier: L (timing/concurrency: one claim per slot across two OS processes, the 60-
 Dual check: no (the schedule has no more rights than its owner, adds no auth or tenancy code, writes nothing to production; no `dual-trigger` applies)
 Fix cycle: 0
 Executor: claude-sonnet-subagent (maker build subagent)
-Status: ready-for-check
+Status: checked-PASS (qa/verdicts/t200a-schedule-core.md, cycle 0; merged 7e0ef5b9; does not close T-200)
 Full-suite trigger: none for this slice. No existing module is edited (`schema/project.py`, `schema/enums.py`, `cli.py`, `ui/app.py`, `pyproject.toml`, `uv.lock` untouched).
 
 ## CONTRACT AMENDMENT THE CHECKER MUST BRING (maker never edits `qa/contracts/`)
