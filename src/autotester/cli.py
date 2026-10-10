@@ -7,7 +7,15 @@ from pathlib import Path
 
 import typer
 
-from autotester import cli_crawl, cli_issues, cli_loop, cli_orchestrate, cli_video, providers
+from autotester import (
+    cli_crawl,
+    cli_issues,
+    cli_loop,
+    cli_orchestrate,
+    cli_release,
+    cli_video,
+    providers,
+)
 from autotester import doctor as doctor_module
 from autotester.core.env import load_repo_env
 from autotester.core.paths import RepoDocs
@@ -34,14 +42,8 @@ app.add_typer(cli_issues.app, name="issues")
 
 @app.callback()
 def _bootstrap() -> None:
-    """Runs before every command.
-
-    AT-228: the web UI loaded the repo-root `.env` and the CLI did not, so
-    `autotester providers` reported `mock` while a working GEMINI_API_KEY sat on
-    disk -- and a HUMAN_GATE was filed against a blocker that did not exist. Two
-    entry points reading the same disk gave different answers to "does this
-    machine have credentials", and each was internally consistent, which is why
-    nobody noticed."""
+    """Runs before every command: load the repo-root `.env` the web UI already loads, so both
+    entry points agree on whether this machine has credentials (AT-228)."""
     load_repo_env()
 
 
@@ -289,6 +291,8 @@ app.command("explore")(cli_crawl.explore_cmd)
 app.command("approve")(cli_crawl.approve_cmd)
 report_app.command("crawl")(cli_crawl.report_crawl)
 app.command("orchestrate")(cli_orchestrate.orchestrate_cmd)
+app.command("release")(cli_release.release_cmd)
+app.command("release-log")(cli_release.release_log_cmd)
 
 
 def main() -> None:

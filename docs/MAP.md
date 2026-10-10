@@ -24,6 +24,7 @@
 | `cli_issues.py` | `autotester issues` — turn an analysis into the sheet a human tester reads. |
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
+| `cli_release.py` | `autotester release` / `release-log` — the release manager's way to run the whole suite (T-167). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
@@ -77,6 +78,7 @@
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
+| `schema/release.py` | Release regression shapes: a flow's persisted plan, a run's scope, its record and diff. |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
 | `schema/scenario.py` | A written scenario list, and what compiling it produced (T-166, EC4/EC5). |
@@ -128,7 +130,9 @@
 | `stages/media_prep.py` | MEDIA PREP: make a recording readable — probe it, cut it, transcribe it. |
 | `stages/merge_flowspec.py` | Fold a freshly ingested FlowSpec into the reviewed one (Track A6, T-135). |
 | `stages/network_capture.py` | First-party network capture as evidence (T-170, NA1/NA2/NA4/NA5/NA6). |
-| `stages/orchestrate.py` | ORCHESTRATE: drive the stage pipeline as a resumable learn-or-explore run. |
+| `stages/orchestrate.py` | ORCHESTRATE: drive the stage pipeline as a resumable LangGraph run (D-041, T-167). |
+| `stages/orchestrate_checkpoint.py` | Persist one run's LangGraph checkpoint without arbitrary Python deserialization. |
+| `stages/orchestrate_gate.py` | The checks and ledger views around the orchestration graph (RR2, T-167). |
 | `stages/orchestrate_runners.py` | The concrete stage runners the orchestrator threads — thin adapters over the |
 | `stages/parallel_run.py` | PARALLEL_RUN: fan N cases out across isolated browser contexts (T-173/D-041). |
 | `stages/persona_changes.py` | What moved in the product since the last crawl: new / changed / missing / broken. |
@@ -137,6 +141,8 @@
 | `stages/product_map.py` | PRODUCT MAP: fold every recording analysis into one navigable screen map. |
 | `stages/read_context.py` | Read approved Markdown as metadata only, never a vault graph or body corpus. |
 | `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
+| `stages/release.py` | The release trigger: stitch every flow's persisted plan into ONE gated release run (T-167). |
+| `stages/release_compare.py` | Release record assembly, the trusted-baseline rule and the regression diff (T-167, RR3/RR6). |
 | `stages/report_export.py` | Tester-style run reports: an Excel summary and a screen-by-screen HTML |
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
@@ -289,6 +295,13 @@
 | `ProviderConfig` (`schema/project.py`) | Which provider serves each role. Roles are swappable per project. |
 | `Source` (`schema/project.py`) | An immutable input the system learned from. |
 | `Project` (`schema/project.py`) | Everything the system needs to test one product. |
+| `FlowPlan` (`schema/release.py`) | One flow's validation plan: the cases that decide whether the flow still works. |
+| `ReleaseScope` (`schema/release.py`) | What one release executes, frozen when the run is first accepted (RR2/RR6). |
+| `ReleaseDecision` (`schema/release.py`) | The human's answer to the `interrupt()` pause. It is NOT an approval (RR2). |
+| `FlowOutcome` (`schema/release.py`) | One flow's line in the release log. `not_run` is never folded into `passed` (RR6). |
+| `ReleaseIssue` (`schema/release.py`) | One entry of the release's single issues log, always naming its flow (RR6). |
+| `RegressionDiff` (`schema/release.py`) | This release against its trusted baseline (RR3). `baseline_run_id` None = no baseline. |
+| `ReleaseRecord` (`schema/release.py`) | One release's durable outcome: per-flow results, ONE issues log and the diff. |
 | `Evidence` (`schema/run.py`) | A file or value the grader may cite. Already redacted and masked. |
 | `ProviderUsage` (`schema/run.py`) | Token and call accounting per provider role — the cost story per run. |
 | `RawResult` (`schema/run.py`) | One case's execution record. |
