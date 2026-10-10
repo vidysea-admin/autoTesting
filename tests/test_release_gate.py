@@ -43,6 +43,21 @@ def test_rr2_an_under_declared_scope_on_disk_is_refused_before_anything_runs(
     assert calls == [] and sorted(p.name for p in run_dir.rglob("*")) == before == ["scope.json"]
 
 
+def test_rr2_an_under_declared_wall_clock_alone_is_refused(tmp_path: Path) -> None:
+    """Only the wall clock is forged: actions are honest (3) and the approval covers them, but
+    its wall clock (8 s) is below what 3 actions cost, so the `max(...)` clause must refuse."""
+    store = _store(tmp_path, approve=False, flows=ALL)
+    approval = grant_live_case_approval(store, max_actions=3, wall_clock_s=8.0)
+    honest = release.build_scope(PROJECT, store, run_id="rel", approval_id=approval.id,
+                                 max_actions=3)
+    store.save_release_scope(honest.model_copy(update={"wall_clock_s": 8.0}))
+    calls: list[str] = []
+    with pytest.raises(ApprovalRequired, match="narrower"):
+        start_release(PROJECT, store, run_id="rel",
+                      runners=_runners(store, _outcome(f1=PASS, f2=PASS, f3=PASS), calls))
+    assert calls == []
+
+
 def test_rr2_a_honestly_frozen_scope_stays_resumable(tmp_path: Path) -> None:
     store = _store(tmp_path, flows=ALL)
     runners = _runners(store, _outcome(f1=PASS, f2=PASS, f3=PASS))
