@@ -56,6 +56,40 @@ def _approval_signing_key() -> Iterator[None]:
         os.environ.pop(_APPROVAL_KEY_ENV, None)
 
 
+@pytest.fixture(autouse=True)
+def _inline_run_queue(monkeypatch: pytest.MonkeyPatch) -> None:
+    """T-203: `POST /projects/<slug>/run` now enqueues and returns at once, so a test that asserts
+    the finished run would race a background thread. Every test therefore gets a fresh queue
+    whose worker runs the job inline, in the request; the queue's own scheduling (limit,
+    single-flight, queued state) is tested in `tests/test_run_queue.py` with a manual spawner.
+
+    A runner crash is RE-RAISED out of the request (AT-866): the real queue records it as
+    `failed` and carries on, which would let a test stay green over a run that never worked,
+    as every inline-run test did before this fixture existed. A gate refusal (`RunRefused`)
+    is a normal answer and stays quiet."""
+    from autotester.ui import run_queue
+
+    crashes: list[Exception] = []
+
+    def runner(entry: run_queue.QueueEntry) -> None:
+        try:
+            run_queue._registered_runner(entry)
+        except run_queue.RunRefused:
+            raise
+        except Exception as exc:
+            crashes.append(exc)
+            raise
+
+    def spawn(job: Callable[[], None]) -> None:
+        job()
+        if crashes:
+            first = crashes[0]
+            crashes.clear()
+            raise first
+
+    monkeypatch.setattr(run_queue, "_QUEUE", run_queue.RunQueue(spawn=spawn, runner=runner))
+
+
 @pytest.fixture(scope="session")
 def serve_dir() -> Iterator[Callable[[Path], str]]:
     """Serve a directory over HTTP on an ephemeral localhost port.

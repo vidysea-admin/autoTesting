@@ -122,7 +122,7 @@ def sources_page(slug: str) -> str:
     form = f"""
       <form method="post" action="/projects/{escape(slug)}/sources">
         <div class="field"><label for="path">Recording path on this machine</label>
-          <input id="path" name="path" required placeholder="C:\\Videos\\product-flow.mp4">
+          <input id="path" name="path" required placeholder="path to the recording file">
           <span class="hint">The file stays where it is; AutoTester records its content hash.</span>
         </div>
         <div class="field"><label for="label">What this recording shows</label>

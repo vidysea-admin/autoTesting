@@ -79,11 +79,13 @@
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
+| `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
 | `schema/scenario.py` | A written scenario list, and what compiling it produced (T-166, EC4/EC5). |
 | `schema/schedule.py` | The per-project schedule (G5, R51): a typed, bounded setting plus the slot-record vocabulary. |
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
+| `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
 | `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
 | `schema/ux_report.py` | The advisory UX artifacts: `UXFinding`, `UXCaseOutcome`, `UXReport` (PU2). |
@@ -159,6 +161,7 @@
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory. |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
+| `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
@@ -185,6 +188,8 @@
 | `ui/routes_sources.py` | The operator-facing recording registry. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
+| `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
+| `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 <!-- /generated:map -->
@@ -299,6 +304,9 @@
 | `RawResult` (`schema/run.py`) | One case's execution record. |
 | `RunBounds` (`schema/run.py`) | The `RunApproval` bounds a run ACTUALLY ran under (AT-660/CN10). |
 | `Run` (`schema/run.py`) | One regression run over a set of cases. |
+| `QueueStatus` (`schema/run_queue.py`) |  |
+| `QueueEntry` (`schema/run_queue.py`) |  |
+| `RunQueueFile` (`schema/run_queue.py`) | The on-disk form (`<data root>/.work/run_queue.json`). |
 | `StageName` (`schema/run_state.py`) | The pipeline stages a run drives, in canonical order. |
 | `StageCheckpoint` (`schema/run_state.py`) | One stage's durable record within a run. |
 | `RunState` (`schema/run_state.py`) | The ledger for one run, keyed by `run_id` (`OR5`: one run_id, one lineage). |
@@ -324,6 +332,7 @@
 | `MappedScreen` (`schema/screenmap.py`) | One screen folded across every recording that showed it. |
 | `Journey` (`schema/screenmap.py`) | One recording's ordered path through screens. |
 | `ScreenMap` (`schema/screenmap.py`) | The product map: every learned screen plus the journeys that visited them. |
+| `ServerSettings` (`schema/server_settings.py`) | What the admin chose; absent fields keep the documented defaults. |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
 | `UserPersona` (`schema/user_persona.py`) | One kind of user the UX pass reads a run as. Advisory input only (PU4). |
