@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-154 [high] Track C4: bounded adversarial pass behind consent gate 2 (+ adversarial_proof.py)
 - T-155 [normal] Track C5: unified AI test report grouped by tier with judge reason strings
 ## Last decisions (computed status)
-- D-075 2026-10-07 decision ACTIVE
 - D-076 2026-10-07 decision ACTIVE
 - D-077 2026-10-07 decision ACTIVE
 - D-078 2026-10-07 decision ACTIVE
 - D-079 2026-10-08 decision ACTIVE
+- D-080 2026-10-10 decision ACTIVE

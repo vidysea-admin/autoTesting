@@ -1,7 +1,7 @@
 # HUMAN_GATE — does `ingest map` discharge a gate that named `Analyze`?
 
 **Opened:** 2026-09-27 by the maker, on the `t192-url-pattern-heal` cycle-1 verdict (**PASS**,
-commit `cfa8cdb9`, pushed). **Decider:** Umesh. **Status:** OPEN — asked once, then written here.
+commit `cfa8cdb9`, pushed). **Decider:** Umesh. **Status:** ANSWERED 2026-10-10 (A) — asked once, then written here.
 **Blocks:** nothing. The repair is done, checked and merged; **this gate is about ratifying a
 substitution after the fact, not about a defect.**
 **Ledger:** `ISS-t192-url-pattern-heal-1` (medium, non-blocking). **Verdict:**
@@ -62,3 +62,5 @@ its choice.
 - `ISS-t192-url-pattern-heal-1` stays `open` — a medium row, not a blocker.
 - The vision call approved by gate `t135-url-pattern-data-migration` is treated as **still unspent**,
   not as consumed by this unit. If you pick C, it is there.
+
+Answered: 2026-10-10 — A — chat (Umesh, delegated to the assistant's recommendation): ratified. Running `uv run autotester ingest map erp` instead of Analyze is accepted as the discharge of gate t135-url-pattern-data-migration answer B (D-048). No standing rule (option B not chosen). The approved single vision call stays unspent. Recorded as D-080.
