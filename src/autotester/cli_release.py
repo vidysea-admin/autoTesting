@@ -4,11 +4,14 @@
 (exit 2, with the grant command) unless a signed `RunApproval` covers it, then pauses at the
 human confirm; `--approve-by NAME` / `--decline-by NAME` answers that pause on the same
 `--run-id`. `release-log` prints the finished run's single issues log and its regression diff.
+`release-report` writes the one damage-control report file for a run (T-168).
 This CLI wires no live executor yet: EXECUTE/GRADE come from the stage runners a host injects
 into `stages/release.py::start_release` (T-174/T-203), so a confirmed run stops there and says so.
 """
 
 from __future__ import annotations
+
+from pathlib import Path
 
 import typer
 
@@ -19,6 +22,7 @@ from autotester.core.paths import ProjectPaths
 from autotester.schema.release import ReleaseDecision, ReleaseRecord
 from autotester.schema.run_state import RunState
 from autotester.stages.release import ReleaseError, start_release
+from autotester.stages.unified_report import export_unified_html
 from autotester.store.project_store import ProjectStore
 
 
@@ -88,3 +92,17 @@ def release_log_cmd(project: str = typer.Argument(...), run_id: str = typer.Argu
         typer.secho(f"no release record for {project} run {run_id}", fg=typer.colors.RED)
         raise typer.Exit(1)
     _echo_log(record)
+
+
+def release_report_cmd(
+    project: str = typer.Argument(..., help="project slug"),
+    run_id: str = typer.Argument(None, help="run to report on (default: the newest)"),
+    out: str = typer.Option(..., "--out", help="output .html path"),
+) -> None:
+    """Write the damage-control report: regression, API failures, workflows, change history."""
+    try:
+        path = export_unified_html(project, run_id, Path(out))
+    except ValueError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(1) from exc
+    typer.secho(f"wrote {path}", fg=typer.colors.GREEN)

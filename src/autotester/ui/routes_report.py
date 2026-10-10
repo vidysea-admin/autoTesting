@@ -22,13 +22,11 @@ from autotester.stages.report_export import (
 )
 from autotester.store.project_store import ProjectStore
 from autotester.ui import theme
-from autotester.ui.helpers import (
-    _load_project_or_404,
-    _require_safe_id,
-    _reserved_temp_path,
-)
+from autotester.ui.helpers import _load_project_or_404, _require_safe_id, _reserved_temp_path
+from autotester.ui.routes_unified_report import router as unified_report_router
 
 router = APIRouter()
+router.include_router(unified_report_router)  # T-168: this module and app.py are at the cap
 
 
 def _run_counts(store: ProjectStore, run_id: str) -> dict[str, int]:

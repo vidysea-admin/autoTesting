@@ -293,6 +293,7 @@ report_app.command("crawl")(cli_crawl.report_crawl)
 app.command("orchestrate")(cli_orchestrate.orchestrate_cmd)
 app.command("release")(cli_release.release_cmd)
 app.command("release-log")(cli_release.release_log_cmd)
+app.command("release-report")(cli_release.release_report_cmd)
 
 
 def main() -> None:
