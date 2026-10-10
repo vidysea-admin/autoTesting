@@ -1,0 +1,23 @@
+== master 3a16616c test_redact_scan_stays_under_a_generous_bound_on_a_500kb_cor rc 1
+E   AssertionError: 500 KB scan took 3.54s, expected under 3s
+E   assert 3.5399738999985857 < 3.0
+FAILED tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus
+1 failed in 4.79s
+== master 3a16616c test_rc2_ingest_video_keeps_narration_on_screen_text_and_exi rc 1
+E   AssertionError: assert None == 'type your email here'
+E    +  where None = Step(order=1, action=<Action.FILL: 'fill'>, target='Email', value='x', expected=ExpectedState(url=None, visible_text=[..._start=1.0, t_end=None, locator=None), note=None, screen_i
+FAILED tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen
+1 failed in 0.68s
+== master 3a16616c test_hook_prints_the_report_and_exits_zero_on_a_healthy_log rc 1
+E   TypeError: argument of type 'NoneType' is not iterable
+FAILED tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log
+1 failed, 1 warning in 26.34s
+== head 23e694a9 test_redact_scan_stays_under_a_generous_bound_on_a_500kb_cor rc 0
+1 passed in 2.44s
+== head 23e694a9 test_rc2_ingest_video_keeps_narration_on_screen_text_and_exi rc 1
+E   AssertionError: assert None == 'type your email here'
+E    +  where None = Step(order=1, action=<Action.FILL: 'fill'>, target='Email', value='x', expected=ExpectedState(url=None, visible_text=[..._start=1.0, t_end=None, locator=None), note=None, screen_i
+FAILED tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen
+1 failed in 0.80s
+== head 23e694a9 test_hook_prints_the_report_and_exits_zero_on_a_healthy_log rc 0
+1 passed in 25.29s

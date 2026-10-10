@@ -1,0 +1,15 @@
+== RC14/C2 import C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A\fals\RC14\src\autotester\__init__.py
+doctor green-before 0 doctor: clean
+doctor red-after 1
+file-too-long: src\autotester\stages\reconcile.py — 302 lines > 300; split by responsibility
+
+1 violation(s)
+
+== C3
+doctor green-before 0 doctor: clean
+doctor red-after 1
+file-too-long: src\autotester\stages\ingest.py — 304 lines > 300; split by responsibility
+duplicate-concept: src\autotester\stages\ingest.py:303 — 'mask_pii' also defined in src\autotester\core\redact.py
+
+2 violation(s)
+

@@ -1,0 +1,58 @@
+== RC12 import from C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A\fals\RC12\src\autotester\__init__.py
+green-before rc 0 42 passed in 0.59s
+replaced 1 changed True
+red-after rc 1
+test_reconcile_pii.py::test_hardened_pii_shapes_never_reach_the_prompt[0141-2345678]
+FAILED tests/test_reconcile_pii.py::test_hardened_pii_shapes_never_reach_the_prompt[011 2345 6789]
+FAILED tests/test_reconcile_pii.py::test_hardened_pii_shapes_never_reach_the_prompt[98765.43210]
+FAILED tests/test_reconcile_pii.py::test_hardened_pii_shapes_never_reach_the_prompt[9876 543 210]
+FAILED tests/test_reconcile_pii.py::test_hardened_pii_shapes_never_reach_the_prompt[(98765) 43210]
+FAILED tests/test_reconcile_pii.py::test_hardened_pii_shapes_never_reach_the_prompt[98765 43210]
+FAILED tests/test_reconcile_pii.py::test_nested_strings_in_every_part_of_the_prompt_are_masked
+16 failed, 26 passed in 1.19s
+
+== C1 import from C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A\fals\C1\src\autotester\__init__.py
+green-before rc 0 1 passed in 0.27s
+replaced 14 changed True
+red-after rc 1
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________________ test_unknown_field_is_rejected_loudly ____________________
+
+    def test_unknown_field_is_rejected_loudly() -> None:
+>       with pytest.raises(ValidationError):
+E       Failed: DID NOT RAISE ValidationError
+
+tests\test_schema.py:88: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_schema.py::test_unknown_field_is_rejected_loudly - Failed: ...
+1 failed in 0.63s
+
+== RC11 import C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A\fals\RC11\src\autotester\__init__.py
+green-before 0 1 passed in 0.66s
+RC11 changed True 1 True
+red-after 1
+videos, crawl, judge_mock(), transcripts=said))
+        swapped = [v.model_copy(update={"flows": list(reversed(v.flows))}) for v in reversed(videos)]
+>       assert dumped(*reconcile(swapped, list(reversed(crawl)), judge_mock(),
+                                 transcripts=said)) == first
+E       assert b'{\n  "schem...ws_out": 6\n}' == b'{\n  "schem...ws_out": 6\n}'
+E         
+E         At index 143 diff: b'5' != b'e'
+E         Use -v to get more diff
+
+tests\test_reconcile.py:145: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_reconcile.py::test_rc11_same_inputs_give_byte_identical_output_in_any_input_order
+1 failed in 0.93s
+
+== RC14/C2 import C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A\fals\RC14\src\autotester\__init__.py
+doctor green-before 1 D:\autoTesting\.worktrees\land-integrate-combined\.venv\Scripts\python.exe: No module named autotester.__main__; 'autotester' is a package and cannot be directly executed
+doctor red-after 1
+D:\autoTesting\.worktrees\land-integrate-combined\.venv\Scripts\python.exe: No module named autotester.__main__; 'autotester' is a package and cannot be directly executed
+
+== C3
+doctor green-before 1 D:\autoTesting\.worktrees\land-integrate-combined\.venv\Scripts\python.exe: No module named autotester.__main__; 'autotester' is a package and cannot be directly executed
+doctor red-after 1
+D:\autoTesting\.worktrees\land-integrate-combined\.venv\Scripts\python.exe: No module named autotester.__main__; 'autotester' is a package and cannot be directly executed
+
