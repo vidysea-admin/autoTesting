@@ -158,7 +158,7 @@
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
-| `store/project_store.py` | Typed convenience over `filestore` for one project's directory. |
+| `store/project_store.py` | Typed convenience over `filestore` for one project's directory (C1/C3). |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
 | `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
@@ -223,6 +223,7 @@
 | `BenchCorpus` (`schema/bench.py`) | A build with known seeded defects and the material pack given to testers. |
 | `BenchTrial` (`schema/bench.py`) | One participant's attempt on one corpus. |
 | `Case` (`schema/case.py`) | One generated or hand-written test case. |
+| `CaseProposal` (`schema/case.py`) | A step-less candidate, bound to an exact FlowSpec snapshot and human review. |
 | `AgentFix` (`schema/case.py`) | The agent's proposed correction for one failing step. |
 | `ExpandedSteps` (`schema/case.py`) | One taxonomy class's proposed steps for a flow — `stages/expand.py`'s raw |
 | `ScriptStep` (`schema/case.py`) | One recorded step's locator: what replay uses in place of the case step's own target. |
