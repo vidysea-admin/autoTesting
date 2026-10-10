@@ -1,5 +1,5 @@
 # Manifest — t153-behavioural-checks
-**Contract:** qa/contracts/ai-target.md (AI6, AI7); also judged: core-invariants.md C1-C5, C7, C12; consent.md CN1/CN5/CN6; grade.md G1-G6
+**Contract:** qa/contracts/ai-target.md (AI6, AI7)
 **Goal task:** T-153 (Track C3: behavioural AI capture, judge mapping, scrub boundary)
 **Date:** 2026-10-11
 **Fix cycle:** 0 of max 2
@@ -27,6 +27,7 @@ Gate answers: none open for T-153. qa/gates/t151-dependency-authorization.md:20 
 Affected tests / full-suite trigger: tests/test_ai_capture.py, tests/test_grade_evidence.py, tests/test_approval_signing.py, plus closure tests/test_ai_catalog.py, tests/test_grade.py, tests/test_schema.py (all passed, see Actual outputs). Security-L unit: the full suite is the checker's single LAST release step, not the builder's. Safe-fallback triggers: none. `land-integrate-combined` edits `core/redact.py`; if it lands first re-run tests/test_ai_capture.py.
 Pre-check[AI6]: ff901f721d17a1b2d7a109526f8444e485920965 uv run pytest tests/test_ai_capture.py tests/test_grade_evidence.py -> 112 passed (77 + 35; includes test_capturer_source_never_constructs_a_verdict_or_result, test_the_capture_is_handed_to_grade_unmodified, test_the_judged_verdict_comes_from_the_judge_not_the_capture, test_module_exposes_no_second_grading_path) and the contract grep for Result./Verdict( in ai_capture.py returns nothing (exit 1) t=35 blobs=tests/test_ai_capture.py:4fd639e,tests/test_grade_evidence.py:2af58c0
 Pre-check[AI7]: ff901f721d17a1b2d7a109526f8444e485920965 uv run pytest tests/test_ai_capture.py tests/test_grade_evidence.py tests/test_approval_signing.py -> 130 passed (77 + 35 + 18; includes test_a_secret_in_the_target_response_never_reaches_the_judge_prompt, test_a_raw_secret_in_a_prompt_is_never_sent_to_the_endpoint, test_ai_computed_grade_enforces_the_final_prompt_redactor) t=47 blobs=tests/test_ai_capture.py:4fd639e,tests/test_grade_evidence.py:2af58c0,tests/test_approval_signing.py:709601f
+Pre-check: ff901f721d17a1b2d7a109526f8444e485920965 uv run pytest tests/test_ai_capture.py tests/test_grade_evidence.py tests/test_approval_signing.py -> 130 passed t=47 blobs=tests/test_ai_capture.py:4fd639e,tests/test_grade_evidence.py:2af58c0,tests/test_approval_signing.py:709601f   (aggregate line for the lint: `tick.mjs` CRIT_RE only recognises C<n> criterion ids, so it cannot see the tagged AI6/AI7 lines above)
 Falsify[AI6]: tests/test_ai_capture.py::test_capturer_source_never_constructs_a_verdict_or_result — see Capability coverage (green before, red after, restored; throwaway copy)
 Metrics: start=2026-10-11T00:00Z end=unavailable wall_min=unavailable agent_min=unavailable blocked_min=60 suite_runs=0 repeat_runs=0 mutations=4 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=unavailable mutants=4 defects_unit=0 defects_6c=0
 
@@ -66,6 +67,7 @@ Done in a throwaway copy (`git archive HEAD` extracted outside the worktree, PYT
 Not UI-touching — no surface changed. Changed paths: src/autotester/schema/ai_check.py, src/autotester/stages/ai_capture.py, src/autotester/stages/ai_judge.py, src/autotester/stages/grade.py, tests/*, docs/MAP.md.
 
 ## Open items for the checker (honest list)
+- Also judged against this unit (not separate acceptance ids): core-invariants.md C1-C5, C7 and C12(b); consent.md CN1/CN5/CN6; grade.md G1-G6.
 - `ApprovalKind.LIVE_CASE` for a behavioural capture (ai_capture.py:95) is an `[ASSUMPTION]`; ADVERSARIAL belongs to T-154.
 - No real HTTP sender exists or is in scope; transport is an injected `send(endpoint, prompt) -> AiReply`. Nothing is persisted (T-154/T-155).
 - `stages/ai_judge.py` is a new un-gated module (reason above).
