@@ -1,0 +1,49 @@
+{
+ "pages": [],
+ "button_count": 1,
+ "after_click_url": "http://127.0.0.1:8765/projects/demo/damage-report",
+ "demo": {
+  "xss_flag": null,
+  "dialogs": [],
+  "scripts_in_dom": 0,
+  "img_onerror_in_dom": 0,
+  "sections": [
+   "regression",
+   "api",
+   "workflows",
+   "history",
+   "coverage"
+  ],
+  "xss_text_visible_literally": true,
+  "has_baseline_rel0": true,
+  "has_regressed": true,
+  "c1_regressed_listed": true,
+  "unavailable_count": 0,
+  "not_run_present": true,
+  "incomplete_banner": true,
+  "not_visited": true,
+  "plain_secret_in_text": false,
+  "hscroll_1280": false
+ },
+ "demo_rel0": {
+  "no_baseline_banner": true,
+  "url_ok": true
+ },
+ "nobase": {
+  "no_claim_banner": true,
+  "regressed_word": false,
+  "fixed_word": false
+ },
+ "empty": {
+  "empty_state": true,
+  "pass_word": false,
+  "sections": 0
+ },
+ "bad_run_status": 400,
+ "bad_project_status": 404,
+ "hscroll_390": true,
+ "console_errors": [
+  "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+  "Failed to load resource: the server responded with a status of 404 (Not Found)"
+ ]
+}
