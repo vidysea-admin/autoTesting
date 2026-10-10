@@ -99,7 +99,9 @@
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
+| `stages/ai_capture.py` | AI CAPTURE: exercise one AI endpoint and record what happened. It observes and never decides. |
 | `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
+| `stages/ai_judge.py` | AI JUDGE: map captured observations into the existing grade stage's evidence and rubric. |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
@@ -201,6 +203,9 @@
 |---|---|
 | `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
 | `AiCheckMethod` (`schema/ai_check.py`) | Who decides a check: code from recorded facts, or the independent judge (C7). |
+| `AiReply` (`schema/ai_check.py`) | What an AI endpoint answered, as the transport seam hands it to the capturer. |
+| `AiExchange` (`schema/ai_check.py`) | One prompt and what was observed of its answer. Facts only: no verdict lives here (C7). |
+| `AiCapture` (`schema/ai_check.py`) | A captured run of one check against one endpoint: observation, never judgement. |
 | `AiSignalKind` (`schema/ai_target.py`) | Observed lexical facts; never runtime claims or check selection. |
 | `AiTargetKind` (`schema/ai_target.py`) | The four positive target kinds specified by the approved T-151 plan. |
 | `Classification` (`schema/ai_target.py`) | Strict naming response; evidence and checks are never model-controlled. |
