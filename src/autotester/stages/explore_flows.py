@@ -1,10 +1,10 @@
 """One job: derive reviewable `Flow` PROPOSALS from a crawl's discovery tree (AT-887, D-084).
 
-Split from `explore_merge.py`, which was at the 300-line cap: folding screens into a spec and
-deriving paths from the screen graph are two jobs. A crawl lands on one screen and discovers
+Split from `explore_merge.py`: folding screens into a spec and deriving paths from the
+screen graph are two jobs. A crawl lands on one screen and discovers
 the rest by clicking, so each leaf of that tree is a replayable user journey. This module is
 pure -- no browser, no provider, no clock -- and never touches review state: what it returns
-is a proposal, and `explore_merge.merge_crawl` puts it behind the existing human gate.
+is a proposal, and `explore_merge.merge_screens_and_flows` puts it behind the existing human gate.
 """
 
 from __future__ import annotations

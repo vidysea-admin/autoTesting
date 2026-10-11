@@ -144,3 +144,36 @@ def test_the_happy_case_keeps_the_real_steps_only_the_prompt_is_masked(tmp_path)
     provider = MockProvider(responses={"agent": [ExpandedSteps(steps=[], rationale="n/a")] * 30})
     cases = expand_flow(flow, "demo", provider, store=store)
     assert cases[0].steps == flow.steps
+
+
+def test_a_phone_at_the_end_of_a_step_does_not_swallow_the_next_step_number() -> None:
+    """The phone pattern spans whitespace, so masking the joined text fused two steps."""
+    flow = Flow(id="flow_p", name=f"Call {PHONE}", entry_screen="scr", steps=[
+        Step(order=1, action=Action.NAVIGATE, target="https://app.test/signin"),
+        Step(order=2, action=Action.FILL, target="phone field", value=PHONE),
+        Step(order=3, action=Action.CLICK, target="Continue"),
+        Step(order=4, action=Action.CLICK, target="Done")])
+    prompt = build_expand_prompt(flow, CaseClass.INPUT_EMPTY, RepoDocs())
+    assert PHONE not in prompt
+    assert ("1. navigate https://app.test/signin\n2. fill phone field = <phone>\n"
+            "3. click Continue\n4. click Done") in prompt
+    assert "Call <phone>" in prompt
+
+
+def test_compile_evals_shows_the_provider_only_the_scrubbed_prompt(tmp_path) -> None:
+    from eval_compiler_fixtures import LOGIN, SLUG, approved_store, persona, provider
+
+    from autotester.stages.eval_compiler import compile_evals
+    steps = [LOGIN.steps[0], LOGIN.steps[1].model_copy(update={"value": f"{SECRET} {EMAIL}"}),
+             *LOGIN.steps[2:]]
+    flow = LOGIN.model_copy(update={"steps": steps})
+    store = approved_store(tmp_path, flow)
+    store.save_project(Project(
+        slug=SLUG, name="Demo", base_url="https://demo.test", allowed_domains=["demo.test"],
+        secrets=[SecretRef(key="ST_PASS", domains=["demo.test"])]))
+    (tmp_path / ".env").write_text(f"ST_PASS={SECRET}\n", encoding="utf-8")
+    spy = provider(flow)
+    compile_evals(store.load_flowspec(), persona(flow), [], spy, store=store)
+    assert spy.prompts, "the provider was never called, so nothing was proven"
+    assert all(SECRET not in p and EMAIL not in p for _, p in spy.prompts)
+    assert any("[REDACTED]" in p and "<email>" in p for _, p in spy.prompts)

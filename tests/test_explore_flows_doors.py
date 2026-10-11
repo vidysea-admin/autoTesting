@@ -11,12 +11,13 @@ from fastapi.testclient import TestClient
 from autotester.cli_crawl import _merge_into_flowspec
 from autotester.schema.crawl import Crawl
 from autotester.schema.enums import Action, ReviewStatus
-from autotester.schema.flowspec import FlowSpec, Review
+from autotester.schema.flowspec import FlowSpec, Review, Screen
 from autotester.schema.project import Project
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
 from autotester.stages.explore_merge import merge_stored_crawl
 from autotester.stages.orchestrate import StageContext
-from autotester.stages.orchestrate_runners import make_discover_runner
+from autotester.stages.orchestrate_runners import make_discover_runner, make_model_runner
+from autotester.stages.screen_identity import dangling_references
 from autotester.store.filestore import read_json
 from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app
@@ -96,3 +97,55 @@ def test_no_edges_stored_means_screens_only_plus_the_landing_screen(tmp_path, st
     base = None if start == "none" else FlowSpec(project="demo")
     spec = merge_stored_crawl(store, base, "demo", "crawl_bare")
     assert len(spec.screens) == 1 and [len(f.steps) for f in spec.flows] == [1]
+
+
+# -- a screen the spec already knows is found again under a fresh node id (AT-102) ----------
+
+def known_spec(status: ReviewStatus = ReviewStatus.APPROVED) -> FlowSpec:
+    """A human/video-learned spec that already holds both crawled screens, by name and pattern."""
+    return FlowSpec(project="demo", version=4, review=Review(status=status, by="umesh"), screens=[
+        Screen(id="scr_home", name="Home", url_pattern="/home"),
+        Screen(id="scr_settings", name="Settings", url_pattern="/settings")])
+
+
+def test_the_cli_door_points_a_rediscovered_screen_at_the_existing_one(tmp_path) -> None:
+    store, _, _ = seeded(tmp_path)
+    store.save_flowspec(known_spec())
+    _merge_into_flowspec(store, "demo", CRAWL)
+    spec = store.load_flowspec()
+    assert len(spec.flows) == 1 and dangling_references(spec) == []
+    flow = spec.flows[0]
+    assert (flow.entry_screen, flow.exit_screen) == ("scr_home", "scr_settings")
+    assert [s.screen_id for s in flow.steps] == ["scr_home", "scr_home"]
+
+
+def test_the_ui_door_points_a_rediscovered_screen_at_the_existing_one(
+        tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store, _, _ = seeded(tmp_path)
+    store.save_flowspec(known_spec())
+    resp = TestClient(app).post(f"/projects/demo/crawls/{CRAWL}/merge", follow_redirects=False)
+    assert resp.status_code == 303
+    spec = ProjectStore("demo", tmp_path).load_flowspec()
+    assert len(spec.flows) == 1 and dangling_references(spec) == []
+    assert spec.flows[0].exit_screen == "scr_settings"
+
+
+def test_the_orchestrated_door_leaves_no_dangling_reference_after_the_model_fold(tmp_path) -> None:
+    store, crawl, nodes = seeded(tmp_path)
+    store.save_flowspec(known_spec())
+    ctx = StageContext(store=store, run_id="run1")
+    proposal_ref = make_discover_runner(PROJECT, lambda: (crawl, nodes))(ctx, None)
+    assert dangling_references(read_json(Path(proposal_ref), FlowSpec)) == []
+    make_model_runner()(ctx, proposal_ref)
+    folded = store.load_flowspec()
+    assert len(folded.flows) == 1 and dangling_references(folded) == []
+
+
+def test_a_rediscovery_changes_the_screen_reference_not_the_flow_id(tmp_path) -> None:
+    store, _, _ = seeded(tmp_path)
+    fresh = merge_stored_crawl(store, None, "demo", CRAWL)
+    known = merge_stored_crawl(store, known_spec(), "demo", CRAWL)
+    assert [f.id for f in known.flows] == [f.id for f in fresh.flows]
+    assert fresh.flows[0].entry_screen != known.flows[0].entry_screen
+    assert merge_stored_crawl(store, known, "demo", CRAWL) == known  # re-crawl adds nothing

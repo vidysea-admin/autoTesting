@@ -87,15 +87,17 @@ def applicable_classes(flow: Flow) -> list[CaseClass]:
 
 def build_expand_prompt(flow: Flow, case_class: CaseClass, docs: RepoDocs) -> str:
     template = load_skill_prompt(SKILL_NAME, skills_dir=docs.skills_dir)
+    # Mask each step on its own: the phone pattern spans whitespace, so masking the joined text
+    # lets a value ending in a phone swallow the next line's ordinal.
     steps_text = "\n".join(
-        f"{s.order}. {s.action.value} {s.target}" + (f" = {s.value}" if s.value else "")
+        mask_pii(f"{s.order}. {s.action.value} {s.target}" + (f" = {s.value}" if s.value else ""))
         for s in sorted(flow.steps, key=lambda s: s.order)
     )
     return (
         template.replace("{{CASE_CLASS}}", case_class.value)
         .replace("{{CLASS_DESCRIPTION}}", CLASS_DESCRIPTIONS.get(case_class, case_class.value))
         .replace("{{FLOW_NAME}}", mask_pii(flow.name))
-        .replace("{{ORIGINAL_STEPS}}", mask_pii(steps_text))
+        .replace("{{ORIGINAL_STEPS}}", steps_text)
     )
 
 

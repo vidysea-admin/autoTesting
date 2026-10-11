@@ -22,6 +22,7 @@ from autotester.schema.enums import ReviewStatus
 from autotester.schema.flowspec import Conflict, FlowSpec, InputField, Review, Screen, SourceRef
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
 from autotester.stages.explore_flows import flows_from_crawl
+from autotester.stages.screen_identity import rewrite_screen_refs
 
 if TYPE_CHECKING:
     from autotester.store.project_store import ProjectStore
@@ -188,6 +189,21 @@ def merge_screens(
     })
 
 
+def _rediscovered_ids(spec: FlowSpec | None, nodes: list[ScreenNode]) -> dict[str, str]:
+    """Crawl node id -> the id of the existing screen it re-found. `merge_screens` skips such a
+    node (`_is_rediscovery`), so a flow that cites the node id would dangle: it must cite this."""
+    held = spec.screens if spec else []
+    known = {s.id for s in held}
+    by_pattern = {s.url_pattern: s for s in held if s.url_pattern}
+    alias: dict[str, str] = {}
+    for node in nodes:
+        incoming = screen_from(node)
+        clash = by_pattern.get(incoming.url_pattern)
+        if incoming.id not in known and clash is not None and _is_rediscovery(clash, incoming):
+            alias[node.id] = clash.id
+    return alias
+
+
 def merge_screens_and_flows(
     spec: FlowSpec | None, nodes: list[ScreenNode], edges: list[ScreenEdge], project: str,
     *, crawl_id: str, login_case_id: str | None = None,
@@ -195,10 +211,14 @@ def merge_screens_and_flows(
     """`merge_screens`, plus the crawl's paths as Flow proposals.
 
     A flow whose id the spec already has is skipped, never replaced, so a reviewed or edited
-    flow survives. Adding anything leaves the spec DRAFT (the human gate re-armed, never
-    approved here) and bumps the version once. Idempotent: the same crawl twice adds nothing."""
+    flow survives. A node the spec already holds as a screen is cited by the spec's screen id
+    (the flow id still comes from the crawl path, so it is stable). Adding anything leaves the
+    spec DRAFT (the human gate re-armed, never approved here) and bumps the version once.
+    Idempotent: the same crawl twice adds nothing."""
     merged = merge_screens(spec, nodes, project, crawl_id=crawl_id)
-    proposed = flows_from_crawl(nodes, edges, crawl_id=crawl_id, login_case_id=login_case_id)
+    alias = _rediscovered_ids(spec, nodes)
+    proposed = [rewrite_screen_refs(f, alias) for f in flows_from_crawl(
+        nodes, edges, crawl_id=crawl_id, login_case_id=login_case_id)]
     new = [f for f in proposed if merged.flow(f.id) is None]
     if not new:
         return merged

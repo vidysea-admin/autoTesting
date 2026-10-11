@@ -12,12 +12,13 @@ import pytest
 from autotester.providers.mock import MockProvider
 from autotester.schema.case import ExpandedSteps
 from autotester.schema.enums import Action, EdgeOutcome, ReviewStatus
-from autotester.schema.flowspec import Flow, FlowSpec, Review, Step
+from autotester.schema.flowspec import Flow, FlowSpec, Review, Screen, Step
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
 from autotester.stages.expand import applicable_classes, expand, propose_cases
 from autotester.stages.explore_flows import flows_from_crawl
 from autotester.stages.explore_merge import merge_screens, merge_screens_and_flows
 from autotester.stages.review import FlowSpecNotReviewed, approve
+from autotester.stages.screen_identity import dangling_references
 from autotester.store.project_store import ProjectStore
 
 CRAWL = "crawl_1"
@@ -178,6 +179,48 @@ def test_flows_for_screens_the_spec_already_knows_still_bump_the_version_once() 
     later = merge_screens_and_flows(screens_only, nodes, edges, "demo", crawl_id=CRAWL)
     assert len(later.flows) == 2 and later.version == screens_only.version + 1
     assert later.review == Review(status=ReviewStatus.DRAFT, note=later.review.note)
+
+
+def test_a_merge_that_adds_screens_and_flows_bumps_the_version_exactly_once() -> None:
+    nodes, edges = inventory()
+    base = FlowSpec(project="demo", version=5, review=Review(status=ReviewStatus.APPROVED))
+    merged = merge_screens_and_flows(base, nodes, edges, "demo", crawl_id=CRAWL)
+    assert len(merged.screens) == 4 and len(merged.flows) == 2 and merged.version == 6
+
+
+def test_a_merge_that_adds_only_flows_is_draft_whatever_the_spec_was() -> None:
+    nodes, edges = inventory()
+    known = approve(merge_screens(None, nodes, "demo", crawl_id=CRAWL), by="umesh")
+    merged = merge_screens_and_flows(known, nodes, edges, "demo", crawl_id=CRAWL)
+    assert merged.screens == known.screens and len(merged.flows) == 2
+    assert merged.review.status is ReviewStatus.DRAFT and merged.review.by is None
+    assert merged.review.at is None
+
+
+def test_a_real_cycle_in_the_crawl_graph_yields_no_flow() -> None:
+    """A -> B -> A: neither screen has a path from a landing screen, so nothing is replayable."""
+    a = node("A", "/a", "s_a")
+    to_b = edge(a, "#b")
+    b = node("B", "/b", "s_b", to_b)
+    back = edge(b, "#a")
+    a_again = a.model_copy(update={"discovered_by": back.id})
+    assert flows_from_crawl([a_again, b], [to_b, back], crawl_id=CRAWL) == []
+
+
+def test_a_rediscovered_screen_is_referenced_by_the_existing_id_and_the_flow_id_is_stable() -> None:
+    nodes, edges = inventory()
+    human = [Screen(id="scr_home", name="Home", url_pattern="/home"),
+             Screen(id="scr_profile", name="Profile", url_pattern="/profile")]
+    known = FlowSpec(project="demo", screens=human)
+    fresh = merge_screens_and_flows(None, nodes, edges, "demo", crawl_id=CRAWL)
+    merged = merge_screens_and_flows(known, nodes, edges, "demo", crawl_id=CRAWL)
+    assert dangling_references(merged) == [] and dangling_references(fresh) == []
+    assert sorted(f.id for f in merged.flows) == sorted(f.id for f in fresh.flows)
+    profile = next(f for f in merged.flows if f.name.endswith("Home > Profile"))
+    assert (profile.entry_screen, profile.exit_screen) == ("scr_home", "scr_profile")
+    deep = next(f for f in merged.flows if "Course detail" in f.name)
+    assert deep.entry_screen == "scr_home" and deep.exit_screen == nodes[2].id  # no rediscovery
+    assert deep.steps[1].screen_id == "scr_home" and deep.steps[2].screen_id == nodes[1].id
 
 
 # -- the seam: expand can run on reviewed crawl-derived flows ------------------
