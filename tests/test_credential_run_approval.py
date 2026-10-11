@@ -222,7 +222,7 @@ def _ui(setup, monkeypatch: pytest.MonkeyPatch, provisioned: bool = True):
         return (RawResult(case_id=case_.id, outcome=Outcome.COMPLETED),
                 Verdict(run_id=run_id, case_id=case_.id, result=Result.PASS,
                         grader_provider="mock"))
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _Judge)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda project, role: _Judge())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient", fake)
     return store, TestClient(app)
 

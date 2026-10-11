@@ -17,7 +17,7 @@
  ],
  [
   "expand",
-  "Generate this project's test cases from its APPROVED FlowSpec."
+  "Review/prune proposals, then generate only persisted human-approved cases."
  ],
  [
   "login",
@@ -46,6 +46,10 @@
  [
   "release-log",
   "Print a finished release's single issues log and regression diff."
+ ],
+ [
+  "release-report",
+  "Write the damage-control report: regression, API failures, workflows, change history."
  ],
  [
   "ledger",

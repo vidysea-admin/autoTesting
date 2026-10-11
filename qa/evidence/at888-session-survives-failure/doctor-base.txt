@@ -1,0 +1,4 @@
+root-clutter: MAP.orig — scratch and evidence belong in .work/, not the repo root
+stale-generated: docs/SNAPSHOT.md — differs from regeneration; run `autotester snapshot`
+
+2 violation(s)

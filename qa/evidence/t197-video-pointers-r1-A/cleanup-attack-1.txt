@@ -1,0 +1,9 @@
+ok ok status=ok LEFT: ['projects', 'projects/p', 'projects/p/reviews', 'projects/p/reviews/rv_43cb91e093f3.json']
+kbint ok status=ok LEFT: ['projects', 'projects/p', 'projects/p/reviews', 'projects/p/reviews/rv_43cb91e093f3.json']
+runtime ok status=ok LEFT: ['projects', 'projects/p', 'projects/p/reviews', 'projects/p/reviews/rv_43cb91e093f3.json']
+provider ok status=ok LEFT: ['projects', 'projects/p', 'projects/p/reviews', 'projects/p/reviews/rv_43cb91e093f3.json']
+sysexit ok status=ok LEFT: ['projects', 'projects/p', 'projects/p/reviews', 'projects/p/reviews/rv_43cb91e093f3.json']
+nowin ok status=ok LEFT: ['projects', 'projects/p', 'projects/p/reviews', 'projects/p/reviews/rv_ae250b2ade75.json']
+locked: status ok LEFT: ['projects', 'projects/p', 'projects/p/reviews', 'projects/p/reviews/rv_43cb91e093f3', 'projects/p/reviews/rv_43cb91e093f3.json', 'projects/p/reviews/rv_43cb91e093f3/frames'] n= 14
+junction ran status ok
+junction: outside after: ['frames', 'frames/00000000.png', 'frames/00015000.png', 'frames/00030000.png', 'frames/00045000.png', 'frames/00075000.png', 'frames/00090000.png', 'frames/00105000.png', 'frames/00120000.png', 'precious.txt', 'redacted.mp4'] | workdir exists: True is_junction: n/a

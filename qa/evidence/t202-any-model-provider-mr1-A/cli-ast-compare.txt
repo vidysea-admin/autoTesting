@@ -1,0 +1,7 @@
+== cli.py head vs MASTER
+DIFF expand_cases 
+compared 52 52
+== cli.py head vs UNIT
+DIFF Expr(value=Call(func=Call(func=Attribute(value=Name(id='app', ctx=Load()), attr=#50 (missing in B)
+DIFF expand_cases 
+compared 52 51

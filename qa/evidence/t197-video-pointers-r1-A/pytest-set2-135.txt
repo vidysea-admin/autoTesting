@@ -1,0 +1,17 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\autoTesting\.worktrees\t197-video-pointers
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 135 items
+
+tests\test_cli_video_review.py ....................                      [ 14%]
+tests\test_cli_video_review_exits.py ..........................          [ 34%]
+tests\test_cli_advice_resolves.py ...............................        [ 57%]
+tests\test_approve_cli.py ...........                                    [ 65%]
+tests\test_cli_surface.py .............................................. [ 99%]
+.                                                                        [100%]
+
+======================= 135 passed in 253.21s (0:04:13) =======================
+
+[exited with code 0]

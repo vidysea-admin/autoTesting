@@ -1,0 +1,15 @@
+autotester from: D:\autoTesting\.worktrees\check-t177s0-b\src\autotester\__init__.py mode headless
+KILL: before {'cdp_url': 'http://127.0.0.1:52220', 'portfile': True, 'port_open': True, 'procs': [46248, 52152, 54904, 75400]} owner pid 46248
+KILL: Stop-Process on my profile's own PIDs [46248, 52152, 54904, 75400]
+KILL: +3s after kill, before close(): {'cdp_url': 'http://127.0.0.1:52220', 'portfile': True, 'port_open': True, 'procs': [46248, 52152, 54904, 75400]} owner alive: True
+KILL: +6s after kill, before close(): {'cdp_url': 'http://127.0.0.1:52220', 'portfile': True, 'port_open': True, 'procs': [46248, 52152, 75400]} owner alive: True
+KILL: +9s after kill, before close(): {'cdp_url': 'http://127.0.0.1:52220', 'portfile': True, 'port_open': True, 'procs': [46248, 52152, 75400]} owner alive: True
+Timeout (0:01:50)!
+Thread 0x00010f50 (most recent call first):
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 825 in _poll
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 444 in select
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1898 in _run_once
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 608 in run_forever
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\windows_events.py", line 321 in run_forever
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 641 in run_until_complete
+  File "D:\autoTesting\.worktrees\check-t177s0-b\.venv\Lib\site-packages\playwright\sync_api\_context_manager.py", line 56 in greenlet_main

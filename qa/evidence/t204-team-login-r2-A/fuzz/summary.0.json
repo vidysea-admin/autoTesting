@@ -1,0 +1,21 @@
+{
+ "total": 386,
+ "by_dim": {
+  "A-bind-x-port-x-lists": 386
+ },
+ "by_verdict": {
+  "ok-refused-by-design": 48,
+  "ok-refused": 144,
+  "ok-started-served": 108,
+  "UNBINDABLE-os-refuses": 86
+ },
+ "by_dim_verdict": {
+  "A-bind-x-port-x-lists": {
+   "ok-refused-by-design": 48,
+   "ok-refused": 144,
+   "ok-started-served": 108,
+   "UNBINDABLE-os-refuses": 86
+  }
+ },
+ "bind_parse_mismatch": 0
+}

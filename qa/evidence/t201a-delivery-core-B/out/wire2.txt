@@ -1,0 +1,53 @@
+autotester from: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\src\src\autotester\__init__.py
+TEST_MARKER: PYTEST_CURRENT_TEST set in env: False
+files under scratch project: 74
+disk grep hits: {"password": [], "user": [], "recipient": [], "rcpt-local": [], "b64(user+pw)": [], "b64(pw)": []}
+log lines captured (all cases): 0 | contain pw/user/addr: []
+{"case": "accept-plain", "raised": null, "records": [[1, "sent", null, false]], "server_messages": 1, "auth_attempts": 1, "auth_before_tls": [false], "elapsed_s": 1.3, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": ["rcpt TO:<alice.rcpt@example.com>"]}
+{"case": "accept-starttls-good", "raised": null, "records": [[1, "sent", null, false]], "server_messages": 1, "auth_attempts": 1, "auth_before_tls": [true], "elapsed_s": 1.5, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": ["rcpt TO:<alice.rcpt@example.com>"]}
+{"case": "accept-implicit-ssl-good", "raised": null, "records": [[1, "sent", null, false]], "server_messages": 1, "auth_attempts": 1, "auth_before_tls": [true], "elapsed_s": 1.3, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": ["rcpt TO:<alice.rcpt@example.com>"]}
+{"case": "auth-reject-echo", "raised": null, "records": [[1, "failed", "SMTPAuthenticationError 535", true], [2, "failed", "SMTPAuthenticationError 535", true], [3, "failed", "SMTPAuthenticationError 535", true], [4, "failed", "SMTPAuthenticationError 535", false]], "server_messages": 0, "auth_attempts": 4, "auth_before_tls": [false, false, false, false], "elapsed_s": 4.0, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": []}
+{"case": "drop-mid-data", "raised": null, "records": [[1, "failed", "SMTPServerDisconnected", true], [2, "failed", "SMTPServerDisconnected", true], [3, "failed", "SMTPServerDisconnected", true], [4, "failed", "SMTPServerDisconnected", false]], "server_messages": 0, "auth_attempts": 4, "auth_before_tls": [false, false, false, false], "elapsed_s": 4.1, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": ["rcpt TO:<alice.rcpt@example.com>", "rcpt TO:<alice.rcpt@example.com>"]}
+{"case": "drop-after-full-data", "raised": null, "records": [[1, "failed", "SMTPServerDisconnected", true], [2, "failed", "SMTPServerDisconnected", true], [3, "failed", "SMTPServerDisconnected", true], [4, "failed", "SMTPServerDisconnected", false]], "server_messages": 4, "auth_attempts": 4, "auth_before_tls": [false, false, false, false], "elapsed_s": 4.2, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": ["rcpt TO:<alice.rcpt@example.com>", "rcpt TO:<alice.rcpt@example.com>"]}
+{"case": "rcpt-reject-echo", "raised": null, "records": [[1, "failed", "SMTPRecipientsRefused", true], [2, "failed", "SMTPRecipientsRefused", true], [3, "failed", "SMTPRecipientsRefused", true], [4, "failed", "SMTPRecipientsRefused", false]], "server_messages": 0, "auth_attempts": 4, "auth_before_tls": [false, false, false, false], "elapsed_s": 4.4, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": ["rcpt TO:<alice.rcpt@example.com>", "rcpt TO:<alice.rcpt@example.com>"]}
+{"case": "data-554-echo", "raised": null, "records": [[1, "failed", "SMTPDataError 554", true], [2, "failed", "SMTPDataError 554", true], [3, "failed", "SMTPDataError 554", true], [4, "failed", "SMTPDataError 554", false]], "server_messages": 4, "auth_attempts": 4, "auth_before_tls": [false, false, false, false], "elapsed_s": 6.8, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": ["rcpt TO:<alice.rcpt@example.com>", "rcpt TO:<alice.rcpt@example.com>"]}
+{"case": "silent-no-banner(timeout1s)", "raised": null, "records": [[1, "failed", "SMTPServerDisconnected", true]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 1.1, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": []}
+{"case": "silent-after-ehlo(timeout1s)", "raised": null, "records": [[1, "failed", "SMTPServerDisconnected", true]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 1.9, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": []}
+{"case": "silent-after-mailfrom(timeout1s)", "raised": null, "records": [[1, "failed", "SMTPServerDisconnected", true]], "server_messages": 0, "auth_attempts": 1, "auth_before_tls": [false], "elapsed_s": 1.9, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": []}
+{"case": "no-starttls-advertised", "raised": null, "records": [[1, "failed", "SMTPNotSupportedError", true], [2, "failed", "SMTPNotSupportedError", true], [3, "failed", "SMTPNotSupportedError", true], [4, "failed", "SMTPNotSupportedError", false]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 5.3, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": []}
+{"case": "starttls-selfsigned", "raised": null, "records": [[1, "failed", "SSLCertVerificationError", true]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 1.4, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [["tls-handshake-failed", "SSLError"]], "rcpts": []}
+{"case": "starttls-wronghost-cert", "raised": null, "records": [[1, "failed", "SSLCertVerificationError", true]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 1.4, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [["tls-handshake-failed", "ConnectionResetError"]], "rcpts": []}
+{"case": "implicit-selfsigned", "raised": null, "records": [[1, "failed", "SSLCertVerificationError", true]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 0.5, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [["tls-handshake-failed", "SSLError"]], "rcpts": []}
+{"case": "implicit-wronghost-cert", "raised": null, "records": [[1, "failed", "SSLCertVerificationError", true]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 0.5, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [["tls-handshake-failed", "ConnectionResetError"]], "rcpts": []}
+{"case": "dribble(timeout1s)", "raised": null, "records": [[1, "failed", "SMTPServerDisconnected", true]], "server_messages": 0, "auth_attempts": 0, "auth_before_tls": [], "elapsed_s": 20.4, "stdout": 0, "stderr": 0, "logs": 0, "srv_errors": [], "tls_fail": [], "rcpts": []}
+{"case": "connection-refused", "raised": null, "records": [[1, "failed", "ConnectionRefusedError", true]], "server_messages": 0}
+{"case": "password-unset", "raised": null, "records": [[1, "failed", "the SMTP password is not set", true]], "server_messages": 0, "auth_attempts": 0}
+{"case": "config:plain+creds+remote-host", "config": "None"}
+{"case": "config:unset-TLS-remote", "tls": "starttls"}
+{"case": "config:port465+TLS=0", "tls": "ssl"}
+{"case": "repr-leak", "leaks": []}
+
+=== wire bytes for the normal send ===
+headers: [('From', 'AutoTester <noreply@example.com>'), ('To', 'alice.rcpt@example.com'), ('Subject', 'AutoTester report: Demo Shop - failed'), ('Auto-Submitted', 'auto-generated'), ('Date', 'Sun, 11 Oct 2026 09:35:38 +0000'), ('Message-ID', '<id>'), ('Content-Type', 'text/plain; charset="utf-8"'), ('Content-Transfer-Encoding', 'quoted-printable'), ('MIME-Version', '1.0')]
+is_multipart: False content-type: text/plain parts: 1
+To count: 1 Cc: None Bcc: None
+body equals independently-filled template: False
+BODY:
+Project: Demo Shop
+Run: run-0001
+Finished: 2026-10-11 12:00 UTC
+
+Result: failed
+Passed: 7
+Failed: 2
+Blocked: 1
+Inconclusive: 3
+Coverage: 12 of 15 screens (80%)
+
+Open the report (you will be asked to sign in):
+https://tester.example.test/runs/run-0001
+
+You get this message because you ticked "Email me run reports" on your profile page.
+.
+
+envelope: ['rcpt TO:<alice.rcpt@example.com>']

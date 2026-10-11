@@ -1,0 +1,20 @@
+dup same route two units                                       refused: duplicate route 'GET /x': claimed by a and b
+dup differing method case                                      MERGED {'GET /x': ('run.start', 'p'), 'get /x': ('project.view', 'p')}
+dup trailing slash                                             MERGED {'GET /x': ('run.start', 'p'), 'GET /x/': ('project.view', 'p')}
+dup path-param renamed                                         MERGED {'GET /p/{slug}': ('run.start', 'p'), 'GET /p/{id}': ('project.view', 'p')}
+dup path-param renamed WITH routes given                       refused: b: policy names a route that does not exist: 'GET /p/{id}'
+public marker on non-public route                              refused: a: 'GET /x' is marked public but is not in the closed public set (auth
+public in set, claimed by two units                            refused: duplicate route 'GET /login': claimed by a and b
+grant is a list (not tuple)                                    refused: a: 'GET /x' must be 'public' or (permission key, resolver)
+grant is empty string (omission-like)                          refused: a: 'GET /x' must be 'public' or (permission key, resolver)
+grant is None                                                  refused: a: 'GET /x' must be 'public' or (permission key, resolver)
+grant is 'PUBLIC' uppercase                                    refused: a: 'GET /x' must be 'public' or (permission key, resolver)
+grant is ('public','x')                                        refused: a: 'GET /x' uses permission key 'public', which is not in the closed c
+empty tuple                                                    refused: a: 'GET /x' must be 'public' or (permission key, resolver)
+3-tuple                                                        refused: a: 'GET /x' must be 'public' or (permission key, resolver)
+route w/ whitespace variants                                   MERGED {'GET /x': ('run.start', 'p'), 'GET  /x': ('project.view', 'p')}
+unit order independence                                        MERGED {'GET /x': ('run.start', 'p'), 'GET /y': ('run.start', 'p')}
+units mapping with a non-dict (None)                           AttributeError: 'NoneType' object has no attribute 'items'
+empty everything                                               MERGED {}
+public_routes=None-ish (empty) + public grant                  refused: a: 'GET /login' is marked public but is not in the closed public set (
+catalogue given as str 'run.start' (substring trap)            refused: a: 'GET /x' uses permission key 'run', which is not in the closed cata

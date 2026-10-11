@@ -1,0 +1,75 @@
+=== head
+autotester from: D:\autoTesting\.worktrees\check-t177s0-b\src\autotester\__init__.py 3.11.15
+leading space javascript:// | ' javascript://127.0.0.1/%0awindow.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+leading space javascript: | ' javascript:window.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+tab in scheme | 'java\tscript://127.0.0.1/%0awindow.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+newline in scheme | 'java\nscript://127.0.0.1/%0awindow.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+mixed case JaVaScRiPt:// | 'JaVaScRiPt://127.0.0.1/%0awindow.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+mixed case JaVaScRiPt: | 'JaVaScRiPt:window.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+leading C0  | '\x01javascript://127.0.0.1/%0awindow.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+leading nbsp | '\xa0javascript://127.0.0.1/%0awindow.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+data: html | 'data:text/html,<script>window.__pwned=1</script>' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+data:// allowed host | 'data://127.0.0.1/text/html,<b>x</b>' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+file:/// | 'file:///C:/Windows/win.ini' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+file://allowed-host | 'file://127.0.0.1/C:/Windows/win.ini' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+view-source: | 'view-source:http://127.0.0.1:61112/ok' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+VIEW-SOURCE: | 'VIEW-SOURCE:http://127.0.0.1:61112/ok' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+ftp://allowed | 'ftp://127.0.0.1/x' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+ws://allowed | 'ws://127.0.0.1:61112/x' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+blob: | 'blob:http://127.0.0.1:61112/abc' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+about:blank | 'about:blank' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+chrome://version | 'chrome://version' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=0
+http legit | 'http://127.0.0.1:61112/ok' | ALLOWED(navigated) | server_hits+1 | url_changed=True | pwned=None
+HTTP upper | 'HTTP://127.0.0.1:61112/ok' | ALLOWED(navigated) | server_hits+1 | url_changed=False | pwned=None
+http localhost | 'http://localhost:61112/ok' | ALLOWED(navigated) | server_hits+1 | url_changed=True | pwned=None
+http with query & fragment | 'http://127.0.0.1:61112/ok?a=1#frag' | ALLOWED(navigated) | server_hits+1 | url_changed=True | pwned=None
+leftover procs: []
+=== master
+autotester from: D:\autoTesting\.worktrees\check-t177s0-b-master\src\autotester\__init__.py 3.11.15
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p4_scheme.py", line 57, in <module>
+    pwned = s.page.evaluate("window.__pwned")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\check-t177s0-b\.venv\Lib\site-packages\playwright\sync_api\_generated.py", line 9385, in evaluate
+    self._sync(
+  File "D:\autoTesting\.worktrees\check-t177s0-b\.venv\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\check-t177s0-b\.venv\Lib\site-packages\playwright\_impl\_page.py", line 472, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\check-t177s0-b\.venv\Lib\site-packages\playwright\_impl\_frame.py", line 345, in evaluate
+    await self._channel.send(
+  File "D:\autoTesting\.worktrees\check-t177s0-b\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\check-t177s0-b\.venv\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: Execution context was destroyed, most likely because of a navigation
+MASTER| autotester from: D:\autoTesting\.worktrees\check-t177s0-b-master\src\autotester\__init__.py 3.11.15
+MASTER| leading space javascript:// | ' javascript://127.0.0.1/%0awindow.__pwned=1' | ERROR Error: Page.goto: net::ERR_ABORTED at javascript://127.0.0.1/%0awin | server_hits+0 | url_changed=False | pwned=1
+MASTER| leading space javascript: | ' javascript:window.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=1
+MASTER| tab in scheme | 'java\tscript://127.0.0.1/%0awindow.__pwned=1' | ERROR Error: Page.goto: net::ERR_ABORTED at javascript://127.0.0.1/%0awin | server_hits+0 | url_changed=False | pwned=1
+MASTER| newline in scheme | 'java\nscript://127.0.0.1/%0awindow.__pwned=1' | ERROR Error: Page.goto: net::ERR_ABORTED at javascript://127.0.0.1/%0awin | server_hits+0 | url_changed=False | pwned=1
+MASTER| mixed case JaVaScRiPt:// | 'JaVaScRiPt://127.0.0.1/%0awindow.__pwned=1' | ERROR Error: Page.goto: net::ERR_ABORTED at javascript://127.0.0.1/%0awin | server_hits+0 | url_changed=False | pwned=1
+MASTER| mixed case JaVaScRiPt: | 'JaVaScRiPt:window.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=1
+MASTER| leading C0  | '\x01javascript://127.0.0.1/%0awindow.__pwned=1' | ERROR Error: Page.goto: net::ERR_ABORTED at javascript://127.0.0.1/%0awin | server_hits+0 | url_changed=False | pwned=1
+MASTER| leading nbsp | '\xa0javascript://127.0.0.1/%0awindow.__pwned=1' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=1
+MASTER| data: html | 'data:text/html,<script>window.__pwned=1</script>' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=1
+MASTER| data:// allowed host | 'data://127.0.0.1/text/html,<b>x</b>' | ALLOWED(navigated) | server_hits+0 | url_changed=True | pwned=None
+MASTER| file:/// | 'file:///C:/Windows/win.ini' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=None
+MASTER| file://allowed-host | 'file://127.0.0.1/C:/Windows/win.ini' | ERROR Error: Page.goto: net::ERR_FILE_NOT_FOUND at file://127.0.0.1/C:/Wi | server_hits+0 | url_changed=False | pwned=evalerr
+MASTER| view-source: | 'view-source:http://127.0.0.1:59412/ok' | REFUSED NavigationRefused | server_hits+0 | url_changed=True | pwned=None
+MASTER| VIEW-SOURCE: | 'VIEW-SOURCE:http://127.0.0.1:59412/ok' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=None
+MASTER| ftp://allowed | 'ftp://127.0.0.1/x' | ERROR Error: Page.goto: net::ERR_ABORTED at ftp://127.0.0.1/x
+MASTER| Call log:
+MASTER|   | server_hits+0 | url_changed=False | pwned=None
+MASTER| ws://allowed | 'ws://127.0.0.1:59412/x' | ERROR Error: Page.goto: net::ERR_UNKNOWN_URL_SCHEME at ws://127.0.0.1:594 | server_hits+0 | url_changed=False | pwned=None
+MASTER| blob: | 'blob:http://127.0.0.1:59412/abc' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=None
+MASTER| about:blank | 'about:blank' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=None
+MASTER| chrome://version | 'chrome://version' | REFUSED NavigationRefused | server_hits+0 | url_changed=False | pwned=None
+MASTER| http legit | 'http://127.0.0.1:59412/ok' | ALLOWED(navigated) | server_hits+1 | url_changed=True | pwned=None
+MASTER| HTTP upper | 'HTTP://127.0.0.1:59412/ok' | ALLOWED(navigated) | server_hits+1 | url_changed=False | pwned=None
+MASTER| http localhost | 'http://localhost:59412/ok' | ALLOWED(navigated) | server_hits+1 | url_changed=True | pwned=None
+MASTER| http with query & fragment | 'http://127.0.0.1:59412/ok?a=1#frag' | ALLOWED(navigated) | server_hits+1 | url_changed=True | pwned=None
+MASTER| leftover procs: []

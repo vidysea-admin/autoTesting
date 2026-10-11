@@ -1,0 +1,24 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-copy\src\autotester\__init__.py
+FLOWS 2 review draft None ver 2 screens 9
+ - crawl path: Home > Profile | auth True | kind None | pre ['signed in by login case case_login']
+      1 navigate https://app.test/home?id=7 | url /home | ref crawl_one https://app.test/home?id=7
+      2 click role=link[name="Profile"] | url /profile | ref crawl_one edge_e84395d98518
+ - crawl path: Home > Courses > Algebra | auth True | kind None | pre ['signed in by login case case_login']
+      1 navigate https://app.test/home?id=7 | url /home | ref crawl_one https://app.test/home?id=7
+      2 click role=link[name="Courses"] | url /courses | ref crawl_one edge_31e43086cc61
+      3 click role=link[name="Algebra"] | url /courses/algebra | ref crawl_one edge_acd40825f387
+name mentions Results False
+name mentions Broken False
+name mentions Orphan False
+name mentions CycA False
+name mentions CycB False
+REMERGE same crawl: same object? True bytes equal True ver 2
+IDS STABLE across crawl ids: True 2
+RECRAWL merge: flows 2 ver 2 source_ids ['crawl_one'] is unchanged object content: True
+RECRAWL persisted bytes identical: True
+APPROVED + nothing new: still APPROVED approved by umesh bytes identical True
+ADD one leaf: flows 2 -> 3 | old flows byte-identical True | review draft by None at None | ver 2 -> 3 | human name kept HUMAN RENAMED
+REVIEW NOTE: 1 screen(s), 1 flow(s) added by crawl crawl_one — needs review
+existing Screens untouched: True
+REFINT crawl path: Home > Profile dangling: [] | of 4
+REFINT crawl path: Home > Courses > Algebra dangling: [] | of 5

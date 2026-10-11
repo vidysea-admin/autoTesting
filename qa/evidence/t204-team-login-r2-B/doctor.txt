@@ -1,0 +1,4 @@
+decision-citation-dangling: qa/manifests/t204-team-login.md:42 — cites D-082, which has no `## D-082` entry in docs/DECISIONS.md or docs/archive/
+decision-citation-dangling: qa/manifests/t204-team-login.md:145 — cites D-082, which has no `## D-082` entry in docs/DECISIONS.md or docs/archive/
+
+2 violation(s)

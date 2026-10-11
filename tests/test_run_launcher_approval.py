@@ -64,6 +64,9 @@ def world(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[ProjectStore
     class Judge:
         trace = None
 
+        def __init__(self, project: Project) -> None:    # the factory is asked per project (LL2)
+            self.project = project
+
         def available(self) -> bool:
             return True
 
@@ -118,8 +121,9 @@ def test_a_covering_approval_proceeds_and_records_who_and_how(world, entry) -> N
 
 
 PINNED = {
-    "launch_run": {"slug", "run_id", "trigger", "requested_by", "slot_key", "via", "seams"},
-    "prepare_run": {"slug", "seams"},
+    "launch_run": {"slug", "run_id", "trigger", "requested_by", "slot_key", "via", "seams",
+                   "priorities"},          # priorities: T-178 FB4 selection, not a gate
+    "prepare_run": {"slug", "seams", "priorities"},
     "require_live_case_approval": {"project", "store", "cases", "secrets", "account_keys"},
 }
 PINNED_SEAMS = {"judge_factory", "planner", "free_ram_mb", "ledger"}

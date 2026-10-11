@@ -1,0 +1,22 @@
+100 lines                                      parsed= 100 errors=   0 nonblank=  100 identity=True 
+101 lines                                      parsed= 100 errors=   1 nonblank=  101 identity=True too many pointer lines (max 100)
+101 lines CRLF                                 parsed= 100 errors=   1 nonblank=  101 identity=True too many pointer lines (max 100)
+note 500                                       parsed=   1 errors=   0 nonblank=    1 identity=True 
+note 501                                       parsed=   0 errors=   1 nonblank=    1 identity=True note is 501 characters (max 500)
+note 500 multibyte(3B)                         parsed=   1 errors=   0 nonblank=    1 identity=True 
+note 501 multibyte                             parsed=   0 errors=   1 nonblank=    1 identity=True note is 501 characters (max 500)
+free 500                                       parsed=   1 errors=   0 nonblank=    1 identity=True 
+free 501                                       parsed=   0 errors=   1 nonblank=    1 identity=True note is 501 characters (max 500)
+note 500 + surrounding spaces                  parsed=   1 errors=   0 nonblank=    1 identity=True 
+empty note after pipe                          parsed=   1 errors=   0 nonblank=    1 identity=True 
+BOM + 1 line                                   parsed=   1 errors=   0 nonblank=    1 identity=True 
+BOM + CRLF                                     parsed=   2 errors=   0 nonblank=    2 identity=True 
+body bytes 32768
+exactly 32768 bytes (many lines)               parsed=  81 errors=   0 nonblank=   81 identity=True 
+32769 bytes                                    parsed=   0 errors=   1 nonblank=    1 identity=True pointer file is 32769 bytes, over the 32768 byte limit
+32768 bytes incl BOM(3B) -> 32771              parsed=   0 errors=   1 nonblank=    1 identity=True pointer file is 32769 bytes, over the 32768 byte limit
+40KB single line                               parsed=   0 errors=   1 nonblank=    1 identity=True pointer file is 40007 bytes, over the 32768 byte limit
+32768 chars single valid-ish line              parsed=   0 errors=   1 nonblank=    1 identity=True note is 32761 characters (max 500)
+multibyte file 10923 chars *3B = 32769         parsed=   0 errors=   1 nonblank=    1 identity=True pointer file is 32769 bytes, over the 32768 byte limit
+multibyte file 10922 chars -> 32766B           parsed=   1 errors=   0 nonblank=    1 identity=True 
+oversize in CLI uses stat bytes; parser uses len(text.encode) -> consistent?

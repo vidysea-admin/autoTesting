@@ -1,0 +1,63 @@
+bind='127.0.0.1'    list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='127.0.0.1'    list=match_host       -> ok
+bind='127.0.0.1'    list=match_host_port  -> ok
+bind='127.0.0.1'    list=match_origin     -> ok
+bind='127.0.0.1'    list=match_v6         -> ok
+bind='127.0.0.1'    list=other_host       -> ok
+bind='127.0.0.1'    list=other_origin     -> ok
+bind='localhost'    list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='localhost'    list=match_host       -> ok
+bind='localhost'    list=match_host_port  -> ok
+bind='localhost'    list=match_origin     -> ok
+bind='localhost'    list=match_v6         -> ok
+bind='localhost'    list=other_host       -> ok
+bind='localhost'    list=other_origin     -> ok
+bind='::1'          list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='::1'          list=match_host       -> ok
+bind='::1'          list=match_host_port  -> ok
+bind='::1'          list=match_origin     -> ok
+bind='::1'          list=match_v6         -> ok
+bind='::1'          list=other_host       -> ok
+bind='::1'          list=other_origin     -> ok
+bind='10.0.0.5'     list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='10.0.0.5'     list=match_host       -> ok
+bind='10.0.0.5'     list=match_host_port  -> ok
+bind='10.0.0.5'     list=match_origin     -> ok
+bind='10.0.0.5'     list=match_v6         -> RAISE: the server's own origin 10.0.0.5:8443 is not allowed: list it in AUTOT
+bind='10.0.0.5'     list=other_host       -> RAISE: the server's own origin 10.0.0.5:8443 is not allowed: list it in AUTOT
+bind='10.0.0.5'     list=other_origin     -> RAISE: the server's own origin 10.0.0.5:8443 is not allowed: list it in AUTOT
+bind='2001:db8::5'  list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='2001:db8::5'  list=match_host       -> RAISE: the server's own origin [2001:db8::5]:8443 is not allowed: list it in 
+bind='2001:db8::5'  list=match_host_port  -> RAISE: the server's own origin [2001:db8::5]:8443 is not allowed: list it in 
+bind='2001:db8::5'  list=match_origin     -> RAISE: the server's own origin [2001:db8::5]:8443 is not allowed: list it in 
+bind='2001:db8::5'  list=match_v6         -> ok
+bind='2001:db8::5'  list=other_host       -> RAISE: the server's own origin [2001:db8::5]:8443 is not allowed: list it in 
+bind='2001:db8::5'  list=other_origin     -> RAISE: the server's own origin [2001:db8::5]:8443 is not allowed: list it in 
+bind='0.0.0.0'      list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='0.0.0.0'      list=match_host       -> ok
+bind='0.0.0.0'      list=match_host_port  -> ok
+bind='0.0.0.0'      list=match_origin     -> ok
+bind='0.0.0.0'      list=match_v6         -> ok
+bind='0.0.0.0'      list=other_host       -> ok
+bind='0.0.0.0'      list=other_origin     -> ok
+bind='::'           list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='::'           list=match_host       -> ok
+bind='::'           list=match_host_port  -> ok
+bind='::'           list=match_origin     -> ok
+bind='::'           list=match_v6         -> ok
+bind='::'           list=other_host       -> ok
+bind='::'           list=other_origin     -> ok
+bind='*'            list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind='*'            list=match_host       -> ok
+bind='*'            list=match_host_port  -> ok
+bind='*'            list=match_origin     -> ok
+bind='*'            list=match_v6         -> ok
+bind='*'            list=other_host       -> ok
+bind='*'            list=other_origin     -> ok
+bind=''             list=none             -> RAISE: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+bind=''             list=match_host       -> ok
+bind=''             list=match_host_port  -> ok
+bind=''             list=match_origin     -> ok
+bind=''             list=match_v6         -> ok
+bind=''             list=other_host       -> ok
+bind=''             list=other_origin     -> ok

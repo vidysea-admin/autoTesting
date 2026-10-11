@@ -8,13 +8,16 @@ only turns a press into a queue entry and a `LaunchRefused` into an HTTP error.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import RedirectResponse
 
 from autotester.core.ids import ulid
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers import for_role
+from autotester.providers.base import Provider
+from autotester.schema.case import CasePriority
+from autotester.schema.project import Project
 from autotester.schema.run_queue import QueueEntry
 from autotester.stages import run_launcher
 from autotester.stages.parallel_run import _free_ram_mb, plan_parallel_run
@@ -29,10 +32,13 @@ __all__ = ["_is_entry_case", "get_queue", "router"]
 
 def _seams(*, shared_ram: bool = True) -> RunSeams:
     """The collaborators of a run, looked up at call time from this module (tests and the
-    server both swap `LangChainFallbackProvider`, `plan_parallel_run` and `_free_ram_mb` here).
+    server both swap `for_role`, `plan_parallel_run` and `_free_ram_mb` here).
     `shared_ram` plans against the queue's RAM ledger (HO20); a gate-only check needs none, and
     must not touch the queue file."""
-    return RunSeams(judge_factory=LangChainFallbackProvider, planner=plan_parallel_run,
+    def judge(project: Project) -> Provider:
+        return for_role(project, "judge")     # LL2: the one provider factory, looked up here
+
+    return RunSeams(judge_factory=judge, planner=plan_parallel_run,
                     free_ram_mb=_free_ram_mb, ledger=get_queue() if shared_ram else None)
 
 
@@ -46,17 +52,18 @@ _plan_under_shared_budget = _with_seams(run_launcher.plan_under_shared_budget)
 
 
 @router.post("/projects/{slug}/run")
-def trigger_run(slug: str) -> RedirectResponse:
+def trigger_run(slug: str, priority: Annotated[list[CasePriority] | None, Query()] = None
+                ) -> RedirectResponse:
     """Queue a real run and return at once (RU1-RU4; T-203/D-072 G6). The launcher's gates are
     checked now, so 400/403 come back immediately; the run itself starts when the server-wide
     limit and the project's single-flight slot allow, and the report page shows it as queued,
     then running."""
     try:
-        run_launcher.prepare_run(slug, _seams(shared_ram=False))
+        run_launcher.prepare_run(slug, _seams(shared_ram=False), priority)
     except LaunchRefused as exc:
         raise HTTPException(exc.status, exc.reason) from exc
     try:
-        get_queue().submit(slug, run_id=f"run-{ulid()}")   # minted only after the gates passed
+        get_queue().submit(slug, run_id=f"run-{ulid()}", priorities=priority)  # id: post-gates
     except QueueFull as exc:
         raise HTTPException(429, str(exc)) from exc
     return RedirectResponse(f"/projects/{slug}/report", status_code=303)
@@ -66,7 +73,7 @@ def _run_queued(entry: QueueEntry) -> None:
     """The queue's executor: the launcher re-checks every gate (HO19), then runs the project."""
     try:
         run_launcher.launch_run(entry.project, run_id=entry.id, requested_by=entry.requested_by,
-                                seams=_seams())
+                                seams=_seams(), priorities=entry.priorities)
     except LaunchRefused as exc:
         raise RunRefused(exc.reason) from exc
 

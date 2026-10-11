@@ -1,0 +1,7 @@
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-copy\src\autotester\__init__.py
+1. navigate https://app.test/signin
+2. fill phone field = <phone>. click Continue
+4. click Done
+
+Answer with a JSON object matching the schema you were given (`steps[]`, `rationale`).
+

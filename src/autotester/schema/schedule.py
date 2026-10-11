@@ -9,7 +9,8 @@ Time zones (Umesh, 2026-10-07): a schedule supports only `UTC` and `IST` (a fixe
 offset). Neither has daylight saving, so there is no zone database, no `tzdata` dependency and
 no DST rule anywhere. Anything else is refused at save, naming the two allowed values.
 
-Vocabulary note: `ScheduleMode`, `SlotOutcome`, `SchedulerHealth` and `ScheduleZone` are Group 10
+Vocabulary note: `ScheduleMode`, `SlotOutcome`, `SchedulerHealth`, `ScheduleZone` and
+`CredentialState` are Group 10
 closed vocabularies. Their home is `schema/team_enums.py` (T-205/TF8); they are imported here so
 `from autotester.schema.schedule import SlotOutcome` keeps working.
 
@@ -29,6 +30,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_valida
 
 from autotester.core.localtime import resolve_local, zone
 from autotester.schema.team_enums import (  # noqa: F401  (re-exported: importers keep their path)
+    CredentialState,
     ScheduleMode,
     SchedulerHealth,
     ScheduleZone,
@@ -212,3 +214,22 @@ class SlotClaim(BaseModel):
     claimed_at: datetime
     intended: SlotOutcome = Field(description="enqueued | catch_up | missed, as decided at claim")
     superseded_by: str | None = None
+
+
+class TickReport(BaseModel):
+    """What one `autotester schedule tick` did: the JSON document of `--output json`.
+
+    `exit_code`: 0 nothing due or all handled, 2 a slot blocked / refused / failed or a project
+    errored, 3 a config was invalid. `errors` holds `<project>: <ExceptionClass>` only (a
+    message may carry a secret). `would_fire` / `would_block` are filled by `--dry-run` alone."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    tick_at: datetime
+    dry_run: bool = False
+    exit_code: int = Field(0, ge=0, le=3)
+    records: list[SlotRecord] = Field(default_factory=list)
+    would_fire: list[str] = Field(default_factory=list)
+    would_block: list[str] = Field(default_factory=list)
+    invalid: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)

@@ -32,9 +32,10 @@ from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import placeholder_keys
 from autotester.core.safe_names import SLUG_PATTERN
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers import for_role, why_unavailable
+from autotester.providers.base import Provider, ProviderError
 from autotester.schema.approval import RunApproval
-from autotester.schema.case import Case
+from autotester.schema.case import Case, CasePriority
 from autotester.schema.catalog import TIER_BY_CLASS, Catalog
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import Action, ApprovalKind, Trigger
@@ -78,10 +79,15 @@ class PlanningLedger(Protocol):
     def grant(self, run_id: str, megabytes: float) -> None: ...
 
 
+def default_judge(project: Project) -> Provider:
+    """The project's judge via the one provider factory (LL2/LL11)."""
+    return for_role(project, "judge")
+
+
 class RunSeams(NamedTuple):
     """The collaborators a caller may substitute; the defaults are the production ones."""
 
-    judge_factory: Callable[[], LangChainFallbackProvider] = LangChainFallbackProvider
+    judge_factory: Callable[[Project], Provider] = default_judge
     planner: Callable[..., ParallelPlan] = plan_parallel_run
     free_ram_mb: Callable[[], float] = _free_ram_mb
     ledger: PlanningLedger | None = None
@@ -94,7 +100,7 @@ class Prepared(NamedTuple):
     store: ProjectStore
     project: Project
     cases: list[Case]
-    judge: LangChainFallbackProvider
+    judge: Provider
     paths: ProjectPaths
     secrets: SecretStore
     approval: RunApproval
@@ -154,7 +160,21 @@ def require_live_case_approval(
         raise LaunchRefused(403, str(exc)) from exc
 
 
-def prepare_run(slug: str, seams: RunSeams = DEFAULT_SEAMS) -> Prepared:
+def judge_or_refuse(project: Project, seams: RunSeams) -> Provider:
+    """The project's judge, or a 400 saying why none can serve (LL11): the model and the one
+    variable to set, never a key, a prompt or an endpoint value. A queued run's 400 becomes
+    `refused` (HO16/HO19), so a run launches no browser without a judge."""
+    try:
+        judge = seams.judge_factory(project)
+    except ProviderError as exc:
+        raise LaunchRefused(400, str(exc)) from None
+    if why := why_unavailable(judge):
+        raise LaunchRefused(400, f"no AI provider is configured ({why}) -- cannot grade a run")
+    return judge
+
+
+def prepare_run(slug: str, seams: RunSeams = DEFAULT_SEAMS,
+                priorities: list[CasePriority] | None = None) -> Prepared:
     """Everything a run needs, with every gate evaluated (`LaunchRefused` otherwise).
 
     Called when a request arrives (so a refusal is immediate) and again when the run starts
@@ -166,13 +186,10 @@ def prepare_run(slug: str, seams: RunSeams = DEFAULT_SEAMS) -> Prepared:
     project = store.load_project()
     if project is None:
         raise LaunchRefused(404, f"no project '{slug}'")
-    cases = store.list_cases()
+    cases = store.list_cases(priorities=priorities)  # FB4: selected priorities + pinned p0
     if not cases:
         raise LaunchRefused(400, f"project '{slug}' has no cases to run")
-    judge = seams.judge_factory()
-    if not judge.available():
-        raise LaunchRefused(
-            400, "no AI provider is configured (set an API key in .env) -- cannot grade a run")
+    judge = judge_or_refuse(project, seams)
     paths = ProjectPaths(slug)
     secrets = SecretStore.load(project, paths.env_file, strict=False)
     account_keys = require_declared_values(project, secrets, slug, cases)
@@ -201,7 +218,7 @@ def plan_under_shared_budget(
 def run_cases_traced(
     store: ProjectStore, run_id: str, secrets: SecretStore, project: Project,
     cases: list[Case], entry_flags: list[bool], run_dir: Path, paths: ProjectPaths,
-    slug: str, judge: LangChainFallbackProvider, approval: RunApproval,
+    slug: str, judge: Provider, approval: RunApproval,
     catalog_snapshot: Catalog | None = None, seams: RunSeams = DEFAULT_SEAMS,
 ) -> ParallelPlan:
     """AT-562/AT-564: build this run's `StageContext` with the project's real `SecretStore`
@@ -241,14 +258,15 @@ def run_cases_traced(
 def launch_run(
     slug: str, *, run_id: str | None = None, trigger: Trigger = Trigger.MANUAL,
     requested_by: str | None = None, slot_key: str | None = None, via: RunVia | None = None,
-    seams: RunSeams = DEFAULT_SEAMS,
+    seams: RunSeams = DEFAULT_SEAMS, priorities: list[CasePriority] | None = None,
 ) -> Run:
-    """Run the whole project as run `run_id` and save it. The one place a `Run` is built.
+    """Run the project (every case, or `priorities` plus pinned p0) as `run_id` and save it. The one
+    place a `Run` is built.
 
     The gates run here, so every caller is gated and none can pass a flag to skip them. Raises
     `LaunchRefused` before any run directory or browser exists."""
     store, project, cases, judge, paths, secrets, approval, entry_flags, cat = prepare_run(
-        slug, seams)
+        slug, seams, priorities)
     run_id = run_id or f"run-{ulid()}"
     plan = run_cases_traced(
         store, run_id, secrets, project, cases, entry_flags, paths.run_dir(run_id), paths, slug,
@@ -272,13 +290,9 @@ def launch_run(
 
 
 def ask_for_what_it_did_not_recognise(store: ProjectStore, run_id: str) -> None:
-    """Turn this run's coverage gaps into video requests.
-
-    AT-240: `diff_coverage`, `request_for` and `add_request` were each written, each tested, and
-    each called from nothing -- so not one `VideoRequest` had ever been created and the north
-    star's "when it meets a screen it does not know, it asks the human for a video" had never
-    happened. Deliberately after `save_run`: a request is about a run that HAPPENED, and failing
-    to ask must never lose the run itself."""
+    """Turn this run's coverage gaps into video requests (AT-240: the north star's "ask the
+    human for a video when it meets an unknown screen" had never happened). Deliberately after
+    `save_run`: a request is about a run that HAPPENED, and failing to ask must never lose it."""
     spec = store.load_flowspec()
     if spec is None:
         return                      # nothing learned yet -> nothing is "unknown" (V2)

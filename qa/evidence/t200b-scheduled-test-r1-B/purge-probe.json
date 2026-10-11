@@ -1,0 +1,62 @@
+{
+ "T1 b: acked/records/claims": [
+  200,
+  200,
+  200
+ ],
+ "T1 b lossless": true,
+ "T1 c: acked/records/claims": [
+  200,
+  200,
+  200
+ ],
+ "T1 c lossless": true,
+ "T1 bb: acked/records/claims": [
+  200,
+  200,
+  200
+ ],
+ "T1 bb lossless": true,
+ "T1 purges done": 231,
+ "T1 purge errors": [],
+ "T1 leaked .purge dirs/tmp": [],
+ "T3 kill after replace #1": {
+  "exit": 9,
+  "a files still live": 3,
+  "in stage": 1,
+  "after retry: stage files leaked": 1,
+  "b intact": true
+ },
+ "T3 kill after replace #2": {
+  "exit": 9,
+  "a files still live": 2,
+  "in stage": 2,
+  "after retry: stage files leaked": 2,
+  "b intact": true
+ },
+ "T3 kill after replace #3": {
+  "exit": 9,
+  "a files still live": 1,
+  "in stage": 3,
+  "after retry: stage files leaked": 3,
+  "b intact": true
+ },
+ "T3 kill after replace #4": {
+  "exit": 9,
+  "a files still live": 0,
+  "in stage": 4,
+  "after retry: stage files leaked": 4,
+  "b intact": true
+ },
+ "T4 SystemExit mid-purge: files": [
+  ".purge-f6728e991ac2448d94af3cdadefa6abe\\0",
+  "claims\\a%3Acustom%3A2026-10-08T00%3A01Z.claim",
+  "claims\\a%3Acustom%3A2026-10-08T00%3A02Z.claim",
+  "records\\a.jsonl"
+ ],
+ "T5 foreign line appended between guard and move survives?": false,
+ "T6 late tick after purge leaves files": [
+  "claims\\a%3Acustom%3A2026-10-08T00%3A00Z.claim",
+  "records\\a.jsonl"
+ ]
+}

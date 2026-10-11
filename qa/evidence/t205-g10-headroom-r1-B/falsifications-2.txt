@@ -1,0 +1,18 @@
+M2_TF6_origin_free_str | BEFORE rc 0 11 passed in 5.96s | AFTER rc 1 2 failed, 9 passed in 2.54s
+     FAILED tests/test_project_schema_team.py::test_an_old_sources_line_loads_and_a_provenance_line_round_trips
+     FAILED tests/test_project_schema_team.py::test_origin_is_a_closed_set_and_provenance_never_moves_the_id
+M3_safe_forbidden_off | BEFORE rc 0 568 passed, 1 deselected in 4.66s | AFTER rc 1 48 failed, 520 passed, 1 deselected in 52.82s
+     FAILED tests/test_safe_names_windows.py::test_every_forbidden_character_form_is_refused[<]
+     FAILED tests/test_safe_names_windows.py::test_every_forbidden_character_form_is_refused[a<]
+     FAILED tests/test_safe_names_windows.py::test_every_forbidden_character_form_is_refused[<a]
+     FAILED tests/test_safe_names_windows.py::test_every_forbidden_character_form_is_refused[a<b]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\scr\mutants.py", line 53, in <module>
+    fn(root)
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\scr\mutants.py", line 17, in <lambda>
+    M["M4_safe_no_conin"] = (lambda r: edit(r,"src/autotester/core/safe_names.py",'"conin$", "conout$", ',""), SAFE)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\scr\mutants.py", line 6, in edit
+    assert t.count(old) == count, (rel, old, t.count(old))
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('src/autotester/core/safe_names.py', '"conin$", "conout$", ', 0)

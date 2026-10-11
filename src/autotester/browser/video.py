@@ -32,6 +32,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from autotester.browser.evidence import MASK_CSS
+from autotester.schema.enums import EvidenceKind
+from autotester.schema.run import Evidence
 
 _MASK_INIT_SCRIPT = f"""(() => {{
   function install() {{
@@ -81,8 +83,18 @@ encoder buffer at `RECORD_VIDEO_SIZE`, on top of
 `video_enabled` argument (V6)."""
 
 
+class SessionRestoreError(RuntimeError):
+    """The shared browser session died and could not be brought back (AT-888). The case that
+    hit it ends ERRORED with this message, never INCONCLUSIVE with a bare closed-browser line."""
+
+
 class VideoMixin:
-    """`begin_case_video()` / `end_case_video()` -- mixed into `BrowserSession`."""
+    """`begin_case_video()` / `end_case_video()` -- mixed into `BrowserSession`.
+
+    AT-888: a headed persistent Chromium ends when its LAST page closes (reproduced with a real
+    headed browser, `.work/repro_at888.py`), so `end_case_video` keeps a spare page open, and
+    `begin_case_video` restarts the session once, as a recorded event, if the browser is gone
+    anyway (a case closed its own last page, a crash)."""
 
     def begin_case_video(self, case_id: str) -> None:
         """Swap to a fresh page for `case_id`. A no-op when this session was
@@ -94,11 +106,15 @@ class VideoMixin:
         from, so there is nothing to swap a page on; this mirrors
         `record_video=False` rather than raising on those pre-existing
         fixtures."""
-        if not getattr(self, "record_video", False) or self._context is None:
+        if not getattr(self, "record_video", False):
+            return
+        if getattr(self, "_restore_error", None):  # AT-888: a failed restart stays named
+            raise SessionRestoreError(self._restore_error)
+        if self._context is None:
             return
         self._timeout()
         old_page = self._page
-        self._page = self._context.new_page()
+        self._page = self._open_case_page()
         self._timeout()
         self._page.add_init_script(_MASK_INIT_SCRIPT)
         self._timeout()
@@ -106,6 +122,58 @@ class VideoMixin:
         if old_page is not None:
             with _ignore_close_errors():
                 old_page.close()
+
+    def take_session_events(self) -> list[Evidence]:
+        """Session restarts since the last call, for the pipeline to attach to the case's
+        result (AT-888): a restart is a recorded event, never a silent retry."""
+        events, self._session_events = list(getattr(self, "_session_events", [])), []
+        return events
+
+    def _open_case_page(self):
+        """A fresh page; if the browser is gone, restart the session ONCE and retry."""
+        try:
+            return self._context.new_page()
+        except Exception as first:
+            self._restart_session(first)
+        try:
+            return self._context.new_page()
+        except Exception as exc:
+            self._restore_error = self._scrubbed(f"browser session restarted but a page "
+                                                 f"could not be opened: {_one_line(exc)}")
+            raise SessionRestoreError(self._restore_error) from exc
+
+    def _restart_session(self, cause: BaseException) -> None:
+        """Tear down the dead context and driver, then `start()` again (login continuity
+        comes from the persistent profile). A failed restart latches `_restore_error`, so
+        later cases fail fast with the same named cause instead of relaunching per case.
+        MERGE NOTE (T-177 slice 0): `start()` is the only launch path, so anything it does
+        per launch (the DevTools publish step) is re-run by this call."""
+        dead = _one_line(cause)
+        for owner, stop in ((self._context, "close"), (self._playwright, "stop")):
+            if owner is not None:
+                with _ignore_close_errors():
+                    getattr(owner, stop)()
+        self._context = self._page = self._playwright = None
+        try:
+            self.start()
+        except Exception as exc:
+            with _ignore_close_errors():
+                if self._context is not None:
+                    self._context.close()
+                if self._playwright is not None:
+                    self._playwright.stop()
+            self._context = self._page = self._playwright = None
+            self._restore_error = self._scrubbed(
+                f"browser session died ({dead}) and could not be restarted: {_one_line(exc)}")
+            raise SessionRestoreError(self._restore_error) from exc
+        note = self._scrubbed(f"browser session was dead before this case ({dead}); "
+                              f"restarted once, login continues from the saved profile")
+        events = getattr(self, "_session_events", [])
+        events.append(Evidence(kind=EvidenceKind.DOM, path=note, label="session-restart"))
+        self._session_events = events
+
+    def _scrubbed(self, text: str) -> str:
+        return self.secrets.redactor().scrub(text)
 
     def end_case_video(self) -> str | None:
         """Close the case's page (finalizing its recording) and return the
@@ -122,6 +190,8 @@ class VideoMixin:
         video = page.video
         self._page = None
         with _ignore_close_errors():
+            self._page = self._context.new_page()  # AT-888: never close the context's last page
+        with _ignore_close_errors():
             page.close()
         if video is None:
             return None
@@ -136,6 +206,10 @@ class VideoMixin:
         if temp_path.exists():
             temp_path.replace(final_path)
         return rel if final_path.exists() else None
+
+
+def _one_line(exc: BaseException) -> str:
+    return f"{type(exc).__name__}: {' '.join(str(exc).split())}"[:200]
 
 
 class _ignore_close_errors:

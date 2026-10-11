@@ -68,6 +68,35 @@ def _inconsistency(rubric: Rubric, judgment: Judgment) -> str | None:
     return None
 
 
+ASSERTION_RULE_NOTE = (
+    "judge answered PASS but a deterministic assertion did not hold ({failed}): a failed "
+    "assertion can never be graded PASS (D-074(b), qa/contracts/grade.md G6, AT-773). "
+    "Held as INCONCLUSIVE for a human to look at; judge scoreboard: {board!r}."
+)
+
+
+def _unmet_assertions(result: RawResult) -> list[str]:
+    """The `assert <field>: unmet (...)` labels the executor recorded (browser/assertions.py)."""
+    return [ev.path for ev in result.evidence
+            if ev.path.startswith("assert ") and ": unmet" in ev.path]
+
+
+def _assertion_guard(result: RawResult, judged: Result, scoreboard: str,
+                     note: str | None) -> tuple[Result, str | None]:
+    """The one place G6 / D-074(b) is enforced (AT-773): a run whose outcome is
+    ASSERTION_FAILED, or that carries any unmet-assertion evidence, may end FAIL or
+    INCONCLUSIVE, never PASS. A judge PASS is downgraded to INCONCLUSIVE, not FAIL:
+    the judge contradicted a recorded fact, so either the product or the expectation
+    is wrong and only a human can say which. FAIL and INCONCLUSIVE answers pass
+    through untouched; a run with every assertion met is never touched."""
+    unmet = _unmet_assertions(result)
+    if judged is Result.PASS and (result.outcome is Outcome.ASSERTION_FAILED or unmet):
+        failed = "; ".join(unmet) or "outcome assertion_failed"
+        return Result.INCONCLUSIVE, _joined(
+            ASSERTION_RULE_NOTE.format(failed=failed, board=scoreboard), note)
+    return judged, note
+
+
 def _verdict(
     run_id: str, result: RawResult, rubric: Rubric, *, verdict_result: Result,
     provider_id: str, scoreboard: str, note: str | None = None,
@@ -125,11 +154,10 @@ def _withheld(
 
 
 def _outcome_verdict(result: RawResult, rubric: Rubric, run_id: str) -> Verdict | None:
-    """The deterministic outcomes a judge never sees (D-032: ASSERTION_FAILED
-    is deliberately NOT one of them — a declared expectation failing is
-    evidence to weigh, not a refusal to judge; the judge may disagree with a
-    wrongly-authored expectation, and only the grader can tell a case defect
-    from a product defect)."""
+    """The deterministic outcomes a judge never sees. ASSERTION_FAILED is not
+    one of them: the judge still reads that run (the recorded unmet assertions
+    are evidence it should cite), but `_assertion_guard` caps what it may
+    answer (D-074(b), AT-773)."""
     if result.outcome is Outcome.BLOCKED_HITL:
         return _verdict(run_id, result, rubric, verdict_result=Result.BLOCKED,
                          provider_id="rule", scoreboard="not judged: execution was blocked",
@@ -158,8 +186,9 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     caller: protection rested entirely on evidence having been scrubbed at
     `session._record`. Optional so the existing script callers are unchanged.
     D-032/AT-540: an ASSERTION_FAILED run still reaches the judge — the
-    recorded unmet assertions travel inside the evidence list, so the judge
-    weighs recorded facts, not just pixels."""
+    recorded unmet assertions travel inside the evidence list. D-074(b)/AT-773:
+    the judge can no longer overrule them; its PASS on such a run is downgraded
+    to INCONCLUSIVE by `_assertion_guard`."""
     outcome = _outcome_verdict(result, rubric, run_id)
     if outcome is not None:
         return outcome
@@ -187,11 +216,12 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
                          provider_id=judge.id, scoreboard="judge output rejected",
                          note=f"self-consistency check failed: {problem}", **counts)
     shortfall = _shortfall(**counts)
-    return _verdict(run_id, result, rubric, verdict_result=judgment.result,
+    final, note = _assertion_guard(result, judgment.result, judgment.scoreboard, judgment.note)
+    return _verdict(run_id, result, rubric, verdict_result=final,
                      provider_id=judge.id,
                      scoreboard=_joined(shortfall, judgment.scoreboard) or "",
                      criteria_met=judgment.criteria_met, failures=judgment.failures,
-                     note=_joined(shortfall, judgment.note), **counts)
+                     note=_joined(shortfall, note), **counts)
 
 
 def _shortfall(*, images_requested: int, images_seen: int) -> str | None:

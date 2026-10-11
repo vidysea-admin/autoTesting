@@ -1,0 +1,17 @@
+[F8] autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F8\src\autotester\__init__.py
+[F8] BASELINE rc=0
+21 passed in 69.33s (0:01:09)
+[F8] mutated function=guard_expand_prompt; hunk old=`return secrets.guard_prompt(secrets.redactor().scrub(prompt))` new=`return __import__('re').sub(r'\{\{SECRET:[A-Z0-9_]+\}\}', '[REDACTED]', secrets.guard_prompt(secrets.redactor().scrub(prompt)))`
+[F8] MUTATED rc=1
+================================== FAILURES ===================================
+E   assert False
+     +  where False = all(<generator object test_a_secret_placeholder_survives_untouched.<locals>.<genexpr> at 0x00000213FF6F6F60>)
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F8\tests\test_expand_redaction.py:95: assert False
+=========================== short test summary info ===========================
+FAILED tests/test_expand_redaction.py::test_a_secret_placeholder_survives_untouched
+1 failed, 20 passed in 81.59s (0:01:21)
+ 
+E   assert False
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F8\tests\test_expand_redaction.py:95: assert False
+FAILED tests/test_expand_redaction.py::test_a_secret_placeholder_survives_untouched
+1 failed, 20 passed in 81.59s (0:01:21)

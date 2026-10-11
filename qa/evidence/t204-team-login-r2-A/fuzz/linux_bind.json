@@ -1,0 +1,190 @@
+{
+ "": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ " 0.0.0.0": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ " 10.0.0.5 ": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ " ::": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "*": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "--port": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "0": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "0.0": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "0.0.0": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "0.0.0.0": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "0.0.0.0\t": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "0.0.0.0 ": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "0.0.0.00": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "0.00.0.0": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "00.0.0.0": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "0000:0000:0000:0000:0000:0000:0000:0000": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ "0:0:0:0:0:0:0:0": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ "0:0:0:0:0:0:0:1": {
+  "kind": "bound",
+  "addr": "::1"
+ },
+ "0:0::0": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ "0::": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ "0x0.0.0.0": {
+  "kind": "bound",
+  "addr": "0.0.0.0"
+ },
+ "10.0.0.5": {
+  "kind": "oserror",
+  "addr": "99 [Errno 99] Cannot assign requested address"
+ },
+ "10.0.0.5 ": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "10.9.9.9": {
+  "kind": "oserror",
+  "addr": "99 [Errno 99] Cannot assign requested address"
+ },
+ "127.0.0.1": {
+  "kind": "bound",
+  "addr": "127.0.0.1"
+ },
+ "127.0.0.2": {
+  "kind": "bound",
+  "addr": "127.0.0.2"
+ },
+ "127.1": {
+  "kind": "bound",
+  "addr": "127.0.0.1"
+ },
+ "2001:DB8::5": {
+  "kind": "oserror",
+  "addr": "99 [Errno 99] Cannot assign requested address"
+ },
+ "2001:db8::5": {
+  "kind": "oserror",
+  "addr": "99 [Errno 99] Cannot assign requested address"
+ },
+ "::": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ ":: ": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "::0": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ "::0.0.0.0": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ "::0:0": {
+  "kind": "bound",
+  "addr": "::"
+ },
+ "::1": {
+  "kind": "bound",
+  "addr": "::1"
+ },
+ "::FFFF:0.0.0.0": {
+  "kind": "bound",
+  "addr": "::ffff:0.0.0.0"
+ },
+ "::ffff:0.0.0.0": {
+  "kind": "bound",
+  "addr": "::ffff:0.0.0.0"
+ },
+ "::ffff:127.0.0.1": {
+  "kind": "bound",
+  "addr": "::ffff:127.0.0.1"
+ },
+ "INTRANET.Example": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "LOCALHOST": {
+  "kind": "bound",
+  "addr": "127.0.0.1"
+ },
+ "[2001:db8::5]": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "[::1]": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "[::]": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "fe80::1%lo": {
+  "kind": "oserror",
+  "addr": "22 [Errno 22] Invalid argument"
+ },
+ "intranet.example": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "intranet.example.": {
+  "kind": "gaierror",
+  "addr": "[Errno -2] Name or service not known"
+ },
+ "localhost": {
+  "kind": "bound",
+  "addr": "127.0.0.1"
+ }
+}

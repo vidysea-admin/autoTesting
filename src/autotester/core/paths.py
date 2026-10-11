@@ -73,6 +73,11 @@ class ProjectPaths:
         return self.dir / "cases.jsonl"
 
     @property
+    def case_proposals(self) -> Path:
+        """Step-less candidates and their human review, separate from executable cases."""
+        return self.dir / "case_proposals.jsonl"
+
+    @property
     def rubrics_dir(self) -> Path:
         return self.dir / "rubrics"
 

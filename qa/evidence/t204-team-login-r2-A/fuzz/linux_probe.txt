@@ -1,0 +1,33 @@
+'0.0.0.0' -> bound 0.0.0.0 wild=True
+'::' -> bound :: wild=True
+'' -> bound 0.0.0.0 wild=True
+'*' -> gaierror: [Errno -2] Name or service not known
+'0' -> bound 0.0.0.0 wild=True
+'::0' -> bound :: wild=True
+'0:0:0:0:0:0:0:0' -> bound :: wild=True
+'[::]' -> gaierror: [Errno -2] Name or service not known
+'0.0.0.00' -> bound 0.0.0.0 wild=True
+' 0.0.0.0' -> gaierror: [Errno -2] Name or service not known
+'0.0.0.0 ' -> gaierror: [Errno -2] Name or service not known
+'::ffff:0.0.0.0' -> bound ::ffff:0.0.0.0 wild=True
+'::FFFF:0.0.0.0' -> bound ::ffff:0.0.0.0 wild=True
+'00.0.0.0' -> bound 0.0.0.0 wild=True
+'0x0.0.0.0' -> bound 0.0.0.0 wild=True
+'0.0.0' -> bound 0.0.0.0 wild=True
+'0.0' -> bound 0.0.0.0 wild=True
+'0000:0000:0000:0000:0000:0000:0000:0000' -> bound :: wild=True
+'::0.0.0.0' -> bound :: wild=True
+' ::' -> gaierror: [Errno -2] Name or service not known
+':: ' -> gaierror: [Errno -2] Name or service not known
+'0.0.0.0\t' -> gaierror: [Errno -2] Name or service not known
+'0.00.0.0' -> bound 0.0.0.0 wild=True
+'::0:0' -> bound :: wild=True
+'0::' -> bound :: wild=True
+'0:0::0' -> bound :: wild=True
+'127.1' -> bound 127.0.0.1 wild=False
+'localhost' -> bound 127.0.0.1 wild=False
+'LOCALHOST' -> bound 127.0.0.1 wild=False
+'10.0.0.5 ' -> gaierror: [Errno -2] Name or service not known
+'[::1]' -> gaierror: [Errno -2] Name or service not known
+'[2001:db8::5]' -> gaierror: [Errno -2] Name or service not known
+'intranet.example.' -> gaierror: [Errno -2] Name or service not known

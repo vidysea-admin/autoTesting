@@ -1,0 +1,12 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- D:\autoTesting\.worktrees\t177-slice0-browser-seam\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\autoTesting\.worktrees\t177-slice0-browser-seam
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 1 item
+
+tests/test_video_parallel_sweep.py::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video PASSED [100%]
+
+======================== 1 passed in 396.41s (0:06:36) ========================

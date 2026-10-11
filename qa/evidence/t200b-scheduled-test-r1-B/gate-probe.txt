@@ -1,0 +1,34 @@
+autotester.__file__ = D:\autoTesting\.worktrees\t200b-scheduled-test\src\autotester\__init__.py
+G1 first gate (None = allowed): None
+G1 approvals: 1
+G1 key now in .env: True
+G2 second gate: None
+G2 approvals still: 1
+G3 seeded expired row expires_at: 2026-10-08T03:37:37.659512+00:00
+G3 gate with only an expired row: None
+G3 rows after: 2
+G3 new row unexpired: [True, False]
+G4 other rows: 1
+G4 demo rows (copied other-project row): ['other']
+G4 gate demo: None
+G4 demo rows after: ['other', 'demo']
+G5 key changed -> gate: None
+G5 rows (old unverifiable, new minted?): 2
+G5 lost key preview: approval_required: the approval signing key is unavailable
+G5 lost key avail: False
+G5 preview wrote nothing: True
+G5 lost key real gate: approval_required: the approval signing key is unavailable
+G5 real gate wrote nothing: True
+G6 tampered row, gate: None
+G6 rows: 2
+G7 value removed, gate: secretref_without_value: a credential is declared but no value is set; set it on the Credentials page
+G8 no secretref gate: no_secretref: this project declares no credentials, so a scheduled run has no approval; declare them on the Credentials page
+G9 first-ever preview=None unchanged: True
+G9 provisioned+minted preview=None unchanged: True
+G10 ambiguous-key preview: None
+G10 ambiguous-key real gate: approval_required: refusing to start a live_case run against https://demo.test/app — no approval exists for it
+Grant one with:
+  uv run autotester approve demo --kind live_case --target "https://demo.test/app" --scope "<what this run may touch>" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 200 --wall-clock 600.0
+(credential-derived approval unavailable: the approval key is unavailable (InvalidEnvValue))
+G11 refusal: secretref_without_value: a credential is declared but no value is set; set it on the Credentials page
+G11 secret absent: True

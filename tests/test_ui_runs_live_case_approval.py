@@ -77,7 +77,8 @@ def _ready(client: TestClient, root: Path, monkeypatch: pytest.MonkeyPatch,
                 Verdict(run_id=run_id, case_id=case_.id, result=Result.PASS,
                          grader_provider="mock"))
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient", fake_run_and_grade)
     return store
 

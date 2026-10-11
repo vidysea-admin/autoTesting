@@ -33,6 +33,7 @@ dependencies = [
                           # same undeclared-direct-import hazard the new doctor check catches.
     "typer>=0.27.2",
     "uvicorn[standard]>=0.30.0",
+    "litellm==1.104.0",  # T-202 (D-071): providers/litellm_provider.py; exact pin, SDK only
 ]
 
 [project.scripts]
