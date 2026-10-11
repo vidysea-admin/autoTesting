@@ -3,7 +3,8 @@
 Contract: qa/contracts/explore.md (X12, X13 as extended below); review-gate.md (R1, R2, R5(c)); expand.md (X1, X5, X6); core-invariants.md C2, C5
 Issues: AT-887 (a crawl's screens never become flows or cases), AT-890 (expand prompt sent unmasked to a provider)
 Authority: docs/DECISIONS.md D-084 item 1 (approved for build) and item 2 (for the student test account, cases come from the crawled screens). No new D-entry needed; no contract edited.
-Status: ready-for-check
+Status: checked-PASS
+Merged: 4f806daa
 Fix cycle: 1
 Repair base: 6d70c0ec
 Policy-Version: proportional-verification/2026-10-10.9
