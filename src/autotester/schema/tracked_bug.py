@@ -26,7 +26,8 @@ DEFAULT_CLOSE_PASSES = 2
 """N consecutive evidenced PASS verdicts that close a bug (the plan gate's assumption, TB2)."""
 
 SYSTEM_ACTOR = "system:bug-loop"
-"""The one actor that may move a status; every other actor is a named user (R44)."""
+"""The one actor that may move a status; every other actor is a named user (R44). The actor is an
+unauthenticated string here: the T-204 route must set it from the session, never from a request."""
 
 _ACTOR_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9 _.:@/+-]{0,79}")
 _VIDEO_KEY_RE = re.compile(r"iss_[0-9a-f]{12}")

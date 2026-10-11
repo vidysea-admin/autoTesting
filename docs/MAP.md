@@ -172,7 +172,7 @@
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
-| `store/bug_store.py` | BUG STORE: the append-only log of bug events under a directory the caller names (T-199a, TB6). |
+| `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory (C1/C3). |

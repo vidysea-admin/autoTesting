@@ -4,9 +4,9 @@ Contract: qa/contracts/team-bug-loop.md. Pure: no file, no provider, no network.
 
 `TABLE` has one entry for every (state, event) pair, 5 x 9, and each is either a `Move` the loop
 makes or a named `Refusal`, so no cell is decided by accident. `judge` applies one event to one bug;
-`fold` replays a whole log through `judge`, and is the single interpreter: the store holds only
-events, and a bug is whatever `fold` says (so history cannot be rewritten and a racing writer's
-event is simply applied in file order, or skipped as a duplicate).
+`fold` replays a set of events through `judge` in time order (ties by event id) and is the single
+interpreter: the store holds only events, and a bug is whatever `fold` says. So history cannot be
+rewritten, and neither writer order nor arrival order can change the result.
 
 The loop reads `Verdict` and never a `RawResult` (TB3, R46): `kind_of_verdict` is the only door
 from a grade to an event, and a result that could not judge changes nothing. Statuses are
@@ -112,11 +112,11 @@ def kind_of_verdict(verdict: Verdict | None) -> EventKind:
 
 
 def _failed(bug: TrackedBug, ev: BugEvent, update: dict) -> TrackedBug:
-    latest = ev.at >= bug.last_seen
+    run = ev.run_id if ev.at >= bug.last_seen and ev.run_id else bug.evidence_run_id
     return bug.model_copy(update={
         "count": bug.count + 1, "first_seen": min(bug.first_seen, ev.at),
         "last_seen": max(bug.last_seen, ev.at), "pass_streak": 0, "streak_runs": [],
-        "streak_refs": [], "evidence_run_id": ev.run_id if latest else bug.evidence_run_id,
+        "streak_refs": [], "evidence_run_id": run,
         **update})
 
 
@@ -179,14 +179,38 @@ def judge(bug: TrackedBug | None, event: BugEvent, *, close_passes: int = DEFAUL
     return Applied(Effect.APPLIED, rule, _mover(rule)(bug, event, close_passes))
 
 
-def fold(events: Iterable[BugEvent], *, close_passes: int = DEFAULT_CLOSE_PASSES,
-         ) -> dict[str, TrackedBug]:
-    """Replay a log in order. The only way a `TrackedBug` comes to exist outside `judge`."""
+def storable(event: BugEvent) -> Refusal | None:
+    """Whether an event belongs in the log at all. Only a policy refusal (wrong actor) is decided
+    here; whatever depends on state is left to `fold`, so a late event is judged in time order. A
+    result that could not judge is `unchanged` in every state and is never stored (TB2)."""
+    if not _actor_allowed(event):
+        return Refusal.ACTOR_NOT_ALLOWED
+    return None
+
+
+def keeps(event: BugEvent) -> bool:
+    return event.kind not in _UNJUDGED
+
+
+def trace(events: Iterable[BugEvent], *, close_passes: int = DEFAULT_CLOSE_PASSES,
+          ) -> tuple[dict[str, TrackedBug], dict[str, Applied]]:
+    """Replay a set of events in time order (ties by `event_id`) and say what each one did.
+
+    The order is a function of the events alone, never of when or by whom they were written, so
+    two writers racing, or an old verdict arriving late, converge on the same bugs (TB6)."""
     bugs: dict[str, TrackedBug] = {}
     seen: set[str] = set()
-    for event in events:
+    applied: dict[str, Applied] = {}
+    for event in sorted(events, key=lambda e: (e.at, e.event_id)):
         result = judge(bugs.get(event.bug_key), event, close_passes=close_passes, seen=seen)
+        applied[event.event_id] = result
         if result.effect is Effect.APPLIED and result.bug is not None:
             bugs[event.bug_key] = result.bug
             seen.add(event.event_id)
-    return bugs
+    return bugs, applied
+
+
+def fold(events: Iterable[BugEvent], *, close_passes: int = DEFAULT_CLOSE_PASSES,
+         ) -> dict[str, TrackedBug]:
+    """The bugs a set of events makes. The only way a `TrackedBug` exists outside `judge`."""
+    return trace(events, close_passes=close_passes)[0]

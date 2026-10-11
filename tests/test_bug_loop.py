@@ -25,7 +25,15 @@ from autotester.schema.tracked_bug import (
     case_bug_key,
 )
 from autotester.schema.verdict import Failure, Verdict
-from autotester.stages.bug_loop import TABLE, Effect, Move, Refusal, fold, judge, kind_of_verdict
+from autotester.stages.bug_loop import (
+    TABLE,
+    Effect,
+    Move,
+    Refusal,
+    fold,
+    judge,
+    kind_of_verdict,
+)
 
 K = EventKind
 S = BugStatus
@@ -266,3 +274,16 @@ def test_tb3_the_loop_reads_verdicts_and_never_a_raw_result() -> None:
         raw = {n for n in found if n.endswith("RawResult") or n == "autotester.schema.run"}
         assert not raw, rel
     assert "autotester.store.project_store" not in _imports(root / "stages/bug_loop.py")
+
+
+def test_a_later_fail_without_a_run_id_keeps_the_evidence_run() -> None:
+    named = event(K.FAIL, 1)
+    bare = event(K.FAIL, 2).model_copy(update={"run_id": None})
+    got = fold([named, bare])[KEY]
+    assert (got.count, got.evidence_run_id) == (2, "run1")
+
+
+def test_assign_sets_the_assignee_in_every_status() -> None:
+    for state in S:
+        result = judge(bug(state), _incoming(K.ASSIGN), close_passes=2)
+        assert result.bug.assignee == "Priya" and result.bug.status is state
