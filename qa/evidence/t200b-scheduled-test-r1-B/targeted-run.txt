@@ -1,0 +1,66 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t200b-scheduled-test\.venv` and will be ignored; use `--active` to target the active environment instead
+.............................................................            [100%]
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_a_refused_credential_state_is_a_blocked_slot_with_no_trace[False-False-no_secretref]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_a_refused_credential_state_is_a_blocked_slot_with_no_trace[True-False-secretref_without_value]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_a_value_outside_the_declared_domains_names_that_state
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_an_admin_owned_schedule_on_an_uncredentialed_project_is_still_blocked
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_a_fully_provisioned_project_enqueues_exactly_one_entry
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_a_missing_approval_after_the_state_check_is_blocked_with_the_reason
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_a_gate_that_raises_fails_closed_and_enqueues_nothing
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_credential_state_is_read_only_and_never_returns_a_value
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_scrub_is_a_required_field_so_a_caller_cannot_forget_it
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_a_value_in_a_gate_exception_message_is_scrubbed_before_it_is_recorded
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_the_dry_run_preview_agrees_with_the_real_gate_when_the_signing_key_is_lost
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_gate.py::test_the_preview_of_a_first_ever_slot_with_no_key_and_no_history_is_not_a_refusal
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_nothing_due_exits_0_and_still_writes_the_heartbeat
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_a_due_slot_is_enqueued_recorded_and_the_tick_exits_0
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_a_blocked_slot_exits_2
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_an_enqueue_that_raises_is_a_failed_record_with_its_cause_and_exits_2
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_an_invalid_config_name_exits_3_but_the_valid_projects_are_still_ticked
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_one_project_that_crashes_does_not_stop_the_others
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_dry_run_prints_what_would_fire_and_changes_nothing
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_dry_run_with_a_blocking_preview_lists_would_block_and_exits_2
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_report_is_one_valid_json_document
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_a_manual_project_never_fires_however_many_ticks_run
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_heartbeat_a_tick_writes_is_what_the_stale_card_reads
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[a lazy import inside a function]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[a relative import]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[a stage that itself reaches the browser]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[a string import]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[from-import of a pipeline module]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[from-import of the browser session]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[plain import of the browser session]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[the gate importing the session]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_claim_is_won_by_exactly_one_caller_and_the_name_is_path_safe
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_two_processes_ticking_one_slot_enqueue_exactly_one_run
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_tick_that_dies_between_claim_and_enqueue_is_redriven_to_one_entry
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_tick_that_dies_after_the_entry_exists_does_not_enqueue_or_skip_twice
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_new_modules_use_no_posix_only_primitive
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_a_claim_file_torn_before_its_body_was_written_is_still_driven_to_one_entry
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_purge_removes_only_that_projects_markers_and_record_file_and_is_idempotent
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_purge_refuses_a_records_file_shared_with_another_project_and_changes_nothing
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_a_purge_that_fails_part_way_leaves_markers_and_records_together_and_no_temp_file
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_marker.py::test_every_acknowledged_append_by_a_neighbour_survives_purges_of_another_project
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_slot_outcomes_are_the_closed_set_of_seven
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_record_with_an_outcome_outside_the_set_fails_the_model
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_queue_down_when_the_slot_fires_is_recorded_failed_with_its_cause
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_failed_detail_is_scrubbed_so_no_secret_reaches_the_record
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_failed_slot_is_not_retried_by_the_next_tick
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_schedule_that_never_ticked_is_never_shown_healthy
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_daily_rule_is_stale_after_two_intervals_of_48_hours[47h59]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_daily_rule_is_stale_after_two_intervals_of_48_hours[48h-exactly]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_daily_rule_is_stale_after_two_intervals_of_48_hours[48h-plus-1s]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_one_off_or_weekly_schedule_is_stale_after_two_tick_timer_intervals[119-healthy]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_one_off_or_weekly_schedule_is_stale_after_two_tick_timer_intervals[120-healthy]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_one_off_or_weekly_schedule_is_stale_after_two_tick_timer_intervals[121-stale]
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_the_tick_interval_comes_from_the_env_and_falls_back_to_60
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_manual_schedule_has_no_scheduler_health_to_report
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_heartbeat_round_trips_replaces_and_leaves_no_temp_file
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_corrupt_heartbeat_reads_as_never_ticked_not_as_healthy
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_appending_a_second_record_for_one_slot_writes_nothing
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_a_duplicate_line_that_slipped_in_is_read_back_once
+PASSED autoTesting\.worktrees\t200b-scheduled-test\tests\test_schedule_failures.py::test_two_ticks_redriving_one_orphan_claim_leave_one_record
+61 passed in 18.40s
