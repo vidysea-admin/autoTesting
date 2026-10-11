@@ -16,12 +16,14 @@ and TI11 (origin = the archive name and member path). A zip is untrusted input, 
 
 from __future__ import annotations
 
+import contextlib
 import lzma
 import zipfile
 import zlib
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
+from types import SimpleNamespace
 from typing import NamedTuple
 
 from autotester.core.upload_limit import human_bytes, read_max_upload_bytes
@@ -133,8 +135,32 @@ class _NestedByContent(Exception):
     """A video-suffixed member whose first bytes are an archive signature."""
 
 
+class _Unreadable(Exception):
+    """The stdlib zip reader failed on this member in a way we did not name."""
+
+
+_NAMED = (zipfile.BadZipFile, zlib.error, lzma.LZMAError, EOFError, NotImplementedError,
+          OSError, MemoryError)  # each is passed through (own reason text below), or never hidden
+
+
+def _guarded(call, *args):
+    """Run one stdlib call that parses or inflates untrusted bytes. The catch is deliberately
+    broad: the stdlib raises UnicodeDecodeError, struct.error, ValueError, RuntimeError,
+    OverflowError... depending on the damage, and a named list failed twice. It covers only this
+    call, never our staging write, hash or registration code; Ctrl-C and SystemExit are not
+    `Exception`s, and MemoryError is passed through."""
+    try:
+        return call(*args)
+    except _NAMED:
+        raise
+    except Exception as exc:
+        raise _Unreadable from exc
+
+
 def _inflate(zf: zipfile.ZipFile, info: zipfile.ZipInfo, dest: Path, cap: int) -> CopyResult:
-    with zf.open(info) as stream:
+    raw = _guarded(zf.open, info)
+    stream = SimpleNamespace(read=lambda size: _guarded(raw.read, size))
+    with contextlib.closing(raw):
         head = stream.read(8)
         if looks_like_archive(head):
             raise _NestedByContent
@@ -180,6 +206,8 @@ def _extract_one(ctx: _Ctx, zf: zipfile.ZipFile, plan: _Plan, staging: Path, ind
             return _fail(plan, "corrupt member (bad checksum or truncated data)"), 0
         except NotImplementedError:
             return _fail(plan, "unsupported compression method"), 0
+        except _Unreadable:
+            return _fail(plan, "corrupt member (the data could not be read)"), 0
         except OSError:
             return _fail(plan, "could not be staged (the write failed)"), 0
         if result.size == 0:
@@ -237,6 +265,12 @@ def expand_zip(store: ProjectStore, archive: Path, *, archive_name: str | None =
     except NotImplementedError:  # a member declares a zip version the stdlib will not list
         return _failed_report(name, "unsupported zip version (a member needs a newer zip "
                                     "reader than this one)", notes)
+    except MemoryError:
+        raise
+    except Exception:  # broad on purpose: the stdlib parses the whole untrusted central directory
+        # here and raises whatever the damage produces (UnicodeDecodeError for a bad UTF-8 name,
+        # struct.error, ValueError, OverflowError...); only this one call is inside the catch.
+        return _failed_report(name, "not a readable zip archive (its file list is damaged)", notes)
     with zf:
         infos = zf.infolist()
         if len(infos) > limits.max_entries:

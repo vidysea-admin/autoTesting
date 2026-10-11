@@ -36,7 +36,7 @@ from ui_intake_support import (  # noqa: F401  (fixtures)
     gate,
     store,
 )
-from zip_fixtures import add_member, build_zip, flip_data_byte, video
+from zip_fixtures import add_member, bad_utf8_name, build_zip, flip_data_byte, video
 
 from autotester.schema.intake import UploadOrigin
 from autotester.ui import intake_gate
@@ -192,6 +192,15 @@ def test_ti5_a_zip_with_a_bad_member_reads_as_partial_not_success(client, store,
     assert "../../escape.mp4" in text
     assert len(store.list_sources()) == 1
     assert not (tmp_path.parent / "escape.mp4").exists()
+
+
+def test_ti5_a_zip_with_an_invalid_utf8_name_is_a_failed_page_not_a_500(client, store, tmp_path):
+    archive = build_zip(tmp_path / "u.zip", [("zz.mp4", video("a")), ("ok.mp4", video("b"))])
+    bad_utf8_name(archive, b"zz.mp4", b"\xffz.mp4")
+    response = _zip_post(client, archive)
+    assert response.status_code < 500 and "Traceback" not in response.text
+    assert "failed" in response.text.lower() and store.list_sources() == []
+    assert _leftovers(tmp_path) == []
 
 
 def test_a_member_name_is_escaped_never_executed_by_the_table(client, store, tmp_path):

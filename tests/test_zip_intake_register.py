@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import hashlib
+import random
 import zipfile
 from pathlib import Path
 
 import pytest
 from zip_fixtures import (
     add_member,
+    bad_utf8_name,
     build_zip,
     flip_data_byte,
     make_store,
@@ -189,6 +191,52 @@ def test_ti5_a_zip_version_python_cannot_read_is_a_failed_report_not_a_crash(tmp
     report = _run(store, archive)
     assert report.status is IntakeStatus.FAILED and report.exit_code == 2
     assert "version" in report.members[0].reason and _rows(store) == []
+
+
+def test_ti5_utf8_flag_with_an_invalid_utf8_name_is_a_failed_report_not_a_crash(tmp_path):
+    """The checker's case: the stdlib raises UnicodeDecodeError while listing the archive."""
+    store = make_store(tmp_path)
+    archive = build_zip(tmp_path / "in.zip", [("zz.mp4", video("a")), ("ok.mp4", video("b"))])
+    bad_utf8_name(archive, b"zz.mp4", b"\xffz.mp4")
+    with pytest.raises(UnicodeDecodeError):
+        zipfile.ZipFile(archive)  # the premise: the stdlib really does raise on this archive
+    report = _run(store, archive)
+    assert report.status is IntakeStatus.FAILED and report.exit_code == 2
+    assert len(report.members) == 1 and report.members[0].outcome is IntakeOutcome.FAILED
+    assert _rows(store) == [] and not list((tmp_path / ".work" / "intake").glob("*/*"))
+
+
+def test_ti5_no_mutation_of_a_healthy_zip_makes_expand_zip_raise(tmp_path):
+    """Seeded fuzz (40 mutants: file I/O makes each ~0.3 s here): random byte flips, runs and truncations of a mixed-method archive."""
+    healthy = tmp_path / "healthy.zip"
+    with zipfile.ZipFile(healthy, "w") as zf:
+        for i, method in enumerate((zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED, zipfile.ZIP_LZMA,
+                                    zipfile.ZIP_BZIP2)):
+            add_member(zf, f"d{i}/m{i}.mp4", _noise(f"m{i}", 3000), compress=method)
+        add_member(zf, "notes.txt", b"hello")
+    flagged = tmp_path / "flagged.zip"  # same archive with the UTF-8 flag on every header
+    flagged.write_bytes(healthy.read_bytes())
+    bad_utf8_name(flagged, b"", b"")
+    originals = (healthy.read_bytes(), flagged.read_bytes())
+    rng = random.Random(198)
+    for i in range(40):
+        raw = bytearray(originals[i % 2])
+        for _ in range(rng.randint(1, 4)):
+            at = rng.randrange(len(raw))
+            if rng.random() < 0.3:
+                raw[at:at + rng.randint(2, 12)] = rng.randbytes(rng.randint(0, 12))
+            else:
+                raw[at] ^= rng.randint(1, 255)
+        if rng.random() < 0.15:
+            del raw[rng.randrange(len(raw)):]
+        mutant = tmp_path / f"mut{i}.zip"
+        mutant.write_bytes(bytes(raw))
+        store = make_store(tmp_path / f"s{i}")
+        report = _run(store, mutant)  # must return a report, never raise
+        assert report.status in set(IntakeStatus)
+        assert not list((tmp_path / f"s{i}" / ".work" / "intake").glob("*/*"))
+        for row in _rows(store):
+            assert Path(row.path).is_file()
 
 
 def test_ti5_password_protected_member_is_failed_not_success(tmp_path):

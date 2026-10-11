@@ -66,6 +66,18 @@ def flip_data_byte(archive_path: Path, member: str) -> None:
     archive_path.write_bytes(bytes(raw))
 
 
+def bad_utf8_name(archive_path: Path, old: bytes, new: bytes) -> None:
+    """Swap `old` for the same-length `new` in every name and set the UTF-8 flag (0x800) on every
+    header: with `new` not valid UTF-8, `zipfile.ZipFile(...)` raises UnicodeDecodeError."""
+    raw = bytearray(archive_path.read_bytes().replace(old, new))
+    for signature, flag_at in ((b"PK", 6), (b"PK", 8)):
+        at = raw.find(signature)
+        while at != -1:
+            raw[at + flag_at + 1] |= 0x08
+            at = raw.find(signature, at + 4)
+    archive_path.write_bytes(bytes(raw))
+
+
 def mark_encrypted(archive_path: Path) -> None:
     """Set the 'encrypted' general-purpose bit on every member (local + central header)."""
     raw = bytearray(archive_path.read_bytes())
