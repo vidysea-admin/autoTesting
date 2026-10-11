@@ -4,7 +4,7 @@
 **Decision:** D-074(b) (Umesh, chat 2026-10-07; amends D-032 partially). D-032 point 4's "judge may weigh and overrule a recorded failed assertion" is the removed part.
 **Issue:** AT-773 (high, correctness)
 **Fix cycle:** 0 of max 2
-**Dual check:** no
+**Dual check:** no (no security/auth/tenancy/prod-write trigger: the diff is `stages/grade.py` verdict logic plus tests only; it handles no credentials, adds no auth or tenant boundary, and writes nothing to production; the guard only ever downgrades a PASS, never upgrades)
 **Persona walk:** skip (no UI route or screen)
 **Executor:** claude-sonnet-subagent
 **Branch:** wave/at773-judge-rule
@@ -26,8 +26,12 @@ If the judge's answer is PASS and the run's outcome is `ASSERTION_FAILED` OR the
 
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-06.6
-Tier: M — shared module (`stages/grade.py`), behaviour change; no security/auth/tenancy, no production write.
-Base: origin/master (rebased) + commits on wave/at773-judge-rule. D-074 is on origin/master as the contract's authority.
+Tier: L — protected test change (`tests/test_grade.py::test_assertion_failed_run_still_reaches_the_judge_but_can_never_pass` pin changed as D-074/G6 require; ruled L by the cycle-0 checker) on a shared module (`stages/grade.py`); no security/auth/tenancy, no production write.
+Owner approval: docs/DECISIONS.md D-084 item 1 (2026-10-11)
+Base: master merged into the branch twice on 2026-10-11 (merge 0e9fa191, then 3322a04f; the only add/add conflicts were the checker's `qa/verdicts/at773-judge-rule.md` and `qa/checkpoints/at773-judge-rule.md`, resolved by taking master's newer files; the cycle-0 verdict is archived on master as `qa/verdicts/at773-judge-rule.r0-1.md`; no src/ or tests/ conflict). D-074 is on master at docs/DECISIONS.md:2218 as the contract's authority. Code (src/ + tests/) is unchanged by the merges: the branch's own diff against master is `stages/grade.py`, `tests/test_grade.py`, `tests/test_grade_assertion_rule.py`.
+
+Pre-check: 3322a04f0d6fae7dc8af3c27453b465cefe34ff2 uv --directory D:/autoTesting/.worktrees/at773-judge-rule run pytest tests/test_grade_assertion_rule.py tests/test_grade.py tests/test_grade_evidence.py -p no:xdist -o addopts= -> 54 passed (criterion G6) t=20 blobs=src/autotester/stages/grade.py:3adecbc,tests/test_grade_assertion_rule.py:0810af0,tests/test_grade.py:7bc75db,tests/test_grade_evidence.py:2af58c0
+Pre-check: 3322a04f0d6fae7dc8af3c27453b465cefe34ff2 uv --directory D:/autoTesting/.worktrees/at773-judge-rule run pytest tests/test_execute_assertions.py -p no:xdist -o addopts= -> 14 passed (criterion E1; and `git diff master...HEAD --stat -- src/autotester/stages/execute.py` is empty: execute.py untouched by this unit) t=31 blobs=src/autotester/stages/execute.py:482f72f,tests/test_execute_assertions.py:51fd826
 
 ## Evidence (run in the worktree, uv run; no full suite)
 - `uv run pytest tests/test_grade_assertion_rule.py tests/test_grade.py tests/test_grade_evidence.py tests/test_run_case_pipeline.py tests/test_run_case_pipeline_resilient.py tests/test_execute_assertions.py tests/test_prompt_skills.py tests/test_report_export.py tests/test_regression_proof.py tests/test_network_assertions.py tests/test_ui_runs_serial_resilience.py tests/test_ui_runs_parallel_crash_recovery.py` -> `108 passed, 1 warning in 10.35s`
