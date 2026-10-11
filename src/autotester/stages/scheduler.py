@@ -11,7 +11,7 @@ tick, inside the grace window, the earlier in-window slots `missed` with `supers
 older slot `missed` and never backfilled (TS3); a busy project records `skipped_overlap` and
 enqueues nothing (TS4); an enqueue error records `failed` with its cause (TS7); a claim whose
 winner died before recording is re-driven once it is older than `redrive_after_s` (TS2).
-Owed to the wiring slice: the credential gate (TS5), owner-rights `refused` (HO24), the CLI.
+`deps.gate` (TS5) is asked before the queue is touched. Owed: owner-rights `refused` (HO24).
 """
 
 from __future__ import annotations
@@ -98,6 +98,7 @@ class TickDeps:
     records_path: Path
     enqueue: Callable[[Slot], str]
     queue: Callable[[], Iterable[QueueSnapshot]]
+    gate: Callable[[Slot], str | None]  # TS5: a refusal reason, or None. Required: no default allow
     scrub: Callable[[str], str] = _same
 
 
@@ -154,6 +155,10 @@ def _fire(project: str, slot: Slot, intended: SlotOutcome, now: datetime, deps: 
         own = next((e for e in snapshot if e.slot_key == slot.key), None)
         if own is not None:
             return _record(slot, project, now, intended, entry_id=own.id)
+        refusal = deps.gate(slot)  # before any queue or run work: a refusal leaves no trace
+        if refusal is not None:
+            return _record(slot, project, now, SlotOutcome.BLOCKED_NO_CREDENTIALS,
+                           detail=deps.scrub(refusal)[:500])
         blocker = blocking_entry(snapshot, project)
         if blocker is not None:
             return _record(slot, project, now, SlotOutcome.SKIPPED_OVERLAP,

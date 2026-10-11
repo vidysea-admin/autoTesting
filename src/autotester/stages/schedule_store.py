@@ -6,6 +6,7 @@ Its one job is making those writes safe on Windows and Ubuntu with only `os.open
 - **Claim marker**: `os.open(O_CREAT | O_EXCL | O_WRONLY)` is the atomic "first wins" for a
   slot. The file name is the percent-encoded `slot_key` (reversible, no `:` for Windows).
 - **Slot record**: one JSON line appended with a single `os.write` on an `O_APPEND` handle.
+- **Purge**: `purge_project` removes one project's markers and records when it is deleted.
 - **Heartbeat**: written to a temp file then `os.replace`d, so a reader sees old or new, never half.
 """
 
@@ -91,6 +92,20 @@ def read_records(path: Path) -> list[SlotRecord]:
             seen.add(rec.slot_key)
             out.append(rec)
     return out
+
+
+def purge_project(claim_dir: Path, records_path: Path, project: str) -> None:
+    """Delete one project's claim markers and slot records (project deleted, HO24). Idempotent.
+    Records are rewritten to a temp file and `os.replace`d; another project's lines are kept."""
+    for key in list_claims(claim_dir):
+        if key.startswith(f"{project}:"):
+            claim_path(claim_dir, key).unlink(missing_ok=True)
+    if not records_path.is_file():
+        return
+    keep = [r for r in read_records(records_path) if r.project != project]
+    tmp = records_path.with_name(f".{records_path.name}.{os.getpid()}.tmp")
+    tmp.write_text("".join(r.model_dump_json() + "\n" for r in keep), encoding="utf-8")
+    os.replace(tmp, records_path)
 
 
 def write_heartbeat(path: Path, now: datetime) -> None:
