@@ -79,6 +79,7 @@
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
+| `schema/bug_run.py` | What reading the bug store and processing one run reports: the shapes of T-199b (TB3, TB4, TB6). |
 | `schema/case.py` | A test case — one falsifiable claim about the product, plus how to check it. |
 | `schema/catalog.py` | The test catalog: schema for `stages/catalog.py::catalog()`'s output. |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
@@ -105,6 +106,7 @@
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
+| `schema/sheet_plan.py` | The shapes of a tracker-sheet sync PLAN (T-199b dry run; contract TB9, TB10, TB11, TB13 in part). |
 | `schema/team_enums.py` | The Group 10 (team features) vocabulary file: every closed value set the team units add. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
 | `schema/tracked_bug.py` | A tracked bug and the events that move it: the data shapes of T-199a (team-bug-loop TB1-TB6). |
@@ -142,6 +144,7 @@
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
+| `stages/bug_run.py` | BUG RUN: turn one finished run's verdicts into bug events, and notice cases that moved (T-199b). |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
@@ -199,6 +202,8 @@
 | `stages/score.py` | SCORE: compare AutoTester's issues against a human tester's own sheet. |
 | `stages/screen_identity.py` | Screen identity: the rules that decide when two screens are one. |
 | `stages/script_replay.py` | SCRIPT_REPLAY: record a working live run's locators as a `Script`, then replay it for free. |
+| `stages/sheet_plan.py` | SHEET PLAN: from the open bugs and one read of the sheet, the exact cells a sync would write. |
+| `stages/sheet_write.py` | SHEET WRITE: the sheet client interface, the dry run, and the guarded write of a confirmed plan. |
 | `stages/similarity_score.py` | How two bug reports are compared for `stages/score.py`'s T-136 scorer. |
 | `stages/synthetic_values.py` | The synthetic value generator (X10-b, D-029): what the crawler types. |
 | `stages/text_lines.py` | Number lines by  |
@@ -212,7 +217,7 @@
 | `stages/video_review_plan.py` | Which seconds of a recording get looked at, and which do not (TV2, TV7 preview). |
 | `stages/video_review_prompt.py` | Build the model prompt for one batch of frames, and say what narration there is (TV5, TV6). |
 | `stages/video_review_render.py` | Render a stored review as Markdown or HTML with the identical item set (TV10, TV4, TV6). |
-| `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a, TB6). |
+| `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a/b, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory (C1/C3). |
@@ -293,6 +298,10 @@
 | `Finding` (`schema/bench.py`) | One reported defect from a participant, matched against ground truth. |
 | `BenchCorpus` (`schema/bench.py`) | A build with known seeded defects and the material pack given to testers. |
 | `BenchTrial` (`schema/bench.py`) | One participant's attempt on one corpus. |
+| `BadEventFile` (`schema/bug_run.py`) | An event file the store could not use. It is reported by name and never deleted (P4). |
+| `BugSnapshot` (`schema/bug_run.py`) | One read of the log: the valid events (in replay order), the bugs they fold to, and the |
+| `RunOutcome` (`schema/bug_run.py`) |  |
+| `RunReport` (`schema/bug_run.py`) | What `process_run` did with one run. Counts are of events, not verdicts. |
 | `Case` (`schema/case.py`) | One generated or hand-written test case. |
 | `CaseProposal` (`schema/case.py`) | A step-less candidate, bound to an exact FlowSpec snapshot and human review. |
 | `AgentFix` (`schema/case.py`) | The agent's proposed correction for one failing step. |
@@ -432,6 +441,14 @@
 | `Journey` (`schema/screenmap.py`) | One recording's ordered path through screens. |
 | `ScreenMap` (`schema/screenmap.py`) | The product map: every learned screen plus the journeys that visited them. |
 | `ServerSettings` (`schema/server_settings.py`) | What the admin chose; absent fields keep the documented defaults. |
+| `SheetColumns` (`schema/sheet_plan.py`) | Which sheet column holds which bug field. The mapping is an input here; proposing and |
+| `SheetState` (`schema/sheet_plan.py`) | One read of the sheet's tab: the header row and the data rows under it (row 2 onward). |
+| `CellChange` (`schema/sheet_plan.py`) |  |
+| `CellConflict` (`schema/sheet_plan.py`) | A cell a human changed since we wrote it. It is reported and never overwritten (TB10). |
+| `PlanRow` (`schema/sheet_plan.py`) |  |
+| `SheetPlan` (`schema/sheet_plan.py`) | What a sync would write. `plan_hash` is derived from the content and checked on load. |
+| `SyncMemory` (`schema/sheet_plan.py`) | What we last wrote, per bug and column, so a later human edit is told from our own value. |
+| `PlanConfirmation` (`schema/sheet_plan.py`) | A named person saw the plan with this hash. Whether that person holds `project.edit` is |
 | `ScheduleMode` (`schema/team_enums.py`) |  |
 | `ScheduleZone` (`schema/team_enums.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
 | `SlotOutcome` (`schema/team_enums.py`) | What a tick decided for one slot. A record carries exactly one of these. |
