@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import typer
 
-from autotester import cli_issues, cli_video
+from autotester import cli_issues, cli_run, cli_video
 
 SUBAPPS: list[tuple[str, typer.Typer]] = [
     ("ingest", cli_video.app),
@@ -22,3 +22,4 @@ def register_subapps(app: typer.Typer) -> None:
     """Add every `SUBAPPS` pair to `app`, in order."""
     for name, sub in SUBAPPS:
         app.add_typer(sub, name=name)
+    cli_run.attach_commands(app)  # T-174: run, catalog, mcp and `report show` (top-level commands)

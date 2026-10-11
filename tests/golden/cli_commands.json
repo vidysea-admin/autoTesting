@@ -1,5 +1,17 @@
 [
  [
+  "run",
+  "Run a project's cases in a real browser and judge them."
+ ],
+ [
+  "catalog",
+  "Print what this project can run now and what blocks the rest (a pure read)."
+ ],
+ [
+  "mcp",
+  "Serve AutoTester over MCP on stdio: tools run_tests, get_report, get_catalog."
+ ],
+ [
   "doctor",
   "Check the repo against the design rules that keep it readable."
  ],

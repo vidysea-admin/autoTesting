@@ -51,6 +51,19 @@ tick landed mid-run. The rule I applied to `.goal/` and not to `qa/` is the
 same rule; it is applied to both now."""
 
 
+def test_server_smoke_refuses_an_argument_without_starting(root, monkeypatch):
+    """The walker covers the server command without blocking in its valid loop."""
+    from autotester import mcp_server
+
+    def forbidden():
+        pytest.fail("bad invocation entered the stdio server")
+
+    monkeypatch.setattr(mcp_server, "serve", forbidden)
+    result = runner.invoke(app, invocation_for("mcp", root))
+    assert result.exit_code == 2
+    assert "unexpected extra argument" in result.output.lower()
+
+
 def _repo_fingerprint() -> dict[str, tuple[int, int, str]]:
     """`(mtime_ns, size, sha256)` per file — not the hash alone.
 

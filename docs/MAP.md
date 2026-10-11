@@ -27,6 +27,7 @@
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
 | `cli_release.py` | `autotester release` / `release-log` — the release manager's way to run the whole suite (T-167). |
+| `cli_run.py` | CLI commands a pipeline can gate on: `run`, `catalog`, `report show`, `mcp`. |
 | `cli_subapps.py` | The list of CLI sub-apps `autotester` registers (T-205/TF5, design rule). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
@@ -53,6 +54,7 @@
 | `ledger/render.py` | Derive the living docs from code and the ledger. Nothing here is hand-typed. |
 | `ledger/store.py` | Read and append `docs/FEATURES.jsonl`. The only write path to the ledger. |
 | `loop_status.py` | Is the maker-checker loop alive, and if it stopped, was that on purpose? |
+| `mcp_server.py` | AutoTester as a local MCP server (stdio): run tests, get report, get catalog. |
 | `media/chunks.py` | Split a recording into overlapping chunks a vision model can actually read. |
 | `media/frames.py` | Pull a single still out of a recording, at a second the model named. |
 | `media/probe.py` | Ask ffmpeg what a recording actually is, and whether ffmpeg is here at all. |
@@ -67,6 +69,7 @@
 | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `run_ops.py` | The three operations both machine surfaces expose -- run tests, get a report, get the catalog. |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
@@ -76,6 +79,7 @@
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
 | `schema/case.py` | A test case — one falsifiable claim about the product, plus how to check it. |
 | `schema/catalog.py` | The test catalog: schema for `stages/catalog.py::catalog()`'s output. |
+| `schema/cli_output.py` | The machine contract of the CLI and the MCP server: the exit-code table and the one |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
@@ -293,6 +297,9 @@
 | `PackEntry` (`schema/catalog.py`) | One `StandardPack`'s standing for one project. Reuses `BlockedReason` |
 | `AiCheckEntry` (`schema/catalog.py`) | One Track C `AiCheckKind`'s standing for one AI target (T-152, ai-target.md AI4-AI5). |
 | `Catalog` (`schema/catalog.py`) | One project's whole catalog: every `CaseClass`, exactly once (CT2), |
+| `ExitCode` (`schema/cli_output.py`) | What a pipeline may act on differently (CM1). `doctor` keeps its 0/1. |
+| `CaseOutcome` (`schema/cli_output.py`) | One case's line in a report: what happened, how it was judged, where the evidence is. |
+| `RunReport` (`schema/cli_output.py`) | The single JSON document on stdout. Every string in it has passed `Redactor.scrub` (C5). |
 | `CoverageGap` (`schema/coverage.py`) | A screen or route observed in a run but absent from the FlowSpec. |
 | `VideoRequest` (`schema/coverage.py`) | What the system asks a human to record, and why. |
 | `DialogEvent` (`schema/crawl.py`) | One JS dialog (`alert`/`confirm`/`prompt`/`beforeunload`) the observer saw. |

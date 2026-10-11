@@ -68,6 +68,9 @@ def invocation_for(command: str, root: Path | None = None) -> list[str]:
     placeholder = str(root / "nonexistent") if root is not None else "nonexistent"
 
     argv = command.split()
+    if command == "mcp":
+        # A valid zero-arity server call cannot be a bounded bad-invocation smoke.
+        return [*argv, placeholder]
     for param in cmd.params:
         if not param.required:
             continue
