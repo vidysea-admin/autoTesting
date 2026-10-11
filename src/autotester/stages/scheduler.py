@@ -88,18 +88,14 @@ class SchedulerStatus:
     since: datetime | None
 
 
-def _same(text: str) -> str:
-    return text
-
-
 @dataclass(frozen=True)
 class TickDeps:
     claim_dir: Path
-    records_path: Path
+    records_path: Path  # THIS project's file (`schedule_store.project_records_path`)
     enqueue: Callable[[Slot], str]
     queue: Callable[[], Iterable[QueueSnapshot]]
     gate: Callable[[Slot], str | None]  # TS5: a refusal reason, or None. Required: no default allow
-    scrub: Callable[[str], str] = _same
+    scrub: Callable[[str], str]  # required like gate: a cause is never recorded unscrubbed
 
 
 def _aware(stamp: datetime) -> datetime:

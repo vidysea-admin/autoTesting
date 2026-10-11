@@ -6,7 +6,8 @@ Its one job is making those writes safe on Windows and Ubuntu with only `os.open
 - **Claim marker**: `os.open(O_CREAT | O_EXCL | O_WRONLY)` is the atomic "first wins" for a
   slot. The file name is the percent-encoded `slot_key` (reversible, no `:` for Windows).
 - **Slot record**: one JSON line appended with a single `os.write` on an `O_APPEND` handle.
-- **Purge**: `purge_project` removes one project's markers and records when it is deleted.
+- **Purge**: `purge_project` removes a deleted project's markers and its own records file,
+  together or not at all.
 - **Heartbeat**: written to a temp file then `os.replace`d, so a reader sees old or new, never half.
 """
 
@@ -14,6 +15,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import uuid
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote, unquote
@@ -94,18 +97,40 @@ def read_records(path: Path) -> list[SlotRecord]:
     return out
 
 
+def project_records_path(records_dir: Path, project: str) -> Path:
+    """The one records file of a project. One file per project, never one shared file: a purge
+    then never touches another project's lines, so a neighbour's append cannot be lost."""
+    return records_dir / (quote(project, safe="") + ".jsonl")
+
+
 def purge_project(claim_dir: Path, records_path: Path, project: str) -> None:
-    """Delete one project's claim markers and slot records (project deleted, HO24). Idempotent.
-    Records are rewritten to a temp file and `os.replace`d; another project's lines are kept."""
-    for key in list_claims(claim_dir):
-        if key.startswith(f"{project}:"):
-            claim_path(claim_dir, key).unlink(missing_ok=True)
-    if not records_path.is_file():
+    """Delete a project's claim markers and its records file (project deleted, HO24). Idempotent.
+
+    Two-phase, so the markers and the records go together or not at all: every file is first
+    `os.replace`d into a staging directory (rolled back if any move fails, e.g. a Windows sharing
+    violation), then the staging directory is removed. Refuses a records file that holds another
+    project's lines (the old shared layout): purging it would mean rewriting them."""
+    if records_path.is_file() and any(r.project != project for r in read_records(records_path)):
+        raise ValueError(f"{records_path.name} is shared with another project; "
+                         "records are kept one file per project (project_records_path)")
+    files = [claim_path(claim_dir, k) for k in list_claims(claim_dir)
+             if k.startswith(f"{project}:")]
+    files += [records_path] if records_path.is_file() else []
+    if not files:
         return
-    keep = [r for r in read_records(records_path) if r.project != project]
-    tmp = records_path.with_name(f".{records_path.name}.{os.getpid()}.tmp")
-    tmp.write_text("".join(r.model_dump_json() + "\n" for r in keep), encoding="utf-8")
-    os.replace(tmp, records_path)
+    stage = claim_dir.parent / f".purge-{uuid.uuid4().hex}"
+    stage.mkdir(parents=True)
+    moved: list[tuple[Path, Path]] = []
+    try:
+        for n, src in enumerate(files):
+            os.replace(src, stage / str(n))
+            moved.append((src, stage / str(n)))
+    except OSError:
+        for src, held in reversed(moved):
+            os.replace(held, src)
+        shutil.rmtree(stage, ignore_errors=True)
+        raise
+    shutil.rmtree(stage, ignore_errors=True)
 
 
 def write_heartbeat(path: Path, now: datetime) -> None:

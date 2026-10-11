@@ -69,8 +69,7 @@ def make_deps(base: Path, project: str, *, idempotent: bool = False,
     deps = TickDeps(
         claim_dir=base / "claims", records_path=base / "records.jsonl",
         enqueue=q.enqueue(project), queue=q.snapshots,
-        gate=gate or (lambda slot: None),
-        **({"scrub": scrub} if scrub else {}))
+        gate=gate or (lambda slot: None), scrub=scrub or (lambda text: text))
     return deps, q
 
 

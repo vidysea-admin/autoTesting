@@ -5,6 +5,7 @@ connects and browser sessions."""
 
 from __future__ import annotations
 
+import os
 import socket
 from pathlib import Path
 
@@ -12,10 +13,11 @@ import pytest
 from schedule_fakes import daily, make_deps, utc
 
 from autotester.core.consent import ApprovalRequired
+from autotester.core.ids import APPROVAL_KEY_ENV
 from autotester.schema.project import Project, SecretRef
 from autotester.schema.schedule import CredentialState, SlotOutcome
 from autotester.stages import schedule_gate
-from autotester.stages.schedule_gate import credential_gate, credential_state
+from autotester.stages.schedule_gate import credential_gate, credential_state, refusal_for
 from autotester.stages.scheduler import tick_project
 from autotester.store.project_store import ProjectStore
 
@@ -36,6 +38,7 @@ def world(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     root = tmp_path / "root"
     root.mkdir()
     counters = {"connect": 0, "browser": 0}
+    monkeypatch.setenv(APPROVAL_KEY_ENV, "")  # restored at teardown even if the code sets it
 
     def _connect(self, *a, **k):  # the transport: any outbound connect is counted, then refused
         counters["connect"] += 1
@@ -150,3 +153,60 @@ def test_credential_state_is_read_only_and_never_returns_a_value(world) -> None:
     assert store.list_approvals() == []  # classifying mints nothing
     bare = _project(declared=False)
     assert credential_state(bare, make(bare, value=False)) is CredentialState.NO_SECRETREF
+
+
+def test_scrub_is_a_required_field_so_a_caller_cannot_forget_it(tmp_path: Path) -> None:
+    from autotester.stages.scheduler import TickDeps
+
+    with pytest.raises(TypeError, match="scrub"):
+        TickDeps(claim_dir=tmp_path, records_path=tmp_path / "r", enqueue=lambda s: "x",
+                 queue=lambda: [], gate=lambda s: None)  # type: ignore[call-arg]
+
+
+def test_a_value_in_a_gate_exception_message_is_scrubbed_before_it_is_recorded(
+    tmp_path: Path,
+) -> None:
+    def boom(slot):
+        raise RuntimeError(f"cannot write {SECRET}")
+
+    deps, q = make_deps(tmp_path, "demo", gate=boom, scrub=lambda t: t.replace(SECRET, "***"))
+    out = tick_project("demo", daily(), NOW, deps, since=SINCE)
+    assert [r.outcome for r in out] == [SlotOutcome.FAILED] and len(q) == 0
+    assert SECRET not in (out[0].detail or "") and "***" in (out[0].detail or "")
+
+
+def _lose_the_signing_key(store: ProjectStore, root: Path, project: Project) -> None:
+    """Mint a signed approval row, then drop the key everywhere: the 'lost key' state."""
+    from autotester.schema.crawl import CrawlBounds
+    from autotester.schema.enums import ApprovalKind
+    from autotester.stages.explore_consent import covering_approval
+
+    covering_approval(project, store, CrawlBounds(), kind=ApprovalKind.LIVE_CASE)
+    (root / ".env").write_text(f"DEMO_USER={SECRET}\n", encoding="utf-8")
+    os.environ[APPROVAL_KEY_ENV] = ""
+
+
+def test_the_dry_run_preview_agrees_with_the_real_gate_when_the_signing_key_is_lost(
+    world,
+) -> None:
+    make, _, tmp_path = world
+    project = _project()
+    store = make(project)
+    _lose_the_signing_key(store, store.paths.env_file.parent, project)
+    before = sorted(p.name for p in store.paths.env_file.parent.rglob("*") if p.is_file())
+    preview = refusal_for(project, store)
+    assert preview is not None and "approval_required" in preview
+    assert sorted(p.name for p in store.paths.env_file.parent.rglob("*") if p.is_file()) == before
+    out, q = _tick(project, store, tmp_path)  # the real gate refuses for the same reason
+    assert [r.outcome for r in out] == [SlotOutcome.BLOCKED_NO_CREDENTIALS] and len(q) == 0
+    assert "approval_required" in (out[0].detail or "")
+
+
+def test_the_preview_of_a_first_ever_slot_with_no_key_and_no_history_is_not_a_refusal(
+    world,
+) -> None:
+    make, _, _ = world
+    project = _project()
+    store = make(project)
+    assert refusal_for(project, store) is None
+    assert APPROVAL_KEY_ENV not in (store.paths.env_file.read_text(encoding="utf-8"))  # wrote none

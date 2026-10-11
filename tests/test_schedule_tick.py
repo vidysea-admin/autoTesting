@@ -4,12 +4,15 @@ The shell itself needs `Project.schedule` (T-205) and is not built here."""
 
 from __future__ import annotations
 
+import ast
 import json
 from dataclasses import replace
 from pathlib import Path
 
+import pytest
 from schedule_fakes import daily, make_deps, utc
 
+import autotester
 from autotester.schema.schedule import (
     ScheduleConfig,
     SchedulerHealth,
@@ -138,43 +141,112 @@ def test_the_heartbeat_a_tick_writes_is_what_the_stale_card_reads(tmp_path: Path
     assert status.state is SchedulerHealth.HEALTHY and status.since == DUE
 
 
-def test_deleting_a_project_purges_its_claims_and_records_and_only_its_own(
-    tmp_path: Path,
-) -> None:
-    """TS1 clause HO24 leaves open: markers and records go with the project, a neighbour with a
-    longer slug that merely starts the same does not."""
-    from autotester.stages.schedule_store import purge_project
 
-    deps, _ = make_deps(tmp_path / "shared", "p")
-    for slug in ("p", "pp"):
-        run_tick([_item(slug)], DUE, deps_for=lambda _slug: deps,
-                 heartbeat_path=tmp_path / "hb.json")
-    assert len(list_claims(deps.claim_dir)) == 2 and len(read_records(deps.records_path)) == 2
-    purge_project(deps.claim_dir, deps.records_path, "p")
-    assert [r.project for r in read_records(deps.records_path)] == ["pp"]
-    assert list(list_claims(deps.claim_dir)) == ["pp:fixed:2026-10-08T09:00Z"]
-    purge_project(deps.claim_dir, deps.records_path, "p")  # idempotent
-    assert len(read_records(deps.records_path)) == 1
+# --- TS6 guard: the scheduler side never reaches a browser or a pipeline module ---------------
+SCHEDULER_SIDE = ("autotester.stages.scheduler", "autotester.stages.schedule_store",
+                  "autotester.stages.schedule_time", "autotester.stages.schedule_gate",
+                  "autotester.stages.schedule_tick")
+# Outside core/, schema/ and store/, the scheduler side may reach exactly these modules. Anything
+# else (a runner, a pipeline stage, the browser session, a provider, the UI app, a CLI) fails.
+ALLOWED_OUTSIDE = frozenset(SCHEDULER_SIDE) | {
+    "autotester.stages", "autotester.stages.explore_consent", "autotester.browser",
+    "autotester.browser.secrets", "autotester.ui", "autotester.ui.env_editor"}
+PLAIN_PACKAGES = ("core", "schema", "store")
+BANNED_NAMES = {"BrowserSession", "run_and_grade_case", "run_and_grade_case_resilient",
+                "_execute_with_trace"}
+SRC = Path(autotester.__file__).parent
 
 
-def test_the_tick_modules_import_no_browser_or_pipeline_code() -> None:
-    """The TS6 guard that can be written now: the tick starts nothing itself. (The full TS6 row,
-    one launcher for the tick, the Test button and `trigger_run`, waits on `run_launcher.py`.)"""
-    import ast
+def _file_of(module: str) -> Path | None:
+    rel = Path(*module.split(".")[1:])
+    for candidate in (SRC / rel / "__init__.py", SRC / rel.with_suffix(".py")):
+        if module != "autotester" and candidate.is_file():
+            return candidate  # the root package is the CLI entry, never scheduler code
+    return None
 
-    import autotester.stages as stages
 
-    banned_modules = {"browser.session", "stages.execute", "stages.run_case_pipeline",
-                      "stages.parallel_run", "stages.explore", "stages.orchestrate",
-                      "ui.routes_runs", "ui.run_execution"}
-    banned_names = {"BrowserSession", "run_and_grade_case", "_execute_with_trace"}
-    root = Path(stages.__file__).parent
-    for name in ("scheduler.py", "schedule_tick.py", "schedule_store.py", "schedule_time.py"):
-        for node in ast.walk(ast.parse((root / name).read_text(encoding="utf-8"))):
-            if isinstance(node, ast.ImportFrom):
-                module = (node.module or "").removeprefix("autotester.")
-                assert module not in banned_modules, f"{name} imports {node.module}"
-                assert not {a.name for a in node.names} & banned_names, name
-            elif isinstance(node, ast.Import):
-                assert not {a.name.removeprefix("autotester.") for a in node.names
-                            } & banned_modules, name
+def _imports(module: str, text: str) -> tuple[set[str], set[str], list[str]]:
+    """(repo modules imported, names imported, dynamic-import calls) of `text`, in any form and
+    at any depth (lazy imports too). `from a import b` also counts `a.b` when that is a module."""
+    here = _file_of(module)
+    package = module if here and here.name == "__init__.py" else module.rsplit(".", 1)[0]
+    found: set[str] = set()
+    names: set[str] = set()
+    dynamic: list[str] = []
+    for node in ast.walk(ast.parse(text)):
+        if isinstance(node, ast.Import):
+            found |= {a.name for a in node.names}
+        elif isinstance(node, ast.ImportFrom):
+            base = node.module or ""
+            if node.level:
+                up = package.split(".")[: len(package.split(".")) - (node.level - 1)]
+                base = ".".join(up + ([node.module] if node.module else []))
+            found |= {base} | {f"{base}.{a.name}" for a in node.names}
+            names |= {a.name for a in node.names}
+        elif isinstance(node, ast.Call):
+            fn = node.func
+            called = fn.attr if isinstance(fn, ast.Attribute) else getattr(fn, "id", "")
+            if called in {"import_module", "__import__"}:
+                dynamic.append(called)
+    repo = {".".join(p[:n]) for p in (d.split(".") for d in found) if p[0] == "autotester"
+            for n in range(2, len(p) + 1) if _file_of(".".join(p[:n]))}
+    return repo, names, dynamic
+
+
+def scheduler_side_violations(patched: dict[str, str] | None = None) -> list[str]:
+    """Static import closure of the scheduler-side modules. Static, because importing them in a
+    subprocess proves nothing: the root package's `__init__` imports the whole CLI, so
+    `sys.modules` always holds the browser. `patched` swaps a module's source (self-tests)."""
+    patched = patched or {}
+    problems: list[str] = []
+    seen: set[str] = set()
+    todo = list(SCHEDULER_SIDE)
+    while todo:
+        module = todo.pop()
+        if module in seen:
+            continue
+        seen.add(module)
+        text = patched.get(module) or _file_of(module).read_text(encoding="utf-8")
+        repo, names, dynamic = _imports(module, text)
+        problems += [f"{module}: dynamic import via {called}()" for called in dynamic]
+        if module in SCHEDULER_SIDE:
+            problems += [f"{module}: imports {n}" for n in sorted(names & BANNED_NAMES)]
+        for dep in sorted(repo):
+            if dep not in ALLOWED_OUTSIDE and dep.split(".")[1] not in PLAIN_PACKAGES:
+                problems.append(f"{module} -> {dep}")
+            todo.append(dep)
+    return problems
+
+
+def test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively() -> None:
+    """TS6: the tick holds no import of BrowserSession, the runners or the pipeline modules.
+    The real tree is clean, so adding any such import (direct, `from pkg import module`, lazy
+    inside a function, or reached through another stage) fails here."""
+    assert scheduler_side_violations() == []
+
+
+LEAKS = {
+    "from-import of a pipeline module": (
+        "autotester.stages.scheduler", "from autotester.stages import explore"),
+    "from-import of the browser session": (
+        "autotester.stages.scheduler", "from autotester.browser import session"),
+    "plain import of the browser session": (
+        "autotester.stages.schedule_tick", "import autotester.browser.session"),
+    "a stage that itself reaches the browser": (
+        "autotester.stages.scheduler", "from autotester.stages.agent_loop import x"),
+    "the gate importing the session": (
+        "autotester.stages.schedule_gate", "from autotester.browser.session import BrowserSession"),
+    "a lazy import inside a function": (
+        "autotester.stages.schedule_store",
+        "def f():\n    from autotester.stages import explore"),
+    "a relative import": ("autotester.stages.schedule_time", "from . import explore"),
+    "a string import": (
+        "autotester.stages.schedule_tick", "import importlib\nimportlib.import_module('x')"),
+}
+
+
+@pytest.mark.parametrize("leak", sorted(LEAKS))
+def test_the_guard_catches_each_way_of_reaching_the_pipeline(leak: str) -> None:
+    module, line = LEAKS[leak]
+    source = _file_of(module).read_text(encoding="utf-8")
+    assert scheduler_side_violations({module: source + "\n" + line + "\n"}), leak

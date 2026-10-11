@@ -18,7 +18,7 @@ from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
 from autotester.schema.schedule import CredentialState
-from autotester.stages.explore_consent import covering_approval
+from autotester.stages.explore_consent import covering_approval, signing_key_available
 from autotester.stages.scheduler import Slot
 from autotester.store.project_store import ProjectStore
 
@@ -52,9 +52,15 @@ def credential_state(project: Project, store: ProjectStore,
 
 def refusal_for(project: Project, store: ProjectStore,
                 secrets: SecretStore | None = None) -> str | None:
-    """The state-only refusal (no approval row is written), for `--dry-run` and the gate."""
+    """The read-only refusal, for `--dry-run` and as the gate's first step: the credential state,
+    then whether the approval could be minted (a lost signing key blocks the real tick). Writes
+    nothing: no approval row, no key, no lock file."""
     state = credential_state(project, store, secrets)
-    return None if state is CredentialState.PROVISIONED else f"{state.value}: {_SAYS[state]}"
+    if state is not CredentialState.PROVISIONED:
+        return f"{state.value}: {_SAYS[state]}"
+    if not signing_key_available(store):
+        return "approval_required: the approval signing key is unavailable"
+    return None
 
 
 def credential_gate(project: Project, store: ProjectStore, bounds: CrawlBounds | None = None,
