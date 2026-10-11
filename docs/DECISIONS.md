@@ -2369,3 +2369,21 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-11: "go for them all")
 
 **Links:** D-057; D-014; D-072; D-081; T-155; T-168; T-178; T-202; T-204; AT-733; AT-792; AT-895; qa/gates/t168-new-modules.md; qa/gates/t204-au20-wildcard-bind.md; qa/gates/at792-round-cap.md
+
+## D-083 | 2026-10-11 | type: decision | status: ACTIVE
+
+**What:** Umesh restated and sharpened four of his 2026-10-10 answers (D-081) in chat on 2026-10-11.
+1. **Email sender.** Umesh: "D:\autoTesting\.env isme hai tho shi smtp ki detals use them". The sender settings are the six keys already in the repo-root .env: `AUTOTESTER_SMTP_HOST`, `AUTOTESTER_SMTP_PORT`, `AUTOTESTER_SMTP_USER`, `AUTOTESTER_SMTP_PASSWORD`, `AUTOTESTER_SMTP_FROM`, `AUTOTESTER_SMTP_FROM_NAME`. T-201a uses these names and declares them as SecretRef keys; no value is read into a brief, a log or a commit. This closes the "which key names" question in qa/briefs/t201a-report-delivery.md.
+2. **Drive identity.** Umesh: "use my umeshsugara@vidysea gws credentials /doc-polisher pr hai naa , isko bhi apni .env mai daal dee". The live Drive fetch runs as the gws CLI login of umeshsugara@vidysea.com. Maker's reading, to be confirmed by Umesh: the gws login itself is used in place (as D-081 item 6 says) and no OAuth token is copied into .env; if the code needs a setting, only the account name goes there.
+3. **Tracker sheet, first live write.** Umesh: "kisi bhi ek tracker mai daal den aa like abhi nhi hai mere paas". Maker's reading, to be confirmed by Umesh: the first live write of T-199 may go to one test tracker sheet that AutoTester creates for the purpose in that Drive account; the real Pathlynks Tracker sheet stays a HUMAN_GATE (D-081 item 7 is narrowed, not removed).
+4. **Hosting.** Umesh: "abhi tho local mai run krr naa issis system mai host krr , server mai baad mai daal dunga". Confirms D-081 item 4: the product is hosted on this machine now; the server host and DNS come later and gate only the hosted check of T-206.
+
+**Why:** These answers remove the open owner questions on the report-delivery unit and let the bug-loop unit prove a real write without touching the team's live tracker.
+
+**Result:** No run, no email and no sheet write has been made by this entry. Items 2 and 3 carry the maker's reading and are acted on only inside that reading.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-11)
+
+**Links:** D-081; D-072; T-198; T-199; T-201; T-203; T-206; qa/briefs/t201a-report-delivery.md; qa/gates/t199-first-live-write.md; qa/gates/t203-host-and-dns.md
