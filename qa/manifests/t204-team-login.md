@@ -203,6 +203,42 @@ The pinned table `tests/test_ui_auth_escalation.py::EXPECTED` carries the same t
 - Files changed in product (`git diff --stat 27a3a0a9..HEAD -- . ':!qa'`): `src/autotester/auth/config.py`, `docker/compose.prod.yml`, `docker/DEPLOY.md`, `tests/test_hosting_deploy.py`, `tests/test_ui_auth_own_origin.py`.
 - Review: the writer did not review its own change; the checker's fresh pass is the review.
 
+## Merge-reconcile 1 (no behaviour change on either side)
+
+Merge-reconcile: 1
+Repair base: 37a1d211
+Master merged: three syncs because master moved while this ran. (1) `25099f87` (t205-g10-headroom, at887, t201a; master was `f84e62b8` when this started) -> `bf6d4e2c`; (2) `45373642` (t197-video-pointers) -> `41aaa6d4`; (3) `2344c045` (t199b-bug-loop-run, at774; no conflicts) -> `997c842b` (code head under check).
+
+**Conflicts and how each was resolved** (all six were T-205's changes colliding with this unit; both sides kept):
+- `auth/policy.py` (add/add): T-205's file is a 63-line `merge_route_policies` + `PolicyError` + `PUBLIC = "public"`; ours is the rule table `ROUTE_POLICY` + `route_for`. Kept our file whole and appended T-205's merge section verbatim (160 lines). One name collided: our `PUBLIC = RouteRule(kind="public")` was renamed `PUBLIC_RULE` (used only inside `policy.py`, 3 table rows); T-205's `PUBLIC = "public"` keeps its name because `tests/test_policy_merge.py` imports it. Our `match`->`route_for` rename is untouched. No row, key or export of either side lost; no key weakened. The merge function is still not wired to the table (T-205's own gap, unchanged).
+- `auth/__init__.py` (add/add): docstring only; both sentences kept.
+- `ui/routers.py` (add/add): kept T-205's `STUBS` + `ROUTERS` + `include_all`, and added our `routes_auth`, `routes_admin` (first, as before) and `routes_project_access` (after `routes_catalog`, before the stubs). The login middleware is still in `ui/app.py`'s `FastAPI(middleware=[...origin, ...auth])`, so it wraps every route including the stubs.
+- `ui/app.py` (content): only the comment on `routers.include_all(app)` conflicted; took T-205's call, kept our `check_startup()` and `middleware=[*origin_guard_middleware(), *auth_middleware()]`. 225 lines.
+- `cli.py` (content): took T-205's `cli_subapps.register_subapps(app)` and dropped our three `add_typer` lines and the `cli_auth` import; `auth` is registered by appending `("auth", auth_app)` to `SUBAPPS` in `cli_subapps.py` (same order as before: ingest, issues, auth). `cli.py` is 293 lines (cap 300).
+- `docs/MAP.md`: regenerated with `autotester map` (not hand-edited). `.env.example` auto-merged: master's `AUTOTESTER_SMTP_FROM_NAME` plus our keys, no key twice. `tests/test_cli_advice_resolves.py` conflicted in sync 2 (docstring only); both kept.
+
+**Policy rows added: none.** Walk of the served routes of `autotester.ui.app:app` (`tests/auth_harness.py::app_routes()` against `auth/policy.py::route_for`): 74 method+path pairs, 0 without a row, 0 policy rows for a route that is not served. T-205, t201a, t197 and t199b add no HTTP route (the Group 10 stubs are empty routers). No `NEEDS-OWNER-RULING`. The `EXPECTED` table in `tests/test_ui_auth_escalation.py` is unchanged.
+
+**Tests changed and why** (no test of master's was loosened; no master UI test needed a sign-in fix, none returned 401):
+- `tests/golden/cli_commands.json`: appended `["auth", "Team login accounts (T-204)."]` (the golden is an exact list of `autotester --help`).
+- `tests/test_cli_subapp_hook.py::test_registered_groups_come_from_the_list`: expected set is now `{"ingest", "issues", "auth"}` because `auth` is in `SUBAPPS`.
+- `tests/test_cli_advice_resolves.py`: `EXPECTED_SITE_COUNT` 25 -> 26, measured (`len(advice())` was 26: master's 25 plus our `auth/config.py` "auth bootstrap-admin" site; the named-site set already held it). Docstring history extended.
+
+Pre-check[AU14]: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= tests/test_ui_auth_escalation.py tests/test_ui_auth_surface.py tests/test_ui_auth_groups.py tests/test_policy_merge.py -> inside the 119 + 138 passed runs below (policy.py is the touched input); route walk 74 pairs, 0 unrouted
+Pre-check[AU16]: 997c842b same run; `tests/test_ui_auth_surface.py` + `tests/test_ui_auth_own_origin.py` (public set and Origin/Host) -> 138 passed
+Pre-check[AU18]: 997c842b `tests/test_ui_auth_surface.py tests/test_ui_auth_survivors.py` (middleware wraps every route, router list) + `tests/test_routers_list.py` -> passed inside the runs below
+Pre-check[AU20]: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= tests/test_hosting_deploy.py tests/test_hosting_config.py (`.env.example` merged) -> passed inside the 258-passed run below
+Pre-check[AU25]: 997c842b `tests/test_ui_runs.py tests/test_ui_learn_guard.py tests/test_ui_runs_serial_*.py tests/test_cli_surface.py tests/test_cli_subapp_hook.py tests/test_cli_advice_resolves.py` -> passed inside the runs below
+Pre-check: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= <9 files tests/test_auth_deploy_files.py tests/test_ui_auth_{accounts,cli_and_limits,envkeys,escalation,groups,hardening}.py> -> 119 passed in 133.92s
+Pre-check: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= tests/test_ui_auth_{host_and_consent,login,own_origin,refusal_audit,surface,survivors}.py -> 138 passed in 92.93s
+Pre-check: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= <20 master-side files: bug_loop, bug_store{,_concurrency,_hardening}, bug_run{,_idempotent}, sheet_plan, cli_advice_resolves, cli_subapp_hook, cli_video_review{,_exits}, delivery_{failure,smtp}, expand_redaction, explore_flows{,_doors}, policy_merge, project_schema_team, report_email, routers_list> -> 476 passed in 177.45s
+Pre-check: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= <13 files: run_launcher{,_approval}, safe_names_windows, team_enums_home, team_store, ui_learn_guard, ui_runs, video_pointers, video_review{,_cleanup,_gates,_guards,_redaction}> -> 722 passed in 159.88s
+Pre-check: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= tests/test_cli_surface.py tests/test_doctor.py tests/test_hosting_deploy.py tests/test_hosting_config.py tests/test_cli_intake.py tests/test_ui_runs_serial_entry_order.py tests/test_ui_runs_serial_resilience.py tests/test_manual_login.py tests/test_onboard_pathlynks.py tests/test_ingest.py tests/test_intake_schema.py tests/test_catalog.py tests/test_ledger.py -> 258 passed in 59.80s
+Pre-check: 997c842b uv --directory <worktree> run pytest -p no:xdist -o addopts= <12 files importing core/paths or run_launcher: drive_intake, drive_verify, parallel_run_evidence_namespace, run_case_pipeline, session_survives_failure, execute, expand, citations, grade, analyze_video, ingest_persist, prompt_skills> -> 161 passed in 22.33s
+Pre-check: 997c842b uv --directory <worktree> run ruff check src tests scripts -> All checks passed!
+Pre-check: 997c842b uv --directory <worktree> run autotester doctor -> doctor: clean
+Not run here (the checker owes them): the full suite (the `tests/conftest.py` auto-login is a full-suite trigger) and the browser/persona walk.
+
 ## How to verify
 - `uv run pytest -p no:xdist` on the Pre-check file list above (the checker owes the full suite: `tests/conftest.py` auto-login is a full-suite trigger).
 - `uv run ruff check src tests scripts` ; `uv run autotester doctor` (the root-clutter violations exist only in the root checkout) ; `uv lock --check`.
