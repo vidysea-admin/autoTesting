@@ -1,0 +1,206 @@
+== read_only: 118 destinations; head executed 30, refused 88; escaped exceptions 0; refused rows with sessions>0 or calls>0 or files>0: 0
+   refusal classes: {'destination': 52, 'write_policy': 36}
+   READ_ONLY executed at head (plain in-domain read per independent classifier?):
+     'https://app.test/home'                                      plain_read=True (ok) goto@head=None
+     'HTTPS://app.test/home'                                      plain_read=True (ok) goto@head=None
+     'HtTpS://APP.TEST/home'                                      plain_read=True (ok) goto@head=None
+     'http://app.test/home'                                       plain_read=True (ok) goto@head=None
+     'https://app.test:443/x'                                     plain_read=True (ok) goto@head=None
+     'https://app.test/home#frag'                                 plain_read=True (ok) goto@head=None
+     'https://app.test/%0d%0aX'                                   plain_read=True (ok) goto@head=None
+     'https://app.test/%252flogout'                               plain_read=False (deny word in path) goto@head=None
+     'https://APP.TEST/home'                                      plain_read=True (ok) goto@head=None
+     'https://.app.test/'                                         plain_read=True (ok) goto@head=None
+     'https://app.test:8080/'                                     plain_read=True (ok) goto@head=None
+     'https://app.test:99999/'                                    plain_read=True (ok) goto@head=None
+     'https://app.test:abc/'                                      plain_read=True (ok) goto@head=None
+     'https://app.test:/x'                                        plain_read=True (ok) goto@head=None
+     'https://app.test:0/'                                        plain_read=True (ok) goto@head=None
+     'https://a.app.test/'                                        plain_read=True (ok) goto@head=None
+     'https://a.b.app.test/'                                      plain_read=True (ok) goto@head=None
+     'https://app.test.app.test/'                                 plain_read=True (ok) goto@head=None
+     'https://app.test/ho\u200bme'                                plain_read=True (ok) goto@head=None
+     ' https://app.test/home'                                     plain_read=True (ok) goto@head=None
+     'https://app.test/home '                                     plain_read=True (ok) goto@head=None
+     'https://app.test/ho me'                                     plain_read=True (ok) goto@head=None
+     'https://app.test/home?'                                     plain_read=False (query) goto@head=None
+     'https://app.test/home?#x'                                   plain_read=False (query) goto@head=None
+     'https://app.test/log%256Fut'                                plain_read=True (ok) goto@head=None
+     'https://app.test/api/close-account'                         plain_read=True (ok) goto@head=None
+     'https://app.test/users/1/destroy'                           plain_read=False (deny word in path) goto@head=None
+     'https://app.test/हटाएं'                                     plain_read=True (ok) goto@head=None
+     'https://app.test/删除'                                        plain_read=True (ok) goto@head=None
+     'https://app.test/home/%E5%88%A0%E9%99%A4'                   plain_read=True (ok) goto@head=None
+   READ_ONLY executed but NOT a plain read: 4
+      https://app.test/%252flogout deny word in path goto: None
+      https://app.test/home? query goto: None
+      https://app.test/home?#x query goto: None
+      https://app.test/users/1/destroy deny word in path goto: None
+== test_account: 118 destinations; head executed 66, refused 52; escaped exceptions 0; refused rows with sessions>0 or calls>0 or files>0: 0
+   refusal classes: {'destination': 52}
+   head-executed whose real goto (act time) would NOT refuse, yet classifier says not a plain in-domain read:
+     '//app.test/x'                                               scheme ''
+     'https://app.test/#/logout'                                  deny word in path
+     'https://app.test/%252flogout'                               deny word in path
+     'https://app.test/?t={{SECRET:APP_PASS}}'                    query
+     'https://app.test/{{SECRET:APP_USER}}'                       placeholder
+     'https://app.test/home?page=2'                               query
+     'https://app.test/home?id=1&confirm=1'                       query
+     'https://app.test/home?'                                     query
+     'https://app.test/home?#x'                                   query
+     'https://app.test/search?q=logout'                           query
+     'https://app.test/logout'                                    deny word in path
+     'https://app.test/Log-Out'                                   deny word in path
+     'https://app.test/log_out'                                   deny word in path
+     'https://app.test/sign-out'                                  deny word in path
+     'https://app.test/signout'                                   deny word in path
+     'https://app.test/LOGOUT'                                    deny word in path
+     'https://app.test/log%6Fut'                                  deny word in path
+     'https://app.test/account/delete'                            deny word in path
+     'https://app.test/account/Delete/'                           deny word in path
+     'https://app.test/delete-account'                            deny word in path
+     'https://app.test/users/1/destroy'                           deny word in path
+     'https://app.test/remove/1'                                  deny word in path
+     'https://app.test/pay'                                       deny word in path
+     'https://app.test/send'                                      deny word in path
+     'https://app.test/x;jsessionid=1/logout'                     deny word in path
+   base-executed -> head-refused (differences), with base goto result:
+     'javascript:alert(1)'                                        head=destination base-goto=NavigationRefused
+     'JAVASCRIPT:alert(1)'                                        head=destination base-goto=NavigationRefused
+     'data:text/html,hi'                                          head=destination base-goto=NavigationRefused
+     'file:///etc/passwd'                                         head=destination base-goto=NavigationRefused
+     'ftp://app.test/'                                            head=destination base-goto=None
+     'view-source:https://app.test/'                              head=destination base-goto=NavigationRefused
+     'blob:https://app.test/x'                                    head=destination base-goto=NavigationRefused
+     'about:blank'                                                head=destination base-goto=NavigationRefused
+     'mailto:a@app.test'                                          head=destination base-goto=NavigationRefused
+     'http:app.test'                                              head=destination base-goto=NavigationRefused
+     'https:/app.test'                                            head=destination base-goto=NavigationRefused
+     'https:///app.test/'                                         head=destination base-goto=NavigationRefused
+     'http:\\\\app.test'                                          head=destination base-goto=NavigationRefused
+     'ws://app.test/'                                             head=destination base-goto=None
+     'chrome://settings'                                          head=destination base-goto=NavigationRefused
+     '//evil.test/x'                                              head=destination base-goto=NavigationRefused
+     '///evil.test/x'                                             head=destination base-goto=NavigationRefused
+     '//app.test.evil.test/'                                      head=destination base-goto=NavigationRefused
+     'https://app.test@evil.test/'                                head=destination base-goto=NavigationRefused
+     'https://evil.test@app.test/'                                head=destination base-goto=NavigationRefused
+     'https://user:pw@app.test/'                                  head=destination base-goto=NavigationRefused
+     'https://app.test\\@evil.test/'                              head=destination base-goto=NavigationRefused
+     'https://evil.test\\app.test/'                               head=destination base-goto=NavigationRefused
+     'https://evil.test\\.app.test/'                              head=destination base-goto=NavigationRefused
+     'https://evil.test%2f@app.test/'                             head=destination base-goto=NavigationRefused
+     'https://app.test%2eevil.test/'                              head=destination base-goto=NavigationRefused
+     'https://app.test%00.evil.test/'                             head=destination base-goto=NavigationRefused
+     'https://app%2Etest/home'                                    head=destination base-goto=NavigationRefused
+     'https://evil.test#@app.test/'                               head=destination base-goto=NavigationRefused
+     'https://evil.test?@app.test/'                               head=destination base-goto=NavigationRefused
+     'https://evil.test/@app.test'                                head=destination base-goto=NavigationRefused
+     'https://xn--pp-0ka.test/'                                   head=destination base-goto=NavigationRefused
+     'https://äpp.test/'                                          head=destination base-goto=NavigationRefused
+     'https://аpp.test/'                                          head=destination base-goto=NavigationRefused
+     'https://app.test./home'                                     head=destination base-goto=NavigationRefused
+     'https://app.test../x'                                       head=destination base-goto=NavigationRefused
+     'https://app..test/'                                         head=destination base-goto=NavigationRefused
+     'https://evilapp.test/'                                      head=destination base-goto=NavigationRefused
+     'https://app.test.evil.com/'                                 head=destination base-goto=NavigationRefused
+     'https://app.testx/'                                         head=destination base-goto=NavigationRefused
+     'https://xapp.test/'                                         head=destination base-goto=NavigationRefused
+     'https://app-test/'                                          head=destination base-goto=NavigationRefused
+     'https://evil.test/app.test'                                 head=destination base-goto=NavigationRefused
+     'https://notapp.test/'                                       head=destination base-goto=NavigationRefused
+     'https://app.test/ho\tme'                                    head=destination base-goto=None
+     'https://app.test/home\n'                                    head=destination base-goto=None
+     'https://app.test/ho\x00me'                                  head=destination base-goto=None
+     'https://app.test/ho\x7fme'                                  head=destination base-goto=None
+     'https://app\u200b.test/'                                    head=destination base-goto=NavigationRefused
+     '\thttps://app.test/home'                                    head=destination base-goto=None
+     'https://{{SECRET:APP_USER}}/'                               head=destination base-goto=SecretScopeError
+     'https://{{SECRET:NOPE}}/'                                   head=destination base-goto=UndeclaredSecret
+   base-executed, head-refused, base goto would NOT refuse (narrowing): ['ftp://app.test/', 'ws://app.test/', 'https://app.test/ho\tme', 'https://app.test/home\n', 'https://app.test/ho\x00me', 'https://app.test/ho\x7fme', '\thttps://app.test/home']
+   head-executed but base-refused: []
+   base refused anything (any class): []
+== allow_writes: 118 destinations; head executed 66, refused 52; escaped exceptions 0; refused rows with sessions>0 or calls>0 or files>0: 0
+   refusal classes: {'destination': 52}
+   head-executed whose real goto (act time) would NOT refuse, yet classifier says not a plain in-domain read:
+     '//app.test/x'                                               scheme ''
+     'https://app.test/#/logout'                                  deny word in path
+     'https://app.test/%252flogout'                               deny word in path
+     'https://app.test/?t={{SECRET:APP_PASS}}'                    query
+     'https://app.test/{{SECRET:APP_USER}}'                       placeholder
+     'https://app.test/home?page=2'                               query
+     'https://app.test/home?id=1&confirm=1'                       query
+     'https://app.test/home?'                                     query
+     'https://app.test/home?#x'                                   query
+     'https://app.test/search?q=logout'                           query
+     'https://app.test/logout'                                    deny word in path
+     'https://app.test/Log-Out'                                   deny word in path
+     'https://app.test/log_out'                                   deny word in path
+     'https://app.test/sign-out'                                  deny word in path
+     'https://app.test/signout'                                   deny word in path
+     'https://app.test/LOGOUT'                                    deny word in path
+     'https://app.test/log%6Fut'                                  deny word in path
+     'https://app.test/account/delete'                            deny word in path
+     'https://app.test/account/Delete/'                           deny word in path
+     'https://app.test/delete-account'                            deny word in path
+     'https://app.test/users/1/destroy'                           deny word in path
+     'https://app.test/remove/1'                                  deny word in path
+     'https://app.test/pay'                                       deny word in path
+     'https://app.test/send'                                      deny word in path
+     'https://app.test/x;jsessionid=1/logout'                     deny word in path
+   base-executed -> head-refused (differences), with base goto result:
+     'javascript:alert(1)'                                        head=destination base-goto=NavigationRefused
+     'JAVASCRIPT:alert(1)'                                        head=destination base-goto=NavigationRefused
+     'data:text/html,hi'                                          head=destination base-goto=NavigationRefused
+     'file:///etc/passwd'                                         head=destination base-goto=NavigationRefused
+     'ftp://app.test/'                                            head=destination base-goto=None
+     'view-source:https://app.test/'                              head=destination base-goto=NavigationRefused
+     'blob:https://app.test/x'                                    head=destination base-goto=NavigationRefused
+     'about:blank'                                                head=destination base-goto=NavigationRefused
+     'mailto:a@app.test'                                          head=destination base-goto=NavigationRefused
+     'http:app.test'                                              head=destination base-goto=NavigationRefused
+     'https:/app.test'                                            head=destination base-goto=NavigationRefused
+     'https:///app.test/'                                         head=destination base-goto=NavigationRefused
+     'http:\\\\app.test'                                          head=destination base-goto=NavigationRefused
+     'ws://app.test/'                                             head=destination base-goto=None
+     'chrome://settings'                                          head=destination base-goto=NavigationRefused
+     '//evil.test/x'                                              head=destination base-goto=NavigationRefused
+     '///evil.test/x'                                             head=destination base-goto=NavigationRefused
+     '//app.test.evil.test/'                                      head=destination base-goto=NavigationRefused
+     'https://app.test@evil.test/'                                head=destination base-goto=NavigationRefused
+     'https://evil.test@app.test/'                                head=destination base-goto=NavigationRefused
+     'https://user:pw@app.test/'                                  head=destination base-goto=NavigationRefused
+     'https://app.test\\@evil.test/'                              head=destination base-goto=NavigationRefused
+     'https://evil.test\\app.test/'                               head=destination base-goto=NavigationRefused
+     'https://evil.test\\.app.test/'                              head=destination base-goto=NavigationRefused
+     'https://evil.test%2f@app.test/'                             head=destination base-goto=NavigationRefused
+     'https://app.test%2eevil.test/'                              head=destination base-goto=NavigationRefused
+     'https://app.test%00.evil.test/'                             head=destination base-goto=NavigationRefused
+     'https://app%2Etest/home'                                    head=destination base-goto=NavigationRefused
+     'https://evil.test#@app.test/'                               head=destination base-goto=NavigationRefused
+     'https://evil.test?@app.test/'                               head=destination base-goto=NavigationRefused
+     'https://evil.test/@app.test'                                head=destination base-goto=NavigationRefused
+     'https://xn--pp-0ka.test/'                                   head=destination base-goto=NavigationRefused
+     'https://äpp.test/'                                          head=destination base-goto=NavigationRefused
+     'https://аpp.test/'                                          head=destination base-goto=NavigationRefused
+     'https://app.test./home'                                     head=destination base-goto=NavigationRefused
+     'https://app.test../x'                                       head=destination base-goto=NavigationRefused
+     'https://app..test/'                                         head=destination base-goto=NavigationRefused
+     'https://evilapp.test/'                                      head=destination base-goto=NavigationRefused
+     'https://app.test.evil.com/'                                 head=destination base-goto=NavigationRefused
+     'https://app.testx/'                                         head=destination base-goto=NavigationRefused
+     'https://xapp.test/'                                         head=destination base-goto=NavigationRefused
+     'https://app-test/'                                          head=destination base-goto=NavigationRefused
+     'https://evil.test/app.test'                                 head=destination base-goto=NavigationRefused
+     'https://notapp.test/'                                       head=destination base-goto=NavigationRefused
+     'https://app.test/ho\tme'                                    head=destination base-goto=None
+     'https://app.test/home\n'                                    head=destination base-goto=None
+     'https://app.test/ho\x00me'                                  head=destination base-goto=None
+     'https://app.test/ho\x7fme'                                  head=destination base-goto=None
+     'https://app\u200b.test/'                                    head=destination base-goto=NavigationRefused
+     '\thttps://app.test/home'                                    head=destination base-goto=None
+     'https://{{SECRET:APP_USER}}/'                               head=destination base-goto=SecretScopeError
+     'https://{{SECRET:NOPE}}/'                                   head=destination base-goto=UndeclaredSecret
+   base-executed, head-refused, base goto would NOT refuse (narrowing): ['ftp://app.test/', 'ws://app.test/', 'https://app.test/ho\tme', 'https://app.test/home\n', 'https://app.test/ho\x00me', 'https://app.test/ho\x7fme', '\thttps://app.test/home']
+   head-executed but base-refused: []
+   base refused anything (any class): []

@@ -1,0 +1,28 @@
+policy ALLOW_WRITES (TEST_ACCOUNT identical? -> True )
+target | base-dispatch exec/head-dispatch exec [canary,hostvals,undeclared] | base real goto exception [canary,hostvals,undeclared] | head refusal class
+'https://{{SECRET:APP_PASS}}/'                       base[1, 1, 1] head[0, 0, 0] | goto ['SecretScopeError', None, 'UndeclaredSecret'] | ['destination', 'destination', 'destination']  <-- DIFF
+'//{{SECRET:APP_USER}}/x'                            base[1, 1, 1] head[0, 0, 0] | goto ['SecretScopeError', 'SecretScopeError', 'UndeclaredSecret'] | ['destination', 'destination', 'destination']  <-- DIFF
+'{{SECRET:APP_PASS}}'                                base[1, 1, 1] head[1, 1, 1] | goto ['SecretScopeError', None, 'UndeclaredSecret'] | [None, None, None]
+'{{SECRET:APP_USER}}'                                base[1, 1, 1] head[1, 1, 1] | goto ['SecretScopeError', None, 'UndeclaredSecret'] | [None, None, None]
+'https://{{SECRET:APP_USER}}'                        base[1, 1, 1] head[0, 0, 0] | goto ['SecretScopeError', 'SecretScopeError', 'UndeclaredSecret'] | ['destination', 'destination', 'destination']  <-- DIFF
+'https://app.test/{{SECRET:APP_PASS}}'               base[1, 1, 1] head[1, 1, 1] | goto [None, None, 'UndeclaredSecret'] | [None, None, None]
+'https://app.test/?t={{SECRET:APP_PASS}}'            base[1, 1, 1] head[1, 1, 1] | goto [None, None, 'UndeclaredSecret'] | [None, None, None]
+'https://{{SECRET:NOPE}}/'                           base[1, 1, 1] head[0, 0, 0] | goto ['UndeclaredSecret', 'UndeclaredSecret', 'UndeclaredSecret'] | ['destination', 'destination', 'destination']  <-- DIFF
+'{{SECRET:NOPE}}'                                    base[1, 1, 1] head[1, 1, 1] | goto ['UndeclaredSecret', 'UndeclaredSecret', 'UndeclaredSecret'] | [None, None, None]
+'https://app.test/home'                              base[1, 1, 1] head[1, 1, 1] | goto [None, None, None] | [None, None, None]
+'https://evil.test/'                                 base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF
+'javascript:alert(1)'                                base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF
+'/reports'                                           base[1, 1, 1] head[1, 1, 1] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | [None, None, None]
+'Admin portal URL'                                   base[1, 1, 1] head[1, 1, 1] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | [None, None, None]
+''                                                   base[1, 1, 1] head[1, 1, 1] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | [None, None, None]
+'   '                                                base[1, 1, 1] head[1, 1, 1] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | [None, None, None]
+'home'                                               base[1, 1, 1] head[1, 1, 1] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | [None, None, None]
+'//evil.test/x'                                      base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF
+'data:text/html,hi'                                  base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF
+'file:///etc/passwd'                                 base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF
+'ftp://app.test/'                                    base[1, 1, 1] head[0, 0, 0] | goto [None, None, None] | ['destination', 'destination', 'destination']  <-- DIFF; BASE GOTO WOULD NOT REFUSE (canary mode)
+'https://app.test.evil.test/'                        base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF
+'https://app.test/ho\tme'                            base[1, 1, 1] head[0, 0, 0] | goto [None, None, None] | ['destination', 'destination', 'destination']  <-- DIFF; BASE GOTO WOULD NOT REFUSE (canary mode)
+'https://app.test/home\n'                            base[1, 1, 1] head[0, 0, 0] | goto [None, None, None] | ['destination', 'destination', 'destination']  <-- DIFF; BASE GOTO WOULD NOT REFUSE (canary mode)
+'https://app.test\\@evil.test/'                      base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF
+'https://user@app.test/'                             base[1, 1, 1] head[0, 0, 0] | goto ['NavigationRefused', 'NavigationRefused', 'NavigationRefused'] | ['destination', 'destination', 'destination']  <-- DIFF

@@ -1,0 +1,73 @@
+rows 176; escaped exceptions head 0; refused rows with sessions/calls/files>0: 0
+mode=login: head executed 21 / 59; base executed 48
+mode=other: head executed 1 / 59; base executed 48
+mode=unset: head executed 1 / 58; base executed 47
+
+HEAD EXECUTED rows, mode login:
+  EXEC  legit: nav,user,pass,Sign in                            [('navigate', 'https://app.test/login', None), ('fill', 'Email', '{{SECRET:APP_USER}}'), ('fill', 'Password', 
+  EXEC  legit: nav,pass,Enter                                   [('navigate', 'https://app.test/login', None), ('fill', 'Password', '{{SECRET:APP_PASS}}'), ('press_key', '', 
+  EXEC  legit: pass,Enter(value None)                           [('fill', 'Password', '{{SECRET:APP_PASS}}'), ('press_key', '', None)]
+  EXEC  legit: login nav with query                             [('navigate', 'https://app.test/login?next=%2Fhome', None), ('fill', 'Email', '{{SECRET:APP_USER}}'), ('fill',
+  EXEC  fill-submit-fill-submit (two logins)                    [('fill', 'Email', '{{SECRET:APP_USER}}'), ('click', 'Sign in', None), ('fill', 'Password', '{{SECRET:APP_PASS
+  EXEC  placeholder with trailing space                         [('fill', 'Pass', '{{SECRET:APP_PASS}} '), ('click', 'Sign in', None)]
+  EXEC  fill value whitespace then Place order                  [('fill', 'x', '   '), ('click', 'Place order', None)]
+  EXEC  fill value tab then Save                                [('fill', 'x', '\t'), ('click', 'Save', None)]
+  EXEC  two blank fills then two clicks                         [('fill', 'x', ' '), ('click', 'Save', None), ('fill', 'x', ' '), ('click', 'Place order', None)]
+  EXEC  blank fill, Enter                                       [('fill', 'x', ' '), ('press_key', '', 'Enter')]
+  EXEC  fill then Place order click (name-tell-free)            [('fill', 'Password', '{{SECRET:APP_PASS}}'), ('click', 'Place order', None)]
+  EXEC  fill then Save click                                    [('fill', 'Password', '{{SECRET:APP_PASS}}'), ('click', 'Save', None)]
+  EXEC  fill then whitespace-name click                         [('fill', 'Password', '{{SECRET:APP_PASS}}'), ('click', '   ', None)]
+  EXEC  after login: navigate with query                        [('fill', 'Email', '{{SECRET:APP_USER}}'), ('fill', 'Password', '{{SECRET:APP_PASS}}'), ('click', 'Sign in', N
+  EXEC  login nav query to off-domain target                    [('navigate', 'https://app.test/login?next=https://evil.test/', None), ('fill', 'Email', '{{SECRET:APP_USER}}'
+  EXEC  login nav query confirm=1                               [('navigate', 'https://app.test/login?confirm=1&action=buy', None), ('fill', 'Email', '{{SECRET:APP_USER}}'), 
+  EXEC  hover between fill and submit                           [('fill', 'Password', '{{SECRET:APP_PASS}}'), ('hover', 'x', None), ('click', 'Sign in', None)]
+  EXEC  wait between fill and submit                            [('fill', 'Password', '{{SECRET:APP_PASS}}'), ('wait', '1', None), ('click', 'Sign in', None)]
+  EXEC  many fills then one submit                              [('fill', 'Email', '{{SECRET:APP_USER}}'), ('fill', 'Password', '{{SECRET:APP_PASS}}'), ('fill', 'Email', '{{S
+  EXEC  click target equals canary literal                      [('fill', 'Password', '{{SECRET:APP_PASS}}'), ('click', '<APP_PASS>', None)]
+  EXEC  scroll/back/hover/wait/assert only                      [('scroll', '', None), ('back', '', None), ('hover', 'x', None), ('wait', '1', None), ('assert', 't', None)]
+
+HEAD EXECUTED rows, mode other/unset (must be only reads):
+  EXEC  [other] scroll/back/hover/wait/assert only                 [('scroll', '', None), ('back', '', None), ('hover', 'x', None), ('wait', '1', None), ('assert', 't', None)]
+  EXEC  [unset] scroll/back/hover/wait/assert only                 [('scroll', '', None), ('back', '', None), ('hover', 'x', None), ('wait', '1', None), ('assert', 't', None)]
+
+HEAD REFUSED rows, mode login:
+  REFUSED write_policy  submit before any fill
+  REFUSED write_policy  submit with no fills
+  REFUSED write_policy  enter with no fills
+  REFUSED write_policy  fill then two submits
+  REFUSED write_policy  fill,Enter,Enter
+  REFUSED write_policy  fill,click,Enter
+  REFUSED write_policy  fill-submit-fill-submit-submit
+  REFUSED write_policy  two fills then two clicks
+  REFUSED write_policy  literal mixed with placeholder
+  REFUSED write_policy  placeholder with trailing text
+  REFUSED write_policy  undeclared key
+  REFUSED write_policy  literal value
+  REFUSED write_policy  fill value empty
+  REFUSED write_policy  fill value None
+  REFUSED write_policy  fill then Delete key
+  REFUSED write_policy  fill then Tab
+  REFUSED write_policy  fill then Delete account click
+  REFUSED write_policy  fill then Logout click
+  REFUSED write_policy  fill then empty-name click
+  REFUSED write_policy  after login: click Save
+  REFUSED write_policy  after login: fill literal
+  REFUSED write_policy  after login: navigate /account/delete
+  REFUSED write_policy  after login: select
+  REFUSED write_policy  after login: upload
+  REFUSED write_policy  mutating click BEFORE login fills
+  REFUSED write_policy  literal fill BEFORE login fills
+  REFUSED destination   credential then off-domain navigate
+  REFUSED write_policy  login nav to /account/delete
+  REFUSED destination   login nav to javascript:
+  REFUSED write_policy  login nav with placeholder
+  REFUSED write_policy  SELECT with placeholder
+  REFUSED write_policy  UPLOAD with placeholder
+  REFUSED write_policy  many fills then two submits
+  REFUSED write_policy  fill value is canary literal
+  REFUSED write_policy  unknown submit-by-key: Control+Enter
+  REFUSED write_policy  Enter lowercase
+  REFUSED write_policy  Enter padded
+  REFUSED write_policy  order field: click(1) fill(2) click(3)
+
+base executed in mode other/unset (the cycle-0 hole):  95
