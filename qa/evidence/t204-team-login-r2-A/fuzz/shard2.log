@@ -1,0 +1,23 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+autotester.__file__ = D:\autoTesting\.worktrees\t204-team-login\src\autotester\__init__.py
+{
+ "total": 386,
+ "by_dim": {
+  "A-bind-x-port-x-lists": 386
+ },
+ "by_verdict": {
+  "ok-started-served": 228,
+  "ok-refused-by-design": 52,
+  "ok-refused": 48,
+  "UNBINDABLE-os-refuses": 58
+ },
+ "by_dim_verdict": {
+  "A-bind-x-port-x-lists": {
+   "ok-started-served": 228,
+   "ok-refused-by-design": 52,
+   "ok-refused": 48,
+   "UNBINDABLE-os-refuses": 58
+  }
+ },
+ "bind_parse_mismatch": 0
+}

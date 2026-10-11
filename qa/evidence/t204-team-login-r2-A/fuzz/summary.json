@@ -1,0 +1,57 @@
+{
+ "total": 3854,
+ "by_verdict": {
+  "ok-refused-by-design": 877,
+  "ok-refused": 1058,
+  "ok-started-served": 1243,
+  "UNBINDABLE-os-refuses": 443,
+  "DISAGREE-refused-but-would-serve": 117,
+  "DISAGREE-started-but-403": 8,
+  "UNBINDABLE-uvicorn-refuses": 32,
+  "DISAGREE-spec-violation-started": 16,
+  "ODDITY-accepted-malformed-harmless": 60
+ },
+ "by_dim": {
+  "A-bind-x-port-x-lists": {
+   "ok-refused-by-design": 240,
+   "ok-refused": 528,
+   "ok-started-served": 732,
+   "UNBINDABLE-os-refuses": 300
+  },
+  "B-host-spelling": {
+   "ok-started-served": 14,
+   "ok-refused": 42,
+   "UNBINDABLE-os-refuses": 24,
+   "ok-refused-by-design": 8,
+   "DISAGREE-refused-but-would-serve": 8
+  },
+  "B-port-spelling": {
+   "ok-started-served": 12,
+   "ok-refused": 50,
+   "DISAGREE-refused-but-would-serve": 3,
+   "DISAGREE-started-but-403": 3,
+   "UNBINDABLE-uvicorn-refuses": 32
+  },
+  "C-wildcard-spelling": {
+   "ok-started-served": 18,
+   "ok-refused": 114,
+   "ok-refused-by-design": 79,
+   "UNBINDABLE-os-refuses": 119,
+   "DISAGREE-refused-but-would-serve": 96,
+   "DISAGREE-spec-violation-started": 16
+  },
+  "D-public-origin": {
+   "ok-refused": 295,
+   "ok-started-served": 448,
+   "ok-refused-by-design": 542,
+   "ODDITY-accepted-malformed-harmless": 60,
+   "DISAGREE-refused-but-would-serve": 10,
+   "DISAGREE-started-but-403": 5
+  },
+  "E-list-syntax-wildcard": {
+   "ok-refused-by-design": 8,
+   "ok-started-served": 19,
+   "ok-refused": 29
+  }
+ }
+}

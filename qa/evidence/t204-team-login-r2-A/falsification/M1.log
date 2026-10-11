@@ -1,0 +1,108 @@
+=== GREEN-BEFORE (-k test_au20_startup_agrees_with_the_request_time_guard and (repro1-bare-host-custom-port or repro4-default-8000-bare-host)) ===
+============================= test session starts =============================
+collected 68 items / 66 deselected / 2 selected
+
+tests\test_ui_auth_own_origin.py ..                                      [100%]
+
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro1-bare-host-custom-port]
+PASSED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro4-default-8000-bare-host]
+================= 2 passed, 66 deselected, 1 warning in 6.14s =================
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== DIFF ===
+--- config.py(orig)
++++ config.py(mutant)
+@@ -141,4 +141,3 @@
+     the scheme's default (80 for http, 443 for https)."""
+-    return [(scheme, name if port == default else f"{name}:{port}")
+-            for scheme, default in (("http", "80"), ("https", "443"))]
++    return [(scheme, name) for scheme in ("http", "https")]
+ 
+
+=== RED-AFTER named (-k) ===
+============================= test session starts =============================
+collected 68 items / 66 deselected / 2 selected
+
+tests\test_ui_auth_own_origin.py ..                                      [100%]
+
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 2 passed, 66 deselected, 1 warning in 4.43s =================
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== SUPPLEMENTARY (-k test_au20_startup_agrees_with_the_request_time_guard and (repro2-bare-origin-custom-port or port-in-origin-https)) ===
+============================= test session starts =============================
+collected 68 items / 66 deselected / 2 selected
+
+tests\test_ui_auth_own_origin.py FF                                      [100%]
+
+================================== FAILURES ===================================
+_ test_au20_startup_agrees_with_the_request_time_guard[repro2-bare-origin-custom-port] _
+tests\test_ui_auth_own_origin.py:126: in test_au20_startup_agrees_with_the_request_time_guard
+    with pytest.raises(AuthConfigError, match="own origin"):
+E   Failed: DID NOT RAISE AuthConfigError
+_ test_au20_startup_agrees_with_the_request_time_guard[port-in-origin-https] __
+tests\test_ui_auth_own_origin.py:124: in test_au20_startup_agrees_with_the_request_time_guard
+    check_startup()
+src\autotester\auth\config.py:86: in check_startup
+    _check_hosted()
+src\autotester\auth\config.py:101: in _check_hosted
+    _check_own_origin()
+src\autotester\auth\config.py:156: in _check_own_origin
+    raise AuthConfigError(
+E   autotester.auth.config.AuthConfigError: the server's own origin http://10.0.0.5 or https://10.0.0.5 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro2-bare-origin-custom-port]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[port-in-origin-https]
+================ 2 failed, 66 deselected, 1 warning in 23.82s =================
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== FULL FILE after edit ===
+b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M1\tests\test_ui_auth_own_origin.py:211: AssertionError: Regex pattern did not match.
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro2-bare-origin-custom-port]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[port-in-origin-https]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[port-in-origin-http]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[hosts-and-origin]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[origin-with-slash-and-caps]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[default-8000-origin]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[port80-https-origin-no]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[port443-http-origin-no]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[ipv6-bracketed]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[hostname]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[hostname-bind-uppercase]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[hostname-trailing-dot-listed]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[uvicorn-port-env]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[argv-port-beats-env]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[last-host-wins]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[last-port-wins]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[concrete-no-public-origin-unchanged]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[concrete-public-right]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[concrete-public-not-allowed]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[concrete-public-malformed]
+============ 20 failed, 48 passed, 1 warning in 272.87s (0:04:32) =============
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
