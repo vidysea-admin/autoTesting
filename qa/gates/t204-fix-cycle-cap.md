@@ -1,7 +1,8 @@
 # HUMAN_GATE: t204-team-login failed its last allowed fix cycle
 
 **Asked:** 2026-10-11 by the maker, on checker B's FAIL
-(`qa/verdicts/t204-team-login.r2.b.md`, master 0705d2d4, head 27a3a0a9). **Answered:** pending.
+(`qa/verdicts/t204-team-login.r2.b.md`, master 0705d2d4, head 27a3a0a9). **Answered:** 2026-10-12 by
+Umesh, option A (D-085): one more fix cycle (cycle 3), scoped to the AU20 Docker default.
 
 ## What is blocked
 

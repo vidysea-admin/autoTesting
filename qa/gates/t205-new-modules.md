@@ -1,7 +1,7 @@
 # HUMAN_GATE: two new modules of t205-g10-headroom are not named by file
 
 **Asked:** 2026-10-11 by the maker, when the merge step stopped on the new-module rule (D-082 item 1).
-**Answered:** pending.
+**Answered:** 2026-10-12 by Umesh, option A (D-085): both modules confirmed, merge at fb93776b.
 
 ## What is blocked
 

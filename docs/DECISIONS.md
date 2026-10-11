@@ -2404,3 +2404,21 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-11)
 
 **Links:** D-081; D-082; T-145; AT-773; AT-774; AT-887; AT-888; AT-890; AT-891; .work/pathlynks-report/SUMMARY.md
+
+## D-085 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered four maker questions in chat (AskUserQuestion, 2026-10-11/12), each with the option quoted.
+1. **T-205 new modules** (`qa/gates/t205-new-modules.md`): "Haan, merge karo". `src/autotester/cli_subapps.py` and `src/autotester/core/repo_docs.py` are confirmed; `wave/t205-g10-headroom` merges at fb93776b on its dual PASS.
+2. **T-204 fix-cycle cap** (`qa/gates/t204-fix-cycle-cap.md`): "Ek aur fix cycle". A third fix cycle is allowed, scoped to the AU20 Docker default: the compose default public origin becomes empty unless a domain is set, a loopback public origin is refused on a wildcard bind, and the two false sentences in `docker/DEPLOY.md` and `docker/compose.prod.yml` are corrected. Then two blind checkers and one full suite.
+3. **T-198a intake module** (`qa/gates/t198a-intake-upload-module.md`): "Abhi merge, follow-up baad me". `wave/t198a-zip-drive-intake` merges at dba80100; moving the five page fragments out of `ui/intake_upload.py` becomes a low follow-up issue. The option text also carried the D-072 reading, so it is confirmed: a Group 10 module that the brief or contract names by its job (not by file name) and that a checker lists counts as named under D-082 item 1. This covers the five t198a modules and t200b's `stages/schedule_gate.py` and `stages/schedule_tick.py`.
+4. **Disk space on D:** Umesh selected three removals: `D:\chk-tmp` (about 77 GB of scratch dated 2026-10-01 to 07), the clean registered worktrees under `.worktrees/` in full, and their `.venv` directories. Maker's narrowing: worktrees of units still in build or check are kept; every removal uses `git worktree remove` without force, so a tree with uncommitted or untracked files is refused and kept; no branch is deleted.
+
+**Why:** Three units on the path to the local deployment held a checker PASS or a one-defect FAIL and waited only on these answers, and a full drive had stopped merges and new checkouts.
+
+**Result:** No merge or deletion has been made by this entry; the maker dispatches them next.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** D-072; D-082; T-198; T-200; T-202; T-204; T-205; qa/gates/t205-new-modules.md; qa/gates/t204-fix-cycle-cap.md; qa/gates/t198a-intake-upload-module.md

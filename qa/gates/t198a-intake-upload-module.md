@@ -1,7 +1,9 @@
 # HUMAN_GATE: one new module of t198a-zip-drive-intake does two jobs
 
 **Asked:** 2026-10-11 by the maker, on the checker's new-module ruling
-(`qa/verdicts/t198a-zip-drive-intake.r2.modules.md`, master 6504de03). **Answered:** pending.
+(`qa/verdicts/t198a-zip-drive-intake.r2.modules.md`, master 6504de03). **Answered:** 2026-10-12 by
+Umesh, option A (D-085): merge at dba80100, fix the module in a follow-up; the D-072 reading below is
+confirmed, including for t200b's two modules.
 
 ## What is blocked
 
