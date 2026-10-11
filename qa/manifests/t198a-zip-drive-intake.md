@@ -7,11 +7,11 @@
 **Authority:** D-072 (group answers), D-081 (Drive identity: the live fetch shells out to the existing `gws` login; no token is copied into the repo), D-066 (Origin guard, unchanged and still first)
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (untrusted archives and links write to the filesystem; a request-body limit; an auth seam)
-Fix cycle: 1
-Repair base: 894549ee
+Fix cycle: 2
+Repair base: 3918a8aa (the cycle 1 base was 894549ee)
 Branch: wave/t198a-zip-drive-intake, based on master 3d8f7d5a. Earlier work of branch wave/g3-zip-core (slice 1, not landed) was carried in by file copy; that branch and its worktree are untouched. Master was not merged.
-Code commit under check: 0d17d67d (product, fix cycle 1; cycle 0 product was 642575ce; c51a66e4 is the master merge and the manifest commit after it changes no product file)
-Integrated master (cycle 1): b210bc6d (merge commit c51a66e4; clean, no conflict, `autotester map` produced no diff). Earlier: 81f63ce9 (merge commit 76eba8c1). Master was merged twice (869cf16e, then 81f63ce9, which added only qa verdicts and evidence); no conflict in either merge. qa/issues.jsonl and uv.lock are identical to master's.
+Code commit under check: 39533108 (product, fix cycle 2; src unchanged since a765c4dd, 39533108 adds one test; cycle 1 product was 0d17d67d, cycle 0 was 642575ce; merge commits and manifest commits change no product file)
+Integrated master: 09828f2d (merge commit 388bd5a0; clean, `autotester map` regenerated with no diff). Earlier, cycle 1: b210bc6d (merge commit c51a66e4; clean, no conflict, `autotester map` produced no diff). Earlier: 81f63ce9 (merge commit 76eba8c1). Master was merged twice (869cf16e, then 81f63ce9, which added only qa verdicts and evidence); no conflict in either merge. qa/issues.jsonl and uv.lock are identical to master's.
 Executor: claude-sonnet-subagent (maker build subagent)
 Dual check: required
 dual-trigger: security src/autotester/sources/zip_names.py:77 (`ensure_inside`), security src/autotester/sources/zip_intake.py:214 (`expand_zip`), security src/autotester/ui/upload_stream.py:175 (`stream_upload`, the streaming body limit), auth src/autotester/ui/intake_upload.py:111 (`handle_upload`, the gate seam)
@@ -45,25 +45,25 @@ Carried from wave/g3-zip-core and adapted (zip core): `sources/zip_names.py` (TI
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L. No builder full suite; scoped files only, one pytest process at a time with `-p no:xdist`.
-Pre-check: 0d17d67d uv run ruff check src tests scripts -> All checks passed!
-Pre-check: 0d17d67d uv run autotester doctor -> doctor: clean; `uv run autotester map` -> docs/MAP.md regenerated, no diff
-Pre-check[TI1]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 103 passed (same four files; TI1 to TI6 serve from them)
-Pre-check[TI2]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 103 passed
-Pre-check[TI3]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_cli_intake.py -> 31 passed
-Pre-check[TI4]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_drive_intake.py -> 124 passed
-Pre-check[TI5]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_cli_intake.py -> 111 passed (includes the new LZMA/bzip2/deflate damage cases and the unreadable-zip-version case)
-Pre-check[TI6]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 103 passed (the kill test now passes from a git-archive copy run with the root .venv)
+Pre-check: 39533108 uv run ruff check src tests scripts -> All checks passed!
+Pre-check: 39533108 uv run autotester doctor -> doctor: clean; `uv run autotester map` -> docs/MAP.md regenerated, no diff
+Pre-check[TI1]: 39533108 uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 109 passed
+Pre-check[TI2]: 39533108 uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 109 passed
+Pre-check[TI3]: fbb7ddff uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_cli_intake.py -> 32 passed
+Pre-check[TI4]: 39533108 uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_drive_intake.py -> 130 passed
+Pre-check[TI5]: 39533108 uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_cli_intake.py -> 117 passed (adds: UTF-8 flag + invalid name through expand_zip, four stdlib error types raised while reading one member, 40-mutant seeded fuzz)
+Pre-check[TI6]: 39533108 uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 109 passed
 Pre-check[TI7]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_drive_verify.py tests/test_drive_intake.py tests/test_ui_intake_drive.py -> 84 passed (good md5, wrong md5, short read, folder with PDF, zip id with hostile member, hostile link) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
 Pre-check[TI8]: 642575ce uv run pytest -p no:xdist tests/test_gws_drive.py tests/test_gws_runner.py -> 49 passed (five distinct messages, canary token absent from stdout, stderr, caplog, messages) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
-Pre-check[TI9]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_drive_intake.py -> 44 passed
-Pre-check[TI10]: HELD on T-204 (no authorize(); the default gate is open); only the seam is proved: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_ui_intake_drive.py -> 32 passed (gate before the first body byte, re-check at job start, refusal writes nothing)
-Pre-check[TI11]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_ui_intake_drive.py tests/test_drive_intake.py -> 56 passed
-Pre-check[HO30]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py -> 23 passed (includes the three F2 field-cap tests)
+Pre-check[TI9]: fbb7ddff uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_drive_intake.py -> 45 passed
+Pre-check[TI10]: HELD on T-204 (no authorize(); the default gate is open); only the seam is proved: fbb7ddff uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_ui_intake_drive.py -> 36 passed (gate before the first body byte, re-check at job start, refusal writes nothing)
+Pre-check[TI11]: fbb7ddff uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_ui_intake_drive.py tests/test_drive_intake.py -> 57 passed
+Pre-check[HO30]: fbb7ddff uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py -> 24 passed (includes the upload-route case for the invalid UTF-8 name: a failed page, not a 500; test_ui_intake.py is identical at fbb7ddff and 39533108)
 Pre-check[HO32]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_ui_intake_drive.py -> 45 passed (hostile hosts and schemes refused, not echoed, no job) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
 Pre-check[HO33]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake_drive.py tests/test_gws_runner.py -> 22 passed (fetching page, typed failure on the page, timeouts) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
-Pre-check: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_sources.py tests/test_source_is_a_recording.py tests/test_cli_advice_resolves.py tests/test_ensemble_honesty.py tests/test_merge_flowspec_cli.py tests/test_server_settings.py tests/test_drive_verify.py tests/test_intake_schema.py tests/test_ui_origin_guard.py -> 254 passed (aggregate neighbours; test_cli_advice_resolves.py unchanged: this unit adds no CLI advice site)
+Pre-check: fbb7ddff uv run pytest -p no:xdist -o addopts= tests/test_ui_sources.py tests/test_source_is_a_recording.py tests/test_cli_advice_resolves.py tests/test_ensemble_honesty.py tests/test_merge_flowspec_cli.py tests/test_server_settings.py tests/test_drive_verify.py tests/test_intake_schema.py tests/test_ui_origin_guard.py -> 254 passed (run at fbb7ddff, src identical to 39533108; aggregate neighbours; test_cli_advice_resolves.py unchanged: this unit adds no CLI advice site)
 mutant-cap-raise: security-class unit with 12 contract rows plus 3 review-found defects; one mutation per row, each recorded in the table below
-Metrics: start=2026-10-11 end=2026-10-11 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=22 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9
+Metrics: start=2026-10-11 end=2026-10-11 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=24 cycle=2 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9
 
 ## Falsification (throwaway copy of src, tests, scripts under the scratchpad, outside the worktree; run with the worktree venv and `PYTHONPATH=<copy>/src`; the originals restored after each; the copy is discarded)
 
@@ -111,6 +111,29 @@ Falsification (throwaway copies under the scratchpad, deleted after; green befor
 | F2 cap | `MAX_FIELDS` and `FIELDS_TOTAL_CAP` checks made inert in `_keep_field` | 3 passed (`-k f2`) | 3 failed |
 | TI6 (F3) | `env=env` removed from the kill test's `subprocess.run`, run from a `git archive` copy with the root `.venv` | 1 passed | 1 failed (`No module named 'autotester.sources.zip_intake'`, return code 1 not 9) |
 
+Lint: `uv run autotester doctor` -> doctor: clean; `uv run ruff check src tests scripts` -> All checks passed!
+
+## Fix cycle 2 (repair base 3918a8aa; seat B FAIL cycle 1, finding P1: UTF-8 flag + invalid UTF-8 name raised UnicodeDecodeError out of `expand_zip`, a 500 on the upload route)
+
+Design: close the CLASS, not the one exception. In `src/autotester/sources/zip_intake.py` (291 lines; 257 after cycle 1) every call into the stdlib zip parser on untrusted bytes is now guarded:
+- `expand_zip`: after the named handlers for `zipfile.ZipFile(archive)` (BadZipFile/OSError and NotImplementedError keep their texts) one deliberately broad `except Exception` (MemoryError is re-raised first) returns an archive-level `failed` report ("not a readable zip archive (its file list is damaged)") and registers nothing. Only that one constructor call is inside the try.
+- `_guarded(call, *args)` wraps `zf.open(info)` and each `stream.read(...)` in `_inflate`: any `Exception` that is not a named one (`_NAMED`: BadZipFile, zlib.error, LZMAError, EOFError, NotImplementedError, OSError, MemoryError) becomes `_Unreadable`, and `_extract_one` records that member `failed` ("corrupt member (the data could not be read)"), so the run is `partial`. The named errors still reach their existing handlers with their existing reason texts. The staging write, hashing and `commit_video` are outside the guard, so a bug in our own code still surfaces. KeyboardInterrupt and SystemExit are not `Exception`s, and MemoryError is passed through.
+- Other doors: the upload route (`ui/intake_upload.py::handle_upload`), the CLI (`cli_intake.py`) and the Drive path (`sources/drive_intake.py`) open archives only through `expand_zip`; none has its own `ZipFile(...)` call (`sources/extract.py` is an unrelated pre-existing module). One door, closed.
+
+Files changed (product commit a765c4dd, test commit 39533108):
+- `src/autotester/sources/zip_intake.py` (291): the guard above (`_Unreadable`, `_NAMED`, `_guarded`, `_inflate` edited in place, one new handler in `_extract_one`, the broad catch in `expand_zip`).
+- `tests/zip_fixtures.py` (122): `bad_utf8_name` builds the checker's archive (same-length name swap plus the 0x800 flag on every header).
+- `tests/test_zip_intake_register.py` (283): the checker's case through `expand_zip` (first asserts the stdlib really raises UnicodeDecodeError on it); four stdlib error types raised while reading one member (parametrized; only that member fails, status `partial`); a seeded fuzz (seed 198, 40 mutants, alternating a healthy base and a UTF-8-flagged base; flips, short runs, truncations) asserting `expand_zip` never raises, leaves no staging file and no row without its file. 40 mutants, not hundreds: each costs about 0.3 s of file I/O on this host (100 mutants measured 35 s).
+- `tests/test_ui_intake.py` (286): the same archive through the upload route: status below 500, no traceback, a failed page, no source row, no leftover file.
+
+Falsification (throwaway copies under the scratchpad, deleted after; green before, red after):
+
+| Row | edit in the copy | before | after |
+|---|---|---|---|
+| TI5 (P1, constructor) | the broad `except Exception` in `expand_zip` removed | 3 passed (`-k "utf8 or no_mutation"`) | 2 failed (UnicodeDecodeError out of `expand_zip` and out of the upload route) |
+| TI5 (P1, member read) | the broad catch in `_guarded` narrowed to ZeroDivisionError | 4 passed (`-k any_error`) | 4 failed |
+
+Not changed (the low PROPOSED-ISSUEs): the bzip2 reason wording, the version above 6.3 whole-archive failure, empty-named fields.
 Lint: `uv run autotester doctor` -> doctor: clean; `uv run ruff check src tests scripts` -> All checks passed!
 
 ## Held and left to others
