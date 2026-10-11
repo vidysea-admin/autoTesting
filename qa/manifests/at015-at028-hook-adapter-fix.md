@@ -148,7 +148,7 @@ doctor: clean
   the same hook file, which is out of this unit's scope (this repo's own copy under
   `.claude/hooks/` was what D-008 authorized changing).
 
-## Status: STALLED (recovery applied, see below)
+## Status: checked-PASS (post-STALL recovery, qa/verdicts/at015-at028-hook-adapter-fix.md, D-011)
 
 Max fix cycles (3) reached. Cycle 3 verdict (`qa/verdicts/at015-at028-hook-adapter-fix.md`,
 Cycle checked: 3, FAIL): technical fix confirmed correct a third time (139 lines kept, no
