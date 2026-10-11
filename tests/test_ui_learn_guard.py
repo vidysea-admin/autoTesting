@@ -46,7 +46,7 @@ def test_a_guard_refusal_is_a_themed_400_with_nothing_written_sent_or_echoed(
 
     spy = _Spy(responses={"agent": [ExpandedSteps(steps=[], rationale="n/a")] * 60})
     import autotester.ui.routes_learn as routes_learn_module
-    monkeypatch.setattr(routes_learn_module, "LangChainFallbackProvider", lambda: spy)
+    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: spy)
 
     response = TestClient(app).post("/projects/demo/cases/generate", follow_redirects=False)
 
