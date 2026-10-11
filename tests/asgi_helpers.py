@@ -77,8 +77,11 @@ async def _post(path: str, chunks: Iterable[bytes], headers: dict[str, str], ser
 
 
 def post_stream(path: str, chunks: Iterable[bytes], *, content_length: int | None = None,
-                content_type: str | None = None) -> tuple[int, bytes, Served]:
-    headers = {"content-type": content_type or f"multipart/form-data; boundary={BOUNDARY}"}
+                content_type: str | None = None, host: str = "testserver"
+                ) -> tuple[int, bytes, Served]:
+    """`host` is the Host header (the allow-list refuses none or a wrong one)."""
+    headers = {"content-type": content_type or f"multipart/form-data; boundary={BOUNDARY}",
+               "host": host}
     if content_length is not None:
         headers["content-length"] = str(content_length)
     served = Served()

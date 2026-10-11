@@ -111,3 +111,11 @@ def test_the_job_file_holds_no_token_or_raw_link(client, store, tmp_path, gate, 
 def test_a_form_with_too_many_fields_is_a_400_not_a_500(client, store, gate, drive):
     data = {f"f{i}": "x" for i in range(60)} | {"link": "FILE000006"}
     assert client.post(DRIVE, data=data, follow_redirects=False).status_code == 400
+
+
+def test_at758_a_hostile_host_on_the_drive_route_is_403_and_makes_no_job(
+        client, store, tmp_path, gate, drive):
+    response = client.post(DRIVE, data={"link": "FILE000007"}, headers={"Host": "evil.example"},
+                           follow_redirects=False)
+    assert response.status_code == 403 and response.content == b""
+    assert gate.checks == [] and not (tmp_path / ".work" / "drive-jobs").exists()

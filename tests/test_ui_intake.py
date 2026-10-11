@@ -210,3 +210,19 @@ def test_a_truncated_multipart_body_is_refused_not_stored(store, tmp_path):
 def test_a_huge_part_header_is_refused_before_it_is_buffered(store):
     head = b"--" + BOUNDARY.encode() + b"\r\nX-Pad: " + b"a" * (40 * 1024) + b"\r\n\r\n"
     assert post_stream(UPLOAD, [head, b"x"])[0] == 400
+
+
+def test_at758_a_hostile_host_on_the_upload_route_is_403_before_any_body_byte(store, gate):
+    """The Host allow-list sits in front of the gate and the body (AT-758)."""
+    for host in ("evil.example", "localhost:8000.evil.com", ""):
+        status, page, served = post_stream(UPLOAD, endless(multipart_head("a.mp4")), host=host)
+        assert status == 403 and page == b"" and served.bytes == 0
+    assert gate.checks == [] and store.list_sources() == []
+
+
+def test_at758_a_hostile_host_on_the_upload_route_is_403_before_any_body_byte(store, gate):
+    """The Host allow-list sits in front of the gate and the body (AT-758)."""
+    for host in ("evil.example", "localhost:8000.evil.com", ""):
+        status, page, served = post_stream(UPLOAD, endless(multipart_head("a.mp4")), host=host)
+        assert status == 403 and page == b"" and served.bytes == 0
+    assert gate.checks == [] and store.list_sources() == []
