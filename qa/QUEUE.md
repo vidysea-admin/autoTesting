@@ -365,6 +365,20 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-11 T-154 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Rows AT-909, AT-911, AT-914, AT-915 and AT-918 are ledger-only and are not candidates. T-154 stays pending (adapter allowlist, AT-917; no live adversarial pass has been made).
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Validate `probe_sets` names as single safe path components and assert the resolved path stays under `prompts/probes`: `../outside` loaded and sent a .md from outside the probe directory on the only probe-sending path (operator-controlled, no CLI yet). Severity low as filed by coordinator B. | AT-912 |
+| priority: security | Owner decision: is an adversarial `RunApproval` single-use? Today 3 passes on one `max_probes=4` row sent 12 probes (replayable until expiry). AD2 words the bound per run, so it is within the contract. | AT-913 |
+| priority: security | Require a per-send timeout when the real sender is built: `wall_clock_s` is checked only between sends, so one hung send is unbounded. Do before the first live pass. | AT-911 |
+| low (owner-confirm) | Confirm `PROBE_CEILING=50`, the five probe categories and the probe text, and the Pathlynks endpoint string and production status (CN7), before any live firing. | AT-916 |
+| low (process) | Add `uv run python scripts/adversarial_proof.py` to `qa/adapter.json` `read_only_allowlist` (enforcement/config path, needs an authorizing D-entry) so T-154's done_check can run and close the task. | AT-917 |
+| low | Make refusals uniform: one exception family, and a `refusals.jsonl` row (true requested count) for host, secret, probe-file and bad `wall_clock_s` refusals. | AT-910 |
+| low (test-gap) | Pin the wall-clock refusal, the exact-ceiling case, and the refusal-log scrub of `target=` and `reason=`. | AT-914, AT-915 |
+
 ## Candidates (human picks) — 2026-10-11 T-167 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
 
 Never built until a human moves one out of this section with `approved: <date>`. Eight low rows (AT-901..AT-908) are ledger-only and are not candidates.
