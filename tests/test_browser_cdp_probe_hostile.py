@@ -64,14 +64,15 @@ class Hostile:
         with contextlib.suppress(OSError), conn:
             _read_request(conn)
             head = b"HTTP/1.1 200 OK\r\n"
+            end = time.monotonic() + 5  # a drip is finite: a missing deadline fails an assert
             if self.mode == "drip_body":
                 self._send(conn, head + b"Content-Length: 100000\r\n\r\n")
-                while not self.stopping.is_set():
+                while not self.stopping.is_set() and time.monotonic() < end:
                     self._send(conn, b" ")
                     time.sleep(0.1)
             elif self.mode == "drip_headers":
                 self._send(conn, head)
-                while not self.stopping.is_set():
+                while not self.stopping.is_set() and time.monotonic() < end:
                     self._send(conn, b"X-A: b\r\n")
                     time.sleep(0.1)
             elif self.mode == "huge_declared":
