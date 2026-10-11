@@ -1,7 +1,9 @@
 # HUMAN_GATE: AU20 own-origin check on a wildcard bind (t204-team-login)
 
 **Asked:** 2026-10-11 by the maker, on checker A's HUMAN_GATE-REQUEST
-(`qa/verdicts/t204-team-login.r1.a.md`, head 6ea9b688). **Answered:** pending.
+(`qa/verdicts/t204-team-login.r1.a.md`, head 6ea9b688). **Answered:** 2026-10-11 by Umesh, option A
+(D-082): the app gets `AUTOTESTER_PUBLIC_ORIGIN` and startup raises on a wildcard bind unless that
+origin is admitted. Folded into fix cycle 2 as an owner-authorised change.
 
 ## What is blocked
 
@@ -37,6 +39,20 @@ startup does not raise, which is what the sentence requires.
 - **B. Amend AU20** so the own-origin check applies to a concrete bind only, and a wildcard bind needs
   a non-empty list. This weakens a startup safety line in the contract; the checker folds it in, and
   T-204 can then be judged on the code as it is.
+
+- **C. A middle rule (checker B's option).** Keep no new setting. On a wildcard bind, require at least
+  one non-loopback entry in `AUTOTESTER_ALLOWED_HOSTS` or one `AUTOTESTER_ALLOWED_ORIGINS` netloc.
+  This catches an empty or loopback-only list at startup but not a list that names the wrong host.
+  It also needs an AU20 amendment.
+
+## Separate from this gate (added 2026-10-11)
+
+Checker B (`qa/verdicts/t204-team-login.r1.b.md`) FAILed AU20 on a defect that does not depend on
+this answer: for a concrete bind, `_check_own_origin` accepts a bare host although the Host check
+(AU19) matches host:port, so `--host 10.0.0.5 --port 8443` with `AUTOTESTER_ALLOWED_HOSTS=10.0.0.5`
+starts and then answers every request 403. Fix cycle 2 (the last allowed) repairs that now and leaves
+the wildcard rule as it is. If the answer here is A or C, that is one more change after cycle 2, made
+on your decision.
 
 Maker's recommendation: A. It keeps the contract as written, and a wrong allow-list then fails at
 startup with a readable message, not as a 403 on every page that the operator has to diagnose. For

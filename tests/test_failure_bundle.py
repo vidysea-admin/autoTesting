@@ -228,3 +228,65 @@ def test_a_residual_secret_the_scrub_cannot_remove_aborts_the_write(tmp_path: Pa
         _build(tmp_path, fx, redactor=LeakyRedactor({"APP_PASSWORD": SECRET}))
     out = tmp_path / "bundles"
     assert [p for p in out.iterdir() if not p.name.endswith(".partial")] == []
+
+
+@pytest.mark.parametrize("name", ["../outside", "/outside", "C:/outside", "C:outside",
+                                  "dir\\outside", "dir//outside", "./outside", ""])
+def test_bundle_manifest_rejects_nonlocal_names_before_read(tmp_path, monkeypatch, name) -> None:
+    import autotester.stages.failure_bundle as module
+
+    bundle = _build(tmp_path, _fixture(tmp_path))
+    manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+    manifest["files"][0]["name"] = name
+    (bundle / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    hashed = []
+    monkeypatch.setattr(module, "_sha256", lambda path: hashed.append(path) or "unused")
+    with pytest.raises(PartialBundleError, match="invalid bundle manifest"):
+        load_bundle(bundle)
+    assert hashed == []
+
+
+@pytest.mark.parametrize("escaped", ["case.json", "manifest.json"])
+def test_bundle_refuses_resolved_symlink_escape_before_read(tmp_path, monkeypatch, escaped) -> None:
+    bundle = _build(tmp_path, _fixture(tmp_path))
+    source = bundle / escaped
+    outside = tmp_path / "outside"
+    real_resolve, real_read = Path.resolve, Path.read_bytes
+    def resolve(path, *args, **kwargs):
+        return outside if path == source else real_resolve(path, *args, **kwargs)
+    def read(path):
+        assert path != outside, "escaped symlink target was read"
+        return real_read(path)
+    monkeypatch.setattr(Path, "resolve", resolve)
+    monkeypatch.setattr(Path, "read_bytes", read)
+    with pytest.raises(PartialBundleError, match="escapes"):
+        load_bundle(bundle)
+
+
+def test_loader_refuses_real_directory_link_escape_before_hashing(tmp_path, monkeypatch) -> None:
+    import subprocess
+    import sys
+
+    from autotester.stages import failure_bundle as module
+
+    bundle = _build(tmp_path, _fixture(tmp_path))
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "case.json").write_bytes((bundle / "case.json").read_bytes())
+    link = bundle / "escape"
+    if sys.platform == "win32":
+        made = subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(outside)],
+                              capture_output=True)
+        assert made.returncode == 0, made.stderr.decode(errors="replace")
+    else:
+        link.symlink_to(outside, target_is_directory=True)
+    manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+    manifest["files"][0]["name"] = "escape/case.json"
+    (bundle / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    original = module._sha256
+    def guarded_hash(path):
+        assert path.resolve() != outside / "case.json", "escaped file reached hashing/read"
+        return original(path)
+    monkeypatch.setattr(module, "_sha256", guarded_hash)
+    with pytest.raises(PartialBundleError, match="escapes"):
+        load_bundle(bundle)

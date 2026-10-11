@@ -1,0 +1,25 @@
+[09:47:24] ref 371eb7f6 = 371eb7f6; 4 shards; out D:\autoTesting\.work\t200b-r1a-suite\out2
+[09:47:29] collecting whole set (one copy)
+[09:48:25] collected 3484 tests in 252 files; balanced by stored durations (3448/3484 tests known, 2 files at mean); pinned files: none; predicted: s0=645, s1=645, s2=645, s3=645
+[09:48:25] shard 0: pid 27428, 63 units, 661 tests
+[09:48:25] shard 1: pid 14676, 63 units, 1019 tests
+[09:48:25] shard 2: pid 29100, 63 units, 897 tests
+[09:48:25] shard 3: pid 12148, 63 units, 907 tests
+[10:01:43] shard 1 finished rc=1 in 798s
+[10:02:21] shard 2 finished rc=0 in 836s
+[10:03:27] shard 3 finished rc=1 in 902s
+[10:03:28] shard 0 finished rc=0 in 903s
+[10:03:29] re-running 6 failing test(s) alone in shard-0 (load-induced vs real)
+[10:04:42]   shard 0: rc=0 wall=903.3s units=63 tests=661 reported=661
+[10:04:42]   shard 1: rc=1 wall=797.9s units=63 tests=1019 reported=1019
+[10:04:42]   shard 2: rc=0 wall=836.1s units=63 tests=897 reported=897
+[10:04:42]   shard 3: rc=1 wall=902.3s units=63 tests=907 reported=907
+[10:04:42] counts {'passed': 3458, 'skipped': 20, 'failed': 6}; collect proof ok=True (baseline 3484, union 3484, ran 3484)
+[10:04:42]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 1, alone: failed)
+[10:04:42]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 3, alone: failed)
+[10:04:42]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero (shard 3, alone: passed)
+[10:04:42]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 3, alone: passed)
+[10:04:42]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 3, alone: failed)
+[10:04:42]   failed tests/test_video_parallel_sweep.py::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video (shard 3, alone: passed)
+[10:04:42] summary -> D:\autoTesting\.work\t200b-r1a-suite\out2\summary.json (exit 1)
+EXIT=1

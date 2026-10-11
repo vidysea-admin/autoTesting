@@ -1,0 +1,6 @@
+M5a_getattr_importlib_executor | BEFORE rc 0 21 passed in 69.17s (0:01:09) | AFTER rc 0 21 passed in 39.51s
+M5b_getattr_literal_executor | BEFORE rc 0 21 passed, 1 warning in 54.10s | AFTER rc 0 21 passed in 23.66s
+M5c_aliased_Run | BEFORE rc 0 21 passed in 31.60s | AFTER rc 1 1 failed, 20 passed in 69.40s (0:01:09)
+     FAILED tests/test_run_launcher.py::test_exactly_one_non_test_call_site_builds_a_run
+M5d_alias_executor_partial | BEFORE rc 0 21 passed in 29.39s | AFTER rc 1 1 failed, 20 passed in 22.91s
+     FAILED tests/test_run_launcher.py::test_exactly_one_non_test_call_site_executes_the_cases

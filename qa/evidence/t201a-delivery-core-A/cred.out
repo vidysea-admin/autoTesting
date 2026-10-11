@@ -1,0 +1,44 @@
+[plain-loopback auth_echo] status=failed err='SMTPAuthenticationError 535' AUTH_secure=[False, False, False, False] plainAUTH=True leaks=[] pickle refused: AttributeError
+    direct: TransportError('SMTPAuthenticationError 535') suppress_ctx=True | ctx chain clean: TransportError:SMTPAuthenticationError 535 <- SMTPAuthenticationError:(535, b'5.7.8 Authentication failed for smtp-user pass=Zq9!SECRETpw-EC
+[plain-loopback ehlo_echo] status=sent err=None AUTH_secure=[False, False] plainAUTH=True leaks=[] pickle refused: AttributeError
+    direct: send ok | 
+[plain-loopback mail_echo] status=failed err='SMTPSenderRefused 550' AUTH_secure=[False, False] plainAUTH=True leaks=[] pickle refused: AttributeError
+    direct: TransportError('SMTPSenderRefused 550') suppress_ctx=True | PW REACHABLE via __context__: TransportError:SMTPSenderRefused 550 <- SMTPSenderRefused:(550, b'mail rejected Zq9!SECRETpw-ECHOME', 'rep@x.test')
+[plain-loopback rcpt_echo] status=failed err='SMTPRecipientsRefused' AUTH_secure=[False, False] plainAUTH=True leaks=[] pickle refused: AttributeError
+    direct: TransportError('SMTPRecipientsRefused') suppress_ctx=True | ctx chain clean: TransportError:SMTPRecipientsRefused <- SMTPRecipientsRefused:{'to@x.test': (550, b'no such user rcpt TO:<to@x.test> Zq9!SECRETpw-EC
+[plain-loopback data_echo] status=failed err='SMTPDataError 554' AUTH_secure=[False, False] plainAUTH=True leaks=[] pickle refused: AttributeError
+    direct: TransportError('SMTPDataError 554') suppress_ctx=True | PW REACHABLE via __context__: TransportError:SMTPDataError 554 <- SMTPDataError:(554, b'data refused Zq9!SECRETpw-ECHOME')
+[plain-loopback garbage] status=sent err=None AUTH_secure=[False, False] plainAUTH=True leaks=[] pickle refused: AttributeError
+    direct: send ok | 
+[unicode password echo] status=failed err='UnicodeEncodeError' AUTH_secure=[] plainAUTH=False leaks=[] pickle refused: AttributeError
+    direct: TransportError('UnicodeEncodeError') suppress_ctx=True | ctx chain clean: TransportError:UnicodeEncodeError <- UnicodeEncodeError:'ascii' codec can't encode character '\xe4' in position 12: ordinal no
+=== TLS ===
+[starttls required, server strips STARTTLS] status=failed err='SMTPNotSupportedError' AUTH_secure=[] plainAUTH=False leaks=[] pickle refused: AttributeError
+    direct: TransportError('SMTPNotSupportedError') suppress_ctx=True | ctx chain clean: TransportError:SMTPNotSupportedError <- SMTPNotSupportedError:STARTTLS extension not supported by server.
+   AUTH seen: [] server saw: ['ehlo [100.67.3.87]', 'quit', 'ehlo [100.67.3.87]', 'quit']
+[starttls, untrusted CA] status=failed err='SSLCertVerificationError' AUTH_secure=[] plainAUTH=False leaks=[] pickle refused: AttributeError
+    direct: TransportError('SSLCertVerificationError') suppress_ctx=True | ctx chain clean: TransportError:SSLCertVerificationError <- SSLCertVerificationError:[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to 
+   AUTH seen: [] ['ehlo [100.67.3.87]', 'STARTTLS', 'tls-handshake-failed:SSLError']
+[starttls, wrong hostname (CA trusted)] status=failed err='SSLCertVerificationError' AUTH_secure=[] plainAUTH=False leaks=[] pickle refused: AttributeError
+    direct: TransportError('SSLCertVerificationError') suppress_ctx=True | ctx chain clean: TransportError:SSLCertVerificationError <- SSLCertVerificationError:[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: IP address
+   AUTH seen: [] ['ehlo [100.67.3.87]', 'STARTTLS', 'tls-handshake-failed:SSLError']
+[starttls, GOOD cert, CA trusted (positive control)] status=sent err=None AUTH_secure=[True, True] plainAUTH=False leaks=[] pickle refused: AttributeError
+    direct: send ok | 
+   AUTH seen: [True, True]
+[implicit ssl untrusted CA] refused: SSLCertVerificationError AUTH_seen=[]
+[implicit ssl wrong hostname] refused: SSLCertVerificationError AUTH_seen=[]
+[implicit ssl good cert trusted CA (positive control)] SENT AUTH_seen=[True]
+plain+credentials host=smtp.example.test: refused
+plain+credentials host=10.0.0.5: refused
+plain+credentials host=127.0.0.2: refused
+plain+credentials host=LOCALHOST: refused
+plain+credentials host=localhost: allowed
+plain+credentials host=::1: allowed
+plain+credentials host=127.0.0.1: allowed
+env {'PORT': '587', 'USER': 'u', 'TLS': '0'} -> None
+env {'PORT': '25', 'TLS': 'none'} -> ('none', None)
+env {'PORT': '465', 'TLS': '0', 'USER': 'u'} -> ('ssl', 'u')
+env {'PORT': '587', 'USER': 'u', 'TLS': 'weird'} -> ('starttls', 'u')
+env {'PORT': '587', 'USER': 'u'} -> ('starttls', 'u')
+
+ALL LEAKS: []

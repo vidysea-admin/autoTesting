@@ -1,0 +1,23 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\mut_m6c_debug
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 18 items / 16 deselected / 2 selected
+
+tests\test_run_launcher_approval.py RAISED ValidationError 3 validation errors for RunApproval
+granted_by
+  Field required [type=missing, input_value={'project': 'demo', 'run_..._clock_s': 1000000000.0}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+granted_at
+  Field required [type=missing, input_value={'proj
+.RAISED ValidationError 3 validation errors for RunApproval
+granted_by
+  Field required [type=missing, input_value={'project': 'demo', 'run_..._clock_s': 1000000000.0}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+granted_at
+  Field required [type=missing, input_value={'proj
+.
+
+====================== 2 passed, 16 deselected in 6.84s =======================
+

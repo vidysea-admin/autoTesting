@@ -1,0 +1,31 @@
+{
+ "total": 380,
+ "by_dim": {
+  "D-public-origin": 324,
+  "E-list-syntax-wildcard": 56
+ },
+ "by_verdict": {
+  "ok-refused-by-design": 133,
+  "ok-refused": 103,
+  "ok-started-served": 129,
+  "ODDITY-accepted-malformed-harmless": 12,
+  "DISAGREE-refused-but-would-serve": 2,
+  "DISAGREE-started-but-403": 1
+ },
+ "by_dim_verdict": {
+  "D-public-origin": {
+   "ok-refused-by-design": 125,
+   "ok-refused": 74,
+   "ok-started-served": 110,
+   "ODDITY-accepted-malformed-harmless": 12,
+   "DISAGREE-refused-but-would-serve": 2,
+   "DISAGREE-started-but-403": 1
+  },
+  "E-list-syntax-wildcard": {
+   "ok-refused-by-design": 8,
+   "ok-started-served": 19,
+   "ok-refused": 29
+  }
+ },
+ "bind_parse_mismatch": 0
+}

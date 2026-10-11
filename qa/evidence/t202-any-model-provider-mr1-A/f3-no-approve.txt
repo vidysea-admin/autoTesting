@@ -1,0 +1,4 @@
+E       assert (400 == 400 and 'could not complete' in '<!doctype html><title>Case proposals need human review — AutoTester</title>\n<link rel="preconnect" href="https://fon...nd demo --proposals</code>; use --approve or --prune with a proposal ID and --by your name.</p></p></div></main></div>')
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+E        +  and   '<!doctype html><title>Case proposals need human review — AutoTester</title>\n<link rel="preconnect" href="https://fon...nd demo --proposals</code>; use --approve or --prune with a proposal ID and --by your name.</p></p></div></main></div>' = <Response [400 Bad Request]>.text
+======================== 1 failed, 1 warning in 50.31s ========================

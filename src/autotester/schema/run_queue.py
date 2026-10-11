@@ -13,6 +13,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from autotester.schema.case import CasePriority
+
 
 class QueueStatus(StrEnum):
     QUEUED = "queued"
@@ -34,6 +36,8 @@ class QueueEntry(BaseModel):
     status: QueueStatus = QueueStatus.QUEUED
     trigger: Literal["button", "schedule", "api"] = "button"
     requested_by: str | None = Field(None, description="who pressed it; None before login exists")
+    priorities: list[CasePriority] | None = Field(
+        None, description="T-178 FB4: run these priorities plus pinned p0; None runs every case")
     enqueued_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     started_at: datetime | None = None
     finished_at: datetime | None = None

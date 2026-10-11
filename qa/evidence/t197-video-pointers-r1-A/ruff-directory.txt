@@ -1,0 +1,11 @@
+E501 Line too long (103 > 100)
+   --> tests\test_video_pointers.py:199:101
+    |
+197 |     assert len(huge.parsed) + len(huge.errors) == huge.non_blank_lines
+198 |     assert not _parse("é" * (MAX_POINTER_FILE_BYTES // 2 + 1)).parsed     # bytes, not characters
+199 |     fat = _parse(("0:10 | " + "z" * 400 + "\n") * MAX_POINTER_LINES)   # every line valid, file too big
+    |                                                                                                     ^^^
+200 |     assert len(fat.errors) == 1 and not fat.parsed
+    |
+
+Found 1 error.

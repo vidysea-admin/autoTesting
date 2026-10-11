@@ -1,0 +1,17 @@
+[F9] autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F9\src\autotester\__init__.py
+[F9] BASELINE rc=0
+21 passed in 68.14s (0:01:08)
+[F9] mutated function=_expand_reviewed_flow; hunk old=`prompt = guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets)` new=`prompt = guard_expand_prompt(build_expand_prompt(flow.model_copy(update={'name': 'FLOWNAMEX'}), proposal.case_class, docs), secrets).replace('FLOWNAMEX', mask_pii(flow.name))`
+[F9] MUTATED rc=1
+============ FAILURES ===================================
+E   assert False
+     +  where False = all(<generator object test_the_provider_never_receives_the_raw_value.<locals>.<genexpr> at 0x000001487D8F8820>)
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F9\tests\test_expand_redaction.py:83: assert False
+=========================== short test summary info ===========================
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[declared-in-name]
+1 failed, 20 passed in 80.59s (0:01:20)
+ 
+E   assert False
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F9\tests\test_expand_redaction.py:83: assert False
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[declared-in-name]
+1 failed, 20 passed in 80.59s (0:01:20)

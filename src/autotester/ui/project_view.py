@@ -86,6 +86,7 @@ def _actions_card(safe_slug: str, run_button: str, case_count: int) -> str:
         f"<a class='btn' href='/projects/{safe_slug}/cases/new'>+ Add case</a>"
         f"<a class='btn' href='/projects/{safe_slug}/env'>🔑 Credentials</a>"
         f"<a class='btn' href='/projects/{safe_slug}/report'>📋 Latest report</a>"
+        f"<a class='btn' href='/projects/{safe_slug}/damage-report'>🩹 Damage-control report</a>"
         f"<a class='btn' href='/projects/{safe_slug}/flow-diagram'>🌳 Flow diagram</a>"
         f"<a class='btn' href='/projects/{safe_slug}/crawls'>🕸 Crawls</a>"
         f"<a class='btn' href='/projects/{safe_slug}/edit'>⚙ Project settings</a>"

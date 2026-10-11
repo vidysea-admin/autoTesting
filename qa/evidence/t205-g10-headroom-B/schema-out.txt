@@ -1,0 +1,15 @@
+master project.json files loaded: 9 failed: 0
+master run records loaded: 0 failed: 0
+unknown top-level key                                   refused (extra_forbidden)
+unknown key __proto__                                   refused (extra_forbidden)
+schedule: unknown nested key                            refused (extra_forbidden)
+tracker: unknown nested key                             refused (extra_forbidden)
+schedule: null (explicit)                               ACCEPTED
+tracker: bare dict                                      ACCEPTED
+schedule: mode outside enum                             refused (enum)
+secrets entry unknown key                               refused (extra_forbidden)
+ScheduleMode same object in schedule and team_enums: True ['manual', 'fixed', 'custom']
+ScheduleZone same object in schedule and team_enums: True ['UTC', 'IST']
+SlotOutcome same object in schedule and team_enums: True ['enqueued', 'catch_up', 'missed', 'skipped_overlap', 'blocked_no_credentials', 'refused', 'failed']
+SchedulerHealth same object in schedule and team_enums: True ['not_applicable', 'never_ticked', 'healthy', 'stale']
+classes defined in >1 module: {}

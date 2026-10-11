@@ -1,0 +1,37 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+autotester.__file__ = D:\autoTesting\.worktrees\t204-team-login\src\autotester\__init__.py
+{
+ "total": 386,
+ "by_dim": {
+  "C-wildcard-spelling": 122,
+  "D-public-origin": 264
+ },
+ "by_verdict": {
+  "ok-refused-by-design": 121,
+  "DISAGREE-refused-but-would-serve": 22,
+  "UNBINDABLE-os-refuses": 68,
+  "ok-refused": 75,
+  "DISAGREE-spec-violation-started": 3,
+  "ok-started-served": 84,
+  "ODDITY-accepted-malformed-harmless": 12,
+  "DISAGREE-started-but-403": 1
+ },
+ "by_dim_verdict": {
+  "C-wildcard-spelling": {
+   "ok-refused-by-design": 13,
+   "DISAGREE-refused-but-would-serve": 20,
+   "UNBINDABLE-os-refuses": 68,
+   "ok-refused": 18,
+   "DISAGREE-spec-violation-started": 3
+  },
+  "D-public-origin": {
+   "ok-refused": 57,
+   "ok-started-served": 84,
+   "ok-refused-by-design": 108,
+   "ODDITY-accepted-malformed-harmless": 12,
+   "DISAGREE-refused-but-would-serve": 2,
+   "DISAGREE-started-but-403": 1
+  }
+ },
+ "bind_parse_mismatch": 0
+}

@@ -1,0 +1,5 @@
+rtal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1773 passed, 1773 deselected, 1 warning in 1112.48s (0:18:32)

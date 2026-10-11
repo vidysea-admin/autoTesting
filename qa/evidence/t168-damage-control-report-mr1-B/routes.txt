@@ -1,0 +1,5 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+D:\autoTesting\.worktrees\t168-damage-control-report\src\autotester\__init__.py
+damage ['/projects/{slug}/damage-report'] ['get']
+status 404 {"detail":"no project 'nope-xyz'"}
+evil host 403

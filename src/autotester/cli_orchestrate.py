@@ -35,6 +35,7 @@ import typer
 from autotester import cli_crawl, providers
 from autotester.core.ids import run_id as mint_run_id
 from autotester.core.paths import ProjectPaths, RepoDocs
+from autotester.providers.base import Provider, ProviderError
 from autotester.schema.run_state import RunState, StageName
 from autotester.stages.orchestrate import TEACHING_KINDS, StageContext, choose_mode, run_or_resume
 from autotester.stages.orchestrate_runners import (
@@ -56,6 +57,23 @@ class NoEntrySource(RuntimeError):
     """`learn` mode needs a teaching Source to (re)run INGEST, and none of the
     project's current sources qualify — named honestly rather than a raw
     `StopIteration` from deep inside a generator."""
+
+
+def usable_provider(spec: str) -> Provider:
+    """A `--provider` value (`gemini`, or `litellm:<model>`) resolved to a provider that can
+    serve a call, else a one-line red refusal and exit 1 -- the same reason the website gives
+    (LL11): the model and the one variable to set, never a key, a prompt or an endpoint."""
+    try:
+        provider_id, options = providers.parse_spec(spec)
+        model = providers.get(provider_id, **options)
+    except ProviderError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(1) from None
+    if why := providers.why_unavailable(model):
+        typer.secho(f"{why} — `autotester providers` lists the ones that have credentials",
+                    fg=typer.colors.RED)
+        raise typer.Exit(1)
+    return model
 
 
 def _entry_source(sources: list[Source]) -> Source | None:

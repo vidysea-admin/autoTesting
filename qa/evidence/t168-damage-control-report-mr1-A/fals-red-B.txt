@@ -1,0 +1,5 @@
+E       AssertionError: [(WindowsPath('cli.py'), 229, 'providers'), (WindowsPath('cli.py'), 225, 'expand'), (WindowsPath('cli_issues.py'), 57,...t list'), (WindowsPath('cli_issues.py'), 82, 'issues derive'), (WindowsPath('cli_issues.py'), 223, 'issues list'), ...]
+E       assert 24 == 23
+E        +  where 24 = len([Advice(where=WindowsPath('cli.py'), line=229, command='providers'), Advice(where=WindowsPath('cli.py'), line=225, com...), line=82, command='issues derive'), Advice(where=WindowsPath('cli_issues.py'), line=223, command='issues list'), ...])
+E        +    where [Advice(where=WindowsPath('cli.py'), line=229, command='providers'), Advice(where=WindowsPath('cli.py'), line=225, com...), line=82, command='issues derive'), Advice(where=WindowsPath('cli_issues.py'), line=223, command='issues list'), ...] = advice()
+====================== 1 failed, 32 deselected in 13.65s ======================

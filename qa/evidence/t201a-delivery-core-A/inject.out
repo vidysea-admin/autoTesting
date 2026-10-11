@@ -1,0 +1,43 @@
+long 5 labels                                                refused
+edge recipient .a@x.test                                     accepted but build_mime raises InvalidHeaderDefect
+edge recipient a..b@x.test                                   accepted but build_mime raises InvalidHeaderDefect
+edge recipient a.@x.test                                     accepted but build_mime raises InvalidHeaderDefect
+edge recipient a%b@x.test                                    accepted; mime ok To=a%b@x.test
+edge recipient a+b@x.test                                    accepted; mime ok To=a+b@x.test
+edge recipient a@-x.test                                     refused
+edge recipient a@x-.test                                     refused
+sender_name 'AutoTester'                                     OK To=to@x.test From=AutoTester <reports@x.test>
+sender_name 'Evil\r\nBcc: z@y.test'                          refused by schema
+sender_name 'Evil\nBcc: z@y.test'                            refused by schema
+sender_name 'x" <evil@e.test>'                               OK To=to@x.test From="x\" <evil@e.test>" <reports@x.test>
+sender_name '=?utf-8?b?DQpCY2M6IHpAeS50ZXN                   OK To=to@x.test From==?utf-8?b?DQpCY2M6IHpAeS50ZXN0?= <reports@x.test>
+sender_name 'äöü 中文'                                         OK To=to@x.test From==?utf-8?b?w6TDtsO8IOS4reaWhw==?= <reports@x.test>
+sender_name 'Bob, <b@e.test>'                                OK To=to@x.test From="Bob, <b@e.test>" <reports@x.test>
+sender_name 'A\u2028Bcc: z@y.test'                           OK To=to@x.test From==?utf-8?b?QeKAqEJjYzogekB5LnRlc3Q=?= <reports@x.test>
+sender_name 'A\x85Bcc: z@y.test'                             OK To=to@x.test From==?utf-8?q?A=C2=85Bcc=3A_z=40y=2Etest?= <reports@x.test>
+sender_name 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx                   OK To=to@x.test From=
+ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+sender_name 'a\x08'                                          refused by schema
+sender_name '(x)'                                            OK To=to@x.test From="(x)" <reports@x.test>
+sender_name 'a;b'                                            OK To=to@x.test From="a;b" <reports@x.test>
+project_name 'Demo' subj='AutoTester report: Demo - green'   OK To=to@x.test From=AutoTester <autotester@localhost.invalid>
+project_name 'Demo\r\nBcc: z@y.test'                         refused by schema
+project_name 'D\u2028Bcc: z@y.test'                          build refused (fail-closed) Header values may not contain linefeed or carriage
+project_name 'D\x85Bcc'                                      build refused (fail-closed) Header values may not contain linefeed or carriage
+project_name '=?utf-8?q?=0D=0ABcc:_z@y.test subj='AutoTester report: =?utf-8?q?=0D=0ABcc:_z@y.test? OK To=to@x.test From=AutoTester <autotester@localhost.invalid>
+project_name 'ä中' subj='AutoTester report: ä中 - green'       OK To=to@x.test From=AutoTester <autotester@localhost.invalid>
+project_name 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx subj='AutoTester report: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx OK To=to@x.test From=AutoTester <autotester@localhost.invalid>
+project_name 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAA subj='AutoTester report: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA OK To=to@x.test From=AutoTester <autotester@localhost.invalid>
+subject 'ok'                                                 OK To=to@x.test From=AutoTester <autotester@localhost.invalid>
+subject 'bad\r\nBcc: z@y.test'                               refused
+subject 'bad\nx'                                             refused
+subject '\u2028x'                                            build refused (fail-closed) Header values may not contain linefeed or carriage
+subject '\x85x'                                              build refused (fail-closed) Header values may not contain linefeed or carriage
+subject 'a\x0bb'                                             refused
+subject 'a\x0cb'                                             refused
+subject '\x1bx'                                              refused
+wire commands: ['ehlo [100.67.3.87]', 'mail FROM:<reports@x.test>', 'rcpt TO:<to@x.test>', 'data', 'quit']
+wire: exactly one RCPT TO / one MAIL FROM / one DATA         BAD
+wire: one DATA body (no smuggled 2nd message)                OK
+
+SUMMARY bad: [('wire: exactly one RCPT TO / one MAIL FROM / one DATA', 'BAD')]

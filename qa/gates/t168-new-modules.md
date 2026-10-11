@@ -1,6 +1,9 @@
 # HUMAN_GATE: four new modules in t168-damage-control-report
 
-**Asked:** 2026-10-11 by the maker. **Answered:** pending.
+**Asked:** 2026-10-11 by the maker. **Answered:** 2026-10-11 by Umesh, option C (D-082): a standing
+rule. A new module needs no gate when the contract or brief names it, its docstring states one job,
+`autotester doctor` is clean and the checker lists it in its verdict. The modules of T-168, T-155,
+T-202 and `stages/ai_judge.py` (AT-895) are confirmed by the same entry.
 
 ## What is blocked
 

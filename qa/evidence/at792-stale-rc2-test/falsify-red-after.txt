@@ -1,0 +1,11 @@
+E       AssertionError: assert None == 'type your email here'
+E        +  where None = Step(order=1, action=<Action.FILL: 'fill'>, target='Email', value='x', expected=ExpectedState(url=None, visible_text=[..._start=1.0, t_end=None, locator=None), note=None, screen_id='scr_5ed6c16ed2f3', narration=None, on_screen_text='Email').narration
+FAILED tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen
+============================== 1 failed in 0.30s ==============================
+--- end a
+E       AssertionError: assert None == 'scr_f0949f19fb5a'
+E        +  where None = Flow(id='flow_c0ac60939652', name='Login', entry_screen='scr_5ed6c16ed2f3', exit_screen=None, preconditions=[], steps=...l here', on_screen_text='Email')], requires_auth=False, kind=None, ideal_basis=None, variant_of=None, diverges_at=None).exit_screen
+E        +  and   'scr_f0949f19fb5a' = Screen(id='scr_f0949f19fb5a', name='Home', url_pattern='/home', signals=[], fields=[], screenshot_ref=None, source_ref=SourceRef(source_id='src_9d1ccc4854a0', t_start=5.0, t_end=None, locator=None), video_only=False).id
+FAILED tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen
+============================== 1 failed in 0.83s ==============================
+--- end b

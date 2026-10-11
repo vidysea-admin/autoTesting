@@ -1,0 +1,17 @@
+{
+ "F1e schedule_tick.py imports run_and_grade_case by name": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "1 passed in 1.27s"
+  ],
+  "after": [
+   "tests\\test_schedule_tick.py:225: AssertionError",
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively",
+   "1 failed in 2.36s"
+  ]
+ }
+}

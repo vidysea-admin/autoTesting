@@ -1,0 +1,9 @@
+projects/checkerdemo/project.json loads, round-trip equal: True
+projects/erp/project.json loads, round-trip equal: True
+projects/pathlynks/project.json loads, round-trip equal: True
+projects/regression-demo/project.json loads, round-trip equal: True
+projects/saucedemo/project.json loads, round-trip equal: True
+projects/t161-final-smoke/project.json loads, round-trip equal: True
+projects/t161-pushed-live/project.json loads, round-trip equal: True
+projects/vidysea-erp/project.json loads, round-trip equal: True
+projects/xssprobe/project.json loads, round-trip equal: True

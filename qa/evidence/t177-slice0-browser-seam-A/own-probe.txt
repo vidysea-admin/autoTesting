@@ -1,0 +1,14 @@
+autotester.__file__ D:\autoTesting\.worktrees\t177-slice0-browser-seam\src\autotester\__init__.py
+P1 cdp_url http://127.0.0.1:59481
+P1 /json/list needs no secret: targets 1 ws page url present: True
+P1 127.0.0.2 accepts: False
+P1 portfile: 59481
+P1 after close cdp_url None file exists False
+P1 port accepting after close False
+P2 start raised: simulated budget exceeded after launch
+P2 after failed start: port file exists False context still open False
+P2 cdp_url None
+P2 after caller close(): file exists False
+P2 port accepting after close False
+P3 _reaches_past_loopback on timeout -> False
+P3 _reaches_past_loopback on 'cannot assign' -> False

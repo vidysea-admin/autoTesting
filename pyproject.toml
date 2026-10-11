@@ -34,6 +34,7 @@ dependencies = [
     "typer>=0.27.2",
     "uvicorn[standard]>=0.30.0",
     "argon2-cffi==25.1.0",  # T-204 password hashing, authorized by D-072 "new modules / auth"
+    "litellm==1.104.0",  # T-202 (D-071): providers/litellm_provider.py; exact pin, SDK only
 ]
 
 [project.scripts]

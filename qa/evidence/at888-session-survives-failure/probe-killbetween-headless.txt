@@ -1,0 +1,115 @@
+127.0.0.1 - - [11/Oct/2026 15:12:34] "GET /index.html?t=k1-pass HTTP/1.1" 200 -
+127.0.0.1 - - [11/Oct/2026 15:13:41] "GET /index.html?t=k2-after-kill HTTP/1.1" 200 -
+127.0.0.1 - - [11/Oct/2026 15:13:43] "GET /index.html?t=k3-pass HTTP/1.1" 200 -
+127.0.0.1 - - [11/Oct/2026 15:13:50] "GET /index.html?t=k4-pass HTTP/1.1" 200 -
+{
+ "autotester_file": "D:\\autoTesting\\.worktrees\\check-at888\\src\\autotester\\__init__.py",
+ "scenario": "killbetween",
+ "headed": false,
+ "cases": [
+  {
+   "title": "k1-pass",
+   "video_rel": "case_c92824250f80.webm",
+   "video_size": 17379,
+   "case_tmp": "page@d5e9d60c8d0fa3cc5994d12402d4bb64.webm",
+   "spare_tmp": "page@166a7ef6527ccb010ce0d2619dd26583.webm",
+   "spare_differs": true,
+   "pages_open": 1,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 42, 36, 869129, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_c92824250f80' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 3.0,
+   "starts_so_far": 1
+  },
+  {
+   "title": "k2-after-kill",
+   "video_rel": "case_79475505438f.webm",
+   "video_size": 6577,
+   "case_tmp": "page@5637f75e138c2482c0c5e4e4599ec0b4.webm",
+   "spare_tmp": "page@12a3fc0aeedc69009ab6a3c8376efbd3.webm",
+   "spare_differs": true,
+   "pages_open": 2,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [
+    [
+     "dom",
+     "session-restart",
+     "browser session was dead before this case (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed Browser logs: <launching> C:\\Users\\Lenovo\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1234\\chrome-he); restarted once, login continues from the saved profile"
+    ]
+   ],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 43, 43, 360383, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_79475505438f' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 54.5,
+   "starts_so_far": 2
+  },
+  {
+   "title": "k3-pass",
+   "video_rel": "case_f25322ee15c4.webm",
+   "video_size": 10677,
+   "case_tmp": "page@5ebc42f32aa2ad36c73a39c7395c039e.webm",
+   "spare_tmp": "page@2d9dd1b08e4e1a73eeb5df7fcab32b01.webm",
+   "spare_differs": true,
+   "pages_open": 2,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 43, 49, 850775, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_f25322ee15c4' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 6.5,
+   "starts_so_far": 2
+  },
+  {
+   "title": "k4-pass",
+   "video_rel": "case_1cbeb6625073.webm",
+   "video_size": 19698,
+   "case_tmp": "page@bcadc82827f4e0b0615bb252092c9258.webm",
+   "spare_tmp": "page@4c47c0c9c74e9e6fabcb7f50cf85166c.webm",
+   "spare_differs": true,
+   "pages_open": 2,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 43, 54, 360669, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_1cbeb6625073' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 4.5,
+   "starts_so_far": 2
+  }
+ ],
+ "tmp": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_ubhkwx9z",
+ "profile_dir": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_ubhkwx9z\\profiles\\at888p",
+ "killed": [
+  [
+   54140,
+   15404,
+   30732,
+   30480,
+   20660,
+   22656
+  ]
+ ],
+ "latched_err": null,
+ "browsers_before_close": 10,
+ "close": "ok",
+ "left_after_close": [
+  "powershell.exe"
+ ]
+}

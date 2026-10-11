@@ -1,0 +1,63 @@
+bz2_garbage                        expand: partial b.mp4:failed:could not be staged (the write failed); ok.mp4:registered:None | route: 200 >
+bz2_header_bad                     expand: partial b.mp4:failed:could not be staged (the write failed); ok.mp4:registered:None | route: 200 >
+cd_truncated                       expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+csize_huge                         expand: failed a.mp4:failed:corrupt member (bad checksum or truncated data); b.mp4:failed:corrupt member (bad checksum | route: 200 m
+ctype_1                            expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+ctype_10                           expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+ctype_13                           expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+ctype_65535                        expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+ctype_9                            expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+ctype_93                           expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+ctype_98                           expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+ctype_99                           expand: partial a.mp4:failed:unsupported compression method; b.mp4:registered:None | route: 200 >
+deflate_garbage                    expand: partial d.mp4:failed:corrupt member (bad checksum or truncated data); ok.mp4:registered:None | route: 200 >
+empty_file                         expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 400 >
+encrypted_both                     expand: failed a.mp4:failed:encrypted member (password-protected zips are not supported); b.mp4:failed:encrypted membe | route: 200 s
+eocd_cdoffset_lie                  expand: failed a.mp4:failed:could not be staged (the write failed); b.mp4:failed:could not be staged (the write failed | route: 200 d
+eocd_cdsize_lie                    expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+eocd_comment_overrun               expand: ok a.mp4:registered:None; b.mp4:registered:None | route: 200 >
+eocd_entries_lie_big               expand: ok a.mp4:registered:None; b.mp4:registered:None | route: 200 >
+extra_ff_ff_overrun                expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+extra_short_zip64_hdr              expand: ok a.mp4:registered:None; b.mp4:registered:None | route: 200 >
+extra_zip64_empty                  expand: ok a.mp4:registered:None; b.mp4:registered:None | route: 200 >
+extra_zip64_len_overrun            expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+extract_version_64                 expand: failed (archive):failed:unsupported zip version (a member needs a newer zip reader than this one) | route: 200 e
+extract_version_ffff               expand: failed (archive):failed:unsupported zip version (a member needs a newer zip reader than this one) | route: 200 e
+flag_all                           expand: partial a.mp4:failed:encrypted member (password-protected zips are not supported); b.mp4:registered:None | route: 200 >
+flag_encrypted_central             expand: partial a.mp4:failed:encrypted member (password-protected zips are not supported); b.mp4:registered:None | route: 200 >
+flag_encrypted_local_only          expand: ok a.mp4:registered:None; b.mp4:registered:None | route: 200 >
+flag_strong_enc                    expand: partial a.mp4:failed:encrypted member (password-protected zips are not supported); b.mp4:registered:None | route: 200 >
+half_truncated                     expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+junk_renamed                       expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+local_extralen_lie                 expand: partial a.mp4:failed:corrupt member (bad checksum or truncated data); b.mp4:registered:None | route: 200 >
+local_fnlen_lie                    expand: partial a.mp4:failed:corrupt member (bad checksum or truncated data); b.mp4:registered:None | route: 200 >
+lzma_dict_4g                       expand: ok l.mp4:registered:None; ok.mp4:registered:None | route: 200 >
+lzma_dict_huge                     expand: ok l.mp4:registered:None; ok.mp4:registered:None | route: 200 >
+lzma_garbage                       expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+lzma_props_byte_bad                expand: partial l.mp4:failed:corrupt member (bad checksum or truncated data); ok.mp4:registered:None | route: 200 >
+lzma_propssize_huge                expand: partial l.mp4:failed:corrupt member (bad checksum or truncated data); ok.mp4:registered:None | route: 200 >
+lzma_propssize_zero                expand: partial l.mp4:failed:corrupt member (bad checksum or truncated data); ok.mp4:registered:None | route: 200 >
+multidisk_eocd                     expand: ok a.mp4:registered:None; b.mp4:registered:None | route: 200 >
+name_bidi_rlo                      expand: partial z\u202e.mp:failed:refused: control character in name; ok.mp4:registered:None | route: 200 >
+name_cp437_highbytes               expand: ok  ■².mp4:registered:None; ok.mp4:registered:None | route: 200 >
+name_invalid_utf8_ff               expand: failed (archive):failed:not a readable zip archive (its file list is damaged) | route: 200 i
+name_nul                           expand: partial z\u0000z.mp4:failed:refused: control character in name; ok.mp4:registered:None | route: 200 >
+name_overlong                      expand: failed (archive):failed:not a readable zip archive (its file list is damaged) | route: 200 i
+name_surrogate_cesu                expand: failed (archive):failed:not a readable zip archive (its file list is damaged) | route: 200 i
+name_truncated_seq                 expand: failed (archive):failed:not a readable zip archive (its file list is damaged) | route: 200 i
+nested_zip_by_name                 expand: partial in.zip:failed:refused: nested archive (archives inside archives are not opened); a.mp4:registered:None | route: 200 >
+offset_absurd                      expand: partial a.mp4:failed:corrupt member (bad checksum or truncated data); b.mp4:registered:None | route: 200 >
+offset_into_middle                 expand: partial a.mp4:failed:corrupt member (bad checksum or truncated data); b.mp4:registered:None | route: 200 >
+only_dirs                          expand: ok  | route: 200 h
+pk0506_only                        expand: ok  | route: 200 h
+pk_only                            expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+sizes_ffff_noextra                 expand: failed a.mp4:failed:4 GiB exceeds the per-file limit of 2 GiB; b.mp4:failed:4 GiB exceeds the per-file limit o | route: 200 -
+trailing_junk                      expand: ok a.mp4:registered:None; b.mp4:registered:None | route: 200 >
+unicode_path_extra                 expand: ok a.mp4:registered:None | route: 200 >
+usize_2g_csize_5                   expand: failed a.mp4:failed:compression ratio 429496729:1 exceeds the 100:1 limit; b.mp4:failed:compression ratio 4294 | route: 200 e
+zero_byte_member                   expand: partial e.mp4:failed:empty file; ok.mp4:registered:None | route: 200 >
+zip64_2p62                         expand: failed (archive):failed:total uncompressed size 8.58993e+09 GiB exceeds the limit of 9.31 GiB | route: 200 h
+zip64_locator_garbage              expand: failed (archive):failed:not a zip archive (or it cannot be read) | route: 200 r
+zip64_u64max                       expand: failed (archive):failed:total uncompressed size 3.43597e+10 GiB exceeds the limit of 9.31 GiB | route: 200 h
+zip64_usize_big_csize_small        expand: failed (archive):failed:total uncompressed size 2048 GiB exceeds the limit of 9.31 GiB | route: 200 h
+zip64_zero                         expand: failed a.mp4:failed:corrupt member (bad checksum or truncated data); b.mp4:failed:corrupt member (bad checksum | route: 200 m

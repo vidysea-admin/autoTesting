@@ -1,0 +1,59 @@
+{
+ "autotester_file": "D:\\autoTesting\\.worktrees\\check-at888\\src\\autotester\\__init__.py",
+ "scenario": "budget",
+ "headed": false,
+ "cases": [
+  {
+   "title": "c1-pass",
+   "video_rel": "case_aad9f989660b.webm",
+   "video_size": 15680,
+   "case_tmp": "page@ccc829ff8a5ca1b4d73de06b0cf2f9f1.webm",
+   "spare_tmp": "page@a9cc2f3aba3cb3ff9c5e4f85ac63be68.webm",
+   "spare_differs": true,
+   "pages_open": 1,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 45, 52, 326587, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_aad9f989660b' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 2.5,
+   "starts_so_far": 1
+  }
+ ],
+ "tmp": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_a6idkneo",
+ "profile_dir": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_a6idkneo\\profiles\\at888p",
+ "killed": [
+  [
+   17060,
+   49596,
+   20332,
+   73204,
+   11876,
+   37224
+  ]
+ ],
+ "stop_reason": "max_actions",
+ "direct_begin": "RunBudgetExceeded: run budget exhausted: max_actions",
+ "start_calls_after_exhaust": 0,
+ "browsers_after": 6,
+ "drivers_left": [
+  "node.exe",
+  "powershell.exe",
+  "chrome-headless-shell.exe",
+  "chrome-headless-shell.exe",
+  "chrome-headless-shell.exe",
+  "chrome-headless-shell.exe",
+  "chrome-headless-shell.exe",
+  "chrome-headless-shell.exe"
+ ],
+ "latched_err": null,
+ "browsers_before_close": 6,
+ "close": "RAISED TargetClosedError: : Target page, context or browser has been closed",
+ "left_after_close": [
+  "powershell.exe"
+ ]
+}

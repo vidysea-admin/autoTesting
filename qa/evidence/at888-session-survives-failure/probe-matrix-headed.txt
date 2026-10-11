@@ -1,0 +1,118 @@
+127.0.0.1 - - [11/Oct/2026 15:00:31] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/Oct/2026 15:00:31] code 404, message File not found
+127.0.0.1 - - [11/Oct/2026 15:00:31] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [11/Oct/2026 15:01:10] "GET /index.html HTTP/1.1" 304 -
+127.0.0.1 - - [11/Oct/2026 15:01:11] code 404, message File not found
+127.0.0.1 - - [11/Oct/2026 15:01:11] "GET /favicon.ico HTTP/1.1" 404 -
+{
+ "autotester_file": "D:\\autoTesting\\.worktrees\\check-at888\\src\\autotester\\__init__.py",
+ "scenario": "matrix",
+ "headed": true,
+ "cases": [
+  {
+   "title": "c1-pass",
+   "video_rel": "case_b195057da5b6.webm",
+   "video_size": 23618,
+   "case_tmp": "page@ae3f680197282a4127e2f73f9558d8ed.webm",
+   "spare_tmp": "page@cdc02c8cf7a396984e828aa0588ca423.webm",
+   "spare_differs": true,
+   "pages_open": 1,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 30, 36, 604793, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_b195057da5b6' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 7.3,
+   "starts_so_far": 1
+  },
+  {
+   "title": "c2-refused",
+   "video_rel": "case_d00987f28d34.webm",
+   "video_size": 3676,
+   "case_tmp": "page@6cda7d689b5d20ad68fb84fe47aad3a7.webm",
+   "spare_tmp": "page@204d96441cb42c52fd0037c2b2cd3b22.webm",
+   "spare_differs": true,
+   "pages_open": 1,
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "NavigationRefused: host 'evil.example.com' is outside allowed domains ['127.0.0.1']",
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 30, 38, 562933, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_d00987f28d34' result=<Result.INCONCLUSIVE: 'INCONCLUSIVE'> scoreboard='not judged: execution errored' criteria_met=0 criteria_total=1 failures=[] grader_provider='rule' rubric_hash='rub_98d48812f919' note=\"NavigationRefused: host 'evil.example.com' is outside allowed domains ['127.0.0.1']\" images_requested=0 images_seen=0",
+   "notes": "eval failed: Error",
+   "secs": 2.0,
+   "starts_so_far": 1
+  },
+  {
+   "title": "c3-close-own-page",
+   "video_rel": "case_b195057da5b6.webm",
+   "video_size": 4462,
+   "case_tmp": "page@9a9edc85f82c4362a1796a541814f82f.webm",
+   "spare_tmp": "a AttributeError",
+   "spare_differs": true,
+   "pages_open": 0,
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "TargetClosedError: Page.goto: Target page, context or browser has been closed",
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 30, 39, 555100, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_b195057da5b6' result=<Result.INCONCLUSIVE: 'INCONCLUSIVE'> scoreboard='not judged: execution errored' criteria_met=0 criteria_total=1 failures=[] grader_provider='rule' rubric_hash='rub_98d48812f919' note='TargetClosedError: Page.goto: Target page, context or browser has been closed' images_requested=0 images_seen=0",
+   "notes": "eval failed: TargetClosedError",
+   "secs": 1.0,
+   "starts_so_far": 1
+  },
+  {
+   "title": "c4-pass",
+   "video_rel": "case_b195057da5b6.webm",
+   "video_size": 6174,
+   "case_tmp": "page@aa5dc1f2b6811108dbeded0d636d3a2c.webm",
+   "spare_tmp": "page@f163fdf250dac5a7621b99216738f78a.webm",
+   "spare_differs": true,
+   "pages_open": 2,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [
+    [
+     "dom",
+     "session-restart",
+     "browser session was dead before this case (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed); restarted once, login continues from the saved profile"
+    ]
+   ],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 31, 14, 88698, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_b195057da5b6' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 34.5,
+   "starts_so_far": 2
+  },
+  {
+   "title": "c5-kill-mid",
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\at888probe_esv326lc\\\\projects\\\\at888p\\\\runs\\\\run_1\\\\_video_scratch\\\\1e4c3f41fdfa\\\\page@b5e548e6a816947b61b727b4663a668a.webm' -> 'C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\at888probe_esv326lc\\\\projects\\\\at888p\\\\runs\\\\run_1\\\\case_b195057da5b6.webm'",
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 31, 43, 722459, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_b195057da5b6' result=<Result.INCONCLUSIVE: 'INCONCLUSIVE'> scoreboard='not judged: execution errored' criteria_met=0 criteria_total=1 failures=[] grader_provider='rule' rubric_hash='rub_98d48812f919' note=\"PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\\\\\Users\\\\\\\\Lenovo\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\at888probe_esv326lc\\\\\\\\projects\\\\\\\\at888p\\\\\\\\runs\\\\\\\\run_1\\\\\\\\_video_scratch\\\\\\\\1e4c3f41fdfa\\\\\\\\page@b5e548e6a816947b61b727b4663a668a.webm' -> 'C:\\\\\\\\Users\\\\\\\\Lenovo\\\\\\\\AppDat",
+   "notes": "skipped",
+   "secs": 29.6,
+   "starts_so_far": 2
+  },
+  {
+   "title": "c6-pass-after-restart",
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\Users\\Lenovo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe --disable-fiel",
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 35, 45, 250682, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_b195057da5b6' result=<Result.INCONCLUSIVE: 'INCONCLUSIVE'> scoreboard='not judged: execution errored' criteria_met=0 criteria_total=1 failures=[] grader_provider='rule' rubric_hash='rub_98d48812f919' note='SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\ms-playwright\\\\chromium-1234\\\\chrome-",
+   "notes": null,
+   "secs": 241.5,
+   "starts_so_far": 3
+  },
+  {
+   "title": "c7-kill-after",
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "SessionRestoreError: browser session died (TargetClosedError: BrowserCon

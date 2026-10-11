@@ -1,0 +1,13 @@
+docs/MAP.md
+qa/manifests/t168-damage-control-report.md
+src/autotester/cli.py
+src/autotester/cli_release.py
+src/autotester/schema/unified_report.py
+src/autotester/stages/unified_report.py
+src/autotester/stages/unified_report_render.py
+src/autotester/ui/project_view.py
+src/autotester/ui/routes_report.py
+src/autotester/ui/routes_unified_report.py
+tests/test_cli_advice_resolves.py
+tests/test_unified_report.py
+tests/test_unified_report_secrets.py

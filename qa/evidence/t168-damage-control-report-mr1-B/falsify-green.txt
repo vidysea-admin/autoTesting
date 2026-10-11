@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t168-mr1b
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 7 items
+
+tests\test_unified_report_secrets.py .......                             [100%]
+
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t168-damage-control-report\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t168-damage-control-report\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 7 passed, 1 warning in 25.24s ========================

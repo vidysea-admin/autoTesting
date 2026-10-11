@@ -1,0 +1,93 @@
+=== GREEN-BEFORE (-k test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string) ===
+starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[*--False]
+PASSED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[,--False]
+PASSED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[-*-False]
+PASSED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[ , * - ,-False]
+PASSED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[*,at.example--True]
+PASSED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[-https://at.example-True]
+================= 6 passed, 62 deselected, 1 warning in 5.03s =================
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== DIFF ===
+--- config.py(orig)
++++ config.py(mutant)
+@@ -93,3 +93,3 @@
+     from autotester.ui.helpers import _listed  # lazy: `ui` imports `auth` at load
+-    if not (_listed("AUTOTESTER_ALLOWED_HOSTS") or _listed("AUTOTESTER_ALLOWED_ORIGINS")):
++    if not (os.environ.get("AUTOTESTER_ALLOWED_HOSTS", "").strip() or os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").strip()):
+         raise AuthConfigError(
+
+=== RED-AFTER named (-k) ===
+============================= test session starts =============================
+collected 68 items / 62 deselected / 6 selected
+
+tests\test_ui_auth_own_origin.py FFFF..                                  [100%]
+
+================================== FAILURES ===================================
+_ test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[*--False] _
+tests\test_ui_auth_own_origin.py:143: in test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string
+    with pytest.raises(AuthConfigError, match="needs"):
+E   Failed: DID NOT RAISE AuthConfigError
+_ test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[,--False] _
+tests\test_ui_auth_own_origin.py:143: in test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string
+    with pytest.raises(AuthConfigError, match="needs"):
+E   Failed: DID NOT RAISE AuthConfigError
+_ test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[-*-False] _
+tests\test_ui_auth_own_origin.py:143: in test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string
+    with pytest.raises(AuthConfigError, match="needs"):
+E   Failed: DID NOT RAISE AuthConfigError
+_ test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[ , * - ,-False] _
+tests\test_ui_auth_own_origin.py:143: in test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string
+    with pytest.raises(AuthConfigError, match="needs"):
+E   Failed: DID NOT RAISE AuthConfigError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[*--False]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[,--False]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[-*-False]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[ , * - ,-False]
+============ 4 failed, 2 passed, 62 deselected, 1 warning in 4.82s ============
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== FULL FILE after edit ===
+oTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M6\tests\test_ui_auth_own_origin.py:221: AssertionError: Regex pattern did not match.
+E   AssertionError: Regex pattern did not match.
+      Expected regex: 'needs'
+      Actual message: 'AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)'
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M6\tests\test_ui_auth_own_origin.py:221: AssertionError: Regex pattern did not match.
+E   AssertionError: Regex pattern did not match.
+      Expected regex: 'needs'
+      Actual message: 'AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)'
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M6\tests\test_ui_auth_own_origin.py:221: AssertionError: Regex pattern did not match.
+E   AssertionError: Regex pattern did not match.
+      Expected regex: 'needs'
+      Actual message: 'AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)'
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M6\tests\test_ui_auth_own_origin.py:221: AssertionError: Regex pattern did not match.
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[*--False]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[,--False]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[-*-False]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string[ , * - ,-False]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_still_needs_a_parsed_allow_list_entry[0.0.0.0]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_still_needs_a_parsed_allow_list_entry[::]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_still_needs_a_parsed_allow_list_entry[*]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_still_needs_a_parsed_allow_list_entry[]
+============= 8 failed, 60 passed, 1 warning in 292.98s (0:04:52) =============
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead

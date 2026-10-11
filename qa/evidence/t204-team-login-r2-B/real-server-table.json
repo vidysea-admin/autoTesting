@@ -1,0 +1,2106 @@
+[
+ {
+  "id": "c01-lan-hosts-bare-custom-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18500",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "192.168.1.4"
+  },
+  "pid": 76608,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18500 or https://192.168.1.4:18500 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18500",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18500",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c02-lan-origin-https-bare-custom-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18501",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://192.168.1.4"
+  },
+  "pid": 67268,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18501 or https://192.168.1.4:18501 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18501",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18501",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c03-lan-hosts-with-port-no-origin",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18502",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "192.168.1.4:18502"
+  },
+  "pid": 58580,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18502 or https://192.168.1.4:18502 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18502",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18502",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c04-lan-origin-http-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18503",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18503"
+  },
+  "pid": 24504,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18503",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18503",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c05-lan-origin-https-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18504",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://192.168.1.4:18504"
+  },
+  "pid": 11868,
+  "expect": "start-any-scheme",
+  "note": "scheme question",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18504",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18504",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c06-lan-hosts-and-origin",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18505",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "192.168.1.4:18505",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18505"
+  },
+  "pid": 58416,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18505",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18505",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c07-lan-wrong-port-in-origin",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18506",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:1"
+  },
+  "pid": 20908,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18506 or https://192.168.1.4:18506 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18506",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18506",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c08-lan-other-host-listed",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18507",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://at.example"
+  },
+  "pid": 17072,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18507 or https://192.168.1.4:18507 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18507",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18507",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c09-lan-eq-form",
+  "cmd": "uvicorn autotester.ui.app:app --host=192.168.1.4 --port=18508",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18508"
+  },
+  "pid": 63132,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18508",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18508",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c10-lan-eq-form-bare-origin",
+  "cmd": "uvicorn autotester.ui.app:app --host=192.168.1.4 --port=18509",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4"
+  },
+  "pid": 70776,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18509 or https://192.168.1.4:18509 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18509",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18509",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c11-lan-uvicorn-port-env",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "UVICORN_PORT": "18510",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18510"
+  },
+  "pid": 53596,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18510",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18510",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c12-lan-uvicorn-port-env-origin-8000",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "UVICORN_PORT": "18511",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:8000"
+  },
+  "pid": 27336,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18511 or https://192.168.1.4:18511 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18511",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18511",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c13-lan-argv-port-beats-env",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18512",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "UVICORN_PORT": "9",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18512"
+  },
+  "pid": 60284,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18512",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18512",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c14-lan-repeated-host-last-wins",
+  "cmd": "uvicorn autotester.ui.app:app --host 10.9.9.9 --host 192.168.1.4 --port 18513",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18513"
+  },
+  "pid": 79828,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18513",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18513",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c15-lan-repeated-port-last-wins",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 1 --port 18514",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18514"
+  },
+  "pid": 50212,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18514",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18514",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c16-lan-repeated-port-same",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18515 --port 18515",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18515"
+  },
+  "pid": 6704,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18515",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18515",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c17-second-lan-addr",
+  "cmd": "uvicorn autotester.ui.app:app --host 172.22.0.1 --port 18516",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://172.22.0.1:18516"
+  },
+  "pid": 59736,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "172.22.0.1:18516",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "172.22.0.1:18516",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c18-lan-hosts-star-only",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18517",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "*"
+  },
+  "pid": 32420,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18517",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18517",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c19-lan-lists-comma-blank",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18518",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": ",",
+   "AUTOTESTER_ALLOWED_HOSTS": " "
+  },
+  "pid": 53724,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18518",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18518",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c20-lan-star-plus-real-entry",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18519",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "*,http://192.168.1.4:18519"
+  },
+  "pid": 38024,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18519",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18519",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c21-lan-origin-caps-slash",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18520",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "HTTP://192.168.1.4:18520/"
+  },
+  "pid": 6680,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18520",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18520",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "c22-lan-origins-space-separated",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18521",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://x.example http://192.168.1.4:18521"
+  },
+  "pid": 42704,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18521",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18521",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "l01-127.0.0.1-foreign-list",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18522",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 55436,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18522",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "127.0.0.1:18522",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "l02-127.0.0.2-foreign-list",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.2 --port 18523",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 37424,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://127.0.0.2:18523 or https://127.0.0.2:18523 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.2:18523",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "127.0.0.2:18523",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "l03-127.0.0.2-origin-listed",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.2 --port 18524",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://127.0.0.2:18524"
+  },
+  "pid": 58524,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.2:18524",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "127.0.0.2:18524",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "l04-localhost-foreign-list",
+  "cmd": "uvicorn autotester.ui.app:app --host localhost --port 18525",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 6048,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "localhost:18525",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "localhost:18525",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "l05-localhost-port-env",
+  "cmd": "uvicorn autotester.ui.app:app --host localhost",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "UVICORN_PORT": "18526",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 19428,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "localhost:18526",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "localhost:18526",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "l06-localhost-eq-form",
+  "cmd": "uvicorn autotester.ui.app:app --host=localhost --port=18527",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://at.example"
+  },
+  "pid": 36796,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "localhost:18527",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "localhost:18527",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "l07-ipv6-loopback",
+  "cmd": "uvicorn autotester.ui.app:app --host ::1 --port 18528",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 40728,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "[::1]:18528",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "[::1]:18528",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "l08-loopback-star-only-list",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18529",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "*"
+  },
+  "pid": 65072,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18529",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "127.0.0.1:18529",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "l09-loopback-no-list",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18530",
+  "env": {
+   "AUTOTESTER_HOSTED": "1"
+  },
+  "pid": 22496,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18530",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "127.0.0.1:18530",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "l10-loopback-uppercase-LOCALHOST",
+  "cmd": "uvicorn autotester.ui.app:app --host LOCALHOST --port 18531",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 72668,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "localhost:18531",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "localhost:18531",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "l11-repeated-wild-then-loop",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --host 127.0.0.1 --port 18532",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 49640,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18532",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "127.0.0.1:18532",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w01-wild4-missing-public",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18533",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com"
+  },
+  "pid": 20140,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w02-wild4-public-right",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18534",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 51040,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w03-wild6-public-right",
+  "cmd": "uvicorn autotester.ui.app:app --host :: --port 18535",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 5832,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w04-wild6-missing-public",
+  "cmd": "uvicorn autotester.ui.app:app --host :: --port 18536",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com"
+  },
+  "pid": 43900,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w05-wild4-public-bare-host",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18537",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "qa.example.com"
+  },
+  "pid": 18760,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='qa.example.com' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w06-wild4-public-ftp",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18538",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "ftp://qa.example.com"
+  },
+  "pid": 76912,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='ftp://qa.example.com' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w07-wild4-public-path",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18539",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com/app"
+  },
+  "pid": 28228,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://qa.example.com/app' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w08-wild4-public-bad-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18540",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com:abc"
+  },
+  "pid": 46944,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://qa.example.com:abc' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w09-wild4-public-no-host",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18541",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://"
+  },
+  "pid": 40576,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w10-wild4-public-userinfo",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18542",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://me@qa.example.com"
+  },
+  "pid": 42632,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://me@qa.example.com' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w11-wild4-public-star",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18543",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "*"
+  },
+  "pid": 44808,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='*' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w12-wild4-public-blank",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18544",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "   "
+  },
+  "pid": 70496,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w13-wild4-public-wrong-host",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18545",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "other.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://other.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 56220,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "w14-wild4-public-wrong-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18546",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com:8443",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 71224,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "w15-wild4-public-wrong-scheme",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18547",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 21604,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "w16-wild4-public-hosts-only",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18548",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 27916,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "w17-wild4-public-origins-only",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18549",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 3528,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w18-wild4-public-explicit-443",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18550",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com:443"
+  },
+  "pid": 77220,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w19-wild4-public-caps-slash",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18551",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "HTTPS://QA.Example.com/"
+  },
+  "pid": 50800,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w20-wild4-public-lan-http",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18552",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18552",
+   "AUTOTESTER_PUBLIC_ORIGIN": "http://192.168.1.4:18552"
+  },
+  "pid": 4644,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18552",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w21-wild4-public-lan-nonlisted-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18553",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18553",
+   "AUTOTESTER_PUBLIC_ORIGIN": "http://192.168.1.4:1"
+  },
+  "pid": 54368,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:1 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18553",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w22-wild4-public-loopback",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18554",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example",
+   "AUTOTESTER_PUBLIC_ORIGIN": "http://localhost:18554"
+  },
+  "pid": 53236,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "localhost:18554",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w23-wild4-eq-form-missing",
+  "cmd": "uvicorn autotester.ui.app:app --host=0.0.0.0 --port=18555",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com"
+  },
+  "pid": 52348,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w24-wild4-eq-form-public",
+  "cmd": "uvicorn autotester.ui.app:app --host=0.0.0.0 --port=18556",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 48216,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w25-loop-then-wild-repeated",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --host 0.0.0.0 --port 18557",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com"
+  },
+  "pid": 68292,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w26-env-UVICORN_HOST-wild-missing",
+  "cmd": "uvicorn autotester.ui.app:app --port 18558",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "UVICORN_HOST": "0.0.0.0"
+  },
+  "pid": 22828,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w27-env-UVICORN_HOST-wild-public",
+  "cmd": "uvicorn autotester.ui.app:app --port 18559",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "UVICORN_HOST": "0.0.0.0",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 29172,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w28-wild4-star-list-public-ok",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18560",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "*",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 3996,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "w29-wild4-comma-list-public-ok",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18561",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": ",",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 17700,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "w30-wild4-blank-list",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18562",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 75720,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "w31-wild4-star-plus-entry",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18563",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "*,https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 56496,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "w32-odd-wildcard-host-0",
+  "cmd": "uvicorn autotester.ui.app:app --host 0 --port 18564",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com"
+  },
+  "pid": 32700,
+  "expect": "raise",
+  "note": "uvicorn binds '0' as every IPv4 address; the code sees a concrete host '0'",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://0:18564 or https://0:18564 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w33-odd-wildcard-host-0-listed",
+  "cmd": "uvicorn autotester.ui.app:app --host 0 --port 18565",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://0:18565"
+  },
+  "pid": 61720,
+  "expect": "?",
+  "note": "operator lists '0'; the real server binds every address and no public origin is required",
+  "startup": "raised",
+  "exit": 3,
+  "message": "INFO:     Application shutdown complete.",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "0:18565",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w34-odd-wildcard-ipv6-long",
+  "cmd": "uvicorn autotester.ui.app:app --host 0:0:0:0:0:0:0:0 --port 18566",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com"
+  },
+  "pid": 32296,
+  "expect": "raise",
+  "note": "long-form wildcard",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://[0:0:0:0:0:0:0:0]:18566 or https://[0:0:0:0:0:0:0:0]:18566 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "p01-lan-public-admitted",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18567",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18567 https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 35448,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18567",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "p02-lan-public-not-admitted",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18568",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18568",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 78560,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18568",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "p03-lan-public-malformed",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18569",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18569",
+   "AUTOTESTER_PUBLIC_ORIGIN": "qa.example.com"
+  },
+  "pid": 63196,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='qa.example.com' is not an origin: use scheme://host[:port] with no path, such as https://qa.example.com (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18569",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "p04-loop-public-not-admitted",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18570",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 10376,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18570",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "p05-loop-no-public",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18571",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 4000,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18571",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "n01-not-hosted-wild",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18572",
+  "env": {},
+  "pid": 8876,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18572",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "n02-not-hosted-loop",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18573",
+  "env": {},
+  "pid": 9964,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18573",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ },
+ {
+  "id": "n03-hosted-auth-disabled",
+  "cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18574",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_AUTH_DISABLED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "at.example"
+  },
+  "pid": 42084,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_AUTH_DISABLED=1 is refused when AUTOTESTER_HOSTED=1 or the bind address is not loopback",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "127.0.0.1:18574",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ }
+]

@@ -1,0 +1,12 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\autoTesting\.worktrees\check-at888
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 4 items / 3 deselected / 1 selected
+
+tests\test_session_survives_failure_live.py .                            [100%]
+
+================= 1 passed, 3 deselected in 272.97s (0:04:32) =================
+EXIT 0

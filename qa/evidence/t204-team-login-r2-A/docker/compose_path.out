@@ -1,0 +1,10 @@
+autotester.__file__ D:\autoTesting\.worktrees\t204-team-login\src\autotester\__init__.py
+1 no vars (compose -> https://localhost), lists name domain  startup=STARTS                                                       browser https://qa.example.com: GET 200 POST 401
+2 no vars (compose -> https://localhost), lists name WRONG   startup=STARTS                                                       browser https://qa.example.com: GET 403 POST 403
+3 no vars, IP interim lists right, PUBLIC unset by op -> localhost startup=STARTS                                                       browser http://192.168.1.20:8000: GET 200 POST 401
+4 no vars, IP interim lists WRONG ip                         startup=STARTS                                                       browser http://192.168.1.20:8000: GET 403 POST 403
+5 DOMAIN only (-> https://qa.example.com), lists name domain startup=STARTS                                                       browser https://qa.example.com: GET 200 POST 401
+6 DOMAIN only, lists name WRONG domain                       startup=RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Ho browser https://qa.example.com: GET 403 POST 403
+7 DOMAIN only, only HOSTS set (no ORIGINS)                   startup=RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Ho browser https://qa.example.com: GET 200 POST 403
+8 DOMAIN only, ORIGINS only (host from origin)               startup=STARTS                                                       browser https://qa.example.com: GET 200 POST 401
+9 DOMAIN only, origin has explicit :443                      startup=RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Ho browser https://qa.example.com: GET 403 POST 403

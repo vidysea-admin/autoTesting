@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
+from autotester.schema.intake import SourceOrigin
 from autotester.schema.user_persona import PERSONA_ID_PATTERN, UXPolicy
 
 DEFAULT_VISION_PROVIDER = "gemini"
@@ -117,6 +119,18 @@ class Source(Artifact):
     notes: str | None = None
     recorded_on: str | None = Field(
         default=None, description="ISO date, e.g. the Excel 'Date' column"
+    )
+    uploaded_by: str | None = Field(
+        default=None,
+        description="TI11: the signed-in member's email, set by the server from the session -- "
+                    "never from a form field. None (rows older than the field) is owned by "
+                    "nobody and so matches only @all.",
+    )
+    uploaded_at: datetime | None = Field(default=None, description="TI11: server UTC time")
+    origin: SourceOrigin | None = Field(
+        default=None,
+        description="TI11: exactly one of an upload (file name), a zip member (archive name + "
+                    "member path) or a Drive file (id). Not part of the content-derived id.",
     )
 
     def model_post_init(self, _context: object) -> None:

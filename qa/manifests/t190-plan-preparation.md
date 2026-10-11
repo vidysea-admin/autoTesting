@@ -245,7 +245,7 @@ transport must count physical sends at installed SDK send/request boundaries,
 including failure→retry/fallback, not MockProvider logical invocation count.
 
 
-Status: proposal-awaiting-independent-plan-review
+Status: superseded-by t190-ux (merged; qa/manifests/t190-ux.md checked-PASS, qa/verdicts/t190-ux.md PASS)
 Bound root: D:/autoTesting. Prepared: 2026-10-05. Implementation cycle: not started.
 Owner: root maker may schedule this only after its current T-151 unit/lane is released.
 This QA artifact is preparation, not competing implementation, plan approval, task PASS,
