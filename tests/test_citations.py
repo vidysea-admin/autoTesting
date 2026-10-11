@@ -28,7 +28,6 @@ def _repo(root: Path, log: str, files: dict[str, str] | None = None,
     return root
 
 LOG = "## D-001 | 2026-09-01 | type: decision | status: ACTIVE\n**What:** x\n"
-
 def test_a_dangling_id_fires_naming_file_line_and_id(tmp_path: Path) -> None:
     _repo(tmp_path, LOG, {"qa/gates/g.md": "ok D-001\nauthorized by D-056 here\n"})
     found = check_decision_citations(tmp_path)
@@ -165,6 +164,7 @@ def _write_reviews(root: Path, rows: list[dict], suffix: str = "") -> None:
     (LOG, "x", None), (LOG.replace("x", "x  y"), "x\n y", None),
     (LOG, "X", "subject-mismatch"), (LOG, "x.", "subject-mismatch"),
     (LOG, "other", "subject-mismatch"),
+    (LOG + "## D-002 | y\n**What:** other\n", "other", "subject-mismatch"),
     (LOG.replace("**What:** x", "**Why:** x"), "x", "subject-unavailable"),
     (LOG + "**Why:** wrong", "wrong", "subject-mismatch"),
     (LOG + "**What:** x", "x", "subject-unavailable"),
