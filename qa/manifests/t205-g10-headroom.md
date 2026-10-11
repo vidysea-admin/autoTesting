@@ -3,7 +3,8 @@
 **Goal task:** T-205 (plan unit G1 `g10-0-headroom`: headroom and shared seams for Group 10)
 **Date:** 2026-10-11
 **Fix cycle:** 0
-**Dual check:** no (the diff moves the existing live-case approval check into the launcher and adds an AST test that nothing can skip it; no approval logic, secret handling, login, permission key, tenancy rule or production write is added or changed. `auth/policy.py` is a pure merge function with no catalogue entries)
+**Dual check:** required (set by the maker at dispatch, 2026-10-11: the diff moves the live-case approval gate, the AT-570 seam, out of `ui/routes_runs.py` into a new module, and a move can drop a gate as easily as a change can. The builder's view was "no": no approval logic, secret handling, login, permission key, tenancy rule or production write is added or changed, and `auth/policy.py` is a pure merge function with no catalogue entries)
+dual-trigger: security src/autotester/stages/run_launcher.py:179 (`require_live_case_approval` called from `prepare_run`; the gate itself is at `:134-151`)
 **Persona walk:** skip (no screen, route, template or command changes; the route table and `--help` listing are held byte-equal by golden snapshots)
 **Issues addressed:** none
 **Executor:** claude-sonnet-subagent
