@@ -365,6 +365,16 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-11 at758-759-host-allowlist close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. AT-758, AT-759, AT-760 and AT-761 are now `fixed` (merged 02c5f016). AT-920, AT-921 and AT-924 are test-environment rows, ledger-only and not candidates. All rows below are low as filed by both coordinators; none is browser-reachable today.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Refuse a websocket scope with a disallowed Host in `_OriginGuard` (`ui/helpers.py:274`), so a future websocket route cannot reopen AT-758. No websocket route exists today. | AT-919 |
+| priority: security | Match the raw Host against a strict pattern before `urlparse` and optionally refuse an absolute-form request target (`ui/helpers.py:233`); a tab or CR inside Host is currently stripped. Not browser-reachable. | AT-922 |
+| priority: security | Refuse duplicate Referer and Sec-Fetch-Site headers in `origin_refusal` (still last-wins; Host and Origin are fixed by AT-761). | AT-923 |
+
 ## Candidates (human picks) — 2026-10-11 T-154 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
 
 Never built until a human moves one out of this section with `approved: <date>`. Rows AT-909, AT-911, AT-914, AT-915 and AT-918 are ledger-only and are not candidates. T-154 stays pending (adapter allowlist, AT-917; no live adversarial pass has been made).
