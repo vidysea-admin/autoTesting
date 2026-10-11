@@ -102,3 +102,26 @@ The per-criterion lines use `C1`-`C4` for DC1-DC4 (the lint only recognises `C<n
 - The brief said `cli.py` could take 2 lines; at 299 after T-167 it can take 1. `docs/ARCHITECTURE.md` has no row for the new modules (prose changes need a DECISIONS entry; not done here).
 - The new modules (`schema/unified_report.py`, `stages/unified_report.py`, `stages/unified_report_render.py`, `ui/routes_unified_report.py`) are not named in the brief, the contract or `qa/gates/new-module-authorization.md`, and D-081 does not authorise them (checker ruling 1, cycle 0): they await the owner's confirmation before merge.
 - Not done: no browser/persona walk executed; no T-204 `require_permission("report.view")` (T-204 has not landed in this base); the AI-test section is deferred (D-059).
+
+## Merge reconcile 2026-10-11
+
+Not a fix cycle: `Fix cycle` stays 2 (cap used). No criterion failed and no feature code changed; this reconciles the dual-check-PASS head with master.
+
+Repair base: 4b93d952
+Master merged: a0adcb31 (merge commit 97465d5d)
+Code head for these pre-checks: 0988ef52 (merge 97465d5d, then one formatting commit; the manifest commit after it adds only this file)
+
+Conflict (one file): `tests/test_cli_advice_resolves.py`. Master (t178 merge) had `("ui/routes_learn.py", "expand")` and `EXPECTED_SITE_COUNT = 23`; this branch had `("stages/unified_report.py", "release")` and `EXPECTED_SITE_COUNT = 22`. Resolution: both entries kept in `EXPECTED_SITES`, `EXPECTED_SITE_COUNT = 24` (23 on master plus this branch's one site). The count is `len(advice())`, not the set size; the number was confirmed by running `test_no_advice_site_can_vanish_unnoticed` (33 passed in the file), not assumed. Additions only, the guard is not loosened. `docs/MAP.md` auto-merged and `autotester map` regenerated no change; `src/` auto-merged without conflict.
+
+Post-merge doctor finding (no conflict, a cap): master's `cli.py` is 300 lines and this branch's `release-report` registration line made the union 301 (`file-too-long`). Fixed with a formatting-only change in `src/autotester/cli.py`: `ledger_relitigation`'s three-line signature joined onto one 100-character line (no behaviour change; `cli.py` is now 299). `docs/SNAPSHOT.md` regenerated with `autotester snapshot` (doctor `stale-generated`).
+
+Pre-check: 0988ef52 uv run pytest -p no:xdist -o addopts= tests/test_unified_report.py tests/test_unified_report_secrets.py -> 19 passed
+Pre-check[C1]: 0988ef52 uv run pytest -p no:xdist -o addopts= tests/test_unified_report.py -k dc1 -> 1 passed
+Pre-check[C2]: 0988ef52 uv run pytest -p no:xdist -o addopts= tests/test_unified_report.py -k dc2 -> 1 passed
+Pre-check[C3]: 0988ef52 uv run pytest -p no:xdist -o addopts= tests/test_unified_report.py -k "one_invocation or regression_reads or no_baseline" -> 3 passed
+Pre-check[C4]: 0988ef52 uv run pytest -p no:xdist -o addopts= tests/test_unified_report.py tests/test_unified_report_secrets.py -k dc4 -> 8 passed
+Pre-check[lint]: 0988ef52 uv run ruff check src tests scripts -> All checks passed
+Pre-check[doctor]: 0988ef52 uv run autotester doctor -> doctor: clean
+Regression nodes on 0988ef52, in two processes: (1) tests/test_unified_report.py tests/test_unified_report_secrets.py tests/test_cli_release.py tests/test_ui_report.py tests/test_ui_report_no_runs.py tests/test_goal_contract_registration.py tests/test_release_gate.py tests/test_regression_trigger.py tests/test_run_trace.py tests/test_ui_video_route.py -> 81 passed; (2) tests/test_cli_advice_resolves.py tests/test_cli_surface.py tests/test_cli_harness_safety.py tests/test_ui_runs.py tests/test_ui_origin_guard.py tests/test_ui_learn.py tests/test_ai_report.py tests/test_crawl_report.py tests/test_ui_runs_serial_entry_order.py tests/test_ui_runs_serial_resilience.py tests/test_failure_bundle.py (the t178, at733 and t155 files that share cli, routes or report with this unit) -> 273 passed (test_cli_advice_resolves.py alone: 33 passed). No full suite.
+
+Status: ready-for-check
