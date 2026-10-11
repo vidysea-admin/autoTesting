@@ -1,0 +1,23 @@
+{
+ "name": "concurrent_skew",
+ "rounds": 200,
+ "procs": 6,
+ "threads_per_proc": 4,
+ "skew_frac": 0.5,
+ "keys": 1200,
+ "seconds": 122.8,
+ "deliver_once_calls": 28800,
+ "exceptions": [],
+ "n_exceptions": 0,
+ "keys_with_wrong_message_count": {},
+ "keys_without_exactly_one_record": [],
+ "record_files": 1200,
+ "tmp_leftovers": [],
+ "unparsable": [],
+ "final_status": {
+  "sent|": 826,
+  "failed|outcome unknown: the attempt s": 374
+ },
+ "total_messages": 1200,
+ "none_returns": 6066
+}
