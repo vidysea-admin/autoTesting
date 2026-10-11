@@ -206,6 +206,27 @@ def test_ti5_utf8_flag_with_an_invalid_utf8_name_is_a_failed_report_not_a_crash(
     assert _rows(store) == [] and not list((tmp_path / ".work" / "intake").glob("*/*"))
 
 
+@pytest.mark.parametrize("error", [ValueError("x"), RuntimeError("x"), OverflowError("x"),
+                                   UnicodeDecodeError("utf-8", b"\xff", 0, 1, "x")])
+def test_ti5_any_error_the_stdlib_raises_reading_one_member_fails_only_that_member(
+        tmp_path, monkeypatch, error):
+    store = make_store(tmp_path)
+    archive = build_zip(tmp_path / "in.zip", [("a.mp4", video("a")), ("b.mp4", video("b")),
+                                              ("c.mp4", video("c"))])
+    real = zipfile.ZipExtFile.read
+
+    def read(self, n=-1):
+        if self.name == "b.mp4":
+            raise error
+        return real(self, n)
+
+    monkeypatch.setattr(zipfile.ZipExtFile, "read", read)
+    report = _run(store, archive)
+    assert [m.member for m in _by_outcome(report, IntakeOutcome.FAILED)] == ["b.mp4"]
+    assert {s.label for s in _rows(store)} == {"a.mp4", "c.mp4"}
+    assert report.status is IntakeStatus.PARTIAL
+
+
 def test_ti5_no_mutation_of_a_healthy_zip_makes_expand_zip_raise(tmp_path):
     """Seeded fuzz of a mixed-method archive (40 mutants; each costs ~0.3 s of file I/O here)."""
     healthy = tmp_path / "healthy.zip"
