@@ -94,9 +94,10 @@ class BugSeed(BaseModel):
 
 
 class BugEvent(BaseModel):
-    """One fact appended to the log. `ref` is the idempotency token: a verdict ref (`run/case`), an
-    issue ref, or a caller-chosen request id. An event is identified by `(bug_key, ref)` alone, so
-    the same ref applied twice, even as a different kind, is counted once."""
+    """One fact. `ref` is the idempotency token: a verdict ref (`run/case`), an issue ref
+    or a caller-chosen request id. An event is identified by `(bug_key, ref, kind)`: the same fact
+    applied twice is counted once, and a different kind on the same ref is a different event, so no
+    event can shadow another and the result never depends on which arrived first."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -139,9 +140,10 @@ class BugEvent(BaseModel):
             raise ValueError("only an ASSIGN event carries an assignee")
         if self.kind is EventKind.PASS and not self.run_id:
             raise ValueError("a PASS event must name the run that closes toward `fixed` (TB4)")
-        derived = content_id("bev", {"bug_key": self.bug_key, "ref": self.ref})
+        derived = content_id(
+            "bev", {"bug_key": self.bug_key, "ref": self.ref, "kind": self.kind.value})
         if self.event_id and self.event_id != derived:
-            raise ValueError("event_id must be derived from (bug_key, ref)")
+            raise ValueError("event_id must be derived from (bug_key, ref, kind)")
         self.event_id = derived
         return self
 

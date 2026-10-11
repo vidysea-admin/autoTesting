@@ -192,16 +192,21 @@ def keeps(event: BugEvent) -> bool:
     return event.kind not in _UNJUDGED
 
 
+def order_key(event: BugEvent) -> tuple:
+    """Replay order: event time, a FAIL before any other kind at the same instant, then the id."""
+    return (event.at, event.kind is not K.FAIL, event.event_id)
+
+
 def trace(events: Iterable[BugEvent], *, close_passes: int = DEFAULT_CLOSE_PASSES,
           ) -> tuple[dict[str, TrackedBug], dict[str, Applied]]:
-    """Replay a set of events in time order (ties by `event_id`) and say what each one did.
+    """Replay a set of events in time order (ties: FAIL first, then id); say what each one did.
 
     The order is a function of the events alone, never of when or by whom they were written, so
     two writers racing, or an old verdict arriving late, converge on the same bugs (TB6)."""
     bugs: dict[str, TrackedBug] = {}
     seen: set[str] = set()
     applied: dict[str, Applied] = {}
-    for event in sorted(events, key=lambda e: (e.at, e.event_id)):
+    for event in sorted(events, key=order_key):
         result = judge(bugs.get(event.bug_key), event, close_passes=close_passes, seen=seen)
         applied[event.event_id] = result
         if result.effect is Effect.APPLIED and result.bug is not None:

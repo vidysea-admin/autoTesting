@@ -14,13 +14,36 @@ and late-arriving events give the same bugs. A file that fails to parse raises w
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 
 from autotester.schema.tracked_bug import DEFAULT_CLOSE_PASSES, BugEvent, TrackedBug
-from autotester.stages.bug_loop import Applied, Effect, Refusal, judge, keeps, storable, trace
+from autotester.stages.bug_loop import (
+    Applied,
+    Effect,
+    Refusal,
+    judge,
+    keeps,
+    order_key,
+    storable,
+    trace,
+)
 from autotester.store.filestore import read_json, write_json
 
 EVENTS_DIR = "bug_events"
+
+
+def _read(path: Path) -> BugEvent | None:
+    """`read_json`, retried briefly: on Windows a reader can hit a sharing violation while a racing
+    writer of the same event replaces the file. Anything else, and a persistent denial, raises."""
+    for attempt in range(20):
+        try:
+            return read_json(path, BugEvent)
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.01)
+    return None
 
 
 class BugStore:
@@ -35,8 +58,8 @@ class BugStore:
 
     def events(self) -> list[BugEvent]:
         """Every stored event, oldest first (event time, ties by id)."""
-        found = [read_json(p, BugEvent) for p in sorted(self.dir.glob("bev_*.json"))]
-        return sorted((e for e in found if e is not None), key=lambda e: (e.at, e.event_id))
+        found = [_read(p) for p in sorted(self.dir.glob("bev_*.json"))]
+        return sorted((e for e in found if e is not None), key=order_key)
 
     def bugs(self) -> dict[str, TrackedBug]:
         return trace(self.events(), close_passes=self.close_passes)[0]
@@ -56,20 +79,20 @@ class BugStore:
         there. After a crash, call again with the same list: written events are duplicates (TB6)."""
         known = {p.stem for p in self.dir.glob("bev_*.json")}
         fresh: set[str] = set()
-        refused: dict[str, Refusal] = {}
-        for event in events:
+        refused: dict[int, Refusal] = {}
+        for index, event in enumerate(events):
             why = storable(event)
             if why is not None:
-                refused[event.event_id] = why
+                refused[index] = why
             elif keeps(event) and event.event_id not in known | fresh:
                 self._write(event)
                 fresh.add(event.event_id)
         bugs, judged = trace(self.events(), close_passes=self.close_passes)
         out: list[Applied] = []
-        for e in events:
+        for index, e in enumerate(events):
             again = (e.event_id in known and e.event_id not in fresh) or any(
-                p.event_id == e.event_id for p in events[:len(out)])
-            out.append(self._report(e, again, refused, judged, bugs.get(e.bug_key)))
+                p.event_id == e.event_id and i not in refused for i, p in enumerate(events[:index]))
+            out.append(self._report(e, again, refused.get(index), judged, bugs.get(e.bug_key)))
         return out
 
     def _write(self, event: BugEvent) -> None:
@@ -82,10 +105,10 @@ class BugStore:
             if not target.exists():  # a racing writer of the same event won; anything else is real
                 raise
 
-    def _report(self, event: BugEvent, was_known: bool, refused: dict[str, Refusal],
+    def _report(self, event: BugEvent, was_known: bool, refusal: Refusal | None,
                 judged: dict[str, Applied], bug: TrackedBug | None) -> Applied:
-        if event.event_id in refused:
-            return Applied(Effect.REFUSED, refused[event.event_id], bug)
+        if refusal is not None:
+            return Applied(Effect.REFUSED, refusal, bug)
         if was_known:
             return Applied(Effect.DUPLICATE, None, bug)
         if not keeps(event):

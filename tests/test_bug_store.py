@@ -1,6 +1,6 @@
 """T-199a: the bug event store and the Issue adapter (TB1, TB5, TB6).
 
-Contract: qa/contracts/team-bug-loop.md. Racing writers are real threads and real processes; the
+Contract: qa/contracts/team-bug-loop.md. Racing writers live in test_bug_store_concurrency.py; the
 store is judged by its files and by the fold, never by what a writer thought it saw.
 """
 
@@ -8,8 +8,6 @@ from __future__ import annotations
 
 import itertools
 import re
-import threading
-from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -61,8 +59,6 @@ def test_tb6_applying_an_event_twice_changes_nothing_and_writes_nothing(tmp_path
     before = _snapshot(store)
     again = store.apply(fail)
     assert again.effect is Effect.DUPLICATE and _snapshot(store) == before
-    assert store.apply(event(K.PASS, 1, ref=fail.ref)).effect is Effect.DUPLICATE
-    assert _snapshot(store) == before
 
 
 def test_tb6_processing_a_whole_run_twice_gives_identical_stores(tmp_path: Path) -> None:
@@ -168,43 +164,6 @@ def test_close_passes_below_one_is_refused(tmp_path: Path) -> None:
     assert store.get(KEY).status is BugStatus.OPEN
 
 
-def _unique(worker: int, count: int) -> list[BugEvent]:
-    return [event(K.FAIL, 1000 * (worker + 1) + n) for n in range(count)]
-
-
-def test_concurrent_threads_lose_no_event_and_never_corrupt_a_file(tmp_path: Path) -> None:
-    errors: list[BaseException] = []
-
-    def work(worker: int) -> None:
-        try:
-            BugStore(tmp_path).apply_all([*_fails(5), *_unique(worker, 25)])
-        except BaseException as exc:
-            errors.append(exc)
-
-    threads = [threading.Thread(target=work, args=(i,)) for i in range(6)]
-    [t.start() for t in threads]
-    [t.join() for t in threads]
-    assert errors == []
-    store = BugStore(tmp_path)
-    assert len(store.events()) == 5 + 6 * 25 and store.bugs()[KEY].count == 5 + 6 * 25
-    assert fold(store.events())[KEY] == store.bugs()[KEY]
-
-
-def _process_worker(args: tuple[str, int]) -> int:
-    root, worker = args
-    BugStore(Path(root)).apply_all([*_fails(5), *_unique(worker, 40)])
-    return worker
-
-
-def test_concurrent_processes_lose_no_event_and_never_corrupt_a_file(tmp_path: Path) -> None:
-    with ProcessPoolExecutor(max_workers=6) as pool:
-        done = list(pool.map(_process_worker, [(str(tmp_path), i) for i in range(6)]))
-    assert sorted(done) == list(range(6))
-    store = BugStore(tmp_path)
-    assert len(store.events()) == 5 + 6 * 40            # every event survived, every file parses
-    assert store.bugs()[KEY].count == 5 + 6 * 40
-
-
 def test_the_fold_is_a_function_of_the_event_set_not_of_its_order() -> None:
     events = [event(K.FAIL, 1), event(K.PASS, 2), event(K.PASS, 3), event(K.FAIL, 4),
               event(K.PASS, 5), event(K.ASSIGN, 6, assignee="Priya")]
@@ -219,6 +178,55 @@ def test_trace_says_what_each_event_did_in_time_order() -> None:
     _, applied = trace([third, first, second])
     assert [applied[e.event_id].effect for e in (first, second, third)] == [Effect.APPLIED] * 3
     assert applied[third.event_id].bug.status is S.FIXED
+
+
+def test_the_same_ref_with_a_different_kind_is_a_different_event_in_either_order(
+        tmp_path: Path) -> None:
+    fail, passed = event(K.FAIL, 1), event(K.PASS, 2, ref=event(K.FAIL, 1).ref)
+    assert fail.event_id != passed.event_id
+    one, two = BugStore(tmp_path / "one"), BugStore(tmp_path / "two")
+    one.apply_all([fail, passed])
+    two.apply_all([passed, fail])
+    assert one.bugs() == two.bugs() and one.get(KEY).pass_streak == 1
+
+
+def test_a_stored_assign_cannot_shadow_the_real_fail_with_the_same_ref(tmp_path: Path) -> None:
+    store = BugStore(tmp_path)
+    store.apply(event(K.ASSIGN, 9, ref=event(K.FAIL, 1).ref, assignee="Priya"))
+    assert store.apply(event(K.FAIL, 1)).effect is Effect.APPLIED
+    assert store.get(KEY).count == 1
+
+
+def test_a_refused_and_an_accepted_event_with_one_id_are_reported_apart(tmp_path: Path) -> None:
+    store = BugStore(tmp_path)
+    bad, good = event(K.FAIL, 1, actor="user:umesh"), event(K.FAIL, 1)
+    first, second = store.apply_all([bad, good])
+    assert first.effect is Effect.REFUSED and second.effect is Effect.APPLIED
+
+
+def test_equal_timestamps_put_the_fail_before_the_pass(tmp_path: Path) -> None:
+    events = [event(K.PASS, 2, minutes=5), event(K.FAIL, 1, minutes=5)]
+    got = fold(events)[KEY]
+    assert (got.status, got.pass_streak) == (BugStatus.OPEN, 1)
+    store = BugStore(tmp_path)
+    store.apply_all(events)
+    assert store.bugs() == fold(events)
+
+
+def test_a_reader_retries_a_transient_sharing_violation(tmp_path: Path, monkeypatch) -> None:
+    import autotester.store.bug_store as module
+    store = BugStore(tmp_path)
+    store.apply(event(K.FAIL, 1))
+    real, calls = module.read_json, {"n": 0}
+
+    def flaky(path, model_cls):
+        calls["n"] += 1
+        if calls["n"] <= 3:
+            raise PermissionError(13, "sharing violation")
+        return real(path, model_cls)
+
+    monkeypatch.setattr(module, "read_json", flaky)
+    assert store.get(KEY).count == 1 and calls["n"] == 4
 
 
 def _issue(title: str = "Save button silent", at_s: float = 12.0, source: str = "src_1") -> Issue:

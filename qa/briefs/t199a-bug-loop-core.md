@@ -50,14 +50,15 @@ reserved actor `system:bug-loop`; a user actor on a status event is refused `act
 - G5 TB6 names a "processed-run marker"; event ids give the same result without the late-verdict loss (old probe P1). Marker held.
 - G6 `reopened` as `open` (f), `assign` in all states (j), a FAIL verdict with no cited failure maps to `inconclusive` (cannot name a criterion), "PASS cites evidence" read as every criterion met and no screenshot owed (the old branch's ruling).
 - G7 notes: the contract defines no note concept; none built.
-- G8 time order: events are replayed by `(at, event_id)`; equal times tie by id. A PASS older than the latest FAIL therefore cannot close the bug. `close_passes` is a store argument, not in the log (a changed N re-folds old history).
+- G8 time order: events are replayed by `(at, event_id)`; equal times put a FAIL first, then by id. A PASS older than the latest FAIL therefore cannot close the bug. `close_passes` is a store argument, not in the log (a changed N re-folds old history).
+- G10 a verdict re-judged with a new kind under the same ref is two events (both counted), not one: the id holds the kind so arrival order cannot pick a winner. Replay (D-072) must reuse the original kind.
 - G9 the actor is an unauthenticated string here; T-204's route must set it from the session, never from a request. An actor-refused event writes nothing.
 
 ## Design
 
 State is a fold of a set of events, never stored. Each event is one file `bug_events/<event_id>.json` in a directory the caller passes, written whole by `store/filestore.py::write_json`
 (the repo's atomic writer; no second lock helper, no `fcntl`, R65). A shared append log was built first and rejected: on Windows concurrent appends from two processes lose and tear lines
-(a reviewer's probe), and the repo has no cross-process lock. `event_id = content_id(bug_key, ref)`, so the same event is the same file. `trace` replays the set in `(at, event_id)` order, so
+(a reviewer's probe), and the repo has no cross-process lock. `event_id = content_id(bug_key, ref, kind)`, so the same fact is the same file and no event shadows another. `trace` replays the set in `(at, FAIL-first, event_id)` order, so
 state depends on the events alone, not on write order or arrival time (a late verdict lands where its time puts it). A file that does not parse raises with its path.
 
 ## Files

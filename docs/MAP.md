@@ -371,7 +371,7 @@
 | `BugStatus` (`schema/tracked_bug.py`) |  |
 | `EventKind` (`schema/tracked_bug.py`) | What happened, in the loop's vocabulary. The first seven are verdict-derived; `case_changed` |
 | `BugSeed` (`schema/tracked_bug.py`) | What a bug is made of when its first FAIL opens it. |
-| `BugEvent` (`schema/tracked_bug.py`) | One fact appended to the log. `ref` is the idempotency token: a verdict ref (`run/case`), an |
+| `BugEvent` (`schema/tracked_bug.py`) | One fact. `ref` is the idempotency token: a verdict ref (`run/case`), an issue ref |
 | `TrackedBug` (`schema/tracked_bug.py`) | One bug, as folded from its events. Never written to disk. |
 | `RegressionSection` (`schema/unified_report.py`) | RR3/RR6: the release's single issues log and its diff against the trusted baseline. |
 | `ApiFailure` (`schema/unified_report.py`) | One first-party response the product answered badly (NA1). `status` None = unreadable. |

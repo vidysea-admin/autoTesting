@@ -216,7 +216,7 @@ def test_an_event_already_seen_is_a_duplicate() -> None:
     dup = judge(None, again, close_passes=2, seen=frozenset({first.event_id}))
     assert dup.effect is Effect.DUPLICATE
     as_pass = event(K.PASS, 1, ref=first.ref)
-    assert as_pass.event_id == first.event_id
+    assert as_pass.event_id != first.event_id        # a different kind is a different event
 
 
 @pytest.mark.parametrize("bad", [
