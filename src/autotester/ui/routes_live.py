@@ -14,7 +14,6 @@ from fastapi.responses import HTMLResponse
 import autotester
 from autotester.auth.access import authorize
 from autotester.auth.context import current_principal
-from autotester.core.paths import repo_root
 from autotester.schema.auth import PermissionKey
 from autotester.ui import theme
 

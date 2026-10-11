@@ -20,19 +20,6 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
-ENV_AUTH_DIR = "AUTOTESTER_AUTH_DIR"
-
-
-def auth_db_path() -> Path:
-    """The team-login store (T-204): users, groups, sessions, project grants.
-
-    `<repo root>/.auth/auth.sqlite3` (gitignored, never committed), or the directory in
-    `AUTOTESTER_AUTH_DIR`. pathlib only, so the same code runs on Windows and Ubuntu."""
-    override = os.environ.get(ENV_AUTH_DIR)
-    base = Path(override).resolve() if override else repo_root() / ".auth"
-    return base / "auth.sqlite3"
-
-
 class ProjectPaths:
     """Resolved paths for one project. Construct with a slug, ask for what you need."""
 

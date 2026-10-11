@@ -229,11 +229,10 @@ def expand_cases(
         typer.secho(str(exc), fg=typer.colors.YELLOW)
         raise typer.Exit(1) from None
     except ProviderError as exc:
-        # AT-260: expand() builds every flow's cases in memory and only
-        # returns once ALL flows succeed, so a provider failure partway
-        # through discards whatever had already been generated -- by
-        # construction, not by an extra step here. Stated plainly rather
-        # than left to a raw traceback: nothing was persisted.
+        # AT-260: expand() builds every flow's cases in memory and only returns once ALL
+        # flows succeed, so a provider failure partway through discards whatever had been
+        # generated -- by construction, not by an extra step here. Stated plainly rather than
+        # left to a raw traceback: nothing was persisted.
         typer.secho(f"{project}: model call failed, no cases persisted — {exc}",
                     fg=typer.colors.RED)
         raise typer.Exit(1) from None

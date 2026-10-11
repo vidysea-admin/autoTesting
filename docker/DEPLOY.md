@@ -78,11 +78,23 @@ Copy existing `projects/<slug>/` and `profiles/<slug>/` folders from your dev ma
 
 ### 5. Create the first account BEFORE exposing the port
 
-Sign-in arrives with T-204. When it is in your release, set `AUTOTESTER_FIRST_ADMIN_EMAIL` and
-`AUTOTESTER_HOSTED=1` in `server.env`, start the stack bound to loopback (step 6, default), and
-create the administrator over an SSH tunnel (`ssh -L 8000:localhost:8000 <server>`, then open
-`http://localhost:8000`). Only then open it to the network. Until accounts exist in your
-release, keep the stack on loopback and use the SSH tunnel for everything.
+Sign-in is on by default (T-204). On a server set `AUTOTESTER_HOSTED=1` and
+`AUTOTESTER_FIRST_ADMIN_EMAIL=<your address>` in `server.env`. Only the signup with that exact
+address (case-insensitive) becomes the administrator, and only while no administrator exists;
+every other signup gets no access until an administrator ticks a group for it. With the address
+unset **nobody** is promoted and startup prints a warning: create the administrator from the
+host instead, with
+
+```bash
+docker compose -f docker/compose.prod.yml exec autotester uv run autotester auth bootstrap-admin --email <address> --password-stdin
+```
+
+(the password is read from standard input and never printed). Start the stack bound to loopback
+(step 6, default), sign up over an SSH tunnel (`ssh -L 8000:localhost:8000 <server>`, then open
+`http://localhost:8000`) and only then open it to the network. Accounts live in
+`<data>/.auth/auth.sqlite3` (backed up with the data folder, never in the image or in git).
+Sign-in attempts are rate limited: 5 failures per account or 20 per client address in 10 minutes
+answer 429 until the window passes.
 
 ### 6. Start
 

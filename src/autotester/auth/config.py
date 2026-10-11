@@ -40,10 +40,11 @@ def auth_disabled() -> bool:
     return not hosted() and bind_host() in _LOOPBACK
 
 
-def public_facing() -> bool:
-    """Hosted, or bound to something other than loopback: anyone who can reach the server
-    can sign up, so the first signup must not be handed admin (D-074 (d))."""
-    return hosted() or bind_host() not in _LOOPBACK
+def public_facing(secure_cookie: bool = False) -> bool:
+    """Hosted, bound to something other than loopback, or serving a Secure session cookie
+    (an HTTPS proxy in front): anyone who can reach the server can sign up, so the first
+    signup must not be handed admin (D-074 (d), AU7)."""
+    return hosted() or secure_cookie or bind_host() not in _LOOPBACK
 
 
 def first_admin_email() -> str:

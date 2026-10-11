@@ -122,7 +122,7 @@ class _AuthGate:
             await self.app(scope, receive, send)
             return
         request = Request(scope)
-        found = policy.match(scope["method"], scope["path"])
+        found = policy.route_for(scope["method"], scope["path"])
         template, rule, params = found if found else (None, None, {})
         who = _principal(request)  # no cookie -> None without opening the store
         token = CURRENT_PRINCIPAL.set(who or ANONYMOUS)

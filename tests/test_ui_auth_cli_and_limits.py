@@ -14,9 +14,9 @@ from auth_harness import ADMIN, PASSWORD, account, client, gate_on
 from typer.testing import CliRunner
 
 from autotester.auth import accounts, sessions
+from autotester.auth.db import auth_db_path
 from autotester.auth.ratelimit import LoginRateLimiter
 from autotester.cli import app as cli_app
-from autotester.core.paths import auth_db_path
 from autotester.ui.auth_middleware import MAX_NEXT_LENGTH, safe_next
 
 

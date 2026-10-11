@@ -91,7 +91,7 @@ _COMPILED = [(method, template, _compile(template), rule)
              for (method, template), rule in ROUTE_POLICY.items()]
 
 
-def match(method: str, path: str) -> tuple[str, RouteRule, dict[str, str]] | None:
+def route_for(method: str, path: str) -> tuple[str, RouteRule, dict[str, str]] | None:
     """(template, rule, path params) for a request, or None (default deny). HEAD is a
     GET; when several templates match, the one with the most literal text wins."""
     verb = "GET" if method == "HEAD" else method

@@ -31,8 +31,8 @@ def gate_on(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("AUTOTESTER_TEST_NO_AUTO_LOGIN", "1")
     for name in _CLEARED:
         monkeypatch.delenv(name, raising=False)
-    # The Host allow-list (wave/at758-759-security) refuses a Host outside it, and TestClient
-    # names its host `testserver`: list it, so these tests pass with AND without that branch.
+    # The Host allow-list (AT-758, `ui/helpers.py::_host_allowed`) refuses a Host outside it,
+    # and TestClient names its host `testserver`: list it.
     monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "testserver")
     login_limiter.reset()
     signup_limiter.reset()

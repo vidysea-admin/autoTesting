@@ -75,7 +75,7 @@ def auth_signup_submit(request: Request, email: str = Form(""),
         return HTMLResponse(auth_view.signup_page(_TOO_MANY_SIGNUPS), status_code=429)
     signup_limiter.record_failure(address, address)  # every attempt counts: each costs one hash
     try:
-        user = signup(email, password)
+        user = signup(email, password, cookie_secure(request.url.scheme))
     except (AccountError, WeakPassword) as exc:
         return HTMLResponse(auth_view.signup_page(str(exc)), status_code=400)
     audit.record_action(actor=user.email, target=user.email, action="signup")

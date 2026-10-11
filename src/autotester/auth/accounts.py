@@ -47,14 +47,14 @@ def _load(conn: sqlite3.Connection, user_id: int) -> User:
     return _user(conn, conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone())
 
 
-def _becomes_first_admin(conn: sqlite3.Connection, address: str) -> bool:
+def _becomes_first_admin(conn: sqlite3.Connection, address: str, secure_cookie: bool) -> bool:
     """AU7 / D-074 (d): with AUTOTESTER_FIRST_ADMIN_EMAIL set, only that address can become
     the first admin, while no admin exists. Unset: on a local loopback server the first
     account becomes admin; on a hosted / non-loopback server nobody does (the CLI
     `bootstrap-admin` creates the first admin)."""
     wanted = first_admin_email()
     if not wanted:
-        if public_facing():
+        if public_facing(secure_cookie):
             return False
         return conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
     admin = db.admin_group_id(conn)
@@ -63,14 +63,15 @@ def _becomes_first_admin(conn: sqlite3.Connection, address: str) -> bool:
     return address == wanted and not has_admin
 
 
-def signup(email: str, password: str) -> User:
-    """Create an account; it gets a group only when it is the first admin."""
+def signup(email: str, password: str, secure_cookie: bool = False) -> User:
+    """Create an account; it gets a group only when it is the first admin.
+    `secure_cookie`: the request's session cookie is Secure (AU7 counts that as hosted)."""
     address = normalize_email(email)
     password_hash = hash_password(password)
     with db.transaction() as conn:
         if conn.execute("SELECT 1 FROM users WHERE email = ?", (address,)).fetchone():
             raise AccountError("an account with this email already exists")
-        first = _becomes_first_admin(conn, address)
+        first = _becomes_first_admin(conn, address, secure_cookie)
         user_id = conn.execute(
             "INSERT INTO users (email, password_hash, created_at) VALUES (?, ?, ?)",
             (address, password_hash, db.now_iso()),

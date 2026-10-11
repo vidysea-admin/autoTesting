@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 from auth_harness import ADMIN, PASSWORD, account, gate_on, group_id, login, project, team, user_id
+from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
 from autotester.auth import accounts, groups, policy
@@ -17,6 +18,7 @@ from autotester.auth.access import set_owner, set_relation
 from autotester.auth.config import check_startup
 from autotester.cli import app as cli_app
 from autotester.schema.auth import ProjectRelation, all_permissions
+from autotester.ui.app import app
 
 JSON = {"accept": "application/json"}
 HTML = {"accept": "text/html"}
@@ -165,6 +167,23 @@ def test_d074_hosted_with_the_fixed_email_promotes_only_that_address(
     assert accounts.signup("boss@team.test", PASSWORD).groups == ["Admin/CEO"]
 
 
+def test_d074_a_secure_cookie_in_effect_counts_as_hosted_for_the_first_admin(
+        root: Path) -> None:
+    """AU7: a loopback bind behind an HTTPS proxy (HOSTED unset) is still public. The signup
+    route passes whether the session cookie is Secure; then nobody is auto-promoted."""
+    assert accounts.signup("early@team.test", PASSWORD, secure_cookie=True).groups == []
+    resp = TestClient(app, base_url="https://testserver", follow_redirects=False).post(
+        "/auth/signup", data={"email": "web@team.test", "password": PASSWORD})
+    assert resp.status_code == 303 and resp.headers["location"] == "/auth/waiting"
+
+
+def test_d074_the_fixed_email_is_compared_case_insensitively(
+        root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AUTOTESTER_HOSTED", "1")
+    monkeypatch.setenv("AUTOTESTER_FIRST_ADMIN_EMAIL", " Boss@Team.test ")
+    assert accounts.signup("  BOSS@team.TEST", PASSWORD).groups == ["Admin/CEO"]
+
+
 def test_d074_loopback_dev_keeps_first_account_admin(root: Path) -> None:
     assert accounts.signup("dev@team.test", PASSWORD).groups == ["Admin/CEO"]
 
@@ -245,7 +264,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "", "/cases/new", "/cases", "/edit", "/flowspec", "/requests", "/sources",
         "/product-map", "/flow-diagram", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
-        "/issues/{issue_id}/pin", "/env", "/access")},
+        "/issues/{issue_id}/pin", "/env", "/access", "/catalog")},
     **{("GET", _P + t): ("project", "report.view") for t in (
         "/runs/{run_id}", "/report", "/report.xlsx", "/report.html")},
     ("GET", _P + "/runs/{run_id}/videos/{video_path:path}"): ("project", "video.view"),
