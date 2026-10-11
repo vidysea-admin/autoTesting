@@ -13,7 +13,8 @@ dual-trigger: security src/autotester/stages/unified_report.py:265
 Round cap: SECURITY CLASS -- redaction of report output
 Fix cycle: 2
 Executor: claude-sonnet-subagent (maker build subagent)
-Status: ready-for-check
+Status: checked-PASS
+Merged: fbf82ff5 at 2425506a (2026-10-11)
 Persona walk: required (lead: project list -> project page -> "Damage-control report", 2 steps; negative path: a project with no runs shows an empty state, a low-coverage crawl is amber and never green). UI surface changed: a new route `GET /projects/{slug}/damage-report` and one button on the project page. Browser check: not run by the builder (offline, no browser); route and link are covered by TestClient in `tests/test_unified_report.py`.
 
 ## Criteria (verbatim from the contract)
@@ -124,4 +125,4 @@ Pre-check[lint]: 0988ef52 uv run ruff check src tests scripts -> All checks pass
 Pre-check[doctor]: 0988ef52 uv run autotester doctor -> doctor: clean
 Regression nodes on 0988ef52, in two processes: (1) tests/test_unified_report.py tests/test_unified_report_secrets.py tests/test_cli_release.py tests/test_ui_report.py tests/test_ui_report_no_runs.py tests/test_goal_contract_registration.py tests/test_release_gate.py tests/test_regression_trigger.py tests/test_run_trace.py tests/test_ui_video_route.py -> 81 passed; (2) tests/test_cli_advice_resolves.py tests/test_cli_surface.py tests/test_cli_harness_safety.py tests/test_ui_runs.py tests/test_ui_origin_guard.py tests/test_ui_learn.py tests/test_ai_report.py tests/test_crawl_report.py tests/test_ui_runs_serial_entry_order.py tests/test_ui_runs_serial_resilience.py tests/test_failure_bundle.py (the t178, at733 and t155 files that share cli, routes or report with this unit) -> 273 passed (test_cli_advice_resolves.py alone: 33 passed). No full suite.
 
-Status: ready-for-check
+Status: checked-PASS
