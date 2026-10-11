@@ -147,13 +147,15 @@ def test_two_stores_in_two_directories_do_not_see_each_other(tmp_path: Path) -> 
     assert BugStore(tmp_path / "b").bugs() == {}
 
 
-def test_a_corrupt_event_file_is_loud_not_silent(tmp_path: Path) -> None:
+def test_a_corrupt_event_file_is_reported_by_name_not_silent_and_not_fatal(
+        tmp_path: Path) -> None:
+    """T-199b P4 changed this from "raises": the valid events are kept and the file is named."""
     store = BugStore(tmp_path)
     store.apply(event(K.FAIL, 1))
     (store.dir / "bev_torn.json").write_text('{"schema_version": 1, "event_id": "bev_',
                                              encoding="utf-8")
-    with pytest.raises(ValueError, match=r"bev_torn\.json"):
-        store.bugs()
+    assert store.get(KEY).count == 1
+    assert [b.name for b in store.snapshot().bad] == ["bev_torn.json"]
 
 
 def test_close_passes_below_one_is_refused(tmp_path: Path) -> None:
