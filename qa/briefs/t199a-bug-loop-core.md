@@ -59,7 +59,7 @@ writer's event is applied in file order, or skipped as a duplicate (`event_id = 
 
 ## Files
 
-- New `src/autotester/schema/tracked_bug.py` (<= 170): `BugStatus`, `EventKind`, `BugSeed`, `BugEvent`, `TrackedBug`, `case_bug_key`, `SYSTEM_ACTOR`. C1: `extra="forbid"`.
+- New `src/autotester/schema/tracked_bug.py` (<= 175): `BugStatus`, `EventKind`, `BugSeed`, `BugEvent`, `TrackedBug`, `case_bug_key`, `SYSTEM_ACTOR`. C1: `extra="forbid"`.
 - New `src/autotester/stages/bug_loop.py` (<= 250): the table, `judge`, `fold`, `kind_of_verdict`. Pure, no I/O.
 - New `src/autotester/store/bug_store.py` (<= 120): `BugStore(root, close_passes)`: `apply`, `apply_all`, `bugs`, `get`, `history`.
 - Edit `src/autotester/stages/issues.py` (242 lines, +<= 58): `issue_to_bug_event`, the only key derivation from an `Issue`.
