@@ -125,9 +125,11 @@ class DeliveryLog:
         return self._load(re.compile(re.escape(key) + r"\.\d+\.json"))
 
     def records_for_run(self, run_id: str) -> list[DeliveryRecord]:
-        """Every attempt for one run, oldest first: what the run page shows (TT9)."""
+        """Every attempt for one run, in file-name order (channel, then user, then attempt):
+        what the run page shows (TT9)."""
         return self._load(re.compile(
-            rf"(?:{_CHANNELS})__{re.escape(_encode_part(run_id))}__{_PART}\.\d+\.json"))
+            "(?:" + _CHANNELS + ")__" + re.escape(_encode_part(run_id)) + "__" + _PART
+            + r"\.\d+\.json"))
 
     def latest(self, key: str) -> DeliveryRecord | None:
         records = self.records_for_key(key)
