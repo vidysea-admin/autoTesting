@@ -1,0 +1,166 @@
+##### src_autotester_cli.py (clean 3-way merge of base db77d7bf / unit 94c569c0 / master 29d02c4b  vs  head 868e3682)
+--- src_autotester_cli.py.auto	2026-10-11 12:24:21.267663900 +0530
++++ src_autotester_cli.py.head	2026-10-11 12:24:20.625496300 +0530
+@@ -214,9 +214,6 @@
+     if spec is None:
+         typer.secho(f"no flowspec for '{project}' yet — ingest a recording first", fg="red")
+         raise typer.Exit(1)
+-<<<<<<< C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/src_autotester_cli.py.ours
+-    model = cli_orchestrate.usable_provider(provider)   # LL11: refuses before any model call
+-=======
+     try:
+         rows = expand_stage.stage_and_review(store_, spec, approve, prune, by)
+         if proposals or approve or prune:
+@@ -227,12 +224,7 @@
+     except (ValueError, review_stage.FlowSpecNotReviewed) as exc:
+         typer.secho(f"{exc}; review with `autotester expand {project} --proposals`", fg="yellow")
+         raise typer.Exit(1) from None
+-    model = providers.get(provider)
+-    if not model.available():
+-        typer.secho(f"provider '{provider}' has no credentials — run `autotester providers`",
+-                    fg="red")
+-        raise typer.Exit(1)
+->>>>>>> C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/src_autotester_cli.py.theirs
++    model = cli_orchestrate.usable_provider(provider)   # LL11: refuses before any model call
+     try:
+         cases = expand_stage.expand(spec, model, store=store_)
+     except (ValueError, review_stage.FlowSpecNotReviewed, ProviderError) as exc:
+##### src_autotester_ui_routes_learn.py (clean 3-way merge of base db77d7bf / unit 94c569c0 / master 29d02c4b  vs  head 868e3682)
+--- src_autotester_ui_routes_learn.py.auto	2026-10-11 12:24:31.408320700 +0530
++++ src_autotester_ui_routes_learn.py.head	2026-10-11 12:24:30.870142500 +0530
+@@ -235,15 +235,6 @@
+             _link(f"/projects/{slug}/flowspec", "Review it"))
+ 
+     try:
+-<<<<<<< C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/src_autotester_ui_routes_learn.py.ours
+-        why = why_unavailable(provider := for_role(project, "agent"))  # LL2: the one factory
+-    except ProviderError as exc:
+-        why = str(exc)
+-    if why:
+-        return _refusal(slug, "No model provider configured",
+-                        f"Generating cases needs a model. {why}, so nothing was generated.",
+-                        _link(f"/projects/{slug}/env", "Add a credential"))
+-=======
+         store.stage_case_proposals(propose_cases(spec))
+         store.preflight_case_proposals(spec)
+     except ValueError as exc:
+@@ -251,14 +242,14 @@
+             slug, "Case proposals need human review", str(exc),
+             f"<p>Review/prune with <code>autotester expand {escape(slug)} --proposals</code>; "
+             "use --approve or --prune with a proposal ID and --by your name.</p>")
+-    provider = LangChainFallbackProvider()
+-    if not provider.available():
+-        return _refusal(
+-            slug, "No model provider configured",
+-            "Generating cases needs a model. No provider on this machine has "
+-            "credentials, so nothing was generated.",
+-            _link(f"/projects/{slug}/env", "Add a credential"))
+->>>>>>> C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/src_autotester_ui_routes_learn.py.theirs
++    try:
++        why = why_unavailable(provider := for_role(project, "agent"))  # LL2: the one factory
++    except ProviderError as exc:
++        why = str(exc)
++    if why:
++        return _refusal(slug, "No model provider configured",
++                        f"Generating cases needs a model. {why}, so nothing was generated.",
++                        _link(f"/projects/{slug}/env", "Add a credential"))
+ 
+     # AT-264: a model failure after the gates is a themed page, never a raw 500
+     try:
+##### tests_test_cli_advice_resolves.py (clean 3-way merge of base db77d7bf / unit 94c569c0 / master 29d02c4b  vs  head 868e3682)
+--- tests_test_cli_advice_resolves.py.auto	2026-10-11 12:24:52.202145400 +0530
++++ tests_test_cli_advice_resolves.py.head	2026-10-11 12:24:51.236207200 +0530
+@@ -157,12 +157,8 @@
+ 
+ 
+ EXPECTED_SITES = {
+-<<<<<<< C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/tests_test_cli_advice_resolves.py.ours
+-    ("cli_orchestrate.py", "providers"),   # T-202: expand's refusal moved here from cli.py
+-=======
+     ("cli.py", "expand"),
+-    ("cli.py", "providers"),
+->>>>>>> C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/tests_test_cli_advice_resolves.py.theirs
++    ("cli_orchestrate.py", "providers"),   # T-202: expand's refusal moved here from cli.py
+     ("cli_orchestrate.py", "ingest register"),
+     ("cli_issues.py", "ingest analyze"),
+     ("cli_issues.py", "ingest list"),
+##### tests_test_ui_runs.py (clean 3-way merge of base db77d7bf / unit 94c569c0 / master 29d02c4b  vs  head 868e3682)
+--- tests_test_ui_runs.py.auto	2026-10-11 12:25:06.610821600 +0530
++++ tests_test_ui_runs.py.head	2026-10-11 12:25:06.178267200 +0530
+@@ -171,8 +171,8 @@
+         return SimpleNamespace(n=1, bound_by="config")
+ 
+     monkeypatch.setattr("autotester.ui.routes_runs._execute_with_trace", execute)
+-    monkeypatch.setattr("autotester.ui.routes_runs.LangChainFallbackProvider",
+-                        lambda: SimpleNamespace(available=lambda: True))
++    monkeypatch.setattr("autotester.ui.routes_runs.for_role",
++                        lambda project, role: SimpleNamespace(available=lambda: True))
+     response = client.post(f"/projects/demo/run?priority={priority}", follow_redirects=False)
+     wanted = [c.id for c in rows if c.flow_id in expected]
+     assert response.status_code == 303 and seen == wanted
+##### tests_test_ui_runs_serial_resilience.py (clean 3-way merge of base db77d7bf / unit 94c569c0 / master 29d02c4b  vs  head 868e3682)
+--- tests_test_ui_runs_serial_resilience.py.auto	2026-10-11 12:25:10.102256000 +0530
++++ tests_test_ui_runs_serial_resilience.py.head	2026-10-11 12:25:09.631808400 +0530
+@@ -69,8 +69,7 @@
+         def available(self) -> bool:
+             return True
+ 
+-    monkeypatch.setattr(
+-        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
++    monkeypatch.setattr(routes_runs_module, "for_role", lambda p, r: _AvailableProvider())
+     return routes_runs_module
+ 
+ 
+##### tests_test_ui_learn.py (clean 3-way merge of base db77d7bf / unit 94c569c0 / master 29d02c4b  vs  head 868e3682)
+--- tests_test_ui_learn.py.auto	2026-10-11 12:25:02.291915800 +0530
++++ tests_test_ui_learn.py.head	2026-10-11 12:25:01.310222400 +0530
+@@ -18,9 +18,7 @@
+ 
+ import pytest
+ from fastapi.testclient import TestClient
+-from litellm_fake import install
+ 
+-from autotester.providers.litellm_provider import LiteLLMProvider
+ from autotester.providers.mock import MockProvider
+ from autotester.schema.case import ExpandedSteps
+ from autotester.schema.enums import Action, ReviewStatus
+@@ -243,28 +241,6 @@
+     assert store.list_cases() == [], "a partial failure must not leave partial cases"
+ 
+ 
+-def test_generate_failure_page_does_not_carry_a_vendor_echoed_key(
+-    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch
+-) -> None:
+-    """AT-790 (LL8). The route prints the ProviderError on its refusal page, so a
+-    vendor error that echoes a vendor-native key must not get that far."""
+-    canary = "AIza-ROUTE-CANARY-555"
+-    store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+-    install(monkeypatch, [RuntimeError(f"403 at https://vendor.test/x?key={canary}")] * 60)
+-    monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
+-    monkeypatch.setenv("GEMINI_API_KEY", canary)
+-    provider = LiteLLMProvider(model="gemini/gemini-2.5-pro")
+-    import autotester.ui.routes_learn as routes_learn_module
+-
+-    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
+-
+-    response = client.post("/projects/demo/cases/generate", follow_redirects=False)
+-
+-    assert response.status_code == 400 and "could not complete" in response.text
+-    assert canary not in response.text
+-    assert store.list_cases() == []
+-
+-
+ def test_generate_on_an_unapproved_flowspec_is_refused_as_a_page_not_raw_json(
+     client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch
+ ) -> None:
+@@ -314,8 +290,8 @@
+     client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch,
+ ) -> None:
+     store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+-    monkeypatch.setattr("autotester.ui.routes_learn.LangChainFallbackProvider",
+-                        lambda: pytest.fail("pending proposals reached provider"))
++    monkeypatch.setattr("autotester.ui.routes_learn.for_role",
++                        lambda project, role: pytest.fail("pending proposals reached provider"))
+     response = client.post("/projects/demo/cases/generate", follow_redirects=False)
+     assert response.status_code == 400 and "human review" in response.text
+     assert store.list_cases() == []
