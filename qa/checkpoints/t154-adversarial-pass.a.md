@@ -16,5 +16,7 @@ Code hashes (blobs per manifest, matched on disk): tests/test_adversarial.py 204
 | Falsification AD1..AD7 | own throwaway copies under scratchpad/check-t154-a/AD*, PYTHONPATH on the copy, anchor asserted unique, bytes asserted changed, green before, red after | AD1 7p->7f; AD2 6p->2f; AD3 2p->1f; AD4 2p->1f; AD5 1p->1f; AD6 1p->1f; AD7 1p->1f (see verdict) |
 | Live-path grep | no endpoint URL, HTTP client, socket, subprocess, CLI, pathlynks/vidysea string in adversarial.py, ai_probe.py, probe files, proof script | none |
 
+| Full suite | `shard_suite.py --repo D:/autoTesting --ref 575a7c3f --shards 4 -- -o addopts=`, 2996 collected = union, summary at scratchpad/check-t154-a/suite2/summary.json | 2975 passed, 19 skipped, 2 failed (AT-792 red alone; AT-858 passed alone); both ledgered, no new red |
+
 ## Remaining
-- ONE checker full suite (L via the security trigger). Started `shard_suite.py --repo ... --ref 575a7c3f --shards 1 -- -o addopts=` at 2026-10-11T01:44:39; the machine-wide suite lock was held by other checkers (t167, then land-integrate-combined). Result recorded in the verdict; if it says CONTINUE-NEEDED, this is the only item left and everything above is reusable by evidence identity.
+none. Verdict PASS (resume 1 of 2), archived CONTINUE-NEEDED verdict at qa/verdicts/t154-adversarial-pass.a.r0-1.md.
