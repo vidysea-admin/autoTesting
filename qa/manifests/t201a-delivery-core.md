@@ -12,7 +12,8 @@ Fix cycle: 2
 Repair base: 7dd225d4
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): 76ba7da5 (fix cycle 2, the last; the manifest commit after it adds only this file; cycle 1 code was 477f4089, cycle 0 code 66ba7be4)
-Status: ready-for-check
+Status: checked-PASS
+Merged: 6a2e8a63
 Persona walk: not applicable to this slice (no route or page is built; the persona walk belongs to phase A1/B).
 
 ## Criteria served (quoted from the contract; the pure half only)
