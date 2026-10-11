@@ -8,10 +8,10 @@ Tier: L (outward-facing email; the module holds the SMTP password)
 Dual check: required
 dual-trigger: security src/autotester/delivery/email.py:149 (`client.login(cfg.user, password)`, the only place the SMTP password is used; the `smtplib` import is line 18, `SmtpAdapter.send` line 138, the password is read from the environment mapping at send time at line 195)
 Contract: C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 C11 C12 (ids below are this manifest's, mapped to contract clauses; the contract has no C-numbers for TT/HO rows)
-Fix cycle: 1
-Repair base: 9b6d44c1
+Fix cycle: 2
+Repair base: 7dd225d4
 Executor: claude-sonnet-subagent (maker build subagent)
-Code commit (pre-check sha): 477f4089 (fix cycle 1; the manifest commit after it adds only this file; cycle 0 code was 66ba7be4)
+Code commit (pre-check sha): 76ba7da5 (fix cycle 2, the last; the manifest commit after it adds only this file; cycle 1 code was 477f4089, cycle 0 code 66ba7be4)
 Status: ready-for-check
 Persona walk: not applicable to this slice (no route or page is built; the persona walk belongs to phase A1/B).
 
@@ -73,25 +73,27 @@ No forbidden file was touched (`store/team_store.py`, `schema/team_enums.py`, `s
 | `delivery/templates/report_email.txt` | Message wording as a file (prompts are files, not inline strings). | CLAUDE.md design rule; not a module |
 | `tests/delivery_fakes.py` | Fakes for the delivery tests. | brief section 5 last row |
 
-## Pre-check (final product commit 477f4089, worktree clean; no full suite; fix cycle 1)
+## Pre-check (final product commit 76ba7da5, worktree clean; no full suite; fix cycle 2)
 
-Pre-check[C1]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "defaults_off or ticked" -> 2 passed t=25s
-Pre-check[C2]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "carries_exactly or planted_secret or template_is_a_file or no_slot or naive or label_is_a_closed or site_relative" -> 7 passed t=25s
-Pre-check[C3]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "outbox or default_selection or default_factory_never or select_transport or config_from_env" -> 14 passed t=27s
-Pre-check[C4]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "starttls_then_login or implicit_ssl or every_connection or password_is_read or authentication_failure or connect_failures or recipient_refusal or nothing_is_logged or plain_text_login or loopback_server or silent_server" -> 15 passed t=32s
-Pre-check[C5]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "only_the_email_adapter" -> 1 passed t=24s
-Pre-check[C6]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "attempt_limit or redacted_in_the_record or append_only or create_once" -> 4 passed t=27s
-Pre-check[C7]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "backoff or attempt_limit or not_attempted_before_it_is_due" -> 3 passed t=37s
-Pre-check[C8]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "unexpected_exception or attempt_limit or clock_skewed" -> 3 passed t=34s
-Pre-check[C9]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "redacted_in_the_record or planted_secret or authentication_failure or nothing_is_logged" -> 4 passed t=31s
-Pre-check[C10]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "refuse_injection_paths_tokens or site_relative or plain_forms" -> 23 passed t=31s
-Pre-check[C11]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "successful_send_is_recorded_once or crash_between or two_workers or key_cannot_escape or outbox_is_idempotent or outbox_refuses or injective or dotted_prefix or spell_the_separator or whole_file_names or clock_skewed or create_once" -> 18 passed t=21s
-Pre-check[C12]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "address_validation or headers_have_exactly or line_break or sender_name" -> 19 passed t=18s
-Pre-check: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -> 97 passed in 5s (cycle 0 had 74) t=27s
-Pre-check[lint]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run ruff check src tests scripts -> All checks passed
-Pre-check[doctor]: 477f4089 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run autotester doctor -> doctor: clean
+Pre-check[C1]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "defaults_off or ticked" -> 2 passed t=25s
+Pre-check[C2]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "carries_exactly or planted_secret or template_is_a_file or no_slot or naive or label_is_a_closed or site_relative" -> 7 passed t=25s
+Pre-check[C3]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "outbox or default_selection or default_factory_never or select_transport or config_from_env" -> 14 passed t=27s
+Pre-check[C4]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "starttls_then_login or implicit_ssl or every_connection or password_is_read or authentication_failure or connect_failures or recipient_refusal or nothing_is_logged or plain_text_login or loopback_server or silent_server" -> 15 passed t=32s
+Pre-check[C5]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "only_the_email_adapter" -> 1 passed t=24s
+Pre-check[C6]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "attempt_limit or redacted_in_the_record or append_only or create_once" -> 4 passed t=27s
+Pre-check[C7]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "backoff or attempt_limit or not_attempted_before_it_is_due" -> 3 passed t=37s
+Pre-check[C8]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "unexpected_exception or attempt_limit or clock_skewed" -> 3 passed t=34s
+Pre-check[C9]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "redacted_in_the_record or planted_secret or authentication_failure or nothing_is_logged" -> 4 passed t=31s
+Pre-check[C10]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "refuse_injection_paths_tokens or site_relative or plain_forms" -> 23 passed t=31s
+Pre-check[C11]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "successful_send_is_recorded_once or crash_between or two_workers or key_cannot_escape or outbox_is_idempotent or outbox_refuses or injective or dotted_prefix or spell_the_separator or whole_file_names or clock_skewed or create_once" -> 18 passed t=21s
+Pre-check[C12]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -k "address_validation or headers_have_exactly or line_break or sender_name" -> 19 passed t=18s
+Pre-check: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_delivery_smtp.py tests/test_report_email.py tests/test_delivery_failure.py -p no:xdist -o addopts= -> 97 passed in 6s (cycle 0 had 74) t=27s
+Pre-check[lint]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run ruff check src tests scripts -> All checks passed
+Pre-check[doctor]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run autotester doctor -> doctor: clean
 
-Affected existing test `tests/test_hosting_deploy.py` (the `.env.example` drift test) was not re-run: no `.env.example` and no env read changed in cycle 1; the cycle 0 note stands.
+Pre-check[advice-scan]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_cli_advice_resolves.py -p no:xdist -o addopts= -> 33 passed (the cycle 1 red `test_the_collector_reports_what_it_could_not_resolve` is green) t=24s
+Pre-check[affected-src-scanners]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest <each file separately> -p no:xdist -o addopts= -> test_actuator_chokepoint 2, test_adversarial 25, test_ai_catalog 28, test_approval_signing 18, test_browser 15, test_catalog 23, test_catalog_packs 13, test_cli_advice_resolves 33, test_cli_harness_safety 4, test_doctor 40, test_hosting_config 8, test_knowledge_graph 12, test_prompt_skills 16, test_regression_trigger 18, test_run_trace 10, test_schedule_marker 6, test_video_evidence 2: all passed
+Pre-check[hosting-deploy]: 76ba7da5 uv --directory D:/autoTesting/.worktrees/t201a-delivery-core run pytest tests/test_hosting_deploy.py -p no:xdist -o addopts= -> 9 passed, 1 failed (`test_env_example_documents_every_key_the_code_reads`: AUTOTESTER_SCHEDULE_GRACE_MINUTES and AUTOTESTER_TICK_INTERVAL_S, read by `stages/scheduler.py`). NOT caused by this unit: identical with the cycle 2 edit stashed (7dd225d4); the keys are read by `stages/scheduler.py`, which this unit does not touch, and this branch is based on an older master than the one that documents them in `.env.example`. Expected to clear when the branch is integrated; the checker should rule.
 
 ## Falsifications, cycle 0 (code 66ba7be4; one per criterion; green before, red after; each in a throwaway copy of `git archive HEAD src tests scripts pyproject.toml` under the C: session scratchpad, run with PYTHONPATH on the copy, deleted afterwards; the worktree was never perturbed; times are the real pytest wall times of the run)
 
@@ -156,6 +158,31 @@ Files changed in cycle 1 (line counts after): `src/autotester/delivery/inbox.py`
 ### Not repaired (checker B items P4..P12 other than those named, plus one of mine)
 
 P4 smtplib-import guard regex misses `import os, smtplib` and `__import__('smtplib')`; P5 U+2028/U+0085 and `.a@`/`a..b@` pass the schema and fail the MIME build (retried 4 times); P6 no total deadline against a dribbling server; P7 a drop after full DATA can deliver up to 4 copies (needs a sentence in the contract); P8 an RFC 2047 encoded word shows as a multi-line Subject; P9 `may_email` takes no recipient, lax bool coercion; P10 a bad optional key silently selects the outbox; P11 the `inbox.py` naming (A's naming flag). P12 is repaired by the create-once test. New, mine: an id of 64 characters made mostly of capitals or underscores encodes to more than 100 characters, and two such ids can exceed `SAFE_KEY` (200); `delivery_key` then raises `ValueError`, as it already did for over-long keys. Ids that long are not expected; not changed.
+
+## Fix cycle 2 (repair base 7dd225d4; the last allowed cycle; one failed point)
+
+**Failed point:** `tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve` was red at 7dd225d4 (green at 9b6d44c1). Cause, reproduced first (`unresolved_in_source(SRC)` returned `(delivery/inbox.py, 130)`): cycle 1's `DeliveryLog.records_for_run` (`src/autotester/delivery/inbox.py`) interpolated `_CHANNELS`, which is bound at module level to a `"|".join(...)` call, into an f-string. `tests/advice_scan.py` flags any f-string that interpolates an upper-case name it cannot resolve to a literal. The cycle 1 affected set missed this test because it does not import `autotester.delivery`; it walks all of `src/`.
+
+**Change (one file, `src/autotester/delivery/inbox.py`, `records_for_run`):** the same regex built by concatenation, `"(?:" + _CHANNELS + ")__" + re.escape(_encode_part(run_id)) + "__" + _PART + r"\.\d+\.json"`; no f-string over an upper-case name. The docstring said "oldest first" but the sort is by file name (`sorted(self.records_dir.iterdir())`); it now says "in file-name order (channel, then user, then attempt)". The sort is not changed. The pattern string is character-for-character the same as before. Every other f-string in `src/autotester/delivery/` was checked (email.py lines 90, 106, 109, 136; inbox.py lines 61, 71, 84, 102, 107, 111): none interpolates an upper-case name. `tests/advice_scan.py`, `tests/test_cli_advice_resolves.py`, `EXPECTED_SITE_COUNT` and every guard are untouched.
+
+**Behaviour unchanged:** `tests/test_delivery_failure.py` (17, holding every exact-match `records_for_run` / `records_for_key` assertion: `records_for_run('x')` vs `'x__email__y'`, `records_for_key(key[:-1]) == []`, `records_for_run('run') == []`, attempt-limit counts) is green, 17 passed, before and after.
+
+**Widened affected-test list for future cycles (every file that walks `src/` with `rglob`/`ast`, plus the delivery files):** `tests/test_cli_advice_resolves.py` (and its helper `tests/advice_scan.py`), `tests/test_actuator_chokepoint.py`, `tests/test_adversarial.py`, `tests/test_ai_catalog.py`, `tests/test_approval_signing.py`, `tests/test_browser.py`, `tests/test_catalog.py`, `tests/test_catalog_packs.py`, `tests/test_cli_harness_safety.py`, `tests/test_doctor.py`, `tests/test_hosting_config.py`, `tests/test_hosting_deploy.py`, `tests/test_knowledge_graph.py`, `tests/test_prompt_skills.py`, `tests/test_regression_trigger.py`, `tests/test_run_trace.py`, `tests/test_schedule_marker.py`, `tests/test_video_evidence.py`, plus `tests/test_delivery_smtp.py`, `tests/test_report_email.py`, `tests/test_delivery_failure.py`. Run each with `-o addopts=`.
+
+### Falsification, cycle 2 (copy of `git archive HEAD` of 76ba7da5 under the C: session scratchpad, random-suffix folder; PYTHONPATH on the copy; `autotester.__file__` printed and confirmed inside the copy; the worktree never perturbed)
+
+| Item | Edit in the copy | Before | After |
+|---|---|---|---|
+| advice scanner sees an upper-case f-string interpolation | `records_for_run` pattern first part back to `f"(?:{_CHANNELS})__"` | `tests/test_cli_advice_resolves.py` 33 passed | 1 failed: `test_the_collector_reports_what_it_could_not_resolve` (32 passed) |
+| restore | the worktree's `inbox.py` copied back | | 33 passed |
+
+### Open items (recorded, deliberately not changed in cycle 2)
+
+- An over-long run id plus user id makes `delivery_key` raise `ValueError("delivery key too long")` out of `deliver_once`.
+- A worker that loses the close race records "outcome unknown" with no retry.
+- The retry numbers (gap 1 below).
+- `tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads` fails on this branch for two `stages/scheduler.py` keys (see Pre-check[hosting-deploy]); not from this unit.
+- Items P4..P11 under "Not repaired" in fix cycle 1 stand.
 
 ## Contract gaps and decisions I made (feedback for `qa/feedback-inbox.md`; the checker rules)
 
