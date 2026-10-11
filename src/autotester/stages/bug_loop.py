@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 
 from autotester.schema.enums import Result
@@ -53,6 +54,7 @@ class Refusal(StrEnum):
     ACTOR_NOT_ALLOWED = "actor_not_allowed"
     SEED_MISSING = "seed_missing"
     KEY_MISMATCH = "key_mismatch"
+    IMPLAUSIBLE_TIME = "implausible_time"
 
 
 class Effect(StrEnum):
@@ -61,6 +63,12 @@ class Effect(StrEnum):
     DUPLICATE = "duplicate"
     REFUSED = "refused"
 
+
+MAX_FUTURE_SKEW = timedelta(minutes=5)
+"""How far ahead of the writer's clock an event time may be (P8). Beyond it the event is refused,
+never clamped: a clamped time would write a fact the run did not state."""
+EARLIEST_AT = datetime(2020, 1, 1, tzinfo=UTC)
+"""Before the product existed. An event older than this is a bad clock, not history."""
 
 Rule = Move | Refusal
 _UNJUDGED = (K.PASS_UNEVIDENCED, K.INCONCLUSIVE, K.BLOCKED, K.NOT_RUN, K.NO_VERDICT)
@@ -179,12 +187,16 @@ def judge(bug: TrackedBug | None, event: BugEvent, *, close_passes: int = DEFAUL
     return Applied(Effect.APPLIED, rule, _mover(rule)(bug, event, close_passes))
 
 
-def storable(event: BugEvent) -> Refusal | None:
-    """Whether an event belongs in the log at all. Only a policy refusal (wrong actor) is decided
-    here; whatever depends on state is left to `fold`, so a late event is judged in time order. A
-    result that could not judge is `unchanged` in every state and is never stored (TB2)."""
+def storable(event: BugEvent, now: datetime | None = None) -> Refusal | None:
+    """Whether an event belongs in the log at all: a policy refusal (wrong actor) or an implausible
+    event time (P8). Whatever depends on bug state is left to `fold`, so a late event is judged in
+    time order. The clock is the writer's, applied at write time only; `fold` never reads it, so a
+    log replays to the same bugs whenever it is read. A result that could not judge is `unchanged`
+    in every state and is never stored (TB2)."""
     if not _actor_allowed(event):
         return Refusal.ACTOR_NOT_ALLOWED
+    if now is not None and not EARLIEST_AT <= event.at <= now + MAX_FUTURE_SKEW:
+        return Refusal.IMPLAUSIBLE_TIME
     return None
 
 
@@ -193,8 +205,10 @@ def keeps(event: BugEvent) -> bool:
 
 
 def order_key(event: BugEvent) -> tuple:
-    """Replay order: event time, a FAIL before any other kind at the same instant, then the id."""
-    return (event.at, event.kind is not K.FAIL, event.event_id)
+    """Replay order: event time; at the same instant a FAIL, then a changed case (a PASS on a
+    criterion that no longer exists proves nothing), then the rest; then the id."""
+    rank = {K.FAIL: 0, K.CASE_CHANGED: 1}.get(event.kind, 2)
+    return (event.at, rank, event.event_id)
 
 
 def trace(events: Iterable[BugEvent], *, close_passes: int = DEFAULT_CLOSE_PASSES,
@@ -208,7 +222,8 @@ def trace(events: Iterable[BugEvent], *, close_passes: int = DEFAULT_CLOSE_PASSE
     applied: dict[str, Applied] = {}
     for event in sorted(events, key=order_key):
         result = judge(bugs.get(event.bug_key), event, close_passes=close_passes, seen=seen)
-        applied[event.event_id] = result
+        if result.effect is not Effect.DUPLICATE or event.event_id not in applied:
+            applied[event.event_id] = result  # a later copy of one fact never masks its result
         if result.effect is Effect.APPLIED and result.bug is not None:
             bugs[event.bug_key] = result.bug
             seen.add(event.event_id)

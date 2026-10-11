@@ -29,6 +29,9 @@ SYSTEM_ACTOR = "system:bug-loop"
 """The one actor that may move a status; every other actor is a named user (R44). The actor is an
 unauthenticated string here: the T-204 route must set it from the session, never from a request."""
 
+MAX_KEY_LEN = 200
+"""A bug key is a content hash or an `iss_` fingerprint; 200 is far above any real one."""
+
 _ACTOR_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9 _.:@/+-]{0,79}")
 _VIDEO_KEY_RE = re.compile(r"iss_[0-9a-f]{12}")
 
@@ -72,7 +75,7 @@ class BugSeed(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    bug_key: str
+    bug_key: str = Field(min_length=1, max_length=MAX_KEY_LEN)
     project: str = Field(min_length=1)
     case_id: str | None = Field(default=None, description="None for a video-found bug")
     criterion_id: str | None = None
@@ -103,7 +106,7 @@ class BugEvent(BaseModel):
 
     schema_version: int = 1
     event_id: str = ""
-    bug_key: str = Field(min_length=1)
+    bug_key: str = Field(min_length=1, max_length=MAX_KEY_LEN)
     kind: EventKind
     ref: str = Field(min_length=1, max_length=200)
     at: datetime
@@ -118,6 +121,11 @@ class BugEvent(BaseModel):
         if not _ACTOR_RE.fullmatch(value):
             raise ValueError("actor must be 1-80 chars of letters, digits and _ . : @ / + - space")
         return value
+
+    @field_validator("bug_key")
+    @classmethod
+    def _key_clean(cls, value: str) -> str:
+        return _no_control(value, "bug_key")
 
     @field_validator("ref", "assignee")
     @classmethod
