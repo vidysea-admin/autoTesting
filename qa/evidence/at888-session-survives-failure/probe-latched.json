@@ -1,0 +1,115 @@
+{
+ "autotester_file": "D:\\autoTesting\\.worktrees\\check-at888\\src\\autotester\\__init__.py",
+ "scenario": "latched",
+ "headed": false,
+ "cases": [
+  {
+   "title": "c1-pass",
+   "video_rel": "case_894c9512b45e.webm",
+   "video_size": 16581,
+   "case_tmp": "page@de833d4e110cd897e7bf0faa7e56abc9.webm",
+   "spare_tmp": "page@81bc480e0e598b12eb04ef102ded4849.webm",
+   "spare_differs": true,
+   "pages_open": 1,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 46, 42, 421248, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_894c9512b45e' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 2.2,
+   "starts_so_far": 1
+  },
+  {
+   "title": "c2-restart-fails",
+   "video_rel": "case_736b22e73f95.webm",
+   "video_size": 16761,
+   "case_tmp": "page@f18673452d29a39d20e1ebfe5fb7e31f.webm",
+   "spare_tmp": "page@09341f2ce3628839da049909811ce522.webm",
+   "spare_differs": true,
+   "pages_open": 2,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [
+    [
+     "dom",
+     "session-restart",
+     "browser session was dead before this case (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed Browser logs: <launching> C:\\Users\\Lenovo\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1234\\chrome-he); restarted once, login continues from the saved profile"
+    ]
+   ],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 47, 59, 72456, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_736b22e73f95' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 64.8,
+   "starts_so_far": 2
+  },
+  {
+   "title": "c3-fast",
+   "video_rel": "case_fefc5dff0962.webm",
+   "video_size": 7346,
+   "case_tmp": "page@c8fa51b1eeb161df27637e856b4377b8.webm",
+   "spare_tmp": "page@ed438ff5d2addea18e9914b645aa0543.webm",
+   "spare_differs": true,
+   "pages_open": 2,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 48, 3, 141934, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_fefc5dff0962' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 4.1,
+   "starts_so_far": 2
+  },
+  {
+   "title": "c4-fast",
+   "video_rel": "case_0adb3e4b7d1a.webm",
+   "video_size": 18059,
+   "case_tmp": "page@4146298c0c23d7353c21213dcf8b2377.webm",
+   "spare_tmp": "page@872a620ee87d58acdbdddf7d8f732dfc.webm",
+   "spare_differs": true,
+   "pages_open": 2,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 48, 7, 908181, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_0adb3e4b7d1a' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 4.8,
+   "starts_so_far": 2
+  }
+ ],
+ "tmp": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_zhldfz9v",
+ "profile_dir": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_zhldfz9v\\profiles\\at888p",
+ "killed": [
+  [
+   65720,
+   67560,
+   38536,
+   68592,
+   78400,
+   60392
+  ]
+ ],
+ "squat_pid": 50220,
+ "squat_line": "up",
+ "start_calls_total": 2,
+ "browsers_during": 14,
+ "latched_err": null,
+ "browsers_before_close": 10,
+ "close": "ok",
+ "left_after_close": [
+  "powershell.exe"
+ ]
+}

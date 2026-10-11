@@ -1,0 +1,5 @@
+A	qa/manifests/at888-session-survives-failure.md
+M	src/autotester/browser/video.py
+M	src/autotester/stages/run_case_pipeline.py
+A	tests/test_session_survives_failure.py
+A	tests/test_session_survives_failure_live.py
