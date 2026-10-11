@@ -157,7 +157,9 @@
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
+| `stages/schedule_gate.py` | The TS5 gate: a scheduled run may start only under the credential-derived approval (D-068). |
 | `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |
+| `stages/schedule_tick.py` | One stateless pass over every scheduled project, plus the heartbeat and `--dry-run` (TS7). |
 | `stages/schedule_time.py` | Slot arithmetic: which UTC instants does a schedule mean to fire at, inside a window? |
 | `stages/scheduler.py` | The scheduler core (G5): which slots are due, who may claim them, and what a tick records. |
 | `stages/score.py` | SCORE: compare AutoTester's issues against a human tester's own sheet. |
@@ -348,11 +350,13 @@
 | `ScheduleZone` (`schema/schedule.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
 | `SlotOutcome` (`schema/schedule.py`) | What a tick decided for one slot. A record carries exactly one of these. |
 | `SchedulerHealth` (`schema/schedule.py`) |  |
+| `CredentialState` (`schema/schedule.py`) | Why the TS5 gate admits or refuses a run; the value leads the slot record's detail. |
 | `ScheduleInvalid` (`schema/schedule.py`) | A value was refused at save. `field` names it; the caller stores nothing. |
 | `WeeklyRule` (`schema/schedule.py`) |  |
 | `ScheduleConfig` (`schema/schedule.py`) |  |
 | `SlotRecord` (`schema/schedule.py`) | One append-only line per slot decision. Holds no secret: ids, instants and a short cause. |
 | `SlotClaim` (`schema/schedule.py`) | The content of a claim marker: what the winning tick decided, so a crash can be re-driven. |
+| `TickReport` (`schema/schedule.py`) | What one `autotester schedule tick` did: the JSON document of `--output json`. |
 | `ElementRef` (`schema/screen_graph.py`) | One interactive element found by `browser/enumerate.js`. |
 | `PageObservation` (`schema/screen_graph.py`) | One page-visit's raw material: its url/title and interactive elements. |
 | `ScreenNode` (`schema/screen_graph.py`) | One distinct screen the crawl found. Identity is structural |

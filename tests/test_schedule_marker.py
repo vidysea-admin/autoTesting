@@ -15,9 +15,16 @@ from pathlib import Path
 import pytest
 from schedule_fakes import daily, make_deps, utc
 
-from autotester.schema.schedule import ScheduleMode, SlotClaim, SlotOutcome
+from autotester.schema.schedule import ScheduleMode, SlotClaim, SlotOutcome, SlotRecord
 from autotester.stages import schedule_store, schedule_time, scheduler
-from autotester.stages.schedule_store import claim, list_claims, read_records
+from autotester.stages.schedule_store import (
+    append_record,
+    claim,
+    list_claims,
+    project_records_path,
+    purge_project,
+    read_records,
+)
 from autotester.stages.scheduler import tick_project
 
 NOW = utc(2026, 10, 8, 9, 0, 20)
@@ -140,3 +147,102 @@ def test_a_claim_file_torn_before_its_body_was_written_is_still_driven_to_one_en
     out = tick_project("p", daily(), utc(2026, 10, 8, 9, 5), deps, since=SINCE)
     assert [r.slot_key for r in out] == [KEY]
     assert len(q) == 1
+
+
+# --- purge of a deleted project (TS1 clause HO24 leaves open) ------------------------------------
+def _slot(project: str) -> tuple[str, SlotClaim, SlotRecord]:
+    key = f"{project}:fixed:2026-10-08T09:00Z"
+    when = utc(2026, 10, 8, 9)
+    return (key, SlotClaim(slot_key=key, mode=ScheduleMode.FIXED, instant=when, claimed_at=NOW,
+                           intended=SlotOutcome.ENQUEUED),
+            SlotRecord(slot_key=key, project=project, mode=ScheduleMode.FIXED, instant=when,
+                       recorded_at=NOW, outcome=SlotOutcome.ENQUEUED))
+
+
+def _seed(base: Path, project: str) -> Path:
+    key, body, rec = _slot(project)
+    path = project_records_path(base / "records", project)
+    assert claim(base / "claims", key, body) and append_record(path, rec)
+    return path
+
+
+def test_purge_removes_only_that_projects_markers_and_record_file_and_is_idempotent(
+    tmp_path: Path,
+) -> None:
+    a, pp = _seed(tmp_path, "p"), _seed(tmp_path, "pp")  # "pp" merely starts like "p"
+    purge_project(tmp_path / "claims", a, "p")
+    assert list(list_claims(tmp_path / "claims")) == ["pp:fixed:2026-10-08T09:00Z"]
+    assert not a.exists() and len(read_records(pp)) == 1
+    purge_project(tmp_path / "claims", a, "p")  # nothing left: still fine
+    assert len(read_records(pp)) == 1
+
+
+def test_purge_refuses_a_records_file_shared_with_another_project_and_changes_nothing(
+    tmp_path: Path,
+) -> None:
+    """The old layout (one file for every project) cannot be purged without rewriting other
+    projects' lines, which loses their concurrent appends: refuse instead of risking it."""
+    shared = _seed(tmp_path, "p")
+    append_record(shared, _slot("q")[2])
+    before = shared.read_text(encoding="utf-8")
+    with pytest.raises(ValueError, match="shared"):
+        purge_project(tmp_path / "claims", shared, "p")
+    assert shared.read_text(encoding="utf-8") == before
+    assert list(list_claims(tmp_path / "claims")) == ["p:fixed:2026-10-08T09:00Z"]
+
+
+def test_a_purge_that_fails_part_way_leaves_markers_and_records_together_and_no_temp_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path = _seed(tmp_path, "p")
+    key2, body2, _ = _slot("p")
+    key2 = "p:fixed:2026-10-09T09:00Z"
+    claim(tmp_path / "claims", key2, body2.model_copy(update={"slot_key": key2}))
+    before = sorted(str(f.relative_to(tmp_path)) for f in tmp_path.rglob("*") if f.is_file())
+    real, calls = os.replace, []
+
+    def flaky(src, dst):
+        calls.append(src)
+        if len(calls) == 2:
+            raise PermissionError("in use by another process")
+        return real(src, dst)
+
+    monkeypatch.setattr(schedule_store.os, "replace", flaky)
+    with pytest.raises(PermissionError):
+        purge_project(tmp_path / "claims", path, "p")
+    monkeypatch.undo()
+    after = sorted(str(f.relative_to(tmp_path)) for f in tmp_path.rglob("*") if f.is_file())
+    assert after == before and len(read_records(path)) == 1  # neither half moved, nothing leaked
+    assert not [d for d in tmp_path.iterdir() if d.name.startswith(".purge")]
+    purge_project(tmp_path / "claims", path, "p")  # and a retry then succeeds
+    assert list_claims(tmp_path / "claims") == {} and not path.exists()
+
+
+def _append_for_b(base: str, count: int, out: str) -> None:
+    path = project_records_path(Path(base) / "records", "b")
+    ok = 0
+    for n in range(count):
+        key = f"b:custom:2026-10-{8 + n // 1440:02d}T{n // 60 % 24:02d}:{n % 60:02d}Z"
+        rec = _slot("b")[2].model_copy(update={"slot_key": key})
+        ok += bool(append_record(path, rec))
+    Path(out).write_text(str(ok), encoding="utf-8")
+
+
+def test_every_acknowledged_append_by_a_neighbour_survives_purges_of_another_project(
+    tmp_path: Path,
+) -> None:
+    """B ticks (appends) in another OS process while A is purged again and again."""
+    ctx = mp.get_context("spawn")
+    count, out = 150, tmp_path / "acked.txt"
+    child = ctx.Process(target=_append_for_b, args=(str(tmp_path), count, str(out)))
+    child.start()
+    purges = 0
+    while child.is_alive() or purges == 0:
+        a = _seed(tmp_path, "a")
+        purge_project(tmp_path / "claims", a, "a")
+        purges += 1
+    child.join(timeout=120)
+    assert child.exitcode == 0
+    b = project_records_path(tmp_path / "records", "b")
+    assert int(out.read_text(encoding="utf-8")) == count == len(read_records(b))
+    assert not list((tmp_path / "records").glob(".*tmp")) and purges >= 1

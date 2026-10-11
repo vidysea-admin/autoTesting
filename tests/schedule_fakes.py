@@ -63,12 +63,13 @@ class FakeQueue:
 
 
 def make_deps(base: Path, project: str, *, idempotent: bool = False,
-              scrub: Callable[[str], str] | None = None) -> tuple[TickDeps, FakeQueue]:
+              scrub: Callable[[str], str] | None = None,
+              gate: Callable[[Slot], str | None] | None = None) -> tuple[TickDeps, FakeQueue]:
     q = FakeQueue(base / "queue", idempotent=idempotent)
     deps = TickDeps(
         claim_dir=base / "claims", records_path=base / "records.jsonl",
         enqueue=q.enqueue(project), queue=q.snapshots,
-        **({"scrub": scrub} if scrub else {}))
+        gate=gate or (lambda slot: None), scrub=scrub or (lambda text: text))
     return deps, q
 
 
