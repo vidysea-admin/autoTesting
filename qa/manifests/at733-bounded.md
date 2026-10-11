@@ -94,4 +94,4 @@ Not run (no UI change; brief section 9).
 - The optional Windows locked-file probe (hold a file open inside the profile with no share-delete) was not run by the builder; it is the checker's, optional under RU5.
 - One `noqa: RUF018` on a walrus assert exists only to keep the test file at the 300-line cap.
 
-Status: ready-for-check
+Status: checked-PASS (merged d9d35257, D-082)
