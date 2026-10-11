@@ -1,0 +1,24 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mr1a-1004311059\head
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 103 items
+
+tests\test_ingest.py .........                                           [  8%]
+tests\test_ingest_real_cli.py ................                           [ 24%]
+tests\test_ingest_persist.py ..............                              [ 37%]
+tests\test_ingest_transcripts.py .......                                 [ 44%]
+tests\test_merge_flowspec_cli.py ...                                     [ 47%]
+tests\test_consent.py ....................................               [ 82%]
+tests\test_approval_signing.py ..................                        [100%]
+
+============================== warnings summary ===============================
+tests/test_ingest_transcripts.py::test_orchestrated_ingest_keeps_a_narration_the_transcript_contains
+tests/test_ingest_transcripts.py::test_the_runner_logs_the_drop_without_the_narration_text
+  <string>:11: RuntimeWarning: StageContext for run 'run_t' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+====================== 103 passed, 2 warnings in 11.49s =======================
+g3 exit 0
