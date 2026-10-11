@@ -1,0 +1,12 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Scripts\python.exe
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1b-qa-no-declared-check-rpwe2ed2\t
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 11 items / 8 deselected / 3 selected
+
+tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared] PASSED [ 33%]
+tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared] PASSED [ 66%]
+tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered PASSED [100%]
+
+======================= 3 passed, 8 deselected in 0.83s =======================

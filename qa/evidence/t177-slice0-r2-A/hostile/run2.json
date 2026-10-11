@@ -1,0 +1,1756 @@
+[
+ {
+  "case": "01 header trickle 1B/0.1s",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.063,
+  "client_bytes": 37,
+  "listener_sent": 38,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:62806"
+  ],
+  "fetch_result": [
+   "ConnectionAbortedError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 62806 is not this browser",
+  "public_wall": 2.109,
+  "public_client_bytes": 37,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "02 body trickle CL=60000 1B/0.1s",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.093,
+  "client_bytes": 189,
+  "listener_sent": 190,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:63626"
+  ],
+  "fetch_result": [
+   "ConnectionAbortedError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 63626 is not this browser",
+  "public_wall": 2.094,
+  "public_client_bytes": 187,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "03a chunked trickle 1B/0.1s",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.0,
+  "client_bytes": 104,
+  "listener_sent": 104,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56854"
+  ],
+  "fetch_result": [
+   "TimeoutError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56854 is not this browser",
+  "public_wall": 2.109,
+  "public_client_bytes": 104,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "03b chunked endless tiny chunks fast",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.312,
+  "client_bytes": 395733,
+  "listener_sent": 528085,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:52802"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 52802 is not this browser",
+  "public_wall": 0.36,
+  "public_client_bytes": 397109,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "03c chunk-size ext endless fast",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 65617,
+  "listener_sent": 73809,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:55394"
+  ],
+  "fetch_result": [
+   "LineTooLong"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 55394 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 65617,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "04 no-CL Connection:close endless fast",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.015,
+  "client_bytes": 65607,
+  "listener_sent": 65708,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:57478"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 57478 is not this browser",
+  "public_wall": 0.047,
+  "public_client_bytes": 65607,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "05a padded 65536 declared CL",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.032,
+  "client_bytes": 65610,
+  "listener_sent": 65610,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:59996"
+  ],
+  "fetch_result": [
+   65536
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:59996",
+  "public_wall": 1.031,
+  "public_client_bytes": 65610,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "05b padded 65537 declared CL",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.031,
+  "client_bytes": 8192,
+  "listener_sent": 65611,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:49995"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 49995 is not this browser",
+  "public_wall": 0.063,
+  "public_client_bytes": 8192,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "05c padded 65536 undeclared (close)",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.312,
+  "client_bytes": 65606,
+  "listener_sent": 65606,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50068"
+  ],
+  "fetch_result": [
+   65536
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:50068",
+  "public_wall": 1.359,
+  "public_client_bytes": 65606,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "05d padded 65537 undeclared (close)",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.015,
+  "client_bytes": 65607,
+  "listener_sent": 65607,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56452"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56452 is not this browser",
+  "public_wall": 0.031,
+  "public_client_bytes": 65607,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "05e padded 65536 chunked",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.047,
+  "client_bytes": 65629,
+  "listener_sent": 65629,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56475"
+  ],
+  "fetch_result": [
+   65536
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:56475",
+  "public_wall": 1.032,
+  "public_client_bytes": 65629,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "05f padded 65537 chunked",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.031,
+  "client_bytes": 65623,
+  "listener_sent": 65630,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:64567"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 64567 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 65623,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "06 accepts, never answers",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.015,
+  "client_bytes": 0,
+  "listener_sent": 0,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:62073"
+  ],
+  "fetch_result": [
+   "TimeoutError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 62073 is not this browser",
+  "public_wall": 2.031,
+  "public_client_bytes": 0,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "07a never-accept (backlog filled)",
+  "run": 2,
+  "note": "fill=40 extra-connect-hangs=connect probe: TimeoutError after 0.72s",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.0,
+  "client_bytes": 0,
+  "listener_sent": 0,
+  "listener_accepts": 0,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:58866"
+  ],
+  "fetch_result": [
+   "TimeoutError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 58866 is not this browser",
+  "public_wall": 2.031,
+  "public_client_bytes": 0,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 0,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "07b unrouted CDP_HOST 192.0.2.1",
+  "run": 2,
+  "note": "CDP_HOST patched to 192.0.2.1 (RFC5737)",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.0,
+  "client_bytes": 0,
+  "listener_sent": 0,
+  "listener_accepts": 0,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "192.0.2.1:9"
+  ],
+  "fetch_result": [
+   "TimeoutError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 9 is not this browser",
+  "public_wall": 2.015,
+  "public_client_bytes": 0,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 0,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "08a mid-body close, valid JSON prefix (CL 1000)",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.046,
+  "client_bytes": 175,
+  "listener_sent": 175,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:53820"
+  ],
+  "fetch_result": [
+   102
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:53820",
+  "public_wall": 1.047,
+  "public_client_bytes": 175,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "08b mid-body close, partial JSON",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 103,
+  "listener_sent": 103,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:52516"
+  ],
+  "fetch_result": [
+   30
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 52516 is not this browser",
+  "public_wall": 0.094,
+  "public_client_bytes": 103,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "08c closed after headers only",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 72,
+  "listener_sent": 72,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:52524"
+  ],
+  "fetch_result": [
+   0
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 52524 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 72,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "09a 100 Continue forever fast",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.015,
+  "client_bytes": 10838016,
+  "listener_sent": 11150000,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:64815"
+  ],
+  "fetch_result": [
+   "ConnectionAbortedError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 64815 is not this browser",
+  "public_wall": 2.094,
+  "public_client_bytes": 7790592,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "09b 103 once then 200 good",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.062,
+  "client_bytes": 214,
+  "listener_sent": 214,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56326"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56326 is not this browser",
+  "public_wall": 0.078,
+  "public_client_bytes": 214,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "09c 100 Continue trickled",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.094,
+  "client_bytes": 475,
+  "listener_sent": 500,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56329"
+  ],
+  "fetch_result": [
+   "ConnectionAbortedError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56329 is not this browser",
+  "public_wall": 2.156,
+  "public_client_bytes": 375,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "09d 100 once then 200 good (control)",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 199,
+  "listener_sent": 199,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:60817"
+  ],
+  "fetch_result": [
+   102
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:60817",
+  "public_wall": 1.032,
+  "public_client_bytes": 199,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10a 301 -> other loopback port (good id)",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 84,
+  "listener_sent": 84,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:53728"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 53728 is not this browser",
+  "public_wall": 0.031,
+  "public_client_bytes": 84,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10b 301 -> http://localhost:<aux>",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.063,
+  "client_bytes": 84,
+  "listener_sent": 84,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:57596"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 57596 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 84,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10c 301 -> http://example.invalid/",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.015,
+  "client_bytes": 87,
+  "listener_sent": 87,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:63801"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 63801 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 87,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10a 302 -> other loopback port (good id)",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 84,
+  "listener_sent": 84,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:52723"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 52723 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 84,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10b 302 -> http://localhost:<aux>",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.047,
+  "client_bytes": 84,
+  "listener_sent": 84,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:52727"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 52727 is not this browser",
+  "public_wall": 0.156,
+  "public_client_bytes": 84,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10c 302 -> http://example.invalid/",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 87,
+  "listener_sent": 87,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56258"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56258 is not this browser",
+  "public_wall": 0.047,
+  "public_client_bytes": 87,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10a 307 -> other loopback port (good id)",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 84,
+  "listener_sent": 84,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:53650"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 53650 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 84,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10b 307 -> http://localhost:<aux>",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 84,
+  "listener_sent": 84,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:53655"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 53655 is not this browser",
+  "public_wall": 0.031,
+  "public_client_bytes": 84,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "10c 307 -> http://example.invalid/",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 87,
+  "listener_sent": 87,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:57848"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [
+   0
+  ],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 57848 is not this browser",
+  "public_wall": 0.032,
+  "public_client_bytes": 87,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11a deep [ x30000",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.047,
+  "client_bytes": 30074,
+  "listener_sent": 30074,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:62782"
+  ],
+  "fetch_result": [
+   30000
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 62782 is not this browser",
+  "public_wall": 0.031,
+  "public_client_bytes": 30074,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11b deep {\"a\": x30000",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 8192,
+  "listener_sent": 150075,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:58837"
+  ],
+  "fetch_result": [
+   "ValueError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 58837 is not this browser",
+  "public_wall": 0.015,
+  "public_client_bytes": 8192,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11c deep [ exactly cap",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 65610,
+  "listener_sent": 65610,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:60182"
+  ],
+  "fetch_result": [
+   65536
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 60182 is not this browser",
+  "public_wall": 0.078,
+  "public_client_bytes": 65610,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11d deep {\"a\": exactly cap",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.032,
+  "client_bytes": 65610,
+  "listener_sent": 65610,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50691"
+  ],
+  "fetch_result": [
+   65536
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 50691 is not this browser",
+  "public_wall": 0.094,
+  "public_client_bytes": 65610,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11e 60000-digit number in good obj",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.063,
+  "client_bytes": 60180,
+  "listener_sent": 60180,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50695"
+  ],
+  "fetch_result": [
+   60106
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 50695 is not this browser",
+  "public_wall": 0.031,
+  "public_client_bytes": 60180,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11f invalid UTF-8 inside good obj",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 183,
+  "listener_sent": 183,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50698"
+  ],
+  "fetch_result": [
+   111
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 50698 is not this browser",
+  "public_wall": 0.015,
+  "public_client_bytes": 183,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11g dup key right then wrong",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 249,
+  "listener_sent": 249,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50702"
+  ],
+  "fetch_result": [
+   177
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 50702 is not this browser",
+  "public_wall": 0.14,
+  "public_client_bytes": 249,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11h dup key wrong then right",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 249,
+  "listener_sent": 249,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:55660"
+  ],
+  "fetch_result": [
+   177
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:55660",
+  "public_wall": 1.235,
+  "public_client_bytes": 249,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11i UTF-8 BOM prefix + good",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 177,
+  "listener_sent": 177,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:60162"
+  ],
+  "fetch_result": [
+   105
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:60162",
+  "public_wall": 1.031,
+  "public_client_bytes": 177,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11j id field = list",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.015,
+  "client_bytes": 176,
+  "listener_sent": 176,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:60911"
+  ],
+  "fetch_result": [
+   104
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 60911 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 176,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11k id field = dict",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.015,
+  "client_bytes": 181,
+  "listener_sent": 181,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56739"
+  ],
+  "fetch_result": [
+   109
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56739 is not this browser",
+  "public_wall": 0.094,
+  "public_client_bytes": 181,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11l id field = int",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 98,
+  "listener_sent": 98,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50582"
+  ],
+  "fetch_result": [
+   27
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 50582 is not this browser",
+  "public_wall": 0.047,
+  "public_client_bytes": 98,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11m id field = null",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.063,
+  "client_bytes": 101,
+  "listener_sent": 101,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50587"
+  ],
+  "fetch_result": [
+   30
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 50587 is not this browser",
+  "public_wall": 0.063,
+  "public_client_bytes": 101,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11n id field = str w/ right path as suffix of longer str",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 177,
+  "listener_sent": 177,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50064"
+  ],
+  "fetch_result": [
+   105
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:50064",
+  "public_wall": 1.015,
+  "public_client_bytes": 177,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11o id field = right path + trailing junk",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.015,
+  "client_bytes": 175,
+  "listener_sent": 175,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:50072"
+  ],
+  "fetch_result": [
+   103
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 50072 is not this browser",
+  "public_wall": 0.094,
+  "public_client_bytes": 175,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11p top-level array containing good obj",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 176,
+  "listener_sent": 176,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:65096"
+  ],
+  "fetch_result": [
+   104
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 65096 is not this browser",
+  "public_wall": 0.063,
+  "public_client_bytes": 176,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11q control: good identity",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.015,
+  "client_bytes": 174,
+  "listener_sent": 174,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:63078"
+  ],
+  "fetch_result": [
+   102
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:63078",
+  "public_wall": 1.031,
+  "public_client_bytes": 174,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "11r control: good identity chunked",
+  "run": 2,
+  "note": "",
+  "direct_ret": true,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 192,
+  "listener_sent": 192,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:63084"
+  ],
+  "fetch_result": [
+   102
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "returned",
+  "public_msg": "http://127.0.0.1:63084",
+  "public_wall": 1.046,
+  "public_client_bytes": 192,
+  "public_connects": 2,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "12a 150 headers",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 1714,
+  "listener_sent": 1714,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:63088"
+  ],
+  "fetch_result": [
+   "HTTPException"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 63088 is not this browser",
+  "public_wall": 0.078,
+  "public_client_bytes": 1714,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "12b 99 headers (control, should pass)",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.016,
+  "client_bytes": 1154,
+  "listener_sent": 1154,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56727"
+  ],
+  "fetch_result": [
+   "HTTPException"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56727 is not this browser",
+  "public_wall": 0.046,
+  "public_client_bytes": 1154,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "12c one 70000-byte header line",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.031,
+  "client_bytes": 70181,
+  "listener_sent": 70181,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:56730"
+  ],
+  "fetch_result": [
+   "LineTooLong"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 56730 is not this browser",
+  "public_wall": 0.016,
+  "public_client_bytes": 70181,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "13a non-HTTP reply",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 20,
+  "listener_sent": 20,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:54086"
+  ],
+  "fetch_result": [
+   "BadStatusLine"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 54086 is not this browser",
+  "public_wall": 0.015,
+  "public_client_bytes": 20,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "13b empty reply (close)",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.0,
+  "client_bytes": 0,
+  "listener_sent": 0,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:54090"
+  ],
+  "fetch_result": [
+   "RemoteDisconnected"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 54090 is not this browser",
+  "public_wall": 0.032,
+  "public_client_bytes": 0,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "13c HTTP/0.9-style bare body",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 0.328,
+  "client_bytes": 102,
+  "listener_sent": 102,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:54093"
+  ],
+  "fetch_result": [
+   "BadStatusLine"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 54093 is not this browser",
+  "public_wall": 0.422,
+  "public_client_bytes": 102,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ },
+ {
+  "case": "13d 200 headers, no CL, no body, stays open",
+  "run": 2,
+  "note": "",
+  "direct_ret": false,
+  "direct_exc": null,
+  "direct_wall": 2.063,
+  "client_bytes": 51,
+  "listener_sent": 51,
+  "listener_accepts": 1,
+  "connect_calls": 1,
+  "connect_addrs": [
+   "127.0.0.1:65299"
+  ],
+  "fetch_result": [
+   "TimeoutError"
+  ],
+  "client_sock_still_open": false,
+  "threads_after_100ms": [],
+  "aux_accepts": [],
+  "public": "CdpEndpointError",
+  "public_msg": "the DevTools listener on port 65299 is not this browser",
+  "public_wall": 2.032,
+  "public_client_bytes": 51,
+  "public_connects": 1,
+  "public_threads_after_100ms": [],
+  "public_sock_open": false,
+  "public_listener_accepts": 1,
+  "netstat_rows_after_stop": null,
+  "threads_after_stop": []
+ }
+]

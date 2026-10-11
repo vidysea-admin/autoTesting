@@ -1,0 +1,14 @@
+ImportError while loading conftest 'C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-3-follow-redirect-n5ub16gg\t\tests\conftest.py'.
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-3-follow-redirect-n5ub16gg\t\tests\conftest.py:24: in <module>
+    ???
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-3-follow-redirect-n5ub16gg\t\scripts\regression_proof.py:28: in <module>
+    ???
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-3-follow-redirect-n5ub16gg\t\src\autotester\__init__.py:10: in <module>
+    ???
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-3-follow-redirect-n5ub16gg\t\src\autotester\cli.py:10: in <module>
+    ???
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-3-follow-redirect-n5ub16gg\t\src\autotester\cli_issues.py:29: in <module>
+    ???
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-3-follow-redirect-n5ub16gg\t\src\autotester\stages\issues.py:28: in <module>
+    ???
+E   ModuleNotFoundError: No module named 'autotester.core.excel'

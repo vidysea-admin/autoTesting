@@ -1,0 +1,139 @@
+{
+ "name": "1b-qb-no-size-check",
+ "point": "1b",
+ "sel": "padded or huge",
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qb-no-size-check-sitjuadv\\t\\src\\autotester\\__init__.py",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qb-no-size-check-sitjuadv\\t",
+ "runs": {
+  "green": {
+   "rc": 0,
+   "secs": 22.2,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qb-no-size-check-sitjuadv\\t"
+   ]
+  },
+  "red": {
+   "rc": 1,
+   "secs": 27.0,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ]
+   ],
+   "summary": "1 failed, 2 passed, 8 deselected",
+   "errs": [
+    "E   Failed: DID NOT RAISE CdpEndpointError"
+   ],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qb-no-size-check-sitjuadv\\t"
+   ]
+  },
+  "red_fullfile": {
+   "rc": 1,
+   "secs": 32.2,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "1 failed, 10 passed",
+   "errs": [
+    "E   Failed: DID NOT RAISE CdpEndpointError"
+   ],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qb-no-size-check-sitjuadv\\t"
+   ]
+  },
+  "restored": {
+   "rc": 0,
+   "secs": 31.9,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qb-no-size-check-sitjuadv\\t"
+   ]
+  }
+ },
+ "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -110,4 +110,2 @@\n             size += len(piece)\n-            if size > PROBE_MAX_BYTES:\n-                raise ValueError(\"reply too large\")\n         raise TimeoutError(\"the DevTools probe passed its deadline\")\n",
+ "restored_same": true
+}

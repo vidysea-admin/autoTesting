@@ -1,0 +1,12 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Scripts\python.exe
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chk-t177r2a-1798127267
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 4 items
+
+AppData\Local\Temp\chk-t177r2a-1798127267::test_interrupt_in_probe_propagates_and_cleans_up[KeyboardInterrupt] PASSED [ 25%]
+AppData\Local\Temp\chk-t177r2a-1798127267::test_interrupt_in_probe_propagates_and_cleans_up[SystemExit] PASSED [ 50%]
+AppData\Local\Temp\chk-t177r2a-1798127267::test_interrupt_inside_real_read_cancels_watchdog[KeyboardInterrupt] PASSED [ 75%]
+AppData\Local\Temp\chk-t177r2a-1798127267::test_interrupt_inside_real_read_cancels_watchdog[SystemExit] PASSED [100%]
+
+============================= 4 passed in 26.13s ==============================

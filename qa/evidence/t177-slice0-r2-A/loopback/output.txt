@@ -1,0 +1,5 @@
+autotester: C:\Users/Lenovo/AppData/Local/Temp/chk-t177r2a-1798127267/src\autotester\__init__.py
+wildcard bind, empty queue                     reaches_past_loopback=True  took=0.00s  raw 127.0.0.2 connect: TimeoutError (1.02s)
+wildcard bind, accept queue FULL               reaches_past_loopback=False took=1.00s  raw 127.0.0.2 connect: TimeoutError (1.02s)
+loopback-only bind (127.0.0.1)                 reaches_past_loopback=False took=1.00s  raw 127.0.0.2 connect: TimeoutError (1.02s)
+loopback-only bind, queue full                 reaches_past_loopback=False took=1.00s  raw 127.0.0.2 connect: TimeoutError (1.02s)

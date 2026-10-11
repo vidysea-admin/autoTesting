@@ -1,0 +1,7 @@
+--- a/launch.py
++++ b/launch.py
+@@ -96,3 +96,3 @@
+         reply = conn.getresponse()
+-        if reply.status != 200:
++        if reply.status >= 500:
+             raise ValueError(f"status {reply.status}")  # a redirect included

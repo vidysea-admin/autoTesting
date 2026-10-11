@@ -1,0 +1,25 @@
+AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\queue.py:179: Empty
+____ test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen _____
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27368/test_rc2_ingest_video_keeps_na0')
+
+    def test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen(tmp_path: Path) -> None:
+        source = _source(tmp_path)
+        spec = ingest_video(source, "p", MockProvider(responses={"vision": [observation()]}))
+        flow, step = spec.flows[0], spec.flows[0].steps[0]
+>       assert step.narration == "type your email here"
+E       AssertionError: assert None == 'type your email here'
+E        +  where None = Step(order=1, action=<Action.FILL: 'fill'>, target='Email', value='x', expected=ExpectedState(url=None, visible_text=[..._start=1.0, t_end=None, locator=None), note=None, screen_id='scr_5ed6c16ed2f3', narration=None, on_screen_text='Email').narration
+
+AppData\Local\Temp\chk-t177r2a-base-11300\tests\test_reconcile_schema.py:125: AssertionError
+============================== warnings summary ===============================
+AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED AppData\Local\Temp\chk-t177r2a-base-11300\tests\test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+FAILED AppData\Local\Temp\chk-t177r2a-base-11300\tests\test_core.py::test_env_creation_is_coordinated_across_processes
+FAILED AppData\Local\Temp\chk-t177r2a-base-11300\tests\test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen
+3 failed, 1 passed, 1 warning in 47.97s
