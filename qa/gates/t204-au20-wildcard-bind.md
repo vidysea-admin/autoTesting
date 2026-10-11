@@ -1,7 +1,9 @@
 # HUMAN_GATE: AU20 own-origin check on a wildcard bind (t204-team-login)
 
 **Asked:** 2026-10-11 by the maker, on checker A's HUMAN_GATE-REQUEST
-(`qa/verdicts/t204-team-login.r1.a.md`, head 6ea9b688). **Answered:** pending.
+(`qa/verdicts/t204-team-login.r1.a.md`, head 6ea9b688). **Answered:** 2026-10-11 by Umesh, option A
+(D-082): the app gets `AUTOTESTER_PUBLIC_ORIGIN` and startup raises on a wildcard bind unless that
+origin is admitted. Folded into fix cycle 2 as an owner-authorised change.
 
 ## What is blocked
 

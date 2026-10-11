@@ -1,6 +1,8 @@
 # HUMAN_GATE: D-014 round cap on the ingest/reconcile seam (at792-stale-rc2-test)
 
-**Asked:** 2026-10-11 by the maker. **Answered:** pending.
+**Asked:** 2026-10-11 by the maker. **Answered:** 2026-10-11 by Umesh, option A (D-082): the D-014
+cap is waived for at792-stale-rc2-test, at733-bounded and t178-failure-bundle-fb4-fb5 only. D-014
+itself is unchanged.
 
 ## What is blocked
 
