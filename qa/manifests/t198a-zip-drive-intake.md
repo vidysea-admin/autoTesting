@@ -7,10 +7,11 @@
 **Authority:** D-072 (group answers), D-081 (Drive identity: the live fetch shells out to the existing `gws` login; no token is copied into the repo), D-066 (Origin guard, unchanged and still first)
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (untrusted archives and links write to the filesystem; a request-body limit; an auth seam)
-Fix cycle: 0
+Fix cycle: 1
+Repair base: 894549ee
 Branch: wave/t198a-zip-drive-intake, based on master 3d8f7d5a. Earlier work of branch wave/g3-zip-core (slice 1, not landed) was carried in by file copy; that branch and its worktree are untouched. Master was not merged.
-Code commit under check: 642575ce (product; the later commits are merges of master and this manifest, no product change)
-Integrated master: 81f63ce9 (merge commit 76eba8c1). Master was merged twice (869cf16e, then 81f63ce9, which added only qa verdicts and evidence); no conflict in either merge. qa/issues.jsonl and uv.lock are identical to master's.
+Code commit under check: 0d17d67d (product, fix cycle 1; cycle 0 product was 642575ce; c51a66e4 is the master merge and the manifest commit after it changes no product file)
+Integrated master (cycle 1): b210bc6d (merge commit c51a66e4; clean, no conflict, `autotester map` produced no diff). Earlier: 81f63ce9 (merge commit 76eba8c1). Master was merged twice (869cf16e, then 81f63ce9, which added only qa verdicts and evidence); no conflict in either merge. qa/issues.jsonl and uv.lock are identical to master's.
 Executor: claude-sonnet-subagent (maker build subagent)
 Dual check: required
 dual-trigger: security src/autotester/sources/zip_names.py:77 (`ensure_inside`), security src/autotester/sources/zip_intake.py:214 (`expand_zip`), security src/autotester/ui/upload_stream.py:175 (`stream_upload`, the streaming body limit), auth src/autotester/ui/intake_upload.py:111 (`handle_upload`, the gate seam)
@@ -44,25 +45,25 @@ Carried from wave/g3-zip-core and adapted (zip core): `sources/zip_names.py` (TI
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L. No builder full suite; scoped files only, one pytest process at a time with `-p no:xdist`.
-Pre-check: 642575ce uv run ruff check src tests scripts -> All checks passed!
-Pre-check: 642575ce uv run autotester doctor -> doctor: clean (worktree; the three root-clutter violations exist only in the root checkout); `uv run autotester map` run
-Pre-check[TI1]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (names, limits, register, atomic files; the same four files serve TI1, TI2, TI4, TI5, TI6)
-Pre-check[TI2]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (limits file: ratio, lying header, entries, nested, total)
-Pre-check[TI3]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_cli_intake.py -> 28 passed (5-member zip table, .env and .ps1 skipped, CLI JSON one outcome per member)
-Pre-check[TI4]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_drive_intake.py -> 114 passed (duplicates, hostile Drive names never reach a path)
-Pre-check[TI5]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_cli_intake.py -> 101 passed (partial is exit 2, not ok)
-Pre-check[TI6]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (atomic file: crash after member N, concurrent intakes)
-Pre-check[TI7]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_drive_verify.py tests/test_drive_intake.py tests/test_ui_intake_drive.py -> 84 passed (good md5, wrong md5, short read, folder with PDF, zip id with hostile member, hostile link)
-Pre-check[TI8]: 642575ce uv run pytest -p no:xdist tests/test_gws_drive.py tests/test_gws_runner.py -> 49 passed (five distinct messages, canary token absent from stdout, stderr, caplog, messages)
-Pre-check[TI9]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_drive_intake.py -> 41 passed (5 MiB exact ok, +1 refused, setting changed between requests, endless body stopped, lying Content-Length)
+Pre-check: 0d17d67d uv run ruff check src tests scripts -> All checks passed!
+Pre-check: 0d17d67d uv run autotester doctor -> doctor: clean; `uv run autotester map` -> docs/MAP.md regenerated, no diff
+Pre-check[TI1]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 103 passed (same four files; TI1 to TI6 serve from them)
+Pre-check[TI2]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 103 passed
+Pre-check[TI3]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_cli_intake.py -> 31 passed
+Pre-check[TI4]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_drive_intake.py -> 124 passed
+Pre-check[TI5]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_cli_intake.py -> 111 passed (includes the new LZMA/bzip2/deflate damage cases and the unreadable-zip-version case)
+Pre-check[TI6]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 103 passed (the kill test now passes from a git-archive copy run with the root .venv)
+Pre-check[TI7]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_drive_verify.py tests/test_drive_intake.py tests/test_ui_intake_drive.py -> 84 passed (good md5, wrong md5, short read, folder with PDF, zip id with hostile member, hostile link) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
+Pre-check[TI8]: 642575ce uv run pytest -p no:xdist tests/test_gws_drive.py tests/test_gws_runner.py -> 49 passed (five distinct messages, canary token absent from stdout, stderr, caplog, messages) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
+Pre-check[TI9]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_drive_intake.py -> 44 passed
 Pre-check[TI10]: HELD on T-204 (no authorize(); the default gate is open); only the seam is proved: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_ui_intake_drive.py -> 32 passed (gate before the first body byte, re-check at job start, refusal writes nothing)
-Pre-check[TI11]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_ui_intake_drive.py tests/test_drive_intake.py -> 53 passed (uploaded_by from the gate only, origin shapes, form field ignored)
-Pre-check[HO30]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py -> 20 passed (streaming; includes the hostile-Host 403 before any body byte limit at the ASGI level)
-Pre-check[HO32]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_ui_intake_drive.py -> 45 passed (hostile hosts and schemes refused, not echoed, no job)
-Pre-check[HO33]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake_drive.py tests/test_gws_runner.py -> 22 passed (fetching page, typed failure on the page, timeouts)
-Pre-check: 642575ce uv run pytest -p no:xdist tests/test_ui_sources.py tests/test_source_is_a_recording.py tests/test_cli_advice_resolves.py tests/test_ensemble_honesty.py tests/test_merge_flowspec_cli.py tests/test_server_settings.py tests/test_drive_verify.py tests/test_intake_schema.py tests/test_ui_origin_guard.py -> 254 passed (existing neighbours, including master's Host allow-list tests and the advice registry)
+Pre-check[TI11]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py tests/test_ui_intake_drive.py tests/test_drive_intake.py -> 56 passed
+Pre-check[HO30]: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_intake.py -> 23 passed (includes the three F2 field-cap tests)
+Pre-check[HO32]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_ui_intake_drive.py -> 45 passed (hostile hosts and schemes refused, not echoed, no job) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
+Pre-check[HO33]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake_drive.py tests/test_gws_runner.py -> 22 passed (fetching page, typed failure on the page, timeouts) [inputs unchanged in cycle 1: no Drive/gws file or test changed; the sha label stays 642575ce]
+Pre-check: 0d17d67d uv run pytest -p no:xdist -o addopts= tests/test_ui_sources.py tests/test_source_is_a_recording.py tests/test_cli_advice_resolves.py tests/test_ensemble_honesty.py tests/test_merge_flowspec_cli.py tests/test_server_settings.py tests/test_drive_verify.py tests/test_intake_schema.py tests/test_ui_origin_guard.py -> 254 passed (aggregate neighbours; test_cli_advice_resolves.py unchanged: this unit adds no CLI advice site)
 mutant-cap-raise: security-class unit with 12 contract rows plus 3 review-found defects; one mutation per row, each recorded in the table below
-Metrics: start=2026-10-11 end=2026-10-11 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=19 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9
+Metrics: start=2026-10-11 end=2026-10-11 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=22 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9
 
 ## Falsification (throwaway copy of src, tests, scripts under the scratchpad, outside the worktree; run with the worktree venv and `PYTHONPATH=<copy>/src`; the originals restored after each; the copy is discarded)
 
@@ -90,6 +91,27 @@ Two mutations SURVIVED and are stated, not hidden:
 - TI2 "trust the declared size" (removing only the central-directory pre-check `if info.file_size > per_file`) stays green: the inflate cap refuses the same member with the same message, so the pre-check is observable only as "zero bytes written", which no test measures. The lying-header mutation (the inflate cap) is caught. PROPOSED-ISSUE below.
 - Part-header cap removed (`HEADER_CAP`): the 40 KiB header test is refused with 400 either way; only the memory bound differs. PROPOSED-ISSUE below.
 Not mutated by me: row-before-copy (TI6), the register-everything and name-in-stored-path mutations (TI3/TI4); the inherited tests of wave/g3-zip-core carry those, and I did not re-run those mutations here.
+
+## Fix cycle 1 (repair base 894549ee; seat A FAIL F1-F3; P4-P14 are filed separately and untouched)
+
+Files changed (product commits c8de9a14 and 0d17d67d, tests first and seen red):
+- `src/autotester/sources/zip_intake.py` (257 lines, was 253): F1. `lzma.LZMAError` added to the corrupt-member handler in `_extract_one`, so a damaged LZMA member is `failed` and the run is `partial`; the other decompressor errors were already caught there (zlib.error, BadZipFile, EOFError, NotImplementedError; bzip2 raises OSError, caught by the OSError handler, which words it as a staging failure). `expand_zip` now catches `NotImplementedError` from `zipfile.ZipFile(...)`.
+- `src/autotester/ui/upload_stream.py` (229 lines, was 216): F2. `MAX_FIELDS = 8` and `FIELDS_TOTAL_CAP = 32 KiB` (names plus values, the form only uses `label`); `_Reader._keep_field` refuses with the unit's existing 400 `UploadRefused` before the field is retained, so retained memory is bounded whatever the body size.
+- `tests/test_zip_intake_register.py` (214): `test_ti5_a_damaged_compressed_member_is_failed_whatever_the_decompressor_raises` (LZMA, bzip2, deflate, three byte positions each) and `test_ti5_a_zip_version_python_cannot_read_is_a_failed_report_not_a_crash`.
+- `tests/test_ui_intake.py` (277): three `test_f2_*` tests (1,000 small fields refused at the head with zero file bytes and no staging left; five 15 KiB fields refused by the total cap; the `_Reader` fed directly never retains more than the caps).
+- `tests/test_zip_intake_atomic.py` (186): F3. The kill-test child gets `PYTHONPATH=<this test file's tree>/src`, so it imports the tree under test.
+
+Behaviour notes (read these): (1) A member whose `extract_version` is above 6.3 cannot become a per-member `failed` row. The stdlib raises in `ZipFile(...)` itself, while reading the central directory, so no member list exists. The intake now returns one `failed` archive-level row ("unsupported zip version"), registers nothing and exits 2, instead of crashing. TI5's wording (`partial`, others processed) is met for every error that surfaces while a member is being read, not for this one case; reaching it would need our own central-directory reader. (2) The refused-field message and status 400 are new behaviour on the upload route for a form with more than 8 fields or more than 32 KiB of fields; the real form sends one. No other behaviour changed.
+
+Falsification (throwaway copies under the scratchpad, deleted after; green before, red after):
+
+| Row | edit in the copy | before | after |
+|---|---|---|---|
+| TI5 (F1) | `lzma.LZMAError` removed from the handler and the `NotImplementedError` catch removed from `expand_zip` | 13 passed on the ti5 selection | 4 failed (LZMA at three positions, the zip-version case) |
+| F2 cap | `MAX_FIELDS` and `FIELDS_TOTAL_CAP` checks made inert in `_keep_field` | 3 passed (`-k f2`) | 3 failed |
+| TI6 (F3) | `env=env` removed from the kill test's `subprocess.run`, run from a `git archive` copy with the root `.venv` | 1 passed | 1 failed (`No module named 'autotester.sources.zip_intake'`, return code 1 not 9) |
+
+Lint: `uv run autotester doctor` -> doctor: clean; `uv run ruff check src tests scripts` -> All checks passed!
 
 ## Held and left to others
 
