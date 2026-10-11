@@ -129,9 +129,10 @@ release; the live view is reachable only from inside the compose network until t
 Over plain http to an IP, set in `server.env`: `AUTOTESTER_ALLOWED_HOSTS=<server-ip>`,
 `AUTOTESTER_ALLOWED_ORIGINS=http://<server-ip>:8000`, `AUTOTESTER_COOKIE_SECURE=0`, and start
 with `AUTOTESTER_BIND=0.0.0.0`. In the shell (or the compose `.env`) that runs `docker compose`,
-also set `AUTOTESTER_PUBLIC_ORIGIN=http://<server-ip>:8000`: without it compose assumes
-`https://localhost` and the app refuses to start. Docker publishes ports around UFW, so a `ufw` rule does not
-restrict port 8000: limit it in your cloud provider's firewall to your office address, or bind
+also set `AUTOTESTER_PUBLIC_ORIGIN=http://<server-ip>:8000`: without it (and without
+`AUTOTESTER_DOMAIN`) compose passes an empty value and the app refuses to start, naming the key; a
+loopback value such as `http://localhost:8000` is refused as well. Docker publishes ports
+around UFW, so a `ufw` rule does not restrict port 8000: limit it in your cloud provider's firewall to your office address, or bind
 `AUTOTESTER_BIND` to one interface address. Passwords cross the network unencrypted in this
 mode: use it for a short trial only, and move to step 7. `docker compose -f docker/compose.prod.yml
 config` works without `AUTOTESTER_DOMAIN`; only the `https` profile needs it.

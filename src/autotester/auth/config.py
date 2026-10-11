@@ -105,8 +105,9 @@ def _check_hosted() -> None:
 def _check_public_origin(required: bool) -> None:
     """AU20: `AUTOTESTER_PUBLIC_ORIGIN` is the origin users open. A wildcard bind (`0.0.0.0`,
     `::`, the container) cannot know it, so it must be set there (`required`); when set anywhere
-    it must be a bare origin the Host and Origin guards both admit. Wrong at startup, never a
-    403 on every request."""
+    it must be a bare origin the Host and Origin guards both admit, and on a wildcard bind not a
+    loopback one (the guards admit loopback unconditionally, so it would satisfy the rule by
+    accident). Wrong at startup, never a 403 on every request."""
     raw = os.environ.get(PUBLIC_ORIGIN_ENV, "").strip()
     if not raw:
         if required:
@@ -127,6 +128,11 @@ def _check_public_origin(required: bool) -> None:
         raise AuthConfigError(
             f"{PUBLIC_ORIGIN_ENV}={raw!r} is not an origin: use scheme://host[:port] with no "
             "path, such as https://qa.example.com (AU20)")
+    if required and parts.hostname in _LOOPBACK:
+        raise AuthConfigError(
+            f"{PUBLIC_ORIGIN_ENV}={raw!r} is a loopback address, which remote users cannot "
+            "reach, and the server binds every address: set the origin users open, for example "
+            "https://qa.example.com or http://192.168.1.20:8000 (AU20)")
     name = f"[{parts.hostname}]" if ":" in parts.hostname else parts.hostname
     host = name if port in {None, {"http": 80, "https": 443}[parts.scheme]} else f"{name}:{port}"
     if not (_host_allowed(host) and _origin_allowed(f"{parts.scheme}://{host}")):

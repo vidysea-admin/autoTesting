@@ -11,7 +11,10 @@ import fnmatch
 import re
 from pathlib import Path
 
+import pytest
 import yaml
+
+from autotester.auth.config import AuthConfigError, check_startup
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_PORTS = {"8000", "8010", "6080", "5900"}
@@ -147,10 +150,75 @@ def test_app_service_is_told_its_public_origin_for_the_wildcard_bind() -> None:
     open, so compose passes AUTOTESTER_PUBLIC_ORIGIN to the app service, derived from the domain."""
     env = _prod()["services"]["autotester"]["environment"]
     assert "AUTOTESTER_DOMAIN" in env["AUTOTESTER_PUBLIC_ORIGIN"]
-    assert env["AUTOTESTER_PUBLIC_ORIGIN"].count("${") == 2
+    assert env["AUTOTESTER_PUBLIC_ORIGIN"].count("${") == 3  # operator value, domain test, domain
     guide = (ROOT / "docker" / "DEPLOY.md").read_text(encoding="utf-8")
     assert "AUTOTESTER_PUBLIC_ORIGIN" in guide and "AUTOTESTER_PUBLIC_ORIGIN" in (
         ROOT / ".env.example").read_text(encoding="utf-8")
+
+
+def _interpolate(value: str, env: dict[str, str]) -> str:
+    """Compose interpolation (compose-spec "Interpolation") for the forms the file uses,
+    innermost first: `${V}` is V's value; `${V:-d}` is d when V is unset or empty; `${V:+a}` is
+    a when V is set and non-empty, else empty. No docker needed."""
+    pattern = re.compile(r"\$\{(\w+)(?::([-+])([^${}]*))?\}")
+    while (m := pattern.search(value)):
+        name, op, alt = m.groups()
+        got = env.get(name, "")
+        out = got if op is None else (got or alt) if op == "-" else (alt if got else "")
+        value = value[:m.start()] + out + value[m.end():]
+    return value
+
+
+def _wildcard_startup(monkeypatch: pytest.MonkeyPatch, compose_env: dict[str, str],
+                      hosts: str, origins: str) -> None:
+    """What `docker/entrypoint.sh` does: bind 0.0.0.0, hosted, with the origin compose hands
+    the app for this operator environment."""
+    value = _interpolate(
+        _prod()["services"]["autotester"]["environment"]["AUTOTESTER_PUBLIC_ORIGIN"],
+        compose_env)
+    for key in ("AUTOTESTER_AUTH_DISABLED", "UVICORN_PORT"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("AUTOTESTER_HOSTED", "1")
+    monkeypatch.setenv("AUTOTESTER_FIRST_ADMIN_EMAIL", "boss@at.example")
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", hosts)
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", origins)
+    monkeypatch.setenv("AUTOTESTER_PUBLIC_ORIGIN", value)
+    monkeypatch.setattr("sys.argv", ["uvicorn", "app", "--host", "0.0.0.0", "--port", "8000"])
+
+
+def test_compose_default_public_origin_is_empty_without_a_domain() -> None:
+    """AU20(b): with neither variable set compose must not invent an origin (it once invented
+    `https://localhost`, which the guards admit, so the 'required' rule could never fire)."""
+    raw = _prod()["services"]["autotester"]["environment"]["AUTOTESTER_PUBLIC_ORIGIN"]
+    assert _interpolate(raw, {}) == ""
+    assert _interpolate(raw, {"AUTOTESTER_DOMAIN": "qa.example.com"}) == "https://qa.example.com"
+    assert _interpolate(raw, {"AUTOTESTER_DOMAIN": "q.x", "AUTOTESTER_PUBLIC_ORIGIN":
+                              "http://10.0.0.5:8000"}) == "http://10.0.0.5:8000"
+    assert "localhost" not in raw
+
+
+@pytest.mark.parametrize(("compose_env", "hosts", "origins"), [
+    pytest.param({}, "other.example.com", "https://other.example.com", id="nothing-set"),
+    pytest.param({}, "192.168.1.99:8000", "http://192.168.1.99:8000", id="interim-wrong-ip"),
+])
+def test_compose_default_fed_through_startup_raises_on_a_list_naming_nothing_useful(
+        monkeypatch: pytest.MonkeyPatch, compose_env: dict[str, str], hosts: str,
+        origins: str) -> None:
+    """AU20(b), the shipped container path: the default compose produces, on a 0.0.0.0 bind
+    with an allow-list that does not name the server, is refused at startup, not served as 403."""
+    _wildcard_startup(monkeypatch, compose_env, hosts, origins)
+    with pytest.raises(AuthConfigError, match="AUTOTESTER_PUBLIC_ORIGIN is required"):
+        check_startup()
+
+
+def test_compose_domain_fed_through_startup_starts_only_when_the_lists_name_it(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    env = {"AUTOTESTER_DOMAIN": "qa.example.com"}
+    _wildcard_startup(monkeypatch, env, "", "https://qa.example.com")
+    check_startup()
+    _wildcard_startup(monkeypatch, env, "other.example.com", "https://other.example.com")
+    with pytest.raises(AuthConfigError, match="is not allowed"):
+        check_startup()
 
 
 def test_deploy_guide_claims_only_what_the_compose_file_does() -> None:

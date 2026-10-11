@@ -175,8 +175,11 @@ PUBLIC = [
     ("wild-right-lan-http", WILD4, "", LAN, LAN, True, ("http", "192.168.1.20:8000")),
     ("wild-right-ipv6", WILD4, "", "https://[2001:db8::5]", "https://[2001:db8::5]", True,
      ("https", "[2001:db8::5]")),
-    ("wild-right-loopback", WILD4, "at.example", "", "http://localhost:8000", True,
-     ("http", "localhost:8000")),
+    # a loopback public origin cannot be what remote users reach: refused on a wildcard bind
+    ("wild-loopback-localhost", WILD4, "at.example", "", "http://localhost:8000", False, None),
+    ("wild-loopback-https-localhost", WILD4, "at.example", "", "https://localhost", False, None),
+    ("wild-loopback-127", WILD4, "at.example", "", "http://127.0.0.1:8000", False, None),
+    ("wild6-loopback-v6", WILD6, "at.example", "", "http://[::1]:8000", False, None),
     ("concrete-no-public-origin-unchanged", H + P, "", "https://10.0.0.5:8443", "", True, None),
     ("concrete-public-right", H + P, "", f"https://10.0.0.5:8443 {QA}", QA, True,
      ("https", "qa.example.com")),
@@ -186,6 +189,10 @@ PUBLIC = [
      None),
     ("loopback-public-not-allowed", ["--host", "127.0.0.1"], "at.example", "", QA, False,
      ("https", "qa.example.com")),
+    ("loopback-bind-loopback-public-unchanged", ["--host", "127.0.0.1"], "at.example", "",
+     "http://localhost:8000", True, ("http", "localhost:8000")),
+    ("concrete-bind-loopback-public-unchanged", H + P, "", "https://10.0.0.5:8443",
+     "http://localhost:8000", True, ("http", "localhost:8000")),
     ("loopback-no-public-origin-unchanged", ["--host", "127.0.0.1"], "at.example", "", "", True,
      None),
 ]
@@ -210,6 +217,16 @@ def test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admit
     else:
         with pytest.raises(AuthConfigError, match="AUTOTESTER_PUBLIC_ORIGIN"):
             check_startup()
+
+
+@pytest.mark.parametrize("argv", [WILD4, WILD6], ids=["0.0.0.0", "::"])
+def test_au20_a_wildcard_bind_names_why_a_loopback_public_origin_is_refused(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, argv: list[str]) -> None:
+    gate_on(tmp_path, monkeypatch)
+    _hosted(monkeypatch, argv, "at.example", "")
+    monkeypatch.setenv("AUTOTESTER_PUBLIC_ORIGIN", "https://localhost")
+    with pytest.raises(AuthConfigError, match=r"loopback.*remote users"):
+        check_startup()
 
 
 @pytest.mark.parametrize("wildcard", ["0.0.0.0", "::", "*", ""])
