@@ -12,7 +12,8 @@ dual-trigger: security src/autotester/stages/schedule_gate.py:74
 Why dual: the gate calls `covering_approval(...)` (line 74), which mints a signed approval row and, with no key, writes `AUTOTESTER_APPROVAL_KEY` to the repo-root `.env`. Cycle 0 said "dual check: no, it writes nothing", and that was wrong (see "Correction" below). Cycle 1 also adds `signing_key_available` in `explore_consent.py`, a read-only twin of `ensure_approval_key`'s refusal.
 Fix cycle: 1
 Executor: claude-sonnet-subagent (maker build subagent)
-Status: ready-for-check
+Status: checked-PASS
+Merged: a3c3a324 at 371eb7f6 (2026-10-11)
 Full-suite trigger: none (the existing modules touched are `explore_consent.py`, +1 read-only function, and `TickDeps` in `scheduler.py`, whose only constructor is `tests/schedule_fakes.py`; the 64 + 64 neighbour tests below ran green).
 UI surface: none changed (no route, screen or card), so no browser walk is owed.
 
