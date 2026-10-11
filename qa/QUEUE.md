@@ -363,7 +363,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   priority: AT-887 S1/S2 (high); AT-890 security (data boundary)
   note: AT-890 is in the same file as AT-887 and is built with it; for the student test account, cases come from the crawled student screens and the four older admin/CRM flows are not run against it (D-084 item 2)
 
-- [ ] at773-judge-rule - AT-773: the judge must not PASS a case whose own evidence shows an unmet assertion (a falsified run passed 6 of 6 re-grades; src/autotester/stages/run_case_pipeline.py:37-56,90-101, grade.py:123-143, grade.py:52-67)
+- [x] at773-judge-rule - AT-773: the judge must not PASS a case whose own evidence shows an unmet assertion (a falsified run passed 6 of 6 re-grades; src/autotester/stages/run_case_pipeline.py:37-56,90-101, grade.py:123-143, grade.py:52-67)
+  closed: 2026-10-11, merged 6ee02779 (on master); PASS cycle 0, qa/verdicts/at773-judge-rule.md (checked 1e0aed21).
   approved: 2026-10-11 (D-084)
   state: branch wave/at773-judge-rule exists; check resumed
   priority: medium
