@@ -1,40 +1,52 @@
-# Verdict - at773-judge-rule (AT-773), resume 1 of 2
+# Verdict - at773-judge-rule (AT-773), cycle 0, Retry 1
 
-Bound to D:/autoTesting, worktree .worktrees/at773-judge-rule, branch head 7a1509ee (code identical to 4acce31b judged at cycle 0).
-Policy-Version: proportional-verification/2026-10-06.6. Cycle checked: 0. Date: 2026-10-11. Earlier same-cycle verdict archived at qa/verdicts/at773-judge-rule.r0-1.md.
+Bound to D:/autoTesting; worktree .worktrees/at773-judge-rule; branch wave/at773-judge-rule head 1e0aed21 (clean worktree, master merged at 3322a04f). Policy-Version: proportional-verification/2026-10-06.6. Cycle checked: 0. Retry: 1. Date: 2026-10-11. The earlier same-cycle verdict (BLOCKED-PROCESS) is archived at qa/verdicts/at773-judge-rule.r0-2.md; the cycle-0 verdict is qa/verdicts/at773-judge-rule.r0-1.md. Evidence index: qa/evidence/at773-judge-rule/cycle0-retry1-2026-10-11.md.
 
 ## Check plan
-Head and checkpoint identity first, then `tick.mjs --lint-manifest`, then the merge forecast. The remaining mandatory checks (acceptance end to end, class attack, falsifications) were not started, because the dispatch gate failed.
+Gate (`tick.mjs --lint-manifest` exit 0, head, clean tree); read G6 (qa/contracts/grade.md:56) and E1 (qa/contracts/execute.md:16) verbatim, D-084 item 1 (owner approval) and D-074; step 4c diff scope; class attack on the rule (65 probes) comparing executor and grader unmet detection; affected tests re-run (not reused: grade.py changed on master after the builder pre-check sha, and the head moved); one falsification per criterion in a copy; ruff; doctor. No UI, no browser, no persona walk.
 
-## Gate result
-- Head: branch 7a1509ee == the commit that carries the cycle-0 verdict; `git diff --stat 4acce31b 7a1509ee` is qa files only. Manifest Status is ready-for-check, Fix cycle 0. Worktree clean.
-- `node D:/ai_os/.claude/skills/maker/tools/tick.mjs --lint-manifest .worktrees/at773-judge-rule/qa/manifests/at773-judge-rule.md` exited 1 with two errors:
-  1. `ERROR no-pre-check` - no `Pre-check[<criterion id>]:` line (policy .8-1). A manifest pinned before .8 gets these at its next dispatch and keeps its pin.
-  2. `ERROR mutant-cap` - `mutants=5 > cap 3 for tier M`. The manifest says Tier M; this checker judged the unit L (protected test change) at cycle 0, so the maker should set `Tier: L` (cap 10) or add `mutant-cap-raise: <reason>`.
+## Gate and tier
+- `--lint-manifest` exit 0. Status ready-for-check, Fix cycle 0. Both Pre-check lines present (untagged; the criteria are G6 and E1).
+- `Dual check: no` is right. The diff is `stages/grade.py` verdict logic plus 2 test files: no credential handling, no auth or tenant boundary, no production write, and the guard only ever downgrades a PASS. No path:line to cite.
+- TIER L, as at cycle 0 (protected test change: the `tests/test_grade.py` pin flips PASS -> INCONCLUSIVE, authorized by D-074/G6 and approved in D-084 item 1, Approved-by Umesh 2026-10-11). Tier unchanged.
 
-## Cause (BLOCKED-PROCESS)
-The manifest is not dispatchable under the pinned process rules. Not a code finding and burns no fix cycle.
+## Criteria
+- [G6] met. Code: `grade.py::_assertion_guard`, called from `grade()` after the self-consistency check. PASS plus (outcome ASSERTION_FAILED or any `assert <field>: unmet` item) -> INCONCLUSIVE with a note naming the assertions, D-074(b), G6 and the judge scoreboard. FAIL and INCONCLUSIVE pass through; clean runs are untouched. Re-run: the two grade test files, test_grade_evidence and test_execute_assertions are green inside the 331 passed of the affected set. Falsification F-G6: guard disabled (`if False and ...`) -> `test_judge_pass_on_an_unmet_login_assertion_is_never_pass` red on `assert verdict.result is not Result.PASS`; the copy is green before and after restore.
+- [E1] met. `git diff master wave/at773-judge-rule -- src/autotester/stages/execute.py` is empty (executor untouched, 14/14 test_execute_assertions green). The amended clause (an ASSERTION_FAILED run still reaches the judge and never ends PASS) is evidenced by tests/test_grade.py:68-82 and the probes. Falsification F-E1: `_outcome_verdict` short-circuits ASSERTION_FAILED -> `test_assertion_failed_run_still_reaches_the_judge_but_can_never_pass` red on `assert judge.prompts, "an ASSERTION_FAILED run never reached the judge"`; green before and after restore.
 
-## What the maker must fix (manifest only; do not touch src/tests)
-- Add `Pre-check[G6]: <sha>=4acce31b or the final head <cmd> -> <result> t=<sec> blobs=<path>:<blob7>,...` and `Pre-check[E1]: ...` (one per acceptance criterion id; the command for G6 is the two grade test files, for E1 a test or `git diff` showing execute.py untouched). sha must be at least 7 hex characters, command non-empty, result green, on the final SHA.
-- Set `Tier: L` (protected-test change, as judged at cycle 0) or add a `mutant-cap-raise:` line. Then re-run `--lint-manifest` to exit 0.
-- Optional wording (low, never a FAIL): the manifest says "D-074 is not on origin/master"; it is at docs/DECISIONS.md:2218. Also make sure the pre-check commands are file-scoped (no directory-wide pytest).
-- A rebase or merge of master is not needed for the gate; forecast below.
+## Close-the-class attack (qa/evidence/at773-judge-rule/class-attack-output.txt; labels produced by the real `assert_expected`)
+| Attack | Result |
+|---|---|
+| each assertion kind unmet (url, visible_text, absent_text, dom_asserts, network), outcome COMPLETED and ASSERTION_FAILED, judge PASS | INCONCLUSIVE in all 10; the same kinds met + PASS -> PASS (5) |
+| unreadable page / url (`unmet (page unreadable)`, `unmet (url unreadable)`) + PASS | INCONCLUSIVE (3) |
+| 5 assertions with one or two unmet (4 variants, each also with outcome ASSERTION_FAILED); all-met control | INCONCLUSIVE x8; all met -> PASS |
+| judge result matrix x {outcome only, unmet only, both}: PASS / FAIL / INCONCLUSIVE / BLOCKED | PASS -> INCONCLUSIVE; FAIL, INCONCLUSIVE, BLOCKED unchanged (see P1); a clean COMPLETED run is unchanged for all 4 |
+| ASSERTION_FAILED with no unmet item (M3), and with empty evidence | INCONCLUSIVE, note says `outcome assertion_failed` |
+| ERRORED / NOT_RUN (+unmet) + judge PASS; BLOCKED_HITL | INCONCLUSIVE / INCONCLUSIVE / BLOCKED, judge never called |
+| missing screenshot file + unmet + PASS | INCONCLUSIVE; the note carries both the shortfall and the D-074 text |
+| self-inconsistent judge PASS (failures non-empty) on an unmet run | INCONCLUSIVE (G3 path) |
+| `Redactor` (master's new param): clean prompt + unmet + PASS; secret value in the prompt | INCONCLUSIVE; BLOCKED with judge not called and no value in the note |
+| 3 unmet items; judge's own note | note names all 3; judge note preserved and joined |
+| met item whose detail contains "unmet" (`expected to contain 'unmet'`, `.unmet` selector, `status: unmet`) | the executor flags every one (substring "unmet"); the grader's `": unmet"` scan flags only the `status: unmet` form. The run outcome is ASSERTION_FAILED in every case, so the outcome limb downgrades: no false PASS. The only disagreement effect is a false INCONCLUSIVE, and it originates in execute.py (P3) |
+| unmet label carried by a non-dom/network evidence kind | grader flags it, executor does not: grader is a superset, worse-only |
+| retired case | `grade()` takes only rubric + RawResult and never sees case status, so the rule is identical for any case: n/a by construction |
 
-## Merge forecast against master (nothing merged)
-master is 178 commits ahead of merge-base aa0dca48. `git merge-tree --write-tree` exits 0 (tree 79391b0d96cf86bfe86c274ba17f315f59a68cb1): no textual conflict. master also changed grade.py (ff901f72, adds Redactor to `_withheld` and `grade`, disjoint hunks). In an archive copy of the merged tree under `uv run --project`, `tests/test_grade_assertion_rule.py tests/test_grade.py tests/test_grade_evidence.py` -> 54 passed. Evidence: qa/evidence/at773-judge-rule/resume1-2026-10-11.md. Note the branch .venv lacks `langgraph`, so a merged-tree run needs a fresh uv env.
+No path found where an unmet assertion yields PASS. Bypass hunt: the only `RawResult(...)` producer for a judged run is execute.py:233; `ai_judge._rule_verdict` goes through `grade()`; no other `Verdict(... PASS)` constructor exists outside grade.py.
 
-## Carried forward from cycle 0 (reusable only while src/tests hashes equal 4acce31b)
-Guard G6 (grade.py `_assertion_guard`), 7 of 8 mutants red, M3 outcome-only limb survives (low P1), ruff clean, 119 affected tests green, no bypass path found. These are not a PASS here: the class attack and the per-criterion falsification of this resume were not run.
+## Findings (none blocking)
+PROPOSED-ISSUE P1: {"severity":"low","feature":"grade","title":"G6 says grade() returns only FAIL or INCONCLUSIVE for a failed-assertion run, but a judge answer of BLOCKED passes through unchanged (Judgment.result allows BLOCKED)","evidence":"src/autotester/stages/grade.py _assertion_guard acts only on PASS; probe matrix judge=BLOCKED in class-attack-output.txt","note":"never PASS, so the operative D-074(b) rule holds; either clamp BLOCKED in the guard or word G6 as 'never PASS'"}
+PROPOSED-ISSUE P2: {"severity":"low","feature":"grade","title":"M3: the outcome-only limb of the guard (ASSERTION_FAILED with no unmet item) is required by the G6 text and works (probe: INCONCLUSIVE), but no test pins it","evidence":"tests/test_grade_assertion_rule.py _result always adds an unmet item for ASSERTION_FAILED; dropping `result.outcome is Outcome.ASSERTION_FAILED or` leaves all tests green (cycle-0 M3)","decision":"not a FAIL: the behaviour is correct and G6's own falsifiable clause is met by F-G6; add a test with ASSERTION_FAILED and no unmet item"}
+PROPOSED-ISSUE P3: {"severity":"low","feature":"execute","title":"execute.py::_assertions_unmet matches the substring 'unmet' anywhere, so a MET assertion whose expected text contains 'unmet' marks the run ASSERTION_FAILED; with G6 such a case can now never PASS","evidence":"src/autotester/stages/execute.py:85-86 versus grade.py _unmet_assertions (': unmet'); probe rows 'met-item word unmet'","note":"false INCONCLUSIVE only, never a false PASS; pre-existing detector, tighten it to the `: unmet` label shape"}
+WARN: the old test name `..._judge_owns_the_verdict` survives only in immutable history (qa/manifests/at540-assertion-layer.md); not a finding.
 
-VERDICT: BLOCKED-PROCESS
-SCOREBOARD: not scored (gate failed before the checks)
-TIER: L (protected test change, unchanged from cycle 0)
+VERDICT: PASS
+SCOREBOARD: 2/2 criteria met (G6, E1), 0/0 invariants touched
+TIER: L (protected test change tests/test_grade.py, authorized D-074/D-084; no security/auth/tenancy/prod-write; one checker)
 FAILURES: none
-CAPABILITY-COVERAGE: not run this resume
-LIVE-BROWSER: not-applicable (changed paths: src/autotester/stages/grade.py, tests)
-ISSUES-WRITTEN: none
+CAPABILITY-COVERAGE: 2/2 rows reproduced by the checker in isolated copies (green before, red after, restored); mutants beyond the floor: 0 (cycle-0's 8 stand as guidance; M3 decided above)
+LIVE-BROWSER: not-applicable (changed paths: src/autotester/stages/grade.py, tests/)
+ISSUES-WRITTEN: none (P1-P3 are PROPOSED-ISSUE lines; the maker mints the rows)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
-EXPLANATION: The manifest fails `tick.mjs --lint-manifest` (no-pre-check, mutant-cap), so it is not dispatchable under policy .8-1/.9. Code is unchanged since 4acce31b and merges cleanly with master; the maker only edits the manifest, then re-dispatches.
-Resume: 1 of 2 (the BLOCKED-PROCESS retry does not consume a resume; the maker may keep the count)
-Metrics: start=2026-10-11T04:05:00Z end=2026-10-11T04:25:00Z wall_min=10 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=0 cycle=0 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-06.6
+EXPLANATION: The rule holds for every assertion kind, multiple assertions, unreadable pages, an outcome with no evidence item, the non-judged outcomes and the Redactor path: an unmet assertion never ends PASS, and the judge can only make a result worse. slow: affected-tests run 35 min (machine load, 331 tests) plus ruff/doctor about 8 min, so wall exceeded the L target; every mandatory check finished. Full-suite trigger: none from this unit; the 6c integration check covers it.
+Retry: 1
+Metrics: start=2026-10-11T05:10:50Z end=2026-10-11T07:10:00Z wall_min=119 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6
