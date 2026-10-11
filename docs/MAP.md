@@ -39,6 +39,9 @@
 | `core/redact_wrap.py` | Whitespace normalisation for the exact-encoding needle search, and a |
 | `core/trace.py` | The redacted per-run trace: `TraceWriter` appends one JSON line per stage |
 | `core/urls.py` | URL templating: the identity input a crawled screen shares with the |
+| `delivery/email.py` | The outbound mail adapters: the dry-run outbox and the SMTP sender (hosting.md HO27, HO29). |
+| `delivery/inbox.py` | Delivery records on disk and the send-once procedure around a mail transport (TT9, HO29). |
+| `delivery/message.py` | Compose the report e-mail from a stored `ReportSummary` and a template file (hosting.md HO28). |
 | `doctor.py` | Design enforcement. Runs the rules that keep this repo readable. |
 | `ledger/checks.py` | Design rules over the project's RECORDS, as opposed to its source files. |
 | `ledger/citations.py` | Does every `D-NNN` cited in a gate, contract, manifest, verdict or doc resolve to an |
@@ -69,6 +72,7 @@
 | `schema/catalog.py` | The test catalog: schema for `stages/catalog.py::catalog()`'s output. |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
+| `schema/delivery.py` | Report-delivery shapes: preference, recipient, summary, rendered message, record, SMTP settings. |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
 | `schema/evidence_tombstone.py` | Sidecar tag for a unit's evidence spec whose `kills` node-ids moved out from |
 | `schema/failure_bundle.py` | Failure-bundle shapes (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
@@ -269,6 +273,16 @@
 | `CrawlCoverage` (`schema/crawl.py`) | What a crawl covered, stated by the crawl itself (coverage.md V7). The books balance: |
 | `NoiseCount` (`schema/crawl.py`) | One third-party host's dropped-request tally (never an issue, X9). |
 | `Crawl` (`schema/crawl.py`) | The envelope for one bounded BFS run — `stages/explore.py`'s output. |
+| `DeliveryChannel` (`schema/delivery.py`) |  |
+| `DeliveryStatus` (`schema/delivery.py`) |  |
+| `ReportLabel` (`schema/delivery.py`) | The stored report label. Computed once elsewhere (TT7); every reader takes it as given. |
+| `NotificationPref` (`schema/delivery.py`) | Per-user opt-in (HO26). Default OFF: no mail until the user ticks the box. |
+| `Recipient` (`schema/delivery.py`) | Who a message goes to. Built from the authenticated identity, never from a request body. |
+| `RunCounts` (`schema/delivery.py`) |  |
+| `ReportSummary` (`schema/delivery.py`) | Exactly what HO28 lets a message carry: names, counts, one coverage line, a link. |
+| `RenderedMessage` (`schema/delivery.py`) |  |
+| `DeliveryRecord` (`schema/delivery.py`) | One attempt's outcome (TT9). Stores the user id, a redacted error, never the address. |
+| `SmtpConfig` (`schema/delivery.py`) | Transport settings from the environment. No password: that is read at send time (C5). |
 | `EvidenceTombstoneEntry` (`schema/evidence_tombstone.py`) | One `kills` node-id, named by file + bare function name (no parametrize |
 | `EvidenceTombstone` (`schema/evidence_tombstone.py`) | `qa/evidence/<slug>/mutations.stale.json` -- absent means untagged. |
 | `BundleFileKind` (`schema/failure_bundle.py`) |  |
