@@ -80,4 +80,6 @@ mutant-cap-raise: seven mutations at Tier M (one per served criterion plus an or
 
 Metrics: start=2026-10-11T07:56:58Z end=2026-10-11T12:00:00Z wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=7 cycle=0 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-10.9
 
-**Status:** ready-for-check
+**Status:** checked-PASS
+
+PASS covers the built subset only; T-199 stays open (TB7, HG-TB1, and the held clauses of TB2/TB3/TB4/TB6)
