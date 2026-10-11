@@ -9,6 +9,7 @@ Chromium exits when its last page closes; headless does not) and runs only when
 from __future__ import annotations
 
 import contextlib
+import faulthandler
 import functools
 import os
 from collections.abc import Callable
@@ -31,6 +32,15 @@ def _skip_if_no_chromium() -> None:  # cached: one probe launch per process, not
             pw.chromium.launch(headless=True).close()
     except Exception as exc:  # pragma: no cover - browser binary missing
         pytest.skip(f"chromium unavailable: {type(exc).__name__}")
+
+
+@pytest.fixture(autouse=True)
+def _hard_deadline():
+    """A stuck browser must fail loudly, not hang the run: after 280 s every thread's stack is
+    dumped and the process exits (no pytest-timeout plugin here). Slow machines took ~135 s."""
+    faulthandler.dump_traceback_later(280, exit=True)
+    yield
+    faulthandler.cancel_dump_traceback_later()
 
 
 @pytest.fixture
