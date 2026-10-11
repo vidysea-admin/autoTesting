@@ -1,0 +1,4 @@
+PE persona: tool='get_persona' ok=True refusal=None summary='0 screens, 0 flows, 0 gotchas' artifact_ref='persona:demo'
+PE catalog real: tool='get_catalog' ok=True refusal=None summary='0 of 15 case classes runnable' artifact_ref='catalog:demo'
+
+1 passed in 0.78s

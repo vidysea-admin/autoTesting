@@ -1,0 +1,114 @@
+
+MATRIX
+MX read_only     FILL literal                             REFUSED
+MX test_account  FILL literal                             ALLOWED
+MX allow_writes  FILL literal                             ALLOWED
+MX read_only     FILL None                                ALLOWED
+MX test_account  FILL None                                ALLOWED
+MX allow_writes  FILL None                                ALLOWED
+MX read_only     FILL empty                               ALLOWED
+MX test_account  FILL empty                               ALLOWED
+MX allow_writes  FILL empty                               ALLOWED
+MX read_only     FILL placeholder only                    ALLOWED
+MX test_account  FILL placeholder only                    ALLOWED
+MX allow_writes  FILL placeholder only                    ALLOWED
+MX read_only     FILL placeholder+literal                 REFUSED
+MX test_account  FILL placeholder+literal                 ALLOWED
+MX allow_writes  FILL placeholder+literal                 ALLOWED
+MX read_only     FILL placeholder+space                   ALLOWED
+MX test_account  FILL placeholder+space                   ALLOWED
+MX allow_writes  FILL placeholder+space                   ALLOWED
+MX read_only     FILL placeholder undeclared key          ALLOWED
+MX test_account  FILL placeholder undeclared key          ALLOWED
+MX allow_writes  FILL placeholder undeclared key          ALLOWED
+MX read_only     FILL lowercase-key bogus placeholder     REFUSED
+MX test_account  FILL lowercase-key bogus placeholder     ALLOWED
+MX allow_writes  FILL lowercase-key bogus placeholder     ALLOWED
+MX read_only     SELECT literal                           REFUSED
+MX test_account  SELECT literal                           ALLOWED
+MX allow_writes  SELECT literal                           ALLOWED
+MX read_only     SELECT None                              ALLOWED
+MX test_account  SELECT None                              ALLOWED
+MX allow_writes  SELECT None                              ALLOWED
+MX read_only     UPLOAD literal                           REFUSED
+MX test_account  UPLOAD literal                           ALLOWED
+MX allow_writes  UPLOAD literal                           ALLOWED
+MX read_only     UPLOAD None                              ALLOWED
+MX test_account  UPLOAD None                              ALLOWED
+MX allow_writes  UPLOAD None                              ALLOWED
+MX read_only     CLICK Delete account                     REFUSED
+MX test_account  CLICK Delete account                     REFUSED
+MX allow_writes  CLICK Delete account                     ALLOWED
+MX read_only     CLICK Submit                             REFUSED
+MX test_account  CLICK Submit                             REFUSED
+MX allow_writes  CLICK Submit                             ALLOWED
+MX read_only     CLICK Save                               ALLOWED
+MX test_account  CLICK Save                               ALLOWED
+MX allow_writes  CLICK Save                               ALLOWED
+MX read_only     CLICK Save changes                       ALLOWED
+MX test_account  CLICK Save changes                       ALLOWED
+MX allow_writes  CLICK Save changes                       ALLOWED
+MX read_only     CLICK Place order                        ALLOWED
+MX test_account  CLICK Place order                        ALLOWED
+MX allow_writes  CLICK Place order                        ALLOWED
+MX read_only     CLICK Confirm                            ALLOWED
+MX test_account  CLICK Confirm                            ALLOWED
+MX allow_writes  CLICK Confirm                            ALLOWED
+MX read_only     CLICK Apply now                          ALLOWED
+MX test_account  CLICK Apply now                          ALLOWED
+MX allow_writes  CLICK Apply now                          ALLOWED
+MX read_only     CLICK Sign in                            ALLOWED
+MX test_account  CLICK Sign in                            ALLOWED
+MX allow_writes  CLICK Sign in                            ALLOWED
+MX read_only     CLICK empty target                       REFUSED
+MX test_account  CLICK empty target                       REFUSED
+MX allow_writes  CLICK empty target                       REFUSED
+MX read_only     CLICK Log out                            REFUSED
+MX test_account  CLICK Log out                            REFUSED
+MX allow_writes  CLICK Log out                            REFUSED
+MX read_only     CLICK Unsubscribe                        REFUSED
+MX test_account  CLICK Unsubscribe                        REFUSED
+MX allow_writes  CLICK Unsubscribe                        ALLOWED
+MX read_only     PRESS_KEY Enter default                  ALLOWED
+MX test_account  PRESS_KEY Enter default                  ALLOWED
+MX allow_writes  PRESS_KEY Enter default                  ALLOWED
+MX read_only     PRESS_KEY Enter                          ALLOWED
+MX test_account  PRESS_KEY Enter                          ALLOWED
+MX allow_writes  PRESS_KEY Enter                          ALLOWED
+MX read_only     PRESS_KEY Delete key                     ALLOWED
+MX test_account  PRESS_KEY Delete key                     ALLOWED
+MX allow_writes  PRESS_KEY Delete key                     ALLOWED
+MX read_only     NAVIGATE /logout                         ALLOWED
+MX test_account  NAVIGATE /logout                         ALLOWED
+MX allow_writes  NAVIGATE /logout                         ALLOWED
+MX read_only     NAVIGATE /account/delete?id=1            ALLOWED
+MX test_account  NAVIGATE /account/delete?id=1            ALLOWED
+MX allow_writes  NAVIGATE /account/delete?id=1            ALLOWED
+MX read_only     NAVIGATE offsite                         ALLOWED
+MX test_account  NAVIGATE offsite                         ALLOWED
+MX allow_writes  NAVIGATE offsite                         ALLOWED
+MX read_only     NAVIGATE javascript:                     ALLOWED
+MX test_account  NAVIGATE javascript:                     ALLOWED
+MX allow_writes  NAVIGATE javascript:                     ALLOWED
+MX read_only     HOVER                                    ALLOWED
+MX test_account  HOVER                                    ALLOWED
+MX allow_writes  HOVER                                    ALLOWED
+MX read_only     SCROLL                                   ALLOWED
+MX test_account  SCROLL                                   ALLOWED
+MX allow_writes  SCROLL                                   ALLOWED
+MX read_only     BACK                                     ALLOWED
+MX test_account  BACK                                     ALLOWED
+MX allow_writes  BACK                                     ALLOWED
+MX read_only     WAIT                                     ALLOWED
+MX test_account  WAIT                                     ALLOWED
+MX allow_writes  WAIT                                     ALLOWED
+MX read_only     ASSERT                                   ALLOWED
+MX test_account  ASSERT                                   ALLOWED
+MX allow_writes  ASSERT                                   ALLOWED
+MX order-reversed list: refused under write_policy read_only: step 2 (click 'Delete account'): destructive-name deny-list
+MX actions not in matrix: set()
+DISPATCH enter True None run_case calls: 1
+DISPATCH nav-delete True None run_case calls: 2
+DISPATCH click-save True None run_case calls: 3
+
+2 passed in 0.96s

@@ -1,0 +1,83 @@
+"""Checker A attack probes (throwaway copy only). Observations printed, not asserted."""
+from __future__ import annotations
+import base64, binascii, json, urllib.parse
+from pathlib import Path
+from typing import Any
+import pytest
+from test_agent_tools import (Spies, _case, _ctx, _go, _grant, _nav, _project, RAW, spies, BASE)
+from autotester.agents import guards, tools
+from autotester.schema.agent_layer import RefusalClass
+from autotester.schema.enums import Action, ApprovalKind, WritePolicy
+from autotester.schema.flowspec import Step
+from autotester.browser.secrets import SecretStore
+from autotester.providers.mock import MockProvider
+
+
+def test_matrix_read_only() -> None:
+    rows = []
+    proj = _project(WritePolicy.READ_ONLY)
+    cases = {
+        "FILL literal": Step(order=1, action=Action.FILL, target="Name", value="Eve"),
+        "FILL None": Step(order=1, action=Action.FILL, target="Name", value=None),
+        "FILL empty": Step(order=1, action=Action.FILL, target="Name", value=""),
+        "FILL placeholder only": Step(order=1, action=Action.FILL, target="Pw", value="{{SECRET:APP_PASS}}"),
+        "FILL placeholder+literal": Step(order=1, action=Action.FILL, target="Pw", value="{{SECRET:APP_PASS}}x"),
+        "FILL placeholder+space": Step(order=1, action=Action.FILL, target="Pw", value="{{SECRET:APP_PASS}} "),
+        "FILL placeholder undeclared key": Step(order=1, action=Action.FILL, target="Pw", value="{{SECRET:NOPE}}"),
+        "FILL lowercase-key bogus placeholder": Step(order=1, action=Action.FILL, target="Pw", value="{{SECRET:lower}}"),
+        "SELECT literal": Step(order=1, action=Action.SELECT, target="Country", value="IN"),
+        "SELECT None": Step(order=1, action=Action.SELECT, target="Country", value=None),
+        "UPLOAD literal": Step(order=1, action=Action.UPLOAD, target="File", value="/tmp/x.pdf"),
+        "UPLOAD None": Step(order=1, action=Action.UPLOAD, target="File", value=None),
+        "CLICK Delete account": Step(order=1, action=Action.CLICK, target="Delete account"),
+        "CLICK Submit": Step(order=1, action=Action.CLICK, target="Submit"),
+        "CLICK Save": Step(order=1, action=Action.CLICK, target="Save"),
+        "CLICK Save changes": Step(order=1, action=Action.CLICK, target="Save changes"),
+        "CLICK Place order": Step(order=1, action=Action.CLICK, target="Place order"),
+        "CLICK Confirm": Step(order=1, action=Action.CLICK, target="Confirm"),
+        "CLICK Apply now": Step(order=1, action=Action.CLICK, target="Apply now"),
+        "CLICK Sign in": Step(order=1, action=Action.CLICK, target="Sign in"),
+        "CLICK empty target": Step(order=1, action=Action.CLICK, target=""),
+        "CLICK Log out": Step(order=1, action=Action.CLICK, target="Log out"),
+        "CLICK Unsubscribe": Step(order=1, action=Action.CLICK, target="Unsubscribe"),
+        "PRESS_KEY Enter default": Step(order=1, action=Action.PRESS_KEY, target="Search", value=None),
+        "PRESS_KEY Enter": Step(order=1, action=Action.PRESS_KEY, target="Comment", value="Enter"),
+        "PRESS_KEY Delete key": Step(order=1, action=Action.PRESS_KEY, target="", value="Delete"),
+        "NAVIGATE /logout": Step(order=1, action=Action.NAVIGATE, target="/logout"),
+        "NAVIGATE /account/delete?id=1": Step(order=1, action=Action.NAVIGATE, target="/account/delete?id=1&confirm=1"),
+        "NAVIGATE offsite": Step(order=1, action=Action.NAVIGATE, target="https://evil.test/x"),
+        "NAVIGATE javascript:": Step(order=1, action=Action.NAVIGATE, target="javascript:alert(1)"),
+        "HOVER": Step(order=1, action=Action.HOVER, target="Menu"),
+        "SCROLL": Step(order=1, action=Action.SCROLL, target="", value="800"),
+        "BACK": Step(order=1, action=Action.BACK, target=""),
+        "WAIT": Step(order=1, action=Action.WAIT, target="", value="100"),
+        "ASSERT": Step(order=1, action=Action.ASSERT, target=""),
+    }
+    for label, step in cases.items():
+        for pol in (WritePolicy.READ_ONLY, WritePolicy.TEST_ACCOUNT, WritePolicy.ALLOW_WRITES):
+            r = guards.write_policy_refusal(_case([step]), _project(pol))
+            rows.append((pol.value, label, "REFUSED" if r else "ALLOWED", r))
+    for pol in (WritePolicy.READ_ONLY, WritePolicy.TEST_ACCOUNT, WritePolicy.ALLOW_WRITES):
+        for label, *_ in [(l,) for l in cases]:
+            pass
+    print("\nMATRIX")
+    for pol, label, verdict, r in rows:
+        print(f"MX {pol:13} {label:40} {verdict}")
+    # ordering: step sorted by order; a mutating step with duplicate/odd order
+    s1 = Step(order=2, action=Action.CLICK, target="Delete account")
+    s0 = Step(order=1, action=Action.NAVIGATE, target="/x")
+    print("MX order-reversed list:", guards.write_policy_refusal(_case([s1, s0]), proj))
+    # all Action covered?
+    covered = {s.action for s in cases.values()}
+    print("MX actions not in matrix:", set(Action) - covered)
+
+
+def test_al3c_in_dispatch_allowed_enter(tmp_path: Path, spies: Spies) -> None:
+    ctx = _ctx(tmp_path, spies, WritePolicy.READ_ONLY)
+    _grant(ctx.store, ApprovalKind.LIVE_CASE)
+    for lab, st in (("enter", Step(order=2, action=Action.PRESS_KEY, target="Comment", value="Enter")),
+                    ("nav-delete", Step(order=2, action=Action.NAVIGATE, target="/account/delete?id=1")),
+                    ("click-save", Step(order=2, action=Action.CLICK, target="Save"))):
+        c = ctx.store.add_case(_case([_nav(), st]))
+        out = _go(ctx, "run_case", {"case_id": c.id})
+        print("DISPATCH", lab, out.ok, out.refusal, "run_case calls:", spies.count("run_case"))
