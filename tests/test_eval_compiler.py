@@ -13,6 +13,7 @@ from eval_compiler_fixtures import (
     LOGIN,
     ORPHAN,
     SLUG,
+    approved_store,
     branch,
     persona,
     provider,
@@ -21,24 +22,25 @@ from eval_compiler_fixtures import (
 )
 
 from autotester.schema.case import ExpandedSteps
-from autotester.schema.enums import Action, Result
+from autotester.schema.enums import Action, CaseClass, Result
 from autotester.schema.flowspec import FlowSpec, Step
 from autotester.schema.scenario import ScenarioSpec
 from autotester.stages.eval_compiler import compile_evals, rollup_workflow
+from autotester.stages.expand import propose_cases
 from autotester.stages.knowledge_graph import trace_of
 from autotester.stages.review import FlowSpecNotReviewed
 from autotester.store.project_store import ProjectStore
 
 
-def _compile(*flows, scens=None, release=None):
+def _compile(root, *flows, scens=None, release=None):
     return compile_evals(spec(*flows), persona(*flows), scens or [], provider(*flows),
-                         release=release)
+                         release=release, store=approved_store(root, *flows))
 
 
 # -- EC2: every eval traces to its source through a real graph edge --------
 
 def test_every_compiled_case_resolves_a_trace_to_a_real_screen_and_flow(tmp_path: Path) -> None:
-    out = _compile(LOGIN, BROWSE, scens=scenarios())
+    out = _compile(tmp_path, LOGIN, BROWSE, scens=scenarios())
     assert out.cases, "a fixture with two flows must compile cases"
     store = ProjectStore(SLUG, tmp_path)
     store.save_portal_persona(persona(LOGIN, BROWSE).model_copy(update={"graph": out.graph}))
@@ -51,27 +53,29 @@ def test_every_compiled_case_resolves_a_trace_to_a_real_screen_and_flow(tmp_path
             assert graph.node(node.id) is not None
 
 
-def test_a_flow_with_no_resolvable_edge_produces_no_case_and_says_so() -> None:
-    out = _compile(LOGIN, ORPHAN)
+def test_a_flow_with_no_resolvable_edge_produces_no_case_and_says_so(tmp_path: Path) -> None:
+    out = _compile(tmp_path, LOGIN, ORPHAN)
     assert {c.flow_id for c in out.cases} == {"flow_login"}
     assert out.untraced_flows == ["flow_orphan"]
 
 
-def test_an_untraceable_flow_spends_no_model_call() -> None:
+def test_an_untraceable_flow_spends_no_model_call(tmp_path: Path) -> None:
     """Even a model that would accept a class for the ORPHAN flow is never asked."""
     prov = provider(ORPHAN)
     prov.responses["agent"][0] = ExpandedSteps(
         steps=[Step(order=1, action=Action.CLICK, target="x")], rationale="r")
-    out = compile_evals(spec(ORPHAN), persona(ORPHAN), [], prov)
+    out = compile_evals(spec(ORPHAN), persona(ORPHAN), [], prov,
+                        store=approved_store(tmp_path, ORPHAN))
     assert out.cases == [] and out.untraced_flows == ["flow_orphan"]
     assert prov.prompts == []
 
 
-def test_a_model_proposed_class_case_is_edged_to_its_flow() -> None:
+def test_a_model_proposed_class_case_is_edged_to_its_flow(tmp_path: Path) -> None:
     prov = provider(LOGIN)
     prov.responses["agent"][0] = ExpandedSteps(
         steps=[Step(order=1, action=Action.FILL, target="email field", value="")], rationale="r")
-    out = compile_evals(spec(LOGIN), persona(LOGIN), [], prov)
+    out = compile_evals(spec(LOGIN), persona(LOGIN), [], prov,
+                        store=approved_store(tmp_path, LOGIN))
     assert len(out.cases) == 2  # the happy case + the one accepted class
     assert all(trace_of(out.graph, c.id) for c in out.cases)
 
@@ -82,8 +86,32 @@ def test_the_flowspec_must_be_reviewed_first() -> None:
         compile_evals(draft, persona(LOGIN), [], provider(LOGIN))
 
 
-def test_a_release_node_is_edged_from_every_case() -> None:
-    out = _compile(LOGIN, scens=scenarios()[:2], release="2026.10.7")
+def test_compile_without_a_reviewed_store_spends_nothing(tmp_path: Path) -> None:
+    """FB5: the gate holds through this caller too -- no store, or no approvals, is 0 calls."""
+    prov = provider(LOGIN)
+    with pytest.raises(ValueError):
+        compile_evals(spec(LOGIN), persona(LOGIN), [], prov)
+    store = ProjectStore(SLUG, tmp_path)
+    saved = spec(LOGIN)
+    store.save_flowspec(saved)
+    store.stage_case_proposals(propose_cases(saved))
+    with pytest.raises(ValueError, match="HAPPY"):
+        compile_evals(spec(LOGIN), persona(LOGIN), [], prov, store=store)
+    assert prov.prompts == []
+
+
+def test_compile_asks_the_model_only_for_approved_proposals(tmp_path: Path) -> None:
+    store = approved_store(tmp_path, LOGIN)
+    rows = [p for p in store.list_case_proposals() if p.case_class is not CaseClass.HAPPY]
+    for row in rows[2:]:
+        store.review_case_proposal(row.id, "umesh", approved=False)
+    prov = provider(LOGIN)
+    compile_evals(spec(LOGIN), persona(LOGIN), [], prov, store=store)
+    assert len(prov.prompts) == 2
+
+
+def test_a_release_node_is_edged_from_every_case(tmp_path: Path) -> None:
+    out = _compile(tmp_path, LOGIN, scens=scenarios()[:2], release="2026.10.7")
     targets = {e.src for e in out.graph.edges if e.kind == "targets"
                and e.dst == "release:2026.10.7"}
     assert targets == {f"case:{c.id}" for c in out.cases}
@@ -116,9 +144,9 @@ def test_rollup_truth_table(e2e, steps, expected) -> None:
 
 # -- EC4: scenario variants are distinct, traceable nodes ------------------
 
-def test_two_declared_variants_make_two_scenario_nodes_with_their_own_cases() -> None:
+def test_two_declared_variants_make_two_scenario_nodes_with_their_own_cases(tmp_path: Path) -> None:
     two = [s for s in scenarios() if s.flow_id == "flow_login"]
-    out = _compile(LOGIN, scens=two)
+    out = _compile(tmp_path, LOGIN, scens=two)
     nodes = [n for n in out.graph.nodes if n.kind == "scenario"]
     assert sorted(n.id for n in nodes) == ["scenario:s_new", "scenario:s_valid"]
     sets = {}
@@ -132,8 +160,8 @@ def test_two_declared_variants_make_two_scenario_nodes_with_their_own_cases() ->
     assert set().union(*sets.values()) <= base
 
 
-def test_a_scenario_case_applies_only_its_own_branch_values() -> None:
-    out = _compile(LOGIN, scens=scenarios()[:1])
+def test_a_scenario_case_applies_only_its_own_branch_values(tmp_path: Path) -> None:
+    out = _compile(tmp_path, LOGIN, scens=scenarios()[:1])
     no_case = next(c for c in out.cases if c.title.endswith("s_valid/no"))
     pw = next(s for s in no_case.steps if s.target == "password field")
     assert pw.value == "bad"
@@ -144,8 +172,10 @@ def test_a_scenario_case_applies_only_its_own_branch_values() -> None:
 
 # -- EC5: a branch with no compiled case is reported UNCOVERED ----------
 
-def test_exactly_the_uncompilable_branch_is_uncovered_and_coverage_is_not_full() -> None:
-    out = _compile(LOGIN, BROWSE, scens=scenarios())
+def test_exactly_the_uncompilable_branch_is_uncovered_and_coverage_is_not_full(
+    tmp_path: Path,
+) -> None:
+    out = _compile(tmp_path, LOGIN, BROWSE, scens=scenarios())
     assert [(u.scenario_id, u.branch_id) for u in out.uncovered] == [("s_browse", "no")]
     assert out.total_branches == 6
     assert out.coverage == pytest.approx(5 / 6) and out.coverage < 1.0
@@ -154,25 +184,25 @@ def test_exactly_the_uncompilable_branch_is_uncovered_and_coverage_is_not_full()
     assert len(covered) == 5
 
 
-def test_a_fully_compilable_list_has_nothing_uncovered() -> None:
+def test_a_fully_compilable_list_has_nothing_uncovered(tmp_path: Path) -> None:
     good = [s for s in scenarios() if s.id != "s_browse"]
-    out = _compile(LOGIN, scens=good)
+    out = _compile(tmp_path, LOGIN, scens=good)
     assert out.uncovered == [] and out.coverage == 1.0
 
 
-def test_a_scenario_on_an_unknown_flow_uncovers_every_branch_with_a_reason() -> None:
+def test_a_scenario_on_an_unknown_flow_uncovers_every_branch_with_a_reason(tmp_path: Path) -> None:
     lost = ScenarioSpec(id="s_lost", flow_id="flow_nope", name="lost",
                         branches=[branch("yes", "y"), branch("no", "n")])
-    out = _compile(LOGIN, scens=[lost])
+    out = _compile(tmp_path, LOGIN, scens=[lost])
     assert [(u.scenario_id, u.branch_id) for u in out.uncovered] == [
         ("s_lost", "yes"), ("s_lost", "no")]
     assert all("flow_nope" in u.reason for u in out.uncovered)
     assert out.coverage == 0.0
 
 
-def test_a_scenario_on_a_flow_with_no_graph_trace_is_uncovered() -> None:
+def test_a_scenario_on_a_flow_with_no_graph_trace_is_uncovered(tmp_path: Path) -> None:
     lost = ScenarioSpec(id="s_orphan", flow_id="flow_orphan", name="o",
                         branches=[branch("yes", "y")])
-    out = _compile(LOGIN, ORPHAN, scens=[lost])
+    out = _compile(tmp_path, LOGIN, ORPHAN, scens=[lost])
     assert [u.branch_id for u in out.uncovered] == ["yes"]
     assert not [n for n in out.graph.nodes if n.id == "scenario:s_orphan"]
