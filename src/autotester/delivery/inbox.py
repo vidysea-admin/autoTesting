@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import uuid
 from collections.abc import Callable
 from datetime import datetime, timedelta
@@ -49,12 +50,32 @@ def next_retry_at(now: datetime, attempts_made: int) -> datetime | None:
     return None if delay is None else now + delay
 
 
+def _encode_part(value: str) -> str:
+    """Make an id unambiguous inside a key and safe on a case-insensitive file system.
+
+    Lower-case letters, digits, `.` and `-` stand for themselves; an upper-case letter becomes
+    `_` + its lower-case letter, a raw `_` becomes `_0`. So `_` is always followed by a letter or
+    digit, the encoded part never contains `__` (the separator) and never ends with `_`, and two
+    different ids never encode to the same text, even when file names ignore case.
+    """
+    return "".join("_0" if c == "_" else f"_{c.lower()}" if c.isupper() else c
+                   for c in safe_id(value))
+
+
 def delivery_key(run_id: str, channel: DeliveryChannel, user_id: str) -> str:
-    """The idempotency key: one per run, channel and recipient. Safe as a file-name part."""
-    key = f"{safe_id(run_id)}__{channel.value}__{safe_id(user_id)}"
+    """The idempotency key `<channel>__<run>__<user>`: one per run, channel and recipient.
+
+    Injective: the parts are encoded so `__` occurs only as the separator, and the channel is a
+    fixed lower-case word. Safe as a file-name part and starts with a letter.
+    """
+    key = f"{channel.value}__{_encode_part(run_id)}__{_encode_part(user_id)}"
     if not SAFE_KEY.fullmatch(key):
         raise ValueError("delivery key too long")
     return key
+
+
+_PART = r"(?:[a-z0-9.-]|_[a-z0-9])+"
+_CHANNELS = "|".join(re.escape(c.value) for c in DeliveryChannel)
 
 
 def _create_once(path: Path, data: str) -> bool:
@@ -93,18 +114,20 @@ class DeliveryLog:
         except (OSError, ValueError, KeyError):
             return None
 
-    def _load(self, pattern: str) -> list[DeliveryRecord]:
+    def _load(self, name: re.Pattern[str]) -> list[DeliveryRecord]:
+        """Records whose WHOLE file name matches `name` (never a prefix or a glob), by name."""
         if not self.records_dir.is_dir():
             return []
         return [DeliveryRecord.model_validate_json(p.read_text("utf-8"))
-                for p in sorted(self.records_dir.glob(pattern)) if not p.name.startswith(".")]
+                for p in sorted(self.records_dir.iterdir()) if name.fullmatch(p.name)]
 
     def records_for_key(self, key: str) -> list[DeliveryRecord]:
-        return self._load(f"{key}.*.json")
+        return self._load(re.compile(re.escape(key) + r"\.\d+\.json"))
 
     def records_for_run(self, run_id: str) -> list[DeliveryRecord]:
         """Every attempt for one run, oldest first: what the run page shows (TT9)."""
-        return self._load(f"{safe_id(run_id)}__*.json")
+        return self._load(re.compile(
+            rf"(?:{_CHANNELS})__{re.escape(_encode_part(run_id))}__{_PART}\.\d+\.json"))
 
     def latest(self, key: str) -> DeliveryRecord | None:
         records = self.records_for_key(key)
@@ -158,7 +181,12 @@ def deliver_once(log: DeliveryLog, transport: MailTransport, to: Recipient,
     else:
         record = DeliveryRecord(run_id=run_id, channel=channel, recipient_user_id=to.user_id,
                                 status=transport.outcome, attempts=attempt)
-    log.append(key, record)
+    try:
+        log.append(key, record)
+    except FileExistsError:
+        # A second worker (skewed clock) closed this live attempt as "outcome unknown" while we
+        # were sending. Records are never rewritten, so that record stands; it is truthful.
+        return log.latest(key)
     return record
 
 
@@ -168,7 +196,8 @@ def _close_stale(log: DeliveryLog, key: str, run_id: str, channel: DeliveryChann
     if started is not None and now - started < STALE_AFTER:
         return None                         # still running elsewhere: wait for its record
     record = _failed(run_id, channel, user_id, attempt,
-                     "attempt started but its outcome was never recorded; not resent", None)
+                     "outcome unknown: the attempt started but was never recorded, so the message "
+                     "may or may not have been sent; not resent", None)
     try:
         log.append(key, record)
     except FileExistsError:

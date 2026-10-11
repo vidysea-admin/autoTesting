@@ -63,6 +63,10 @@ def test_summary_has_no_slot_for_page_content_or_attachments() -> None:
     ("report_url", "https://x.test/runs/1?token=abc"), ("report_url", "https://x.test/r#frag"),
     ("report_url", "https://user:pw@x.test/r"), ("report_url", "javascript:alert(1)"),
     ("report_url", "ftp://x.test/r"), ("report_url", "https://x.test/r\r\nBcc: e@x.test"),
+    ("report_url", "//evil.test/x"), ("report_url", "///evil.test/x"),
+    ("report_url", "https://x.test//evil.test/x"),
+    ("report_url", "https://x.test:99999/r"), ("report_url", "https://x.test:0/r"),
+    ("report_url", "https://x.test:65536/r"),
     ("run_id", "../../etc"), ("run_id", "a/b")])
 def test_summary_fields_refuse_injection_paths_tokens_and_odd_links(field: str,
                                                                     value: str) -> None:
@@ -72,6 +76,12 @@ def test_summary_fields_refuse_injection_paths_tokens_and_odd_links(field: str,
 
 def test_report_url_may_be_a_signed_in_site_relative_path() -> None:
     assert render_message(summary(report_url="/runs/run-0001")).body.count("/runs/run-0001") == 1
+
+
+@pytest.mark.parametrize("url", ["https://x.test:65535/runs/r1", "https://x.test:1/r", "/",
+                                 "/a//b"])
+def test_report_url_accepts_the_plain_forms_next_to_the_refused_ones(url: str) -> None:
+    assert summary(report_url=url).report_url == url
 
 
 def test_naive_timestamps_are_refused() -> None:

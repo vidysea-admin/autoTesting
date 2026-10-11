@@ -73,6 +73,23 @@ def test_implicit_ssl_mode_skips_starttls_and_asks_the_factory_for_ssl() -> None
     assert factory.requests[0][2] is True and "starttls" not in factory.client.names()
 
 
+def test_implicit_ssl_default_factory_verifies_the_certificate(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: list[dict[str, object]] = []
+
+    class StubSsl(FakeSmtpClient):
+        def __init__(self, host: str, port: int, **kw: object) -> None:
+            super().__init__()
+            seen.append({"host": host, "port": port, **kw})
+
+    monkeypatch.setattr(mail.smtplib, "SMTP_SSL", StubSsl)
+    SmtpAdapter(config(host="127.0.0.1", port=465, tls="ssl"), lambda: FAKE_PASSWORD).send(
+        recipient(), render_message(summary()), key="k1")
+    ctx = seen[0]["context"]
+    assert seen[0]["port"] == 465 and ctx.verify_mode == ssl.CERT_REQUIRED
+    assert ctx.check_hostname is True
+
+
 def test_every_connection_carries_a_positive_timeout() -> None:
     factory = FakeFactory()
     _adapter(factory).send(recipient(), render_message(summary()), key="k1")
@@ -165,7 +182,9 @@ def test_silent_server_trips_the_timeout_instead_of_hanging() -> None:
 
 @pytest.mark.parametrize("bad", ["a@x.test\r\nBcc: evil@x.test", "a@x.test\nCc: e@x.test",
                                  "a b@x.test", "a@x", "@x.test", "a@@x.test", "<a@x.test>",
-                                 "a@x.test, b@x.test", "", "a@x.test;b@x.test"])
+                                 "a@x.test, b@x.test", "", "a@x.test;b@x.test",
+                                 "a@x.test\r", "a@x.test\n", "\ra@x.test", "\na@x.test",
+                                 "a\rb@x.test", "a\nb@x.test"])
 def test_recipient_address_validation_rejects_injection_and_malformed(bad: str) -> None:
     with pytest.raises(ValidationError):
         Recipient(user_id="user-a", address=bad)

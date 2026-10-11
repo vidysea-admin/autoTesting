@@ -24,7 +24,7 @@ SAFE_KEY = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,199}")
 _ADDRESS = re.compile(r"[A-Za-z0-9._%+-]{1,64}@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)"
                       r"+[A-Za-z]{2,63}")
 _PATH = re.compile(r"(?:^|[\s(\"'=])(?:[A-Za-z]:[\\/]|\\\\|/[A-Za-z0-9_.~-]+/)")
-_URL = re.compile(r"(?:https?://[A-Za-z0-9.-]+(?::\d{1,5})?)?/[A-Za-z0-9._~/-]*")
+_URL = re.compile(r"(?:https?://[A-Za-z0-9.-]+(?::(\d{1,5}))?)?/(?!/)[A-Za-z0-9._~/-]*")
 LOOPBACK = frozenset({"127.0.0.1", "::1", "localhost"})
 
 
@@ -130,8 +130,11 @@ class ReportSummary(BaseModel):
     @field_validator("report_url")
     @classmethod
     def _url(cls, v: str) -> str:
-        if len(v) > 2048 or not _URL.fullmatch(v):
+        match = _URL.fullmatch(v) if len(v) <= 2048 else None
+        if match is None:   # `(?!/)` refuses `//host/...`, which a mail client resolves elsewhere
             raise ValueError("a plain link to the report (no query, fragment or credentials)")
+        if match.group(1) is not None and not 1 <= int(match.group(1)) <= 65535:
+            raise ValueError("the port is out of range")
         return v
 
 
