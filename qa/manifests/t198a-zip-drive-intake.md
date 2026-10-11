@@ -1,6 +1,6 @@
 # Manifest - t198a-zip-drive-intake (Group 10 unit G3 / T-198a: zip and Drive intake)
 
-## Status: ready-for-check
+## Status: checked-PASS
 
 **Contract:** qa/contracts/team-intake.md TI1-TI11, qa/contracts/hosting.md HO15, HO30-HO33 (referenced, not restated)
 **Goal task:** T-198 slice G3. The developer-portal slice t198b is NOT in this unit.
