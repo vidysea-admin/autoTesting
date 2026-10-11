@@ -1,0 +1,6 @@
+provider RuntimeError          exit=1 NO-DOC stdout='' exc=RuntimeError stderr='reviewing src_73dd99fb62f6 with fake (cap $0.5)\n'
+provider OSError               exit=1 NO-DOC stdout='' exc=OSError stderr='reviewing src_73dd99fb62f6 with fake (cap $0.5)\n'
+provider KeyboardInterrupt     exit=130 NO-DOC stdout='' exc=SystemExit stderr='reviewing src_73dd99fb62f6 with fake (cap $0.5)\n'
+provider ProviderError         exit=1 one-doc exc=SystemExit stderr='reviewing src_73dd99fb62f6 with fake (cap $0.5)\n'
+redact+RuntimeError            exit=1 NO-DOC stdout='' exc=RuntimeError stderr='reviewing src_73dd99fb62f6 with fake (cap $0.5)\n'
+done
