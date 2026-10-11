@@ -1,0 +1,10 @@
+>       assert found == EXPECTED_SITES, (
+E       AssertionError: advice sites changed.
+E         gone: []
+E         new: [('stages/unified_report.py', 'release')]
+E       assert {('cli.py', '...s list'), ...} == {('cli.py', '...s list'), ...}
+E         
+E         Extra items in the left set:
+E         ('stages/unified_report.py', 'release')
+E         Use -v to get more diff
+====================== 1 failed, 32 deselected in 9.83s =======================

@@ -1,0 +1,4 @@
+[09:30:01] suite lock busy, waiting: {"pid": 32092, "repo": "D:\\hei-sweep", "started": 1791691144.9423523, "started_iso": "2026-10-11T09:29:04", "token": "c8bd577e0a0a97a9", "cmd": "shard_suite --repo D:/hei-sweep --ref ee1608b4 --shards 2 --python D:/hei-sweep/.venv/Scripts/python.exe --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--hei-sweep/26f1a91d-f148-4b30-b5ef-61c69724d073/scratchpad/suite-6c-1011b/ --lock-timeout 900"}
+[09:45:02] BLOCKED: suite lock busy after 901s; holder: {"pid": 32092, "repo": "D:\\hei-sweep", "started": 1791691144.9423523, "started_iso": "2026-10-11T09:29:04", "token": "c8bd577e0a0a97a9", "cmd": "shard_suite --repo D:/hei-sweep --ref ee1608b4 --shards 2 --python D:/hei-sweep/.venv/Scripts/python.exe --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--hei-sweep/26f1a91d-f148-4b30-b5ef-61c69724d073/scratchpad/suite-6c-1011b/ --lock-timeout 900"}
+[09:45:02] summary -> D:\autoTesting\.work\t200b-r1a-suite\out1\summary.json (exit 3)
+EXIT=3

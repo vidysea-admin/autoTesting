@@ -1,0 +1,63 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t168-mr1b
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 7 items
+
+tests\test_unified_report_secrets.py FF.....                             [100%]
+
+================================== FAILURES ===================================
+_ test_dc4_special_character_secret_is_absent_raw_and_escaped_in_html_and_cli _
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-25504/test_dc4_special_character_sec0')
+
+    def test_dc4_special_character_secret_is_absent_raw_and_escaped_in_html_and_cli(
+            root: Path) -> None:
+        _seed_everywhere(root)
+        out = root / "cli.html"
+        result = runner.invoke(cli_app, ["release-report", "demo", "--out", str(out)])
+        assert result.exit_code == 0, result.output
+        page = out.read_text(encoding="utf-8")
+        assert "fix " in page and "Export" in page  # the planted fields really rendered
+        for form in _forms():
+>           assert form not in page, form
+E           AssertionError: p&amp;ss&lt;w&gt;o&#x27;rdQ9
+E           assert 'p&amp;ss&lt...;o&#x27;rdQ9' not in '<!doctype h...tion></html>'
+E             
+E             'p&amp;ss&lt;w&gt;o&#x27;rdQ9' is contained here:
+E             ?           ---------------------------------------------------                              ^^^^^^^^^^^
+E               : flagged p&amp;ss&lt;w&gt;o&#x27;rdQ9</p><p>Release <code>rel1</code> · build <code>sha-p&amp;ss&lt;w&gt;o&#x27;rdQ9</code></p><p class='warn'>No trusted baseline, so no regression claim is made. no trusted baseline: no earlier release was finished, unflagged and all-PASS (a release is never compared with itself or with an untrusted run)</p><h3>Flows</h3><table><tr><th>Flow</th><th>Status</th><th>Cases</th></tr><tr><...
+E             
+E             ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests\test_unified_report_secrets.py:103: AssertionError
+____________ test_dc4_report_object_is_clean_before_it_is_rendered ____________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-25504/test_dc4_report_object_is_clea0')
+
+    def test_dc4_report_object_is_clean_before_it_is_rendered(root: Path) -> None:
+        store = _seed_everywhere(root)
+        dumped = build_report(store, None).model_dump_json()
+        for form in _forms():
+>           assert form not in dumped, form
+E           AssertionError: p&ss<w>o'rdQ9
+E           assert "p&ss<w>o'rdQ9" not in '{"schema_ve...lete":true}}'
+E             
+E             "p&ss<w>o'rdQ9" is contained here:
+E             ?           ---------------------------------------------------------------
+E               sha":"sha-p&ss<w>o'rdQ9","finished":true,"flagged_bad":true,"flagged_reason":"flagged p&ss<w>o'rdQ9","diff":{"baseline_rule":"latest_earlier_finished_unflagged_all_pass_release","baseline_run_id":null,"regressed":[],"fixed":[],"new_cases":[],"note":"no trusted baseline: no earlier release was finished, unflagged and all-PASS (a release is never compared with itself or with an untrusted run)"},"flows":[{"flow_id":"f-p&ss<w>o'rdQ9","status":"failed","case_ids":["c1"]}],"issue...
+E             
+E             ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests\test_unified_report_secrets.py:116: AssertionError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t168-damage-control-report\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t168-damage-control-report\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_unified_report_secrets.py::test_dc4_special_character_secret_is_absent_raw_and_escaped_in_html_and_cli
+FAILED tests/test_unified_report_secrets.py::test_dc4_report_object_is_clean_before_it_is_rendered
+=================== 2 failed, 5 passed, 1 warning in 6.96s ====================

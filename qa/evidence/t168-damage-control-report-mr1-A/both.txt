@@ -1,0 +1,3 @@
+docs/MAP.md
+src/autotester/cli.py
+tests/test_cli_advice_resolves.py

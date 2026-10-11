@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-155 [normal] Track C5: unified AI test report grouped by tier with judge reason strings
 - T-167 [high] Commit/release-triggered visible-browser regression with consent, history and resumable retries
 ## Last decisions (computed status)
-- D-078 2026-10-07 decision ACTIVE
-- D-079 2026-10-08 decision ACTIVE
 - D-080 2026-10-10 decision ACTIVE
 - D-081 2026-10-10 decision ACTIVE
 - D-082 2026-10-11 decision ACTIVE
+- D-083 2026-10-11 decision ACTIVE
+- D-084 2026-10-11 decision ACTIVE

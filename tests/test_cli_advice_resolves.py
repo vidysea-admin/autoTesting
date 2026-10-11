@@ -176,6 +176,7 @@ EXPECTED_SITES = {
     ("stages/ingest.py", "ingest register"),
     ("stages/media_prep.py", "ingest prep"),
     ("stages/review.py", "flowspec approve"),
+    ("stages/unified_report.py", "release"),
     ("ui/routes_learn.py", "expand"),
 }
 """Every place this codebase tells a human to run something, frozen.
@@ -193,7 +194,7 @@ interpolates it), so this set has ten entries for eleven sites; the count is
 asserted separately. AT-110 added a second `core/consent.py` "approve" site
 (re-grant an unsigned approval), so that command now has two sites as well."""
 
-EXPECTED_SITE_COUNT = 23
+EXPECTED_SITE_COUNT = 24
 
 
 def test_no_advice_site_can_vanish_unnoticed() -> None:

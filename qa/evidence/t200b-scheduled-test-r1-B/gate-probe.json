@@ -1,0 +1,40 @@
+{
+ "G1 first gate (None = allowed)": null,
+ "G1 approvals": 1,
+ "G1 key now in .env": true,
+ "G2 second gate": null,
+ "G2 approvals still": 1,
+ "G3 seeded expired row expires_at": "2026-10-08T03:37:37.659512+00:00",
+ "G3 gate with only an expired row": null,
+ "G3 rows after": 2,
+ "G3 new row unexpired": [
+  true,
+  false
+ ],
+ "G4 other rows": 1,
+ "G4 demo rows (copied other-project row)": [
+  "other"
+ ],
+ "G4 gate demo": null,
+ "G4 demo rows after": [
+  "other",
+  "demo"
+ ],
+ "G5 key changed -> gate": null,
+ "G5 rows (old unverifiable, new minted?)": 2,
+ "G5 lost key preview": "approval_required: the approval signing key is unavailable",
+ "G5 lost key avail": false,
+ "G5 preview wrote nothing": true,
+ "G5 lost key real gate": "approval_required: the approval signing key is unavailable",
+ "G5 real gate wrote nothing": true,
+ "G6 tampered row, gate": null,
+ "G6 rows": 2,
+ "G7 value removed, gate": "secretref_without_value: a credential is declared but no value is set; set it on the Credentials page",
+ "G8 no secretref gate": "no_secretref: this project declares no credentials, so a scheduled run has no approval; declare them on the Credentials page",
+ "G9 first-ever preview=None unchanged": true,
+ "G9 provisioned+minted preview=None unchanged": true,
+ "G10 ambiguous-key preview": null,
+ "G10 ambiguous-key real gate": "approval_required: refusing to start a live_case run against https://demo.test/app \u2014 no approval exists for it\nGrant one with:\n  uv run autotester approve demo --kind live_case --target \"https://demo.test/app\" --scope \"<what this run may touch>\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 200 --wall-clock 600.0\n(credential-derived approval unavailable: the approval key is unavailable (InvalidEnvValue))",
+ "G11 refusal": "secretref_without_value: a credential is declared but no value is set; set it on the Credentials page",
+ "G11 secret absent": true
+}
