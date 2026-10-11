@@ -1,0 +1,15 @@
+    
+        monkeypatch.setattr(FakeContext, "new_page", over_budget)
+        s = session(tmp_path, expose_cdp=True)
+        with pytest.raises(RunBudgetExceeded):
+            s.start()
+>       assert s.cdp_url is None and refuses_connections(dev.port)
+E       assert (None is None and False)
+E        +  where None = <autotester.browser.session.BrowserSession object at 0x00000183A53E0D90>.cdp_url
+E        +  and   False = refuses_connections(61526)
+E        +    where 61526 = <test_browser_session_cdp.FakeDevTools object at 0x00000183A4DDB750>.port
+
+tests\test_browser_session_cdp.py:239: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_browser_session_cdp.py::test_a_failure_after_launch_closes_the_exposed_browser
+============================== 1 failed in 4.65s ==============================
