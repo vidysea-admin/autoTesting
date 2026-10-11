@@ -83,4 +83,4 @@ All reds are assertion failures. 10 mutations, 10 red.
 - Unreadable `capture.json` or `run.json` render as UNREADABLE rows and a malformed refusal line is named by number, never dropped; raw file content is never echoed.
 - AT-840 and AT-890 (PII masking toward a model) are out of scope: this stage calls no model, and only `Redactor` secret masking applies to cells.
 
-Status: ready-for-check
+Status: checked-PASS (merged 808cdf7f, D-082)
