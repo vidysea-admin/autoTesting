@@ -214,6 +214,11 @@ class SecretStore:
         """Declared and undeclared alike — anything in .env is a secret to mask."""
         return {**self._shadow, **self._values}
 
+    def scrub_values(self) -> dict[str, str]:
+        """Every masked value by key, for a caller that needs the mapping itself (a secret
+        gate over a prompt, a `Redactor`) rather than a ready `redactor()`."""
+        return dict(self._all_values())
+
     def has_value(self, key: str) -> bool:
         """Whether a declared key currently has a usable value. Says nothing
         about what the value is — callers use this to fail a run up front

@@ -78,6 +78,10 @@ projects/*/sources.jsonl
 # (same rationale as the crawl artifacts above, D-015).
 projects/*/screenmap.json
 projects/*/issues.jsonl
+# A video review (T-197): the work dir holds a redacted copy of a recording and PNG frames of it;
+# the stored review and its exports quote the recording. The contract says the review is stored
+# under the project and "never in the repo" (team-video-review TV10), so the whole tree is out.
+projects/*/reviews/
 
 # maker-checker parallel wave worktrees (AIOS /maker convention)
 .worktrees/

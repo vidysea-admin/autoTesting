@@ -209,7 +209,7 @@ def _warn_on_target_mismatch(target: str, proj: Any) -> None:
     """
     from urllib.parse import urlparse
 
-    if proj is None or not proj.base_url:
+    if proj is None or not proj.base_url or "://" not in target:   # a provider id is no URL
         return
     base, want = urlparse(target), urlparse(proj.base_url)
     same_host = (base.scheme, base.netloc) == (want.scheme, want.netloc)
@@ -234,7 +234,7 @@ def _signed_or_refuse(candidate: Any) -> None:
 
 def approve_cmd(
     project: str,
-    kind: str = typer.Option(..., "--kind", help="read | crawl | adversarial | live_case"),
+    kind: str = typer.Option(..., "--kind", help="read|crawl|adversarial|live_case|video_review"),
     target: str = typer.Option(..., "--target", help="the exact base_url or endpoint"),
     scope: str = typer.Option(..., "--scope", help="what this run may touch, in your words"),
     granted_by: str = typer.Option(..., "--granted-by"),

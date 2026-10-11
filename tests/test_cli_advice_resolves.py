@@ -169,6 +169,7 @@ EXPECTED_SITES = {
     ("cli_release.py", "release"),
     ("cli_release.py", "release-log"),
     ("cli_video.py", "ingest list"),
+    ("cli_video_review.py", "ingest list"),
     ("core/consent.py", "approve"),
     ("doctor.py", "map"),
     ("doctor.py", "snapshot"),
@@ -193,9 +194,16 @@ removing it without putting this in its place was a net loss.
 Two sites in `media_prep.py` share a command (the constant and the message that
 interpolates it), so this set has ten entries for eleven sites; the count is
 asserted separately. AT-110 added a second `core/consent.py` "approve" site
-(re-grant an unsigned approval), so that command now has two sites as well."""
+(re-grant an unsigned approval), so that command now has two sites as well.
 
-EXPECTED_SITE_COUNT = 25
+Count history: 21 at the T-197 base; master's changes (T-198a intake commands,
+T-202 provider move) took it to 24; T-197 adds one site, `cli_video_review.py`
+("ingest list", the review command's hint to list sources), so the merged
+count is 24 + 1 = 25. T-204 adds one more, `auth/config.py` ("auth bootstrap-admin",
+the startup refusal that names the break-glass command), so the count after merging
+T-204 is 25 + 1 = 26. The set above names every site from all sides."""
+
+EXPECTED_SITE_COUNT = 26
 
 
 def test_no_advice_site_can_vanish_unnoticed() -> None:
