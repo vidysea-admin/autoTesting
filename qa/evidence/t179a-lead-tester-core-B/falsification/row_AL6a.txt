@@ -1,0 +1,42 @@
+== row AL6a-release-test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_400748/AL6a-release-test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_400748\AL6a-release-test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 5.60s
+-- diff
+@@ -144,6 +144,7 @@
+ 
+ def _release(ctx: AgentContext, outcome: ToolOutcome) -> ToolOutcome:
+     """Scrub, then gate, the one thing that goes back to the model (AL6)."""
++    return outcome
+     clean = outcome.model_copy(update={"summary": ctx.secrets.redactor().scrub(outcome.summary)})
+     try:
+         guards.guard_model_bound(ctx.secrets, clean.model_dump_json())
+-- red-after
+>       assert out.ok and RAW not in out.model_dump_json()  # exact value: scrubbed to a placeholder
+E       assert (True and 'Hunter2-raw-value-9137' not in '{"tool":"ge...t_ref":null}'
+E        +  where True = ToolOutcome(tool='get_catalog', ok=True, refusal=None, summary='typed Hunter2-raw-value-9137 into the form', artifact_ref=None).ok
+E         
+E         'Hunter2-raw-value-9137' is contained here:
+E           y":"typed Hunter2-raw-value-9137 into the form","artifact_ref":null}
+E         ?           ++++++++++++++++++++++)
+tests\test_agent_tools.py:260: AssertionError
+1 failed in 1.45s
+-- other nodes in file (context)
+== row AL6a-release-test_al6_a_secret_in_a_stage_result_never_reaches_the_model (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_401737/AL6a-release-test_al6_a_secret_in_a_stage_result_never_reaches_the_model)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_401737\AL6a-release-test_al6_a_secret_in_a_stage_result_never_reaches_the_model\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 1.05s
+-- diff
+@@ -144,6 +144,7 @@
+ 
+ def _release(ctx: AgentContext, outcome: ToolOutcome) -> ToolOutcome:
+     """Scrub, then gate, the one thing that goes back to the model (AL6)."""
++    return outcome
+     clean = outcome.model_copy(update={"summary": ctx.secrets.redactor().scrub(outcome.summary)})
+     try:
+         guards.guard_model_bound(ctx.secrets, clean.model_dump_json())
+-- red-after
+1 passed in 0.51s
+-- other nodes in file (context)

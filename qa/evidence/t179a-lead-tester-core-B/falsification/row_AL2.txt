@@ -1,0 +1,23 @@
+== row AL2 (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_398499/AL2)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_398499\AL2\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 2.16s
+-- diff
+@@ -98,7 +98,7 @@
+         raise _Refused(RefusalClass.WRITE_POLICY, why)
+     guards.live_case_approval(ctx.store, ctx.project, case)
+     with ctx.open_session(None) as session:
+-        result = _scrubbed(ctx, execute.run_case(case, session))
++        result = _scrubbed(ctx, RawResult(case_id=case.id, outcome=__import__("autotester.schema.run",fromlist=["x"]).Outcome.COMPLETED))
+     ctx.store.save_result(ctx.run_id, result)
+     return ToolOutcome(tool="run_case", ok=True, artifact_ref=f"result:{case.id}",
+                        summary=f"outcome {result.outcome.value}"
+-- red-after
+>       assert spies.count("run_case") == 1 and spies.sessions == 1
+E       AssertionError: assert (0 == 1)
+E        +  where 0 = count('run_case')
+E        +    where count = <test_agent_tools.Spies object at 0x0000019076D88ED0>.count
+tests\test_agent_tools.py:148: AssertionError
+1 failed in 1.59s
+-- other nodes in file (context)
