@@ -5,7 +5,8 @@
 **Date:** 2026-10-11
 **Executor:** claude-sonnet-subagent (builder only; no checker dispatched)
 
-## Status: ready-for-check
+## Status: checked-PASS
+Merged: d867024f
 Fix cycle: 2
 Repair base: b59dda0d
 Policy-Version: proportional-verification/2026-10-10.9
