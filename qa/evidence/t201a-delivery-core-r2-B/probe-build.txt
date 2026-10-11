@@ -1,0 +1,6 @@
+### build base
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_base\src\autotester\__init__.py
+deliveries: 88
+### build head
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_head\src\autotester\__init__.py
+deliveries: 88

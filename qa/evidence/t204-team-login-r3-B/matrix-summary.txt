@@ -1,0 +1,196 @@
+M001-127.0.0.1-unset-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M002-127.0.0.1-unset-both START-OK 200 303 403 
+M003-127.0.0.1-unset-hosts START-OK 200 303 403 
+M004-127.0.0.1-unset-origins START-OK 200 303 403 
+M005-127.0.0.1-unset-wrong START-OK 200 303 403 
+M006-127.0.0.1-empty-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M007-127.0.0.1-empty-both START-OK 200 303 403 
+M008-127.0.0.1-empty-hosts START-OK 200 303 403 
+M009-127.0.0.1-empty-origins START-OK 200 303 403 
+M010-127.0.0.1-empty-wrong START-OK 200 303 403 
+M011-127.0.0.1-lo-http-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M012-127.0.0.1-lo-http-both START-OK 200 303 403 
+M013-127.0.0.1-lo-http-hosts START-OK 200 303 403 
+M014-127.0.0.1-lo-http-origins START-OK 200 303 403 
+M015-127.0.0.1-lo-http-wrong START-OK 200 303 403 
+M016-127.0.0.1-lo-https-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M017-127.0.0.1-lo-https-both START-OK 200 303 403 
+M018-127.0.0.1-lo-https-hosts START-OK 200 303 403 
+M019-127.0.0.1-lo-https-origins START-OK 200 303 403 
+M020-127.0.0.1-lo-https-wrong START-OK 200 303 403 
+M021-127.0.0.1-lo-127-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M022-127.0.0.1-lo-127-both START-OK 200 303 403 
+M023-127.0.0.1-lo-127-hosts START-OK 200 303 403 
+M024-127.0.0.1-lo-127-origins START-OK 200 303 403 
+M025-127.0.0.1-lo-127-wrong START-OK 200 303 403 
+M026-127.0.0.1-lan-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M027-127.0.0.1-lan-both START-OK 200 303 403 
+M028-127.0.0.1-lan-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M029-127.0.0.1-lan-origins START-OK 200 303 403 
+M030-127.0.0.1-lan-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M031-127.0.0.1-domain-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M032-127.0.0.1-domain-both START-OK 200 303 403 
+M033-127.0.0.1-domain-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M034-127.0.0.1-domain-origins START-OK 200 303 403 
+M035-127.0.0.1-domain-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M036-cc1-unset-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M037-cc1-unset-both START-OK 200 303 403 
+M038-cc1-unset-hosts START-OK 200 303 403 
+M039-cc1-unset-origins START-OK 200 303 403 
+M040-cc1-unset-wrong START-OK 200 303 403 
+M041-cc1-empty-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M042-cc1-empty-both START-OK 200 303 403 
+M043-cc1-empty-hosts START-OK 200 303 403 
+M044-cc1-empty-origins START-OK 200 303 403 
+M045-cc1-empty-wrong START-OK 200 303 403 
+M046-cc1-lo-http-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M047-cc1-lo-http-both START-OK 200 303 403 
+M048-cc1-lo-http-hosts START-OK 200 303 403 
+M049-cc1-lo-http-origins START-OK 200 303 403 
+M050-cc1-lo-http-wrong START-OK 200 303 403 
+M051-cc1-lo-https-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M052-cc1-lo-https-both START-OK 200 303 403 
+M053-cc1-lo-https-hosts START-OK 200 303 403 
+M054-cc1-lo-https-origins START-OK 200 303 403 
+M055-cc1-lo-https-wrong START-OK 200 303 403 
+M056-cc1-lo-127-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M057-cc1-lo-127-both START-OK 200 303 403 
+M058-cc1-lo-127-hosts START-OK 200 303 403 
+M059-cc1-lo-127-origins START-OK 200 303 403 
+M060-cc1-lo-127-wrong START-OK 200 303 403 
+M061-cc1-lan-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M062-cc1-lan-both START-OK 200 303 403 
+M063-cc1-lan-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M064-cc1-lan-origins START-OK 200 303 403 
+M065-cc1-lan-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M066-cc1-domain-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M067-cc1-domain-both START-OK 200 303 403 
+M068-cc1-domain-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M069-cc1-domain-origins START-OK 200 303 403 
+M070-cc1-domain-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M071-192.168.1.4-unset-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M072-192.168.1.4-unset-both START-OK 200 303 403 
+M073-192.168.1.4-unset-hosts REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M074-192.168.1.4-unset-origins START-OK 200 303 403 
+M075-192.168.1.4-unset-wrong REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M076-192.168.1.4-empty-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M077-192.168.1.4-empty-both START-OK 200 303 403 
+M078-192.168.1.4-empty-hosts REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M079-192.168.1.4-empty-origins START-OK 200 303 403 
+M080-192.168.1.4-empty-wrong REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M081-192.168.1.4-lo-http-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M082-192.168.1.4-lo-http-both START-OK 200 303 403 
+M083-192.168.1.4-lo-http-hosts REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M084-192.168.1.4-lo-http-origins START-OK 200 303 403 
+M085-192.168.1.4-lo-http-wrong REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M086-192.168.1.4-lo-https-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M087-192.168.1.4-lo-https-both START-OK 200 303 403 
+M088-192.168.1.4-lo-https-hosts REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M089-192.168.1.4-lo-https-origins START-OK 200 303 403 
+M090-192.168.1.4-lo-https-wrong REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M091-192.168.1.4-lo-127-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M092-192.168.1.4-lo-127-both START-OK 200 303 403 
+M093-192.168.1.4-lo-127-hosts REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M094-192.168.1.4-lo-127-origins START-OK 200 303 403 
+M095-192.168.1.4-lo-127-wrong REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M096-192.168.1.4-lan-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M097-192.168.1.4-lan-both START-OK 200 303 403 
+M098-192.168.1.4-lan-hosts REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M099-192.168.1.4-lan-origins START-OK 200 303 403 
+M100-192.168.1.4-lan-wrong REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M101-192.168.1.4-domain-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M102-192.168.1.4-domain-both REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M103-192.168.1.4-domain-hosts REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M104-192.168.1.4-domain-origins REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M105-192.168.1.4-domain-wrong REFUSE None None None ) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M106-0.0.0.0-unset-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M107-0.0.0.0-unset-both REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M108-0.0.0.0-unset-hosts REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M109-0.0.0.0-unset-origins REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M110-0.0.0.0-unset-wrong REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M111-0.0.0.0-empty-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M112-0.0.0.0-empty-both REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M113-0.0.0.0-empty-hosts REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M114-0.0.0.0-empty-origins REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M115-0.0.0.0-empty-wrong REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M116-0.0.0.0-lo-http-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M117-0.0.0.0-lo-http-both REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M118-0.0.0.0-lo-http-hosts REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M119-0.0.0.0-lo-http-origins REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M120-0.0.0.0-lo-http-wrong REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M121-0.0.0.0-lo-https-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M122-0.0.0.0-lo-https-both REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M123-0.0.0.0-lo-https-hosts REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M124-0.0.0.0-lo-https-origins REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M125-0.0.0.0-lo-https-wrong REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M126-0.0.0.0-lo-127-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M127-0.0.0.0-lo-127-both REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M128-0.0.0.0-lo-127-hosts REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M129-0.0.0.0-lo-127-origins REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M130-0.0.0.0-lo-127-wrong REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M131-0.0.0.0-lan-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M132-0.0.0.0-lan-both START-OK 200 303 403 
+M133-0.0.0.0-lan-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M134-0.0.0.0-lan-origins START-OK 200 303 403 
+M135-0.0.0.0-lan-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M136-0.0.0.0-domain-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M137-0.0.0.0-domain-both START-OK 200 303 403 
+M138-0.0.0.0-domain-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M139-0.0.0.0-domain-origins START-OK 200 303 403 
+M140-0.0.0.0-domain-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M141-cc-unset-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M142-cc-unset-both REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M143-cc-unset-hosts REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M144-cc-unset-origins REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M145-cc-unset-wrong REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M146-cc-empty-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M147-cc-empty-both REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M148-cc-empty-hosts REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M149-cc-empty-origins REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M150-cc-empty-wrong REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M151-cc-lo-http-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M152-cc-lo-http-both REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M153-cc-lo-http-hosts REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M154-cc-lo-http-origins REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M155-cc-lo-http-wrong REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M156-cc-lo-https-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M157-cc-lo-https-both REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M158-cc-lo-https-hosts REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M159-cc-lo-https-origins REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M160-cc-lo-https-wrong REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M161-cc-lo-127-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M162-cc-lo-127-both REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M163-cc-lo-127-hosts REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M164-cc-lo-127-origins REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M165-cc-lo-127-wrong REFUSE None None None very address: set the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+M166-cc-lan-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M167-cc-lan-both START-OK 200 303 403 
+M168-cc-lan-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M169-cc-lan-origins START-OK 200 303 403 
+M170-cc-lan-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M171-cc-domain-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+M172-cc-domain-both START-OK 200 303 403 
+M173-cc-domain-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+M174-cc-domain-origins START-OK 200 303 403 
+M175-cc-domain-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+C176-compose-neither-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+C177-compose-neither-both REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+C178-compose-neither-hosts REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+C179-compose-neither-origins REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+C180-compose-neither-wrong REFUSE None None None or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+C181-compose-domain-only-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+C182-compose-domain-only-both START-OK 200 303 403 
+C183-compose-domain-only-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+C184-compose-domain-only-origins START-OK 200 303 403 
+C185-compose-domain-only-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+C186-compose-explicit-origin-unset REFUSE None None None onfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+C187-compose-explicit-origin-both START-OK 200 303 403 
+C188-compose-explicit-origin-hosts REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+C189-compose-explicit-origin-origins START-OK 200 303 403 
+C190-compose-explicit-origin-wrong REFUSE None None None ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+H191-0.0.0.0-nohosted-unset-unset START-BUT-REJECTS 403 403 403 
+H192-0.0.0.0-nohosted-unset-both START-OK 200 303 403 
+H193-0.0.0.0-nohosted-unset-wrong START-BUT-REJECTS 403 403 403 
+H194-0.0.0.0-nohosted-lan-unset START-BUT-REJECTS 403 403 403 
+H195-0.0.0.0-nohosted-lan-both START-OK 200 303 403 
+H196-0.0.0.0-nohosted-lan-wrong START-BUT-REJECTS 403 403 403 

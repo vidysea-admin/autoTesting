@@ -1,0 +1,57 @@
+01 header trickle 1B/0.1s                               direct=False  2.11s cb=     37 sent=       38 acc=1 | public=CdpEndpointError  2.09s thr=[] ns=None
+02 body trickle CL=60000 1B/0.1s                        direct=False  2.02s cb=    188 sent=      189 acc=1 | public=CdpEndpointError  2.08s thr=[] ns=None
+03a chunked trickle 1B/0.1s                             direct=False  2.02s cb=    104 sent=      104 acc=1 | public=CdpEndpointError  2.09s thr=[] ns=None
+03b chunked endless tiny chunks fast                    direct=False  0.42s cb= 399189 sent=   660085 acc=1 | public=CdpEndpointError  0.33s thr=[] ns=None
+03c chunk-size ext endless fast                         direct=False  0.00s cb=  65617 sent=    73809 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+04 no-CL Connection:close endless fast                  direct=False  0.00s cb=  65607 sent=    73900 acc=1 | public=CdpEndpointError  0.08s thr=[] ns=None
+05a padded 65536 declared CL                            direct=True   0.09s cb=  65610 sent=    65610 acc=1 | public=returned  1.06s thr=[] ns=None
+05b padded 65537 declared CL                            direct=False  0.06s cb=   8192 sent=    65611 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+05c padded 65536 undeclared (close)                     direct=True   0.31s cb=  65606 sent=    65606 acc=1 | public=returned  1.33s thr=[] ns=None
+05d padded 65537 undeclared (close)                     direct=False  0.00s cb=  65607 sent=    65607 acc=1 | public=CdpEndpointError  0.08s thr=[] ns=None
+05e padded 65536 chunked                                direct=True   0.09s cb=  65629 sent=    65629 acc=1 | public=returned  1.03s thr=[] ns=None
+05f padded 65537 chunked                                direct=False  0.05s cb=  65623 sent=    65630 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+06 accepts, never answers                               direct=False  2.01s cb=      0 sent=        0 acc=1 | public=CdpEndpointError  2.03s thr=[] ns=None
+07a never-accept (backlog filled)                       direct=False  2.02s cb=      0 sent=        0 acc=0 | public=CdpEndpointError  2.03s thr=[] ns=None
+07b unrouted CDP_HOST 192.0.2.1                         direct=False  2.00s cb=      0 sent=        0 acc=0 | public=CdpEndpointError  2.02s thr=[] ns=None
+08a mid-body close, valid JSON prefix (CL 1000)         direct=True   0.03s cb=    175 sent=      175 acc=1 | public=returned  1.05s thr=[] ns=None
+08b mid-body close, partial JSON                        direct=False  0.02s cb=    103 sent=      103 acc=1 | public=CdpEndpointError  0.06s thr=[] ns=None
+08c closed after headers only                           direct=False  0.00s cb=     72 sent=       72 acc=1 | public=CdpEndpointError  0.02s thr=[] ns=None
+09a 100 Continue forever fast                           direct=False  2.00s cb=11791680 sent= 12100000 acc=1 | public=CdpEndpointError  2.03s thr=[] ns=None
+09b 103 once then 200 good                              direct=False  0.03s cb=    214 sent=      214 acc=1 | public=CdpEndpointError  0.09s thr=[] ns=None
+09c 100 Continue trickled                               direct=False  2.09s cb=    475 sent=      500 acc=1 | public=CdpEndpointError  2.08s thr=[] ns=None
+09d 100 once then 200 good (control)                    direct=True   0.02s cb=    199 sent=      199 acc=1 | public=returned  1.03s thr=[] ns=None
+10a 301 -> other loopback port (good id)                direct=False  0.02s cb=     84 sent=       84 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+10b 301 -> http://localhost:<aux>                       direct=False  0.02s cb=     84 sent=       84 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+10c 301 -> http://example.invalid/                      direct=False  0.03s cb=     87 sent=       87 acc=1 | public=CdpEndpointError  0.02s thr=[] ns=None
+10a 302 -> other loopback port (good id)                direct=False  0.00s cb=     84 sent=       84 acc=1 | public=CdpEndpointError  0.05s thr=[] ns=None
+10b 302 -> http://localhost:<aux>                       direct=False  0.03s cb=     84 sent=       84 acc=1 | public=CdpEndpointError  0.02s thr=[] ns=None
+10c 302 -> http://example.invalid/                      direct=False  0.01s cb=     87 sent=       87 acc=1 | public=CdpEndpointError  0.05s thr=[] ns=None
+10a 307 -> other loopback port (good id)                direct=False  0.00s cb=     84 sent=       84 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+10b 307 -> http://localhost:<aux>                       direct=False  0.02s cb=     84 sent=       84 acc=1 | public=CdpEndpointError  0.16s thr=[] ns=None
+10c 307 -> http://example.invalid/                      direct=False  0.00s cb=     87 sent=       87 acc=1 | public=CdpEndpointError  0.08s thr=[] ns=None
+11a deep [ x30000                                       direct=False  0.03s cb=  30074 sent=    30074 acc=1 | public=CdpEndpointError  0.06s thr=[] ns=None
+11b deep {"a": x30000                                   direct=False  0.00s cb=   8192 sent=    65536 acc=1 | public=CdpEndpointError  0.05s thr=[] ns=None
+11c deep [ exactly cap                                  direct=False  0.00s cb=  65610 sent=    65610 acc=1 | public=CdpEndpointError  0.08s thr=[] ns=None
+11d deep {"a": exactly cap                              direct=False  0.03s cb=  65610 sent=    65610 acc=1 | public=CdpEndpointError  0.05s thr=[] ns=None
+11e 60000-digit number in good obj                      direct=False  0.03s cb=  60180 sent=    60180 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+11f invalid UTF-8 inside good obj                       direct=False  0.00s cb=    183 sent=      183 acc=1 | public=CdpEndpointError  0.02s thr=[] ns=None
+11g dup key right then wrong                            direct=False  0.00s cb=    249 sent=      249 acc=1 | public=CdpEndpointError  0.08s thr=[] ns=None
+11h dup key wrong then right                            direct=True   0.00s cb=    249 sent=      249 acc=1 | public=returned  1.08s thr=[] ns=None
+11i UTF-8 BOM prefix + good                             direct=True   0.03s cb=    177 sent=      177 acc=1 | public=returned  1.03s thr=[] ns=None
+11j id field = list                                     direct=False  0.00s cb=    176 sent=      176 acc=1 | public=CdpEndpointError  0.02s thr=[] ns=None
+11k id field = dict                                     direct=False  0.00s cb=    181 sent=      181 acc=1 | public=CdpEndpointError  0.08s thr=[] ns=None
+11l id field = int                                      direct=False  0.06s cb=     98 sent=       98 acc=1 | public=CdpEndpointError  0.09s thr=[] ns=None
+11m id field = null                                     direct=False  0.05s cb=    101 sent=      101 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+11n id field = str w/ right path as suffix of longer str direct=True   0.00s cb=    177 sent=      177 acc=1 | public=returned  1.03s thr=[] ns=None
+11o id field = right path + trailing junk               direct=False  0.02s cb=    175 sent=      175 acc=1 | public=CdpEndpointError  0.05s thr=[] ns=None
+11p top-level array containing good obj                 direct=False  0.00s cb=    176 sent=      176 acc=1 | public=CdpEndpointError  0.06s thr=[] ns=None
+11q control: good identity                              direct=True   0.03s cb=    174 sent=      174 acc=1 | public=returned  1.02s thr=[] ns=None
+11r control: good identity chunked                      direct=True   0.00s cb=    192 sent=      192 acc=1 | public=returned  1.03s thr=[] ns=None
+12a 150 headers                                         direct=False  0.00s cb=   1714 sent=     1714 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+12b 99 headers (control, should pass)                   direct=False  0.02s cb=   1154 sent=     1154 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+12c one 70000-byte header line                          direct=False  0.03s cb=  70181 sent=    70181 acc=1 | public=CdpEndpointError  0.02s thr=[] ns=None
+13a non-HTTP reply                                      direct=False  0.02s cb=     20 sent=       20 acc=1 | public=CdpEndpointError  0.03s thr=[] ns=None
+13b empty reply (close)                                 direct=False  0.02s cb=      0 sent=        0 acc=1 | public=CdpEndpointError  0.06s thr=[] ns=None
+13c HTTP/0.9-style bare body                            direct=False  0.33s cb=    102 sent=      102 acc=1 | public=CdpEndpointError  0.38s thr=[] ns=None
+13d 200 headers, no CL, no body, stays open             direct=False  2.05s cb=     51 sent=       51 acc=1 | public=CdpEndpointError  2.01s thr=[] ns=None
+DONE 56

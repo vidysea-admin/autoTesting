@@ -1,0 +1,120 @@
+===== 1b-main-both C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1b-main-both-r_1ders5\t\src\autotester\__init__.py ['C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-main-both-r_1ders5\\t'] restored_same True
+  green 3 passed, 8 deselected 32.3 s
+  red 3 failed, 8 deselected 39.9 s
+     FAILED tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]
+     FAILED tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]
+     FAILED tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered
+     E: ['E   Failed: DID NOT RAISE CdpEndpointError', 'E   Failed: DID NOT RAISE CdpEndpointError', 'E   Failed: DID NOT RAISE CdpEndpointError']
+  restored 3 passed, 8 deselected 24.5 s
+--- a/launch.py
++++ b/launch.py
+@@ -98,4 +98,2 @@
+             raise ValueError(f"status {reply.status}")  # a redirect included
+-        if int(reply.getheader("Content-Length") or 0) > PROBE_MAX_BYTES:
+-            raise ValueError("reply too large")
+         chunks: list[bytes] = []
+@@ -110,4 +108,2 @@
+             size += len(piece)
+-            if size > PROBE_MAX_BYTES:
+-                raise ValueError("reply too large")
+         raise TimeoutError("the DevTools probe passed its deadline")
+
+===== 1a-q2-while-true-only C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1a-q2-while-true-only-eb9kvzzs\t\src\autotester\__init__.py ['C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q2-while-true-only-eb9kvzzs\\t'] restored_same True
+  green 3 passed, 8 deselected 36.9 s
+  red 3 passed, 8 deselected 38.9 s
+     E: []
+  red_fullfile 11 passed 35.1 s
+     E: []
+    passed-ids: 11
+  restored 3 passed, 8 deselected 27.0 s
+--- a/launch.py
++++ b/launch.py
+@@ -102,3 +102,3 @@
+         size = 0
+-        while time.monotonic() < deadline:
++        while True:
+             piece = reply.read1(PROBE_MAX_BYTES + 1 - size)
+
+===== 1a-q3-no-watchdog-start C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1a-q3-no-watchdog-start-rkpq2kpm\t\src\autotester\__init__.py ['C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q3-no-watchdog-start-rkpq2kpm\\t'] restored_same True
+  green 3 passed, 8 deselected 38.5 s
+  red 1 failed, 2 passed, 8 deselected 46.7 s
+     FAILED tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]
+     E: ['E   AssertionError: the probe held start() for 5.1s against a 0.6s deadline', 'E   assert 5.10999999998603 < 2.0']
+  red_fullfile 1 failed, 10 passed 39.9 s
+     FAILED tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]
+     E: ['E   AssertionError: the probe held start() for 5.1s against a 0.6s deadline', 'E   assert 5.125 < 2.0']
+    passed-ids: 10
+  restored 3 passed, 8 deselected 26.3 s
+--- a/launch.py
++++ b/launch.py
+@@ -90,3 +90,2 @@
+     watchdog.daemon = True
+-    watchdog.start()
+     conn = http.client.HTTPConnection(CDP_HOST, port)
+
+===== 1b-qa-no-declared-check C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1b-qa-no-declared-check-82p1ozgj\t\src\autotester\__init__.py ['C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qa-no-declared-check-82p1ozgj\\t'] restored_same True
+  green 3 passed, 8 deselected 22.8 s
+  red 3 passed, 8 deselected 21.9 s
+     E: []
+  red_fullfile 11 passed 38.2 s
+     E: []
+    passed-ids: 11
+  restored 3 passed, 8 deselected 26.2 s
+--- a/launch.py
++++ b/launch.py
+@@ -98,4 +98,2 @@
+             raise ValueError(f"status {reply.status}")  # a redirect included
+-        if int(reply.getheader("Content-Length") or 0) > PROBE_MAX_BYTES:
+-            raise ValueError("reply too large")
+         chunks: list[bytes] = []
+
+===== 1b-qb-no-size-check C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1b-qb-no-size-check-46ibfhm2\t\src\autotester\__init__.py ['C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qb-no-size-check-46ibfhm2\\t'] restored_same True
+  green 3 passed, 8 deselected 23.3 s
+  red 1 failed, 2 passed, 8 deselected 34.4 s
+     FAILED tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]
+     E: ['E   Failed: DID NOT RAISE CdpEndpointError']
+  red_fullfile 1 failed, 10 passed 43.7 s
+     FAILED tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]
+     E: ['E   Failed: DID NOT RAISE CdpEndpointError']
+    passed-ids: 10
+  restored 3 passed, 8 deselected 26.3 s
+--- a/launch.py
++++ b/launch.py
+@@ -110,4 +110,2 @@
+             size += len(piece)
+-            if size > PROBE_MAX_BYTES:
+-                raise ValueError("reply too large")
+         raise TimeoutError("the DevTools probe passed its deadline")
+
+===== 1b-qc-readsize-65536 C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1b-qc-readsize-65536-zza042o2\t\src\autotester\__init__.py ['C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-qc-readsize-65536-zza042o2\\t'] restored_same True
+  green 3 passed, 8 deselected 33.6 s
+  red 3 passed, 8 deselected 28.0 s
+     E: []
+  red_fullfile 11 passed 40.4 s
+     E: []
+    passed-ids: 11
+  restored 3 passed, 8 deselected 24.2 s
+--- a/launch.py
++++ b/launch.py
+@@ -103,3 +103,3 @@
+         while time.monotonic() < deadline:
+-            piece = reply.read1(PROBE_MAX_BYTES + 1 - size)
++            piece = reply.read1(65536)
+             if not piece:
+
+===== q-d-status-ge-500 C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-q-d-status-ge-500-kcfg9whs\t\src\autotester\__init__.py ['C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-q-d-status-ge-500-kcfg9whs\\t'] restored_same True
+  green 11 passed 36.5 s
+  red 11 passed 31.8 s
+     E: []
+  red_fullfile 11 passed 31.7 s
+     E: []
+    passed-ids: 11
+  restored 11 passed 32.9 s
+--- a/launch.py
++++ b/launch.py
+@@ -96,3 +96,3 @@
+         reply = conn.getresponse()
+-        if reply.status != 200:
++        if reply.status >= 500:
+             raise ValueError(f"status {reply.status}")  # a redirect included
+

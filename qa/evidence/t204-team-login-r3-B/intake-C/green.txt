@@ -1,0 +1,15 @@
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\r3b-43931685\copyC
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 43 items / 35 deselected / 8 selected
+
+tests\test_ui_auth_surface.py .......                                    [ 87%]
+tests\test_ui_auth_escalation.py .                                       [100%]
+
+============================== warnings summary ===============================
+..\copy\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\r3b-43931685\copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================ 8 passed, 35 deselected, 1 warning in 12.51s =================

@@ -1,0 +1,9 @@
+code=base store=base IDENTICAL to base/base on all sections
+code=head store=head IDENTICAL to base/base on all sections
+code=head store=base IDENTICAL to base/base on all sections
+code=base store=head IDENTICAL to base/base on all sections
+sections compared: ['attempt_files', 'by_key', 'by_run', 'contents', 'latest', 'record_files']
+record files 149 attempt files 149 file contents (minus created_at) 298
+run lookups 47 = 27 with records + 20 with none; rows returned 149
+key lookups 925 (925 from runs x users x channels + 9 garbage... ) rows returned 149 latest entries 918
+deliver_once return sequences equal base vs head: True deliveries 88

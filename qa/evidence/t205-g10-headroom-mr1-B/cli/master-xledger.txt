@@ -1,0 +1,16 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+                                                                                                   
+ Usage: autotester ledger [OPTIONS] COMMAND [ARGS]...                                              
+                                                                                                   
+ The feature ledger (docs/FEATURES.jsonl) — the only write path.                                   
+                                                                                                   
+┌─ Options ───────────────────────────────────────────────────────────────────────────────────────┐
+│ --help          Show this message and exit.                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─ Commands ──────────────────────────────────────────────────────────────────────────────────────┐
+│ add           Append one feature event. Retirements require a real --reason.                    │
+│ weight        Re-weight a feature after shipping. Raising to high asks for the reason once.     │
+│ check         L3: every closed high-value goal task has a live/updated row.                     │
+│ relitigation  Gate check before a unit is built: is this a retired feature coming back?         │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+

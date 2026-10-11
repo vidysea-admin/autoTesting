@@ -1,0 +1,14 @@
+{
+ "mode": "fast",
+ "n": 2000,
+ "results": {
+  "True": 2000
+ },
+ "exceptions": [],
+ "iters_with_extra_thread_immediately": 346,
+ "threads_at_end": [],
+ "max_wall": 0.281,
+ "total_s": 69.1,
+ "accepts": 2000,
+ "open_client_socks": 0
+}

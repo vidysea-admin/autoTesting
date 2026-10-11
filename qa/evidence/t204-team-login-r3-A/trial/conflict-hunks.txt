@@ -1,0 +1,20 @@
+=== docs/MAP.md: total=499 markers=3 ours_lines/theirs_lines:
+  hunk ours=12 theirs=1
+  hunk ours=1 theirs=1
+  hunk ours=3 theirs=1
+=== src/autotester/auth/__init__.py: total=8 markers=1 ours_lines/theirs_lines:
+  hunk ours=4 theirs=1
+=== src/autotester/auth/policy.py: total=173 markers=2 ours_lines/theirs_lines:
+  hunk ours=5 theirs=13
+  hunk ours=99 theirs=46
+=== src/autotester/cli.py: total=300 markers=1 ours_lines/theirs_lines:
+  hunk ours=3 theirs=1
+=== src/autotester/ui/app.py: total=229 markers=1 ours_lines/theirs_lines:
+  hunk ours=1 theirs=1
+=== src/autotester/ui/routers.py: total=97 markers=6 ours_lines/theirs_lines:
+  hunk ours=5 theirs=7
+  hunk ours=2 theirs=0
+  hunk ours=1 theirs=0
+  hunk ours=3 theirs=9
+  hunk ours=1 theirs=1
+  hunk ours=0 theirs=1

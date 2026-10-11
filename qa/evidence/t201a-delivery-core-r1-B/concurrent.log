@@ -1,0 +1,23 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r1B-u7k3\copy\src\autotester\__init__.py
+{
+ "name": "concurrent",
+ "rounds": 200,
+ "procs": 6,
+ "threads_per_proc": 4,
+ "skew_frac": 0.0,
+ "keys": 1200,
+ "seconds": 120.3,
+ "deliver_once_calls": 28800,
+ "exceptions": [],
+ "n_exceptions": 0,
+ "keys_with_wrong_message_count": {},
+ "keys_without_exactly_one_record": [],
+ "record_files": 1200,
+ "tmp_leftovers": [],
+ "unparsable": [],
+ "final_status": {
+  "sent|": 1200
+ },
+ "total_messages": 1200,
+ "none_returns": 8145
+}

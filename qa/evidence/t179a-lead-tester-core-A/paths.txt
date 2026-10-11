@@ -1,0 +1,1 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\chkA-t179a-1175810622\src\autotester\__init__.py

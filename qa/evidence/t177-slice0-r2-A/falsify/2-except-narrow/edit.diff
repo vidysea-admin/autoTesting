@@ -1,0 +1,7 @@
+--- a/launch.py
++++ b/launch.py
+@@ -128,3 +128,3 @@
+         return str(url).endswith(browser_path)
+-    except Exception:  # every doubt about this endpoint is a refusal
++    except (OSError, ValueError, http.client.HTTPException):  # every doubt about this endpoint is a refusal
+         return False

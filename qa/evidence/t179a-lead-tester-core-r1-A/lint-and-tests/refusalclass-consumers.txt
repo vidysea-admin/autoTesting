@@ -1,0 +1,12 @@
+src/autotester/agents/guards.py
+src/autotester/agents/tools.py
+src/autotester/agents/__pycache__/guards.cpython-311.pyc
+src/autotester/agents/__pycache__/tools.cpython-311.pyc
+src/autotester/schema/agent_layer.py
+src/autotester/schema/__pycache__/agent_layer.cpython-311.pyc
+tests/test_agent_read_only.py
+tests/test_agent_tools.py
+tests/__pycache__/test_agent_read_only.cpython-311-pytest-9.1.1.pyc
+tests/__pycache__/test_agent_tools.cpython-311-pytest-9.1.1.pyc
+tests/__pycache__/test_agent_tools.cpython-311.pyc
+docs/MAP.md

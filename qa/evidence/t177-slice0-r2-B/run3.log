@@ -1,0 +1,174 @@
+== threads
+{
+ "wall_s": 6.7,
+ "errors": {},
+ "sessions": {
+  "1": {
+   "start_s": 6.42,
+   "url": "http://127.0.0.1:63334",
+   "port": 63334,
+   "guid": "/devtools/browser/e9df9e3f-4985-4152-aecd-e08fef87a9e5",
+   "own_ws_matches": true
+  },
+  "2": {
+   "start_s": 6.42,
+   "url": "http://127.0.0.1:63333",
+   "port": 63333,
+   "guid": "/devtools/browser/9e15f8ec-2934-4273-8287-6ba234388b19",
+   "own_ws_matches": true
+  },
+  "4": {
+   "start_s": 6.44,
+   "url": "http://127.0.0.1:63332",
+   "port": 63332,
+   "guid": "/devtools/browser/d01b7252-0680-437a-b454-1a8be5a2a0cc",
+   "own_ws_matches": true
+  },
+  "3": {
+   "start_s": 6.55,
+   "url": "http://127.0.0.1:63331",
+   "port": 63331,
+   "guid": "/devtools/browser/85796f0e-bbf0-4216-910f-8bdc8e406b39",
+   "own_ws_matches": true
+  },
+  "0": {
+   "start_s": 6.62,
+   "url": "http://127.0.0.1:63335",
+   "port": 63335,
+   "guid": "/devtools/browser/f977eb13-84c4-49da-8253-d57bdb6be06e",
+   "own_ws_matches": true
+  }
+ },
+ "distinct_ports": 5,
+ "timers_alive_after_all_started": [],
+ "cross_ok": true,
+ "probe_calls_own_port_true": true,
+ "n_probe_calls": 5,
+ "n_proc_in_tree_with_5_up": 25,
+ "close_s": 6.3,
+ "close_each_s": {
+  "3": 1.11,
+  "1": 1.2,
+  "4": 4.08,
+  "0": 4.28,
+  "2": 6.31
+ },
+ "close_errors": {},
+ "procs_left": [],
+ "ports_accept_after": [],
+ "portfiles_after": [],
+ "timers_alive_after_close": [],
+ "threads_left": [
+  "MainThread"
+ ]
+}
+== misc2
+{
+ "header_flood_60KB_lines": {
+  "answers_as": false,
+  "held_s": 0.05,
+  "listener_bytes_sent": 6120527,
+  "timers": []
+ },
+ "100_continue_flood": {
+  "answers_as": false,
+  "held_s": 2.02,
+  "listener_bytes_sent": 392825,
+  "timers": []
+ }
+}
+== fals 1a
+{
+ "point": "1a",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1a-80108",
+ "autotester.__file__": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1a-80108\\src\\autotester\\__init__.py",
+ "inside_copy": true,
+ "green_before": [
+  0,
+  35.2,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1a-80108\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 1 item\n\ntests\\test_browser_cdp_probe_hostile.py .                                [100%]\n\n============================== 1 passed in 1.45s ==============================\n"
+ ],
+ "red_after": [
+  1,
+  26.4,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1a-80108\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 1 item\n\ntests\\test_browser_cdp_probe_hostile.py F                                [100%]\n\n================================== FAILURES ===================================\n_ test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers] __\ntests\\test_browser_cdp_probe_hostile.py:121: in test_a_trickling_listener_is_cut_off_at_the_overall_deadline\n    assert elapsed < 2.0, f\"the probe held start() for {elapsed:.1f}s against a 0.6s deadline\"\nE   AssertionError: the probe held start() for 5.1s against a 0.6s deadline\nE   assert 5.109000000025844 < 2.0\n=========================== short test summary info ===========================\nFAILED tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]\n============================== 1 failed in 7.19s ==============================\n"
+ ],
+ "restored": [
+  0,
+  21.5,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1a-80108\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 1 item\n\ntests\\test_browser_cdp_probe_hostile.py .                                [100%]\n\n============================== 1 passed in 1.16s ==============================\n"
+ ]
+}
+== fals 1b
+{
+ "point": "1b",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1b-10356",
+ "autotester.__file__": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1b-10356\\src\\autotester\\__init__.py",
+ "inside_copy": true,
+ "green_before": [
+  0,
+  17.8,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1b-10356\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 2 items\n\ntests\\test_browser_cdp_probe_hostile.py ..                               [100%]\n\n============================== 2 passed in 1.14s ==============================\n"
+ ],
+ "red_after": [
+  1,
+  18.8,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1b-10356\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 2 items\n\ntests\\test_browser_cdp_probe_hostile.py FF                               [100%]\n\n================================== FAILURES ===================================\n_ test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared] __\ntests\\test_browser_cdp_probe_hostile.py:129: in test_a_correct_answer_padded_past_the_byte_cap_is_refused\n    _refused(tmp_path, mode, deadline=5, monkeypatch=monkeypatch)\ntests\\test_browser_cdp_probe_hostile.py:109: in _refused\n    with pytest.raises(CdpEndpointError, match=\"not this browser\"):\nE   Failed: DID NOT RAISE CdpEndpointError\n_ test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared] _\ntests\\test_browser_cdp_probe_hostile.py:129: in test_a_correct_answer_padded_past_the_byte_cap_is_refused\n    _refused(tmp_path, mode, deadline=5, monkeypatch=monkeypatch)\ntests\\test_browser_cdp_probe_hostile.py:109: in _refused\n    with pytest.raises(CdpEndpointError, match=\"not this browser\"):\nE   Failed: DID NOT RAISE CdpEndpointError\n=========================== short test summary info ===========================\nFAILED tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]\nFAILED tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]\n============================== 2 failed in 4.03s ==============================\n"
+ ],
+ "restored": [
+  0,
+  13.7,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-1b-10356\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 2 items\n\ntests\\test_browser_cdp_probe_hostile.py ..                               [100%]\n\n============================== 2 passed in 0.57s ==============================\n"
+ ]
+}
+== fals 2
+{
+ "point": "2",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-2-70664",
+ "autotester.__file__": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-2-70664\\src\\autotester\\__init__.py",
+ "inside_copy": true,
+ "green_before": [
+  0,
+  11.7,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-2-70664\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 1 item\n\ntests\\test_browser_cdp_probe_hostile.py .                                [100%]\n\n============================== 1 passed in 0.91s ==============================\n"
+ ],
+ "red_after": [
+  1,
+  16.6,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-2-70664\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 1 item\n\ntests\\test_browser_cdp_probe_hostile.py F                                [100%]\n\n================================== FAILURES ===================================\n____ test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error _____\ntests\\test_browser_cdp_probe_hostile.py:139: in test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error\n    _refused(tmp_path, \"deep\", deadline=5, monkeypatch=monkeypatch)\ntests\\test_browser_cdp_probe_hostile.py:110: in _refused\n    launch.verified_cdp_url(_profile(tmp_path, bad.port))\nsrc\\autotester\\browser\\launch.py:158: in verified_cdp_url\n    if not _answers_as(port, browser_path):\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\autotester\\browser\\launch.py:126: in _answers_as\n    body = json.loads(_fetch_version(port))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\json\\__init__.py:346: in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\json\\decoder.py:337: in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\json\\decoder.py:353: in raw_decode\n    obj, end = self.scan_once(s, idx)\n               ^^^^^^^^^^^^^^^^^^^^^^\nE   RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string\n=========================== short test summary info ===========================\nFAILED tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error\n============================== 1 failed in 2.00s ==============================\n"
+ ],
+ "restored": [
+  0,
+  15.1,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-2-70664\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 1 item\n\ntests\\test_browser_cdp_probe_hostile.py .                                [100%]\n\n============================== 1 passed in 0.60s ==============================\n"
+ ]
+}
+== fals 3
+{
+ "point": "3",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-3-23412",
+ "autotester.__file__": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-3-23412\\src\\autotester\\__init__.py",
+ "inside_copy": true,
+ "green_before": [
+  0,
+  15.3,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-3-23412\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 2 items\n\ntests\\test_browser_cdp_probe_hostile.py ..                               [100%]\n\n============================== 2 passed in 2.04s ==============================\n"
+ ],
+ "red_after": [
+  1,
+  20.3,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-3-23412\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 2 items\n\ntests\\test_browser_cdp_probe_hostile.py FF                               [100%]\n\n================================== FAILURES ===================================\n______________ test_a_redirect_is_never_followed[loopback_port] _______________\ntests\\test_browser_cdp_probe_hostile.py:152: in test_a_redirect_is_never_followed\n    _refused(tmp_path, \"redirect\", deadline=5, location=dest, monkeypatch=monkeypatch)\ntests\\test_browser_cdp_probe_hostile.py:109: in _refused\n    with pytest.raises(CdpEndpointError, match=\"not this browser\"):\nE   Failed: DID NOT RAISE CdpEndpointError\n________________ test_a_redirect_is_never_followed[other_host] ________________\ntests\\test_browser_cdp_probe_hostile.py:152: in test_a_redirect_is_never_followed\n    _refused(tmp_path, \"redirect\", deadline=5, location=dest, monkeypatch=monkeypatch)\ntests\\test_browser_cdp_probe_hostile.py:109: in _refused\n    with pytest.raises(CdpEndpointError, match=\"not this browser\"):\nE   Failed: DID NOT RAISE CdpEndpointError\n=========================== short test summary info ===========================\nFAILED tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]\nFAILED tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]\n============================== 2 failed in 5.92s ==============================\n"
+ ],
+ "restored": [
+  0,
+  15.7,
+  "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-3222928938\\fals-3-23412\nconfigfile: pyproject.toml\nplugins: anyio-4.15.0, langsmith-0.12.1\ncollected 2 items\n\ntests\\test_browser_cdp_probe_hostile.py ..                               [100%]\n\n============================== 2 passed in 1.41s ==============================\n"
+ ]
+}
+== ruff
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+All checks passed!
+== doctor
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+doctor: clean
+== ALLDONE3

@@ -1,0 +1,3 @@
+tests/test_ui_auth_surface.py::test_au16_only_the_public_set_answers_unsigned_in PASSED [ 50%]
+tests/test_ui_auth_escalation.py::test_au14_every_policy_row_requires_exactly_its_pinned_key PASSED [100%]
+======================== 2 passed, 1 warning in 4.01s =========================

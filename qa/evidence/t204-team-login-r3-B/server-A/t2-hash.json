@@ -1,0 +1,13 @@
+{
+ "before": {
+  ".auth/auth.sqlite3": "604557c3e57554445e20b1e3121b4ae58be3c64d37f5ac0adeb82054bc21a126",
+  ".work/audit.jsonl": "e894d0af32f7706b899056f8e632abc1d9f23df9a18c375476c81ad4d6fd48d4",
+  ".work/run_queue.json": "949085781997ff11b62aaa9827717f6b74d9df1bf1927ad5c9be509edd2930b0"
+ },
+ "after": {
+  ".auth/auth.sqlite3": "604557c3e57554445e20b1e3121b4ae58be3c64d37f5ac0adeb82054bc21a126",
+  ".work/audit.jsonl": "e894d0af32f7706b899056f8e632abc1d9f23df9a18c375476c81ad4d6fd48d4",
+  ".work/run_queue.json": "949085781997ff11b62aaa9827717f6b74d9df1bf1927ad5c9be509edd2930b0"
+ },
+ "changed": []
+}

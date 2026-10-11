@@ -1,0 +1,22 @@
+flows in merged spec: [('flow_306fe3e188fc', 10)] name: crawl path: Home > Help > Mail > Fax > Office > Mobile > Paren > Token > Other > Last
+provider calls 9 exact lines match: True
+  ok   '1. navigate https://demo.test/home?email=<email>' 
+  ok   '2. click text=Helpline <phone>' 
+  ok   '3. click text=Mail <email>' 
+  ok   '4. click text=Fax <phone>' 
+  ok   '5. click text=Office <phone>' 
+  ok   '6. click text=Mobile <phone>' 
+  ok   '7. click text=Call <phone>' 
+  ok   '8. click text=Token [REDACTED]:ST_PASS' 
+  ok   '9. click text=Other [REDACTED]:OTHER_KEY' 
+  ok   '10. click role=link[name="Finish"] >> nth=0' 
+leaks: [('Hunter2-Zebra-4411', 0), ('Other-Projects-Key-9082', 0), ('ada.lovelace', 0), ('98765', 0), ('7946', 0), ('555-2671', 0), ('9876543210', 0), ('SHVudGVyMi1aZWJyYS00NDEx', 0)]
+encoded base64 {'status': 400, 'provider_calls': 0, 'cases_before': 0, 'cases_after': 0, 'echoed': [], 'html': 'text/html; charset=u', 'body': '<!doctype html><title>The model could not complete this — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=F', 'themed': True}
+encoded hex {'status': 400, 'provider_calls': 0, 'cases_before': 0, 'cases_after': 0, 'echoed': [], 'html': 'text/html; charset=u', 'body': '<!doctype html><title>The model could not complete this — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=F', 'themed': True}
+encoded percent-single {'status': 400, 'provider_calls': 0, 'cases_before': 0, 'cases_after': 0, 'echoed': [], 'html': 'text/html; charset=u', 'body': '<!doctype html><title>The model could not complete this — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=F', 'themed': True}
+encoded percent-double {'status': 400, 'provider_calls': 0, 'cases_before': 0, 'cases_after': 0, 'echoed': [], 'html': 'text/html; charset=u', 'body': '<!doctype html><title>The model could not complete this — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=F', 'themed': True}
+encoded reversed {'status': 400, 'provider_calls': 0, 'cases_before': 0, 'cases_after': 0, 'echoed': [], 'html': 'text/html; charset=u', 'body': '<!doctype html><title>The model could not complete this — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=F', 'themed': True}
+encoded upper-spaced {'status': 400, 'provider_calls': 0, 'cases_before': 0, 'cases_after': 0, 'echoed': [], 'html': 'text/html; charset=u', 'body': '<!doctype html><title>The model could not complete this — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=F', 'themed': True}
+unrelated ValueError raised by provider AFTER the prompt was sent {'status': 400, 'provider_calls': 1, 'user_sentence': 'Generating cases failed partway through: a prompt was refused unsent'}
+unrelated pydantic ValidationError (a ValueError) on the model's reply {'status': 400, 'provider_calls': 1, 'user_sentence': 'Generating cases failed partway through: a prompt was refused unsent'}
+provider error {'status': 400, 'sentence': 'Generating cases failed partway through: quota exhausted'}

@@ -1,0 +1,80 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1080 items
+
+tests\test_ai_report.py .......................                          [  2%]
+tests\test_auth_deploy_files.py ...                                      [  2%]
+tests\test_cli_advice_resolves.py ..................................     [  5%]
+tests\test_cli_intake.py ........                                        [  6%]
+tests\test_coverage_wiring.py ........                                   [  7%]
+tests\test_credential_run_approval.py .........................          [  9%]
+tests\test_drive_intake.py .....................                         [ 11%]
+tests\test_drive_link.py .................................               [ 14%]
+tests\test_drive_verify.py ..................                            [ 16%]
+tests\test_eval_compiler.py .......................                      [ 18%]
+tests\test_expand.py ...............                                     [ 19%]
+tests\test_expand_cli.py ..........                                      [ 20%]
+tests\test_failure_bundle.py .......................                     [ 22%]
+tests\test_grade.py .............                                        [ 23%]
+tests\test_grade_assertion_rule.py ......                                [ 24%]
+tests\test_gws_drive.py .......................................          [ 27%]
+tests\test_gws_runner.py ..........                                      [ 28%]
+tests\test_hosting_deploy.py ...............                             [ 30%]
+tests\test_intake_schema.py ...........................................  [ 34%]
+tests\test_litellm_guard.py .....................                        [ 36%]
+tests\test_litellm_provider.py ................                          [ 37%]
+tests\test_provider_factory.py ...............................           [ 40%]
+tests\test_reconcile_schema.py ...................                       [ 42%]
+tests\test_schedule_gate.py ............                                 [ 43%]
+tests\test_schedule_marker.py ..........                                 [ 44%]
+tests\test_schedule_tick.py ....................                         [ 46%]
+tests\test_schema.py ........................                            [ 48%]
+tests\test_session_survives_failure.py ..................                [ 50%]
+tests\test_session_survives_failure_live.py ...s                         [ 50%]
+tests\test_store.py ...................                                  [ 52%]
+tests\test_ui_auth_accounts.py .............                             [ 53%]
+tests\test_ui_auth_cli_and_limits.py ......                              [ 53%]
+tests\test_ui_auth_envkeys.py .......................                    [ 56%]
+tests\test_ui_auth_escalation.py ......................                  [ 58%]
+tests\test_ui_auth_groups.py .................................           [ 61%]
+tests\test_ui_auth_hardening.py ...................                      [ 62%]
+tests\test_ui_auth_host_and_consent.py .............                     [ 64%]
+tests\test_ui_auth_login.py .....................                        [ 66%]
+tests\test_ui_auth_own_origin.py ....................................... [ 69%]
+....................................                                     [ 73%]
+tests\test_ui_auth_refusal_audit.py ....                                 [ 73%]
+tests\test_ui_auth_surface.py .....................                      [ 75%]
+tests\test_ui_auth_survivors.py ....                                     [ 75%]
+tests\test_ui_credential_safety.py ...............                       [ 77%]
+tests\test_ui_intake.py ........................                         [ 79%]
+tests\test_ui_intake_drive.py ............                               [ 80%]
+tests\test_ui_learn.py .............                                     [ 81%]
+tests\test_ui_learn_vendor_echo.py .                                     [ 81%]
+tests\test_ui_runs.py ........                                           [ 82%]
+tests\test_ui_runs_live_case_approval.py .........                       [ 83%]
+tests\test_ui_runs_parallel_crash_recovery.py ...                        [ 83%]
+tests\test_ui_runs_parallel_trace.py ........                            [ 84%]
+tests\test_ui_runs_queue.py ..........                                   [ 85%]
+tests\test_ui_runs_serial_entry_mix_live.py .                            [ 85%]
+tests\test_ui_runs_serial_entry_order.py .....................           [ 87%]
+tests\test_ui_runs_serial_entry_screenshot_namespace.py .                [ 87%]
+tests\test_ui_runs_serial_resilience.py ........                         [ 88%]
+tests\test_unified_report.py ............                                [ 89%]
+tests\test_unified_report_secrets.py .......                             [ 89%]
+tests\test_zip_intake_atomic.py .....                                    [ 90%]
+tests\test_zip_intake_limits.py .........                                [ 91%]
+tests\test_zip_intake_names.py ......................................... [ 95%]
+........................                                                 [ 97%]
+tests\test_zip_intake_register.py ..............................         [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========== 1079 passed, 1 skipped, 1 warning in 1053.86s (0:17:33) ===========

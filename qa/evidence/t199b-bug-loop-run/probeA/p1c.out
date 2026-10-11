@@ -1,0 +1,4 @@
+1.4 same-run 2 procs x10: bad iterations = 0 last outs ['OK 2 0 0', 'OK 0 2 0'] counts [1, 1]
+serial12: ({'bug_194f39013bb7': (1, '2026-10-01T09:05:00+00:00', '2026-10-01T09:05:00+00:00', 'open'), 'bug_3a125cd293e1': (2, '2026-10-01T09:05:00+00:00', '2026-10-01T09:06:00+00:00', 'open'), 'bug_c92737ea3981': (1, '2026-10-01T09:06:00+00:00', '2026-10-01T09:06:00+00:00', 'open')}, [], 4)
+serial21 == serial12 bytes: True True
+1.5 diff runs 2 procs x10: bad = 0

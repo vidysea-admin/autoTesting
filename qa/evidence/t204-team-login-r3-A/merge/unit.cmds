@@ -1,0 +1,34 @@
+approve :: --expires --granted-by --kind --max-actions --max-probes --production --scope --target --wall-clock project
+auth bootstrap-admin :: --email --password-stdin
+doctor :: 
+expand :: --provider project
+explore :: --login-case --max-actions --max-depth --max-screens --merge --wall-clock project
+flowspec approve :: --by --note project
+flowspec request-edit :: --by --note project
+flowspec status :: project
+ingest analyze :: --force --models project source_id
+ingest frames :: project source_id
+ingest list :: project
+ingest map :: project
+ingest prep :: --chunk-minutes --no-whisper project source_id
+ingest register :: --label --recorded-on path project
+ingest run :: --merge --model --provider --replace project source_id
+issues derive :: --source project
+issues export :: --out project
+issues list :: project
+issues pin :: --step issue_id project
+ledger add :: --date --description --reason --supersedes --unit --value --verdict event feature title
+ledger check :: 
+ledger relitigation :: --provider unit_text
+ledger weight :: feature value
+login :: project
+loop-status :: --hours --strict
+map :: 
+orchestrate :: --login-case --max-actions --max-depth --max-screens --provider --run-id --wall-clock project
+providers :: 
+release :: --approve-by --decline-by --git-sha --run-id project
+release-log :: project run_id
+report crawl :: --out crawl_id project
+report excel :: --out project run_id
+report html :: --out project run_id
+snapshot :: --print

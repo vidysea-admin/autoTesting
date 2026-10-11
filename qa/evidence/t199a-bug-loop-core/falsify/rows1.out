@@ -1,0 +1,143 @@
+======================================================================
+ROW TB1
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB1
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB1\src\autotester\__init__.py
+GREEN: 1 passed in 0.89s (20.0s)
+rootdir line: []
+EDIT src/autotester/schema/tracked_bug.py:61  BEFORE: '{"project": project, "case_id": case_id, "criterion_id": criterion_id}'  AFTER: '{"project": project, "case_id": case_id}'
+RED/after-mutant: 1 failed in 1.92s (23.1s)
+--- failing detail ---
+E   AssertionError: assert 1 == 2
+E    +  where 1 = len({'bug_0b76afb9c36f': TrackedBug(bug_key='bug_0b76afb9c36f', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...None, evidence_run_id='run2', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])})
+E    +    where {'bug_0b76afb9c36f': TrackedBug(bug_key='bug_0b76afb9c36f', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...None, evidence_run_id='run2', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])} = bugs()
+E    +      where bugs = <autotester.store.bug_store.BugStore object at 0x00000179D64D3610>.bugs
+FAILED tests/test_bug_store.py::test_tb1_two_failing_criteria_on_one_case_are_two_bugs
+======================================================================
+ROW TB2a
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2a
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2a\src\autotester\__init__.py
+GREEN: 45 passed, 50 deselected in 1.04s (32.3s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:75  BEFORE: '_LIVE = _row(Move.REFAIL, Move.PASS_STEP, Move.MARK_STALE, Move.ASSIGN)'  AFTER: '_LIVE = {**_row(Move.REFAIL, Move.PASS_STEP, Move.MARK_STALE, Move.ASSIGN), K.INCONCLUSIVE: Move.PASS_STEP}'
+RED/after-mutant: 2 failed, 43 passed, 50 deselected in 2.27s (34.0s)
+--- failing detail ---
+E   AssertionError: assert (<Effect.APPL... 'pass_step'>) == (<Effect.UNCH... 'unchanged'>)
+E     
+E     At index 0 diff: <Effect.APPLIED: 'applied'> != <Effect.UNCHANGED: 'unchanged'>
+E     Use -v to get more diff
+E   AssertionError: assert (<Effect.APPL... 'pass_step'>) == (<Effect.UNCH... 'unchanged'>)
+E     
+E     At index 0 diff: <Effect.APPLIED: 'applied'> != <Effect.UNCHANGED: 'unchanged'>
+E     Use -v to get more diff
+FAILED tests/test_bug_loop.py::test_tb2_every_cell_of_the_table[open-inconclusive]
+FAILED tests/test_bug_loop.py::test_tb2_every_cell_of_the_table[reopened-inconclusive]
+======================================================================
+ROW TB2b
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2b
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2b\src\autotester\__init__.py
+GREEN: 123 passed in 62.71s (0:01:02) (119.4s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:125  BEFORE: 'if len(refs) < n:'  AFTER: 'if len(refs) < 1:'
+RED/after-mutant: 14 failed, 109 passed in 57.20s (98.3s)
+--- failing detail ---
+E   AssertionError: assert <BugStatus.FIXED: 'fixed'> is <BugStatus.OPEN: 'open'>
+E    +  where <BugStatus.FIXED: 'fixed'> = TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id='C1', criterion_fp='f...ass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=['run10'], closed_by_verdicts=['run10/case_aaaaaaaaaaaa']).status
+E   AssertionError: assert (<BugStatus.F...: 'fixed'>, 0) == (<BugStatus.OPEN: 'open'>, 1)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.OPEN: 'open'>
+E     Use -v to get more diff
+E   AssertionError: assert (<BugStatus.F...fixed'>, 0, 2) == (<BugStatus.O...'open'>, 1, 2)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.OPEN: 'open'>
+E     Use -v to get more diff
+E   AssertionError: assert (<BugStatus.F...: 'fixed'>, 0) == (<BugStatus.OPEN: 'open'>, 1)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.OPEN: 'open'>
+E     Use -v to get more diff
+E   AssertionError: assert ['run2'] == ['run2', 'run3']
+E     
+E     Right contains one more item: 'run3'
+E     Use -v to get more diff
+E   AssertionError: assert <BugStatus.FIXED: 'fixed'> is <BugStatus.STALE: 'stale'>
+E    +  where <BugStatus.FIXED: 'fixed'> = TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id='C1', criterion_fp='f... pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=['run2'], closed_by_verdicts=['run2/case_aaaaaaaaaaaa']).status
+E    +  and   <BugStatus.STALE: 'stale'> = S.STALE
+E   AssertionError: assert (<BugStatus.F...: 'fixed'>, 0) == (<BugStatus.R...reopened'>, 1)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.REOPENED: 'reopened'>
+E     Use -v to get more diff
+======================================================================
+ROW TB3
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB3
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB3\src\autotester\__init__.py
+GREEN: 9 passed, 86 deselected in 0.73s (26.2s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:110  BEFORE: 'return K.PASS if proven else K.PASS_UNEVIDENCED'  AFTER: 'return K.PASS'
+RED/after-mutant: 3 failed, 6 passed, 86 deselected in 2.28s (48.2s)
+--- failing detail ---
+E   AssertionError: assert <EventKind.PASS: 'pass'> is <EventKind.PASS_UNEVIDENCED: 'pass_unevidenced'>
+E    +  where <EventKind.PASS: 'pass'> = kind_of_verdict(Verdict(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 27, 54, 445093, tzinfo=datetime.timezone.utc)...met=1, criteria_total=2, failures=[], grader_provider='', rubric_hash='', note=None, images_requested=0, images_seen=0))
+E   AssertionError: assert <EventKind.PASS: 'pass'> is <EventKind.PASS_UNEVIDENCED: 'pass_unevidenced'>
+E    +  where <EventKind.PASS: 'pass'> = kind_of_verdict(Verdict(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 27, 54, 445093, tzinfo=datetime.timezone.utc)...met=0, criteria_total=0, failures=[], grader_provider='', rubric_hash='', note=None, images_requested=0, images_seen=0))
+E   AssertionError: assert <EventKind.PASS: 'pass'> is <EventKind.PASS_UNEVIDENCED: 'pass_unevidenced'>
+E    +  where <EventKind.PASS: 'pass'> = kind_of_verdict(Verdict(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 27, 54, 445093, tzinfo=datetime.timezone.utc)...met=2, criteria_total=2, failures=[], grader_provider='', rubric_hash='', note=None, images_requested=2, images_seen=1))
+FAILED tests/test_bug_loop.py::test_tb3_a_verdict_maps_to_one_event_kind_none_changes_nothing[verdict4-pass_unevidenced]
+FAILED tests/test_bug_loop.py::test_tb3_a_verdict_maps_to_one_event_kind_none_changes_nothing[verdict5-pass_unevidenced]
+FAILED tests/test_bug_loop.py::test_tb3_a_verdict_maps_to_one_event_kind_none_changes_nothing[verdict6-pass_unevidenced]
+======================================================================
+ROW TB4
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB4
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB4\src\autotester\__init__.py
+GREEN: 1 passed, 94 deselected in 0.68s (27.0s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:150  BEFORE: '"status": S.STALE, "pass_streak": 0'  AFTER: '"status": S.FIXED, "pass_streak": 0'
+RED/after-mutant: 1 failed, 94 deselected in 2.18s (22.0s)
+--- failing detail ---
+E   AssertionError: assert <BugStatus.FIXED: 'fixed'> is <BugStatus.STALE: 'stale'>
+E    +  where <BugStatus.FIXED: 'fixed'> = TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id='C1', criterion_fp='f...=None, evidence_run_id='run1', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[]).status
+E    +  and   <BugStatus.STALE: 'stale'> = S.STALE
+FAILED tests/test_bug_loop.py::test_tb4_a_changed_case_makes_an_open_bug_stale_and_it_can_never_become_fixed
+======================================================================
+ROW TB5
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB5
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB5\src\autotester\__init__.py
+GREEN: 1 passed, 24 deselected in 0.69s (20.0s)
+rootdir line: []
+EDIT src/autotester/stages/issues.py:123  BEFORE: 'ref=f"issue/{issue.id}"'  AFTER: 'ref=f"issue/{issue.id}/{__import__(\'uuid\').uuid4().hex}"'
+RED/after-mutant: 1 failed, 24 deselected in 2.60s (22.6s)
+--- failing detail ---
+E   AssertionError: assert <Effect.APPLIED: 'applied'> is <Effect.DUPLICATE: 'duplicate'>
+E    +  where <Effect.APPLIED: 'applied'> = Applied(effect=<Effect.APPLIED: 'applied'>, reason=<Move.REFAIL: 'refail'>, bug=TrackedBug(bug_key='iss_f79fdba60a3f',...e=None, evidence_run_id=None, pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])).effect
+E    +    where Applied(effect=<Effect.APPLIED: 'applied'>, reason=<Move.REFAIL: 'refail'>, bug=TrackedBug(bug_key='iss_f79fdba60a3f',...e=None, evidence_run_id=None, pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])) = apply(BugEvent(schema_version=1, event_id='bev_058d76e56083', bug_key='iss_f79fdba60a3f', kind=<EventKind.FAIL: 'fail'>, ref..._id=None, criterion_fp='', title='Save button silent', screen='Settings', severity=<Severity.S2: 'S2'>), assignee=None))
+E    +      where apply = <autotester.store.bug_store.BugStore object at 0x000002707C9D3FD0>.apply
+E    +      and   BugEvent(schema_version=1, event_id='bev_058d76e56083', bug_key='iss_f79fdba60a3f', kind=<EventKind.FAIL: 'fail'>, ref..._id=None, criterion_fp='', title='Save button silent', screen='Settings', severity=<Severity.S2: 'S2'>), assignee=None) = issue_to_bug_event(Issue(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 30, 29, 704855, tzinfo=datetime.timezone.utc), ...ueCategory.OTHER: 'other'>, confidence=<Confidence.MEDIUM: 'medium'>, status=<IssueStatus.OPEN: 'open'>, human_id=None))
+E    +        where Issue(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 30, 29, 704855, tzinfo=datetime.timezone.utc), ...ueCategory.OTHER: 'other'>, confidence=<Confidence.MEDIUM: 'medium'>, status=<IssueStatus.OPEN: 'open'>, human_id=None) = _issue()
+E    +  and   <Effect.DUPLICATE: 'duplicate'> = Effect.DUPLICATE
+FAILED tests/test_bug_store.py::test_tb5_a_video_found_issue_becomes_one_bug_keyed_by_its_fingerprint
+======================================================================
+ROW TB6
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6\src\autotester\__init__.py
+GREEN: 1 passed, 24 deselected in 0.72s (24.0s)
+rootdir line: []
+EDIT src/autotester/store/bug_store.py:80  BEFORE: 'known = {p.stem for p in self.dir.glob("bev_*.json")}'  AFTER: 'known = set()'
+RED/after-mutant: 1 failed, 24 deselected in 2.17s (21.8s)
+--- failing detail ---
+E   AssertionError: assert (<Effect.APPLIED: 'applied'> is <Effect.DUPLICATE: 'duplicate'>)
+E    +  where <Effect.APPLIED: 'applied'> = Applied(effect=<Effect.APPLIED: 'applied'>, reason=<Move.OPEN: 'open'>, bug=TrackedBug(bug_key='bug_6425286942c1', pro...None, evidence_run_id='run1', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])).effect
+E    +  and   <Effect.DUPLICATE: 'duplicate'> = Effect.DUPLICATE
+FAILED tests/test_bug_store.py::test_tb6_applying_an_event_twice_changes_nothing_and_writes_nothing
+======================================================================
+ROW TB6order
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6order
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6order\src\autotester\__init__.py
+GREEN: 1 passed, 24 deselected in 0.84s (33.0s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:209  BEFORE: 'sorted(events, key=order_key)'  AFTER: 'list(events)'
+RED/after-mutant: 1 failed, 24 deselected in 2.18s (33.7s)
+--- failing detail ---
+E   AssertionError: assert {'bug_6425286..._verdicts=[])} == {'bug_6425286..._verdicts=[])}
+E     
+E     Differing items:
+E     {'bug_6425286942c1': TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...iya', evidence_run_id='run4', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])} != {'bug_6425286942c1': TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...pass_streak=1, streak_runs=['run5'], streak_refs=['run5/case_aaaaaaaaaaaa'], closed_by_runs=[], closed_by_verdicts=[])}
+E     Use -v to get more diff
+FAILED tests/test_bug_store.py::test_the_fold_is_a_function_of_the_event_set_not_of_its_order

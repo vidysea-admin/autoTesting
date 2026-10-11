@@ -1,0 +1,84 @@
+{
+ "name": "1b-main-both",
+ "point": "1b",
+ "sel": "padded or huge",
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-main-both-kodo3tcg\\t\\src\\autotester\\__init__.py",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-main-both-kodo3tcg\\t",
+ "runs": {
+  "green": {
+   "rc": 0,
+   "secs": 24.3,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-main-both-kodo3tcg\\t"
+   ]
+  },
+  "red": {
+   "rc": 1,
+   "secs": 27.3,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "FAILED"
+    ]
+   ],
+   "summary": "3 failed, 8 deselected",
+   "errs": [
+    "E   Failed: DID NOT RAISE CdpEndpointError",
+    "E   Failed: DID NOT RAISE CdpEndpointError",
+    "E   Failed: DID NOT RAISE CdpEndpointError"
+   ],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-main-both-kodo3tcg\\t"
+   ]
+  },
+  "restored": {
+   "rc": 0,
+   "secs": 23.1,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1b-main-both-kodo3tcg\\t"
+   ]
+  }
+ },
+ "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -98,4 +98,2 @@\n             raise ValueError(f\"status {reply.status}\")  # a redirect included\n-        if int(reply.getheader(\"Content-Length\") or 0) > PROBE_MAX_BYTES:\n-            raise ValueError(\"reply too large\")\n         chunks: list[bytes] = []\n@@ -110,4 +108,2 @@\n             size += len(piece)\n-            if size > PROBE_MAX_BYTES:\n-                raise ValueError(\"reply too large\")\n         raise TimeoutError(\"the DevTools probe passed its deadline\")\n",
+ "restored_same": true
+}

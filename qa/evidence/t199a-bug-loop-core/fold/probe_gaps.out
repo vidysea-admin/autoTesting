@@ -1,0 +1,8 @@
+graded FAIL, no cited failure -> inconclusive
+F, P, (FAIL-uncited between), P -> fixed <- contract: consecutive only if no FAIL falls between
+stale then FAIL -> stale count 1 (FAIL not tracked)
+{'fail': 'refused:stale_bug', 'case_changed': 'applied:mark_stale'}
+N=2 -> fixed | N=3 -> open
+same ref FAIL then PASS: ids differ True
+any caller can set actor=system:bug-loop -> system:bug-loop
+assign by system:other -> actor_not_allowed

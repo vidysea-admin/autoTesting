@@ -1,7 +1,7 @@
 """The one place any artifact is read from or written to disk. Contract: core-invariants.md C6.
 
 Every stage's typed convenience wrapper (`ProjectStore`, the feature ledger)
-is built on these five primitives, so "how does file X get persisted" always
+is built on these primitives, so "how does file X get persisted" always
 has exactly one answer. Writes are atomic (temp file + `os.replace`) so a
 crash mid-write never leaves a half-written artifact for a human — or the
 next run — to trip over.
@@ -29,6 +29,11 @@ def _atomic_write(path: Path, text: str) -> None:
     except BaseException:
         Path(tmp_name).unlink(missing_ok=True)
         raise
+
+
+def write_text(path: Path, text: str) -> None:
+    """Whole-file, atomic text. For stores that hold something other than one model."""
+    _atomic_write(path, text)
 
 
 def write_json(path: Path, model: BaseModel) -> None:

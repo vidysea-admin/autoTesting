@@ -1,0 +1,52 @@
+name: docker
+services:
+  autotester:
+    build:
+      context: C:\Users\Lenovo\AppData\Local\Temp\chk\au20scratch-7828
+      dockerfile: Dockerfile
+    cpus: 3
+    environment:
+      AUTOTESTER_HOSTED: "1"
+      AUTOTESTER_PUBLIC_ORIGIN: https://explicit.example.com
+      AUTOTESTER_ROOT: /data
+      DISPLAY: :99
+    expose:
+      - "6080"
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -fsS
+        - http://localhost:8000/healthz
+      timeout: 5s
+      interval: 30s
+      retries: 3
+      start_period: 40s
+    init: true
+    logging:
+      driver: json-file
+      options:
+        max-file: "5"
+        max-size: 10m
+    mem_limit: "6442450944"
+    networks:
+      default: null
+    pids_limit: 2048
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 8000
+        published: "8000"
+        protocol: tcp
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    shm_size: "1073741824"
+    volumes:
+      - type: bind
+        source: /srv/autotester/data
+        target: /data
+        bind: {}
+networks:
+  default:
+    name: docker_default

@@ -1,0 +1,11 @@
+--- a/launch.py
++++ b/launch.py
+@@ -90,3 +90,2 @@
+     watchdog.daemon = True
+-    watchdog.start()
+     conn = http.client.HTTPConnection(CDP_HOST, port)
+@@ -102,3 +101,3 @@
+         size = 0
+-        while time.monotonic() < deadline:
++        while True:
+             piece = reply.read1(PROBE_MAX_BYTES + 1 - size)

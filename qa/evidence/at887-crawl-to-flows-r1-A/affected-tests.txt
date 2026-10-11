@@ -1,0 +1,41 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at887r1a-copy
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 340 items
+
+tests\test_explore_flows.py .....................                        [  6%]
+tests\test_explore_flows_doors.py ..........                             [  9%]
+tests\test_expand.py ...............                                     [ 13%]
+tests\test_expand_cli.py ..........                                      [ 16%]
+tests\test_expand_redaction.py .......................                   [ 23%]
+tests\test_explore_merge.py ................                             [ 27%]
+tests\test_eval_compiler.py .......................                      [ 34%]
+tests\test_ui_learn.py .............                                     [ 38%]
+tests\test_ui_learn_guard.py .                                           [ 38%]
+tests\test_ui_crawls.py ................                                 [ 43%]
+tests\test_orchestrate_runners.py ...                                    [ 44%]
+tests\test_cli_orchestrate_resume.py ....                                [ 45%]
+tests\test_coverage_wiring.py ........                                   [ 47%]
+tests\test_merge_flowspec.py ............                                [ 51%]
+tests\test_cli_advice_resolves.py ................................       [ 60%]
+tests\test_redact_pii.py ............................................... [ 74%]
+........................................................................ [ 95%]
+..............                                                           [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at887r1a-copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_explore_flows_doors.py::test_orchestrated_discover_parks_flow_proposals_in_its_draft
+tests/test_explore_flows_doors.py::test_the_orchestrated_door_leaves_no_dangling_reference_after_the_model_fold
+tests/test_orchestrate_runners.py::test_orchestrated_run_never_overwrites_approved_truth
+tests/test_orchestrate_runners.py::test_model_stage_reads_only_the_previous_stage_artifact
+tests/test_orchestrate_runners.py::test_discover_stage_parks_its_own_draft_proposal
+  <string>:11: RuntimeWarning: StageContext for run 'run1' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 340 passed, 6 warnings in 107.41s (0:01:47) =================

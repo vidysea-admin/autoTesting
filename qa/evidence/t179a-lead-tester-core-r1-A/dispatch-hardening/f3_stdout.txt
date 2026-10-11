@@ -1,0 +1,100 @@
+rows 482 tree-leak rows 72 outcome-leak rows 12 rows that wrote files 111 refusal-but-wrote 0
+TREELEAK result rev_hex error True  projects\demo\runs\run-1\case_f0ea437a1870.json:rev_hex
+TREELEAK result rev_hex hitl_prompt True  projects\demo\runs\run-1\case_f0ea437a1870.json:rev_hex
+TREELEAK result rev_hex not_run_reason True  projects\demo\runs\run-1\case_f0ea437a1870.json:rev_hex
+TREELEAK result rev_hex evidence_path True  projects\demo\runs\run-1\case_f0ea437a1870.json:rev_hex
+TREELEAK result rev_hex evidence_label True  projects\demo\runs\run-1\case_f0ea437a1870.json:rev_hex
+TREELEAK result rev_hex log_ref True  projects\demo\runs\run-1\case_f0ea437a1870.json:rev_hex
+TREELEAK result rev_hex case_id True  projects\demo\runs\run-1\c-6339613366372d77702d5952414e4143.json:rev_hex
+TREELEAK result b64_rev error True  projects\demo\runs\run-1\case_f0ea437a1870.json:b64_rev
+TREELEAK result b64_rev hitl_prompt True  projects\demo\runs\run-1\case_f0ea437a1870.json:b64_rev
+TREELEAK result b64_rev not_run_reason True  projects\demo\runs\run-1\case_f0ea437a1870.json:b64_rev
+TREELEAK result b64_rev evidence_path True  projects\demo\runs\run-1\case_f0ea437a1870.json:b64_rev
+TREELEAK result b64_rev evidence_label True  projects\demo\runs\run-1\case_f0ea437a1870.json:b64_rev
+TREELEAK result b64_rev log_ref True  projects\demo\runs\run-1\case_f0ea437a1870.json:b64_rev
+TREELEAK result b64_rev case_id True  projects\demo\runs\run-1\c-YzlhM2Y3LXdwLVlSQU5BQw.json:b64_rev
+TREELEAK result rot13 error True  projects\demo\runs\run-1\case_f0ea437a1870.json:rot13
+TREELEAK result rot13 hitl_prompt True  projects\demo\runs\run-1\case_f0ea437a1870.json:rot13
+TREELEAK result rot13 not_run_reason True  projects\demo\runs\run-1\case_f0ea437a1870.json:rot13
+TREELEAK result rot13 evidence_path True  projects\demo\runs\run-1\case_f0ea437a1870.json:rot13
+TREELEAK result rot13 evidence_label True  projects\demo\runs\run-1\case_f0ea437a1870.json:rot13
+TREELEAK result rot13 log_ref True  projects\demo\runs\run-1\case_f0ea437a1870.json:rot13
+TREELEAK result rot13 case_id True  projects\demo\runs\run-1\c-PNANEL-cj-7s3n9p.json:rot13
+TREELEAK result tab_split error True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result tab_split hitl_prompt True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result tab_split not_run_reason True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result tab_split evidence_path True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result tab_split evidence_label True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result tab_split log_ref True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result nl_split error True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result nl_split hitl_prompt True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result nl_split not_run_reason True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result nl_split evidence_path True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result nl_split evidence_label True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result nl_split log_ref True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result crlf_mid error True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result crlf_mid hitl_prompt True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result crlf_mid not_run_reason True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result crlf_mid evidence_path True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result crlf_mid evidence_label True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK result crlf_mid log_ref True  projects\demo\runs\run-1\case_f0ea437a1870.json:raw,pct_quote
+TREELEAK verdict rev_hex note True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rev_hex
+TREELEAK verdict rev_hex scoreboard True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rev_hex
+TREELEAK verdict rev_hex grader_provider True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rev_hex
+TREELEAK verdict rev_hex rubric_hash True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rev_hex
+TREELEAK verdict rev_hex failure_reason True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rev_hex
+TREELEAK verdict rev_hex case_id True  projects\demo\runs\run-1\c-6339613366372d77702d5952414e4143.verdict.json:rev_hex
+TREELEAK verdict b64_rev note True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:b64_rev
+TREELEAK verdict b64_rev scoreboard True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:b64_rev
+TREELEAK verdict b64_rev grader_provider True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:b64_rev
+TREELEAK verdict b64_rev rubric_hash True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:b64_rev
+TREELEAK verdict b64_rev failure_reason True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:b64_rev
+TREELEAK verdict b64_rev case_id True  projects\demo\runs\run-1\c-YzlhM2Y3LXdwLVlSQU5BQw.verdict.json:b64_rev
+TREELEAK verdict rot13 note True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rot13
+TREELEAK verdict rot13 scoreboard True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rot13
+TREELEAK verdict rot13 grader_provider True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rot13
+TREELEAK verdict rot13 rubric_hash True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rot13
+TREELEAK verdict rot13 failure_reason True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:rot13
+TREELEAK verdict rot13 case_id True  projects\demo\runs\run-1\c-PNANEL-cj-7s3n9p.verdict.json:rot13
+TREELEAK verdict tab_split note True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict tab_split scoreboard True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict tab_split grader_provider True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict tab_split rubric_hash True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict tab_split failure_reason True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict nl_split note True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict nl_split scoreboard True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict nl_split grader_provider True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict nl_split rubric_hash True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict nl_split failure_reason True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict crlf_mid note True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict crlf_mid scoreboard True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict crlf_mid grader_provider True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict crlf_mid rubric_hash True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+TREELEAK verdict crlf_mid failure_reason True  projects\demo\runs\run-1\case_f0ea437a1870.verdict.json:raw,pct_quote
+OUTLEAK result rev_hex error rev_hex
+OUTLEAK result b64_rev error b64_rev
+OUTLEAK result rot13 error rot13
+OUTLEAK result tab_split error raw,pct_quote
+OUTLEAK result nl_split error raw,pct_quote
+OUTLEAK result crlf_mid error raw,pct_quote
+OUTLEAK verdict rev_hex scoreboard rev_hex
+OUTLEAK verdict b64_rev scoreboard b64_rev
+OUTLEAK verdict rot13 scoreboard rot13
+OUTLEAK verdict tab_split scoreboard raw,pct_quote
+OUTLEAK verdict nl_split scoreboard raw,pct_quote
+OUTLEAK verdict crlf_mid scoreboard raw,pct_quote
+CONTROL result benign error True  0  -
+CONTROL result benign hitl_prompt True  0  -
+CONTROL result benign not_run_reason True  0  -
+CONTROL result benign evidence_path True  0  -
+CONTROL result benign evidence_label True  0  -
+CONTROL result benign log_ref True  0  -
+CONTROL result benign case_id True  1 c-everything fine.json -
+CONTROL result split_across_fields error|hitl_prompt True  0  -
+CONTROL verdict benign note True  1 case_f0ea437a1870.verdict.json -
+CONTROL verdict benign scoreboard True  1 case_f0ea437a1870.verdict.json -
+CONTROL verdict benign grader_provider True  1 case_f0ea437a1870.verdict.json -
+CONTROL verdict benign rubric_hash True  1 case_f0ea437a1870.verdict.json -
+CONTROL verdict benign failure_reason True  1 case_f0ea437a1870.verdict.json -
+CONTROL verdict benign case_id True  1 c-all good.verdict.json -
+Counter({('result', False, 'secret'): 189, ('verdict', False, 'secret'): 174, ('result', True, ''): 66, ('verdict', True, ''): 45, ('result', False, 'stage_error'): 5, ('verdict', False, 'stage_error'): 3})

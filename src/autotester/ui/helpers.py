@@ -24,7 +24,7 @@ from starlette.middleware import Middleware
 
 from autotester.browser.secrets import host_of
 from autotester.browser.session import NavigationRefused, check_destination
-from autotester.core.paths import repo_root
+from autotester.core.paths import SLUG_PATTERN, repo_root
 from autotester.core.redact import PLACEHOLDER_RE
 from autotester.schema.enums import Action
 from autotester.schema.flowspec import Step
@@ -53,10 +53,10 @@ __all__ = [
     "origin_guard_middleware",
 ]
 
-# Same shape as schema.project.Project.slug's own field pattern -- a slug is a
+# `SLUG_PATTERN` (core/safe_names.py) is the one slug shape -- a slug is a
 # single safe path segment, never `..`, `/`, `\`, or a null byte, before it is
 # ever handed to ProjectPaths/ProjectStore as a directory name.
-_SLUG_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+_SLUG_RE = re.compile(SLUG_PATTERN)
 # run/case ids are ulid- or content_id-shaped: alnum plus `_`/`-` only.
 _HOSTNAME_RE = re.compile(r"^(?=.*\.)[a-z0-9.-]+$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")

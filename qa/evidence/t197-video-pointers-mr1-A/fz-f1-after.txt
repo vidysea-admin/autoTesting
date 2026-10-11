@@ -1,0 +1,7 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mr1a-1004311059\fz-f1\src\autotester\__init__.py
+FAILED tests/test_cli_video_review.py::test_a_second_run_returns_the_stored_review_without_new_calls
+FAILED tests/test_cli_video_review.py::test_unreadable_media_exits_4_before_any_approval_or_call[]
+FAILED tests/test_cli_video_review.py::test_unreadable_media_exits_4_before_any_approval_or_call[this is not a video]
+FAILED tests/test_cli_video_review.py::test_unknown_source_and_bad_redact_spec_are_usage_errors_exit_1
+FAILED tests/test_cli_video_review.py::test_a_planted_secret_in_a_pointer_note_stays_out_of_prompt_and_output
+======================== 19 failed, 1 passed in 6.20s =========================

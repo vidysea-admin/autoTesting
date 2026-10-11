@@ -1,0 +1,18 @@
+C:\Users\Lenovo\AppData\Local\Temp\claude\r3b-43931685\copyF2\src\autotester\__init__.py
+.......................................................................F [ 80%]
+FFF........FF.....                                                       [100%]
+============================== warnings summary ===============================
+..\copy\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\r3b-43931685\copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-loopback-localhost]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-loopback-https-localhost]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-loopback-127]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild6-loopback-v6]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_names_why_a_loopback_public_origin_is_refused[0.0.0.0]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_names_why_a_loopback_public_origin_is_refused[::]
+6 failed, 84 passed, 1 warning in 63.15s (0:01:03)
+exit 1

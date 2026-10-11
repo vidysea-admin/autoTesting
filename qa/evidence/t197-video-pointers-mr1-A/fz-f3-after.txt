@@ -1,0 +1,7 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mr1a-1004311059\fz-f3\src\autotester\__init__.py
+E        +    where [Advice(where=WindowsPath('cli.py'), line=225, command='expand'), Advice(where=WindowsPath('cli_issues.py'), line=57, ..., line=223, command='issues list'), Advice(where=WindowsPath('cli_issues.py'), line=266, command='issues derive'), ...] = advice()
+
+tests\test_cli_advice_resolves.py:215: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed
+============================= 1 failed in 16.83s ==============================

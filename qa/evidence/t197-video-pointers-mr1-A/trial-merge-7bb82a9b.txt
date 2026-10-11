@@ -1,0 +1,4 @@
+Auto-merging docs/MAP.md
+Auto-merging src/autotester/cli_crawl.py
+Automatic merge went well; stopped before committing as requested
+merge exit 0

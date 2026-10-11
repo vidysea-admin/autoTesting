@@ -1,0 +1,16 @@
+fz1-X13c-drop-alias-rewrite | import: ad\fz\fz1-X13c-drop-alias-rewrite\src\autotester\__init__.py | GREEN 0 ======================= 31 passed, 3 warnings in 6.43s ======================== (22s) | RED 1 ================== 4 failed, 27 passed, 3 warnings in 6.07s =================== (18s)
+     FAILED tests/test_explore_flows_doors.py::test_the_cli_door_points_a_rediscovered_screen_at_the_existing_one
+     FAILED tests/test_explore_flows_doors.py::test_the_ui_door_points_a_rediscovered_screen_at_the_existing_one
+     FAILED tests/test_explore_flows_doors.py::test_a_rediscovery_changes_the_screen_reference_not_the_flow_id
+     FAILED tests/test_explore_flows.py::test_a_rediscovered_screen_is_referenced_by_the_existing_id_and_the_flow_id_is_stable
+fz2-X6-narrow-except | import: cratchpad\fz\fz2-X6-narrow-except\src\autotester\__init__.py | GREEN 0 ======================== 1 passed, 1 warning in 3.22s ========================= (18s) | RED 1 ======================== 1 failed, 1 warning in 4.32s ========================= (19s)
+     FAILED tests/test_ui_learn_guard.py::test_a_guard_refusal_is_a_themed_400_with_nothing_written_sent_or_echoed
+fz3-PII2-mask-joined | import: cratchpad\fz\fz3-PII2-mask-joined\src\autotester\__init__.py | GREEN 0 ============================= 23 passed in 22.03s ============================= (37s) | RED 1 ======================== 1 failed, 22 passed in 19.25s ======================== (30s)
+     FAILED tests/test_expand_redaction.py::test_a_phone_at_the_end_of_a_step_does_not_swallow_the_next_step_number
+m4-double-bump | import: d7f6\scratchpad\fz\m4-double-bump\src\autotester\__init__.py | GREEN 0 ======================= 31 passed, 3 warnings in 6.52s ======================== (21s) | RED 1 ================== 1 failed, 30 passed, 3 warnings in 5.99s =================== (18s)
+     FAILED tests/test_explore_flows.py::test_a_merge_that_adds_screens_and_flows_bumps_the_version_exactly_once
+m5-rediscovery-name-cond | import: chpad\fz\m5-rediscovery-name-cond\src\autotester\__init__.py | GREEN 0 ======================= 31 passed, 3 warnings in 5.67s ======================== (21s) | RED 1 ================== 4 failed, 27 passed, 3 warnings in 6.31s =================== (18s)
+     FAILED tests/test_explore_flows_doors.py::test_the_cli_door_points_a_rediscovered_screen_at_the_existing_one
+     FAILED tests/test_explore_flows_doors.py::test_the_ui_door_points_a_rediscovered_screen_at_the_existing_one
+     FAILED tests/test_explore_flows_doors.py::test_a_rediscovery_changes_the_screen_reference_not_the_flow_id
+     FAILED tests/test_explore_flows.py::test_a_rediscovered_screen_is_referenced_by_the_existing_id_and_the_flow_id_is_stable

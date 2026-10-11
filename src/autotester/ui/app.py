@@ -65,7 +65,7 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(title="AutoTester", lifespan=_lifespan,
               middleware=[*origin_guard_middleware(), *auth_middleware()])
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
-routers.include_all(app)  # T-204: the one router list lives in ui/routers.py
+routers.include_all(app)  # T-204/T-205 (TF3): the one router list lives in ui/routers.py
 
 
 @app.get("/favicon.ico", status_code=204)

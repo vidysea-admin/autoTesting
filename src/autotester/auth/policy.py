@@ -1,18 +1,22 @@
-"""The central route policy table (AU14, AU16): every route's required permission.
+"""The central route policy (AU14, AU16, TF4): the rule table, its matcher, the unit merge.
 
-A request is matched against these templates by method and path. A route that is not
-in the table matches nothing and is refused (default deny), so a route added later
-without a row here is unreachable until someone declares what it needs.
+`ROUTE_POLICY` is the table T-204's login gate walks: a request is matched against its
+templates by method and path, and a route not in it matches nothing and is refused (default
+deny), so a route added later without a row is unreachable until someone declares what it
+needs. `merge_route_policies` (T-205/TF4) folds units' own `"<METHOD> <path>"` dicts into one
+table and fails loudly on a duplicate route, an invented permission key (R63) or a `public`
+outside AU16's closed set; it is not yet wired to the table above, which T-204 owns.
 """
 
 from __future__ import annotations
 
 import re
+from collections.abc import Collection, Mapping
 
 from autotester.schema.auth import PermissionKey as K
 from autotester.schema.auth import RouteRule
 
-PUBLIC = RouteRule(kind="public")
+PUBLIC_RULE = RouteRule(kind="public")
 SESSION = RouteRule(kind="session")
 MEMBER = RouteRule(kind="member")
 
@@ -34,9 +38,9 @@ _SETTINGS, _USERS, _GROUPS = (_key(K.SETTINGS_MANAGE), _key(K.USERS_MANAGE),
 
 ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     # AU16: the closed public set
-    ("GET", "/auth/login"): PUBLIC, ("POST", "/auth/login"): PUBLIC,
-    ("GET", "/auth/signup"): PUBLIC, ("POST", "/auth/signup"): PUBLIC,
-    ("GET", "/healthz"): PUBLIC,
+    ("GET", "/auth/login"): PUBLIC_RULE, ("POST", "/auth/login"): PUBLIC_RULE,
+    ("GET", "/auth/signup"): PUBLIC_RULE, ("POST", "/auth/signup"): PUBLIC_RULE,
+    ("GET", "/healthz"): PUBLIC_RULE,
     # signed in, even with zero permissions (AU6)
     ("POST", "/auth/logout"): SESSION, ("GET", "/auth/waiting"): SESSION,
     ("GET", "/favicon.ico"): MEMBER,
@@ -106,3 +110,51 @@ def route_for(method: str, path: str) -> tuple[str, RouteRule, dict[str, str]] |
             if best is None or weight > best[0]:
                 best = (weight, template, rule, found.groupdict())
     return None if best is None else (best[1], best[2], best[3])
+
+
+# --- TF4: merge each unit's own policy dict (T-205) ---
+
+PUBLIC = "public"  # a unit-policy grant (T-205); `ROUTE_POLICY` above uses `PUBLIC_RULE`
+RoutePolicy = Mapping[str, "str | tuple[str, str]"]
+
+
+class PolicyError(ValueError):
+    """The unit policies cannot be merged; the message names the unit and the route."""
+
+
+def _check_entry(unit: str, route: str, grant: str | tuple[str, str], *,
+                 catalogue: Collection[str], public_routes: Collection[str],
+                 routes: Collection[str] | None) -> None:
+    if routes is not None and route not in routes:
+        raise PolicyError(f"{unit}: policy names a route that does not exist: {route!r}")
+    if grant == PUBLIC:
+        if route not in public_routes:
+            raise PolicyError(f"{unit}: {route!r} is marked public but is not in the closed "
+                              "public set (auth.md AU16)")
+        return
+    if not isinstance(grant, tuple) or len(grant) != 2:
+        raise PolicyError(f"{unit}: {route!r} must be 'public' or (permission key, resolver)")
+    if grant[0] not in catalogue:
+        raise PolicyError(f"{unit}: {route!r} uses permission key {grant[0]!r}, which is not "
+                          "in the closed catalogue (R63: a unit cannot invent a key)")
+
+
+def merge_route_policies(
+    units: Mapping[str, RoutePolicy], *, catalogue: Collection[str],
+    public_routes: Collection[str], routes: Collection[str] | None = None,
+) -> dict[str, str | tuple[str, str]]:
+    """The central table: every unit's routes, deterministically (units in name order).
+
+    `routes` is the set of `"<METHOD> <path>"` the app really serves; when given, a policy
+    row for a route outside it is an error. Raises `PolicyError`; never last-wins."""
+    table: dict[str, str | tuple[str, str]] = {}
+    owner: dict[str, str] = {}
+    for unit in sorted(units):
+        for route, grant in units[unit].items():
+            if route in table:
+                raise PolicyError(f"duplicate route {route!r}: claimed by {owner[route]} "
+                                  f"and {unit}")
+            _check_entry(unit, route, grant, catalogue=catalogue, public_routes=public_routes,
+                         routes=routes)
+            table[route], owner[route] = grant, unit
+    return table

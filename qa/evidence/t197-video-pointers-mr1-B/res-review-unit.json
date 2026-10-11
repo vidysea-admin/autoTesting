@@ -1,0 +1,3278 @@
+[
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r01-ok-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "cf5edf0e4777",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "# Video review rv_9c7c99ac4188\n\n**Status:** ok\n**Summary:** A user logs in.\n**Narration:** no narration on record\n**Coverage:** Every part of the recording was looked at.\n**Baseline:** No baseline to compare: this review is not matched against the product's crawled map, so it says nothing about whether the recording agrees with it.\n**Count:** Only 2 items found (fewer than 4); the list is not padded.\n\n| id | time | screen | seen | suggestion | severity | origin | status |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| it_3e0f308a0952 | 0:10 | Screen0 | seen 0 [no narration on record] | fix 0 | S1 | visual | open |\n| it_5a1be118db6c | 0:19 | Screen1 | seen 1 [no narration on record] | fix 1 | S2 | visual | open |\n\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r02-ok-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "cf5edf0e4777",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r03-dry-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--dry-run"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "plan: 9 frame(s) in 1 call(s), 0 held back by redaction (windows: none), estimated cost $0.0246; no model was called\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r04-dry-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--dry-run"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"frame_count\": 9,\n  \"redacted_frame_count\": 0,\n  \"call_count\": 1,\n  \"est_cost_usd\": 0.0246,\n  \"windows\": [],\n  \"pointer_windows\": [],\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r05-dry-noapproval-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--dry-run"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"frame_count\": 9,\n  \"redacted_frame_count\": 0,\n  \"call_count\": 1,\n  \"est_cost_usd\": 0.0246,\n  \"windows\": [],\n  \"pointer_windows\": [],\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r06a-dry-pointers-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt",
+     "--dry-run"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"frame_count\": 21,\n  \"redacted_frame_count\": 0,\n  \"call_count\": 2,\n  \"est_cost_usd\": 0.0519,\n  \"windows\": [],\n  \"pointer_windows\": [\n    [\n      30.0,\n      120.0\n    ]\n  ],\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r06b-partial-cap0-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "2aab39738e9e",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "0"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"failed\",\n  \"reason\": \"spend cap $0 reached\",\n  \"summary\": \"\",\n  \"items\": [],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": null,\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Not reviewed: 0:00-2:10.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [],\n  \"analysed\": [],\n  \"not_reviewed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"calls\": 0,\n  \"cost_usd\": 0.0,\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r06c-partial-costly-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_94ccf9c5cbb0.json": "91bac8639ce0",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00030000",
+    "00035000",
+    "00040000",
+    "00045000",
+    "00050000",
+    "00055000",
+    "00060000",
+    "00065000",
+    "00070000",
+    "00075000",
+    "00080000",
+    "00085000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2252
+   ],
+   "prompt_sha": [
+    "94241bdff3f2"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt",
+     "--max-cost",
+     "0.5"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_94ccf9c5cbb0\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"partial\",\n  \"reason\": \"spend cap $0.5 reached\",\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_62067f16f179\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_24dadd3dd057\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Not reviewed: 0:00-0:30, 1:30-2:10.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [\n    {\n      \"line_no\": 1,\n      \"kind\": \"window\",\n      \"start_s\": 30.0,\n      \"end_s\": 50.0,\n      \"approx\": false,\n      \"text\": \"check this\"\n    },\n    {\n      \"line_no\": 2,\n      \"kind\": \"time\",\n      \"start_s\": 70.0,\n      \"end_s\": null,\n      \"approx\": true,\n      \"text\": null\n    },\n    {\n      \"line_no\": 3,\n      \"kind\": \"time\",\n      \"start_s\": 100.0,\n      \"end_s\": null,\n      \"approx\": false,\n      \"text\": \"and this\"\n    }\n  ],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    30.0,\n    35.0,\n    40.0,\n    45.0,\n    50.0,\n    55.0,\n    60.0,\n    65.0,\n    70.0,\n    75.0,\n    80.0,\n    85.0\n  ],\n  \"analysed\": [\n    [\n      30.0,\n      90.0\n    ]\n  ],\n  \"not_reviewed\": [\n    [\n      0.0,\n      30.0\n    ],\n    [\n      90.0,\n      130.0\n    ]\n  ],\n  \"calls\": 1,\n  \"cost_usd\": 13.5,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r06d-partial-costly-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_94ccf9c5cbb0.json": "91bac8639ce0",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00030000",
+    "00035000",
+    "00040000",
+    "00045000",
+    "00050000",
+    "00055000",
+    "00060000",
+    "00065000",
+    "00070000",
+    "00075000",
+    "00080000",
+    "00085000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2252
+   ],
+   "prompt_sha": [
+    "94241bdff3f2"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--pointers",
+     "{WORLD}/files/p.txt",
+     "--max-cost",
+     "0.5"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "# Video review rv_94ccf9c5cbb0\n\n**Status:** partial (spend cap $0.5 reached)\n**Summary:** A user logs in.\n**Narration:** no narration on record\n**Coverage:** Not reviewed: 0:00-0:30, 1:30-2:10.\n**Baseline:** No baseline to compare: this review is not matched against the product's crawled map, so it says nothing about whether the recording agrees with it.\n**Count:** Only 2 items found (fewer than 4); the list is not padded.\n\n| id | time | screen | seen | suggestion | severity | origin | status |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| it_62067f16f179 | 0:10 | Screen0 | seen 0 [no narration on record] | fix 0 | S1 | visual | open |\n| it_24dadd3dd057 | 0:19 | Screen1 | seen 1 [no narration on record] | fix 1 | S2 | visual | open |\n\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r07-failed-badreply-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "b7c18420de8f",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"failed\",\n  \"reason\": \"model reply was not usable: ProviderError: reply is dict, not a ReviewReply\",\n  \"summary\": \"\",\n  \"items\": [],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": null,\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Not reviewed: 0:00-2:10.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [],\n  \"analysed\": [],\n  \"not_reviewed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r07b-failed-badreply-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "b7c18420de8f",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "# Video review rv_9c7c99ac4188\n\n**Status:** failed (model reply was not usable: ProviderError: reply is dict, not a ReviewReply)\n**Summary:** (none)\n**Narration:** no narration on record\n**Coverage:** Not reviewed: 0:00-2:10.\n**Baseline:** No baseline to compare: this review is not matched against the product's crawled map, so it says nothing about whether the recording agrees with it.\n\n| id | time | screen | seen | suggestion | severity | origin | status |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r08-provider-error-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "aca4faead33f",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"failed\",\n  \"reason\": \"model reply was not usable: ProviderError: provider said no\",\n  \"summary\": \"\",\n  \"items\": [],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": null,\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Not reviewed: 0:00-2:10.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [],\n  \"analysed\": [],\n  \"not_reviewed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"calls\": 0,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r09-runtime-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nunexpected RuntimeError during the review: boom secret=CANARY-SECRET-123 at <recording>\n",
+    "stdout": "{\n  \"status\": \"internal_error\",\n  \"reason\": \"unexpected RuntimeError during the review: boom secret=CANARY-SECRET-123 at <recording>\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r09b-runtime-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nunexpected RuntimeError during the review: boom secret=CANARY-SECRET-123 at <recording>\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r10-oserror-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nunexpected OSError during the review: disk exploded <recording>\n",
+    "stdout": "{\n  \"status\": \"internal_error\",\n  \"reason\": \"unexpected OSError during the review: disk exploded <recording>\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r10b-oserror-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 1,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nunexpected OSError during the review: disk exploded <recording>\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r11-interrupt-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 130,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\ninterrupted; nothing stored\n",
+    "stdout": "{\n  \"status\": \"interrupted\",\n  \"reason\": \"interrupted; nothing stored\",\n  \"exit_code\": 130\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r11b-interrupt-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 130,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\ninterrupted; nothing stored\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r12-ptrerr-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 2,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\npointer file refused: 3 line(s), nothing was sent to a model\n  line 1: seconds must be 0-59, got 99 in the time\n  line 3: reversed or empty range: end 750s is not after start 840s\n  line 4: negative time is not allowed\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r12b-ptrerr-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 2,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\npointer file refused: 3 line(s), nothing was sent to a model\n  line 1: seconds must be 0-59, got 99 in the time\n  line 3: reversed or empty range: end 750s is not after start 840s\n  line 4: negative time is not allowed\n",
+    "stdout": "{\n  \"status\": \"pointer_errors\",\n  \"exit_code\": 2,\n  \"errors\": [\n    {\n      \"line_no\": 1,\n      \"reason\": \"seconds must be 0-59, got 99 in the time\"\n    },\n    {\n      \"line_no\": 3,\n      \"reason\": \"reversed or empty range: end 750s is not after start 840s\"\n    },\n    {\n      \"line_no\": 4,\n      \"reason\": \"negative time is not allowed\"\n    }\n  ]\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r13-ptr-ok-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_94ccf9c5cbb0.json": "d93554eae407",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 2,
+   "frames": [
+    "00030000",
+    "00035000",
+    "00040000",
+    "00045000",
+    "00050000",
+    "00055000",
+    "00060000",
+    "00065000",
+    "00070000",
+    "00075000",
+    "00080000",
+    "00085000",
+    "00000000",
+    "00015000",
+    "00090000",
+    "00095000",
+    "00100000",
+    "00105000",
+    "00110000",
+    "00115000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2252,
+    2244
+   ],
+   "prompt_sha": [
+    "94241bdff3f2",
+    "4c7b6fcfab99"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_94ccf9c5cbb0\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in. A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_62067f16f179\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_24dadd3dd057\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_62067f16f179\",\n        \"time_s\": 10.0,\n        \"screen\": \"Screen0\",\n        \"seen\": \"seen 0\",\n        \"suggestion\": \"fix 0\",\n        \"severity\": \"S1\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    },\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_24dadd3dd057\",\n        \"time_s\": 19.0,\n        \"screen\": \"Screen1\",\n        \"seen\": \"seen 1\",\n        \"suggestion\": \"fix 1\",\n        \"severity\": \"S2\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    }\n  ],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [\n    {\n      \"line_no\": 1,\n      \"kind\": \"window\",\n      \"start_s\": 30.0,\n      \"end_s\": 50.0,\n      \"approx\": false,\n      \"text\": \"check this\"\n    },\n    {\n      \"line_no\": 2,\n      \"kind\": \"time\",\n      \"start_s\": 70.0,\n      \"end_s\": null,\n      \"approx\": true,\n      \"text\": null\n    },\n    {\n      \"line_no\": 3,\n      \"kind\": \"time\",\n      \"start_s\": 100.0,\n      \"end_s\": null,\n      \"approx\": false,\n      \"text\": \"and this\"\n    }\n  ],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    30.0,\n    35.0,\n    40.0,\n    45.0,\n    50.0,\n    55.0,\n    60.0,\n    65.0,\n    70.0,\n    75.0,\n    80.0,\n    85.0,\n    0.0,\n    15.0,\n    90.0,\n    95.0,\n    100.0,\n    105.0,\n    110.0,\n    115.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 2,\n  \"cost_usd\": 0.00036,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r13b-ptr-bom-crlf-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_ae8f03768f18.json": "9b0799ce063b",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 2,
+   "frames": [
+    "00030000",
+    "00035000",
+    "00040000",
+    "00045000",
+    "00050000",
+    "00055000",
+    "00060000",
+    "00065000",
+    "00070000",
+    "00075000",
+    "00080000",
+    "00085000",
+    "00000000",
+    "00015000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2222,
+    2195
+   ],
+   "prompt_sha": [
+    "c06980d67cdf",
+    "3a77d92aa4fb"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_ae8f03768f18\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in. A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_ddb1e2592092\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_31609e6acd89\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_ddb1e2592092\",\n        \"time_s\": 10.0,\n        \"screen\": \"Screen0\",\n        \"seen\": \"seen 0\",\n        \"suggestion\": \"fix 0\",\n        \"severity\": \"S1\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    },\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_31609e6acd89\",\n        \"time_s\": 19.0,\n        \"screen\": \"Screen1\",\n        \"seen\": \"seen 1\",\n        \"suggestion\": \"fix 1\",\n        \"severity\": \"S2\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    }\n  ],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [\n    {\n      \"line_no\": 1,\n      \"kind\": \"window\",\n      \"start_s\": 30.0,\n      \"end_s\": 50.0,\n      \"approx\": false,\n      \"text\": \"check\"\n    },\n    {\n      \"line_no\": 2,\n      \"kind\": \"time\",\n      \"start_s\": 70.0,\n      \"end_s\": null,\n      \"approx\": true,\n      \"text\": null\n    }\n  ],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    30.0,\n    35.0,\n    40.0,\n    45.0,\n    50.0,\n    55.0,\n    60.0,\n    65.0,\n    70.0,\n    75.0,\n    80.0,\n    85.0,\n    0.0,\n    15.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 2,\n  \"cost_usd\": 0.00036,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r14a-ptr-32768-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_ee05c8463d01.json": "db6d825de28e",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00010000",
+    "00015000",
+    "00020000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    35925
+   ],
+   "prompt_sha": [
+    "0a5658a5639e"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_ee05c8463d01\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_654200593edd\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_33d57bae4135\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [\n    {\n      \"line_no\": 1,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 2,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 3,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 4,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 5,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 6,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 7,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 8,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 9,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 10,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 11,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 12,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 13,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 14,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 15,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 16,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 17,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 18,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 19,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 20,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 21,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 22,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 23,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 24,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 25,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 26,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 27,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 28,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 29,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 30,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 31,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 32,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 33,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 34,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 35,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 36,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 37,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 38,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 39,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 40,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 41,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 42,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 43,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 44,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 45,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 46,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 47,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 48,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 49,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 50,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 51,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 52,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 53,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 54,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 55,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 56,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 57,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 58,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 59,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 60,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 61,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 62,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 63,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 64,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 65,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 66,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 67,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 68,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 69,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 70,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 71,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 72,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 73,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 74,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 75,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 76,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 77,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 78,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 79,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 80,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 81,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 82,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 83,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 84,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 85,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 86,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 87,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 88,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 89,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 90,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 91,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 92,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 93,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 94,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 95,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 96,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 97,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 98,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 99,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    },\n    {\n      \"line_no\": 100,\n      \"kind\": \"window\",\n      \"start_s\": 10.0,\n      \"end_s\": 20.0,\n      \"approx\": false,\n      \"text\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    }\n  ],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    10.0,\n    15.0,\n    20.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r14b-ptr-32769-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 2,
+    "stderr": "pointer file refused: 1 line(s), nothing was sent to a model\n  line 1: pointer file is 32769 bytes, over the 32768 byte limit\n",
+    "stdout": "{\n  \"status\": \"pointer_errors\",\n  \"exit_code\": 2,\n  \"errors\": [\n    {\n      \"line_no\": 1,\n      \"reason\": \"pointer file is 32769 bytes, over the 32768 byte limit\"\n    }\n  ]\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r14c-ptr-32769-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 2,
+    "stderr": "pointer file refused: 1 line(s), nothing was sent to a model\n  line 1: pointer file is 32769 bytes, over the 32768 byte limit\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r15-ptr-missing-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/nope.txt"
+    ],
+    "exit": 1,
+    "stderr": "cannot read the pointer file (FileNotFoundError)\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"cannot read the pointer file (FileNotFoundError)\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r15b-ptr-nonutf8-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 1,
+    "stderr": "cannot read the pointer file (UnicodeDecodeError)\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"cannot read the pointer file (UnicodeDecodeError)\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r16-noapproval-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 3,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nrefusing to start a video_review run against fake \ufffd no approval exists for it\nGrant one with:\n  uv run autotester approve demo --kind video_review --target \"fake\" --scope \"<what this run may touch>\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 1\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r16b-noapproval-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 3,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nrefusing to start a video_review run against fake \ufffd no approval exists for it\nGrant one with:\n  uv run autotester approve demo --kind video_review --target \"fake\" --scope \"<what this run may touch>\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 1\n",
+    "stdout": "{\n  \"status\": \"refused\",\n  \"reason\": \"refusing to start a video_review run against fake \ufffd no approval exists for it\\nGrant one with:\\n  uv run autotester approve demo --kind video_review --target \\\"fake\\\" --scope \\\"<what this run may touch>\\\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 1\",\n  \"exit_code\": 3\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r16c-wrongprov-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "a5641b6763ae",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 3,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nrefusing to start a video_review run against fake \ufffd no approval exists for it\nGrant one with:\n  uv run autotester approve demo --kind video_review --target \"fake\" --scope \"<what this run may touch>\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 1\n",
+    "stdout": "{\n  \"status\": \"refused\",\n  \"reason\": \"refusing to start a video_review run against fake \ufffd no approval exists for it\\nGrant one with:\\n  uv run autotester approve demo --kind video_review --target \\\"fake\\\" --scope \\\"<what this run may touch>\\\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 1\",\n  \"exit_code\": 3\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r16d-wrongproject-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "2b82df477735",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 3,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\nrefusing to start a video_review run against fake \ufffd no approval exists for it\nGrant one with:\n  uv run autotester approve demo --kind video_review --target \"fake\" --scope \"<what this run may touch>\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 1\n",
+    "stdout": "{\n  \"status\": \"refused\",\n  \"reason\": \"refusing to start a video_review run against fake \ufffd no approval exists for it\\nGrant one with:\\n  uv run autotester approve demo --kind video_review --target \\\"fake\\\" --scope \\\"<what this run may touch>\\\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 1\",\n  \"exit_code\": 3\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r17a-unreadable-empty-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 4,
+    "stderr": "src_b5dd24de9576: recording is missing or empty\n",
+    "stdout": "{\n  \"status\": \"unreadable\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"reason\": \"recording is missing or empty\",\n  \"exit_code\": 4\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r17b-unreadable-empty-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 4,
+    "stderr": "src_b5dd24de9576: recording is missing or empty\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r17c-missingfile-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 4,
+    "stderr": "src_b5dd24de9576: recording is missing or empty\n",
+    "stdout": "{\n  \"status\": \"unreadable\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"reason\": \"recording is missing or empty\",\n  \"exit_code\": 4\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r17d-corrupt-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "4a9aa5664e70"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 4,
+    "stderr": "src_dec3924add15: recording is corrupt or has no video track\n",
+    "stdout": "{\n  \"status\": \"unreadable\",\n  \"source_id\": \"src_dec3924add15\",\n  \"reason\": \"recording is corrupt or has no video track\",\n  \"exit_code\": 4\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r17e-audioonly-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "c2987be4cf90"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 4,
+    "stderr": "src_21d8a76d89d9: recording is corrupt or has no video track\n",
+    "stdout": "{\n  \"status\": \"unreadable\",\n  \"source_id\": \"src_21d8a76d89d9\",\n  \"reason\": \"recording is corrupt or has no video track\",\n  \"exit_code\": 4\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18a-usage-cap-abc-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "abc"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Invalid value for '--max-cost': 'abc' is not a valid float.\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"Invalid value for '--max-cost': 'abc' is not a valid float.\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18b-usage-cap-abc-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--max-cost",
+     "abc"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Invalid value for '--max-cost': 'abc' is not a valid float.\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18c-usage-cap-empty-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     ""
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Invalid value for '--max-cost': '' is not a valid float.\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"Invalid value for '--max-cost': '' is not a valid float.\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18d-usage-missing-arg-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Missing argument 'source_id'.\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"Missing argument 'source_id'.\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18e-usage-missing-arg-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Missing argument 'source_id'.\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18f-usage-unknown-opt-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--bogus"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: No such option: --bogus\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"No such option: --bogus\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18g-usage-unknown-opt-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--bogus"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: No such option: --bogus\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18h-usage-output-xml",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "xml"
+    ],
+    "exit": 1,
+    "stderr": "--output must be text or json\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18i-usage-output-bare-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output"
+    ],
+    "exit": 1,
+    "stderr": "Error: Option '--output' requires an argument.\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r18j-usage-output-eq-json-bad",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output=json",
+     "--max-cost",
+     "x"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Invalid value for '--max-cost': 'x' is not a valid float.\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"Invalid value for '--max-cost': 'x' is not a valid float.\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r19a-redact-bad-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--redact",
+     "bad"
+    ],
+    "exit": 1,
+    "stderr": "--redact takes START-END windows inside the recording, like 12:30-14:00\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--redact takes START-END windows inside the recording, like 12:30-14:00\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r19b-redact-bad-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--redact",
+     "bad"
+    ],
+    "exit": 1,
+    "stderr": "--redact takes START-END windows inside the recording, like 12:30-14:00\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r19c-redact-beyond-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--redact",
+     "5:00-6:00"
+    ],
+    "exit": 1,
+    "stderr": "--redact takes START-END windows inside the recording, like 12:30-14:00\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--redact takes START-END windows inside the recording, like 12:30-14:00\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r19d-redact-reversed-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--redact",
+     "1:00-0:30"
+    ],
+    "exit": 1,
+    "stderr": "--redact takes START-END windows inside the recording, like 12:30-14:00\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--redact takes START-END windows inside the recording, like 12:30-14:00\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r19e-redact-ok-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_170876f0ab37.json": "41d9c505bd64",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2193
+   ],
+   "prompt_sha": [
+    "5a2ff53ddecf"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--redact",
+     "0:20-0:40"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_170876f0ab37\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3d23ea2a6bdf\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_38ebf1de1512\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Not reviewed: 0:20-0:45. Redacted on request: 0:20-0:40.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [\n    {\n      \"start_s\": 20.0,\n      \"end_s\": 40.0\n    }\n  ],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      20.0\n    ],\n    [\n      45.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [\n    [\n      20.0,\n      45.0\n    ]\n  ],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r19f-redact-ok-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_170876f0ab37.json": "41d9c505bd64",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2193
+   ],
+   "prompt_sha": [
+    "5a2ff53ddecf"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--redact",
+     "0:20-0:40"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "# Video review rv_170876f0ab37\n\n**Status:** ok\n**Summary:** A user logs in.\n**Narration:** no narration on record\n**Coverage:** Not reviewed: 0:20-0:45. Redacted on request: 0:20-0:40.\n**Baseline:** No baseline to compare: this review is not matched against the product's crawled map, so it says nothing about whether the recording agrees with it.\n**Count:** Only 2 items found (fewer than 4); the list is not padded.\n\n| id | time | screen | seen | suggestion | severity | origin | status |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| it_3d23ea2a6bdf | 0:10 | Screen0 | seen 0 [no narration on record] | fix 0 | S1 | visual | open |\n| it_38ebf1de1512 | 0:19 | Screen1 | seen 1 [no narration on record] | fix 1 | S2 | visual | open |\n\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r19g-redact-two-ok-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_4ff84d5b47af.json": "7177c4bd7b50",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00045000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2189
+   ],
+   "prompt_sha": [
+    "971ceaaa608e"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--redact",
+     "0:20-0:40",
+     "--redact",
+     "1:00-1:10"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_4ff84d5b47af\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_d37fbc8c4d7b\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_a30eca96819b\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Not reviewed: 0:20-0:45, 1:00-1:15. Redacted on request: 0:20-0:40, 1:00-1:10.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [\n    {\n      \"start_s\": 20.0,\n      \"end_s\": 40.0\n    },\n    {\n      \"start_s\": 60.0,\n      \"end_s\": 70.0\n    }\n  ],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    45.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      20.0\n    ],\n    [\n      45.0,\n      60.0\n    ],\n    [\n      75.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [\n    [\n      20.0,\n      45.0\n    ],\n    [\n      60.0,\n      75.0\n    ]\n  ],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20a-cap-nan-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "nan"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--max-cost must be a finite number of dollars, 0 or more\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20b-cap-inf-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "inf"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--max-cost must be a finite number of dollars, 0 or more\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20c-cap--inf-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "-inf"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--max-cost must be a finite number of dollars, 0 or more\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20d-cap--1-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "-1"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--max-cost must be a finite number of dollars, 0 or more\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20e-cap--0.01-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "-0.01"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--max-cost must be a finite number of dollars, 0 or more\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20f-cap-1e999-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "1e999"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--max-cost must be a finite number of dollars, 0 or more\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20g-cap-NaN-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--max-cost",
+     "NaN"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"--max-cost must be a finite number of dollars, 0 or more\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r20h-cap-nan-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--max-cost",
+     "nan"
+    ],
+    "exit": 1,
+    "stderr": "--max-cost must be a finite number of dollars, 0 or more\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r21a-provider-unknown-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--provider",
+     "nonesuch"
+    ],
+    "exit": 1,
+    "stderr": "unknown provider 'nonesuch'; known: anthropic, gemini, langchain-fallback, mock\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"unknown provider 'nonesuch'; known: anthropic, gemini, langchain-fallback, mock\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r21b-provider-gemini-noapproval-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--provider",
+     "gemini"
+    ],
+    "exit": 1,
+    "stderr": "provider 'gemini' is not available here (no credentials or binary)\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"provider 'gemini' is not available here (no credentials or binary)\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r21c-provider-unavailable-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "provider 'gemini' is not available here (no credentials or binary)\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"provider 'gemini' is not available here (no credentials or binary)\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r22a-noproject-json",
+  "listing": {},
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "no project 'demo' yet\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"no project 'demo' yet\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r22b-noproject-text",
+  "listing": {},
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 1,
+    "stderr": "no project 'demo' yet\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r22c-nosuchsource-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "ingest",
+     "review",
+     "demo",
+     "src_deadbeef",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Got unexpected extra argument(s) (ingest review demo src_deadbeef)\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"Got unexpected extra argument(s) (ingest review demo src_deadbeef)\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r22d-emptyproject-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "ingest",
+     "review",
+     "demo",
+     "src_deadbeef",
+     "--output",
+     "json"
+    ],
+    "exit": 1,
+    "stderr": "Usage: autotester ingest review [OPTIONS] {project} {source_id}\nTry 'autotester ingest review --help' for help.\n\nError: Got unexpected extra argument(s) (ingest review demo src_deadbeef)\n",
+    "stdout": "{\n  \"status\": \"usage_error\",\n  \"reason\": \"Got unexpected extra argument(s) (ingest review demo src_deadbeef)\",\n  \"exit_code\": 1\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r23a-rerun-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "cf5edf0e4777",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   },
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   },
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--refresh"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r23b-rerun-confirm-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "b5f9919efbc6",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   },
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"confirmed\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r23c-pointer-changes-id-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_94ccf9c5cbb0.json": "d93554eae407",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_94ccf9c5cbb0\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in. A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_62067f16f179\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_24dadd3dd057\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_62067f16f179\",\n        \"time_s\": 10.0,\n        \"screen\": \"Screen0\",\n        \"seen\": \"seen 0\",\n        \"suggestion\": \"fix 0\",\n        \"severity\": \"S1\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    },\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_24dadd3dd057\",\n        \"time_s\": 19.0,\n        \"screen\": \"Screen1\",\n        \"seen\": \"seen 1\",\n        \"suggestion\": \"fix 1\",\n        \"severity\": \"S2\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    }\n  ],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [\n    {\n      \"line_no\": 1,\n      \"kind\": \"window\",\n      \"start_s\": 30.0,\n      \"end_s\": 50.0,\n      \"approx\": false,\n      \"text\": \"check this\"\n    },\n    {\n      \"line_no\": 2,\n      \"kind\": \"time\",\n      \"start_s\": 70.0,\n      \"end_s\": null,\n      \"approx\": true,\n      \"text\": null\n    },\n    {\n      \"line_no\": 3,\n      \"kind\": \"time\",\n      \"start_s\": 100.0,\n      \"end_s\": null,\n      \"approx\": false,\n      \"text\": \"and this\"\n    }\n  ],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    30.0,\n    35.0,\n    40.0,\n    45.0,\n    50.0,\n    55.0,\n    60.0,\n    65.0,\n    70.0,\n    75.0,\n    80.0,\n    85.0,\n    0.0,\n    15.0,\n    90.0,\n    95.0,\n    100.0,\n    105.0,\n    110.0,\n    115.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 2,\n  \"cost_usd\": 0.00036,\n  \"exit_code\": 0\n}\n"
+   },
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--pointers",
+     "{WORLD}/files/p.txt"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_94ccf9c5cbb0\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in. A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_62067f16f179\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_24dadd3dd057\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_62067f16f179\",\n        \"time_s\": 10.0,\n        \"screen\": \"Screen0\",\n        \"seen\": \"seen 0\",\n        \"suggestion\": \"fix 0\",\n        \"severity\": \"S1\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    },\n    {\n      \"reason\": \"duplicate_item\",\n      \"item\": {\n        \"id\": \"it_24dadd3dd057\",\n        \"time_s\": 19.0,\n        \"screen\": \"Screen1\",\n        \"seen\": \"seen 1\",\n        \"suggestion\": \"fix 1\",\n        \"severity\": \"S2\",\n        \"source_id\": \"src_b5dd24de9576\",\n        \"origin\": \"visual\",\n        \"quote\": null,\n        \"pointer_line\": null,\n        \"narration_note\": \"no narration on record\",\n        \"downgrade\": null,\n        \"status\": \"open\"\n      }\n    }\n  ],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [\n    {\n      \"line_no\": 1,\n      \"kind\": \"window\",\n      \"start_s\": 30.0,\n      \"end_s\": 50.0,\n      \"approx\": false,\n      \"text\": \"check this\"\n    },\n    {\n      \"line_no\": 2,\n      \"kind\": \"time\",\n      \"start_s\": 70.0,\n      \"end_s\": null,\n      \"approx\": true,\n      \"text\": null\n    },\n    {\n      \"line_no\": 3,\n      \"kind\": \"time\",\n      \"start_s\": 100.0,\n      \"end_s\": null,\n      \"approx\": false,\n      \"text\": \"and this\"\n    }\n  ],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    30.0,\n    35.0,\n    40.0,\n    45.0,\n    50.0,\n    55.0,\n    60.0,\n    65.0,\n    70.0,\n    75.0,\n    80.0,\n    85.0,\n    0.0,\n    15.0,\n    90.0,\n    95.0,\n    100.0,\n    105.0,\n    110.0,\n    115.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 2,\n  \"cost_usd\": 0.00036,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r24a-many-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "7958c68c5bde",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user does things.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_1e5e9e8fb99d\",\n      \"time_s\": 37.0,\n      \"screen\": \"Screen3\",\n      \"seen\": \"seen 3\",\n      \"suggestion\": \"fix 3\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_83401b0ff764\",\n      \"time_s\": 46.0,\n      \"screen\": \"Screen4\",\n      \"seen\": \"seen 4\",\n      \"suggestion\": \"fix 4\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_1f6961369d97\",\n      \"time_s\": 64.0,\n      \"screen\": \"Screen6\",\n      \"seen\": \"seen 6\",\n      \"suggestion\": \"fix 6\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [\n    {\n      \"id\": \"it_3c35703cc4d0\",\n      \"time_s\": 73.0,\n      \"screen\": \"Screen7\",\n      \"seen\": \"seen 7\",\n      \"suggestion\": \"fix 7\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_62deb95b1929\",\n      \"time_s\": 28.0,\n      \"screen\": \"Screen2\",\n      \"seen\": \"seen 2\",\n      \"suggestion\": \"fix 2\",\n      \"severity\": \"S3\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_6aa4cdea6fdf\",\n      \"time_s\": 55.0,\n      \"screen\": \"Screen5\",\n      \"seen\": \"seen 5\",\n      \"suggestion\": \"fix 5\",\n      \"severity\": \"S3\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_a7899630c71d\",\n      \"time_s\": 82.0,\n      \"screen\": \"Screen8\",\n      \"seen\": \"seen 8\",\n      \"suggestion\": \"fix 8\",\n      \"severity\": \"S3\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"rejected\": [],\n  \"count_note\": null,\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r24b-many-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "7958c68c5bde",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $0.5)\n",
+    "stdout": "# Video review rv_9c7c99ac4188\n\n**Status:** ok\n**Summary:** A user does things.\n**Narration:** no narration on record\n**Coverage:** Every part of the recording was looked at.\n**Baseline:** No baseline to compare: this review is not matched against the product's crawled map, so it says nothing about whether the recording agrees with it.\n**Held back:** 4 more item(s) beyond the 5-item limit\n\n| id | time | screen | seen | suggestion | severity | origin | status |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| it_3e0f308a0952 | 0:10 | Screen0 | seen 0 [no narration on record] | fix 0 | S1 | visual | open |\n| it_5a1be118db6c | 0:19 | Screen1 | seen 1 [no narration on record] | fix 1 | S2 | visual | open |\n| it_1e5e9e8fb99d | 0:37 | Screen3 | seen 3 [no narration on record] | fix 3 | S1 | visual | open |\n| it_83401b0ff764 | 0:46 | Screen4 | seen 4 [no narration on record] | fix 4 | S2 | visual | open |\n| it_1f6961369d97 | 1:04 | Screen6 | seen 6 [no narration on record] | fix 6 | S1 | visual | open |\n\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r25-maxcost-model-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/reviews/": "dir",
+   "projects/demo/reviews/rv_9c7c99ac4188.json": "cf5edf0e4777",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 1,
+   "frames": [
+    "00000000",
+    "00015000",
+    "00030000",
+    "00045000",
+    "00060000",
+    "00075000",
+    "00090000",
+    "00105000",
+    "00120000"
+   ],
+   "orig_path_seen": false,
+   "paths_under_reviews": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "prompt_len": [
+    2197
+   ],
+   "prompt_sha": [
+    "99af1e69fcb9"
+   ]
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--output",
+     "json",
+     "--model",
+     "m-x",
+     "--max-cost",
+     "1.5"
+    ],
+    "exit": 0,
+    "stderr": "reviewing src_b5dd24de9576 with fake (cap $1.5)\n",
+    "stdout": "{\n  \"schema_version\": 1,\n  \"created_at\": \"<TS>\",\n  \"provenance\": null,\n  \"id\": \"rv_9c7c99ac4188\",\n  \"source_id\": \"src_b5dd24de9576\",\n  \"status\": \"ok\",\n  \"reason\": null,\n  \"summary\": \"A user logs in.\",\n  \"items\": [\n    {\n      \"id\": \"it_3e0f308a0952\",\n      \"time_s\": 10.0,\n      \"screen\": \"Screen0\",\n      \"seen\": \"seen 0\",\n      \"suggestion\": \"fix 0\",\n      \"severity\": \"S1\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    },\n    {\n      \"id\": \"it_5a1be118db6c\",\n      \"time_s\": 19.0,\n      \"screen\": \"Screen1\",\n      \"seen\": \"seen 1\",\n      \"suggestion\": \"fix 1\",\n      \"severity\": \"S2\",\n      \"source_id\": \"src_b5dd24de9576\",\n      \"origin\": \"visual\",\n      \"quote\": null,\n      \"pointer_line\": null,\n      \"narration_note\": \"no narration on record\",\n      \"downgrade\": null,\n      \"status\": \"open\"\n    }\n  ],\n  \"overflow\": [],\n  \"rejected\": [],\n  \"count_note\": \"Only 2 items found (fewer than 4); the list is not padded.\",\n  \"narration_state\": \"none\",\n  \"narration_note\": \"no narration on record\",\n  \"coverage_note\": \"Every part of the recording was looked at.\",\n  \"duration_s\": 130.0,\n  \"source_sha256\": \"9a78f3299830358f6b3192e25b111d63dc100a7867321c264e1e645e265c42a5\",\n  \"transcript_hash\": \"74234e98afe7\",\n  \"pointers\": [],\n  \"redaction_windows\": [],\n  \"frame_times\": [\n    0.0,\n    15.0,\n    30.0,\n    45.0,\n    60.0,\n    75.0,\n    90.0,\n    105.0,\n    120.0\n  ],\n  \"analysed\": [\n    [\n      0.0,\n      130.0\n    ]\n  ],\n  \"not_reviewed\": [],\n  \"calls\": 1,\n  \"cost_usd\": 0.00018,\n  \"exit_code\": 0\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-unit-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "r26-help",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/approvals.jsonl": "5932d09b116d",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": {
+   "calls": 0,
+   "frames": [],
+   "orig_path_seen": false,
+   "paths_under_reviews": [],
+   "prompt_len": [],
+   "prompt_sha": []
+  },
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "review",
+     "demo",
+     "{SRC}",
+     "--help"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "                                                                                                   \n Usage: autotester ingest review [OPTIONS] {project} {source_id}                                   \n                                                                                                   \n Review one recording: a flow summary and a short confirm-list citing exact seconds. Pointers      \n raise attention; they never hide the rest. Exit 0 ok, 2 pointer errors, 3 approval missing, 4     \n source unreadable; --output json writes one JSON document on every exit.                          \n                                                                                                   \n+- Arguments -------------------------------------------------------------------------------------+\n| *    project        <str>  project slug [required]                                              |\n| *    source_id      <str>  a source id from `ingest list` [required]                            |\n+-------------------------------------------------------------------------------------------------+\n+- Options ---------------------------------------------------------------------------------------+\n| --pointers        <str>    file: one pointer per line (12:30, ~12:30, 12:30-14:00, optional '|  |\n|                            note'; up to 3 free)                                                 |\n| --redact          <str>    START-END window to black out and mute before a model sees it        |\n| --provider        <str>    the model frames go to [default: gemini]                             |\n| --model           <str>    override the provider's default model                                |\n| --max-cost        <float>  spend cap in USD; the review stops there, as partial [default: 0.5]  |\n| --dry-run                  print the plan; zero model calls                                     |\n| --refresh                  re-run even if a review is stored                                    |\n| --output          <str>    text | json (JSON on stdout only) [default: text]                    |\n| --help                     Show this message and exit.                                          |\n+-------------------------------------------------------------------------------------------------+\n\n"
+   }
+  ]
+ }
+]

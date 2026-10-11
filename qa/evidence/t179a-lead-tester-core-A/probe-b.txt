@@ -1,0 +1,68 @@
+PB case_id=raw                            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=b64                            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=b64url                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=hex                            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=pct                            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=pct_all                        refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=rev                            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=upper                          refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=spaced                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=dotted                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB case_id=rot13                          refusal=nothing_to_do ok=False raw_in_out=False summary='no such case, or it has no steps to run' sessions=0 calls=0
+PB case_id=b32                            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB split across two args (extra)          refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (x: extra_forbidden)' sessions=0 calls=0
+PB split case_id|case_id concatenated name refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB nested dict arg                        refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB dict KEY raw                           refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB dict KEY b64                           refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB dict KEY rev                           refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB tool name raw                          refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB tool name b64                          refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB crawl bool/num fields                  refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB crawl nested list                      refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB esc-secret 'pa\\ss-word-91'            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   as dict key                          refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   in tool name                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB esc-secret 'pa\'ss"word-92'            refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   as dict key                          refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   in tool name                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB esc-secret 'line1\nline2-secret'       refusal=nothing_to_do ok=False raw_in_out=False summary='no such case, or it has no steps to run' sessions=0 calls=0
+PB   as dict key                          refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments ([REDACTED]:APP_PASS: extra_forbidden)' sessions=0 calls=0
+PB   in tool name                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB esc-secret 'tab\tsecret-xyz1'          refusal=nothing_to_do ok=False raw_in_out=False summary='no such case, or it has no steps to run' sessions=0 calls=0
+PB   as dict key                          refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments ([REDACTED]:APP_PASS: extra_forbidden)' sessions=0 calls=0
+PB   in tool name                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB esc-secret 'unié中-secret9'             refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   as dict key                          refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   in tool name                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB esc-secret 'withA-esc99'               refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   as dict key                          refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB   in tool name                         refusal=secret ok=False raw_in_out=False summary='refused: the call carried a credential value; use {{SECRET:KEY}}' sessions=0 calls=0
+PB args None                              RAISED 'TypeError: autotester.schema.agent_layer.EmptyArgs() argument after ** must be a mapping, not NoneType' secret_in_exc=False sessions=0 calls=0
+PB args list                              RAISED 'TypeError: autotester.schema.agent_layer.EmptyArgs() argument after ** must be a mapping, not list' secret_in_exc=False sessions=0 calls=0
+PB args str                               RAISED 'TypeError: autotester.schema.agent_layer.EmptyArgs() argument after ** must be a mapping, not str' secret_in_exc=False sessions=0 calls=0
+PB name None                              refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB name int                               refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB name path                              refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB name dunder                            refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB name nul                               refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB name space-trail                       refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB name upper                             refusal=unknown_tool ok=False raw_in_out=False summary='no such tool' sessions=0 calls=0
+PB missing arg                            refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (case_id: missing)' sessions=0 calls=0
+PB wrong type                             refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (case_id: string_type)' sessions=0 calls=0
+PB crawl negative                         refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (max_actions: greater_than_equal)' sessions=0 calls=0
+PB crawl nan                              refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (wall_clock_s: greater_than)' sessions=0 calls=0
+PB crawl inf                              refusal=approval ok=False raw_in_out=False summary='refusing to start a crawl run against https://app.test — no approval e' sessions=0 calls=0
+PB crawl bool-as-int                      refusal=approval ok=False raw_in_out=False summary='refusing to start a crawl run against https://app.test — no approval e' sessions=0 calls=0
+PB giant case_id                          refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (case_id: string_too_long)' sessions=0 calls=0
+PB case_id 201                            refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (case_id: string_too_long)' sessions=0 calls=0
+PB extra kw 'self'                        refusal=bad_arguments ok=False raw_in_out=False summary='invalid arguments (self: extra_forbidden)' sessions=0 calls=0
+PB stage raises w/ secret                 RAISED 'RuntimeError: driver died typing Hunter2-raw-value-9137' secret_in_exc=True sessions=1 calls=0
+PB crawl stage raises w/ secret           refusal=approval ok=False raw_in_out=False summary='refusing to start a crawl run against https://app.test — the approvals' sessions=1 calls=0
+PB open_session raises                    RAISED 'OSError: cannot launch with Hunter2-raw-value-9137' secret_in_exc=True sessions=1 calls=0
+SR rev: out.refusal=secret out_has_leak=False stored_has_leak=True
+SR b64: out.refusal=secret out_has_leak=False stored_has_leak=True
+SR raw: out.refusal=None out_has_leak=False stored_has_leak=False
+SR Evidence fields: ['kind', 'path', 'step_order', 'label', 'masked']
+
+10 passed in 2.52s

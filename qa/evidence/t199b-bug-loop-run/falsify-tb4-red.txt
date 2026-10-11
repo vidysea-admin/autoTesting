@@ -1,0 +1,6 @@
+E         Use -v to get more diff
+
+tests\test_bug_run.py:225: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_bug_run.py::test_tb4_a_removed_criterion_is_a_change - Asse...
+1 failed, 7 passed, 14 deselected in 4.33s

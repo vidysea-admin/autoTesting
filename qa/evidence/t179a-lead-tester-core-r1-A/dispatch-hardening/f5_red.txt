@@ -1,0 +1,35 @@
+== RED (mutant: _get_persona never calls ctx.store.load_portal_persona) ==
+C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\dispatch-hardening\mut1\src\autotester\__init__.py
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27450/test_get_persona_calls_the_wra0')
+spy = <test_agent_tools.Spies object at 0x000001E8572F27D0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E8572E13D0>
+
+    def test_get_persona_calls_the_wrapped_reader(
+            tmp_path: Path, spy: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
+        ctx = _ctx(tmp_path, spy)
+        ctx.store.save_portal_persona(PortalPersona(project="demo"))
+        real, calls = ctx.store.load_portal_persona, []
+        monkeypatch.setattr(ctx.store, "load_portal_persona", lambda: calls.append(1) or real())
+        out = _go(ctx, "get_persona")
+>       assert out.ok and out.artifact_ref == "persona:demo" and calls == [1]
+E       AssertionError: assert (True and 'persona:demo' == 'persona:demo'
+E        +  where True = ToolOutcome(tool='get_persona', ok=True, refusal=None, summary='0 screens, 0 flows, 0 gotchas', artifact_ref='persona:demo').ok
+E         
+E           persona:demo and [] == [1]
+E         
+E         Right contains one more item: 1
+E         Use -v to get more diff)
+
+tests\test_agent_read_only.py:260: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_agent_read_only.py::test_get_persona_calls_the_wrapped_reader
+============================== 1 failed in 3.16s ==============================
+
+== other persona-related tests under mutant ==
+
+tests\test_agent_read_only.py:260: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_agent_tools.py::test_read_tools_and_grade_wrap_catalog_persona_grade
+FAILED tests/test_agent_read_only.py::test_get_persona_calls_the_wrapped_reader
+======================= 2 failed, 129 passed in 15.17s ========================

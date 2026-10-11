@@ -14,6 +14,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 from autotester.schema.base import utc_now
+from autotester.schema.team_enums import SourceOriginKind
 
 
 class IntakeOutcome(StrEnum):
@@ -57,7 +58,7 @@ class UploadOrigin(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    kind: Literal["upload"] = "upload"
+    kind: Literal[SourceOriginKind.UPLOAD] = SourceOriginKind.UPLOAD
     file_name: str
 
 
@@ -66,7 +67,7 @@ class ZipOrigin(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    kind: Literal["zip"] = "zip"
+    kind: Literal[SourceOriginKind.ZIP] = SourceOriginKind.ZIP
     archive_name: str
     member_path: str
 
@@ -76,7 +77,7 @@ class DriveOrigin(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    kind: Literal["drive"] = "drive"
+    kind: Literal[SourceOriginKind.DRIVE] = SourceOriginKind.DRIVE
     file_id: str
 
 

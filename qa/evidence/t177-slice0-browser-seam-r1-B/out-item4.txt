@@ -1,0 +1,5 @@
+{"t": 8.3, "ev": "started", "cdp_url": "http://127.0.0.1:64803", "procs": ["29656:chrome.exe", "27452:chrome.exe", "59536:chrome.exe", "52336:chrome.exe", "76212:chrome.exe", "70864:chrome.exe", "43196:chrome.exe"]}
+{"t": 12.4, "ev": "accepts", "a127_1": true, "a127_2": false, "lan": false}
+{"t": 15.4, "ev": "close_begin"}
+{"t": 28.5, "ev": "close_returned", "procs": [], "port_file": false, "port_accepts": false}
+exit=0

@@ -1,0 +1,1 @@
+--- .env at cwd (parent of docker/): PUBLIC_ORIGIN rendered "" ; .env in docker/: https://fromdocker.example.com (compose reads .env from the compose file directory)

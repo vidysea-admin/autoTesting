@@ -1,0 +1,2 @@
+doctor: clean
+exit=0 t=75s

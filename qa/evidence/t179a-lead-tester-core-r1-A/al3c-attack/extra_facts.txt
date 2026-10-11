@@ -1,0 +1,2 @@
+huge-click-target summary length=100079
+store-roundtrip summary="ValueError: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\al3c-j_44vt58\\projects\\demo\\cases.jsonl:1: 1 validation error for Case\nsteps.0.action\n  Input should be 'navigate', 'click', 'fill', 'select', 'upload', 'wait', 'assert', 'back', 'hover', 'press_key' or 'scroll' [type=enum, input_value='submit', input_t"

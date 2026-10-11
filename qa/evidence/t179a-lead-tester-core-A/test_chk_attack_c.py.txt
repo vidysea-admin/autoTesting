@@ -1,0 +1,47 @@
+from __future__ import annotations
+from pathlib import Path
+from typing import Any
+import pytest
+from test_agent_tools import (Spies, _case, _ctx, _go, _grant, _nav, _project, RAW, spies, BASE)
+from autotester.agents import tools
+from autotester.schema.approval import RunApproval
+from autotester.schema.enums import ApprovalKind, WritePolicy
+
+
+def _row(**kw: Any) -> RunApproval:
+    base = dict(project="demo", run_kind=ApprovalKind.CRAWL, target=BASE, scope="x", max_actions=50,
+                wall_clock_s=900.0, granted_by="umesh", granted_at="2026-10-01", expires_at="2099-01-01")
+    base.update(kw)
+    return RunApproval(**base)
+
+
+def test_approval_variants(tmp_path: Path, spies: Spies) -> None:
+    variants = {
+        "unsigned": lambda: _row(),
+        "signed-then-widened": lambda: _row().sign().model_copy(update={"max_actions": 5000}),
+        "expired": lambda: _row(expires_at="2020-01-01").sign(),
+        "other-project": lambda: _row(project="other").sign(),
+        "other-target": lambda: _row(target="https://evil.test").sign(),
+        "wrong-kind READ": lambda: _row(run_kind=ApprovalKind.READ).sign(),
+        "wrong-kind LIVE_CASE for crawl": lambda: _row(run_kind=ApprovalKind.LIVE_CASE).sign(),
+        "good": lambda: _row().sign(),
+        "good-but-narrow-wall": lambda: _row(wall_clock_s=10.0).sign(),
+    }
+    for tag, mk in variants.items():
+        ctx = _ctx(tmp_path / tag.replace(" ", "_"), spies)
+        spies.sessions = 0; spies.calls.clear()
+        ctx.store.add_approval(mk())
+        out = _go(ctx, "crawl", {"max_actions": 40, "wall_clock_s": 600})
+        print(f"AP crawl {tag:32} ok={out.ok} refusal={out.refusal} sessions={spies.sessions} run_crawl_calls={spies.count('run_crawl')}")
+        # run_case requires LIVE_CASE
+        spies.sessions = 0; spies.calls.clear()
+        case = ctx.store.add_case(_case([_nav()]))
+        out = _go(ctx, "run_case", {"case_id": case.id})
+        print(f"AP run_case {tag:29} ok={out.ok} refusal={out.refusal} sessions={spies.sessions}")
+    # LIVE_CASE with actions less than steps
+    ctx = _ctx(tmp_path / "narrow", spies)
+    ctx.store.add_approval(_row(run_kind=ApprovalKind.LIVE_CASE, max_actions=1).sign())
+    case = ctx.store.add_case(_case([_nav(), _nav().model_copy(update={"order": 2})]))
+    spies.sessions = 0
+    out = _go(ctx, "run_case", {"case_id": case.id})
+    print(f"AP run_case 2 steps vs approved 1: ok={out.ok} refusal={out.refusal} sessions={spies.sessions}")

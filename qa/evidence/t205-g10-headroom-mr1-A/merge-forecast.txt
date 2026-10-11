@@ -1,0 +1,9 @@
+Trial merge in a throwaway clone on C: (clone of D:/autoTesting, fetched wave/t205-g10-headroom = ecaaf7e4):
+  git merge-tree --write-tree master(49df5efa) ecaaf7e4  -> exit 0, tree 019b6fd91e61260449f56a802ce963bf727606e0, no conflict lines.
+Master since 1c52bf71 (t199a bug loop + verdict/ledger commits) touches: docs/MAP.md, schema/tracked_bug.py, stages/bug_loop.py,
+stages/issues.py, store/bug_store.py, tests/bug_loop_fixture.py, test_bug_loop.py, test_bug_store*.py. Overlap with the unit: docs/MAP.md only (auto-merged).
+Merged tree extracted to C: and checked: autotester doctor -> "doctor: clean"; autotester map -> no diff (MAP.md already current);
+pytest tests/test_team_enums_home.py test_routers_list.py test_cli_subapp_hook.py test_bug_loop.py test_bug_store.py -> 131 passed.
+Re-run at write time (master 41349022, only qa/ files changed since f6003e87): git merge-tree --write-tree -> exit 0, tree 6fbea73f.
+Earlier run vs f6003e87 (src changes in cli_crawl, expand, explore_*, routes_crawls, routes_learn, MAP.md): exit 0, tree 4c99f2e0;
+extracted merged tree: autotester doctor clean, autotester map no diff, 46 tests (enums home, routers list, cli hook, launcher x2, ui_learn) passed.

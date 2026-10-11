@@ -1,8 +1,12 @@
-"""The one list of routers the UI app serves (moved out of `ui/app.py` by T-204).
+"""The one ordered list of routers the UI app serves (T-204/T-205, TF3).
 
-Every feature registers its router by adding it to `ROUTERS`; `app.py` calls
-`include_all(app)` once. A route registered here still needs a row in the central
-route policy table (`auth/policy.py`), or the login gate refuses it (auth.md AU14).
+Every feature registers its router by adding it to `ROUTERS`; `ui/app.py` calls
+`include_all(app)` once and holds no per-unit `include_router` line. Order is route order, so
+the 17 routers that existed before this file keep the order `app.py` had. The Group 10 units
+(`STUBS`) are empty `APIRouter()`s registered now and filled by their own unit: such a unit
+replaces its stub in `ROUTERS` with its real router, without editing `app.py`.
+A route registered here still needs a row in the central route policy table
+(`auth/policy.py`), or the login gate refuses it (auth.md AU14, T-204).
 """
 
 from __future__ import annotations
@@ -32,6 +36,14 @@ from autotester.ui import (
     routes_video,
 )
 
+STUBS: dict[str, APIRouter] = {
+    name: APIRouter() for name in (
+        "schedule", "team_run", "inbox", "profile", "tracker", "video_review", "video_portal",
+        "access_requests",
+    )
+}
+"""Group 10 routers, empty until their unit fills them (zero routes: nothing is exposed)."""
+
 ROUTERS: tuple[APIRouter, ...] = (
     routes_auth.router,
     routes_admin.router,
@@ -53,9 +65,11 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_live.router,
     routes_catalog.router,
     routes_project_access.router,
+    *STUBS.values(),
 )
 
 
 def include_all(app: FastAPI) -> None:
+    """Register every router in `ROUTERS`, in order."""
     for router in ROUTERS:
         app.include_router(router)

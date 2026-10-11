@@ -1,0 +1,31 @@
+## fa green-before
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\fa\src\autotester\__init__.py
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\fa
+============================= 33 passed in 25.88s =============================
+## fa RED (f-string reintroduced)
+E       AssertionError: assert [(WindowsPath...ox.py'), 131)] == []
+tests\test_cli_advice_resolves.py:151: AssertionError
+FAILED tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve
+======================== 1 failed, 32 passed in 24.44s ========================
+## fa restored
+============================= 33 passed in 21.84s =============================
+## fb green-before
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\fb\src\autotester\__init__.py
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\fb
+====================== 3 passed, 14 deselected in 1.39s =======================
+## fb RED (records_for_key widened)
+E       AssertionError: assert (DeliveryRecord(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 21, 50, 33, 761656, tzinfo=TzInfo(0)), pro...l'>, recipient_user_id='alice.smith', status=<DeliveryStatus.SENT: 'sent'>, error=None, attempts=1, next_retry_at=None) is not None and 'alice.smith' == 'alice'
+tests\test_delivery_failure.py:216: AssertionError
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for DeliveryRecord
+src\autotester\delivery\inbox.py:121: ValidationError
+FAILED tests/test_delivery_failure.py::test_a_dotted_prefix_user_does_not_suppress_the_shorter_one
+FAILED tests/test_delivery_failure.py::test_lookups_match_whole_file_names_and_ignore_stray_files
+======================== 2 failed, 15 passed in 3.50s =========================
+## fb restored
+============================= 17 passed in 2.10s ==============================
+## fc green-before
+3 passed (-k dotted_prefix or whole_file_names or spell_the_separator)
+## fc RED (records_for_run: '__'+_PART replaced by '.*')
+2 failed: test_run_and_user_ids_that_spell_the_separator_do_not_collide, test_lookups_match_whole_file_names_and_ignore_stray_files; 15 passed
+## fc restored
+============================= 17 passed in 2.48s ==============================

@@ -1,0 +1,7 @@
+docs/MAP.md
+docs/SNAPSHOT.md
+src/autotester/auth/__init__.py
+src/autotester/auth/policy.py
+src/autotester/cli.py
+src/autotester/ui/app.py
+src/autotester/ui/routers.py

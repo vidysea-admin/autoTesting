@@ -1,0 +1,11 @@
+--- head/src/autotester/agents/tools.py	2026-10-12 02:38:37.000000000 +0530
++++ scripts/falsify/row2/src/autotester/agents/tools.py	2026-10-12 02:56:05.319661100 +0530
+@@ -266,7 +266,7 @@
+         outcome = _refusal(label, refused.kind, refused.detail)
+     except ApprovalRequired as exc:
+         outcome = _refusal(label, RefusalClass.APPROVAL, str(exc))
+-    except Exception as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
++    except ZeroDivisionError as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
+         outcome = _refusal(label, RefusalClass.STAGE_ERROR, _error_text(ctx, exc))
+     return _release(ctx, outcome)
+ 

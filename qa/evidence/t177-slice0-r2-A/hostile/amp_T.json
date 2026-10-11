@@ -1,0 +1,14 @@
+{
+ "variant": "T",
+ "n": 1500,
+ "results": {
+  "True-full": 1500
+ },
+ "wall_min": 0.0,
+ "wall_med": 0.016,
+ "wall_max": 0.156,
+ "threads_end": [],
+ "open_socks": 0,
+ "thread_gone_latency_max_s": 0.032,
+ "latency_gt_0.1s": 0
+}

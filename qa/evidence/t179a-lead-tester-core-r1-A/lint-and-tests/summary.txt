@@ -1,0 +1,9 @@
+ create mode 100644 qa/briefs/t179-lead-tester.md
+ create mode 100644 qa/manifests/t179a-lead-tester-core.md
+ create mode 100644 src/autotester/agents/__init__.py
+ create mode 100644 src/autotester/agents/context.py
+ create mode 100644 src/autotester/agents/guards.py
+ create mode 100644 src/autotester/agents/tools.py
+ create mode 100644 src/autotester/schema/agent_layer.py
+ create mode 100644 tests/test_agent_read_only.py
+ create mode 100644 tests/test_agent_tools.py

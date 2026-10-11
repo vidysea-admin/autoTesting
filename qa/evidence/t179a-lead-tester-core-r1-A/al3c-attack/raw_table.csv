@@ -1,0 +1,232 @@
+group,id,desc,expect,ok,refusal,summary,sessions,run_case,changed,verdict,note
+1-cycle0,1.click.1,click target='Save' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Save': click can change state,0,0,False,PASS,
+1-cycle0,1.click.2,click target='Save changes' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Save changes': click can change state,0,0,False,PASS,
+1-cycle0,1.click.3,click target='Place order' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Place order': click can change state,0,0,False,PASS,
+1-cycle0,1.click.4,click target='Confirm' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Confirm': click can change state,0,0,False,PASS,
+1-cycle0,1.click.5,click target='Apply now' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Apply now': click can change state,0,0,False,PASS,
+1-cycle0,1.click.6,click target='Register' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Register': click can change state,0,0,False,PASS,
+1-cycle0,1.click.7,click target='Sign up' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Sign up': click can change state,0,0,False,PASS,
+1-cycle0,1.click.8,click target='Add to cart' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Add to cart': click can change state,0,0,False,PASS,
+1-cycle0,1.click.9,click target='Sign in' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Sign in': click can change state,0,0,False,PASS,
+1-cycle0,1.click.10,click target='खाता हटाएं' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'खाता हटाएं': click can change state,0,0,False,PASS,
+1-cycle0,1.click.11,click target='Delete account' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Delete account': click can change state,0,0,False,PASS,
+1-cycle0,1.click.12,click target='Log out' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Log out': click can change state,0,0,False,PASS,
+1-cycle0,1.click.13,click target='' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) '': click can change state,0,0,False,PASS,
+1-cycle0,1.press.14,press_key target='' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+1-cycle0,1.press.15,press_key target='' value='Enter',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+1-cycle0,1.press.16,press_key target='' value='Delete',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+1-cycle0,1.press.17,press_key target='' value='Tab',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+1-cycle0,1.press.18,press_key target='' value='enter',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+1-cycle0,1.press.19,press_key target='' value=' Enter ',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+1-cycle0,1.press.20,press_key target='' value='ENTER',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+1-cycle0,1.press.target,press_key target='Search' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) 'Search': press_key can change state,0,0,False,PASS,
+1-cycle0,1.nav.21,navigate target='https://app.example.test/account/delete?id=1&confi' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/account/delete?id=1&confirm=1': navigate with a query string can change state,0,0,False,PASS,
+1-cycle0,1.nav.22,navigate target='https://app.example.test/logout' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/logout': never-click pattern (logout/sign-out),0,0,False,PASS,
+1-cycle0,1.nav.23,navigate target='https://evil.test/x' value=None,REFUSED,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,PASS,
+1-cycle0,1.nav.24,navigate target='javascript:alert(1)' value=None,REFUSED,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,PASS,
+1-cycle0,1.nav.25,"navigate target='data:text/html,x' value=None",REFUSED,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,PASS,
+1-cycle0,1.nav.26,navigate target='/reports' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (navigate) '/reports': navigate needs an absolute http(s) URL without placeholders,0,0,False,PASS,
+1-cycle0,1.nav.27,navigate target='Admin portal URL' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'Admin portal URL': navigate needs an absolute http(s) URL without placeholders,0,0,False,PASS,
+1-cycle0,1.nav.28,navigate target='' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (navigate) '': navigate needs an absolute http(s) URL without placeholders,0,0,False,PASS,
+1-cycle0,1.fill.29,fill target='Name' value='',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+1-cycle0,1.fill.30,fill target='Name' value='   ',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+1-cycle0,1.fill.31,fill target='Name' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+1-cycle0,1.fill.32,fill target='Name' value='x',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+2-enum,2.navigate.None,navigate target='https://app.example.test/reports' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.navigate.x,navigate target='https://app.example.test/reports' value='x',ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.click.None,click target='Menu' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Menu': click can change state,0,0,False,PASS,
+2-enum,2.click.x,click target='Menu' value='x',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Menu': click can change state,0,0,False,PASS,
+2-enum,2.fill.None,fill target='Menu' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Menu': fill outside the declared login's credential entry,0,0,False,PASS,
+2-enum,2.fill.x,fill target='Menu' value='x',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Menu': fill outside the declared login's credential entry,0,0,False,PASS,
+2-enum,2.select.None,select target='Menu' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (select) 'Menu': select can change state,0,0,False,PASS,
+2-enum,2.select.x,select target='Menu' value='x',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (select) 'Menu': select can change state,0,0,False,PASS,
+2-enum,2.upload.None,upload target='Menu' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (upload) 'Menu': upload can change state,0,0,False,PASS,
+2-enum,2.upload.x,upload target='Menu' value='x',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (upload) 'Menu': upload can change state,0,0,False,PASS,
+2-enum,2.wait.None,wait target='Menu' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.wait.x,wait target='Menu' value='x',ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.assert.None,assert target='Menu' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.assert.x,assert target='Menu' value='x',ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.back.None,back target='Menu' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.back.x,back target='Menu' value='x',ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.hover.None,hover target='Menu' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.hover.x,hover target='Menu' value='x',ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.press_key.None,press_key target='Menu' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) 'Menu': press_key can change state,0,0,False,PASS,
+2-enum,2.press_key.x,press_key target='Menu' value='x',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) 'Menu': press_key can change state,0,0,False,PASS,
+2-enum,2.scroll.None,scroll target='Menu' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+2-enum,2.scroll.x,scroll target='Menu' value='x',ALLOWED,True,,outcome completed,1,1,True,PASS,
+2b-construct,2b.'submit',model_construct action='submit' target=Save,REFUSED,False,stage_error,AttributeError: 'str' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'str' object has no attribute 'value'
+2b-construct,2b.'eval',model_construct action='eval' target=Save,REFUSED,False,stage_error,AttributeError: 'str' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'str' object has no attribute 'value'
+2b-construct,2b.'CLICK',model_construct action='CLICK' target=Save,REFUSED,False,stage_error,AttributeError: 'str' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'str' object has no attribute 'value'
+2b-construct,2b.' click ',model_construct action=' click ' target=Save,REFUSED,False,stage_error,AttributeError: 'str' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'str' object has no attribute 'value'
+2b-construct,2b.'click',model_construct action='click' target=Save,REFUSED,False,stage_error,AttributeError: 'str' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'str' object has no attribute 'value'
+2b-construct,2b.'wait',model_construct action='wait' target=Save,REFUSED,True,,outcome completed,1,1,True,DEVIATION,direct: guard returned None
+2b-construct,2b.'navigate',model_construct action='navigate' target=Save,REFUSED,False,stage_error,AttributeError: 'str' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'str' object has no attribute 'value'
+2b-construct,2b.'WAIT',model_construct action='WAIT' target=Save,REFUSED,False,stage_error,AttributeError: 'str' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'str' object has no attribute 'value'
+2b-construct,2b.'scroll',model_construct action='scroll' target=Save,REFUSED,True,,outcome completed,1,1,True,DEVIATION,direct: guard returned None
+2b-construct,2b.None,model_construct action=None target=Save,REFUSED,False,stage_error,AttributeError: 'NoneType' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'NoneType' object has no attribute 'value'
+2b-construct,2b.5,model_construct action=5 target=Save,REFUSED,False,stage_error,AttributeError: 'int' object has no attribute 'value',0,0,False,DEVIATION,direct: guard raised AttributeError: 'int' object has no attribute 'value'
+2b-construct,2b.store-roundtrip-submit,model_construct 'submit' written to store then dispatched,REFUSED,False,stage_error,"ValueError: C:\Users\Lenovo\AppData\Local\Temp\al3c-cav3x3kq\projects\demo\cases.jsonl:1: 1 validation error for Case
+steps.0.action
+  Input should be 'navigate",0,0,False,DEVIATION,
+3-navigate,3.0.scheme case,navigate 'HTTPS://app.example.test/x',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.1.proto-relative ok,navigate '//app.example.test/x',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) '//app.example.test/x': navigate needs an absolute http(s) URL without placeholders,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.2.proto-relative evil,navigate '//evil.test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='evil.test'; ALLOW_WRITES -> destination
+3-navigate,3.3.http:/ host,navigate 'http:/app.example.test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='http'; ALLOW_WRITES -> destination
+3-navigate,3.4.http:host,navigate 'http:app.example.test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='http'; ALLOW_WRITES -> destination
+3-navigate,3.5.userinfo,navigate 'https://app.example.test@evil.test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.6.evil#@,navigate 'https://evil.test#@app.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='evil.test'; ALLOW_WRITES -> destination
+3-navigate,3.7.evil?@,navigate 'https://evil.test?@app.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='evil.test'; ALLOW_WRITES -> destination
+3-navigate,3.8.evil backslash@,navigate 'https://evil.test\\@app.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.9.suffix evil,navigate 'https://app.example.test.evil.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app.example.test.evil.test'; ALLOW_WRITES -> destination
+3-navigate,3.10.notapp,navigate 'https://notapp.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='notapp.example.test'; ALLOW_WRITES -> destination
+3-navigate,3.11.evilapp,navigate 'https://evilapp.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='evilapp.example.test'; ALLOW_WRITES -> destination
+3-navigate,3.12.trailing dot,navigate 'https://app.example.test./x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app.example.test.'; ALLOW_WRITES -> destination
+3-navigate,3.13.port,navigate 'https://app.example.test:8443/x',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.14.bad port,navigate 'https://app.example.test:99999/x',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.15.punycode lookalike,navigate 'https://xn--pp-example-test.example/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='xn--pp-example-test.example'; ALLOW_WRITES -> destination
+3-navigate,3.16.fullwidth a,navigate 'https://ａpp.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='ａpp.example.test'; ALLOW_WRITES -> destination
+3-navigate,3.17.cyrillic a,navigate 'https://аpp.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='аpp.example.test'; ALLOW_WRITES -> destination
+3-navigate,3.18.%2e%2e/logout,navigate 'https://app.example.test/%2e%2e/logout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/%2e%2e/logout': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.19.encoded ?,navigate 'https://app.example.test/x%3Fid=1',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.20.;params,navigate 'https://app.example.test/x;id=1',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.21.frag with ?,navigate 'https://app.example.test/x#frag?id=1',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.22.SPA hash logout,navigate 'https://app.example.test/#/logout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/#/logout': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.23.%6cogout,navigate 'https://app.example.test/%6cogout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/%6cogout': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.24./Logout,navigate 'https://app.example.test/Logout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/Logout': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.25.log%00out,navigate 'https://app.example.test/log%00out',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.26.%256cogout double-encoded,navigate 'https://app.example.test/%256cogout',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.27.backslash path,navigate 'https://app.example.test/x\\y',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.28.tab in path,navigate 'https://app.example.test/\tx',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> destination
+3-navigate,3.29.newline in host,navigate 'https://app.exam\nple.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> destination
+3-navigate,3.30.100k URL,navigate 'https://app.example.test/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.31./delete,navigate 'https://app.example.test/delete',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/delete': destructive-name deny-list,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.32./deleted-items,navigate 'https://app.example.test/deleted-items',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.33./api/close-account,navigate 'https://app.example.test/api/close-account',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.34./api/delete,navigate 'https://app.example.test/api/delete',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/api/delete': destructive-name deny-list,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.35./logoff,navigate 'https://app.example.test/logoff',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.36./sign-off,navigate 'https://app.example.test/sign-off',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.37./signoff,navigate 'https://app.example.test/signoff',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.38./sign-out,navigate 'https://app.example.test/sign-out',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/sign-out': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.39./orders/42/cancel,navigate 'https://app.example.test/orders/42/cancel',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.40./session/destroy,navigate 'https://app.example.test/session/destroy',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.41./exit,navigate 'https://app.example.test/exit',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.42./invite/accept,navigate 'https://app.example.test/invite/accept',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.43./log%2Dout,navigate 'https://app.example.test/log%2Dout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/log%2Dout': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.44./log%20out,navigate 'https://app.example.test/log%20out',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/log%20out': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.45./users/42/remove,navigate 'https://app.example.test/users/42/remove',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/users/42/remove': destructive-name deny-list,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.46./checkout,navigate 'https://app.example.test/checkout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/checkout': destructive-name deny-list,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.47./unsubscribe,navigate 'https://app.example.test/unsubscribe',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/unsubscribe': destructive-name deny-list,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.48.empty query x?,navigate 'https://app.example.test/x?',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.49.empty frag x#,navigate 'https://app.example.test/x#',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.50.no path,navigate 'https://app.example.test',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.51.subdomain,navigate 'https://sub.app.example.test/x',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='sub.app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.52.surrounding spaces,navigate '  https://app.example.test/x  ',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.53.nbsp lead,navigate '\xa0https://app.example.test/x',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.54.file,navigate 'file:///etc/passwd',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.55.ftp,navigate 'ftp://app.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> destination
+3-navigate,3.56.blob,navigate 'blob:https://app.example.test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.57.view-source,navigate 'view-source:https://app.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.58.about:blank,navigate 'about:blank',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='about'; ALLOW_WRITES -> destination
+3-navigate,3.59.chrome,navigate 'chrome://settings',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='settings'; ALLOW_WRITES -> destination
+3-navigate,3.60.JAVASCRIPT upper,navigate 'JAVASCRIPT:alert(1)',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='javascript'; ALLOW_WRITES -> destination
+3-navigate,3.61.java<tab>script,navigate 'java\tscript:alert(1)',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='javascript'; ALLOW_WRITES -> destination
+3-navigate,3.62.localhost:8080,navigate 'localhost:8080/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='localhost'; ALLOW_WRITES -> destination
+3-navigate,3.63.bare host path,navigate 'app.example.test/reports',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'app.example.test/reports': navigate needs an absolute http(s) URL without placeholders,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.64.unterminated [,navigate 'http://[::1',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='host_of RAISED ValueError'; ALLOW_WRITES -> destination
+3-navigate,3.65.http:[::1 (no //),navigate 'http:[::1',OBSERVE,False,stage_error,ValueError: Invalid IPv6 URL,0,0,False,OTHER,host_of='host_of RAISED ValueError'; ALLOW_WRITES -> stage_error
+3-navigate,3.66.http:/[x,navigate 'http:/[x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='http'; ALLOW_WRITES -> destination
+3-navigate,3.67.https:[a]b,navigate 'https:[a',OBSERVE,False,stage_error,ValueError: Invalid IPv6 URL,0,0,False,OTHER,host_of='host_of RAISED ValueError'; ALLOW_WRITES -> stage_error
+3-navigate,3.68.https:///evil,navigate 'https:///evil.test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.69.%2e in host,navigate 'https://app.example.test%2eevil.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app.example.test%2eevil.test'; ALLOW_WRITES -> destination
+3-navigate,3.70.[host] brackets,navigate 'https://[app.example.test]/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='host_of RAISED ValueError'; ALLOW_WRITES -> destination
+3-navigate,3.71.evil%2f.app suffix,navigate 'https://evil.test%2f.app.example.test/',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='evil.test%2f.app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.72.evil%2e.app suffix,navigate 'https://evil.test%2e.app.example.test/',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='evil.test%2e.app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.73.app%2fevil,navigate 'https://app.example.test%2fevil.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app.example.test%2fevil.test'; ALLOW_WRITES -> destination
+3-navigate,3.74.ideographic full stop,navigate 'https://app。example。test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='app。example。test'; ALLOW_WRITES -> destination
+3-navigate,3.75.empty port,navigate 'https://app.example.test:/x',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.76.port 80 on https,navigate 'https://app.example.test:80/x',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.77.user@ empty,navigate 'https://:@app.example.test/x',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of=''; ALLOW_WRITES -> destination
+3-navigate,3.78.evil:80.app suffix,navigate 'https://evil.test:80.app.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='evil.test'; ALLOW_WRITES -> destination
+3-navigate,3.79.logout in query-less userinfo-free,navigate 'https://app.example.test/a/b/../../logout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/a/b/../../logout': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.80.dot-segment before logout,navigate 'https://app.example.test/a/./logout',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/a/./logout': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.81.logout semicolon,navigate 'https://app.example.test/logout;jsessionid=1',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/logout;jsessionid=1': never-click pattern (logout/sign-out),0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.82.query ?a=1,navigate 'https://app.example.test/reports?a=1',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/reports?a=1': navigate with a query string can change state,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.83.confirm token path,navigate 'https://app.example.test/confirm/abc123',OBSERVE,True,,outcome completed,1,1,True,ALLOWED,host_of='app.example.test'; ALLOW_WRITES -> ok
+3-navigate,3.84.placeholder host,navigate 'https://{{SECRET:APP_PASS}}.example.test/',OBSERVE,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,REFUSED,host_of='{{secret'; ALLOW_WRITES -> destination
+3-navigate,3.85.placeholder path,navigate 'https://app.example.test/x/{{SECRET:APP_PASS}}',OBSERVE,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/x/{{SECRET:APP_PASS}}': navigate needs an absolute http(s) URL without placeho,0,0,False,REFUSED,host_of='app.example.test'; ALLOW_WRITES -> ok
+5-multi,5.nav-assert-save,"3 steps: 1:navigate,2:assert,3:click",REFUSED,False,write_policy,refused under write_policy read_only: step 3 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.save-first,"2 steps: 1:click,2:navigate",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.five-reads-fill,"6 steps: 1:wait,2:assert,3:hover,4:scroll,5:back,6:fill",REFUSED,False,write_policy,refused under write_policy read_only: step 6 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+5-multi,5.order-out-of-order,"3 steps: 3:click,1:navigate,2:assert",REFUSED,False,write_policy,refused under write_policy read_only: step 3 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.order-dup-nav-first,"2 steps: 1:navigate,1:click",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.order-dup-click-first,"2 steps: 1:click,1:navigate",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.order-zero,"2 steps: 1:navigate,0:fill",REFUSED,False,write_policy,refused under write_policy read_only: step 0 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+5-multi,5.order-negative,"2 steps: 5:navigate,-3:click",REFUSED,False,write_policy,refused under write_policy read_only: step -3 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.order-huge,"2 steps: 4611686018427387904:click,1:wait",REFUSED,False,write_policy,refused under write_policy read_only: step 4611686018427387904 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.300-last-fill,"300 steps: 1:wait,2:wait,3:wait,4:wait,5:wait,6:wait",REFUSED,False,write_policy,refused under write_policy read_only: step 300 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+5-multi,5.300-last-click,"300 steps: 1:hover,2:hover,3:hover,4:hover,5:hover,6:hover",REFUSED,False,write_policy,refused under write_policy read_only: step 300 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.300-first-click,"300 steps: 1:click,2:wait,3:wait,4:wait,5:wait,6:wait",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Save': click can change state,0,0,False,PASS,
+5-multi,5.300-all-reads,300 WAIT steps,ALLOWED,True,,outcome completed,1,1,True,PASS,
+5-multi,5.no-approval-click,"CLICK Save, NO approval",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Save': click can change state,0,0,False,PASS,write_policy check must precede approval
+6-allowed,6.wait,wait target='' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+6-allowed,6.wait-sel,"wait target='role=button[name=""Go""]' value='500'",ALLOWED,True,,outcome completed,1,1,True,PASS,
+6-allowed,6.assert,ASSERT visible_text,ALLOWED,True,,outcome completed,1,1,True,PASS,
+6-allowed,6.back,back target='' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+6-allowed,6.hover,hover target='Menu' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+6-allowed,6.scroll,scroll target='' value='400',ALLOWED,True,,outcome completed,1,1,True,PASS,
+6-allowed,6.nav-reports,navigate target='https://app.example.test/reports' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+6-allowed,6.multi-reads,"nav, wait, assert, hover, scroll, back",ALLOWED,True,,outcome completed,1,1,True,PASS,
+4-readpayload,4.hover-delete,hover target='Delete account' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,hover on a deny-listed name
+4-readpayload,4.hover-logout,hover target='Log out' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+4-readpayload,4.scroll-abc,scroll target='' value='abc',ALLOWED,True,,outcome completed,1,1,True,PASS,guard allows; executor int('abc') -> ERRORED
+4-readpayload,4.wait-sel-big,wait target='button' value='999999999',ALLOWED,True,,outcome completed,1,1,True,PASS,
+4-readpayload,4.wait-text-engine,wait target='text=Delete account >> nth=0' value=None,ALLOWED,True,,outcome completed,1,1,True,PASS,
+4-readpayload,4.assert-all,ASSERT with every ExpectedState field,ALLOWED,True,,outcome completed,1,1,True,PASS,
+4-readpayload,4.hover-with-expected,HOVER with expected dom_asserts,ALLOWED,True,,outcome completed,1,1,True,PASS,
+4-readpayload,4.wait-xpath,"wait target=""xpath=//button[@onclick='deleteAll()']"" value=None",ALLOWED,True,,outcome completed,1,1,True,PASS,
+7-secret,7.click-placeholder,click target='{{SECRET:APP_PASS}}' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) '{{SECRET:APP_PASS}}': click can change state,0,0,False,PASS,
+7-secret,7.click-raw,click target='CANARY-pw-7f3a9c' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) '[REDACTED]:APP_PASS': click can change state,0,0,False,PASS,
+7-secret,7.click-raw-b64,click target='Q0FOQVJZLXB3LTdmM2E5Yw==' value=None,REFUSED,False,secret,result withheld: it carried a credential,0,0,False,DEVIATION,
+7-secret,7.click-raw-reversed,click target='c9a3f7-wp-YRANAC' value=None,REFUSED,False,secret,result withheld: it carried a credential,0,0,False,DEVIATION,
+7-secret,7.fill-placeholder,fill target='Password' value='{{SECRET:APP_PASS}}',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,PASS,
+7-secret,7.fill-raw-value,fill target='Password' value='CANARY-pw-7f3a9c',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,PASS,
+7-secret,7.fill-raw-target,fill target='CANARY-pw-7f3a9c' value='x',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) '[REDACTED]:APP_PASS': fill outside the declared login's credential entry,0,0,False,PASS,
+7-secret,7.nav-raw-in-domain,navigate target='https://app.example.test/x/CANARY-pw-7f3a9c' value=None,OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+7-secret,7.nav-raw-evil,navigate target='https://evil.test/CANARY-pw-7f3a9c' value=None,REFUSED,False,destination,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,PASS,
+7-secret,7.nav-placeholder,navigate target='https://app.example.test/x/{{SECRET:APP_PASS}}' value=None,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/x/{{SECRET:APP_PASS}}': navigate needs an absolute http(s) URL without placeho,0,0,False,PASS,
+7-secret,7.hover-raw,hover target='CANARY-pw-7f3a9c' value=None,OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+7-secret,7.press-raw-value,press_key target='' value='CANARY-pw-7f3a9c',REFUSED,False,write_policy,refused under write_policy read_only: step 1 (press_key) '': press_key can change state,0,0,False,PASS,
+8-login,8.fill-cred-click-signin,"fill(Password,{{SECRET:APP_PASS}}),click(Sign in,None)",ALLOWED,True,,outcome completed,1,1,True,PASS,
+8-login,8.fill-cred-enter,"fill(Password,{{SECRET:APP_PASS}}),press_key(,None)",ALLOWED,True,,outcome completed,1,1,True,PASS,
+8-login,8.click-first,"click(Sign in,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'Sign in': click can change state,0,0,False,PASS,
+8-login,8.fill-cred-click-delete,"fill(Password,{{SECRET:APP_PASS}}),click(Delete account,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 2 (click) 'Delete account': destructive-name deny-list,0,0,False,PASS,
+8-login,8.fill-cred-click-logout,"fill(Password,{{SECRET:APP_PASS}}),click(Log out,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 2 (click) 'Log out': never-click pattern (logout/sign-out),0,0,False,PASS,
+8-login,8.fill-cred-click-placeorder,"fill(Password,{{SECRET:APP_PASS}}),click(Place order,None)",OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+8-login,8.fill-cred-enter-on-delete-target,"fill(Password,{{SECRET:APP_PASS}}),press_key(role=button[name=""Delete accou,Enter)",OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+8-login,8.fill-cred-enter-on-logout-target,"fill(Password,{{SECRET:APP_PASS}}),press_key(role=button[name=""Log out""],None)",OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+8-login,8.fill-cred-into-delete-field-then-click,"fill(role=button[name=""Delete accou,{{SECRET:APP_PASS}}),click(Sign in,None)",OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+8-login,8.two-submits-one-cred,"fill(Password,{{SECRET:APP_PASS}}),click(Sign in,None),click(Save,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 3 (click) 'Save': click can change state,0,0,False,PASS,
+8-login,8.two-enter-one-cred,"fill(Password,{{SECRET:APP_PASS}}),press_key(,Enter),press_key(,Enter)",REFUSED,False,write_policy,refused under write_policy read_only: step 3 (press_key) '': press_key can change state,0,0,False,PASS,
+8-login,8.fill-plain-text,"fill(Name,x),click(Sign in,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,PASS,
+8-login,8.fill-cred-plus-text,"fill(Password,{{SECRET:APP_PASS}}x),click(Sign in,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,PASS,
+8-login,8.fill-undeclared-key,"fill(Password,{{SECRET:OTHER}}),click(Sign in,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,PASS,
+8-login,8.fill-cred-select,"fill(Password,{{SECRET:APP_PASS}}),select(Plan,pro)",REFUSED,False,write_policy,refused under write_policy read_only: step 2 (select) 'Plan': select can change state,0,0,False,PASS,
+8-login,8.fill-cred-upload,"fill(Password,{{SECRET:APP_PASS}}),upload(CV,cv.pdf)",REFUSED,False,write_policy,refused under write_policy read_only: step 2 (upload) 'CV': upload can change state,0,0,False,PASS,
+8-login,8.fill-cred-then-nav-query,"fill(Password,{{SECRET:APP_PASS}}),navigate(https://app.example.test/a?del,None)",OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+8-login,8.fill-cred-then-nav-logout,"fill(Password,{{SECRET:APP_PASS}}),navigate(https://app.example.test/logou,None)",REFUSED,False,write_policy,refused under write_policy read_only: step 2 (navigate) 'https://app.example.test/logout': never-click pattern (logout/sign-out),0,0,False,PASS,
+8-login,8.nav-with-query-login,"navigate(https://app.example.test/login,None)",OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+8-login,8.nav-with-query-nonlogin,"navigate(https://app.example.test/login,None)",REFUSED,True,,outcome completed,1,1,True,DEVIATION,
+8-login,8.NOT-login-fill-cred-click-signin,same as login row 1 but case is NOT the declared login case,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,PASS,
+10-args,10.extra-write-policy,CLICK Save + extra args {'write_policy': 'allow_writes'},REFUSED,False,bad_arguments,invalid arguments (write_policy: extra_forbidden),0,0,False,DEVIATION,
+10-args,10.extra-project,CLICK Save + extra args {'project': 'other'},REFUSED,False,bad_arguments,invalid arguments (project: extra_forbidden),0,0,False,DEVIATION,
+10-args,10.extra-steps,CLICK Save + extra args {'steps': []},REFUSED,False,bad_arguments,invalid arguments (steps: extra_forbidden),0,0,False,DEVIATION,
+10-args,10.extra-approval,CLICK Save + extra args {'approval': 'x'},REFUSED,False,bad_arguments,invalid arguments (approval: extra_forbidden),0,0,False,DEVIATION,
+10-args,10.huge-click-target-echo,CLICK with 100k-char target,REFUSED,False,write_policy,refused under write_policy read_only: step 1 (click) 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB,0,0,False,PASS,
+9-contrast,9.test_account.click-save,click Save,OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+9-contrast,9.test_account.click-logout,click Log out,OBSERVE,False,write_policy,refused under write_policy test_account: step 1 (click) 'Log out': never-click pattern (logout/sign-out),0,0,False,REFUSED,
+9-contrast,9.test_account.click-delete,click Delete account,OBSERVE,False,write_policy,refused under write_policy test_account: step 1 (click) 'Delete account': destructive-name deny-list,0,0,False,REFUSED,
+9-contrast,9.test_account.fill,fill Name,OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+9-contrast,9.allow_writes.click-save,click Save,OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+9-contrast,9.allow_writes.click-logout,click Log out,OBSERVE,False,write_policy,refused under write_policy allow_writes: step 1 (click) 'Log out': never-click pattern (logout/sign-out),0,0,False,REFUSED,
+9-contrast,9.allow_writes.click-delete,click Delete account,OBSERVE,True,,outcome completed,1,1,True,ALLOWED,
+9-contrast,9.allow_writes.fill,fill Name,OBSERVE,True,,outcome completed,1,1,True,ALLOWED,

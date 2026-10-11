@@ -1,0 +1,4 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_head\src\autotester\__init__.py
+first: sent 1 sends 1
+second: sent 1 sends 1 files 1
+race: 20 trials of 2 threads, each sent exactly once, exactly one record file

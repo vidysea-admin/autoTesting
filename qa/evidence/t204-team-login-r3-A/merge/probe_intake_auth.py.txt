@@ -1,0 +1,79 @@
+from __future__ import annotations
+from pathlib import Path
+import pytest
+from auth_harness import ADMIN, PASSWORD, account, client, gate_on, login, project, team, user_id
+from drive_fakes import FakeDrive
+from zip_fixtures import video
+from autotester.auth.access import set_owner
+from autotester.ui import routes_intake, intake_gate
+from autotester.store.project_store import ProjectStore
+
+UP = "/projects/demo/sources/upload"
+DR = "/projects/demo/sources/drive"
+LINK = "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz012345/view"
+
+@pytest.fixture()
+def root(tmp_path, monkeypatch):
+    r = gate_on(tmp_path, monkeypatch)
+    monkeypatch.setattr(routes_intake, "drive_factory", lambda _s: FakeDrive())
+    return r
+
+def _post(c, path, **kw):
+    if path == UP:
+        return c.post(path, files={"recording": ("a.mp4", video("p"), "video/mp4")}, data={"label": "x"}, **kw)
+    return c.post(path, data={"link": LINK}, **kw)
+
+def _rows(root):
+    return ProjectStore("demo", root).list_sources()
+
+def test_gate_is_open_gate():
+    assert type(intake_gate.get_gate()).__name__ == "OpenGate"
+
+@pytest.mark.parametrize("path", [UP, DR])
+def test_anonymous(root, path):
+    users = team(); project(root, "demo")
+    c = client()
+    j = _post(c, path, headers={"accept": "application/json"})
+    h = _post(c, path, headers={"accept": "text/html"})
+    print("ANON", path, j.status_code, h.status_code, h.headers.get("location"))
+    assert j.status_code == 401 and h.status_code == 302 and _rows(root) == []
+
+@pytest.mark.parametrize("path", [UP, DR])
+def test_signed_in_no_group(root, path):
+    team(); project(root, "demo")
+    account("nogroup@team.test")
+    c = login("nogroup@team.test")
+    r = _post(c, path, headers={"accept": "application/json"})
+    print("NOGROUP", path, r.status_code, r.text[:160])
+    assert r.status_code in (403, 404) and _rows(root) == []
+
+@pytest.mark.parametrize("path", [UP, DR])
+def test_tester_refused(root, path):
+    users = team(); project(root, "demo")
+    r = _post(users["tester"], path, headers={"accept": "application/json"})
+    print("TESTER", path, r.status_code, r.text[:160])
+    assert r.status_code in (403, 404) and _rows(root) == []
+
+@pytest.mark.parametrize("path", [UP, DR])
+def test_developer_not_owner_refused(root, path):
+    users = team(); project(root, "demo")
+    r = _post(users["dev"], path, headers={"accept": "application/json"})
+    print("DEV-NOT-OWNER", path, r.status_code, r.text[:160])
+    assert r.status_code in (403, 404) and _rows(root) == []
+
+@pytest.mark.parametrize("path", [UP, DR])
+def test_developer_owner_allowed(root, path):
+    users = team(); project(root, "demo")
+    set_owner("demo", user_id("dev@team.test"))
+    r = _post(users["dev"], path, follow_redirects=False)
+    print("DEV-OWNER", path, r.status_code)
+    assert r.status_code in (200, 202, 303)
+    if path == UP:
+        rows = _rows(root); print("ROW uploaded_by =", [s.uploaded_by for s in rows]); assert rows
+
+@pytest.mark.parametrize("path", [UP, DR])
+def test_admin_allowed(root, path):
+    users = team(); project(root, "demo")
+    r = _post(users["admin"], path, follow_redirects=False)
+    print("ADMIN", path, r.status_code)
+    assert r.status_code in (200, 202, 303)

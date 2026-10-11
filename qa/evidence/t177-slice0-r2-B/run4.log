@@ -1,0 +1,14 @@
+== affected tests
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\r2b-3222928938\head\src\autotester\__init__.py
+
+tests\test_browser_cdp_probe_hostile.py ...........                      [ 10%]
+tests\test_browser_session_cdp.py .......................                [ 32%]
+tests\test_browser_navigation_secrets.py ............................... [ 62%]
+.....................................                                    [ 98%]
+tests\test_browser_session_cdp_live.py ..                                [100%]
+
+============================ 104 passed in 50.58s =============================
+wall 64 s
+== base rounds 2
+== head rounds 2
+== ALLDONE4

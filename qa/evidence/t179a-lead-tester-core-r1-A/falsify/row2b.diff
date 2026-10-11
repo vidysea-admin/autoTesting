@@ -1,0 +1,18 @@
+--- head/src/autotester/agents/tools.py	2026-10-12 02:38:37.000000000 +0530
++++ scripts/falsify/row2b/src/autotester/agents/tools.py	2026-10-12 03:08:58.230712900 +0530
+@@ -266,7 +266,7 @@
+         outcome = _refusal(label, refused.kind, refused.detail)
+     except ApprovalRequired as exc:
+         outcome = _refusal(label, RefusalClass.APPROVAL, str(exc))
+-    except Exception as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
++    except ZeroDivisionError as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
+         outcome = _refusal(label, RefusalClass.STAGE_ERROR, _error_text(ctx, exc))
+     return _release(ctx, outcome)
+ 
+@@ -276,5 +276,5 @@
+     carries no unscrubbed text and no caller-supplied name."""
+     try:
+         return _dispatch(ctx, name, raw_args)
+-    except Exception:  # last resort (never BaseException): a fixed typed result with no detail
++    except ZeroDivisionError:  # last resort (never BaseException): a fixed typed result with no detail
+         return _refusal("unknown", RefusalClass.STAGE_ERROR, "the tool call failed")

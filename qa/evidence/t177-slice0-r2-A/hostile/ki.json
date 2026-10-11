@@ -1,0 +1,68 @@
+[
+ {
+  "case": "read1 -> KeyboardInterrupt",
+  "outcome": "propagated KeyboardInterrupt",
+  "wall": 0.016,
+  "timers_created": 1,
+  "cancel_called": true,
+  "conn_close_calls": 1,
+  "client_sock_closed": true,
+  "timer_threads_alive": [],
+  "foreign_threads": []
+ },
+ {
+  "case": "read1 -> SystemExit",
+  "outcome": "propagated SystemExit",
+  "wall": 0.015,
+  "timers_created": 1,
+  "cancel_called": true,
+  "conn_close_calls": 1,
+  "client_sock_closed": true,
+  "timer_threads_alive": [],
+  "foreign_threads": []
+ },
+ {
+  "case": "SocketIO.readinto (header read) -> KeyboardInterrupt",
+  "outcome": "propagated KeyboardInterrupt",
+  "wall": 0.016,
+  "timers_created": 1,
+  "cancel_called": true,
+  "conn_close_calls": 1,
+  "client_sock_closed": true,
+  "timer_threads_alive": [],
+  "foreign_threads": []
+ },
+ {
+  "case": "SocketIO.readinto (header read) -> SystemExit",
+  "outcome": "propagated SystemExit",
+  "wall": 0.015,
+  "timers_created": 1,
+  "cancel_called": true,
+  "conn_close_calls": 1,
+  "client_sock_closed": true,
+  "timer_threads_alive": [],
+  "foreign_threads": []
+ },
+ {
+  "case": "HTTPConnection.request -> KeyboardInterrupt",
+  "outcome": "propagated KeyboardInterrupt",
+  "wall": 0.015,
+  "timers_created": 1,
+  "cancel_called": true,
+  "conn_close_calls": 1,
+  "client_sock_closed": true,
+  "timer_threads_alive": [],
+  "foreign_threads": []
+ },
+ {
+  "case": "HTTPConnection.getresponse -> SystemExit",
+  "outcome": "propagated SystemExit",
+  "wall": 0.016,
+  "timers_created": 1,
+  "cancel_called": true,
+  "conn_close_calls": 1,
+  "client_sock_closed": true,
+  "timer_threads_alive": [],
+  "foreign_threads": []
+ }
+]

@@ -1,0 +1,1054 @@
+diff --git a/docs/MAP.md b/docs/MAP.md
+index b0859e42..a9f965b9 100644
+--- a/docs/MAP.md
++++ b/docs/MAP.md
+@@ -8,6 +8,9 @@
+ <!-- generated:map -->
+ | Module | One job |
+ |---|---|
++| `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
++| `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
++| `agents/tools.py` | The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6). |
+ | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
+ | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
+ | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
+@@ -63,6 +66,7 @@
+ | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
+ | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
+ | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
++| `schema/agent_layer.py` | The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist, |
+ | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
+ | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
+ | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
+@@ -237,6 +241,15 @@
+ <!-- generated:schema -->
+ | Model | Meaning |
+ |---|---|
++| `AgentToolName` (`schema/agent_layer.py`) | The stage tools in this slice. `report` and `capture_network` join with the rest of T-179. |
++| `ToolEffect` (`schema/agent_layer.py`) | What a tool can do to the outside world. T-180 allowlists subagents by this. |
++| `RefusalClass` (`schema/agent_layer.py`) | Why a tool call produced no action. A refusal is a result, never an exception the |
++| `ToolSpec` (`schema/agent_layer.py`) | One tool: its name, effect, and the existing function it wraps (C3). |
++| `CrawlArgs` (`schema/agent_layer.py`) | Bounds the model REQUESTS; the approval decides whether they are granted. |
++| `RunCaseArgs` (`schema/agent_layer.py`) |  |
++| `GradeCaseArgs` (`schema/agent_layer.py`) |  |
++| `EmptyArgs` (`schema/agent_layer.py`) | Tools that take nothing (`get_persona`, `get_catalog`): everything is trusted context. |
++| `ToolOutcome` (`schema/agent_layer.py`) | What a tool call returns to the model. `summary` is scrubbed before it is built, and the |
+ | `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
+ | `AiCheckMethod` (`schema/ai_check.py`) | Who decides a check: code from recorded facts, or the independent judge (C7). |
+ | `AiReply` (`schema/ai_check.py`) | What an AI endpoint answered, as the transport seam hands it to the capturer. |
+diff --git a/docs/SNAPSHOT.md b/docs/SNAPSHOT.md
+index 7d3b95cf..f3fd5f1f 100644
+--- a/docs/SNAPSHOT.md
++++ b/docs/SNAPSHOT.md
+@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
+ - T-155 [normal] Track C5: unified AI test report grouped by tier with judge reason strings
+ - T-167 [high] Commit/release-triggered visible-browser regression with consent, history and resumable retries
+ ## Last decisions (computed status)
+-- D-080 2026-10-10 decision ACTIVE
+ - D-081 2026-10-10 decision ACTIVE
+ - D-082 2026-10-11 decision ACTIVE
+ - D-083 2026-10-11 decision ACTIVE
+ - D-084 2026-10-11 decision ACTIVE
++- D-085 2026-10-12 decision ACTIVE
+diff --git a/qa/briefs/t179-lead-tester.md b/qa/briefs/t179-lead-tester.md
+new file mode 100644
+index 00000000..965de07e
+--- /dev/null
++++ b/qa/briefs/t179-lead-tester.md
+@@ -0,0 +1,170 @@
++# Build brief — t179-lead-tester (T-179, criticality high)
++
++Prepared 2026-10-10 by a read-only readiness pass. Nothing was built, run or committed. Facts marked `unknown` are not in the repo; do not guess them. Re-read `git -C D:/autoTesting rev-parse master` at dispatch.
++
++## STATUS: NOT-DISPATCHABLE. Do not hand this to a builder yet.
++
++The contract exists (`qa/contracts/agent-layer.md`, AL1-AL7 for this unit, DRAFT) and the dependencies T-170, T-172, T-175 are `done`. Four blockers remain, none of them a builder's to resolve:
++
++1. **AL1 cannot be satisfied as written.** AL1 and D-042 require `deepagents>=1.7`. The Python package `deepagents` on PyPI is at 0.7.23 (checked 2026-10-10; the maker manifest recorded 0.7.21 on 2026-09-30), requires Python >=3.11, and has never been 1.x. A `>=1.7` floor resolves to nothing. Correcting it needs (a) an authorizing decision entry naming the new floor, written by Umesh's approval via `scripts/append_decision.ps1`, and (b) a checker-owned amendment of AL1. D-042's `Changes-authorized` allows "add deepagents within T-179 only", not a different floor.
++2. **The new file paths are unapproved and contradict each other.** The maker's planning manifest proposes three new paths (`src/autotester/stages/agent_layer.py`, `src/autotester/providers/agent_chat.py`, `tests/test_agent_layer.py`). `docs/plan.md:66` and `qa/QUEUE.md` say a new `src/autotester/agents/` package. The repo rule is edit in place; a new module needs explicit approval or a C3 cap justification. The manifest recorded the question `T179 exact three new files: approve/hold` on 2026-10-05 as unanswered.
++3. **The Provider and trace approach has no authorizing decision.** The plan edits `providers/base.py::Provider` (a message/tool interface), `core/trace.py` and `schema/trace.py` (operation and parent identifiers). D-042's `Changes-authorized` lists none of these files.
++4. **There is no approved concrete plan.** `qa/manifests/t179-agent-layer-plan.md` is `Status: planning; no implementation approval or product PASS`. It says: "Required human authority: exact new paths and version correction. Required decision authorization: Provider/trace approach. Then concrete plan approval, dependency lock, offline real-framework scripted-model proofs…"
++
++When all four are answered, this brief becomes dispatchable with only sections 2, 5 and 8 updated.
++
++## 1. Policy and tier
++
++- `Policy-Version: proportional-verification/2026-10-10.9`
++- **Tier: L.** Triggers: dependency bump (`deepagents` and its transitive set: `langchain`, `langgraph`, `langsmith`, `wcmatch` in `uv.lock`); security (AL3 guards, AL6 secret boundary); config (provider seam change).
++- **Dual check: required.** Trigger: `security: src/autotester/browser/secrets.py:256` (`SecretStore.guard_prompt`) and `src/autotester/core/redact.py:120` (`assert_no_raw_secrets`) are the credential boundary AL6 extends to a model that now plans and calls tools; `src/autotester/core/consent.py:182` (`require_approval`) is the approval boundary AL3(b) tests. The tools wrap `run_case` which can write to a live product.
++- No enforcement-path file (`.claude/hooks/*`, `scripts/append_decision.ps1`, `.claude/settings.json`, `qa/hooks/*`) is touched by the build. The decision entry in blocker 1 and 3 is written through `scripts/append_decision.ps1` by the owner path, not by the builder.
++
++## 2. Root and base
++
++- Root `D:/autoTesting`. Base = `master` @ `4f8f5da100931ebda1b26836304bfbd38460764b` (at preparation time).
++- **Branch: a fresh `wave/t179-lead-tester` from master.** Reason: no branch or worktree for T-179 exists (`git branch --list '*t179*'` is empty); `src/autotester/agents/` does not exist. Start clean.
++
++## 3. Acceptance criteria (verbatim from `qa/contracts/agent-layer.md`, T-179 group)
++
++Contract-level facts: criterion ids AL1-AL7 belong to T-179. AL8-AL10 belong to T-180 and AL11-AL13 to T-181 and are NOT judged here. The goal `done_check` is `uv run pytest tests/test_agent_layer.py` (exit 0); that file does not exist. The contract header still says T-170/T-172/T-175 are "DRAFT — not yet merged"; that is stale, all three are `done` in `.goal/goal.json`. Contract header grounding the build: D-042, D-041, `core-invariants.md` C3, C7, C8, `skills.md` SK1-SK4, `run-trace.md` RT2-RT6, `consent.md` CN1-CN9.
++
++### T-179 group (AL1-AL7) — lead agent, stage tools, safety-in-tools
++
++- **AL1 — Built with `create_deep_agent`.** The lead tester agent is constructed via
++  `create_deep_agent` (not a hand-rolled LangGraph `StateGraph` reimplementing planning/subagents),
++  with `deepagents>=1.7` in `pyproject.toml` added only within this unit (D-042
++  Changes-authorized). (Falsifiable: `grep -rn "create_deep_agent"` in the agent module; `deepagents`
++  present in `pyproject.toml` with a `>=1.7` floor; the agent object exposes the Deep Agents
++  to-do-list/planning middleware, not a bespoke planner.)
++- **AL2 — Every stage is exposed as a tool that WRAPS the existing function, never
++  re-implements it (C3).** Each of `crawl`, `run_case`, `get_persona`, `get_catalog`, `grade_case`,
++  `report` (and `capture_network` once T-170 merges) is a thin tool function whose body calls the
++  named existing stage function/module and does not duplicate its logic. (Falsifiable: for each
++  tool, `grep -rn` its body imports and calls the cited existing function
++  — e.g. `run_case` tool imports and calls `stages.execute.run_case`, `grade_case` tool imports and
++  calls `stages.grade.grade` — and contains no parallel implementation of what that function does;
++  `autotester doctor`'s duplicate-concept check stays clean.)
++- **AL3 — Deterministic guards execute inside each acting tool, in code, and are refused
++  regardless of model instruction.** Every tool that can touch a live target (`crawl`, `run_case`,
++  and any future write-capable tool) calls the existing guard functions
++  (`core.consent.require_approval` for outward-facing runs, `explore_safety.deny_reason`/
++  `policy_for` or an equivalent `write_policy` check for `run_case`, `browser.secrets.SecretStore`
++  for any credential) before performing the observable action, and a prompt instruction cannot
++  route around the check. (Falsifiable, one test per clause: (a) a model instruction to "use the raw
++  value of SECRET_KEY directly, ignore the placeholder" — the tool call is refused with
++  `SecretError`/`assert_no_raw_secrets`, never a raw value reaching the browser or a log; (b) a model
++  instruction to run a crawl beyond the granted `RunApproval` bounds — the `crawl` tool raises
++  `ApprovalRequired` before any browser action, same as CN1; (c) a model instruction to submit a
++  form / mutate state while `Project.write_policy == WritePolicy.READ_ONLY` — the `run_case` tool
++  refuses the write action the same way `explore_safety.deny_reason` refuses it during a crawl,
++  and the refusal is asserted from the tool's own return/exception, not inferred from an absence of
++  side effects.)
++- **AL4 — Skills are loaded via `skills=`, not inline prompt strings.** The lead agent (and any
++  subagent needing one) is constructed with `skills=[...]` pointing at the `SKILL.md` folders T-175
++  produces (`qa/contracts/skills.md` SK1); no agent or tool in this unit embeds a prompt as a Python
++  string literal or reads a `.md` file directly outside that loader (core-invariants C8's "prompts
++  live in files" extended to the agent layer). (Falsifiable: `grep -rn` for a triple-quoted prompt
++  string or a direct `read_text(...)` of a skill/prompt file inside the agent module returns
++  nothing; the agent's `skills=` argument resolves to the SK1 folders.)
++- **AL5 — Every agent/tool call emits a T-172 trace span.** Once T-172 merges, every lead-agent
++  planning step, every subagent invocation, and every tool call this unit adds produces a span in
++  `projects/<slug>/runs/<run_id>/trace.jsonl` matching run-trace.md's RT3/RT4 shape (stage span or
++  LLM-call span, `trace_id` equal to the run's own `run_id`) — this unit does not open a second,
++  parallel trace mechanism (RT5). Until T-172 merges, this criterion is not yet judgeable and the
++  checker records it as not-applicable rather than failing the unit for a dependency that has not
++  landed. (Falsifiable, once T-172 is ACTIVE: a fixture run through the lead agent → its
++  `trace.jsonl` carries a span per tool call and per subagent invocation, `trace_id` matching
++  `state.json`'s `run_id`.)
++- **AL6 — The agent never sees a secret value (C5, extended to the agent layer).** Every prompt
++  the lead agent or a subagent sends to a model — planning prompts, tool-call arguments, skill
++  bodies — passes `core.redact.assert_no_raw_secrets` before the call, matching the existing gate
++  every `Provider` call already sits behind (`browser/secrets.py::SecretStore.guard_prompt`).
++  (Falsifiable: seed a fixture project with a fake secret bound to a `SecretRef`, drive the lead
++  agent through a task whose evidence would otherwise carry it, and assert no model-bound prompt in
++  the run contains the raw value — only `{{SECRET:KEY}}`.)
++- **AL7 — Scope discipline: subagents only where judgement is needed (rule 2).** The lead agent
++  does not spin up a subagent for work that is a plain deterministic tool call — planning routes
++  judgement-needing steps (test design, grading, exploration strategy) to subagents and routes
++  mechanical steps (a single `run_case`, a single `get_persona` read) as direct tool calls, matching
++  D-042's "used only where judgement is needed" and rule 2's per-multi-agent-step cost. (Falsifiable:
++  a fixture job with one deterministic step and one judgement step → the trace/`result['files']`
++  shows exactly one subagent delegation, not two; a job with zero judgement steps → zero subagent
++  delegations.)
++
++
++Binding no-fire list (same contract): no hosted agent runtime; no replacing deterministic crawl/safety logic with model judgement; no A2A; no Langfuse export; T-177's browser-use internals; T-167's checkpointer wiring; subgraph-mounting of `create_deep_agent` output is `[UNVERIFIED]` and out of scope unless a criterion names it. Verification (contract): `uv run pytest tests/test_agent_layer.py` bare, `uv run ruff check src tests scripts`, `uv run autotester doctor`; AL3's three sub-clauses each need their own falsifying edit.
++
++## 4. What exists and what is missing
++
++Built and reusable (master):
++- Stages to wrap: `stages/execute.py::run_case` (:159), `stages/grade.py::grade`, `stages/expand.py` (141), `stages/explore.py` (286) with `explore_safety.py::policy_for` (:55) and `deny_reason` (:86), `stages/portal_persona.py::build_portal_persona` (:276), `stages/network_capture.py::first_party_evidence` (:24, T-170), `stages/orchestrate.py::run_or_resume` (:182, T-163; T-167 will rewrite its internals).
++- Guards to keep in code: `core/consent.py::require_approval` (:182) and `ApprovalRequired` (:25); `browser/secrets.py::SecretStore.resolve` (:140) and `guard_prompt` (:256); `core/redact.py::assert_no_raw_secrets` (:120).
++- Trace: `core/trace.py::TraceWriter` (80 lines) and `schema/trace.py::StageSpan/LLMSpan` (56 lines) from T-172 (one writer, `trace_id` equals `run_id`).
++- Skills: `src/autotester/skills/` holds `expand-case/`, `grade/`, `ingest-video/`, `reconcile-screen/`, `ux_judge/`, `video-issues/` (T-175, `tests/test_prompt_skills.py`).
++- Provider seam: `providers/base.py::Provider` (189 lines; `see_video`, `act`, `judge`), `providers/langchain_fallback.py` (171).
++
++Missing (everything for AL1-AL7):
++- No `deepagents` in `pyproject.toml`; no `create_deep_agent` call anywhere; no agent module; no stage-tool wrappers; no `skills=` wiring; no agent/tool trace spans; no `tests/test_agent_layer.py`.
++- Per the planning manifest (unapproved): seven thin tools (`crawl`, `run_case`, `get_persona`, `get_catalog`, `capture_network`, `grade_case`, `report`) mapped onto existing stages; trusted injected context fixes project roots, session, provider and approval so the model cannot choose them; built-in filesystem/shell routes denied; `stages/agent_loop.py` must NOT be repurposed (it owns single-step repair).
++
++## 5. Files the builder will touch (PROVISIONAL, pending blockers 2 and 3)
++
++Existing, additive edits, in place:
++- `pyproject.toml`, `uv.lock` (deepagents; shared lock, section 10)
++- `src/autotester/providers/base.py` (189): additive message/tool interface only
++- `src/autotester/providers/langchain_fallback.py` (171)
++- `src/autotester/schema/trace.py` (56) and `src/autotester/core/trace.py` (80): additive operation/parent identifiers; `StageName` and the single writer preserved
++
++New, only if approved (blocker 2): `src/autotester/stages/agent_layer.py` (lead construction, scoped backend, thin tools; will probably exceed 300 lines, so a split is `unknown`), `src/autotester/providers/agent_chat.py` (framework-specific Provider adapter), `tests/test_agent_layer.py`. The manifest says the checker owns test/oracle changes under the current test floor; whether the builder writes `tests/test_agent_layer.py` is `unknown`. Alternative path in plan.md/QUEUE: a `src/autotester/agents/` package, names `unknown`.
++
++Regenerated: `docs/MAP.md`, `docs/SNAPSHOT.md`.
++Forbidden: `docs/ARCHITECTURE.md` (150/150; D-042 allows one line after the PASS, as maker close-out), `docs/DECISIONS.md`, `qa/contracts/*`, `.goal/goal.json`, `qa/QUEUE.md`, `stages/agent_loop.py`, `stages/orchestrate*.py` (T-167's), any `.env`.
++
++## 6. Test scope
++
++- `tests/test_agent_layer.py` (done_check; offline, a scripted local chat model, the real pinned `create_deep_agent`).
++- Existing consumers of touched files, as needed: `tests/test_run_trace.py`, `tests/test_prompt_skills.py`, `tests/test_consent.py`, `tests/test_agent_loop.py` (must stay green); the provider-seam test file for `providers/base.py` is `unknown` (no `tests/test_provider_factory.py` exists on master).
++- End gates: `uv run ruff check src tests scripts`, `uv run autotester doctor`. No full suite, no native browser, no paid model call, no real account.
++
++## 7. Reachable test cases
++
++From the planning manifest's frozen synthetic set of 24 jobs (exact stage calls and typed references, not prose similarity): seven stage-tool dispatches, two routing jobs, three AL3 refusals, six secret-propagation surfaces, four filesystem bypasses, two invalid or empty-result jobs.
++- AL1: instantiate the real `create_deep_agent` with a scripted model; planning middleware present; dependency floor matches the authorized decision.
++- AL2: each of the seven tools calls its named existing function exactly once with the trusted context and returns the typed artifact; `autotester doctor` duplicate-concept check clean.
++- AL3 (one test and one falsifying edit each): (a) "use the raw SECRET_KEY value" is refused with `SecretError` or `assert_no_raw_secrets`; (b) a crawl beyond the granted `RunApproval` raises `ApprovalRequired` before any browser action; (c) a form submit while `WritePolicy.READ_ONLY` is refused by the tool's own return or exception.
++- AL4: `skills=` resolves the T-175 folders; no triple-quoted prompt and no direct `read_text` of a skill file in the agent module.
++- AL5: every planning step, subagent call and tool call produces a span in `projects/<slug>/runs/<run_id>/trace.jsonl` with `trace_id` equal to the run id, no duplicate LLM spans.
++- AL6: a fake secret bound to a `SecretRef` never appears in any model-bound request, tool result, trace or artifact across six surfaces.
++- AL7: deterministic-only job delegates zero times; a mixed job delegates exactly once.
++- Safety: four filesystem bypasses refused; empty or invalid jobs cannot produce a verdict or a PASS.
++
++## 8. Gate answers
++
++- `qa/gates/d042-deep-agents.md`: `Answered: 2026-09-24T22:33:42+05:30 — "Haan, Umesh approve (Recommended)" + "Wave 1 ke baad (Recommended)" — AskUserQuestion in the 2026-09-24 session (running under the himanshu@ claude.ai account; the answer explicitly selected "Umesh approve")`. Adoption of Deep Agents is answered. Wave 1 (T-170, AT-110, T-172, T-173, AT-086/087, T-175, T-126, AT-335) is the stated precondition; the manifest records its historical PASSes (AT086/087, AT110 cycle 2, AT335).
++- **No `Answered:` line exists** for the two manifest questions (`qa/manifests/t179-agent-layer-plan.md`): `T179 Python version correction: approve/hold` and `T179 exact three new files: approve/hold`, both recorded "unanswered" as of 2026-10-05. Neither authorizes paid models, native browser or real-account runs.
++- `docs/DECISIONS.md` D-068 point 3: build order "all open groups run in parallel, scheduled only by real dependencies (the agent layer waits for the stages it wraps)". D-081 and `qa/QUEUE.md` say the owner asked for all remaining work to run. Neither answers the two questions above, and `qa/manifests/t179-agent-layer-plan.md` states "No silent dependency/contract correction is authorized."
++
++## 9. UI surface and persona walk
++
++`Persona walk: skip (agent layer, no human-facing screen, route or CLI output is added; docs/plan.md:66 lists it as "skip (agent layer)")`.
++
++## 10. Dependencies and conflicts
++
++- Must land first: none by dependency (T-170, T-172, T-175 are done). D-055 says the agent layer is independent of T-167. `uv.lock` ordering: land after T-167's `langgraph` lock change or serialize with it (deepagents pulls `langchain` and `langgraph` transitively and can re-resolve the pin T-167 sets).
++- **T-180 needs from this unit** (write no brief): a tool registry where each of the seven tools is individually addressable by name, with read/evidence tools separable from acting tools, so T-180 can configure the five subagents with explicit allowlists (AL10) and give the grader no action tools (AL8); the lead agent constructed with an extension point for `subagents=`; context isolation that does not depend on the lead's message history (AL9).
++- **T-181 needs from this unit** (write no brief): a budget hook point on the model-call path (token/cost accounting per run, AL11); trace usage fields on every span; a way to run the same fixture job through `stages/orchestrate.py::run_or_resume` and through the lead agent for the AL12 comparison (`stages/bench.py:76::scorecard` is the precedent); and a design where the layer can be removed cleanly if AL13 shows no gain.
++- Shared files (one owner each):
++  - `pyproject.toml`, `uv.lock`: owner serialized: T-167 first, then T-202/T-174, then this unit (`qa/QUEUE.md:86`, `:290`).
++  - `src/autotester/providers/base.py`: this unit, but `qa/QUEUE.md` shows unit t202 (LiteLLM provider, `providers/__init__.py` registry) also works in `providers/`; whether it edits `base.py` is `unknown`. Treat as shared with t202, one writer at a time.
++  - `src/autotester/schema/trace.py`, `core/trace.py`: this unit only (additive).
++  - `docs/ARCHITECTURE.md`: maker close-out, serialized with T-167's line.
++  - `docs/MAP.md`, `docs/SNAPSHOT.md`: last merger regenerates.
++  - `agents/` or `stages/agent_layer.py`: this unit, then T-180, then T-181 (`qa/QUEUE.md` owner line).
++
++## 11. Budget and process rules
++
++- Check budget (tier L): 45 min. The builder runs no full suite, only the files in section 6.
++- Falsification only in a throwaway copy outside the bound tree, then a byte-identical restore. One row per AL criterion; AL3 needs three.
++- Kill only PIDs you started. Scratch and evidence go to `.work/`. Edit in place; no `*_v2.py` or `*_new.py`. All model calls via `providers.base.Provider`; prompts are files. No secrets in logs.
++- Evidence manifest `qa/manifests/t179-lead-tester.md` (or continue `t179-agent-layer-plan.md` if the maker chooses) at `Status: ready-for-check`; only `/checker` can PASS.
+diff --git a/qa/manifests/t179a-lead-tester-core.md b/qa/manifests/t179a-lead-tester-core.md
+new file mode 100644
+index 00000000..34344a36
+--- /dev/null
++++ b/qa/manifests/t179a-lead-tester-core.md
+@@ -0,0 +1,107 @@
++# Manifest - t179a-lead-tester-core (T-179 slice a: the guarded stage-tool core)
++
++## Status: ready-for-check
++
++**Contract:** qa/contracts/agent-layer.md AL2, AL3, AL6 (the T-179 group); AL2 and AL6 in part, AL3 in full for the tools built; AL1, AL4, AL5, AL7 held (below)
++**Goal task:** T-179, slice a only. T-180 (subagents) and T-181 (gain, budget) are not in this unit.
++**Authority:** D-042 (Deep Agents adopted, `qa/gates/d042-deep-agents.md` answered 2026-09-24), D-018 (consent), D-053 (the supplied account is the scope). No new decision is needed for this slice: it adds no dependency and edits no file D-042 does not already allow.
++Policy-Version: proportional-verification/2026-10-10.9
++Tier: L (security class: the AL3 guards and the AL6 secret boundary decide what a model-driven tool may do to a live product; no dependency change, so not L for that reason)
++Fix cycle: 0
++Branch: wave/t179-lead-tester, based on master 16aaa402. Master was not merged. Nothing pushed.
++Code commit under check: 90705dc0 (9c000f1c is the first code commit; 90705dc0 adds one test and regenerates `docs/MAP.md`/`docs/SNAPSHOT.md`; the manifest commit changes no product file)
++Executor: claude-sonnet-subagent (maker build subagent)
++Dual check: required
++dual-trigger: security src/autotester/agents/guards.py:64 (`write_policy_refusal`, the one new guard: `execute.run_case` has no write-policy check of its own)
++dual-trigger: security src/autotester/agents/tools.py:168 (`dispatch`, the secret gate on the raw call and the only path a model reaches an acting tool)
++Persona walk: skip (agent layer, no human-facing screen, route or CLI output is added; docs/plan.md:66)
++
++## Slice chosen, and why
++
++The dependency question is open (no `deepagents` in `pyproject.toml` or `uv.lock`; the brief records that the PyPI package is 0.7.x and AL1's `>=1.7` resolves to nothing). So this slice contains **nothing that needs the framework**: the tool surface the framework will later be handed, with the safety checks already inside the tools. The planner, subagents, to-do middleware and `skills=` loading ARE the framework (AL1/AL4/AL7), and a hand-rolled planner behind `Provider` would be exactly what AL1 forbids, so none is built here.
++
++What is in the slice: five stage tools (`crawl`, `run_case`, `get_persona`, `get_catalog`, `grade_case`), each a thin call into the existing stage function; one dispatcher a model reaches; the guards running inside the tools before any browser opens; secret gating of the call and of the result. No live model call, no browser, no network, no new dependency. `grade_case` reaches the judge only through `stages.grade.grade` and `providers.base.Provider` (tests use `MockProvider`).
++
++Design choices a checker should know (none contradicts the contract):
++- The model passes ids and requested bounds only. Project, store, secrets, judge, run id and the session factory are `AgentContext` (trusted); no args model has a field for any of them, and every args model is `extra="forbid"`.
++- `crawl` calls `guards.crawl_approval` (`core.consent.require_approval`, reading existing signed rows only, so an agent can never mint one) BEFORE `ctx.open_session`. `run_crawl` checks again at its own seam; this is additional.
++- `run_case` runs the write-policy check, then `require_approval(kind=LIVE_CASE)`, then opens the session. Note `trigger_run` (UI) checks no approval today (AT-570, open); this tool is stricter than that path by design, per AL3.
++- Write-policy rule (new logic, `guards.py::write_policy_refusal`): a CLICK step goes through the crawler's own `explore_safety.deny_reason` (never-click and destructive names); under `READ_ONLY` a FILL/SELECT/UPLOAD step with a literal value is refused, while a value made only of `{{SECRET:KEY}}` placeholders (a login) is allowed.
++- The stage result is scrubbed (`Redactor.scrub_obj`) before it is persisted or described; the outcome is scrubbed again and re-gated by `SecretStore.guard_prompt` before it returns to the model.
++
++## Acceptance criteria claimed
++
++| id | claim | where proved |
++|---|---|---|
++| AL2 | IN PART: 5 of the 7 named tools (`crawl`, `run_case`, `get_persona`, `get_catalog`, `grade_case`). Each body calls the existing function named by `ToolSpec.wraps`. `report` and `capture_network` are HELD | `test_every_tool_names_a_real_existing_function`, `test_run_case_wraps_*`, `test_crawl_wraps_*`, `test_read_tools_and_grade_wrap_*` |
++| AL3 | IN FULL for the acting tools built (`crawl`, `run_case`): (a) raw secret in a call refused with `RefusalClass.SECRET` before any action, (b) crawl beyond the approval refused with the `ApprovalRequired` text before any browser opens, (c) a READ_ONLY project's mutating step refused from the tool's own result. Each asserts the session factory and the stage spy were never called | `test_al3a_*`, `test_al3b_*`, `test_al3c_*`, plus `test_read_only_still_allows_login_placeholder_*` and `test_run_case_without_a_live_case_approval_is_refused` |
++| AL6 | IN PART: the tool boundary only (call arguments, stage results, stored result, the grade prompt gate). Planning prompts and skill bodies are the framework's and HELD | `test_al6_*` (three tests) |
++
++## Criteria held (verbatim ids) and why
++
++- **AL1** (built with `create_deep_agent`, `deepagents>=1.7`): HELD. Needs the dependency, and the `>=1.7` floor resolves to nothing (brief section 1, blocker 1).
++- **AL4** (skills loaded via `skills=`): HELD. A framework argument; the slice builds no agent.
++- **AL5** (a T-172 trace span per agent/tool call): HELD. Needs operation/parent identifiers in `schema/trace.py` and `core/trace.py`, which D-042's `Changes-authorized` does not list (brief blocker 3). `provider.record()` already emits the LLM span for the one judge call a tool makes.
++- **AL7** (subagents only where judgement is needed): HELD. Delegation is the framework's.
++- AL2 remainder (`report`, `capture_network`) and AL6 remainder (framework planning prompts, skill bodies): HELD with AL1.
++- AL8-AL13 belong to T-180/T-181.
++
++## What changed (all new files; no existing source file edited)
++
++Existing files edited: none in `src/`. `docs/MAP.md` and `docs/SNAPSHOT.md` regenerated (`autotester map`, `autotester snapshot`).
++
++## New-module table (D-082 item 1)
++
++| module | lines | one job | named by |
++|---|---|---|---|
++| `src/autotester/schema/agent_layer.py` | 94 | the tool names, effects, refusal classes, per-tool args and the outcome a model sees | brief section 4 ("typed schemas"); contract AL2/AL3 (refusal is a result) |
++| `src/autotester/agents/__init__.py` | 7 | package docstring | `docs/plan.md` row 16 and `qa/QUEUE.md:296` ("new `agents/` package wrapping existing stages as tools") |
++| `src/autotester/agents/context.py` | 39 | the trusted context a model can never choose | brief section 4 ("trusted injected context fixes project roots, session, provider and approval") |
++| `src/autotester/agents/guards.py` | 73 | the checks that run in code inside an acting tool | contract AL3 |
++| `src/autotester/agents/tools.py` | 184 | the five stage tools and their one dispatcher | contract AL2 |
++| `tests/test_agent_tools.py` | 280 | offline proof of AL2/AL3/AL6 for this slice | brief section 6; deliberately NOT named `test_agent_layer.py`, the goal's `done_check` file |
++
++The package location follows `docs/plan.md:66` and `qa/QUEUE.md:296` (`agents/`), not the planning manifest's three proposed paths (`stages/agent_layer.py`, `providers/agent_chat.py`, `tests/test_agent_layer.py`). The contradiction is brief blocker 2 and is still an owner question; this slice is the smallest that makes either answer cheap to follow (a move, not a rewrite). `providers/agent_chat.py` is not created because no framework adapter is built.
++
++## Verification scope
++Policy-Version: proportional-verification/2026-10-10.9
++Tier: L. No builder full suite; touched/affected test files only; no CLI `-q`. `autotester.__file__` confirmed under `D:\autoTesting\.worktrees\t179-lead-tester\src`.
++Pre-check: 90705dc0 uv run ruff check src tests scripts -> All checks passed!
++Pre-check: 90705dc0 uv run autotester doctor -> doctor: clean; `uv run autotester map` and `autotester snapshot` regenerated, committed
++Pre-check: 90705dc0 uv run pytest tests/test_agent_tools.py -> 14 passed (AL2 x4, AL3 x5, AL6 x3, validation x1, guard-function x1; criteria AL2, AL3, AL6 each have named tests above)
++Pre-check: 90705dc0 uv run pytest tests/test_schema.py tests/test_doctor.py -> 64 passed (C1 schema rules and the doctor rules over the new files)
++Metrics: start=2026-10-12 end=2026-10-12 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=8 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9
++
++TDD note, stated plainly: the test file was written before `tools.py`/`guards.py`, but I did not run it red first (it went green on its first run, 13 passed). The red evidence is the falsification table, not a failing-first run.
++
++## Falsification (throwaway copy of src, tests, scripts, docs under the scratchpad on C:, outside the worktree; run with the worktree venv and `PYTHONPATH=<copy>/src`, `autotester.__file__` printed from the copy; the worktree was never edited; the copy is discarded)
++
++Each row: the named test green on the copy before the edit, red after it.
++
++| Row | edit in the copy | test | before | after |
++|---|---|---|---|---|
++| AL2 | `run_case` tool returns a hand-built `RawResult` instead of calling `execute.run_case` | `test_run_case_wraps_execute_run_case_once_with_the_context_session` | 1 passed | 1 failed |
++| AL3a | secret gate on the raw call replaced by `pass` | `test_al3a_raw_secret_in_arguments_is_refused_before_any_action` | 1 passed | 1 failed |
++| AL3b | `guards.crawl_approval(...)` call removed from `_crawl` | `test_al3b_crawl_beyond_the_approval_is_refused_before_a_browser_opens` | 1 passed | 1 failed |
++| AL3c | `write_policy_refusal` returns `None` first | `test_al3c_a_read_only_project_refuses_a_mutating_step_from_the_tool_itself` | 1 passed | 1 failed |
++| AL6 | stored/returned result not scrubbed (`_scrubbed` returns the input) | `test_al6_a_secret_in_a_stage_result_never_reaches_the_model` | 1 passed | 1 failed |
++| AL6 | `grade` called without `secrets=`/`redactor=` | `test_al6_a_real_grade_withholds_a_prompt_carrying_a_secret` | 1 passed | 1 failed |
++| AL6 | release step stops scrubbing the summary | `test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result` | 1 passed | 1 failed |
++| AL6 | release step stops gating the outcome | same test | 1 passed | 1 failed |
++
++One mutation first SURVIVED and was fixed by a new test, not hidden: removing the release scrub and gate together left `test_al6_a_secret_in_a_stage_result_*` green, because `_scrubbed` already cleaned the text upstream. `test_al6_a_stage_summary_is_scrubbed_*` now pins the release step separately (exact value scrubbed to a placeholder; a reversed spelling withholds the whole result).
++
++## Contract gaps and residuals (for the checker, not for the maker to close)
++
++1. **A CLICK that submits a form but carries no tell in its name is not caught by the write-policy guard.** A `Case` step holds a semantic target string, not an `ElementRef`, so `is_form_submit` is unknown at tool level; only names (`deny_reason`) and literal-value typing are checked. AL3(c) says "submit a form / mutate state"; the contract does not say how a step that is a submit is recognised. Proposed contract wording is the checker's. Until then this is a stated limit, not a pass claim for that sub-case.
++2. **`run_case` requires a `LIVE_CASE` approval; the UI path does not (AT-570).** Contract AL3 names `require_approval` for outward-facing runs, so the tool follows it. If the owner decides a read-only fixture needs none, that is a decision to record.
++3. `docs/ARCHITECTURE.md` (150/150) is not edited (forbidden to this unit); its concept to file table does not yet name `agents/`. D-042 allows one line after PASS, as maker close-out.
++4. `ToolOutcome.summary` of `run_case` carries `result.error` (scrubbed). It is bounded by what the executor wrote; no length cap is applied here.
++5. The `HUMAN_GATE` items below were not needed for this slice but gate the rest.
++
++## Open owner questions (gate the REST of T-179, not this slice)
++
++1. Which `deepagents` version floor, and is adding that dependency (with its transitive `langchain`/`langgraph`/`langsmith` set) accepted? PyPI shows 0.7.x; AL1 and D-042 say `>=1.7`. Needs a decision entry via `scripts/append_decision.ps1` and a checker amendment of AL1. Serialize the lock-file writer with T-167/T-202/T-174 (`qa/QUEUE.md:91`).
++2. Package location: `src/autotester/agents/` (plan.md, QUEUE; used here) or the planning manifest's `stages/agent_layer.py` + `providers/agent_chat.py`. Answer either way and this slice moves with one rename.
++3. Provider and trace approach (message/tool interface in `providers/base.py`; operation/parent ids in `schema/trace.py`, `core/trace.py`): no authorizing decision names those files (AL5 depends on it).
++4. Should `tests/test_agent_layer.py` (the goal `done_check`) be checker-owned, as the planning manifest says? This unit's tests live in `tests/test_agent_tools.py`.
+diff --git a/src/autotester/agents/__init__.py b/src/autotester/agents/__init__.py
+new file mode 100644
+index 00000000..3deaeb57
+--- /dev/null
++++ b/src/autotester/agents/__init__.py
+@@ -0,0 +1,7 @@
++"""The agent layer (T-179, D-042): the lead tester's tool surface over the existing stages.
++
++This slice holds the part that does not need a model framework: `context.py` (what a model
++can never choose), `guards.py` (the checks that run in code) and `tools.py` (the stage tools
++and their one dispatcher). The planner, subagents and `skills=` loading are the framework's
++and arrive with the rest of T-179.
++"""
+diff --git a/src/autotester/agents/context.py b/src/autotester/agents/context.py
+new file mode 100644
+index 00000000..fb8f29ae
+--- /dev/null
++++ b/src/autotester/agents/context.py
+@@ -0,0 +1,39 @@
++"""The trusted context of a lead-tester run: everything a model may NOT choose.
++
++Project, store, secrets, judge provider and run id are fixed by whoever starts the run. A
++tool receives this beside the model's arguments; no args model has a field for any of it, so
++a prompt cannot swap the project, widen an approval or pick a different judge. The browser is
++opened lazily (`open_session`) so a guard that refuses a call refuses it before any browser
++exists.
++
++NOT a schema model: it holds live handles and duplicates no persisted shape (same convention
++as `stages/orchestrate.py::StageContext`).
++"""
++
++from __future__ import annotations
++
++from collections.abc import Callable
++from dataclasses import dataclass, field
++
++from autotester.browser.observe import PageObserver
++from autotester.browser.secrets import SecretStore
++from autotester.browser.session import BrowserSession
++from autotester.core.paths import RepoDocs
++from autotester.providers.base import Provider
++from autotester.schema.project import Project
++from autotester.store.project_store import ProjectStore
++
++
++@dataclass
++class AgentContext:
++    """Live, trusted dependencies for one lead-tester run."""
++
++    project: Project
++    store: ProjectStore
++    secrets: SecretStore
++    judge: Provider
++    run_id: str
++    open_session: Callable[[PageObserver | None], BrowserSession]
++    """Builds a session for this run (the caller decides headed/shot dir); called only
++    after every guard has passed."""
++    docs: RepoDocs = field(default_factory=RepoDocs)
+diff --git a/src/autotester/agents/guards.py b/src/autotester/agents/guards.py
+new file mode 100644
+index 00000000..f80c512a
+--- /dev/null
++++ b/src/autotester/agents/guards.py
+@@ -0,0 +1,73 @@
++"""The checks that stop an acting tool, in code (AL3). One job: decide, before any browser
++exists, whether a model-requested action may start.
++
++Nothing here is a prompt. Each function either returns/raises from an EXISTING guard
++(`core.consent.require_approval`, `explore_safety.deny_reason`, `SecretStore.guard_prompt`) or,
++for the one gap -- `execute.run_case` has no write-policy check of its own -- applies
++`deny_reason` to the case's steps. A model instruction cannot reach any of this.
++"""
++
++from __future__ import annotations
++
++from autotester.browser.secrets import SecretStore
++from autotester.core.consent import require_approval
++from autotester.core.redact import PLACEHOLDER_RE
++from autotester.schema.approval import RunApproval
++from autotester.schema.case import Case
++from autotester.schema.crawl import CrawlBounds
++from autotester.schema.enums import Action, ApprovalKind, WritePolicy
++from autotester.schema.flowspec import Step
++from autotester.schema.project import Project
++from autotester.schema.screen_graph import ElementRef
++from autotester.stages import explore_safety
++from autotester.store.project_store import ProjectStore
++
++_DATA_ACTIONS = frozenset({Action.FILL, Action.SELECT, Action.UPLOAD})
++
++
++def guard_model_bound(secrets: SecretStore, text: str) -> str:
++    """Raise `ValueError` if `text` carries a raw credential (folded/encoded too)."""
++    return secrets.guard_prompt(text)
++
++
++def crawl_approval(store: ProjectStore, project: Project, bounds: CrawlBounds) -> RunApproval:
++    """The signed, unexpired human approval covering exactly these bounds, or `ApprovalRequired`.
++    Reads existing rows only: an agent can never mint one (D-018)."""
++    return require_approval(
++        store.list_approvals(), project=project.slug, kind=ApprovalKind.CRAWL,
++        target=project.base_url, actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s)
++
++
++def live_case_approval(store: ProjectStore, project: Project, case: Case) -> RunApproval:
++    """The approval for running this case against the live target, or `ApprovalRequired`."""
++    return require_approval(
++        store.list_approvals(), project=project.slug, kind=ApprovalKind.LIVE_CASE,
++        target=project.base_url, actions=len(case.steps))
++
++
++def _is_login_value(value: str | None) -> bool:
++    """A step that only types `{{SECRET:KEY}}` placeholders is a credential entry, not a write."""
++    return value is None or PLACEHOLDER_RE.sub("", value).strip() == ""
++
++
++def _step_refusal(step: Step, project: Project) -> str | None:
++    if step.action in _DATA_ACTIONS:
++        if project.write_policy is WritePolicy.READ_ONLY and not _is_login_value(step.value):
++            return f"{step.action.value} with a literal value"
++        return None
++    if step.action is Action.CLICK:
++        element = ElementRef(role="button", name=step.target, selector=step.target)
++        return explore_safety.deny_reason(element, explore_safety.policy_for(project))
++    return None
++
++
++def write_policy_refusal(case: Case, project: Project) -> str | None:
++    """Why this case may not run under the project's `write_policy`, or None. Clicks go through
++    the crawler's own `deny_reason` (never-click and destructive names at every policy but
++    ALLOW_WRITES); under READ_ONLY a step that types a literal value is refused too."""
++    for step in sorted(case.steps, key=lambda s: s.order):
++        why = _step_refusal(step, project)
++        if why is not None:
++            return (f"refused under write_policy {project.write_policy.value}: "
++                    f"step {step.order} ({step.action.value} {step.target!r}): {why}")
++    return None
+diff --git a/src/autotester/agents/tools.py b/src/autotester/agents/tools.py
+new file mode 100644
+index 00000000..3e179298
+--- /dev/null
++++ b/src/autotester/agents/tools.py
+@@ -0,0 +1,184 @@
++"""The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6).
++
++Every tool body is a thin call into the existing stage function named by its `ToolSpec.wraps`
++(C3: nothing re-implemented). `dispatch` is the only entry a model reaches: it runs the secret
++gate on the raw call, validates the tool name and arguments, lets the tool run its guards
++(`agents/guards.py`) BEFORE any browser opens, and releases a scrubbed, re-gated outcome. A
++refusal comes back as a `ToolOutcome`, never as something the model can argue with.
++"""
++
++from __future__ import annotations
++
++from collections.abc import Callable
++from typing import Any
++
++from pydantic import BaseModel, ValidationError
++
++from autotester.agents import guards
++from autotester.agents.context import AgentContext
++from autotester.browser.observe import PageObserver
++from autotester.core.consent import ApprovalRequired
++from autotester.schema.agent_layer import (
++    AgentToolName as Name,
++)
++from autotester.schema.agent_layer import (
++    CrawlArgs,
++    EmptyArgs,
++    GradeCaseArgs,
++    RefusalClass,
++    RunCaseArgs,
++    ToolEffect,
++    ToolOutcome,
++    ToolSpec,
++)
++from autotester.schema.crawl import CrawlBounds
++from autotester.schema.run import RawResult
++from autotester.stages import catalog, execute, explore, grade
++
++_PERSONA = "autotester.store.project_store.ProjectStore.load_portal_persona"
++TOOLS: dict[Name, ToolSpec] = {
++    Name.CRAWL: ToolSpec(
++        name=Name.CRAWL, effect=ToolEffect.ACTING, wraps="autotester.stages.explore.run_crawl",
++        description="Bounded crawl of the project; needs a covering approval."),
++    Name.RUN_CASE: ToolSpec(
++        name=Name.RUN_CASE, effect=ToolEffect.ACTING, wraps="autotester.stages.execute.run_case",
++        description="Execute one stored case in the browser; observes only."),
++    Name.GET_PERSONA: ToolSpec(
++        name=Name.GET_PERSONA, effect=ToolEffect.READ, wraps=_PERSONA,
++        description="Read the durable portal persona."),
++    Name.GET_CATALOG: ToolSpec(
++        name=Name.GET_CATALOG, effect=ToolEffect.READ, wraps="autotester.stages.catalog.catalog",
++        description="Read which case classes can run, and what blocks the rest."),
++    Name.GRADE_CASE: ToolSpec(
++        name=Name.GRADE_CASE, effect=ToolEffect.GRADING, wraps="autotester.stages.grade.grade",
++        description="Judge one executed case in a fresh context."),
++}
++_ARGS: dict[Name, type[BaseModel]] = {
++    Name.CRAWL: CrawlArgs, Name.RUN_CASE: RunCaseArgs, Name.GET_PERSONA: EmptyArgs,
++    Name.GET_CATALOG: EmptyArgs, Name.GRADE_CASE: GradeCaseArgs,
++}
++
++
++class _Refused(Exception):
++    def __init__(self, kind: RefusalClass, detail: str) -> None:
++        super().__init__(detail)
++        self.kind, self.detail = kind, detail
++
++
++def _refusal(tool: str, kind: RefusalClass, detail: str) -> ToolOutcome:
++    return ToolOutcome(tool=tool, ok=False, refusal=kind, summary=detail)
++
++
++def _crawl(ctx: AgentContext, args: CrawlArgs) -> ToolOutcome:
++    asked = {"max_actions": args.max_actions, "wall_clock_s": args.wall_clock_s}
++    bounds = CrawlBounds(**{k: v for k, v in asked.items() if v is not None})
++    guards.crawl_approval(ctx.store, ctx.project, bounds)
++    observer = PageObserver()
++    login = ctx.store.get_case(ctx.project.login_case_id) if ctx.project.login_case_id else None
++    with ctx.open_session(observer) as session:
++        crawl = explore.run_crawl(ctx.project, session, ctx.store, observer=observer,
++                                  bounds=bounds, login_case=login, incremental=args.incremental)
++    return ToolOutcome(tool="crawl", ok=True, artifact_ref=f"crawl:{crawl.id}",
++                       summary=f"{crawl.status.value}: {crawl.screens} screens, "
++                               f"{crawl.actions} actions")
++
++
++def _scrubbed(ctx: AgentContext, result: RawResult) -> RawResult:
++    """Persist and return only scrubbed text (C5), whatever the stage let through."""
++    cleaned = ctx.secrets.redactor().scrub_obj(result.model_dump(mode="json"))
++    return RawResult.model_validate(cleaned)
++
++
++def _run_case(ctx: AgentContext, args: RunCaseArgs) -> ToolOutcome:
++    case = ctx.store.get_case(args.case_id)
++    if case is None or not case.steps:
++        raise _Refused(RefusalClass.NOTHING_TO_DO, "no such case, or it has no steps to run")
++    why = guards.write_policy_refusal(case, ctx.project)
++    if why is not None:
++        raise _Refused(RefusalClass.WRITE_POLICY, why)
++    guards.live_case_approval(ctx.store, ctx.project, case)
++    with ctx.open_session(None) as session:
++        result = _scrubbed(ctx, execute.run_case(case, session))
++    ctx.store.save_result(ctx.run_id, result)
++    return ToolOutcome(tool="run_case", ok=True, artifact_ref=f"result:{case.id}",
++                       summary=f"outcome {result.outcome.value}"
++                               + (f": {result.error}" if result.error else ""))
++
++
++def _get_persona(ctx: AgentContext, _args: EmptyArgs) -> ToolOutcome:
++    persona = ctx.store.load_portal_persona()
++    if persona is None:
++        raise _Refused(RefusalClass.NOTHING_TO_DO, "no portal persona yet; a crawl builds one")
++    return ToolOutcome(tool="get_persona", ok=True, artifact_ref=f"persona:{persona.project}",
++                       summary=f"{len(persona.screens)} screens, "
++                               f"{len(persona.taught_flows)} flows, {len(persona.gotchas)} gotchas")
++
++
++def _get_catalog(ctx: AgentContext, _args: EmptyArgs) -> ToolOutcome:
++    cat = catalog.catalog(ctx.project, ctx.store.load_flowspec(), ctx.store)
++    runnable = sum(1 for e in cat.entries if e.runnable)
++    return ToolOutcome(tool="get_catalog", ok=True, artifact_ref=f"catalog:{cat.project}",
++                       summary=f"{runnable} of {len(cat.entries)} case classes runnable")
++
++
++def _grade_case(ctx: AgentContext, args: GradeCaseArgs) -> ToolOutcome:
++    case = ctx.store.get_case(args.case_id)
++    rubric = ctx.store.load_rubric(case.rubric_ref) if case and case.rubric_ref else None
++    result = next((r for r in ctx.store.load_results(ctx.run_id) if r.case_id == args.case_id),
++                  None)
++    if case is None or rubric is None or result is None:
++        raise _Refused(RefusalClass.NOTHING_TO_DO, "needs a stored case, its rubric and a result")
++    verdict = grade.grade(rubric, result, ctx.run_id, ctx.judge, ctx.docs,
++                          run_dir=ctx.store.paths.run_dir(ctx.run_id), secrets=ctx.secrets,
++                          redactor=ctx.secrets.redactor())
++    ctx.store.save_verdict(ctx.run_id, verdict)
++    return ToolOutcome(tool="grade_case", ok=True, artifact_ref=f"verdict:{case.id}",
++                       summary=f"{verdict.result.value}: {verdict.scoreboard}")
++
++
++_HANDLERS: dict[Name, Callable[[AgentContext, Any], ToolOutcome]] = {
++    Name.CRAWL: _crawl, Name.RUN_CASE: _run_case, Name.GET_PERSONA: _get_persona,
++    Name.GET_CATALOG: _get_catalog, Name.GRADE_CASE: _grade_case,
++}
++
++
++def _release(ctx: AgentContext, outcome: ToolOutcome) -> ToolOutcome:
++    """Scrub, then gate, the one thing that goes back to the model (AL6)."""
++    clean = outcome.model_copy(update={"summary": ctx.secrets.redactor().scrub(outcome.summary)})
++    try:
++        guards.guard_model_bound(ctx.secrets, clean.model_dump_json())
++    except ValueError:
++        return _refusal(outcome.tool, RefusalClass.SECRET,
++                        "result withheld: it carried a credential")
++    return clean
++
++
++def _validate(name: str, raw_args: dict[str, Any]) -> tuple[Name, BaseModel]:
++    try:
++        tool = Name(name)
++    except ValueError:
++        raise _Refused(RefusalClass.UNKNOWN_TOOL, "no such tool") from None
++    try:
++        return tool, _ARGS[tool](**raw_args)
++    except ValidationError as exc:  # type + location only: pydantic's text would echo the input
++        bad = "; ".join(f"{'.'.join(map(str, e['loc']))}: {e['type']}" for e in exc.errors())
++        raise _Refused(RefusalClass.BAD_ARGUMENTS, f"invalid arguments ({bad})") from None
++
++
++def dispatch(ctx: AgentContext, name: str, raw_args: dict[str, Any]) -> ToolOutcome:
++    """Run one model-requested tool call. A refusal is returned, never raised."""
++    try:
++        guards.guard_model_bound(ctx.secrets, f"{name} {raw_args!r}")
++    except ValueError:
++        return _refusal("unknown", RefusalClass.SECRET,
++                        "refused: the call carried a credential value; use {{SECRET:KEY}}")
++    known = name in {n.value for n in Name}
++    label = name if known else "unknown"
++    try:
++        tool, args = _validate(name, raw_args)
++        outcome = _HANDLERS[tool](ctx, args)
++    except _Refused as refused:
++        outcome = _refusal(label, refused.kind, refused.detail)
++    except ApprovalRequired as exc:
++        outcome = _refusal(label, RefusalClass.APPROVAL, str(exc))
++    return _release(ctx, outcome)
+diff --git a/src/autotester/schema/agent_layer.py b/src/autotester/schema/agent_layer.py
+new file mode 100644
+index 00000000..fc2db520
+--- /dev/null
++++ b/src/autotester/schema/agent_layer.py
+@@ -0,0 +1,94 @@
++"""The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist,
++what a model may pass each, and how a refusal is named.
++
++A model supplies IDS and bounds only (`CrawlArgs`, `RunCaseArgs`, ...). The project, the
++browser session, the judge provider and the approvals are the trusted context
++(`agents/context.py`) and have no field here, so a prompt cannot choose or widen them.
++Every args model forbids unknown fields: an invented parameter fails before any action.
++"""
++
++from __future__ import annotations
++
++from enum import StrEnum
++
++from pydantic import BaseModel, ConfigDict, Field
++
++
++class AgentToolName(StrEnum):
++    """The stage tools in this slice. `report` and `capture_network` join with the rest of T-179."""
++
++    CRAWL = "crawl"
++    RUN_CASE = "run_case"
++    GET_PERSONA = "get_persona"
++    GET_CATALOG = "get_catalog"
++    GRADE_CASE = "grade_case"
++
++
++class ToolEffect(StrEnum):
++    """What a tool can do to the outside world. T-180 allowlists subagents by this."""
++
++    READ = "read"
++    ACTING = "acting"
++    GRADING = "grading"
++
++
++class RefusalClass(StrEnum):
++    """Why a tool call produced no action. A refusal is a result, never an exception the
++    model can talk its way past (AL3)."""
++
++    UNKNOWN_TOOL = "unknown_tool"
++    BAD_ARGUMENTS = "bad_arguments"
++    SECRET = "secret"
++    APPROVAL = "approval"
++    WRITE_POLICY = "write_policy"
++    NOTHING_TO_DO = "nothing_to_do"
++
++
++class ToolSpec(BaseModel):
++    """One tool: its name, effect, and the existing function it wraps (C3)."""
++
++    model_config = ConfigDict(extra="forbid")
++
++    name: AgentToolName
++    effect: ToolEffect
++    wraps: str = Field(description="dotted path of the existing stage function the body calls")
++    description: str
++
++
++class _Args(BaseModel):
++    model_config = ConfigDict(extra="forbid")
++
++
++class CrawlArgs(_Args):
++    """Bounds the model REQUESTS; the approval decides whether they are granted."""
++
++    max_actions: int | None = Field(default=None, ge=1)
++    wall_clock_s: float | None = Field(default=None, gt=0)
++    incremental: bool = False
++
++
++class RunCaseArgs(_Args):
++    case_id: str = Field(min_length=1, max_length=200)
++
++
++class GradeCaseArgs(_Args):
++    case_id: str = Field(min_length=1, max_length=200)
++
++
++class EmptyArgs(_Args):
++    """Tools that take nothing (`get_persona`, `get_catalog`): everything is trusted context."""
++
++
++class ToolOutcome(BaseModel):
++    """What a tool call returns to the model. `summary` is scrubbed before it is built, and the
++    whole outcome passes the secret gate again before it leaves the tool (AL6)."""
++
++    model_config = ConfigDict(extra="forbid")
++
++    tool: str
++    ok: bool
++    refusal: RefusalClass | None = None
++    summary: str = ""
++    artifact_ref: str | None = Field(
++        default=None, description="typed id of what the stage produced, e.g. `result:<case_id>`"
++    )
+diff --git a/tests/test_agent_tools.py b/tests/test_agent_tools.py
+new file mode 100644
+index 00000000..35afecfb
+--- /dev/null
++++ b/tests/test_agent_tools.py
+@@ -0,0 +1,280 @@
++"""T-179a: the lead tester's stage tools -- thin wrappers (AL2), guards in code (AL3), no
++secret at the tool boundary (AL6). Offline: spies stand in for stages; no browser, no model."""
++
++from __future__ import annotations
++
++import importlib
++from pathlib import Path
++from typing import Any
++
++import pytest
++
++from autotester.agents import guards, tools
++from autotester.agents.context import AgentContext
++from autotester.browser.secrets import SecretStore
++from autotester.providers.mock import MockProvider
++from autotester.schema.agent_layer import AgentToolName, RefusalClass
++from autotester.schema.approval import RunApproval
++from autotester.schema.case import Case
++from autotester.schema.enums import (
++    Action,
++    ApprovalKind,
++    CaseClass,
++    CaseKind,
++    Outcome,
++    Result,
++    WritePolicy,
++)
++from autotester.schema.flowspec import Step
++from autotester.schema.project import Project, SecretRef
++from autotester.schema.run import RawResult
++from autotester.schema.verdict import Criterion, Judgment, Rubric
++from autotester.store.project_store import ProjectStore
++
++BASE = "https://app.test"
++RAW = "Hunter2-raw-value-9137"
++
++
++class Spies:
++    def __init__(self) -> None:
++        self.calls: dict[str, list[tuple[Any, ...]]] = {}
++        self.sessions = 0
++
++    def hit(self, name: str, *args: Any) -> None:
++        self.calls.setdefault(name, []).append(args)
++
++    def count(self, name: str) -> int:
++        return len(self.calls.get(name, []))
++
++
++def _project(policy: WritePolicy) -> Project:
++    return Project(slug="demo", name="Demo", base_url=BASE, allowed_domains=["app.test"],
++                   write_policy=policy,
++                   secrets=[SecretRef(key="APP_PASS", domains=["app.test"])])
++
++
++def _case(steps: list[Step], rubric: bool = False) -> Case:
++    return Case(project="demo", flow_id="f1", kind=CaseKind.BEST, case_class=CaseClass.HAPPY,
++                title="case", steps=steps, rubric_ref="r1" if rubric else None)
++
++
++def _nav() -> Step:
++    return Step(order=1, action=Action.NAVIGATE, target="/home")
++
++
++def _grant(store: ProjectStore, kind: ApprovalKind, actions: int = 50) -> None:
++    store.add_approval(RunApproval(
++        project="demo", run_kind=kind, target=BASE, scope="t179a fixture", max_actions=actions,
++        wall_clock_s=900.0, granted_by="umesh", granted_at="2026-10-01",
++        expires_at="2099-01-01").sign())
++
++
++@pytest.fixture
++def spies(monkeypatch: pytest.MonkeyPatch) -> Spies:
++    spy = Spies()
++    result = lambda case_id: RawResult(case_id=case_id, outcome=Outcome.COMPLETED)  # noqa: E731
++    monkeypatch.setattr(tools.execute, "run_case",
++                        lambda case, session: (spy.hit("run_case", case, session),
++                                               result(case.id))[1])
++    monkeypatch.setattr(tools.explore, "run_crawl",
++                        lambda *a, **k: (spy.hit("run_crawl", *a), _crawl())[1])
++    monkeypatch.setattr(tools.grade, "grade",
++                        lambda *a, **k: (spy.hit("grade", *a), _verdict(a))[1])
++    monkeypatch.setattr(tools.catalog, "catalog",
++                        lambda *a, **k: (spy.hit("catalog", *a), _catalog())[1])
++    return spy
++
++
++def _crawl() -> Any:
++    from autotester.schema.crawl import Crawl
++    return Crawl(project="demo")
++
++
++def _catalog() -> Any:
++    from autotester.schema.catalog import Catalog
++    return Catalog(project="demo")
++
++
++def _verdict(args: tuple[Any, ...]) -> Any:
++    from autotester.schema.verdict import Verdict
++    return Verdict(run_id=args[2], case_id=args[1].case_id, rubric_hash="h", result=Result.PASS,
++                   grader_provider="mock")
++
++
++def _ctx(tmp_path: Path, spy: Spies, policy: WritePolicy = WritePolicy.READ_ONLY) -> AgentContext:
++    project = _project(policy)
++    store = ProjectStore("demo", tmp_path)
++    store.paths.ensure()
++    store.save_project(project)
++
++    def open_session(observer: object) -> Any:
++        spy.sessions += 1
++        return _Session()
++    return AgentContext(project=project, store=store,
++                        secrets=SecretStore(project, {"APP_PASS": RAW}),
++                        judge=MockProvider(), run_id="run-1", open_session=open_session)
++
++
++class _Session:
++    def __enter__(self) -> _Session:
++        return self
++
++    def __exit__(self, *exc: object) -> None:
++        return None
++
++
++def _go(ctx: AgentContext, name: str, args: dict[str, Any] | None = None) -> Any:
++    return tools.dispatch(ctx, name, args or {})
++
++
++# -- AL2: each tool wraps its named existing function, once, with the trusted context ----------
++def test_every_tool_names_a_real_existing_function() -> None:
++    assert set(tools.TOOLS) == set(AgentToolName)
++    for spec in tools.TOOLS.values():
++        parts = spec.wraps.split(".")
++        target: Any = importlib.import_module(".".join(parts[:3]))  # autotester.<pkg>.<module>
++        for attr in parts[3:]:
++            target = getattr(target, attr)
++        assert callable(target), spec.wraps
++
++
++def test_run_case_wraps_execute_run_case_once_with_the_context_session(
++        tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies)
++    case = ctx.store.add_case(_case([_nav()]))
++    _grant(ctx.store, ApprovalKind.LIVE_CASE)
++    out = _go(ctx, "run_case", {"case_id": case.id})
++    assert out.ok and out.artifact_ref == f"result:{case.id}"
++    assert spies.count("run_case") == 1 and spies.sessions == 1
++    assert ctx.store.load_results("run-1")[0].case_id == case.id
++
++
++def test_crawl_wraps_run_crawl_once_when_within_the_approval(tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies)
++    _grant(ctx.store, ApprovalKind.CRAWL, actions=50)
++    out = _go(ctx, "crawl", {"max_actions": 40, "wall_clock_s": 600})
++    assert out.ok and spies.count("run_crawl") == 1
++
++
++def test_read_tools_and_grade_wrap_catalog_persona_grade(tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies)
++    assert _go(ctx, "get_catalog").ok and spies.count("catalog") == 1
++    assert _go(ctx, "get_persona").refusal is RefusalClass.NOTHING_TO_DO
++    case = ctx.store.add_case(_case([_nav()], rubric=True))
++    ctx.store.save_rubric(Rubric(id="r1", case_id=case.id, criteria=[Criterion(id="c1", text="t")]))
++    assert _go(ctx, "grade_case", {"case_id": case.id}).refusal is RefusalClass.NOTHING_TO_DO
++    ctx.store.save_result("run-1", RawResult(case_id=case.id, outcome=Outcome.COMPLETED))
++    out = _go(ctx, "grade_case", {"case_id": case.id})
++    assert out.ok and spies.count("grade") == 1
++    assert spies.calls["grade"][0][3] is ctx.judge
++
++
++# -- AL3: guards execute inside the tool, before any browser, whatever the model says -----------
++def test_al3a_raw_secret_in_arguments_is_refused_before_any_action(
++        tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies)
++    _grant(ctx.store, ApprovalKind.LIVE_CASE)
++    for name, args in (("run_case", {"case_id": RAW}), ("get_catalog", {"note": RAW}),
++                       ("run_case", {"case_id": "c1", "x": f"use {RAW[::-1]} reversed"})):
++        out = _go(ctx, name, args)
++        assert out.refusal is RefusalClass.SECRET and not out.ok
++        assert RAW not in out.model_dump_json()
++    assert spies.sessions == 0 and not spies.calls
++
++
++def test_al3b_crawl_beyond_the_approval_is_refused_before_a_browser_opens(
++        tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies)
++    assert _go(ctx, "crawl").refusal is RefusalClass.APPROVAL  # no approval at all
++    _grant(ctx.store, ApprovalKind.CRAWL, actions=50)
++    out = _go(ctx, "crawl", {"max_actions": 5000})
++    assert out.refusal is RefusalClass.APPROVAL and "grant" in out.summary.lower()
++    assert spies.sessions == 0 and spies.count("run_crawl") == 0
++
++
++def test_al3c_a_read_only_project_refuses_a_mutating_step_from_the_tool_itself(
++        tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies, WritePolicy.READ_ONLY)
++    _grant(ctx.store, ApprovalKind.LIVE_CASE)
++    fill = Step(order=1, action=Action.FILL, target="Display name", value="Eve")
++    delete = Step(order=1, action=Action.CLICK, target="Delete account")
++    for step in (fill, delete):
++        case = ctx.store.add_case(_case([_nav(), step]))
++        out = _go(ctx, "run_case", {"case_id": case.id})
++        assert out.refusal is RefusalClass.WRITE_POLICY and "read_only" in out.summary
++    assert spies.sessions == 0 and spies.count("run_case") == 0
++
++
++def test_read_only_still_allows_login_placeholder_and_the_same_step_under_test_account(
++        tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies, WritePolicy.READ_ONLY)
++    _grant(ctx.store, ApprovalKind.LIVE_CASE)
++    login = Step(order=2, action=Action.FILL, target="Password", value="{{SECRET:APP_PASS}}")
++    assert _go(ctx, "run_case", {"case_id": ctx.store.add_case(_case([_nav(), login])).id}).ok
++    writer = _ctx(tmp_path / "w", spies, WritePolicy.TEST_ACCOUNT)
++    _grant(writer.store, ApprovalKind.LIVE_CASE)
++    fill = Step(order=2, action=Action.FILL, target="Display name", value="Eve")
++    assert _go(writer, "run_case", {"case_id": writer.store.add_case(_case([_nav(), fill])).id}).ok
++
++
++def test_run_case_without_a_live_case_approval_is_refused(tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies)
++    case = ctx.store.add_case(_case([_nav()]))
++    assert _go(ctx, "run_case", {"case_id": case.id}).refusal is RefusalClass.APPROVAL
++    assert spies.sessions == 0
++
++
++# -- validation and AL6: unknown tools/fields, empty work, nothing secret leaves a tool ---------
++def test_unknown_tool_field_and_case_do_nothing(tmp_path: Path, spies: Spies) -> None:
++    ctx = _ctx(tmp_path, spies)
++    assert _go(ctx, "shell", {"cmd": "ls"}).refusal is RefusalClass.UNKNOWN_TOOL
++    assert _go(ctx, "run_case", {"case_id": "c", "project": "other"}).refusal \
++        is RefusalClass.BAD_ARGUMENTS
++    assert _go(ctx, "run_case", {"case_id": "missing"}).refusal is RefusalClass.NOTHING_TO_DO
++    empty = ctx.store.add_case(_case([]))
++    assert _go(ctx, "run_case", {"case_id": empty.id}).refusal is RefusalClass.NOTHING_TO_DO
++    assert not spies.calls and spies.sessions == 0
++
++
++def test_al6_a_secret_in_a_stage_result_never_reaches_the_model(
++        tmp_path: Path, spies: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
++    ctx = _ctx(tmp_path, spies)
++    _grant(ctx.store, ApprovalKind.LIVE_CASE)
++    case = ctx.store.add_case(_case([_nav()]))
++    leaked = RawResult(case_id=case.id, outcome=Outcome.ERRORED, error=f"bad login {RAW}")
++    monkeypatch.setattr(tools.execute, "run_case", lambda c, s: leaked)
++    out = _go(ctx, "run_case", {"case_id": case.id})
++    assert RAW not in out.model_dump_json()
++    stored = ctx.store.paths.run_dir("run-1").joinpath(f"{case.id}.json")
++    assert RAW not in stored.read_text("utf-8")
++
++
++def test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result(
++        tmp_path: Path, spies: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
++    from autotester.schema.agent_layer import ToolOutcome
++    ctx = _ctx(tmp_path, spies)
++    name = AgentToolName.GET_CATALOG
++    monkeypatch.setitem(tools._HANDLERS, name, lambda c, a: ToolOutcome(
++        tool="get_catalog", ok=True, summary=f"typed {RAW} into the form"))
++    out = _go(ctx, "get_catalog")
++    assert out.ok and RAW not in out.model_dump_json()  # exact value: scrubbed to a placeholder
++    monkeypatch.setitem(tools._HANDLERS, name, lambda c, a: ToolOutcome(
++        tool="get_catalog", ok=True, summary=f"typed {RAW[::-1]} into the form"))
++    folded = _go(ctx, "get_catalog")
++    assert folded.refusal is RefusalClass.SECRET and RAW[::-1] not in folded.model_dump_json()
++
++
++def test_al6_a_real_grade_withholds_a_prompt_carrying_a_secret(tmp_path: Path) -> None:
++    ctx = _ctx(tmp_path, Spies())
++    ctx.judge = MockProvider(responses={"judge": [Judgment(result=Result.PASS)]})
++    case = ctx.store.add_case(_case([_nav()], rubric=True))
++    ctx.store.save_rubric(Rubric(id="r1", case_id=case.id,
++                                 criteria=[Criterion(id="c1", text=f"mentions {RAW}")]))
++    ctx.store.save_result("run-1", RawResult(case_id=case.id, outcome=Outcome.COMPLETED))
++    out = _go(ctx, "grade_case", {"case_id": case.id})
++    assert ctx.judge.prompts == [] and RAW not in out.model_dump_json()  # type: ignore[attr-defined]
++    assert ctx.store.load_verdicts("run-1")[0].result is Result.BLOCKED
++
++
++def test_guards_module_exposes_the_write_policy_check_as_a_pure_function() -> None:
++    assert guards.write_policy_refusal(_case([_nav()]), _project(WritePolicy.READ_ONLY)) is None
