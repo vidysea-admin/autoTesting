@@ -49,22 +49,17 @@ def test_p5_groups_manage_cannot_tick_users_manage_or_settings_into_its_own_grou
     for perm in ("settings.manage", "users.manage", "credentials.view", "groups.manage"):
         resp = ops.post(f"/admin/groups/{ops_id}", data={
             "name": "Ops", "permission": ["groups.manage", perm]})
-        if perm == "groups.manage":
-            assert resp.status_code == 303  # already held: no new grant
-            continue
-        assert resp.status_code == 403, perm
+        assert resp.status_code == (303 if perm == "groups.manage" else 403), perm  # 303: held
     assert groups.get_group(ops_id).permissions == ["groups.manage"]
 
 
 def test_p5_a_new_group_cannot_carry_more_than_its_creator_holds(root: Path) -> None:
     _delegate("groups.manage", "project.view@shared")
     ops = login("ops@team.test")
-    assert ops.post("/admin/groups", data={"name": "Peek", "permission": "report.view@all"}
-                    ).status_code == 403
-    assert ops.post("/admin/groups", data={"name": "Wider", "permission": "project.view@all"}
-                    ).status_code == 403
-    assert ops.post("/admin/groups", data={"name": "Same", "permission": "project.view@shared"}
-                    ).status_code == 303
+    for name, perm, code in (("Peek", "report.view@all", 403), ("Wider", "project.view@all", 403),
+                             ("Same", "project.view@shared", 303)):
+        assert ops.post("/admin/groups", data={"name": name, "permission": perm}
+                        ).status_code == code, name
 
 
 def test_p5_a_held_admin_only_key_is_still_admin_only_to_grant(root: Path) -> None:
