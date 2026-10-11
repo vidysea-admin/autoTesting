@@ -1,0 +1,40 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+                                                                               
+ Usage: autotester [OPTIONS] COMMAND [ARGS]...                                 
+                                                                               
+ AutoTester — AI automated end-to-end tester                                   
+                                                                               
++- Options -------------------------------------------------------------------+
+| --install-completion          Install completion for the current shell.     |
+| --show-completion             Show completion for the current shell, to     |
+|                               copy it or customize the installation.        |
+| --help                        Show this message and exit.                   |
++-----------------------------------------------------------------------------+
++- Commands ------------------------------------------------------------------+
+| doctor          Check the repo against the design rules that keep it        |
+|                 readable.                                                   |
+| providers       Show which model providers have credentials present on this |
+|                 machine.                                                    |
+| map             Regenerate docs/MAP.md — directory map + schema summary,    |
+|                 derived from code.                                          |
+| snapshot        Regenerate docs/SNAPSHOT.md — the digest injected at        |
+|                 session start.                                              |
+| expand          Review/prune proposals, then generate only persisted        |
+|                 human-approved cases.                                       |
+| login           Open a real browser for a human to log in by hand -- no     |
+|                 password needed.                                            |
+|                 Contract: qa/contracts/manual-login.md. The session is      |
+|                 saved into the                                              |
+|                 project's persistent profile; every later run reuses it.    |
+| loop-status     Report gaps in `qa/.last-tick` — was the maker loop alive,  |
+|                 and was any stop deliberate?                                |
+| explore         Bounded BFS crawl of a project, refusing anything its       |
+|                 write_policy                                                |
+|                 denies. Contract: qa/contracts/explore.md. Nothing is typed |
+|                 except the                                                  |
+|                 optional login case; nothing destructive is clicked.        |
+| approve         Grant a human's approval for one kind of run against one    |
+|                 target (D-018).                                             |
+|                 HMAC-signed with the repo-root approval key: protects       |
+|                 against row tampering,                                      |
+|                 not a party capable of rewriting the checker itself         |
