@@ -9,7 +9,8 @@ Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (untrusted archives and links write to the filesystem; a request-body limit; an auth seam)
 Fix cycle: 0
 Branch: wave/t198a-zip-drive-intake, based on master 3d8f7d5a. Earlier work of branch wave/g3-zip-core (slice 1, not landed) was carried in by file copy; that branch and its worktree are untouched. Master was not merged.
-Code commit under check: 5cfd9eb0
+Code commit under check: 642575ce (product; the later commits are merges of master and this manifest, no product change)
+Integrated master: 81f63ce9 (merge commit 76eba8c1). Master was merged twice (869cf16e, then 81f63ce9, which added only qa verdicts and evidence); no conflict in either merge. qa/issues.jsonl and uv.lock are identical to master's.
 Executor: claude-sonnet-subagent (maker build subagent)
 Dual check: required
 dual-trigger: security src/autotester/sources/zip_names.py:77 (`ensure_inside`), security src/autotester/sources/zip_intake.py:214 (`expand_zip`), security src/autotester/ui/upload_stream.py:175 (`stream_upload`, the streaming body limit), auth src/autotester/ui/intake_upload.py:111 (`handle_upload`, the gate seam)
@@ -43,23 +44,23 @@ Carried from wave/g3-zip-core and adapted (zip core): `sources/zip_names.py` (TI
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L. No builder full suite; scoped files only, one pytest process at a time with `-p no:xdist`.
-Pre-check: 5cfd9eb0 uv run ruff check src tests scripts -> All checks passed!
-Pre-check: 5cfd9eb0 uv run autotester doctor -> doctor: clean (worktree; the three root-clutter violations exist only in the root checkout); `uv run autotester map` run
-Pre-check[TI1]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (names, limits, register, atomic files; the same four files serve TI1, TI2, TI4, TI5, TI6)
-Pre-check[TI2]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (limits file: ratio, lying header, entries, nested, total)
-Pre-check[TI3]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_cli_intake.py -> 27 passed (5-member zip table, .env and .ps1 skipped, CLI JSON one outcome per member)
-Pre-check[TI4]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_drive_intake.py -> 114 passed (duplicates, hostile Drive names never reach a path)
-Pre-check[TI5]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_cli_intake.py -> 101 passed (partial is exit 2, not ok)
-Pre-check[TI6]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (atomic file: crash after member N, concurrent intakes)
-Pre-check[TI7]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_drive_link.py tests/test_drive_verify.py tests/test_drive_intake.py tests/test_ui_intake_drive.py -> 83 passed (good md5, wrong md5, short read, folder with PDF, zip id with hostile member, hostile link)
-Pre-check[TI8]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_gws_drive.py tests/test_gws_runner.py -> 49 passed (five distinct messages, canary token absent from stdout, stderr, caplog, messages)
-Pre-check[TI9]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_drive_intake.py -> 40 passed (5 MiB exact ok, +1 refused, setting changed between requests, endless body stopped, lying Content-Length)
-Pre-check[TI10]: HELD on T-204 (no authorize()); seam proved: 5cfd9eb0 uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_ui_intake_drive.py -> 30 passed (gate before the first body byte, re-check at job start, refusal writes nothing)
-Pre-check[TI11]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_ui_intake_drive.py tests/test_drive_intake.py -> 51 passed (uploaded_by from the gate only, origin shapes, form field ignored)
-Pre-check[HO30]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_ui_intake.py -> 19 passed (streaming limit at the ASGI level)
-Pre-check[HO32]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_drive_link.py tests/test_ui_intake_drive.py -> 44 passed (hostile hosts and schemes refused, not echoed, no job)
-Pre-check[HO33]: 5cfd9eb0 uv run pytest -p no:xdist tests/test_ui_intake_drive.py tests/test_gws_runner.py -> 21 passed (fetching page, typed failure on the page, timeouts)
-Pre-check: 5cfd9eb0 uv run pytest -p no:xdist tests/test_ui_sources.py tests/test_source_is_a_recording.py tests/test_cli_advice_resolves.py tests/test_ensemble_honesty.py tests/test_merge_flowspec_cli.py tests/test_server_settings.py tests/test_drive_verify.py tests/test_intake_schema.py -> 164 passed (existing neighbours of the touched files plus the schema and verify files)
+Pre-check: 642575ce uv run ruff check src tests scripts -> All checks passed!
+Pre-check: 642575ce uv run autotester doctor -> doctor: clean (worktree; the three root-clutter violations exist only in the root checkout); `uv run autotester map` run
+Pre-check[TI1]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (names, limits, register, atomic files; the same four files serve TI1, TI2, TI4, TI5, TI6)
+Pre-check[TI2]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (limits file: ratio, lying header, entries, nested, total)
+Pre-check[TI3]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_cli_intake.py -> 28 passed (5-member zip table, .env and .ps1 skipped, CLI JSON one outcome per member)
+Pre-check[TI4]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_drive_intake.py -> 114 passed (duplicates, hostile Drive names never reach a path)
+Pre-check[TI5]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py tests/test_cli_intake.py -> 101 passed (partial is exit 2, not ok)
+Pre-check[TI6]: 642575ce uv run pytest -p no:xdist tests/test_zip_intake_names.py tests/test_zip_intake_limits.py tests/test_zip_intake_register.py tests/test_zip_intake_atomic.py -> 93 passed (atomic file: crash after member N, concurrent intakes)
+Pre-check[TI7]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_drive_verify.py tests/test_drive_intake.py tests/test_ui_intake_drive.py -> 84 passed (good md5, wrong md5, short read, folder with PDF, zip id with hostile member, hostile link)
+Pre-check[TI8]: 642575ce uv run pytest -p no:xdist tests/test_gws_drive.py tests/test_gws_runner.py -> 49 passed (five distinct messages, canary token absent from stdout, stderr, caplog, messages)
+Pre-check[TI9]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_drive_intake.py -> 41 passed (5 MiB exact ok, +1 refused, setting changed between requests, endless body stopped, lying Content-Length)
+Pre-check[TI10]: HELD on T-204 (no authorize(); the default gate is open); only the seam is proved: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_ui_intake_drive.py -> 32 passed (gate before the first body byte, re-check at job start, refusal writes nothing)
+Pre-check[TI11]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py tests/test_ui_intake_drive.py tests/test_drive_intake.py -> 53 passed (uploaded_by from the gate only, origin shapes, form field ignored)
+Pre-check[HO30]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake.py -> 20 passed (streaming; includes the hostile-Host 403 before any body byte limit at the ASGI level)
+Pre-check[HO32]: 642575ce uv run pytest -p no:xdist tests/test_drive_link.py tests/test_ui_intake_drive.py -> 45 passed (hostile hosts and schemes refused, not echoed, no job)
+Pre-check[HO33]: 642575ce uv run pytest -p no:xdist tests/test_ui_intake_drive.py tests/test_gws_runner.py -> 22 passed (fetching page, typed failure on the page, timeouts)
+Pre-check: 642575ce uv run pytest -p no:xdist tests/test_ui_sources.py tests/test_source_is_a_recording.py tests/test_cli_advice_resolves.py tests/test_ensemble_honesty.py tests/test_merge_flowspec_cli.py tests/test_server_settings.py tests/test_drive_verify.py tests/test_intake_schema.py tests/test_ui_origin_guard.py -> 254 passed (existing neighbours, including master's Host allow-list tests and the advice registry)
 mutant-cap-raise: security-class unit with 12 contract rows plus 3 review-found defects; one mutation per row, each recorded in the table below
 Metrics: start=2026-10-11 end=2026-10-11 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=19 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9
 
@@ -92,7 +93,7 @@ Not mutated by me: row-before-copy (TI6), the register-everything and name-in-st
 
 ## Held and left to others
 
-- **TI10 is HELD on T-204** (accounts, groups, `authorize()`, the `video.upload` permission). What is built and proved is the seam: `ui/intake_gate.py` (`check` before any body byte is read, `recheck` when the queued Drive job starts, a refusal creates no job and writes nothing), `uploaded_by` only from the gate. The default gate is open and records nobody, so on a live host intake is as open as the old upload route was until T-204 installs a gate. The unit cannot close T-198 on its own.
+- **TI10 is HELD on T-204, NOT MET.** The default gate is open: until T-204 installs a gate with `set_gate`, anyone who can reach the page can add videos and `uploaded_by` stays empty. Judge it as held, not as met. (accounts, groups, `authorize()`, the `video.upload` permission). What is built and proved is the seam: `ui/intake_gate.py` (`check` before any body byte is read, `recheck` when the queued Drive job starts, a refusal creates no job and writes nothing), `uploaded_by` only from the gate. The default gate is open and records nobody, so on a live host intake is as open as the old upload route was until T-204 installs a gate. The unit cannot close T-198 on its own.
 - **SERVER-GATED / not run:** one real Drive fetch (needs the owner's approved synthetic video and the server's `gws` login, D-081), a real >= 1 GiB upload through the proxy (HO30/HO31), the Linux run of the R65 assertions (`qa/evidence/t198-linux-run.md` not written).
 - **BROWSER checks not run:** the persona walk for TI3 (zip result table as `dev`) and the Drive job page polling. The page is exercised only through TestClient and an ASGI harness.
 - t198b (share link, access requests, comments) is untouched.
@@ -115,3 +116,10 @@ PROPOSED-ISSUE: {"severity":"low","type":"test-gap","title":"No test shows the z
 PROPOSED-ISSUE: {"severity":"low","type":"test-gap","title":"The multipart part-header cap (HEADER_CAP) is not observable through the status code; removing it keeps the suite green","file":"src/autotester/ui/upload_stream.py","fix":"measure bytes buffered, or assert the cap constant in a unit test of _Reader"}
 PROPOSED-ISSUE: {"severity":"low","type":"hardening","title":"No cap on concurrent Drive worker threads: one member can start unlimited fetches","file":"src/autotester/ui/routes_intake.py","fix":"refuse with 429 when more than N drive-job threads are alive, once T-204 gives a per-member identity"}
 PROPOSED-ISSUE: {"severity":"low","type":"hardening","title":"Until T-204 the default intake gate is open and uploaded_by stays empty, so on a hosted server anyone who can reach the page can add videos","file":"src/autotester/ui/intake_gate.py","fix":"T-204 installs its gate with set_gate; consider refusing intake on a non-loopback host while the open gate is installed"}
+
+## Integration with master (2026-10-11)
+- Merged master 869cf16e then 81f63ce9 into this branch (no rebase). Both merges were clean: no conflicts. Line counts after the merge: ui/app.py 300, cli_video.py 295, cli.py 299, ui/helpers.py 292, stages/ingest.py 300 (all within the cap, none grew).
+- Master's Host allow-list (AT-758) now sits in front of the new routes. `tests/asgi_helpers.py::post_stream` sends a `Host` header (default `testserver`, which the test conftest allows); the ASGI streaming tests pass through the guard. New tests: hostile Host on the upload route gets an empty 403 with zero body bytes read and the gate not called (`test_at758_a_hostile_host_on_the_upload_route_is_403_before_any_body_byte`); the same for the Drive route with no job made.
+- New env key read: `AUTOTESTER_GWS_BIN` (path of the `gws` CLI). Documented in `.env.example`. `test_env_example_documents_every_key_the_code_reads` still fails only for `AUTOTESTER_SCHEDULE_GRACE_MINUTES` and `AUTOTESTER_TICK_INTERVAL_S`, which are undocumented on master itself (not this unit's; already a PROPOSED-ISSUE on the at758 manifest).
+- Advice registry (`tests/test_cli_advice_resolves.py`): passes unchanged. No user-facing text of this unit names an `autotester` CLI command (the only command named is `gws auth login`, not ours); no site registered, no assertion weakened.
+- `uv run ruff check src tests scripts`: All checks passed. `uv run autotester doctor`: doctor: clean (map not stale).
