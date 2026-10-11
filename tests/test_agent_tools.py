@@ -59,7 +59,7 @@ def _case(steps: list[Step], rubric: bool = False) -> Case:
 
 
 def _nav() -> Step:
-    return Step(order=1, action=Action.NAVIGATE, target="/home")
+    return Step(order=1, action=Action.NAVIGATE, target=f"{BASE}/home")
 
 
 def _grant(store: ProjectStore, kind: ApprovalKind, actions: int = 50) -> None:
@@ -210,7 +210,10 @@ def test_read_only_still_allows_login_placeholder_and_the_same_step_under_test_a
     ctx = _ctx(tmp_path, spies, WritePolicy.READ_ONLY)
     _grant(ctx.store, ApprovalKind.LIVE_CASE)
     login = Step(order=2, action=Action.FILL, target="Password", value="{{SECRET:APP_PASS}}")
-    assert _go(ctx, "run_case", {"case_id": ctx.store.add_case(_case([_nav(), login])).id}).ok
+    case = ctx.store.add_case(_case([_nav(), login]))
+    assert _go(ctx, "run_case", {"case_id": case.id}).refusal is RefusalClass.WRITE_POLICY
+    ctx.project = ctx.project.model_copy(update={"login_case_id": case.id})  # the declared login
+    assert _go(ctx, "run_case", {"case_id": case.id}).ok
     writer = _ctx(tmp_path / "w", spies, WritePolicy.TEST_ACCOUNT)
     _grant(writer.store, ApprovalKind.LIVE_CASE)
     fill = Step(order=2, action=Action.FILL, target="Display name", value="Eve")

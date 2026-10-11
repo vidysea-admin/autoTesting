@@ -3,15 +3,25 @@ exists, whether a model-requested action may start.
 
 Nothing here is a prompt. Each function either returns/raises from an EXISTING guard
 (`core.consent.require_approval`, `explore_safety.deny_reason`, `SecretStore.guard_prompt`) or,
-for the one gap -- `execute.run_case` has no write-policy check of its own -- applies
-`deny_reason` to the case's steps. A model instruction cannot reach any of this.
+for the one gap -- `execute.run_case` and the browser session have no write-policy check, and a
+stored `Step` carries no DOM facts (no `is_form_submit`) -- decides from what the step says.
+
+Under READ_ONLY that decision is fail-closed (table: the T-179a manifest): only step kinds that
+cannot change state by construction run (reads, waits, assertions, hover, scroll, back, and a
+GET navigation to an in-domain http(s) URL), plus the declared login case's credential entry.
+`deny_reason` stays the one name deny-function. A model instruction cannot reach any of this.
 """
 
 from __future__ import annotations
 
-from autotester.browser.secrets import SecretStore
+import re
+from dataclasses import dataclass
+from urllib.parse import unquote, urlsplit
+
+from autotester.browser.secrets import SecretStore, host_of
 from autotester.core.consent import require_approval
 from autotester.core.redact import PLACEHOLDER_RE
+from autotester.schema.agent_layer import RefusalClass
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
 from autotester.schema.crawl import CrawlBounds
@@ -22,7 +32,18 @@ from autotester.schema.screen_graph import ElementRef
 from autotester.stages import explore_safety
 from autotester.store.project_store import ProjectStore
 
-_DATA_ACTIONS = frozenset({Action.FILL, Action.SELECT, Action.UPLOAD})
+_READS = frozenset({Action.WAIT, Action.ASSERT, Action.BACK, Action.HOVER, Action.SCROLL})
+_WEB = ("http", "https")
+_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+DESTINATION_REFUSED = "destination is not an http(s) URL inside the allowed domains"
+
+
+@dataclass
+class _Walk:
+    """Where we are in one case: is it the declared login, and was a credential just typed."""
+
+    login: bool
+    credential_pending: bool = False
 
 
 def guard_model_bound(secrets: SecretStore, text: str) -> str:
@@ -45,29 +66,96 @@ def live_case_approval(store: ProjectStore, project: Project, case: Case) -> Run
         target=project.base_url, actions=len(case.steps))
 
 
-def _is_login_value(value: str | None) -> bool:
-    """A step that only types `{{SECRET:KEY}}` placeholders is a credential entry, not a write."""
-    return value is None or PLACEHOLDER_RE.sub("", value).strip() == ""
+def _declared_credential(value: str | None, project: Project) -> bool:
+    """Only `{{SECRET:KEY}}` placeholders of keys the project declares, and nothing else."""
+    if not value or PLACEHOLDER_RE.sub("", value).strip() != "":
+        return False
+    declared = {ref.key for ref in project.secrets}
+    return all(key in declared for key in PLACEHOLDER_RE.findall(value))
 
 
-def _step_refusal(step: Step, project: Project) -> str | None:
-    if step.action in _DATA_ACTIONS:
-        if project.write_policy is WritePolicy.READ_ONLY and not _is_login_value(step.value):
-            return f"{step.action.value} with a literal value"
+def _click_denied(name: str, project: Project) -> str | None:
+    """The crawler's own name deny-function, asked about a name (the one deny concept)."""
+    element = ElementRef(role="button", name=name, selector=name)
+    return explore_safety.deny_reason(element, explore_safety.policy_for(project))
+
+
+def _destination(target: str, project: Project) -> tuple[str | None, str]:
+    """(why not, the cleaned target). Absolute and protocol-relative URLs must be http(s) inside
+    the allowed domains at EVERY policy (the session refuses the same hosts at act time); a bare
+    path or a description has no destination to judge: left to the session unless READ_ONLY."""
+    if _CONTROL.search(target):
+        return DESTINATION_REFUSED, target
+    cleaned = target.strip()
+    try:
+        parts = urlsplit(cleaned)
+    except ValueError:
+        return DESTINATION_REFUSED, cleaned
+    if parts.scheme and parts.scheme not in _WEB:
+        return DESTINATION_REFUSED, cleaned
+    if parts.scheme or cleaned.startswith("//"):
+        host = host_of(cleaned)
+        if not host or not project.allows_domain(host):
+            return DESTINATION_REFUSED, cleaned
+    return None, cleaned
+
+
+def _navigate_refusal(step: Step, project: Project, walk: _Walk) -> tuple[str | None, bool]:
+    """(reason, is_destination). READ_ONLY allows only a placeholder-free absolute http(s) GET
+    with no query (the declared login may carry one) whose path and fragment pass `deny_reason`."""
+    why, url = _destination(step.target, project)
+    if why is not None:
+        return why, True
+    if project.write_policy is not WritePolicy.READ_ONLY:
+        return None, False
+    parts = urlsplit(url)
+    if not parts.scheme or PLACEHOLDER_RE.search(url):
+        return "navigate needs an absolute http(s) URL without placeholders", False
+    if parts.query and not walk.login:
+        return "navigate with a query string can change state", False
+    return _click_denied(unquote(f"{parts.path} {parts.fragment}"), project), False
+
+
+def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
+    """Fail closed: what is not listed as safe, or as the login's credential entry, is refused."""
+    action = step.action
+    if action in _READS:
         return None
+    if action is Action.FILL and walk.login and _declared_credential(step.value, project):
+        walk.credential_pending = True
+        return None
+    enter = action is Action.PRESS_KEY and step.value in (None, "Enter")
+    if (action is Action.CLICK or enter) and walk.login and walk.credential_pending:
+        walk.credential_pending = False  # one submit per credential entry
+        return _click_denied(step.target, project) if action is Action.CLICK else None
+    if action is Action.FILL:
+        return "fill outside the declared login's credential entry"
+    return f"{action.value} can change state"
+
+
+def _step_refusal(step: Step, project: Project, walk: _Walk) -> tuple[str | None, RefusalClass]:
+    if step.action is Action.NAVIGATE:
+        why, is_destination = _navigate_refusal(step, project, walk)
+        return why, RefusalClass.DESTINATION if is_destination else RefusalClass.WRITE_POLICY
+    if project.write_policy is WritePolicy.READ_ONLY:
+        return _read_only_refusal(step, project, walk), RefusalClass.WRITE_POLICY
     if step.action is Action.CLICK:
-        element = ElementRef(role="button", name=step.target, selector=step.target)
-        return explore_safety.deny_reason(element, explore_safety.policy_for(project))
-    return None
+        return _click_denied(step.target, project), RefusalClass.WRITE_POLICY
+    return None, RefusalClass.WRITE_POLICY
 
 
-def write_policy_refusal(case: Case, project: Project) -> str | None:
-    """Why this case may not run under the project's `write_policy`, or None. Clicks go through
-    the crawler's own `deny_reason` (never-click and destructive names at every policy but
-    ALLOW_WRITES); under READ_ONLY a step that types a literal value is refused too."""
+def write_policy_refusal(case: Case, project: Project) -> tuple[RefusalClass, str] | None:
+    """(refusal class, why) if this case may not run under the project's `write_policy`, else
+    None. A NAVIGATE outside the allowed http(s) domains is refused at every policy; above
+    READ_ONLY nothing is added to the click deny-list the crawler already applies."""
+    walk = _Walk(login=project.login_case_id is not None and case.id == project.login_case_id)
     for step in sorted(case.steps, key=lambda s: s.order):
-        why = _step_refusal(step, project)
-        if why is not None:
-            return (f"refused under write_policy {project.write_policy.value}: "
-                    f"step {step.order} ({step.action.value} {step.target!r}): {why}")
+        why, kind = _step_refusal(step, project, walk)
+        if why is None:
+            continue
+        where = f"step {step.order} ({step.action.value})"
+        if kind is RefusalClass.DESTINATION:
+            return kind, f"refused: {where}: {why}"
+        return kind, (f"refused under write_policy {project.write_policy.value}: "
+                      f"{where} {step.target!r}: {why}")
     return None

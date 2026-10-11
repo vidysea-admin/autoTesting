@@ -10,7 +10,7 @@ refusal comes back as a `ToolOutcome`, never as something the model can argue wi
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, ValidationError
 
@@ -83,19 +83,31 @@ def _crawl(ctx: AgentContext, args: CrawlArgs) -> ToolOutcome:
                                f"{crawl.actions} actions")
 
 
+def _withhold_if_credential(ctx: AgentContext, model: BaseModel) -> None:
+    """The release gate's own detector, applied BEFORE a write: nothing it would refuse (a
+    reversed, encoded or folded secret the exact-value scrub misses) is ever put on disk."""
+    try:
+        guards.guard_model_bound(ctx.secrets, model.model_dump_json())
+    except ValueError:
+        raise _Refused(RefusalClass.SECRET,
+                       "result withheld: it carried a credential; nothing was stored") from None
+
+
 def _scrubbed(ctx: AgentContext, result: RawResult) -> RawResult:
     """Persist and return only scrubbed text (C5), whatever the stage let through."""
     cleaned = ctx.secrets.redactor().scrub_obj(result.model_dump(mode="json"))
-    return RawResult.model_validate(cleaned)
+    clean = RawResult.model_validate(cleaned)
+    _withhold_if_credential(ctx, clean)
+    return clean
 
 
 def _run_case(ctx: AgentContext, args: RunCaseArgs) -> ToolOutcome:
     case = ctx.store.get_case(args.case_id)
     if case is None or not case.steps:
         raise _Refused(RefusalClass.NOTHING_TO_DO, "no such case, or it has no steps to run")
-    why = guards.write_policy_refusal(case, ctx.project)
-    if why is not None:
-        raise _Refused(RefusalClass.WRITE_POLICY, why)
+    refused = guards.write_policy_refusal(case, ctx.project)
+    if refused is not None:
+        raise _Refused(*refused)
     guards.live_case_approval(ctx.store, ctx.project, case)
     with ctx.open_session(None) as session:
         result = _scrubbed(ctx, execute.run_case(case, session))
@@ -131,6 +143,7 @@ def _grade_case(ctx: AgentContext, args: GradeCaseArgs) -> ToolOutcome:
     verdict = grade.grade(rubric, result, ctx.run_id, ctx.judge, ctx.docs,
                           run_dir=ctx.store.paths.run_dir(ctx.run_id), secrets=ctx.secrets,
                           redactor=ctx.secrets.redactor())
+    _withhold_if_credential(ctx, verdict)
     ctx.store.save_verdict(ctx.run_id, verdict)
     return ToolOutcome(tool="grade_case", ok=True, artifact_ref=f"verdict:{case.id}",
                        summary=f"{verdict.result.value}: {verdict.scoreboard}")
@@ -165,15 +178,87 @@ def _validate(name: str, raw_args: dict[str, Any]) -> tuple[Name, BaseModel]:
         raise _Refused(RefusalClass.BAD_ARGUMENTS, f"invalid arguments ({bad})") from None
 
 
-def dispatch(ctx: AgentContext, name: str, raw_args: dict[str, Any]) -> ToolOutcome:
-    """Run one model-requested tool call. A refusal is returned, never raised."""
+_MAX_NAME, _MAX_CHARS, _MAX_NODES, _MAX_DEPTH = 100, 16_384, 256, 6
+
+
+def _too_big() -> _Refused:
+    return _Refused(RefusalClass.BAD_ARGUMENTS,
+                    "arguments are too big, too deep or not plain data")
+
+
+def _scalar_text(node: object) -> str | None:
+    """The text of a leaf, `""` for a leaf that cannot hold a credential, None if not plain data."""
+    if isinstance(node, str):
+        return node
+    if node is None or isinstance(node, bool):
+        return ""
+    if (isinstance(node, int) and node.bit_length() <= 256) or isinstance(node, float):
+        return repr(node)
+    return None
+
+
+def _children(node: object) -> list[object]:
+    """The keys and values of a container, size-checked BEFORE they are expanded."""
+    if isinstance(node, dict):
+        items = [*node, *node.values()]
+    elif isinstance(node, (list, tuple)):
+        items = list(node)
+    else:
+        return []
+    if len(items) > _MAX_NODES:
+        raise _too_big()
+    return items
+
+
+def _call_texts(name: object, raw_args: object) -> list[str]:
+    """Every real string of a call (name, keys, leaves), bounded in size, depth and node count
+    and walked iteratively, so hostile nesting can neither recurse nor stall the secret scan."""
+    if not isinstance(name, str) or len(name) > _MAX_NAME:
+        raise _Refused(RefusalClass.UNKNOWN_TOOL, "no such tool")
+    if not isinstance(raw_args, dict):
+        raise _Refused(RefusalClass.BAD_ARGUMENTS, "arguments must be an object")
+    texts, chars, nodes = [name], len(name), 0
+    stack: list[tuple[object, int]] = [(raw_args, 0)]
+    while stack:
+        node, depth = stack.pop()
+        nodes += 1
+        if depth > _MAX_DEPTH or nodes > _MAX_NODES:
+            raise _too_big()
+        if isinstance(node, dict) and not all(isinstance(k, str) for k in node):
+            raise _Refused(RefusalClass.BAD_ARGUMENTS, "argument names must be text")
+        if isinstance(node, (dict, list, tuple)):
+            stack.extend((child, depth + 1) for child in _children(node))
+            continue
+        text = _scalar_text(node)
+        if text is None:
+            raise _too_big()
+        texts.append(text)
+        chars += len(text)
+        if chars > _MAX_CHARS:
+            raise _too_big()
+    return texts
+
+
+def _error_text(ctx: AgentContext, exc: Exception) -> str:
+    """`ExcType: message`, scrubbed THEN truncated (a cut secret would escape the scrub)."""
     try:
-        guards.guard_model_bound(ctx.secrets, f"{name} {raw_args!r}")
+        text = f"{type(exc).__name__}: {exc}"
+    except Exception:  # a hostile __str__ must not become a raw escape
+        text = type(exc).__name__
+    return ctx.secrets.redactor().scrub(text)[:300]
+
+
+def _dispatch(ctx: AgentContext, name: object, raw_args: object) -> ToolOutcome:
+    try:
+        for text in _call_texts(name, raw_args):
+            guards.guard_model_bound(ctx.secrets, text)
+    except _Refused as refused:
+        return _refusal("unknown", refused.kind, refused.detail)
     except ValueError:
         return _refusal("unknown", RefusalClass.SECRET,
                         "refused: the call carried a credential value; use {{SECRET:KEY}}")
-    known = name in {n.value for n in Name}
-    label = name if known else "unknown"
+    name, raw_args = cast(str, name), cast(dict[str, Any], raw_args)  # _call_texts proved both
+    label = name if name in {n.value for n in Name} else "unknown"
     try:
         tool, args = _validate(name, raw_args)
         outcome = _HANDLERS[tool](ctx, args)
@@ -181,4 +266,15 @@ def dispatch(ctx: AgentContext, name: str, raw_args: dict[str, Any]) -> ToolOutc
         outcome = _refusal(label, refused.kind, refused.detail)
     except ApprovalRequired as exc:
         outcome = _refusal(label, RefusalClass.APPROVAL, str(exc))
+    except Exception as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
+        outcome = _refusal(label, RefusalClass.STAGE_ERROR, _error_text(ctx, exc))
     return _release(ctx, outcome)
+
+
+def dispatch(ctx: AgentContext, name: Any, raw_args: Any) -> ToolOutcome:
+    """Run one model-requested tool call. A refusal or failure is RETURNED, never raised, and
+    carries no unscrubbed text and no caller-supplied name."""
+    try:
+        return _dispatch(ctx, name, raw_args)
+    except Exception:  # last resort (never BaseException): a fixed typed result with no detail
+        return _refusal("unknown", RefusalClass.STAGE_ERROR, "the tool call failed")

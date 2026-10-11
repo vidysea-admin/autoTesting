@@ -41,6 +41,8 @@ class RefusalClass(StrEnum):
     SECRET = "secret"
     APPROVAL = "approval"
     WRITE_POLICY = "write_policy"
+    DESTINATION = "destination"
+    STAGE_ERROR = "stage_error"
     NOTHING_TO_DO = "nothing_to_do"
 
 
