@@ -1,7 +1,7 @@
-# Verdict - t205-g10-headroom - coordinator A (blind dual check) - repair check
+# Verdict - t205-g10-headroom - coordinator A (blind dual check) - repair check (suite retry 1; earlier BLOCKED-PROCESS verdict archived as t205-g10-headroom.r1.a.r1-1.md)
 
 Cycle checked: 1
-Retry: 0
+Retry: 1
 Policy-Version: proportional-verification/2026-10-10.9
 Bound to: D:/autoTesting. Tree: D:/autoTesting/.worktrees/t205-g10-headroom, head fb93776bbf216c91c5854e0c5ce58dff8a22e052 (product 57cec910), repair base 0b8325b6 (ancestor of head, verified), merge-base with master 09828f2d.
 Manifest: Status ready-for-check, Fix cycle 1, `tick.mjs --lint-manifest` exit 0.
@@ -10,10 +10,19 @@ Blindness kept: no file under qa/verdicts/, qa/checkpoints/ or qa/evidence/ whos
 ## Plan
 Failed list given: TF6 (Source lacked uploaded_by, uploaded_at, origin). Re-run: TF6; criteria whose inputs the repair touches: TF1, TF2 (guard tests), TF7 (safe names), TF8 (team_enums.py, MAP.md). TF3, TF4, TF5: input files untouched by the repair diff, recorded results kept. Plus affected tests, repair diff read in full, whole-unit diff scan, one falsification per repaired criterion, class attacks. Full suite owed at this head (security-class L).
 
-VERDICT: BLOCKED-PROCESS (suite owed only; every criterion result below is recorded, so a suite-only retry can finish)
-SCOREBOARD: 8/8 criteria met on the checks run (TF1 TF2 TF6 TF7 TF8 re-run; TF3 TF4 TF5 kept by evidence identity), invariants: none touched. Full suite NOT RUN.
+VERDICT: PASS
+SCOREBOARD: 8/8 criteria met (TF1 TF2 TF6 TF7 TF8 re-run; TF3 TF4 TF5 kept by evidence identity), invariants: none touched. Full suite run: no new red.
 TIER: L (security: run-approval gate src/autotester/stages/run_launcher.py:134-151, safe_name path guard src/autotester/core/safe_names.py:44-58)
-CAUSE (cited): shard_suite.py exit 3, "[11:55:34] BLOCKED: suite lock busy after 901s; holder pid 13816, repo D:\hei-sweep, started 2026-10-11T10:56:19" (the machine-wide lock, a process that is not ours; not killed, not touched). Waited the full 15 min (blocked_min 15).
+
+## Full suite (the one owed check) - ref fb93776b, retry 1
+Command: `python D:/ai_os/.claude/skills/checker/tools/shard_suite.py --repo D:/autoTesting --ref fb93776b --shards 4 -- -o addopts=` (lock acquired at once, blocked_s 0.0; run 12:32:32 to 13:48:18 IST, 4544.6 s incl. 1455 s isolated re-run; lock released at tool exit 13:48; no other lock holder touched).
+Totals: collected 4068 in 259 files, collect proof ok (union 4068, ran 4068); passed 4039, failed 9, skipped 20. Evidence: qa/evidence/t205-g10-headroom-r1-A-suite/ (summary.json, suite.log).
+Classification of the 9 reds (none is in the unit's diff; none is a new red owned by this unit):
+- Fail the same way on master (main checkout, HEAD f84af8db, single-test run `uv --directory D:/autoTesting run pytest <node>`): test_crawl_inventory_live::test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused (master: 600 s watchdog trip; shard: STOPPED_BOUND, same crawl bound), test_redact_ignorable_perf::test_cjk_heavy_scan_stays_within_a_generous_multiple_of_ascii (master 40.5 s vs 15 s), test_redact_wrap_perf::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (master 15.0 s vs 3 s), test_video_parallel_sweep::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video (master: "A never finished closing"). Slow/loaded machine class; none touches a file of this diff.
+- Pre-existing at the unit's merge-base 09828f2d (git archive copy, PYTHONPATH=src, same python), pass on master only because master fixed them after this branch forked; the unit changes none of their files (git diff 09828f2d..fb93776b over .env.example, qa/hooks, tests/test_hosting_deploy.py, test_reconcile_schema.py, test_mc_sessionstart_loop_status.py, test_hosting_config.py is empty; the env-key names do not appear in the unit diff): test_hosting_deploy::test_env_example_documents_every_key_the_code_reads (undocumented AUTOTESTER_SCHEDULE_GRACE_MINUTES, AUTOTESTER_TICK_INTERVAL_S: base .env.example lacks them, master has them), test_reconcile_schema::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (base fails identically; master changed this test file), test_mc_sessionstart_loop_status::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (powershell hook 60 s timeout at base too).
+- test_mc_sessionstart_loop_status::..._unhealthy_line_only_on_an_asleep_log...: load flake, passed alone in the isolated re-run and passes at the base copy.
+- test_hosting_config::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere: a shard-copy artifact (the test spawns a fresh interpreter without PYTHONPATH, which imports the editable install D:/autoTesting/src); fails identically at the merge-base copy without PYTHONPATH, passes with it.
+None of AT-858/725/750/920/921/924/792 appeared in this run. New reds owned by this unit: 0.
 
 ## Criterion results (all run by me, in the tree under test)
 Proof of tree: autotester.__file__ = D:\autoTesting\.worktrees\t205-g10-headroom\src\autotester\__init__.py; pytest rootdir D:\autoTesting\.worktrees\t205-g10-headroom; 665 collected test node ids, all `tests/...` inside the tree (affected-tests.txt). Runs redone after the coordinator's correction: the first run used `uv run --project` with absolute in-tree test paths; it was repeated with `uv --directory <tree> run` (665 passed, 140 s), and ruff and `autotester doctor` were run the same way.
@@ -46,7 +55,8 @@ PROPOSED-ISSUE: {"severity":"low","feature":"team-foundation","title":"The TF1 A
 CAPABILITY-COVERAGE: 4/4 repaired-criterion falsification rows reproduced (TF1, TF2, TF6, TF7)
 LIVE-BROWSER: not-applicable (changed paths: schema, core, stages, tests, MAP.md; no UI surface this cycle)
 ISSUES-WRITTEN: none (dual coordinator)
-SUITE: owed, not run. full-suite trigger: security-class L unit (one checker full suite at head fb93776b). Retry command: python D:/ai_os/.claude/skills/checker/tools/shard_suite.py --repo D:/autoTesting --ref fb93776b --shards 4 -- -o addopts=  . Known reds to expect: AT-858, AT-725, AT-750, AT-920, AT-921, AT-924, AT-792 (branch predates master 05eb07bf).
+SUITE: run at fb93776b, 4039 passed / 9 failed / 20 skipped, all 9 classified above as not owned by this unit.
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
-EXPLANATION: Every criterion in scope is met and each repaired criterion was falsified green-to-red in a copy, so the only thing missing for a PASS is the single owed full suite, which could not start because the machine-wide lock was held by another project's suite for the whole 15-minute wait. slow: environment contention (copies and pytest 5-10x slower than usual), included in wall_min.
-Metrics: start=2026-10-11T05:10:00Z end=2026-10-11T06:55:00Z wall_min=90 agent_min=unavailable blocked_min=15 suite_runs=0 repeat_runs=0 mutations=8 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=5400 mutants=0 defects_unit=0 defects_6c=0
+EXPLANATION: Every criterion was met and each repaired criterion falsified green-to-red in a copy (earlier part of this check, unchanged); the single owed full suite then ran on fb93776b with a complete 4-shard collect proof, and every one of its 9 reds either fails identically on master, fails identically at this branch's merge-base, or is a load/shard-copy artifact, so the unit adds no red. The PROPOSED-ISSUE lines above are carried unchanged. slow: full suite 76 min wall (machine contention).
+Metrics: start=2026-10-11T05:10:00Z end=2026-10-11T10:30:00Z wall_min=90 agent_min=unavailable blocked_min=15 suite_runs=1 repeat_runs=0 mutations=8 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=5400 mutants=0 defects_unit=0 defects_6c=0
+Retry-Metrics: retry=1 start=2026-10-11T07:02:07Z end=2026-10-11T09:35:30Z (suite 12:32-13:48 IST plus master/base classification runs to 15:05 IST) suite_runs=1 blocked_s=0
