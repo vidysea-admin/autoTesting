@@ -63,8 +63,10 @@ AUTOTESTER_MAX_CONCURRENT_RUNS=2
 
 Set `AUTOTESTER_ALLOWED_ORIGINS` once the server is reachable by name: the Origin guard (D-066)
 refuses a state-changing request from any other origin. `AUTOTESTER_ALLOWED_HOSTS` belongs to
-the Host allow-list, which ships with AT-758 and is not in this release; set it anyway so the
-file is ready, and do not rely on it for protection until AT-758 is in your release.
+the Host allow-list (AT-758): any request, GET included, whose Host header is not loopback, the
+host of an `AUTOTESTER_ALLOWED_ORIGINS` entry, or listed in `AUTOTESTER_ALLOWED_HOSTS` exactly
+(port included, no wildcard) gets an empty 403. Set one of them or every request from the proxy
+is refused.
 
 Put the model keys (`ANTHROPIC_API_KEY`, `GEMINI_API_KEY`) and `AUTOTESTER_APPROVAL_KEY` in
 `<data>/.env`.
@@ -161,8 +163,8 @@ Run as a service (pick one):
 
 Settings go in the repo's `.env` (or system environment variables for the service):
 `AUTOTESTER_ALLOWED_ORIGINS=https://<host>` (state-changing requests from other origins are
-refused otherwise) and `AUTOTESTER_ALLOWED_HOSTS=<host-or-ip>` (read once the Host allow-list,
-AT-758, is in your release).
+refused otherwise) and `AUTOTESTER_ALLOWED_HOSTS=<host-or-ip>` (the Host allow-list, AT-758: any
+other Host gets an empty 403).
 
 Firewall: allow inbound TCP only for the port you serve on, from the networks that need it,
 for example `New-NetFirewallRule -DisplayName AutoTester -Direction Inbound -Protocol TCP

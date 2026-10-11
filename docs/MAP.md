@@ -25,6 +25,7 @@
 | `cli_issues.py` | `autotester issues` — turn an analysis into the sheet a human tester reads. |
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
+| `cli_release.py` | `autotester release` / `release-log` — the release manager's way to run the whole suite (T-167). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
@@ -60,6 +61,7 @@
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
+| `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
@@ -81,6 +83,7 @@
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
+| `schema/release.py` | Release regression shapes: a flow's persisted plan, a run's scope, its record and diff. |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
 | `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
@@ -112,8 +115,11 @@
 | `sources/zip_intake.py` | Safe zip expansion: one video source per video member, everything else accounted for. |
 | `sources/zip_names.py` | Zip member-name vetting that behaves identically under Windows and Ubuntu path rules. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
+| `stages/adversarial.py` | ADVERSARIAL: a bounded pass of file-defined probes at one AI endpoint. It records, never judges. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
+| `stages/ai_capture.py` | AI CAPTURE: exercise one AI endpoint and record what happened. It observes and never decides. |
 | `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
+| `stages/ai_judge.py` | AI JUDGE: map captured observations into the existing grade stage's evidence and rubric. |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
@@ -146,7 +152,9 @@
 | `stages/media_prep.py` | MEDIA PREP: make a recording readable — probe it, cut it, transcribe it. |
 | `stages/merge_flowspec.py` | Fold a freshly ingested FlowSpec into the reviewed one (Track A6, T-135). |
 | `stages/network_capture.py` | First-party network capture as evidence (T-170, NA1/NA2/NA4/NA5/NA6). |
-| `stages/orchestrate.py` | ORCHESTRATE: drive the stage pipeline as a resumable learn-or-explore run. |
+| `stages/orchestrate.py` | ORCHESTRATE: drive the stage pipeline as a resumable LangGraph run (D-041, T-167). |
+| `stages/orchestrate_checkpoint.py` | Persist one run's LangGraph checkpoint without arbitrary Python deserialization. |
+| `stages/orchestrate_gate.py` | The checks and ledger views around the orchestration graph (RR2, T-167). |
 | `stages/orchestrate_runners.py` | The concrete stage runners the orchestrator threads — thin adapters over the |
 | `stages/parallel_run.py` | PARALLEL_RUN: fan N cases out across isolated browser contexts (T-173/D-041). |
 | `stages/persona_changes.py` | What moved in the product since the last crawl: new / changed / missing / broken. |
@@ -155,6 +163,8 @@
 | `stages/product_map.py` | PRODUCT MAP: fold every recording analysis into one navigable screen map. |
 | `stages/read_context.py` | Read approved Markdown as metadata only, never a vault graph or body corpus. |
 | `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
+| `stages/release.py` | The release trigger: stitch every flow's persisted plan into ONE gated release run (T-167). |
+| `stages/release_compare.py` | Release record assembly, the trusted-baseline rule and the regression diff (T-167, RR3/RR6). |
 | `stages/report_export.py` | Tester-style run reports: an Excel summary and a screen-by-screen HTML |
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
@@ -219,6 +229,13 @@
 |---|---|
 | `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
 | `AiCheckMethod` (`schema/ai_check.py`) | Who decides a check: code from recorded facts, or the independent judge (C7). |
+| `AiReply` (`schema/ai_check.py`) | What an AI endpoint answered, as the transport seam hands it to the capturer. |
+| `AiExchange` (`schema/ai_check.py`) | One prompt and what was observed of its answer. Facts only: no verdict lives here (C7). |
+| `AiCapture` (`schema/ai_check.py`) | A captured run of one check against one endpoint: observation, never judgement. |
+| `ProbeSet` (`schema/ai_probe.py`) | One probe file under `prompts/probes/`: a category name and its probe texts (AD4). |
+| `ProbeRecord` (`schema/ai_probe.py`) | One probe sent and what was observed of the answer, tagged with the set it came from. |
+| `ProbeRun` (`schema/ai_probe.py`) | A completed bounded pass against one endpoint: observation, never judgement (AD5). |
+| `ProbeRefusal` (`schema/ai_probe.py`) | One line of `refusals.jsonl` (AD7). Carries no probe content, by construction. |
 | `AiSignalKind` (`schema/ai_target.py`) | Observed lexical facts; never runtime claims or check selection. |
 | `AiTargetKind` (`schema/ai_target.py`) | The four positive target kinds specified by the approved T-151 plan. |
 | `Classification` (`schema/ai_target.py`) | Strict naming response; evidence and checks are never model-controlled. |
@@ -329,6 +346,13 @@
 | `ProviderConfig` (`schema/project.py`) | Which provider serves each role. Roles are swappable per project. |
 | `Source` (`schema/project.py`) | An immutable input the system learned from. |
 | `Project` (`schema/project.py`) | Everything the system needs to test one product. |
+| `FlowPlan` (`schema/release.py`) | One flow's validation plan: the cases that decide whether the flow still works. |
+| `ReleaseScope` (`schema/release.py`) | What one release executes, frozen when the run is first accepted (RR2/RR6). |
+| `ReleaseDecision` (`schema/release.py`) | The human's answer to the `interrupt()` pause. It is NOT an approval (RR2). |
+| `FlowOutcome` (`schema/release.py`) | One flow's line in the release log. `not_run` is never folded into `passed` (RR6). |
+| `ReleaseIssue` (`schema/release.py`) | One entry of the release's single issues log, always naming its flow (RR6). |
+| `RegressionDiff` (`schema/release.py`) | This release against its trusted baseline (RR3). `baseline_run_id` None = no baseline. |
+| `ReleaseRecord` (`schema/release.py`) | One release's durable outcome: per-flow results, ONE issues log and the diff. |
 | `Evidence` (`schema/run.py`) | A file or value the grader may cite. Already redacted and masked. |
 | `ProviderUsage` (`schema/run.py`) | Token and call accounting per provider role — the cost story per run. |
 | `RawResult` (`schema/run.py`) | One case's execution record. |
@@ -385,6 +409,7 @@
 <!-- generated:scripts -->
 | Script | One job |
 |---|---|
+| `scripts/adversarial_proof.py` | Credential-free, network-free proof that the adversarial pass refuses to exceed its scope. |
 | `scripts/append_decision.ps1` | append_decision.ps1 -- the ONLY legitimate write path to docs/DECISIONS.md |
 | `scripts/bench_trial.py` | T-120: the north star made measurable — first real human-vs-AI trial scorecard. |
 | `scripts/check_crawl_approval.py` | T-145's done_check (D-018): a live crawl counts as done only if it actually |

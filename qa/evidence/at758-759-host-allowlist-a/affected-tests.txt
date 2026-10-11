@@ -1,0 +1,4 @@
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+1 failed, 157 passed, 1 warning in 6.16s

@@ -16,6 +16,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.schema.base import utc_now
+from autotester.schema.release import ReleaseDecision
 
 
 class StageName(StrEnum):
@@ -30,14 +31,19 @@ class StageName(StrEnum):
     DISCOVER = "discover"
     MODEL = "model"
     EXPAND = "expand"
+    CONFIRM = "confirm"
+    """T-167: a release's human pause (`interrupt()`), AFTER its `RunApproval` was checked."""
     EXECUTE = "execute"
     GRADE = "grade"
+    COMPARE = "compare"
+    """T-167: diff a release against its last trusted baseline (RR3)."""
     REPORT = "report"
 
 
-StageStatus = Literal["pending", "running", "done", "failed", "skipped"]
+StageStatus = Literal["pending", "running", "awaiting_human", "done", "failed", "skipped"]
 """A checkpoint's lifecycle. `done`/`skipped` are terminal-good (never re-run);
-`failed` is terminal-bad but re-enterable; `pending`/`running` are in-flight."""
+`failed` is terminal-bad but re-enterable; `pending`/`running` are in-flight and
+`awaiting_human` is paused on `interrupt()` until a human answers."""
 
 
 class StageCheckpoint(BaseModel):
@@ -71,11 +77,13 @@ class RunState(BaseModel):
 
     run_id: str
     project_slug: str
-    mode: Literal["learn", "explore"]
+    mode: Literal["learn", "explore", "release"]
     mode_reason: str
     stages: list[StageCheckpoint] = Field(default_factory=list)
     created: datetime = Field(default_factory=utc_now)
     updated: datetime = Field(default_factory=utc_now)
+    scope_fingerprint: str | None = None
+    release_decision: ReleaseDecision | None = None
 
     def next_pending(self) -> StageCheckpoint | None:
         """The resume pointer: the first stage not yet `done`/`skipped`, or None

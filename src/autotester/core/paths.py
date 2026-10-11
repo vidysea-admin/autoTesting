@@ -115,6 +115,19 @@ class ProjectPaths:
     def run_dir(self, run_id: str) -> Path:
         return self.runs_dir / run_id
 
+    @property
+    def flow_plans(self) -> Path:
+        """Persisted per-flow validation plans a release run stitches together (T-167, RR6)."""
+        return self.dir / "flow_plans.jsonl"
+
+    def run_release_scope(self, run_id: str) -> Path:
+        """The release's frozen scope (T-167): written once, before the human confirm."""
+        return self.run_dir(run_id) / "scope.json"
+
+    def run_release_record(self, run_id: str) -> Path:
+        """The release's durable record + single issues log (T-167); T-168 reads this."""
+        return self.run_dir(run_id) / "release.json"
+
     def bundles_dir(self, run_id: str) -> Path:
         """Where a run's failure bundles live (T-178); each is one directory."""
         return self.run_dir(run_id) / "bundles"
@@ -262,24 +275,9 @@ class RepoDocs:
 
     @property
     def prompts_dir(self) -> Path:
-        """Prompts ship WITH THE CODE, so the DATA root must not move them.
-
-        `root` falls back to `repo_root()`, which honours `AUTOTESTER_ROOT` — a
-        switch for relocating a project's DATA. That silently moved the prompt
-        lookup too, and `autotester ingest run` under a relocated root died on
-        `FileNotFoundError: <data root>/src/autotester/prompts/...` (AT-132,
-        found by a test driving the real CLI). Every prompt-reading stage was
-        one environment variable away from the same failure.
-
-        An EXPLICIT `root` still wins: substituting a stub prompt tree is a
-        legitimate thing for a test to do, and the defect was never explicit
-        injection — it was the env var leaking into a path it does not own.
-
-        AT-137: that fallback used to be the ONLY way to substitute a prompt
-        tree — an inferred side effect of passing `root`, not a named act.
-        Pass `prompts_dir=` explicitly instead when that is what's meant;
-        `root` alone still behaves exactly as before for every caller that
-        never adopts the explicit form (no behaviour change, C2)."""
+        """Prompts ship WITH THE CODE, so the DATA root (`AUTOTESTER_ROOT`) must not move
+        them (AT-132). An EXPLICIT `root` still wins; pass `prompts_dir=` to substitute a
+        stub tree by name (AT-137)."""
         if self._prompts_dir_override is not None:
             return self._prompts_dir_override
         if self._root_given:
@@ -288,11 +286,7 @@ class RepoDocs:
 
     @property
     def skills_dir(self) -> Path:
-        """Migrated-prompt `SKILL.md` folders (T-175/D-041) -- same shape as
-        `prompts_dir` above and for the same reason: ships WITH THE CODE, so an
-        explicit override lets a test substitute a stub tree (mirroring
-        AT-137's `prompts_dir=` fix) without a relocated `AUTOTESTER_ROOT`
-        leaking into a path it does not own."""
+        """Migrated-prompt `SKILL.md` folders (T-175/D-041); code-owned like `prompts_dir`."""
         if self._skills_dir_override is not None:
             return self._skills_dir_override
         if self._root_given:

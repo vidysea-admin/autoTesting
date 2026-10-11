@@ -46,15 +46,21 @@ def covering_approval(project: Project, store: ProjectStore, bounds: CrawlBounds
     D-068: when no human-granted row covers the run and the project declares
     credentials, provisioned credentials ARE the approval -- a signed row is minted
     (or an earlier account-derived row reused) with no human step. `account_keys`
-    narrows the credentials checked to those the run references."""
+    narrows the credentials checked to those the run references.
+
+    AT-759: an account-derived row counts ONLY through `_credential_approval`, which
+    re-validates the current .env and declaration on every run. Every other path (a
+    credential removed or re-scoped, the declaration dropped, ADVERSARIAL) sees human-granted
+    rows alone, so removing a credential ends coverage at once instead of at row expiry."""
     rows = store.list_approvals()
+    human = [row for row in rows if not is_account_derived(row)]  # AT-759: see below
     if kind not in ACCOUNT_KINDS or not project.secrets:
-        return _require(rows, project, kind, bounds)
+        return _require(human, project, kind, bounds)
     try:
         return _credential_approval(project, store, bounds, kind, rows, secrets, account_keys)
     except ApprovalRequired as why:
         try:  # credentials unavailable: a human-granted row can still cover it, as before D-068
-            return _require(rows, project, kind, bounds)
+            return _require(human, project, kind, bounds)
         except ApprovalRequired as human_refusal:
             raise ApprovalRequired(
                 f"{human_refusal}\n(credential-derived approval unavailable: {why})") from None

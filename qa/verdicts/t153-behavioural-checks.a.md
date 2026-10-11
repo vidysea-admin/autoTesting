@@ -1,21 +1,26 @@
 # Verdict A — t153-behavioural-checks (coordinator A of a dual check)
-Cycle checked: 0 · Retry: 0 · Resume: 0 of 2 · Policy-Version: proportional-verification/2026-10-10.9
-Bound to D:/autoTesting; checked worktree `.worktrees/t153-behavioural-checks` HEAD 2653bbcb (product ff901f72). Date 2026-10-11.
+Cycle checked: 0 · Retry: 1 · Resume: 0 of 2 · Policy-Version: proportional-verification/2026-10-10.9
+Bound to D:/autoTesting; branch `wave/t153-behavioural-checks` re-verified at 2653bbcb97bd (product ff901f72), unchanged since the earlier dispatch. Date 2026-10-11. Earlier BLOCKED-PROCESS verdict archived at `qa/verdicts/t153-behavioural-checks.a.r0-1.md`.
 
 ## Check plan
-Tier L (security trigger cited: ai_capture.py:92 `assert_clean`, :95 `require_approval`, both read). Backend only: no UI, no walks, no browser.
-Steps: contract AI6/AI7 + C5/C7/C12(b); re-run criterion commands (pre-check sha ff901f72 != HEAD, so .9-5 reuse not allowed); falsifications in copies; step 4c diff scope; doctor on a clean archive of master; ONE full suite (owed to A).
+Tier L (security trigger: ai_capture.py:92 `assert_clean`, :95 `require_approval`, both read in the earlier dispatch). Backend only: no UI, no walks, no browser. Retry scope: the ONE owed full suite; every other check reused by evidence identity (same sha, same test blobs, checkpoint `qa/checkpoints/t153-behavioural-checks.a.md`).
 
-VERDICT: BLOCKED-PROCESS
-CAUSE (cited): the machine-wide suite lock `%LOCALAPPDATA%/aios/suite.lock` was held by PIDs that are not ours for the whole 15 min wait.
-- Holder 1: pid 20200, `uv --directory D:/autoTesting/.worktrees/land-integrate-combined run pytest ...`, started 01:04:09.
-- Holder 2 (took over at 01:44:54): pid 38884, repo `.worktrees/land-integrate-combined`, a shard_suite run.
-- `shard_suite.py --repo D:/autoTesting --ref 2653bbcb --shards 1 --lock-timeout 900 -- -o addopts=` logged `[01:45:08] BLOCKED: suite lock busy after 900s ... (exit 3)`. Log: scratchpad `check-t153-a/suite.log`, summary `suite/summary.json`.
-- The lock holder was not touched. blocked_min=15.
-SCOREBOARD: 2/2 criteria evidenced (AI6, AI7); core invariants C5/C7/C12(b) hold on the evidence; the single owed full suite did NOT run, so no PASS.
+VERDICT: PASS
+SCOREBOARD: 2/2 criteria met (AI6, AI7), core invariants C5/C7/C12(b) hold on the evidence; 0/0 FAIL findings
 TIER: L (security: secret admission before send, ai_capture.py:92; signed consent, :95)
 FAILURES: none
-REMAINING (for the retry): the one checker full suite only: `python ~/.claude/skills/checker/tools/shard_suite.py --repo D:/autoTesting --ref 2653bbcb --shards 1 --out <scratch> -- -o addopts=` once the lock is free (code cap is 1). Everything below is reusable by evidence identity (same sha 2653bbcb, same test blobs).
+CAPABILITY-COVERAGE: AI6 and AI7 rows reproduced (3 of 4 manifest rows) plus 5 own falsifications; the C12(b) row is outside AI6/AI7 and was not re-run
+LIVE-BROWSER: not-applicable (changed paths: schema/ai_check.py, stages/ai_capture.py, stages/ai_judge.py, stages/grade.py, tests, docs/MAP.md)
+ISSUES-WRITTEN: none (dual check: PROPOSED-ISSUE lines only)
+EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent; self != executor)
+EXPLANATION: Every criterion was evidenced in the earlier dispatch and the one owed full suite now ran: 2950 passed, 19 skipped, 2 failed, both failures are ledgered pre-existing reds with the same assertion as on the base (below). No red touches this unit's files. Two earlier attempts at the suite were blocked by the machine lock (15 min each, holders were other projects' PIDs), the third ran with the lock free.
+
+## Full suite (checker A's one suite, sha 2653bbcb)
+`python shard_suite.py --repo D:/autoTesting --ref 2653bbcb --shards 4 -- -o addopts=` (4 shards, not 6: free memory 2.7 GB), no -x, started 05:09:24, ended 05:20:02, wall 637.7 s, blocked_s 0.
+Counts: passed 2950, skipped 19, failed 2, collected 2971 in 232 files; collect proof ok (baseline 2971 = union 2971 = ran 2971). Log: scratchpad `suite4.log`, `shards4/summary.json`.
+- `tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log` — AT-858. Failed in shard 2 with `TypeError: argument of type 'NoneType' is not iterable`; PASSED when re-run alone (load-induced). The same TypeError is recorded on the base in `qa/evidence/land-integrate-combined-A/base.out` (master 3a16616c). Not in this unit's files.
+- `tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen` — AT-792. Failed in shard and failed alone with `AssertionError: assert None == 'type your email here'` (Step(order=1, action=FILL, target='Email'...)). Identical assertion on the base in `qa/evidence/land-integrate-combined-A/base.out`. `git diff 3a16616c..2653bbcb --stat` touches neither this test nor reconcile code.
+- AT-725 (`test_redact_wrap_perf.py`) and AT-750 (`test_crawl_inventory_live.py`) did not fail in this run. No new red. No `load-flake` row needed beyond the AT-858 ledger entry.
 
 ## Evidence (all produced by this checker)
 - AI6 grep `grep -n "Result\.\|Verdict(" src/autotester/stages/ai_capture.py` -> no output, exit 1. Source read in full (112 lines): no Verdict/Result, no `grade` import; `capture_run` records reply, latency, is_json, missing_keys only.
@@ -25,7 +30,7 @@ REMAINING (for the retry): the one checker full suite only: `python ~/.claude/sk
 - Doctor on clean `git archive` of master 354bd31f and of 2653bbcb: both print only `stale-generated: docs/SNAPSHOT.md` (1 violation) -> the builder's "pre-existing" claim is confirmed. `src/` and `tests/` are identical between 3a16616c and 354bd31f (`git diff --stat` empty).
 - Step 4c: `git diff 3a16616c..HEAD --name-status`: A ai_capture.py, ai_judge.py, test_ai_capture.py, manifest; M ai_check.py (+45), grade.py (+9/-5), MAP.md, test_approval_signing.py, test_grade_evidence.py. No deletion or rename; no test line removed (a `^-` filter on the two modified test files returns none). grade.py's removals are the old `if secrets is None` / `secrets.guard_prompt` lines, rewritten in place with the same behaviour when `redactor=None` (`test_grade_secret_store_guard_survives_optional_redactor` passes). Every changed file is listed in "What changed".
 
-## Falsifications (throwaway copies of `git archive 2653bbcb` under scratchpad `check-t153-a/m_*`; import path verified to be the copy; green before, red after)
+## Falsifications (reused from the earlier dispatch: same sha 2653bbcb, branch tip re-verified) (throwaway copies of `git archive 2653bbcb` under scratchpad `check-t153-a/m_*`; import path verified to be the copy; green before, red after)
 | id | edit | named test | before | after |
 |---|---|---|---|---|
 | AI6a | ai_capture.py: add `_X = "Verdict("` | test_capturer_source_never_constructs_a_verdict_or_result | 1 passed | red on `assert not <re.Match 'Verdict('>` |
@@ -46,12 +51,10 @@ PROPOSED-ISSUE: {"severity":"low","feature":"ai-target","title":"AI6 wording: sa
 PROPOSED-ISSUE: {"severity":"low","feature":"ai-target","title":"weak oracle: test_a_hand_built_capture_is_scrubbed_again_at_the_judge goes red by IndexError when the judge scrub is removed; assert the blocked outcome or scrub-specific output instead","evidence":"tests/test_ai_capture.py:274 (AI7a red = IndexError)"}
 Open assumption noted, not a finding: `ApprovalKind.LIVE_CASE` for a behavioural capture (ai_capture.py:95) is the builder's [ASSUMPTION]; ADVERSARIAL belongs to T-154.
 
-## Full suite
-Owed to coordinator A and NOT run: the suite lock was busy for 15 min (cited above). suite_runs=0. No ledgered red can be classified because no suite ran.
-
-LIVE-BROWSER: not-applicable (changed paths: schema/ai_check.py, stages/ai_capture.py, stages/ai_judge.py, stages/grade.py, tests, docs/MAP.md)
-CAPABILITY-COVERAGE: manifest rows for AI6, AI7 final-grade and AI7 judge-side reproduced (3 of 4; the C12(b) row is outside AI6/AI7 and was not re-run); plus 5 own falsifications
-ISSUES-WRITTEN: none (dual check: PROPOSED-ISSUE lines only)
-EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent; self != executor)
-EXPLANATION: Both criteria hold on evidence I produced and the floor is met, but the single full suite owed to this coordinator could not run because the machine suite lock stayed with another project's PIDs for 15 minutes; per policy that is BLOCKED-PROCESS (burns no fix cycle), not a PASS. A retry needs only the full suite.
-Metrics: start=2026-10-11T01:14:00+05:30 end=2026-10-11T01:48:00+05:30 wall_min=19 agent_min=unavailable blocked_min=15 suite_runs=0 repeat_runs=0 mutations=8 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=2040 mutants=4 defects_unit=0 defects_6c=0
+## New module `stages/ai_judge.py`, proposals (unchanged from the earlier dispatch)
+Un-gated but permitted: no contract line or D-017 text forbids it; doctor/design rules pass (201 lines, one-job docstring); no duplicate path. Not a FAIL.
+PROPOSED-ISSUE: {"severity":"low","feature":"ai-target","title":"stages/ai_judge.py is un-gated: no ARCHITECTURE.md row and no DECISIONS entry names it; add both (authorising entry first)","evidence":"src/autotester/stages/ai_judge.py:1; docs/ARCHITECTURE.md concept map; D-017 stage list"}
+PROPOSED-ISSUE: {"severity":"low","feature":"ai-target","title":"AI6 wording: say whether a rule-based Provider supplying a Judgment to grade() (ai_judge.py _ComputedJudge) counts as judgement only in grade.py","evidence":"qa/contracts/ai-target.md:112-114; src/autotester/stages/ai_judge.py _ComputedJudge.judge"}
+PROPOSED-ISSUE: {"severity":"low","feature":"ai-target","title":"weak oracle: test_a_hand_built_capture_is_scrubbed_again_at_the_judge goes red by IndexError when the judge scrub is removed; assert the blocked outcome or scrub-specific output instead","evidence":"tests/test_ai_capture.py:274 (AI7a red = IndexError)"}
+Open assumption noted, not a finding: `ApprovalKind.LIVE_CASE` for a behavioural capture (ai_capture.py:95) is the builder's [ASSUMPTION]; ADVERSARIAL belongs to T-154.
+Metrics: start=2026-10-11T05:09:00+05:30 end=2026-10-11T05:35:00+05:30 wall_min=26 agent_min=unavailable blocked_min=15 suite_runs=1 repeat_runs=0 mutations=8 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=1560 mutants=4 defects_unit=0 defects_6c=0
