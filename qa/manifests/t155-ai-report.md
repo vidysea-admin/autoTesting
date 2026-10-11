@@ -1,5 +1,5 @@
 # Manifest — t155-ai-report
-**Contract:** qa/contracts/ai-target.md (AI9, AI10, AI11, AI12, AI13, AI14); also core-invariants C3/C5/C7 and report-export.md RE1/RE5 as the mechanisms AI12/AI14 cite
+**Contract:** qa/contracts/ai-target.md (AI9, AI10, AI11, AI12, AI13, AI14); the criteria AI12/AI14 also cite the core invariants for copies, secrets and verification independence, and report-export.md RE1/RE5
 **Goal task:** T-155 (Track C5: unified AI test report grouped by tier with judge reason strings)
 **Date:** 2026-10-11
 **Fix cycle:** 0 of max 2
@@ -44,6 +44,7 @@ Falsify[AI11]: tests/test_ai_report.py::test_ai11_every_failure_string_verbatim:
 Falsify[AI12]: tests/test_ai_report.py::test_ai12_read_only_deterministic_and_no_model_or_network, test_ai12_stage_constructs_no_verdict: see Capability coverage
 Falsify[AI13]: tests/test_ai_report.py::test_ai13_two_refusals_two_rows_no_probe_text, test_ai13_missing_and_empty_logs_have_distinct_statements: see Capability coverage
 Falsify[AI14]: tests/test_ai_report.py::test_ai14_planted_secret_never_reaches_a_cell, test_ai14_autosize_columns_is_the_shared_helper: see Capability coverage
+mutant-cap-raise: six acceptance criteria (AI9-AI14), each needing one isolating mutation, and four of them (AI9, AI12, AI13, AI14) carry two independent behaviours that one mutation cannot both reach; 10 mutants, every one a distinct behaviour, none repeated.
 Metrics: start=2026-10-11T00:00Z end=unavailable wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=10 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=unavailable mutants=10 defects_unit=0 defects_6c=0
 
 ## How to verify (commands + expected)
