@@ -1,0 +1,7 @@
+FILE C:\Users\Lenovo\AppData\Local\Temp\at-mr1b-123619858\mut-m2a\src\autotester\__init__.py
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_runs.py::test_run_refuses_when_no_ai_provider_is_configured
+======================== 1 failed, 1 warning in 4.68s =========================

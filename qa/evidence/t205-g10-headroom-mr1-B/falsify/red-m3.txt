@@ -1,0 +1,7 @@
+FILE C:\Users\Lenovo\AppData\Local\Temp\at-mr1b-123619858\mut-m3\src\autotester\__init__.py
+FAILED tests/test_ui_runs_live_case_approval.py::test_a_missing_signing_key_refuses_a_signed_row_and_names_the_key
+FAILED tests/test_ui_runs_live_case_approval.py::test_an_approval_narrower_than_the_run_is_refused_with_the_shortfall
+FAILED tests/test_ui_runs_live_case_approval.py::test_an_approval_granting_no_wall_clock_is_refused_before_a_browser_opens
+FAILED tests/test_ui_runs_live_case_approval.py::test_an_expired_live_case_approval_is_refused
+FAILED tests/test_ui_runs_live_case_approval.py::test_a_signed_live_case_approval_lets_the_run_proceed
+================== 15 failed, 10 passed, 1 warning in 17.63s ==================
