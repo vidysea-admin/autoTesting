@@ -120,18 +120,18 @@ def echo_crawl_summary(crawl: Any) -> None:
 
 
 def _merge_into_flowspec(store_: ProjectStore, project: str, crawl_id: str) -> None:
-    """Fold the crawl's screens into the FlowSpec and say what that cost the
-    review status — a merge always sends an approved spec back to DRAFT, and a
-    user who is not told that will think the spec is still approved."""
-    from autotester.stages.explore_merge import merge_screens
+    """Fold the crawl's screens and flow proposals into the FlowSpec and say what that cost the
+    review status: a merge sends an approved spec back to DRAFT, so the user must be told."""
+    from autotester.stages.explore_merge import merge_stored_crawl
 
     before = store_.load_flowspec()
-    spec = merge_screens(before, store_.list_nodes(crawl_id), project, crawl_id=crawl_id)
+    spec = merge_stored_crawl(store_, before, project, crawl_id)
     store_.save_flowspec(spec)
-    added = len(spec.screens) - (len(before.screens) if before else 0)
+    old_screens, old_flows = (len(before.screens), len(before.flows)) if before else (0, 0)
     typer.secho(
-        f"merged {added} new screen(s) into flowspec v{spec.version} "
-        f"(review: {spec.review.status.value})",
+        f"merged {len(spec.screens) - old_screens} new screen(s) and "
+        f"{len(spec.flows) - old_flows} flow proposal(s) into flowspec "
+        f"v{spec.version} (review: {spec.review.status.value})",
         fg=typer.colors.GREEN,
     )
 

@@ -251,13 +251,13 @@ def generate_cases(slug: str):
                         f"Generating cases needs a model. {why}, so nothing was generated.",
                         _link(f"/projects/{slug}/env", "Add a credential"))
 
-    # AT-264: a model failure after the gates is a themed page, never a raw 500
-    try:
+    try:  # AT-264: a failure after the gates (model, or the secret guard) is a page, not a 500
         cases = expand(spec, provider, RepoDocs(), store=store)
-    except ProviderError as exc:
+    except (ProviderError, ValueError) as exc:
         return _refusal(
             slug, "The model could not complete this",
-            f"Generating cases failed partway through: {exc}",
+            "Generating cases failed partway through: "
+            f"{exc if isinstance(exc, ProviderError) else 'a prompt was refused unsent'}",
             _link(f"/projects/{slug}/env", "Check the provider's credentials"))
     for case in cases:
         store.add_case(case)
