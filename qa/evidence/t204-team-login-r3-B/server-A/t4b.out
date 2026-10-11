@@ -1,0 +1,23 @@
+DRIVE sub-admin qa-proj 303 /projects/qa-proj/sources/drive/01M4PAQ2V6RY21NZ53VJ0GCPSM
+  job page 200 ine tool (`gws`) is not installed on the server, so Drive links cannot be fetched. An administrator must install it, or you can upload the file. Back to sources
+  tester sees job page (qa-proj shared view): 200
+DRIVE developer dev-proj 303 /projects/dev-proj/sources/drive/01M4PAQ4X27J1DB150AWEF6SYF
+  job page 200 ine tool (`gws`) is not installed on the server, so Drive links cannot be fetched. An administrator must install it, or you can upload the file. Back to sources
+  tester sees job page (qa-proj shared view): 404
+DRIVE admin qa-proj 303 /projects/qa-proj/sources/drive/01M4PAQ6Y9VZRXE6P4PBETFHCS
+  job page 200 ine tool (`gws`) is not installed on the server, so Drive links cannot be fetched. An administrator must install it, or you can upload the file. Back to sources
+  tester sees job page (qa-proj shared view): 200
+row present after login: 1
+logout 303
+row present after logout: 0
+ANON GET /nonexistent 302 /auth/login?next=/nonexistent 0
+ANON GET //evil.example 302 /auth/login?next=/ 0
+ANON GET /auth/login/ 302 /auth/login?next=/auth/login/ 0
+ANON GET /AUTH/login 302 /auth/login?next=/AUTH/login 0
+ANON GET /projects/x/../../etc/passwd 302 /auth/login?next=/projects/x/../../etc/passwd 0
+ANON GET /static/x 302 /auth/login?next=/static/x 0
+ANON GET /projects/x/sources/upload 302 /auth/login?next=/projects/x/sources/upload 0
+ANON HEAD / 302 /auth/login?next=/ 0
+ANON OPTIONS /projects/x 302 /auth/login?next=/projects/x 0
+ANON GET /auth/login?next=//evil.example 200 None 16693
+ANON GET /auth/login?next=javascript:alert(1) 200 None 16693
