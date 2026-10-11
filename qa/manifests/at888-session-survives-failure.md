@@ -10,7 +10,7 @@ Tier: L (concurrency/timing touch: a browser process that exits when its last pa
 Dual check: no (no auth, tenancy or production-write code is added; the secret-mask line `page.add_init_script(_MASK_INIT_SCRIPT)` in `begin_case_video` is byte-for-byte unchanged and C5 pins it by test, so the diff does not change secret masking; if the checker reads moving the call site of `new_page` as touching masking, that is its call to make and I would not object)
 Fix cycle: 0
 Executor: claude-sonnet-subagent (maker build subagent)
-Status: ready-for-check
+Status: checked-PASS
 Full-suite trigger: none. `browser/session.py` is NOT edited; the diff is `browser/video.py` and one helper pair in `stages/run_case_pipeline.py`.
 
 ## Criteria served (quoted)
