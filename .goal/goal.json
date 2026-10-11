@@ -4,7 +4,7 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-11T05:22:52",
+  "updated": "2026-10-11T05:32:47",
   "progress": {
     "total": 92,
     "done": 68,
@@ -1110,7 +1110,7 @@
         "cmd": "uv run pytest tests/test_regression_trigger.py",
         "expect_exit": 0
       },
-      "note": "Developer changes trigger the approved project suite; results are durable and compare against the last trusted baseline. | D-041: build on LangGraph 1.x (checkpointer + interrupt() for consent/review); langgraph added to pyproject in this unit. | D-042: runs the lead agent on LangGraph checkpoints.",
+      "note": "Developer changes trigger the approved project suite; results are durable and compare against the last trusted baseline. | D-041: build on LangGraph 1.x (checkpointer + interrupt() for consent/review); langgraph added to pyproject in this unit. | D-042: runs the lead agent on LangGraph checkpoints. | Dual independent PASS cycle2: qa/verdicts/t167-release-regression.r2.a.md + qa/verdicts/t167-release-regression.r2.b.md (earlier cycles: .a/.b, .r1.a/.r1.b); merged on master 476666d6. KEPT OPEN by checker close-out: RR6 'each completed flow leaves a persisted validation plan' has no producer in src (AT-898), so a real release reports every flow not run; the RR6 Verify passes only on a hand-seeded fixture.",
       "attempts": 0,
       "created": "2026-09-10T05:58:09",
       "user_value": "high",
@@ -2197,6 +2197,6 @@
     "velocity_per_day": 1.61,
     "eta_days": 14.9
   },
-  "last_deterministic_tick": "2026-10-11T05:22:52",
+  "last_deterministic_tick": "2026-10-11T05:32:47",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }

@@ -365,6 +365,16 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-11 T-167 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Eight low rows (AT-901..AT-908) are ledger-only and are not candidates.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Validate `--run-id` as a single safe path component before any write: `ProjectPaths.run_dir` joins it unchecked, so `../escaped` created a directory outside `runs/` and more `..` segments reach outside the project. Raised from low to medium by the checker. | AT-900 |
+| priority: S1/S2 (medium, goal-coverage) | Add the FlowPlan producer: nothing in src/ writes a FlowPlan, so a real `autotester release` reports every flow `not run` (RR6; T-167 stays open until this lands). | AT-898 |
+| medium | Make the release pause, approve and decline output usable: show what is approved, give a next step, no 'finished' after decline, no raw traceback. | AT-899 |
+
 ## Candidates (human picks) — 2026-10-11 T-153 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
 
 Never built until a human moves one out of this section with `approved: <date>`. Five low rows (AT-893..AT-897) are ledger-only and are not candidates.
