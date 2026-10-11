@@ -256,6 +256,7 @@ def test_ll11_the_cli_exits_non_zero_with_the_same_one_line_reason(
     assert result.exit_code == 1 and "Traceback" not in result.output
     assert "litellm:openai/gpt-4o" in result.output and "OPENAI_API_KEY" in result.output
     assert len(result.output.strip().splitlines()) == 1
+    assert "model call failed" not in result.output      # refused BEFORE any model call
 
 
 def test_ll11_the_cli_refuses_a_malformed_spec_without_echoing_it(
