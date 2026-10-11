@@ -268,14 +268,14 @@ def ingest_video(
                                       prompt_file=SKILL_NAME, fed_id=source.id)
     spec = flowspec_from_observation(observation, source.id, project_slug)
     heard = {source.id: transcript} if transcript else {}
-    redactor = _project_redactor(project_slug) if redactor is None else redactor
+    redactor = project_redactor(project_slug) if redactor is None else redactor
     checked = [verify_narration(f, heard, redactor) for f in spec.flows]
     if dropped is not None:
         dropped.extend(ref for _, refs in checked for ref in refs)
     return spec.model_copy(update={"flows": [f for f, _ in checked]})
 
 
-def _project_redactor(slug: str) -> Redactor:
+def project_redactor(slug: str) -> Redactor:
     """The project's SecretStore redactor, or an empty one when it has no project yet."""
     store = ProjectStore(slug)
     project = store.load_project()
