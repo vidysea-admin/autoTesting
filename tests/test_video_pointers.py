@@ -196,4 +196,6 @@ def test_pointer_size_limits_are_errors_never_truncation():
     assert len(huge.errors) == 1 and not huge.parsed
     assert len(huge.parsed) + len(huge.errors) == huge.non_blank_lines
     assert not _parse("é" * (MAX_POINTER_FILE_BYTES // 2 + 1)).parsed     # bytes, not characters
+    fat = _parse(("0:10 | " + "z" * 400 + "\n") * MAX_POINTER_LINES)   # every line valid, file too big
+    assert len(fat.errors) == 1 and not fat.parsed
 

@@ -152,11 +152,18 @@ def test_too_many_pointer_lines_is_a_pointer_error_naming_each_extra_line(world)
         MAX_POINTER_LINES + 1, MAX_POINTER_LINES + 2, MAX_POINTER_LINES + 3]
 
 
-def test_an_oversized_pointer_file_is_refused_unread_and_never_sent(world):
+def test_an_oversized_pointer_file_is_refused_unread_and_never_sent(world, monkeypatch):
     store, source, provider, tmp = world
     grant(store)
     big = tmp / "big.txt"
     big.write_bytes(b"a" * (MAX_POINTER_FILE_BYTES + 1))
+    real = Path.read_bytes
+
+    def guarded(self):
+        assert self != big, "the oversized pointer file was read into memory"
+        return real(self)
+
+    monkeypatch.setattr(Path, "read_bytes", guarded)
     r = review(source, "--pointers", str(big))
     assert r.exit_code == 2 and provider.calls == 0
     errors = _doc(r)["errors"]
