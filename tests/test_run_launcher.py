@@ -128,3 +128,38 @@ def test_trigger_run_is_a_thin_caller() -> None:
     called = {n.func.id if isinstance(n.func, ast.Name) else getattr(n.func, "attr", "")
               for n in ast.walk(trigger) if isinstance(n, ast.Call)}
     assert "prepare_run" in called and not called & (EXECUTORS | {"Run", "save_run"})
+
+
+def test_the_default_judge_is_the_provider_factorys_and_an_unusable_one_is_a_400() -> None:
+    """T-202 behaviour re-homed into the launcher by the T-205 merge reconcile (LL2/LL11)."""
+    import pytest
+
+    from autotester.providers.base import ProviderError
+    from autotester.schema.project import Project
+    from autotester.stages import run_launcher
+
+    project = Project(slug="demo", name="Demo", base_url="https://demo.test",
+                      allowed_domains=["demo.test"])
+    asked: list[tuple[str, str]] = []
+
+    class Down:
+        def available(self) -> bool:
+            return False
+
+    def factory(project_, role):
+        asked.append((project_.slug, role))
+        return Down()
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(run_launcher, "for_role", factory)
+        seams = run_launcher.RunSeams()
+        with pytest.raises(run_launcher.LaunchRefused) as refused:
+            run_launcher.judge_or_refuse(project, seams)
+    assert asked == [("demo", "judge")] and refused.value.status == 400
+    assert "no AI provider is configured" in refused.value.reason
+
+    def broken(_project):
+        raise ProviderError("litellm:x needs X_KEY")
+    with pytest.raises(run_launcher.LaunchRefused) as refused:
+        run_launcher.judge_or_refuse(project, run_launcher.RunSeams(judge_factory=broken))
+    assert refused.value.status == 400 and "X_KEY" in refused.value.reason
