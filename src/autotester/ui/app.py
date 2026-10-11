@@ -32,6 +32,7 @@ from autotester.ui import (
     theme,
 )
 from autotester.ui.auth_middleware import auth_middleware
+from autotester.ui.credential_guard import refuse_reserved_slug
 from autotester.ui.env_editor import InvalidEnvValue, set_env_values, validate_env_values
 from autotester.ui.helpers import (
     _load_project_or_404,
@@ -153,6 +154,7 @@ async def onboard_submit(request: Request) -> RedirectResponse:
     _require_project_name(name)
     if ProjectStore(slug).load_project() is not None:
         raise HTTPException(400, "a project with this slug already exists")
+    refuse_reserved_slug(slug)  # AU21: its key prefix may not cover a setting the server has
     domains = [d.strip() for d in allowed_domains.split(",") if d.strip()]
     draft = Project(slug=slug, name=name, base_url=base_url, allowed_domains=domains)
     refs, values = routes_project_edit.parse_secret_rows(

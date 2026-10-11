@@ -108,6 +108,56 @@ def test_au20_hosted_needs_an_allow_list(root: Path, monkeypatch: pytest.MonkeyP
     check_startup()
 
 
+def _hosted(monkeypatch: pytest.MonkeyPatch, argv: list[str], hosts: str = "",
+            origins: str = "") -> None:
+    monkeypatch.setenv("AUTOTESTER_HOSTED", "1")
+    monkeypatch.setenv("AUTOTESTER_FIRST_ADMIN_EMAIL", "boss@at.example")
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", hosts)
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", origins)
+    monkeypatch.setattr("sys.argv", ["uvicorn", *argv])
+
+
+def test_au20_the_hosts_list_alone_satisfies_the_allow_list(
+        root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Either key is enough: the hosts list with no origins starts fine; neither refuses."""
+    _hosted(monkeypatch, [], hosts="at.example")
+    check_startup()
+    _hosted(monkeypatch, [])
+    with pytest.raises(AuthConfigError):
+        check_startup()
+
+
+@pytest.mark.parametrize(("argv", "hosts", "origins", "starts"), [
+    (["--host", "10.0.0.5", "--port", "8443"], "at.example", "", False),
+    (["--host", "10.0.0.5", "--port", "8443"], "at.example,10.0.0.5:8443", "", True),
+    (["--host", "10.0.0.5", "--port", "8443"], "", "https://10.0.0.5:8443", True),
+    (["--host=10.0.0.5"], "at.example", "", False),
+    (["--host=10.0.0.5"], "10.0.0.5", "", True),
+    (["--host", "intranet.example"], "at.example", "", False),
+    (["--host", "2001:db8::5", "--port", "9000"], "[2001:db8::5]:9000", "", True),
+    (["--host", "127.0.0.1"], "at.example", "", True),  # loopback is always an allowed origin
+])
+def test_au20_the_servers_own_origin_must_be_allowed(
+        root: Path, monkeypatch: pytest.MonkeyPatch, argv: list[str], hosts: str, origins: str,
+        starts: bool) -> None:
+    """A server bound to a concrete address has a known own origin; startup raises unless it
+    is allowed. A wildcard bind (`0.0.0.0`, `::`) names no origin the server could check: the
+    public name lives in the proxy, so only the non-empty allow-list is enforced there."""
+    _hosted(monkeypatch, argv, hosts=hosts, origins=origins)
+    if starts:
+        check_startup()
+    else:
+        with pytest.raises(AuthConfigError, match="own origin"):
+            check_startup()
+
+
+@pytest.mark.parametrize("wildcard", ["0.0.0.0", "::"])
+def test_au20_a_wildcard_bind_cannot_name_its_origin_and_is_not_guessed(
+        root: Path, monkeypatch: pytest.MonkeyPatch, wildcard: str) -> None:
+    _hosted(monkeypatch, ["--host", wildcard, "--port", "8000"], hosts="at.example")
+    check_startup()
+
+
 def test_au17_gate_is_on_by_default(root: Path) -> None:
     assert not auth_disabled()
     assert client().get("/", headers=JSON).status_code == 401

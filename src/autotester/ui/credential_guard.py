@@ -11,49 +11,66 @@ keeps working unchanged.
 
 from __future__ import annotations
 
-import re
+import os
 from urllib.parse import unquote_plus
 
 from fastapi import HTTPException
 
-from autotester.browser.secrets import SecretStore
+from autotester.browser.secrets import SecretStore, parse_env
+from autotester.core.env import (
+    PROVIDER_KEYS,
+    SERVER_PREFIX,
+    is_server_key,
+    key_namespace,
+)
 from autotester.core.paths import repo_root
 from autotester.core.redact import BIDI_OVERRIDES, PLACEHOLDER_RE
 from autotester.schema.project import Project
 from autotester.store.project_store import ProjectStore
 
-# The global provider keys (US1) -- server-wide, `settings.manage` only, never a project's.
-PROVIDER_KEYS = (
-    "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY",
-    "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OPENAI_API_KEY",
-)
-SERVER_PREFIX = "AUTOTESTER_"
+
+def refuse_server_key(key: str) -> None:
+    """Provider keys and `AUTOTESTER_*` are server-wide (Settings, `settings.manage`)."""
+    if is_server_key(key.strip()):
+        raise HTTPException(403, "server-wide keys are managed under Settings "
+                                 "(settings.manage), not in a project")
 
 
-def key_namespace(slug: str) -> str:
-    """`pathlynks` -> `PATHLYNKS_`; `my-app` -> `MY_APP_` (a project's own key prefix)."""
-    return re.sub(r"[^A-Z0-9]+", "_", slug.upper()).strip("_") + "_"
+def refuse_reserved_slug(slug: str) -> None:
+    """AU21: a new project's key prefix must not cover a key the server reads or a variable
+    this process or the shared `.env` already holds -- else its namespace would swallow it
+    (`load_repo_env` never exports a project namespace). Existing projects are unaffected."""
+    ns = key_namespace(slug)
+    env_file = repo_root() / ".env"
+    held = [*os.environ, *(parse_env(env_file.read_text(encoding="utf-8"))
+                           if env_file.exists() else {})]
+    if (any(k.startswith(ns) for k in (*PROVIDER_KEYS, *held))
+            or ns.startswith(SERVER_PREFIX) or SERVER_PREFIX.startswith(ns)):
+        raise HTTPException(400, f"the key prefix {ns} of that slug is used by a setting on "
+                                 "this server; choose a different slug")
 
 
 def refuse_foreign_key(project: Project, key: str) -> None:
     """T-204 AU21, the ONE gate every project route declaring a credential passes through
     (/env/add, /secrets, onboarding rows): a key must sit in the project's own namespace,
     must not be a server-wide key (provider keys, `AUTOTESTER_*`: Settings, `settings.manage`),
-    and must not already be declared by another project. Without it a `credentials.edit`
-    holder could write the shared `.env` (provider keys, the approval key, a neighbour's
-    password) or aim another project's secret at their own site."""
+    must not already be declared by another project, and must not fall in the longer
+    namespace of another project (`alpha` cannot claim `ALPHA_BETA_*`). Without it a
+    `credentials.edit` holder could write the shared `.env` (provider keys, the approval key,
+    a neighbour's password) or aim another project's secret at their own site. What a
+    project writes is never exported to the process either (`core.env.load_repo_env`)."""
     name = key.strip()
-    if name in PROVIDER_KEYS or name.startswith(SERVER_PREFIX):
-        raise HTTPException(403, "server-wide keys are managed under Settings "
-                                 "(settings.manage), not in a project")
-    if not name.startswith(key_namespace(project.slug)):
-        raise HTTPException(400, f"a credential key for this project must start with "
-                                 f"{key_namespace(project.slug)}")
+    refuse_server_key(name)
+    ns = key_namespace(project.slug)
+    if not name.startswith(ns):
+        raise HTTPException(400, f"a credential key for this project must start with {ns}")
     projects_dir = repo_root() / "projects"
     slugs = (sorted(p.name for p in projects_dir.iterdir() if (p / "project.json").exists())
              if projects_dir.exists() else [])
-    for slug in slugs:
-        other = ProjectStore(slug).load_project() if slug != project.slug else None
+    for slug in (s for s in slugs if s != project.slug):
+        other = ProjectStore(slug).load_project()
+        if len(key_namespace(slug)) > len(ns) and name.startswith(key_namespace(slug)):
+            raise HTTPException(400, "that key is in another project's namespace")
         if other is not None and other.secret(name) is not None:
             raise HTTPException(400, "that key belongs to another project")
 
@@ -198,3 +215,4 @@ def _refuse_unsafe_submission(
             f"{', '.join(sorted({label for label, t in fresh if t}))}. Declare it in Project "
             "settings and use {{SECRET:KEY}} in a step's Value box instead."
         ))
+

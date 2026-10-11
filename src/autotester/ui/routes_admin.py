@@ -35,6 +35,12 @@ def _require(key: PermissionKey) -> Principal:
     return who
 
 
+def _audit_refusal(who: Principal, target: str, action: str) -> None:
+    """AU27: a refused admin attempt is on record as `{actor, target, action}` (the request
+    line alone cannot say who or what). Names only: no password, hash, cookie or body."""
+    audit.record_action(actor=who.email, target=target, action=f"{action}.refused")
+
+
 def _users_page(message: str = "", status: int = 200) -> HTMLResponse:
     body = admin_view.users_body(accounts.list_users(), groups.list_groups(), message)
     return HTMLResponse(theme.page("Users", body), status_code=status)
@@ -74,6 +80,7 @@ async def admin_user_action(user_id: int, action: str, request: Request) -> Resp
         else:
             raise HTTPException(404, "unknown action")
     except _REFUSED as exc:
+        _audit_refusal(who, target.email, f"user.{action}")
         return _users_page(str(exc), status=_status(exc))
     audit.record_action(actor=who.email, target=target.email, action=f"user.{action}")
     return RedirectResponse("/admin/users", status_code=303)
@@ -93,6 +100,7 @@ async def admin_group_create(request: Request) -> Response:
         group = groups.create_group(str(form.get("name", "")),
                                     [str(v) for v in form.getlist("permission")], who)
     except _REFUSED as exc:
+        _audit_refusal(who, str(form.get("name", ""))[:80], "group.create")
         body = admin_view.groups_body(groups.list_groups(), str(exc))
         return HTMLResponse(theme.page("Groups", body), status_code=_status(exc))
     audit.record_action(actor=who.email, target=group.name, action="group.create")
@@ -128,6 +136,7 @@ async def admin_group_update(group_id: int, request: Request) -> Response:
         groups.update_group(group_id, str(form.get("name", "")),
                             [str(v) for v in form.getlist("permission")], members, who)
     except _REFUSED as exc:
+        _audit_refusal(who, group.name, "group.update")
         body = admin_view.group_body(group, accounts.list_users(), can_members, str(exc))
         return HTMLResponse(theme.page(escape(group.name), body), status_code=_status(exc))
     audit.record_action(actor=who.email, target=group.name, action="group.update")
@@ -145,6 +154,7 @@ async def admin_group_delete(group_id: int, request: Request) -> Response:
     try:
         groups.delete_group(group_id, who)
     except _REFUSED as exc:
+        _audit_refusal(who, group.name, "group.delete")
         body = admin_view.groups_body(groups.list_groups(), str(exc))
         return HTMLResponse(theme.page("Groups", body), status_code=_status(exc))
     audit.record_action(actor=who.email, target=group.name, action="group.delete")

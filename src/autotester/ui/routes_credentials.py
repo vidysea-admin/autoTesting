@@ -19,6 +19,7 @@ from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.paths import ProjectPaths, repo_root
 from autotester.schema.auth import PermissionKey
 from autotester.ui import theme
+from autotester.ui.credential_guard import refuse_server_key
 from autotester.ui.env_editor import InvalidEnvValue, set_env_value
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
 from autotester.ui.routes_crawl_approval import _approvals_card, _crawl_approval_form
@@ -211,6 +212,7 @@ def env_editor_submit(
     _store, project = _load_project_or_404(slug)
     if project.secret(key) is None:
         raise HTTPException(400, f"'{key}' is not a declared secret for '{slug}'")
+    refuse_server_key(key)  # AU21: even a legacy declaration cannot write a server key
     if not value.strip():
         # An empty field means "nothing typed", never "erase" — the input is a
         # masked write-only box (placeholder 'new value'), so a submit with
