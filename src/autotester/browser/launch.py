@@ -8,6 +8,8 @@ into `session.py` so nothing else needs to know it moved.
 from __future__ import annotations
 
 import contextlib
+import errno
+import http.client
 import json
 import os
 import socket
@@ -67,17 +69,27 @@ def _answers_as(port: int, browser_path: str) -> bool:
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # never via a proxy
     try:
         with opener.open(f"http://{CDP_HOST}:{port}/json/version", timeout=2) as reply:
-            return str(json.load(reply).get("webSocketDebuggerUrl", "")).endswith(browser_path)
-    except (OSError, ValueError):
+            body = json.load(reply)
+    except (OSError, ValueError, http.client.HTTPException):  # non-HTTP bytes, bad JSON, no answer
         return False
+    url = body.get("webSocketDebuggerUrl", "") if isinstance(body, dict) else ""
+    return str(url).endswith(browser_path)
 
 
 def _reaches_past_loopback(port: int) -> bool:
-    """True when `port` also accepts on 127.0.0.2, i.e. it is bound to a wildcard, not CDP_HOST."""
+    """True when `port` also accepts on 127.0.0.2, i.e. it is bound to a wildcard, not CDP_HOST.
+
+    Fails closed on an unexpected error. Three outcomes say "no": a refusal, a timeout (measured
+    on Windows: a closed loopback port refuses only after ~2 s, so at 1 s a closed port IS a
+    timeout; failing closed on it would refuse every legitimate Windows host), and a host with no
+    127.0.0.2 alias (the check cannot be made; Chromium's loopback bind and the identity check
+    still hold). Any other error is doubt, which refuses."""
     try:
         socket.create_connection(("127.0.0.2", port), timeout=1).close()
-    except OSError:
+    except (ConnectionRefusedError, TimeoutError):
         return False
+    except OSError as err:
+        return err.errno not in (errno.EADDRNOTAVAIL, 10049)  # 10049 = WSAEADDRNOTAVAIL
     return True
 
 

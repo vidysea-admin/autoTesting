@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -102,12 +103,16 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
             **launch_options(self.project, self.paths, record_video_dir=video_dir,
                              expose_cdp=self.expose_cdp), **timeout
         )
-        self._page = self._context.pages[0] if self._context.pages else self._context.new_page()
-        self._timeout()
-        if self.expose_cdp:
-            self._publish_cdp()
-        if self.observer is not None:
-            self.observer.attach(self._page)
+        try:  # `__exit__` never runs when `__enter__` raises: nothing may outlive a failed start
+            self._page = self._context.pages[0] if self._context.pages else self._context.new_page()
+            self._timeout()
+            if self.expose_cdp:
+                self._publish_cdp()
+            if self.observer is not None:
+                self.observer.attach(self._page)
+        except BaseException:
+            self._close_quietly()
+            raise
         return self
 
     def _publish_cdp(self) -> None:
@@ -115,8 +120,14 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
         try:
             self._cdp_url = verified_cdp_url(self.paths.profile_dir)
         except CdpEndpointError:
-            self.close()
+            self._close_quietly()
             raise
+
+    def _close_quietly(self) -> None:
+        """Teardown on a failure path: a `close()` error must never mask the error being raised.
+        `close()` clears its state and the port file in `finally`, so nothing is left behind."""
+        with contextlib.suppress(Exception):
+            self.close()
 
     def close(self) -> None:
         """Close only this session's context and driver (B9). Never a process kill."""

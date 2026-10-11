@@ -8,12 +8,14 @@ server) and writes it to `<profile>/DevToolsActivePort`. No browser is launched 
 
 from __future__ import annotations
 
+import errno
 import json
 import socket
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from typing import Any
+from unittest.mock import Mock
 
 import pytest
 from test_browser import make_project, make_store
@@ -22,6 +24,7 @@ from autotester.browser import launch
 from autotester.browser.launch import CdpEndpointError, launch_options
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
+from autotester.stages.run_budget import RunBudgetExceeded
 
 GUID = "/devtools/browser/11111111-2222-3333-4444-555555555555"
 
@@ -29,12 +32,15 @@ GUID = "/devtools/browser/11111111-2222-3333-4444-555555555555"
 class FakeDevTools:
     """A local `/json/version` server standing in for Chromium's DevTools HTTP endpoint."""
 
-    def __init__(self, guid: str = GUID, host: str = "127.0.0.1") -> None:
+    def __init__(self, guid: str = GUID, host: str = "127.0.0.1", raw: bytes | None = None) -> None:
         outer = self
 
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self) -> None:
                 outer.hits += 1
+                if raw is not None:  # a listener that is not (or only half) an HTTP server
+                    self.wfile.write(raw)
+                    return
                 body = json.dumps({"webSocketDebuggerUrl":
                                    f"ws://127.0.0.1:{outer.port}{guid}"}).encode()
                 self.send_response(200)
@@ -201,6 +207,50 @@ def test_a_wildcard_bound_endpoint_is_refused(
     with pytest.raises(CdpEndpointError, match="beyond loopback"):
         s.start()
     assert s.cdp_url is None
+
+
+@pytest.mark.parametrize("raw", [b"garbage, not http\r\n", b"HTTP/1.0 200 OK\r\n\r\n[]",
+                                 b'HTTP/1.0 200 OK\r\n\r\n"x"', b"HTTP/1.0 200 OK\r\n\r\nnull"])
+def test_any_reply_that_is_not_this_browsers_json_object_refuses_and_tears_down(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, raw: bytes) -> None:
+    """Checker A P1(a): BadStatusLine / AttributeError escaped `start()` with the port open."""
+    dev = FakeDevTools(raw=raw)
+    install(monkeypatch, devtools=dev)
+    s = session(tmp_path, expose_cdp=True)
+    with pytest.raises(CdpEndpointError, match="not this browser"):
+        s.start()
+    assert s.cdp_url is None and refuses_connections(dev.port)
+    assert not (s.paths.profile_dir / "DevToolsActivePort").exists()
+
+
+def test_a_failure_after_launch_closes_the_exposed_browser(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Checker A P1(b): `__exit__` never runs when `__enter__` raises: the browser leaked."""
+    dev = FakeDevTools()
+    install(monkeypatch, devtools=dev)
+
+    def over_budget(self: FakeContext) -> object:
+        raise RunBudgetExceeded("run budget spent")
+
+    monkeypatch.setattr(FakeContext, "new_page", over_budget)
+    s = session(tmp_path, expose_cdp=True)
+    with pytest.raises(RunBudgetExceeded):
+        s.start()
+    assert s.cdp_url is None and refuses_connections(dev.port)
+    assert not (s.paths.profile_dir / "DevToolsActivePort").exists()
+
+
+@pytest.mark.parametrize(("error", "reaches"), [
+    (ConnectionRefusedError(), False),  # nothing listens on 127.0.0.2: bound to loopback only
+    (OSError(errno.EADDRNOTAVAIL, "no 127.0.0.2 alias"), False),  # check impossible on this host
+    (TimeoutError("timed out"), False),  # Windows: a closed loopback port times out at 1 s
+    (OSError(errno.ENETUNREACH, "unreachable"), True),  # any other doubt refuses (checker A P2)
+    (PermissionError(errno.EACCES, "blocked"), True),
+])
+def test_reaching_past_loopback_fails_closed_on_an_unexpected_error(
+        monkeypatch: pytest.MonkeyPatch, error: OSError, reaches: bool) -> None:
+    monkeypatch.setattr(socket, "create_connection", Mock(side_effect=error))
+    assert launch._reaches_past_loopback(1234) is reaches
 
 
 def test_cdp_url_is_read_only(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
