@@ -25,6 +25,18 @@ refuses every request). A new defect of the same kind is in the shipped Docker p
 - `docker/DEPLOY.md:131-133` and the comment at `docker/compose.prod.yml:16-17` say the app refuses to
   start in this case. That statement is false.
 
+Checker A reached the same FAIL on its own (`qa/verdicts/t204-team-login.r2.a.md`, master a2139416):
+it ran the compose values through startup and the real app, and with no variable set and a wrong
+allow-list the app starts and answers GET and POST with 403. With `AUTOTESTER_DOMAIN` set, startup and
+the request guard agree in all five cases, so only the no-variable default is wrong. Disclosure: the
+maker had told checker A to look at the Docker compose path after B's FAIL, so A's finding is not
+fully independent of B's. No full suite has run on this head (the suite lock was busy); one is owed
+after the repair.
+
+Checker A also flags one behaviour change for the owner: an allow-list that sets only
+`AUTOTESTER_ALLOWED_HOSTS` on a concrete (non-loopback) bind now refuses to start. Such a setup used to
+start, and then answered every login POST with 403.
+
 This affects the Docker deployment only. Running the app directly on this machine with an explicit
 origin is not affected.
 
