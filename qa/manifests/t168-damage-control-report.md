@@ -3,8 +3,9 @@
 **Unit:** T-168, the damage-control report: regression diff, API failures, workflows and change history (plus the crawl's coverage) on one surface, built from stored evidence only.
 **Brief:** `qa/briefs/t168-damage-control-report.md`. **Contract:** `qa/contracts/damage-control-report.md` (DRAFT, DC1-DC4), plus `core-invariants.md`.
 **Branch / base:** `wave/t168-damage-control-report` on T-167's code commit `00fae668` (T-167 is built, NOT yet checked; this unit cannot merge before it).
-**Code commit (pre-check sha):** 72a7ecae (cycle-2 repair of DC4 F1; cycle-1 product was 82ba1f1e, cycle-0 cdb0ae53). The manifest commit after it adds only this file.
+**Code commit (pre-check sha):** 6ef7f14b (cycle-2 repair of DC4 F1 at 72a7ecae, then master integrated and the advice site registered; cycle-1 product was 82ba1f1e, cycle-0 cdb0ae53). The manifest commit after it adds only this file.
 Repair base: fb47735c
+Integrated master: 476666d6 (merge commit ccc86dd0)
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: M (multi-file behaviour reading five existing evidence owners, one new report module set, a CLI and an HTTP surface; no L trigger)
 Dual check: required
@@ -61,27 +62,28 @@ EDITED: `cli_release.py` (appended block + docstring line + 2 import lines) and 
 - Absence: each section says `Unavailable: <reason>`; no persona, no crawl, no release record is never a zero.
 - Secrets: repro steps are scrubbed by `_repro_steps`; the whole report object is scrubbed with the project `Redactor` before render (cycle 1; cycle 0 scrubbed the HTML after render, which missed secrets containing HTML-special characters).
 
-## Pre-check (final code commit 72a7ecae, worktree clean; no full suite, no directory-wide run)
+## Pre-check (final product commit 6ef7f14b, worktree clean; no full suite, no directory-wide run)
 
-Pre-check: 72a7ecae uv run pytest tests/test_unified_report.py tests/test_unified_report_secrets.py -p no:xdist t=14s -> 19 passed
-Pre-check[C1]: 72a7ecae uv run pytest tests/test_unified_report.py -k dc1 -p no:xdist t=1s -> 1 passed
-Pre-check[C2]: 72a7ecae uv run pytest tests/test_unified_report.py -k dc2 -p no:xdist t=1s -> 1 passed
-Pre-check[C3]: 72a7ecae uv run pytest tests/test_unified_report.py -k "one_invocation or regression_reads or no_baseline" -p no:xdist t=1s -> 3 passed
-Pre-check[C4]: 72a7ecae uv run pytest tests/test_unified_report.py tests/test_unified_report_secrets.py -k dc4 -p no:xdist t=5s -> 7 passed (success path: plain and special-character secret `p&ss<w>o'rdQ9` absent raw and HTML-escaped from HTML, CLI output, report object; error path: a stored `release.json` with the secret in a mistyped field, CLI and route outputs hold none of its raw, HTML-escaped or URL-encoded forms and no `input_value`)
-Pre-check[lint]: 72a7ecae uv run ruff check src tests scripts -> All checks passed
-Pre-check[doctor]: 72a7ecae uv run autotester doctor -> doctor: clean
-Regression nodes (files this cycle touched: `cli_release.py`, `routes_unified_report.py`, `stages/unified_report.py`): `uv run pytest tests/test_cli_release.py tests/test_ui_report.py tests/test_ui_report_no_runs.py tests/test_goal_contract_registration.py -p no:xdist` -> 24 passed on 72a7ecae.
+Pre-check: 6ef7f14b uv run pytest tests/test_unified_report.py tests/test_unified_report_secrets.py -p no:xdist t=15s -> 19 passed
+Pre-check[C1]: 6ef7f14b uv run pytest tests/test_unified_report.py -k dc1 -p no:xdist t=1s -> 1 passed
+Pre-check[C2]: 6ef7f14b uv run pytest tests/test_unified_report.py -k dc2 -p no:xdist t=1s -> 1 passed
+Pre-check[C3]: 6ef7f14b uv run pytest tests/test_unified_report.py -k "one_invocation or regression_reads or no_baseline" -p no:xdist t=1s -> 3 passed
+Pre-check[C4]: 6ef7f14b uv run pytest tests/test_unified_report.py tests/test_unified_report_secrets.py -k dc4 -p no:xdist t=17s -> 8 passed (success path: plain and special-character secret `p&ss<w>o'rdQ9` absent raw and HTML-escaped from HTML, CLI output, report object; error path: a stored `release.json` with the secret in a mistyped field, CLI and route outputs hold none of its raw, HTML-escaped or URL-encoded forms and no `input_value`; the -k dc4 selection counts 8 on this base, the earlier 7 was the same selection before the merge)
+Pre-check[lint]: 6ef7f14b uv run ruff check src tests scripts -> All checks passed
+Pre-check[doctor]: 6ef7f14b uv run autotester doctor -> doctor: clean
+Regression nodes (files this cycle touched: `cli_release.py`, `routes_unified_report.py`, `stages/unified_report.py`; the merge conflicted on `ui/routes_report.py`): `uv run pytest tests/test_cli_release.py tests/test_ui_report.py tests/test_ui_report_no_runs.py tests/test_goal_contract_registration.py -p no:xdist` -> 24 passed on 6ef7f14b; also on 6ef7f14b, one process each: `tests/test_cli_advice_resolves.py` 31 passed, `tests/test_release_gate.py` 4, `tests/test_regression_trigger.py` 18, `tests/test_run_trace.py` 10, `tests/test_ui_video_route.py` 6 (the last two import `routes_report`). `uv run autotester map` left `docs/MAP.md` unchanged.
 
 Cycle 2 repair (checker r1 B finding F1): the error path printed unscrubbed exception text built from stored data (pydantic's `input_value`). Output channels closed:
 - `stages/unified_report.py:243-251` `build_report` converts every non-`ReportUnavailable` exception into `ReportUnreadable`, whose text (`_unreadable`, `_where`, `_file_of`, :54-97) is fixed wording plus the stored file's last two path parts or identifier-shaped field names and the exception type, passed through the project `Redactor`; never pydantic's message; raised `from None`.
 - `stages/unified_report.py:273-281` `export_unified_html`: a corrupt `project.json` is wrapped the same way.
 - `cli_release.py:109-111` and `ui/routes_unified_report.py:30-38`: catch only the two typed errors; the route returns HTTP 500 with the fixed text for `ReportUnreadable` and keeps the 200 empty state for `ReportUnavailable` (no runs yet, DC1-DC4 are silent and `test_cli_and_ui_with_no_runs_show_an_empty_state...` requires it). Unexpected errors no longer reach a handler that prints `str(exc)`.
 - The loaders' `Unavailable: <reason>` strings sit inside the report object, so `scrub_obj` already covers them (cycle 1); no log line is written by this feature.
-Advice sites: `tests/test_cli_advice_resolves.py` on this branch lists 3 new sites: `('cli_release.py','release')` and `('cli_release.py','release-log')` (parent unit T-167, which registers them in its own repair) and `('stages/unified_report.py','release')` (this unit, the pre-existing text "a release is started with `autotester release`" in `load_regression`). The advice names `autotester release`, which resolves; the registry entry for `stages/unified_report.py` / `release` is left to be added after the parent merges (that file was not edited here). The other 30 tests of that file pass.
+Integration (cycle 2, before check): `git merge master` (merge commit ccc86dd0, master 476666d6 incl. T-167, T-153, the hosting re-land). One conflict: `src/autotester/ui/routes_report.py` imports; kept master's `run_queue_view` import and this unit's `unified_report_router` include, and collapsed the master-reformatted `ui.helpers` import to one line (93 chars, limit 100) so the file stays 297 lines (<= 300). `cli.py` 300 lines, `cli_release.py` came from master unchanged by this branch, `qa/issues.jsonl` identical to master (no row added or dropped), `docs/MAP.md` auto-merged and `autotester map` regenerated no change.
+Guard-test addition for the checker to rule on: `tests/test_cli_advice_resolves.py` `EXPECTED_SITES` gains `("stages/unified_report.py", "release")` and `EXPECTED_SITE_COUNT` goes 21 -> 22 (commit 6ef7f14b). Additions only, the guard is not loosened. The advice text (`stages/unified_report.py:125`, "a release is started with `autotester release`") names `release`, which the real CLI parser resolves (`autotester release --help` exits 0; `test_every_command_the_code_names_is_one_the_cli_exposes` passes for it). Falsification (throwaway copy of `src` and the test under the scratchpad, discarded): with the entry present `test_no_advice_site_can_vanish_unnoticed` 1 passed; with the entry removed from the copy it is red by assertion (`new: [('stages/unified_report.py', 'release')]`).
 
 Cycle 1 repair (ISS-t168-damage-control-report-1 and -3): `build_report` (`stages/unified_report.py:203-207`) now scrubs the report OBJECT with the project `Redactor.scrub_obj` before `render_html`, so the secret never reaches the renderer in any form; the post-render scrub in `unified_html` is removed (it added nothing, and was the layer that ran too late). Layers: the object scrub is load-bearing for `test_dc4_special_character_secret_is_absent_raw_and_escaped_in_html_and_cli` and `test_dc4_report_object_is_clean_before_it_is_rendered`; the workflow loader's repro-step scrub is load-bearing for `test_dc4_workflow_loader_scrubs_repro_steps_on_its_own`.
 
-The per-criterion lines use `C1`-`C4` for DC1-DC4 (the lint only recognises `C<n>` tags); the untagged `Pre-check:` line is the new and existing unified-report test files on 82ba1f1e.
+The per-criterion lines use `C1`-`C4` for DC1-DC4 (the lint only recognises `C<n>` tags); the untagged `Pre-check:` line is the new and existing unified-report test files on 6ef7f14b.
 
 ## Falsifications (one per criterion; green before, red after; each in a throwaway copy under the scratchpad, never the worktree; discarded)
 
