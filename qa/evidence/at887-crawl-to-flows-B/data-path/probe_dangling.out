@@ -1,0 +1,5 @@
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-copy\src\autotester\__init__.py
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-copy\src\autotester\__init__.py
+screens ['node_1a4f750c7d37', 'node_5fcc7c0e060b', 'node_8ae7d6520217', 'node_b2f065459f1d', 'node_c272d7096f0a', 'node_d2b18c3c7539', 'node_db5353146635', 'node_dcc13e67617c', 'scr_from_video_home']
+REFINT crawl path: Home > Profile dangling: ['node_34cb44cfb3bc', 'node_34cb44cfb3bc', 'node_34cb44cfb3bc']
+REFINT crawl path: Home > Courses > Algebra dangling: ['node_34cb44cfb3bc', 'node_34cb44cfb3bc', 'node_34cb44cfb3bc']

@@ -1,0 +1,27 @@
+[F6] autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F6\src\autotester\__init__.py
+[F6] BASELINE rc=0
+21 passed in 66.40s (0:01:06)
+[F6] mutated function=_expand_reviewed_flow; hunk old=`prompt = guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets)` new=`prompt = build_expand_prompt(flow, proposal.case_class, docs)`
+[F6] MUTATED rc=1
+_redaction.py::test_the_provider_never_receives_the_raw_value[declared-in-name]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[undeclared-env-value]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[all-in-one]
+FAILED tests/test_expand_redaction.py::test_both_entry_points_guard_the_prompt[expand_flow]
+FAILED tests/test_expand_redaction.py::test_both_entry_points_guard_the_prompt[expand]
+FAILED tests/test_expand_redaction.py::test_an_encoded_secret_is_refused_before_any_model_call
+8 failed, 13 passed in 61.61s (0:01:01)
+ 
+E   assert False
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F6\tests\test_expand_redaction.py:90: assert False
+E   assert False
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F6\tests\test_expand_redaction.py:90: assert False
+E   Failed: DID NOT RAISE ValueError
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[declared-in-value]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[declared-in-target]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[declared-in-name]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[undeclared-env-value]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[all-in-one]
+FAILED tests/test_expand_redaction.py::test_both_entry_points_guard_the_prompt[expand_flow]
+FAILED tests/test_expand_redaction.py::test_both_entry_points_guard_the_prompt[expand]
+FAILED tests/test_expand_redaction.py::test_an_encoded_secret_is_refused_before_any_model_call
+8 failed, 13 passed in 61.61s (0:01:01)
