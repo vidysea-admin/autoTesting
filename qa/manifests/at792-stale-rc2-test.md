@@ -2,7 +2,7 @@
 
 **Unit:** repair a stale test, `tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen` (AT-792). Test-only diff; no product file, contract or issues ledger touched.
 **Contract:** `qa/contracts/reconcile.md` RC2 and RC3
-**Status:** ready-for-check
+**Status:** checked-PASS (merged 05eb07bf, D-082)
 **Policy-Version:** proportional-verification/2026-10-10.9
 **Tier:** S (test-only diff)
 **Dual check:** no
