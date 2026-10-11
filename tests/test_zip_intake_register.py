@@ -207,7 +207,7 @@ def test_ti5_utf8_flag_with_an_invalid_utf8_name_is_a_failed_report_not_a_crash(
 
 
 def test_ti5_no_mutation_of_a_healthy_zip_makes_expand_zip_raise(tmp_path):
-    """Seeded fuzz (40 mutants: file I/O makes each ~0.3 s here): random byte flips, runs and truncations of a mixed-method archive."""
+    """Seeded fuzz of a mixed-method archive (40 mutants; each costs ~0.3 s of file I/O here)."""
     healthy = tmp_path / "healthy.zip"
     with zipfile.ZipFile(healthy, "w") as zf:
         for i, method in enumerate((zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED, zipfile.ZIP_LZMA,
