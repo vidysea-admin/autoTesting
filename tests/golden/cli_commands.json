@@ -70,5 +70,9 @@
  [
   "issues",
   "Issues derived from a recording \u2014 the tester's sheet."
+ ],
+ [
+  "schedule",
+  "The scheduler: run the tests that are due."
  ]
 ]
