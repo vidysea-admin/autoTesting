@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
+from autotester.schema.schedule import ScheduleConfig
 from autotester.schema.user_persona import PERSONA_ID_PATTERN, UXPolicy
 
 DEFAULT_VISION_PROVIDER = "gemini"
@@ -127,6 +128,15 @@ class Source(Artifact):
             object.__setattr__(self, "id", content_id("src", {"k": str(self.kind), "v": key}))
 
 
+class TrackerConfig(BaseModel):
+    """Where a project's confirmed bugs go (Group 10, T-205/TF6 placeholder).
+
+    Deliberately empty: G6 adds the tracker fields here, in place. Until then `{}` is the only
+    value it accepts, and `Project.tracker` is `None` (no tracker)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+
 class Project(Artifact):
     """Everything the system needs to test one product."""
 
@@ -175,6 +185,15 @@ class Project(Artifact):
                     "a Case's own ref overrides it. Never read by grading (PU4)",
     )
     ux_policy: UXPolicy = Field(default_factory=UXPolicy)
+    schedule: ScheduleConfig | None = Field(
+        default=None,
+        description="T-205/TF6, G5: when the scheduler runs this project; None means manual "
+                    "(the Test button only)",
+    )
+    tracker: TrackerConfig | None = Field(
+        default=None,
+        description="T-205/TF6, G6: where confirmed bugs go; None means no tracker",
+    )
 
     @field_validator("test_id_attributes")
     @classmethod

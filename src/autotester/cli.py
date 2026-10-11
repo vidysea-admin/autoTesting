@@ -9,11 +9,10 @@ import typer
 
 from autotester import (
     cli_crawl,
-    cli_issues,
     cli_loop,
     cli_orchestrate,
     cli_release,
-    cli_video,
+    cli_subapps,
     providers,
 )
 from autotester import doctor as doctor_module
@@ -36,8 +35,7 @@ report_app = typer.Typer(help="Export a run as a portable tester report (Excel +
 app.add_typer(ledger_app, name="ledger")
 app.add_typer(flowspec_app, name="flowspec")
 app.add_typer(report_app, name="report")
-app.add_typer(cli_video.app, name="ingest")
-app.add_typer(cli_issues.app, name="issues")
+cli_subapps.register_subapps(app)  # T-205/TF5: ingest, issues and every later group
 
 
 @app.callback()
