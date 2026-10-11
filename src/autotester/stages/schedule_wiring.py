@@ -25,7 +25,7 @@ from autotester.core.paths import ProjectPaths, repo_root, team_path
 from autotester.schema.run_queue import ACTIVE, QueueEntry
 from autotester.schema.schedule import ScheduleMode, TickReport
 from autotester.stages.schedule_gate import credential_gate, refusal_for
-from autotester.stages.schedule_store import project_records_path
+from autotester.stages.schedule_store import project_records_path, read_heartbeat
 from autotester.stages.schedule_tick import ScheduledProject, run_tick
 from autotester.stages.scheduler import DEFAULT_GRACE_MINUTES, QueueSnapshot, Slot, TickDeps
 from autotester.store.project_store import ProjectStore
@@ -83,8 +83,11 @@ def schedule_paths(root: Path | None = None) -> SchedulePaths:
 def scheduled_projects(root: Path | None = None) -> tuple[list[ScheduledProject], list[str]]:
     """Every project whose schedule is not `manual`, and the slugs whose file cannot be loaded.
 
-    `since` is when the project file was last written: a schedule never backfills slots from
-    before it was saved, and a long outage is still bounded by the core's lookback."""
+    `since` is when the project file was last written, but never later than the last heartbeat:
+    an unrelated edit during an outage must not move the bound past a slot the scheduler never
+    saw (it is then recorded `missed`, not dropped). The core's lookback still bounds it. The
+    exact bound needs a `saved_at` on the schedule, set by the save route (held)."""
+    heartbeat = read_heartbeat(schedule_paths(root).heartbeat)
     base = (root or repo_root()) / "projects"
     items: list[ScheduledProject] = []
     invalid: list[str] = []
@@ -93,6 +96,7 @@ def scheduled_projects(root: Path | None = None) -> tuple[list[ScheduledProject]
         try:
             project = ProjectStore(slug, root).load_project()
             since = datetime.fromtimestamp(config.stat().st_mtime, tz=UTC)
+            since = min(since, heartbeat) if heartbeat else since
         except (ValueError, OSError):
             invalid.append(slug)
             continue
@@ -159,6 +163,6 @@ def tick_all(
             gate=(gate_for or (lambda s: real_gate(s, root)))(slug),
             scrub=_scrubber(slug, root))
 
-    return run_tick(items, now, deps_for=deps_for, heartbeat_path=paths.heartbeat,
+    return run_tick(items, now, deps_for=deps_for, heartbeat_path=None if only else paths.heartbeat,
                     dry_run=dry_run, invalid=invalid, grace_minutes=grace_minutes,
                     preview=preview or (lambda slug: real_preview(slug, root)))

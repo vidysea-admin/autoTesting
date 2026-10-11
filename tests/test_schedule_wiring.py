@@ -261,3 +261,39 @@ def test_a_scheduled_entry_without_an_approval_is_refused_by_the_launcher(world,
     with pytest.raises(RunRefused):
         routes_runs._run_queued(_entry("schedule", "demo:fixed:2026-10-08T09:00Z"))
     assert not store.paths.runs_dir.exists() and store.list_approvals() == []
+
+
+# --- review findings (senior-software-engineer, 2026-10-12) ---------------------------------
+def test_an_edit_after_a_missed_slot_does_not_hide_it(tmp_path: Path) -> None:
+    """`since` is the project file's mtime; an unrelated edit after the outage began must not
+    move the lower bound past a slot the scheduler never saw (never silently dropped)."""
+    from autotester.stages.schedule_store import write_heartbeat
+
+    _scheduled(tmp_path, saved=utc(2026, 10, 8, 12))            # edited after the 09:00 slot
+    write_heartbeat(schedule_paths(tmp_path).heartbeat, utc(2026, 10, 8, 8, 0))
+    queue, _ = _queue()
+    report = _tick(tmp_path, queue, utc(2026, 10, 8, 18))       # outside grace
+    assert [r.outcome for r in report.records] == [SlotOutcome.MISSED]
+    assert queue.snapshot() == []
+
+
+def test_a_tick_for_one_project_does_not_refresh_the_global_heartbeat(tmp_path: Path) -> None:
+    _scheduled(tmp_path, "alpha")
+    _scheduled(tmp_path, "beta")
+    queue, _ = _queue()
+    _tick(tmp_path, queue, only="beta")
+    assert not schedule_paths(tmp_path).heartbeat.exists()
+    _tick(tmp_path, queue)
+    assert schedule_paths(tmp_path).heartbeat.exists()
+
+
+def test_a_scheduled_run_refused_at_start_leaves_a_line_on_stderr(
+    world, capsys: pytest.CaptureFixture[str],
+) -> None:
+    from autotester.ui.run_queue import RunRefused
+
+    _store, routes_runs = world
+    queue = routes_runs.tick_queue()
+    with pytest.raises(RunRefused):
+        routes_runs.tick_runner(_entry("schedule", "demo:fixed:2026-10-08T09:00Z"))
+    assert "demo:fixed:2026-10-08T09:00Z" in capsys.readouterr().err and queue is not None

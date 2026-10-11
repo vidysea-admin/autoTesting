@@ -7,6 +7,7 @@ only turns a press into a queue entry and a `LaunchRefused` into an HTTP error.
 
 from __future__ import annotations
 
+import sys
 import threading
 from collections.abc import Callable
 from typing import Annotated, Any
@@ -36,7 +37,7 @@ from autotester.ui.run_queue import (
 
 router = APIRouter()
 
-__all__ = ["_is_entry_case", "get_queue", "router", "tick_queue"]
+__all__ = ["_is_entry_case", "get_queue", "router", "tick_queue", "tick_runner"]
 
 
 def _seams(*, shared_ram: bool = True) -> RunSeams:
@@ -95,11 +96,22 @@ def _run_queued(entry: QueueEntry) -> None:
 set_runner(_run_queued)
 
 
+def tick_runner(entry: QueueEntry) -> None:
+    """`_run_queued` for the tick process: a refusal at start has no UI to show it, so it is
+    also written to stderr (the entry still ends `refused`)."""
+    try:
+        _run_queued(entry)
+    except RunRefused as exc:
+        print(f"{entry.slot_key or entry.id}: run refused at start: {exc}", file=sys.stderr)
+        raise
+
+
 def tick_queue() -> RunQueue:
     """The queue a scheduler tick process runs its entries on (T-200): in memory only, so it
     never `recover()`s the server's persisted queue; workers are non-daemon threads, so the
     process stays alive until the runs it started finish. Installed as the process queue, so
     the executor's RAM ledger is this one. Executes through the same `_run_queued`."""
-    queue = RunQueue(spawn=lambda job: threading.Thread(target=job, name="autotester-run").start())
+    queue = RunQueue(runner=tick_runner,
+                     spawn=lambda job: threading.Thread(target=job, name="autotester-run").start())
     set_queue(queue)
     return queue

@@ -38,12 +38,13 @@ def _exit_code(report: TickReport) -> int:
 
 def run_tick(
     items: Iterable[ScheduledProject], now: datetime, *,
-    deps_for: Callable[[str], TickDeps], heartbeat_path: Path,
+    deps_for: Callable[[str], TickDeps], heartbeat_path: Path | None,
     dry_run: bool = False, invalid: Sequence[str] = (),
     grace_minutes: int = DEFAULT_GRACE_MINUTES,
     preview: Callable[[str], str | None] | None = None,
 ) -> TickReport:
-    """`invalid` names the projects whose stored schedule failed to load (exit 3).
+    """`heartbeat_path=None` writes no heartbeat (a pass over one project proves nothing about
+    the rest). `invalid` names the projects whose stored schedule failed to load (exit 3).
     `preview(project)` is the read-only credential check a dry run uses in place of the gate."""
     report = TickReport(tick_at=now, dry_run=dry_run, invalid=list(invalid))
     for item in items:
@@ -57,7 +58,7 @@ def run_tick(
         except Exception as exc:  # one broken project must not stop the rest
             report.errors.append(f"{item.project}: {type(exc).__name__}")
     report.exit_code = _exit_code(report)
-    if not dry_run:
+    if not dry_run and heartbeat_path is not None:
         write_heartbeat(heartbeat_path, now)
     return report
 
