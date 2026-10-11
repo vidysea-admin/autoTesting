@@ -81,7 +81,7 @@ Pre-check[LL14]: 8e66190b uv run ruff check src tests scripts -> All checks pass
 
 ## Merge reconcile 2026-10-11
 Repair base: 94c569c0
-Master merged: a0adcb31 (at792-stale-rc2-test checked-PASS; it contains the t178 merge 1ddbb377 and t155, t197, t198a, t168-r2 qa files). Product commit under check: ae0220cd (merge commit; this section is the only later change). Fix cycle unchanged (0): no criterion failed, nothing was fixed; this only reconciles two PASSed units. A second `git merge master` is OWED once t168 lands (it adds one more `EXPECTED_SITES` entry to the same list), before the checker starts.
+Master merged: a0adcb31 (at792-stale-rc2-test checked-PASS; it contains the t178 merge 1ddbb377 and t155, t197, t198a, t168-r2 qa files). Product commit under check: ae0220cd (merge commit; this section is the only later change). Fix cycle unchanged (0): no criterion failed, nothing was fixed; this only reconciles two PASSed units. The second `git merge master` that was owed once t168 landed is DONE; see "Second master merge" below.
 
 Conflicts and how each was resolved (both sides kept):
 - `src/autotester/cli.py::expand_cases`: master took the order flowspec check, then `expand_stage.stage_and_review` (t178 moved the `expand` call's review into it, `--proposals/--approve/--prune`), then `store_.preflight_case_proposals`, then provider, then `expand_stage.expand(spec, model, store=store_)`. Taken from master as is, except the provider step stays t202's `model = cli_orchestrate.usable_provider(provider)` (LL11: bad spec or no credentials = one red line, exit 1, before any model call) in place of master's `providers.get(provider)` + `available()` block; `fg="red"` strings from master. t178's order means `--proposals` no longer needs a credential (its intent); t202's refusal still precedes any model call. cli.py 296 lines (cap 300); cli_orchestrate.py unchanged (276).
@@ -93,25 +93,36 @@ Conflicts and how each was resolved (both sides kept):
   - `tests/test_ui_runs_serial_resilience.py` was 301 lines after the merge; the one `for_role` patch is back on one line.
 - `docs/MAP.md`: auto-merged, regenerated with `autotester map`. `docs/SNAPSHOT.md` regenerated with `autotester snapshot` (doctor flagged it stale after the merge). `pyproject.toml` / `uv.lock` did not conflict; `uv lock --check` clean.
 
-Pre-check[LL1]: ae0220cd uv run pytest -p no:xdist -o addopts= <brief section 6 set> + tests/test_ensemble_honesty.py tests/test_ui_runs_queue.py tests/test_expand_cli.py tests/test_expand.py tests/test_failure_bundle.py tests/test_execute_serial_evidence_scope.py tests/test_pinned_regression.py tests/test_cli_advice_resolves.py tests/test_cli_surface.py tests/test_cli_harness_safety.py tests/test_ui_learn_vendor_echo.py -> 371 passed, 1 warning in 236.50s (one run, cited for every criterion below; `test_provider_factory.py` parse_spec cases)
-Pre-check[LL2]: ae0220cd same 371-passed run -> `test_provider_factory.py` (three-way route test, AST no-construction test, factory-called tests) and `test_ui_runs.py` retargeted trigger test
-Pre-check[LL3]: ae0220cd same 371-passed run -> `test_litellm_provider.py` 16 passed
-Pre-check[LL4]: ae0220cd same 371-passed run -> `test_litellm_provider.py::test_see_video_is_unsupported`
-Pre-check[LL5]: ae0220cd same 371-passed run -> `test_litellm_guard.py` 21 passed
-Pre-check[LL6]: ae0220cd same 371-passed run -> `test_litellm_provider.py` one-call and repair-count tests
-Pre-check[LL7]: ae0220cd same 371-passed run -> `test_litellm_provider.py` usage and span test
-Pre-check[LL8]: ae0220cd same 371-passed run -> `test_litellm_guard.py` plus `test_ui_learn_vendor_echo.py` (route echo, AT-790)
-Pre-check[LL9]: ae0220cd same 371-passed run -> `test_litellm_provider.py` gemini dialect tests
-Pre-check[LL10]: ae0220cd same 371-passed run -> `test_litellm_guard.py` subprocess and real-SDK quietness tests
-Pre-check[LL11]: ae0220cd same 371-passed run -> `test_provider_factory.py` ll11 tests, `test_expand_cli.py::test_expand_refuses_when_the_named_provider_has_no_credentials`, `test_ui_learn.py` unavailable-provider test, `test_cli_advice_resolves.py` 32 passed
-Pre-check[LL12]: ae0220cd same 371-passed run -> `test_providers.py`, `test_langchain_fallback.py`, `test_ensemble_honesty.py` (29 passed within it, no assertion edited)
-Pre-check[LL13]: ae0220cd uv lock --check -> Resolved 123 packages in 4ms (no change; the exact-pin test is in the 371-passed run)
-Pre-check[LL14]: ae0220cd uv run ruff check src tests scripts -> All checks passed!; uv run autotester doctor -> doctor: clean (cli.py 296, routes_learn.py 300, test_ui_learn.py 299, test_ui_runs_serial_resilience.py 300)
+Pre-check[LL1]: 0dd59183 uv --directory <worktree> run pytest -p no:xdist -o addopts= tests/test_provider_factory.py tests/test_litellm_provider.py tests/test_litellm_guard.py tests/test_providers.py tests/test_langchain_fallback.py tests/test_ensemble_honesty.py tests/test_ui_runs.py tests/test_ui_runs_queue.py tests/test_expand_cli.py tests/test_expand.py tests/test_failure_bundle.py tests/test_execute_serial_evidence_scope.py tests/test_pinned_regression.py tests/test_cli_advice_resolves.py tests/test_cli_surface.py tests/test_cli_harness_safety.py tests/test_ui_learn_vendor_echo.py tests/test_ui_learn.py -> 272 passed, 1 warning in 803.37s (one run, cited for every criterion below; `test_provider_factory.py` parse_spec cases)
+Pre-check[LL2]: 0dd59183 same 272-passed run -> `test_provider_factory.py` (three-way route test, AST no-construction test, factory-called tests) and `test_ui_runs.py` retargeted trigger test
+Pre-check[LL3]: 0dd59183 same 272-passed run -> `test_litellm_provider.py`
+Pre-check[LL4]: 0dd59183 same 272-passed run -> `test_litellm_provider.py::test_see_video_is_unsupported`
+Pre-check[LL5]: 0dd59183 same 272-passed run -> `test_litellm_guard.py`
+Pre-check[LL6]: 0dd59183 same 272-passed run -> `test_litellm_provider.py` one-call and repair-count tests
+Pre-check[LL7]: 0dd59183 same 272-passed run -> `test_litellm_provider.py` usage and span test
+Pre-check[LL8]: 0dd59183 same 272-passed run -> `test_litellm_guard.py` plus `test_ui_learn_vendor_echo.py` (route echo, AT-790)
+Pre-check[LL9]: 0dd59183 same 272-passed run -> `test_litellm_provider.py` gemini dialect tests
+Pre-check[LL10]: 0dd59183 same 272-passed run -> `test_litellm_guard.py` subprocess and real-SDK quietness tests
+Pre-check[LL11]: 0dd59183 same 272-passed run -> `test_provider_factory.py` ll11 tests, `test_expand_cli.py::test_expand_refuses_when_the_named_provider_has_no_credentials`, `test_ui_learn.py` unavailable-provider test, `test_cli_advice_resolves.py` (EXPECTED_SITE_COUNT 24, real count verified by the test)
+Pre-check[LL12]: 0dd59183 same 272-passed run -> `test_providers.py`, `test_langchain_fallback.py`, `test_ensemble_honesty.py` (no assertion edited)
+Pre-check[LL13]: 0dd59183 uv --directory <worktree> lock --check -> Resolved 123 packages in 1ms (no change; the exact-pin test is in the 272-passed run)
+Pre-check[LL14]: 0dd59183 uv --directory <worktree> run ruff check src tests scripts -> All checks passed!; uv --directory <worktree> run autotester doctor -> doctor: clean (cli.py 295, routes_learn.py 300)
 
 Falsification of the reconciled seam (throwaway copy of ae0220cd outside the worktree under the session scratchpad, run with PYTHONPATH on the copy; copy deleted; the worktree was not touched). Baseline on `test_provider_factory.py test_ui_learn.py test_ui_learn_vendor_echo.py test_expand_cli.py`: 55 passed.
 - Mutant A: `cli.py::expand_cases` ignores `--provider` (`model = providers.get("mock")` instead of `cli_orchestrate.usable_provider(provider)`): 2 failed (`test_ll11_the_cli_exits_non_zero_with_the_same_one_line_reason`, `test_expand_refuses_when_the_named_provider_has_no_credentials`), 53 passed.
 - Mutant B: `routes_learn.py::generate_cases` ignores the selected provider (`for_role(project, "agent")` replaced by a MockProvider): 4 failed (`test_neither_route_constructs_the_langchain_provider_itself[routes_learn.py]`, `test_generate_cases_asks_the_factory_for_the_agent_of_this_project`, `test_a_malformed_spec_on_the_learn_route_is_a_refusal_page_not_a_500`, `test_generate_creates_real_cases_in_the_projects_cases_file`), 51 passed.
 - Restored copy: 55 passed.
+
+## Second master merge 2026-10-11
+Master merged: 29d02c4b (t168-damage-control-report merged at fbf82ff5, then SNAPSHOT regeneration 8ad646d3, plus t198a, t200b and at773 qa files). Product commit under check: 0dd59183 (merge commit; this section and the refreshed Pre-check lines are the only later change). Fix cycle unchanged (0): nothing failed, nothing was fixed; this reconciles two PASSed units. Status stays ready-for-check.
+
+Conflicts and how each was resolved:
+- `docs/SNAPSHOT.md`: the only textual conflict (generated file). Resolved by regenerating with `autotester snapshot`, never by hand; `docs/MAP.md` auto-merged and `autotester map` produced no further change.
+- `src/autotester/cli.py`: auto-merged, no conflict. Master's `release-report` registration and the one-line signature join from t168 sit alongside t202's `cli_orchestrate.usable_provider(provider)` in `expand_cases`. 295 lines, no formatting edit needed; `git diff master -- src/autotester/cli.py` is only the t202 provider-refusal hunk.
+- `tests/test_cli_advice_resolves.py`: auto-merged, no conflict. `EXPECTED_SITES` has all master entries (including t168's `cli_release.py` release and release-log and `stages/unified_report.py` release sites) plus t202's `("cli_orchestrate.py", "providers")` swap. `EXPECTED_SITE_COUNT` stays 24, the real count (the test asserts it and passed). No test deleted, skipped, moved or weakened.
+- No other file under `src/` conflicted. `ui/routes_learn.py` is 300 lines (unchanged by this merge).
+
+All runs in the Pre-check lines were done with `uv --directory <t202 worktree> run ...` so they act on the worktree, not on master.
 
 ## Not claimed / held
 - LL15 (settings page keys, Models card, "Test this model"): waits on T-204 `settings.manage`. LL16 (`autotester providers --probe`): HUMAN-GATED, not run, no network call was made.
