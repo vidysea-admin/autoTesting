@@ -1,14 +1,14 @@
 # Verdict — t154-adversarial-pass, coordinator A (dual check)
-Bound to D:/autoTesting. Checked HEAD 575a7c3f (product fd7362a8, diff ff901f72..575a7c3f). Cycle checked: 0. Resume: 0 of 2. Retry: 0. Date 2026-10-11.
+Bound to D:/autoTesting. Checked HEAD 575a7c3f (product fd7362a8, diff ff901f72..575a7c3f). Cycle checked: 0. Resume: 1 of 2. Retry: 0. (Earlier CONTINUE-NEEDED verdict archived as qa/verdicts/t154-adversarial-pass.a.r0-1.md.) Date 2026-10-11.
 Policy-Version: proportional-verification/2026-10-10.9. Blind to coordinator B (its verdict, checkpoint and evidence were not read). PASS here would have no side effects; PROPOSED-ISSUE lines only.
 
 ## Check plan
-Tier L, dual (trigger cited `src/autotester/stages/adversarial.py:108`, confirmed by reading :108-110 and core/consent.py ADVERSARIAL path). Checks: AD1-AD7 by own re-run of `tests/test_adversarial.py` (25) and `scripts/adversarial_proof.py`; step 4c diff scope; one falsification per criterion in own copies; live-path grep (no browser, no UI); one checker full suite (security trigger).
+Tier L, dual (trigger cited `src/autotester/stages/adversarial.py:108`, confirmed by reading :108-110 and core/consent.py ADVERSARIAL path). Checks (cycle 0, resume 1 ran the suite only): AD1-AD7 by own re-run of `tests/test_adversarial.py` (25) and `scripts/adversarial_proof.py`; step 4c diff scope; one falsification per criterion in own copies; live-path grep (no browser, no UI); one checker full suite (security trigger).
 
-VERDICT: CONTINUE-NEEDED
-SCOREBOARD: 7/7 criteria met on every check run so far, 0/0 invariants violated; PASS withheld only because the mandatory full suite has not run
+VERDICT: PASS
+SCOREBOARD: 7/7 criteria met, 0 invariants violated (core-invariants C3, C5, C7 touched and held)
 TIER: L (security: consent gate 2 and the only probe-sending path; `adversarial.py:108`)
-REMAINING (copy into the next dispatch): ONE full suite of 575a7c3f via `shard_suite.py --repo D:/autoTesting/.worktrees/t154-adversarial-pass --ref 575a7c3f --shards 1 -- -o addopts=` (about 25-40 min once the lock is free). Cause: `BLOCKED: suite lock busy after 901s`, holder pid 38884 (land-integrate-combined, not ours), after pid 71416 (t167) held it first. Everything else below is reusable by evidence identity (qa/checkpoints/t154-adversarial-pass.a.md); tree hash unchanged is the condition.
+FULL SUITE (the one owed): branch tip re-verified 575a7c3f (unchanged). `shard_suite.py --repo D:/autoTesting --ref 575a7c3f --shards 4 -- -o addopts=`, lock acquired 05:29:43 after 8 min wait; 2996 collected = union (collect proof ok), 2975 passed, 19 skipped, 2 failed, both ledgered: AT-792 `test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen` (also red alone, as on the base) and AT-858 `test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log` (passed alone: load flake of a ledgered red). AT-725 and AT-750 did not fail. No new red. Neither failing file nor the code it tests is in this diff. suite_runs=1.
 FAILURES: none
 
 ## Criteria (each: my own run, not the manifest's)
@@ -42,5 +42,5 @@ CAPABILITY-COVERAGE: 7/7 rows reproduced (own edits, own copies)
 LIVE-BROWSER: not-applicable (stage, schema, probe .md files, script, tests; no UI path changed)
 ISSUES-WRITTEN: none (dual coordinator)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
-EXPLANATION: Every criterion is evidenced and falsified by me; the only mandatory item left is the one full suite, which could not start because the machine-wide suite lock stayed with other checkers for the whole 15-minute wait. slow: lock wait 15 min (blocked_min).
-Metrics: start=2026-10-11T01:37 end=2026-10-11T02:02 wall_min=10 agent_min=unavailable blocked_min=15 suite_runs=0 repeat_runs=0 mutations=8 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=unavailable mutants=1 defects_unit=0 defects_6c=0
+EXPLANATION: Every criterion is evidenced and falsified by me, the diff touches nothing outside its manifest, the live path is absent, and the owed full suite shows only the two ledgered reds. The PROPOSED-ISSUE lines P1-P6 are non-blocking low rows for the maker to write after coordinator B also passes. slow: lock wait 15 min then 8 min (blocked_min).
+Metrics: start=2026-10-11T01:37 end=2026-10-11T05:42 wall_min=21 agent_min=unavailable blocked_min=23 suite_runs=1 repeat_runs=0 mutations=8 cycle=0 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=unavailable mutants=1 defects_unit=0 defects_6c=0

@@ -1,0 +1,22 @@
+tree: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A758fresh\src\autotester\__init__.py
+CRAWL baseline (credential present): COVERS by account-derived row appr_5fc
+CRAWL after .env removed: REFUSED
+CRAWL after credential domain re-scoped: REFUSED
+CRAWL after declaration dropped: REFUSED
+CRAWL after value blanked (key absent): REFUSED
+   rows on disk: 1
+LIVE_CASE baseline (credential present): COVERS by account-derived row appr_7ca
+LIVE_CASE after .env removed: REFUSED
+LIVE_CASE after credential domain re-scoped: REFUSED
+LIVE_CASE after declaration dropped: REFUSED
+LIVE_CASE after value blanked (key absent): REFUSED
+   rows on disk: 1
+READ baseline (credential present): COVERS by account-derived row appr_4da
+READ after .env removed: REFUSED
+READ after credential domain re-scoped: REFUSED
+READ after declaration dropped: REFUSED
+READ after value blanked (key absent): REFUSED
+   rows on disk: 1
+ADVERSARIAL with account row present: REFUSED
+human LIVE_CASE row, credential gone: COVERS by human row appr_b01
+ADVERSARIAL, human live_case row only: REFUSED

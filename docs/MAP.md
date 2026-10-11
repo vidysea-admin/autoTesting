@@ -62,6 +62,7 @@
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
+| `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
@@ -103,6 +104,7 @@
 | `sources/email_register.py` | Registration for EMAIL sources: `register_email` -> `Source` rows. |
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
+| `stages/adversarial.py` | ADVERSARIAL: a bounded pass of file-defined probes at one AI endpoint. It records, never judges. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
 | `stages/ai_capture.py` | AI CAPTURE: exercise one AI endpoint and record what happened. It observes and never decides. |
 | `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
@@ -215,6 +217,10 @@
 | `AiReply` (`schema/ai_check.py`) | What an AI endpoint answered, as the transport seam hands it to the capturer. |
 | `AiExchange` (`schema/ai_check.py`) | One prompt and what was observed of its answer. Facts only: no verdict lives here (C7). |
 | `AiCapture` (`schema/ai_check.py`) | A captured run of one check against one endpoint: observation, never judgement. |
+| `ProbeSet` (`schema/ai_probe.py`) | One probe file under `prompts/probes/`: a category name and its probe texts (AD4). |
+| `ProbeRecord` (`schema/ai_probe.py`) | One probe sent and what was observed of the answer, tagged with the set it came from. |
+| `ProbeRun` (`schema/ai_probe.py`) | A completed bounded pass against one endpoint: observation, never judgement (AD5). |
+| `ProbeRefusal` (`schema/ai_probe.py`) | One line of `refusals.jsonl` (AD7). Carries no probe content, by construction. |
 | `AiSignalKind` (`schema/ai_target.py`) | Observed lexical facts; never runtime claims or check selection. |
 | `AiTargetKind` (`schema/ai_target.py`) | The four positive target kinds specified by the approved T-151 plan. |
 | `Classification` (`schema/ai_target.py`) | Strict naming response; evidence and checks are never model-controlled. |
@@ -376,6 +382,7 @@
 <!-- generated:scripts -->
 | Script | One job |
 |---|---|
+| `scripts/adversarial_proof.py` | Credential-free, network-free proof that the adversarial pass refuses to exceed its scope. |
 | `scripts/append_decision.ps1` | append_decision.ps1 -- the ONLY legitimate write path to docs/DECISIONS.md |
 | `scripts/bench_trial.py` | T-120: the north star made measurable — first real human-vs-AI trial scorecard. |
 | `scripts/check_crawl_approval.py` | T-145's done_check (D-018): a live crawl counts as done only if it actually |
