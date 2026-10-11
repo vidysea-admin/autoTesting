@@ -3,7 +3,7 @@
 **Contract:** qa/contracts/team-bug-loop.md TB3, TB4, TB6 (held clauses of t199a closed); TB9, TB10, TB11, TB13 (part, as a dry-run plan on a fake client); TB2 stored-N clause, TB7, TB8, TB12, TB14, HG-TB1 held
 **Brief:** qa/briefs/t199b-bug-loop-run.md (and qa/briefs/t199-bug-loop-dry-run.md it builds on; never edits qa/contracts)
 **Fix cycle:** 0 of max 2
-**Dual check:** no. No `dual-trigger`: this slice has no auth, tenancy or security surface (no route, no session, no permission key; the confirmer is a named string and the `project.edit` check is T-204's), and it is not a prod write. The sheet-write PLAN has no live client: `SheetClient` has one implementation, a test fake, and `write_confirmed_plan` raises `LiveWriteRefused` on any client whose `live` is true (`src/autotester/stages/sheet_write.py:70`). No Google API, no `gws`, no network, no first-write-confirmed record was created.
+**Dual check:** no. No `dual-trigger`: this slice has no auth, tenancy or security surface (no route, no session, no permission key; the confirmer is a named string and the `project.edit` check is T-204's), and it is not a prod write. The sheet-write PLAN has no live client: `SheetClient` has one implementation, a test fake, and `write_confirmed_plan` raises `LiveWriteRefused` on any client whose `live` is true (`src/autotester/stages/sheet_write.py:77`). No Google API, no `gws`, no network, no first-write-confirmed record was created.
 **Persona walk:** skip (no UI route or screen; TB7 is held)
 **Executor:** claude-sonnet-subagent
 **Branch:** wave/t199b-bug-loop-run
