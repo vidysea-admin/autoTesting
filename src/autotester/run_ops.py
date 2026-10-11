@@ -41,6 +41,7 @@ _STATUS: dict[ExitCode, ReportStatus] = {
 # URL and DOM evidence carry the observed value itself, not a file path.
 _VALUE_KINDS = frozenset({EvidenceKind.URL, EvidenceKind.DOM})
 _REFUSED_BY_GATE = 403
+_RUN_ID = r"[A-Za-z0-9][A-Za-z0-9_-]*"  # a path segment, never a path
 
 
 def exit_code_for(exc: BaseException) -> ExitCode:
@@ -128,8 +129,10 @@ def _case_outcomes(store: ProjectStore, run_id: str, case_ids: list[str]) -> lis
 
 def stored_run_report(store: ProjectStore, run_id: str) -> RunReport:
     """A stored run as the CM2 document. A case no grader judged is NOT_GRADED, never PASS."""
+    if not re.fullmatch(_RUN_ID, run_id):
+        raise LaunchRefused(400, "invalid run id")
     run = store.load_run(run_id)
-    if run is None:
+    if run is None or run.id != run_id or run.project != store.paths.slug:
         raise LaunchRefused(404, f"no run '{run_id}' for '{store.paths.slug}'")
     cases = _case_outcomes(store, run_id, run.case_ids)
     counts = Counter(c.result.value if c.result else "NOT_GRADED" for c in cases)

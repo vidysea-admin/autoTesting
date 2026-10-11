@@ -259,3 +259,22 @@ def test_a_machine_run_is_attributed_to_its_surface(surface, root, monkeypatch):
         mcp_server.tool_run_tests("demo")
     saved = store.load_run(next(p.name for p in store.paths.runs_dir.iterdir()))
     assert saved.trigger is Trigger.CI and saved.requested_by == surface
+
+
+@pytest.mark.parametrize("run_id", ["../../other/secretdir", "a/b", "..", "C:/Windows", "-x"])
+def test_an_unsafe_run_id_is_usage_and_reads_nothing(run_id, root):
+    """Review finding (high): `run_id` is a path segment. No surface may resolve it outside the
+    project's runs directory, and no file content may come back in the error text."""
+    from cli_mcp_fixture import SECRET_VALUE, seed_project
+
+    from autotester.schema.cli_output import ExitCode, RunReport
+    seed_project(root)
+    planted = root / "projects" / "other" / "secretdir"   # what `../../other/secretdir` resolves to
+    planted.mkdir(parents=True)
+    (planted / "run.json").write_text(f"{SECRET_VALUE} not json", "utf-8")
+    cli = runner.invoke(app, ["report", "show", "demo", run_id, "--output", "json"])
+    assert cli.exit_code == int(ExitCode.USAGE), cli.output
+    assert SECRET_VALUE not in cli.output
+    for report in (run_ops.get_report("demo", run_id), mcp_server.tool_get_report("demo", run_id)):
+        assert isinstance(report, RunReport) and report.exit_code == int(ExitCode.USAGE)
+        assert SECRET_VALUE not in report.model_dump_json()
