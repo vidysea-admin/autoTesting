@@ -1,0 +1,4 @@
+BAD_HOSTS requests sent=2850 non-403-or-nonempty=2850 leaks=1026
+LEAK ('evil.example', 'GET', '/', 200)
+LEAK ('evil.example', 'GET', '/live', 200)
+LEAK ('evil.example', 'GET', '/onboard', 200)

@@ -7,7 +7,15 @@ from pathlib import Path
 
 import typer
 
-from autotester import cli_crawl, cli_issues, cli_loop, cli_orchestrate, cli_video, providers
+from autotester import (
+    cli_crawl,
+    cli_issues,
+    cli_loop,
+    cli_orchestrate,
+    cli_release,
+    cli_video,
+    providers,
+)
 from autotester import doctor as doctor_module
 from autotester.core.env import load_repo_env
 from autotester.core.paths import RepoDocs
@@ -34,7 +42,8 @@ app.add_typer(cli_issues.app, name="issues")
 
 @app.callback()
 def _bootstrap() -> None:
-    """Load the same repository environment as the UI (AT-228)."""
+    """Runs before every command: load the repo-root `.env` the web UI already loads, so both
+    entry points agree on whether this machine has credentials (AT-228)."""
     load_repo_env()
 
 
@@ -208,15 +217,9 @@ def expand_cases(
         typer.secho(f"no flowspec for '{project}' yet — ingest a recording first", fg="red")
         raise typer.Exit(1)
     try:
-        rows = expand_stage.propose_cases(spec)
-        store_.stage_case_proposals(rows)
-        if set(approve) & set(prune):
-            raise ValueError("a proposal cannot be approved and pruned together")
-        for proposal_id in approve + prune:
-            store_.review_case_proposal(proposal_id, by=by, approved=proposal_id in approve)
+        rows = expand_stage.stage_and_review(store_, spec, approve, prune, by)
         if proposals or approve or prune:
-            ids = {p.id for p in rows}
-            for row in (p for p in store_.list_case_proposals() if p.id in ids):
+            for row in rows:
                 typer.echo(f"{row.id} {row.status} {row.case_class.value}: {row.title}")
             return
         store_.preflight_case_proposals(spec)
@@ -289,6 +292,8 @@ app.command("explore")(cli_crawl.explore_cmd)
 app.command("approve")(cli_crawl.approve_cmd)
 report_app.command("crawl")(cli_crawl.report_crawl)
 app.command("orchestrate")(cli_orchestrate.orchestrate_cmd)
+app.command("release")(cli_release.release_cmd)
+app.command("release-log")(cli_release.release_log_cmd)
 
 
 def main() -> None:

@@ -5,4 +5,5 @@ Done (reusable while the code identity is unchanged):
 - doctor on git archive of master 354bd31f and of 2653bbcb: only stale-generated docs/SNAPSHOT.md.
 - falsifications AI6a AI6b AI7a AI7b AI7c AI7d AI7e AI7f: all green-before / red-after (see verdict).
 - step 4c diff scope: clean.
-Remaining: ONE checker full suite (shard_suite.py --repo D:/autoTesting --ref 2653bbcb --shards 1 ... -- -o addopts=), blocked 15 min on the suite lock (holders pid 20200 then 38884, not ours; shard_suite exit 3).
+- FULL SUITE (checker A, Retry 1): shard_suite --shards 4 -- -o addopts=, ref 2653bbcb, 2026-10-11T05:09-05:20, wall 637.7 s: 2950 passed, 19 skipped, 2 failed (collect proof ok, 2971). Reds: AT-858 hook healthy-log test (TypeError NoneType, passed alone; same on base) and AT-792 rc2 test (assert None == 'type your email here', failed alone; same on base land-integrate-combined-A/base.out). Result: no new red.
+Remaining: none. Verdict PASS (Retry 1). Earlier BLOCKED-PROCESS verdict archived as a.r0-1.

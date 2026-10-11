@@ -1,0 +1,146 @@
+{
+ "six_mib_real_body": {
+  "status": 413,
+  "rows": 0
+ },
+ "boundary_5000": {
+  "status": 500,
+  "body": "Internal Server Error"
+ },
+ "boundary_quoted_weird": {
+  "status": 400,
+  "body": "<!doctype html><title>Upload refused \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crosso"
+ },
+ "boundary_256": {
+  "status": 400,
+  "body": "<!doctype html><title>Upload refused \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crosso"
+ },
+ "boundary_257": {
+  "status": 500,
+  "body": "Internal Server Error"
+ },
+ "cross_origin_upload": {
+  "status": 403,
+  "rows": 0
+ },
+ "cross_origin_drive": {
+  "status": 403
+ },
+ "hostile_host_upload": {
+  "status": 403,
+  "rows": 0
+ },
+ "slug_..": 404,
+ "slug_..%2f..": 404,
+ "slug_demo%2f..%2f": 404,
+ "slug_nope": 404,
+ "slug_DEMO": 400,
+ "slug_aaaaaaaaaaaa": 404,
+ "job_..": 200,
+ "job_..%2f..%2fsecr": 404,
+ "job_00000000000000": 404,
+ "job_01M4M62SK47SH3": 404,
+ "job_aaaaaaaaaaaaaa": 404,
+ "job_%2e%2e": 404,
+ "drive_good_spoof": {
+  "status": 303,
+  "by": [
+   "dev@vidysea.test"
+  ],
+  "origin": [
+   {
+    "kind": "drive",
+    "file_id": "GOODID123"
+   }
+  ],
+  "raw_img": false,
+  "escaped": true,
+  "rechecks": 1
+ },
+ "drive_recheck_refused": {
+  "status": 303,
+  "opened": [],
+  "page_has_refused": true,
+  "rows_for": 0
+ },
+ "gws_folder_hostile": {
+  "rows": [
+   [
+    "$(calc).mp4",
+    "failed",
+    "that is not a valid Google Drive id (letters, digits, - and _ only)"
+   ],
+   [
+    "evil<script>.mp4",
+    "registered",
+    null
+   ],
+   [
+    "a.mp4",
+    "failed",
+    "that is not a valid Google Drive id (letters, digits, - and _ only)"
+   ],
+   [
+    "b>",
+    "skipped",
+    "sub-folders are not opened; paste the sub-folder's own link"
+   ],
+   [
+    "x.pdf",
+    "skipped",
+    "not a recording (application/pdf); only video files are fetched"
+   ]
+  ],
+  "all_argv_tokens": [
+   "--params",
+   "-o",
+   "download.part",
+   "drive",
+   "files",
+   "get",
+   "list"
+  ],
+  "any_arg_contains_metachar": false,
+  "download_ids": [
+   "GOODFILE01"
+  ]
+ },
+ "gws_error_text": {
+  "rows": "[[\"(Drive file)\", \"Google Drive refused access to that file. Make it viewable by anyone with the link, or share it with the server's Google account, then paste the link again.\"]]",
+  "has_canary": false,
+  "has_script": false
+ },
+ "job_page_typed_error": {
+  "status": 303,
+  "has_fixed_msg": true,
+  "traceback": false
+ },
+ "real_subprocess_argv": {
+  "argv": [
+   "drive",
+   "files",
+   "get",
+   "--params",
+   "{\"fileId\":\"-abc_DEF-1\",\"fields\":\"id,name,mimeType,size,md5Checksum\",\"supportsAllDrives\":true}"
+  ],
+  "item": "ABCDEF123"
+ },
+ "real_subprocess_bad_id": "DriveVerifyError",
+ "real_subprocess_inject": "DriveVerifyError",
+ "pwned_marker_exists": false,
+ "job_file_two_writers_one_reader": [
+  "PermissionError:[Errno 13] Permission denied: 'C:\\\\Users\\\\Lenovo\\\\AppData\\\\L",
+  "PermissionError:[Errno 13] Permission denied: 'C:\\\\Users\\\\Lenovo\\\\AppData\\\\L",
+  "FileNotFoundError:[WinError 2] The system cannot find the file specified: 'C:\\",
+  "FileNotFoundError:[WinError 2] The system cannot find the file specified: 'C:\\",
+  "PermissionError:[Errno 13] Permission denied: 'C:\\\\Users\\\\Lenovo\\\\AppData\\\\L",
+  "PermissionError:[Errno 13] Permission denied: 'C:\\\\Users\\\\Lenovo\\\\AppData\\\\L"
+ ],
+ "job_dir": [
+  "01M4M62SK47SH3SXBPAF6RNYMA.json",
+  "01M4M65FFKSWMYTA4XAZM9VN91.json",
+  "01M4M65FJJ5N7R35HPBEWQ67CS.json",
+  "01M4M65FN24D1VK9NTR3QC98F2.json"
+ ],
+ "lock_basic": "ok"
+}

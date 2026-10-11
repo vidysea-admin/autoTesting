@@ -1,0 +1,23 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.43s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_no_callbacks_are_registered_and_telemetry_is_off ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000207BF9A7950>
+
+    def test_no_callbacks_are_registered_and_telemetry_is_off(monkeypatch: pytest.MonkeyPatch) -> None:
+        fake = install(monkeypatch, [reply(json.dumps(GOOD))])
+        _with_key(monkeypatch)
+        _provider().judge("g", Answer)
+>       assert not (fake.success_callback or fake.failure_callback or fake.callbacks)
+E       AssertionError: assert not (['x'])
+E        +  where ['x'] = <module 'litellm'>.success_callback
+
+tests\test_litellm_guard.py:126: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_guard.py::test_no_callbacks_are_registered_and_telemetry_is_off
+1 failed in 1.02s

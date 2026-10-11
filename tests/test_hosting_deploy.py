@@ -145,8 +145,10 @@ def test_compose_needs_no_domain_unless_the_https_profile_is_used() -> None:
 def test_deploy_guide_claims_only_what_the_compose_file_does() -> None:
     """AT-864: the guide once sent operators to an SSH tunnel to 6080, which compose only
     `expose`s (nothing listens on the host), and described a Host allow-list (AT-758) that is
-    not in the code as if it answered 403 today."""
+    not in the code as if it answered 403 today. AT-758 has since landed, so the guide now says
+    the allow-list answers 403 and no longer says it is missing from the release."""
     guide = (ROOT / "docker" / "DEPLOY.md").read_text(encoding="utf-8")
     assert "http://localhost:6080" not in guide
-    assert "ships with AT-758" in guide
+    assert "ships with AT-758" not in guide and "AT-758 is in your release" not in guide
+    assert "empty 403" in guide
     assert "AUTOTESTER_ALLOWED_HOSTS" in guide

@@ -1,0 +1,34 @@
+using C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A758fresh\src\autotester\__init__.py
+route classes: ['APIRoute', 'Route', '_IncludedRouter']
+distinct (method,path) probes: 75
+BAD_HOSTS requests sent=2850 non-403-or-nonempty=0 leaks=0
+allowed 'localhost' 200 True
+allowed 'LOCALHOST:8000' 200 True
+allowed '127.0.0.1:8000' 200 True
+allowed '[::1]:8000' 200 True
+allowed '[::1]' 200 True
+allowed 'Localhost:1' 200 True
+evil Host + XFH localhost -> 403 False
+localhost Host + XFH evil -> 200 (allowed by Host; app ignores XFH)
+evil Host + Forwarded host=localhost -> 403
+repeated [('Host', 'localhost'), ('Host', 'localhost')] 403 True
+repeated [('Host', 'localhost'), ('Host', 'evil.example')] 403 True
+repeated [('Host', 'evil.example'), ('Host', 'localhost')] 403 True
+repeated [('host', 'localhost'), ('HOST', 'localhost')] 403 True
+dup origin same value -> 403
+AT-760 origin http://localhost:8000.evil.com 403
+AT-760 origin http://localhost:80a 403
+AT-760 origin http://[::1]:8000.evil.com 403
+asgi missing host -> reached app, status: (False, 403)
+asgi absolute-form + evil host -> reached app, status: (False, 403)
+asgi absolute-form + loopback host (target names evil) -> reached app, status: (True, 200)
+asgi absolute-form target loopback, Host evil -> reached app, status: (False, 403)
+asgi authority header (h2-like) -> reached app, status: (False, 403)
+asgi websocket scope -> reached app, status: (True, 200)
+unset allow-lists, non-loopback Host (hosted bind, nothing configured): 403 403
+ORIGINS admits autotester.example.org: 200 403 evil still: 403 sub: 403
+ORIGINS bare name (no scheme): 403
+ORIGINS junk entries admit evil?: 403 403 403
+HOSTS='*': 403
+HOSTS list: 200 200 403 403 403
+HOSTS empty string: 403

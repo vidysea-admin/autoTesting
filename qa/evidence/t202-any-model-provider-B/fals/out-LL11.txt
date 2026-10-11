@@ -1,0 +1,23 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 1.25s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_a_missing_key_is_a_clear_error_naming_the_key_and_makes_no_call _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000028228AB3C50>
+
+    def test_a_missing_key_is_a_clear_error_naming_the_key_and_makes_no_call(
+            monkeypatch: pytest.MonkeyPatch) -> None:
+        fake = install(monkeypatch, [], missing_keys=["OPENAI_API_KEY"])
+>       with pytest.raises(ProviderError, match="OPENAI_API_KEY"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'OPENAI_API_KEY'
+E         Actual message: 'litellm:openai/gpt-4o judge call failed: IndexError: pop from empty list'
+
+tests\test_litellm_guard.py:172: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_guard.py::test_a_missing_key_is_a_clear_error_naming_the_key_and_makes_no_call
+1 failed in 1.25s

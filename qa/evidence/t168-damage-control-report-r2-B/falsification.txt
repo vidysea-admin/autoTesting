@@ -1,0 +1,18 @@
+=== src6
+7 passed, 1 warning in 7.11s
+=== m1
+E       AssertionError: assert 'input_value' not in '<!doctype h.../main></div>'
+FAILED tests/test_unified_report_secrets.py::test_dc4_cli_error_path_does_not_echo_a_stored_secret
+FAILED tests/test_unified_report_secrets.py::test_dc4_route_error_path_is_an_error_status_without_the_stored_secret
+FAILED tests/test_unified_report_secrets.py::test_dc4_build_report_failure_message_names_the_field_never_the_value
+3 failed, 4 passed, 1 warning in 8.13s
+=== m3
+FAILED tests/test_unified_report_secrets.py::test_dc4_cli_error_path_does_not_echo_a_stored_secret
+FAILED tests/test_unified_report_secrets.py::test_dc4_build_report_failure_message_names_the_field_never_the_value
+2 failed, 5 passed, 1 warning in 6.99s
+E       AssertionError: advice sites changed.
+E         gone: []
+E         new: [('stages/unified_report.py', 'release')]
+E       assert {('cli.py', '...gister'), ...} == {('cli.py', '...gister'), ...}
+E         
+E         Extra items in the left set:

@@ -365,6 +365,60 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-11 at758-759-host-allowlist close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. AT-758, AT-759, AT-760 and AT-761 are now `fixed` (merged 02c5f016). AT-920, AT-921 and AT-924 are test-environment rows, ledger-only and not candidates. All rows below are low as filed by both coordinators; none is browser-reachable today.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Refuse a websocket scope with a disallowed Host in `_OriginGuard` (`ui/helpers.py:274`), so a future websocket route cannot reopen AT-758. No websocket route exists today. | AT-919 |
+| priority: security | Match the raw Host against a strict pattern before `urlparse` and optionally refuse an absolute-form request target (`ui/helpers.py:233`); a tab or CR inside Host is currently stripped. Not browser-reachable. | AT-922 |
+| priority: security | Refuse duplicate Referer and Sec-Fetch-Site headers in `origin_refusal` (still last-wins; Host and Origin are fixed by AT-761). | AT-923 |
+
+## Candidates (human picks) — 2026-10-11 T-154 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Rows AT-909, AT-911, AT-914, AT-915 and AT-918 are ledger-only and are not candidates. T-154 stays pending (adapter allowlist, AT-917; no live adversarial pass has been made).
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Validate `probe_sets` names as single safe path components and assert the resolved path stays under `prompts/probes`: `../outside` loaded and sent a .md from outside the probe directory on the only probe-sending path (operator-controlled, no CLI yet). Severity low as filed by coordinator B. | AT-912 |
+| priority: security | Owner decision: is an adversarial `RunApproval` single-use? Today 3 passes on one `max_probes=4` row sent 12 probes (replayable until expiry). AD2 words the bound per run, so it is within the contract. | AT-913 |
+| priority: security | Require a per-send timeout when the real sender is built: `wall_clock_s` is checked only between sends, so one hung send is unbounded. Do before the first live pass. | AT-911 |
+| low (owner-confirm) | Confirm `PROBE_CEILING=50`, the five probe categories and the probe text, and the Pathlynks endpoint string and production status (CN7), before any live firing. | AT-916 |
+| low (process) | Add `uv run python scripts/adversarial_proof.py` to `qa/adapter.json` `read_only_allowlist` (enforcement/config path, needs an authorizing D-entry) so T-154's done_check can run and close the task. | AT-917 |
+| low | Make refusals uniform: one exception family, and a `refusals.jsonl` row (true requested count) for host, secret, probe-file and bad `wall_clock_s` refusals. | AT-910 |
+| low (test-gap) | Pin the wall-clock refusal, the exact-ceiling case, and the refusal-log scrub of `target=` and `reason=`. | AT-914, AT-915 |
+
+## Candidates (human picks) — 2026-10-11 T-167 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Eight low rows (AT-901..AT-908) are ledger-only and are not candidates.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Validate `--run-id` as a single safe path component before any write: `ProjectPaths.run_dir` joins it unchecked, so `../escaped` created a directory outside `runs/` and more `..` segments reach outside the project. Raised from low to medium by the checker. | AT-900 |
+| priority: S1/S2 (medium, goal-coverage) | Add the FlowPlan producer: nothing in src/ writes a FlowPlan, so a real `autotester release` reports every flow `not run` (RR6; T-167 stays open until this lands). | AT-898 |
+| medium | Make the release pause, approve and decline output usable: show what is approved, give a next step, no 'finished' after decline, no raw traceback. | AT-899 |
+
+## Candidates (human picks) — 2026-10-11 T-153 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Five low rows (AT-893..AT-897) are ledger-only and are not candidates.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Escape or fence the target's response text in `stages/ai_judge.py::_evidence` so it cannot forge evidence rows in the judge prompt (reproduced: a response carrying `- [network] tools_called[0]: ...` renders as a real evidence line and can steer a JUDGED check). Medium. | AT-892 |
+
+## Candidates (human picks) — 2026-10-11 T-145 live-run review (checker, read-only, report `.work/pathlynks-report/`)
+
+Never built until a human moves one out of this section with `approved: <date>`. Findings about the product under test (Pathlynks) are not ledger rows and are listed in the checker's report only. Existing open rows that already cover a T-145 claim and were not duplicated: AT-773 (judge PASSes a failed assertion), AT-774 (retired cases are run), AT-840 (judge sends prompts and screenshots with no mask), AT-654 (no setting yields typing on production; this is why 11 typing actions were refused), AT-113 (screen the crawler cannot return to).
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security (data boundary) | Mask or guard `stages/expand.py::build_expand_prompt` before `provider.act`; the T-145 expand sent 42 step values (4 email-shaped, 2 phone-shaped) to the provider unmasked. Pairs with AT-840 (judge screenshots). | AT-890, AT-840 |
+| priority: S1/S2 (high) | One failed case must not take the rest of a tier down: 34 of the 37 inconclusive cases failed on a dead browser. Prove the cause with two passing shared-session cases first, then fix `browser/video.py` `end_case_video` and add a session restart. Without this a rerun still tests nothing. | AT-888 |
+| priority: S1/S2 (high) | Turn a crawl's screens into reviewable student flows so `expand` has something to expand, and warn before a run when no case's first target exists on the crawled surface. | AT-887 |
+| priority: security (consent record) | HUMAN_GATE for Umesh: is `pathlynks.vidysea.com` production? Approval `appr_ce61e4420ac9` is signed `production: false`; the gate file and the T-145 row say production, `project.json` says dev. Inert this run (no typing), live the moment typing is enabled. | AT-891, AT-654 |
+| medium | AT-226 precheck races a client-side redirect on a live session; `login_failed` carries no cause. | AT-889 |
+
 ## Candidates (human picks) — 2026-10-11 sweep (Mode B sharded, window 72fafe7c..4f8f5da1, master 057b6dbb)
 
 Never built until a human moves one out of this section with `approved: <date>`. **BACKSTOP RED** on 4f8f5da1 (2836 passed, 20 skipped, 4 failed, 4 shards, 2301 s): no `backstop:` stamp, so the next sweep with a changed tree is a backstop run again. **No `HOLD:` line:** no behavioural regression or security defect is traced to a checked-PASS feature's changed files. The one deterministic red (AT-792) is a stale test of a contract-conformant product; the other three are load-sensitive and unresolved (AT-750, AT-725, AT-858). `qa/checkpoints/baseline-reds.md` was not created (see AT-750). No new S1/S2 or security row this sweep; the carried S1/S2 rows below in the 2026-10-07 section stand (its first row, AT-744, is now fixed but see AT-853).

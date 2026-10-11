@@ -1,0 +1,66 @@
+GREEN-BEFORE
+.......                                                                  [100%]
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7 passed, 1 warning in 2.15s
+
+AFTER-EDIT
+.FF.F..                                                                  [100%]
+================================== FAILURES ===================================
+_ test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing[litellm:https://user:pw@host/v1] _
+
+spec = 'litellm:https://user:pw@host/v1'
+
+    @pytest.mark.parametrize("spec", [
+        "litellm:", "litellm:https://user:pw@host/v1", "litellm:openai/gpt-4o@user:pw", "",
+        "litellm:openai/gpt-4o user pw", "nosuchprovider-user:model", "gemini,nosuch-user",
+    ])
+    def test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing(
+            spec: str) -> None:
+>       with pytest.raises(ProviderError) as info:
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_provider_factory.py:67: Failed
+_ test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing[litellm:openai/gpt-4o@user:pw] _
+
+spec = 'litellm:openai/gpt-4o@user:pw'
+
+    @pytest.mark.parametrize("spec", [
+        "litellm:", "litellm:https://user:pw@host/v1", "litellm:openai/gpt-4o@user:pw", "",
+        "litellm:openai/gpt-4o user pw", "nosuchprovider-user:model", "gemini,nosuch-user",
+    ])
+    def test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing(
+            spec: str) -> None:
+>       with pytest.raises(ProviderError) as info:
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_provider_factory.py:67: Failed
+_ test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing[litellm:openai/gpt-4o user pw] _
+
+spec = 'litellm:openai/gpt-4o user pw'
+
+    @pytest.mark.parametrize("spec", [
+        "litellm:", "litellm:https://user:pw@host/v1", "litellm:openai/gpt-4o@user:pw", "",
+        "litellm:openai/gpt-4o user pw", "nosuchprovider-user:model", "gemini,nosuch-user",
+    ])
+    def test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing(
+            spec: str) -> None:
+>       with pytest.raises(ProviderError) as info:
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_provider_factory.py:67: Failed
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_factory.py::test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing[litellm:https://user:pw@host/v1]
+FAILED tests/test_provider_factory.py::test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing[litellm:openai/gpt-4o@user:pw]
+FAILED tests/test_provider_factory.py::test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoing[litellm:openai/gpt-4o user pw]
+3 failed, 4 passed, 1 warning in 1.35s

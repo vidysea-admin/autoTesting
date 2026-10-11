@@ -124,6 +124,19 @@ def propose_cases(spec: FlowSpec) -> list[CaseProposal]:
     ) for flow in spec.flows for case_class in applicable_classes(flow)]
 
 
+def stage_and_review(store: ProjectStore, spec: FlowSpec, approve: list[str],
+                     prune: list[str], by: str) -> list[CaseProposal]:
+    """Stage this spec's proposals, apply the human's approve/prune decisions, return the rows."""
+    rows = propose_cases(spec)
+    store.stage_case_proposals(rows)
+    if set(approve) & set(prune):
+        raise ValueError("a proposal cannot be approved and pruned together")
+    for proposal_id in approve + prune:
+        store.review_case_proposal(proposal_id, by=by, approved=proposal_id in approve)
+    ids = {p.id for p in rows}
+    return [p for p in store.list_case_proposals() if p.id in ids]
+
+
 def _reviewed_batch(spec: FlowSpec, store: ProjectStore | None,
                     proposal_ids: list[str] | None = None,
                     flow_id: str | None = None) -> list[CaseProposal]:
