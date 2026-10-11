@@ -42,3 +42,10 @@ Five of the 18 modules (`sources/drive_errors.py`, `sources/gws_runner.py`, `sou
 `sources/drive_intake.py`, `ui/intake_gate.py`) are not named by file in the brief or the contract. The
 checker counted them as named through D-072 item 2 ("yes to all new modules ... the Group 10 split
 modules ... the checker judges it"). If "names it" in D-082 means file names only, say so.
+
+The same reading was used for t200b-scheduled-test, which IS merged (a3c3a324, local only, not
+pushed): its two new modules `stages/schedule_gate.py` and `stages/schedule_tick.py` are named by file
+in the manifest and in checker B's verdict, but the brief and contract name only their jobs. Both have
+one-job docstrings and neither has a caller in `src/` yet (scheduling stays off). Its manifest also
+leaves "keep `schedule_gate.py` separate or fold it into `explore_consent.py`" as your ruling. If you
+do not accept this reading, the merge is undone with `git revert -m 1 a3c3a324`.
