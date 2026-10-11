@@ -254,6 +254,14 @@ def test_tb13_a_planted_secret_is_in_neither_the_plan_nor_its_rendering_nor_the_
     assert "[REDACTED]" in sheet.rows[0][HEADER.index("Title")]
 
 
+def test_a_value_that_would_run_as_a_formula_is_written_as_plain_text() -> None:
+    sheet = FakeSheet(HEADER)
+    plan, _ = _write(sheet, [_bug(1, title='=HYPERLINK("http://evil","x")'), _bug(2, title="-1+1")])
+    assert sheet.rows[0][HEADER.index("Title")] == "'=HYPERLINK(\"http://evil\",\"x\")"
+    assert sheet.rows[1][HEADER.index("Title")] == "'-1+1"
+    assert plan.rows[0].changes[1].after.startswith("'=")
+
+
 # -- design rules -------------------------------------------------------------------------------
 
 def test_the_sheet_modules_import_no_network_google_or_process_library() -> None:

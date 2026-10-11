@@ -25,9 +25,8 @@ from autotester.schema.sheet_plan import (
     SheetState,
     SyncMemory,
 )
-from autotester.schema.tracked_bug import BugStatus, TrackedBug
+from autotester.schema.tracked_bug import LIVE_STATUSES, TrackedBug
 
-LIVE = (BugStatus.OPEN, BugStatus.REOPENED)
 Scrub = Callable[[str], str]
 
 
@@ -44,6 +43,15 @@ def bug_values(bug: TrackedBug) -> dict[str, str]:
         "first_seen": bug.first_seen.strftime("%Y-%m-%d %H:%M UTC"),
         "last_seen": bug.last_seen.strftime("%Y-%m-%d %H:%M UTC"), "count": str(bug.count),
     }
+
+
+FORMULA_STARTS = ("=", "+", "-", "@", chr(9), chr(13))
+
+
+def _safe(value: str) -> str:
+    """A cell starting with `=`, `+`, `-`, `@`, tab or CR can run as a formula in a sheet that
+    parses its input; a leading apostrophe makes it plain text. Applied before the plan is hashed."""
+    return "'" + value if value[:1] in FORMULA_STARTS else value
 
 
 def _cell(row: list[str], index: int) -> str:
@@ -71,7 +79,8 @@ def _located(sheet: SheetState, key_at: int) -> dict[str, list[int]]:
 
 def _row_for(bug: TrackedBug, rows: list[int], sheet: SheetState, index: dict[str, int],
              cols: SheetColumns, memory: SyncMemory, scrub: Scrub) -> PlanRow | None:
-    want = {cols.columns[f]: scrub(v) for f, v in bug_values(bug).items() if f in cols.columns}
+    want = {cols.columns[f]: _safe(scrub(v)) for f, v in bug_values(bug).items()
+            if f in cols.columns}
     if not rows:
         return PlanRow(action="append", bug_key=bug.bug_key,
                        changes=[CellChange(column=h, before="", after=v) for h, v in want.items()])
@@ -105,7 +114,7 @@ def plan_sync(bugs: Iterable[TrackedBug], sheet: SheetState, cols: SheetColumns,
     unchanged = 0
     for bug in sorted(bugs, key=lambda b: (b.first_seen, b.bug_key)):
         have = located.get(bug.bug_key, [])
-        if bug.status not in LIVE and not have:
+        if bug.status not in LIVE_STATUSES and not have:
             continue
         row = _row_for(bug, have, sheet, index, cols, memory, scrub)
         if row is None:

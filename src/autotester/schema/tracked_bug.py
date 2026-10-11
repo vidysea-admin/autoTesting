@@ -43,6 +43,10 @@ class BugStatus(StrEnum):
     STALE = "stale"
 
 
+LIVE_STATUSES = (BugStatus.OPEN, BugStatus.REOPENED)
+"""The two statuses of a bug still being worked: the loop treats `reopened` as `open`."""
+
+
 class EventKind(StrEnum):
     """What happened, in the loop's vocabulary. The first seven are verdict-derived; `case_changed`
     says the check the bug rests on is gone; `assign` is the one human-made event."""
@@ -64,7 +68,7 @@ def case_bug_key(project: str, case_id: str, criterion_id: str) -> str:
     return content_id("bug", {"project": project, "case_id": case_id, "criterion_id": criterion_id})
 
 
-def _no_control(value: str, what: str) -> str:
+def no_control(value: str, what: str) -> str:
     if any(ord(ch) < 32 or ord(ch) == 127 for ch in value):
         raise ValueError(f"{what} must not contain control characters")
     return value
@@ -125,12 +129,12 @@ class BugEvent(BaseModel):
     @field_validator("bug_key")
     @classmethod
     def _key_clean(cls, value: str) -> str:
-        return _no_control(value, "bug_key")
+        return no_control(value, "bug_key")
 
     @field_validator("ref", "assignee")
     @classmethod
     def _clean(cls, value: str | None) -> str | None:
-        return None if value is None else _no_control(value, "ref/assignee")
+        return None if value is None else no_control(value, "ref/assignee")
 
     @field_validator("at")
     @classmethod

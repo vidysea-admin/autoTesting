@@ -10,7 +10,8 @@ without a lock the repo does not have. Distinct files cannot tear each other.
 Why that converges: the event id is `(bug_key, ref, kind)`, so the same event written twice is the
 same file with the same bytes. If two processes race the same fact with two different times, both
 files are kept (the time is in the name, so neither replaces the other) and `fold` counts the fact
-once, at its earliest time: no writer order can change the result (P8). `fold` orders by event
+once, at its earliest applied time: the result is a function of the set of files, whichever
+process wrote first (P8). `fold` orders by event
 time, not by write order, so late-arriving events give the same bugs.
 
 A file that is not a valid event (torn, zero-length after a crash, or named for another event) does

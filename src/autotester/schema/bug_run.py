@@ -58,6 +58,9 @@ class RunReport(BaseModel):
         default_factory=list, description="cases with a raw result and no verdict (nothing moved)")
     case_changed: list[str] = Field(
         default_factory=list, description="bug keys whose case was deleted or criterion changed")
+    unresolved_failures: list[str] = Field(
+        default_factory=list,
+        description="'<case>/<criterion>' of a FAIL that names a case or criterion that is gone")
     unverifiable: list[str] = Field(
         default_factory=list, description="bug keys whose rubric could not be loaded to compare")
     bad_files: list[BadEventFile] = Field(default_factory=list)

@@ -114,19 +114,54 @@ def test_p2_choice_pinned_an_uncited_fail_does_not_break_a_pass_streak(tmp_path:
 
 def test_p1_choice_pinned_a_new_fail_on_a_stale_key_is_refused_not_reopened(
         tmp_path: Path) -> None:
-    """HUMAN_GATE P1: today a FAIL on a key that went stale is refused `stale_bug`. If the owner
-    rules that it must open or reopen the bug, this test is the one to flip."""
+    """HUMAN_GATE P1: today a FAIL on a key that went stale is refused `stale_bug`, and an edited
+    criterion keeps its id, so its next failure lands on that key. If the owner rules that it must
+    open or reopen the bug (or that the key must carry the criterion's fingerprint), flip this."""
     store, bugs, case = _setup(tmp_path)
     finished_run(store, "run1", 1, [verdict(case, "run1", R.FAIL)], [case])
     process_run(store, bugs, "run1")
-    store.delete_case(case.id)
-    finished_run(store, "run2", 2, [], [])
+    set_criteria(store, case, (("C1", "Pay button submits the order and shows a receipt"),))
+    finished_run(store, "run2", 2, [], [case])
     process_run(store, bugs, "run2")
     assert bugs.get(_key(case)).status is S.STALE
-    finished_run(store, "run3", 3, [verdict(case, "run3", R.FAIL)], [])
+    finished_run(store, "run3", 3, [verdict(case, "run3", R.FAIL)], [case])
     report = process_run(store, bugs, "run3")
     assert bugs.get(_key(case)).status is S.STALE and bugs.get(_key(case)).count == 1
     assert any("stale_bug" in line for line in report.refused)
+
+
+def test_a_fail_on_a_case_or_criterion_that_is_gone_opens_no_bug_and_is_reported_each_time(
+        tmp_path: Path) -> None:
+    store, bugs, case = _setup(tmp_path)
+    gone = add_case(store, "profile")
+    finished_run(store, "run1", 1, [verdict(case, "run1", R.FAIL, failing=("C7",)),
+                                    verdict(gone, "run1", R.FAIL)], [case, gone])
+    store.delete_case(gone.id)
+    first = process_run(store, bugs, "run1")
+    second = process_run(store, bugs, "run1")
+    assert bugs.bugs() == {} and _files(bugs) == {}
+    want = {f"{case.id}/C7", f"{gone.id}/C1"}
+    assert set(first.unresolved_failures) == set(second.unresolved_failures) == want
+
+
+def test_a_missing_case_list_is_not_every_case_deleted(tmp_path: Path) -> None:
+    store, bugs, case = _setup(tmp_path)
+    finished_run(store, "run1", 1, [verdict(case, "run1", R.FAIL)], [case])
+    process_run(store, bugs, "run1")
+    store.paths.cases.unlink()
+    finished_run(store, "run2", 2, [], [])
+    report = process_run(store, bugs, "run2")
+    assert report.case_changed == [] and report.unverifiable == [_key(case)]
+    assert bugs.get(_key(case)).status is S.OPEN
+
+
+def test_a_corrupt_rubric_file_is_unverifiable_not_a_crash(tmp_path: Path) -> None:
+    store, bugs, case = _setup(tmp_path)
+    finished_run(store, "run1", 1, [verdict(case, "run1", R.FAIL)], [case])
+    process_run(store, bugs, "run1")
+    store.paths.rubrics_dir.joinpath(f"{case.rubric_ref}.json").write_text("{", encoding="utf-8")
+    finished_run(store, "run2", 2, [], [case])
+    assert process_run(store, bugs, "run2").unverifiable == [_key(case)]
 
 
 def test_a_run_that_is_not_finished_or_belongs_to_another_project_applies_nothing(

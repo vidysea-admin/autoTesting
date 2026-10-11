@@ -22,10 +22,10 @@ from datetime import datetime
 from autotester.schema.bug_run import RunOutcome, RunReport
 from autotester.schema.case import Case
 from autotester.schema.tracked_bug import (
+    LIVE_STATUSES,
     SYSTEM_ACTOR,
     BugEvent,
     BugSeed,
-    BugStatus,
     EventKind,
     TrackedBug,
     case_bug_key,
@@ -36,7 +36,6 @@ from autotester.store.bug_store import BugStore
 from autotester.store.project_store import ProjectStore
 
 K = EventKind
-LIVE = (BugStatus.OPEN, BugStatus.REOPENED)
 
 
 class _Rubrics:
@@ -50,20 +49,25 @@ class _Rubrics:
         if case is None or not case.rubric_ref:
             return None
         if case.rubric_ref not in self._seen:
-            self._seen[case.rubric_ref] = self._store.load_rubric(case.rubric_ref)
+            try:
+                self._seen[case.rubric_ref] = self._store.load_rubric(case.rubric_ref)
+            except ValueError:  # a corrupt rubric file is "cannot compare", never a crash
+                self._seen[case.rubric_ref] = None
         return self._seen[case.rubric_ref]
 
 
-def _seed(project: str, case: Case | None, case_id: str, criterion_id: str,
-          rubric: Rubric | None) -> BugSeed:
+def _seed(project: str, case: Case, criterion_id: str, rubric: Rubric | None) -> BugSeed | None:
+    """The bug a failing criterion opens, or None when the case or the criterion cannot be
+    resolved (a bug that would be stale on the next look is never opened: TB6)."""
     crit = next((c for c in rubric.criteria if c.id == criterion_id), None) if rubric else None
-    head = case.title if case else f"case {case_id}"
-    title = f"{head}: {crit.text}" if crit else f"{head}: criterion {criterion_id} failed"
-    screen = next((s.screen_id for s in case.steps if s.screen_id), None) if case else None
-    return BugSeed(bug_key=case_bug_key(project, case_id, criterion_id), project=project,
-                   case_id=case_id, criterion_id=criterion_id,
+    if rubric is not None and crit is None:
+        return None
+    title = f"{case.title}: {crit.text}" if crit else f"{case.title}: criterion {criterion_id}"
+    screen = next((s.screen_id for s in case.steps if s.screen_id), None)
+    return BugSeed(bug_key=case_bug_key(project, case.id, criterion_id), project=project,
+                   case_id=case.id, criterion_id=criterion_id,
                    criterion_fp=crit.fingerprint if crit else "", title=title[:200],
-                   screen=screen, **({"severity": case.severity} if case else {}))
+                   screen=screen, severity=case.severity)
 
 
 def _event(bug_key: str, kind: EventKind, ref: str, at: datetime, run_id: str,
@@ -73,15 +77,23 @@ def _event(bug_key: str, kind: EventKind, ref: str, at: datetime, run_id: str,
 
 
 def verdict_events(verdict: Verdict, run_id: str, at: datetime, project: str, case: Case | None,
-                   rubric: Rubric | None, bugs: dict[str, TrackedBug]) -> list[BugEvent]:
-    """The events one verdict makes. The kind is the door's; this only picks the bugs."""
+                   rubric: Rubric | None, bugs: dict[str, TrackedBug],
+                   ) -> tuple[list[BugEvent], list[str]]:
+    """The events one verdict makes, and the failures it named that cannot be filed under a bug
+    (case gone, or criterion not in its rubric). The kind is the door's; this only picks bugs."""
     kind, ref = kind_of_verdict(verdict), f"{run_id}/{verdict.case_id}"
-    if kind is K.FAIL:
-        ids = dict.fromkeys(f.criterion_id for f in verdict.failures)
-        return [_event(case_bug_key(project, verdict.case_id, crit), kind, ref, at, run_id,
-                       _seed(project, case, verdict.case_id, crit, rubric)) for crit in ids]
-    return [_event(b.bug_key, kind, ref, at, run_id)
-            for b in bugs.values() if b.case_id == verdict.case_id]
+    if kind is not K.FAIL:
+        return [_event(b.bug_key, kind, ref, at, run_id)
+                for b in bugs.values() if b.case_id == verdict.case_id], []
+    events: list[BugEvent] = []
+    unresolved: list[str] = []
+    for crit in dict.fromkeys(f.criterion_id for f in verdict.failures):
+        seed = _seed(project, case, crit, rubric) if case else None
+        if seed is None:
+            unresolved.append(f"{verdict.case_id}/{crit}")
+        else:
+            events.append(_event(seed.bug_key, kind, ref, at, run_id, seed))
+    return events, unresolved
 
 
 def changed_case_events(store: ProjectStore, rubrics: _Rubrics, bugs: dict[str, TrackedBug],
@@ -92,7 +104,10 @@ def changed_case_events(store: ProjectStore, rubrics: _Rubrics, bugs: dict[str, 
     events: list[BugEvent] = []
     unverifiable: list[str] = []
     for bug in bugs.values():
-        if bug.status not in LIVE or bug.case_id is None:
+        if bug.status not in LIVE_STATUSES or bug.case_id is None:
+            continue
+        if not cases:  # no case list at all (wrong root, missing file) is not "every case deleted"
+            unverifiable.append(bug.bug_key)
             continue
         case = cases.get(bug.case_id)
         why = "deleted" if case is None else None
@@ -123,9 +138,12 @@ def process_run(store: ProjectStore, bugs: BugStore, run_id: str) -> RunReport:
     verdicts, rubrics = store.load_verdicts(run_id), _Rubrics(store)
     cases = {c.id: c for c in store.list_cases()}
     events: list[BugEvent] = []
+    unresolved: list[str] = []
     for v in verdicts:
         case = cases.get(v.case_id)
-        events += verdict_events(v, run_id, at, run.project, case, rubrics.of(case), snap.bugs)
+        made, lost = verdict_events(v, run_id, at, run.project, case, rubrics.of(case), snap.bugs)
+        events += made
+        unresolved += lost
     changed, unverifiable = changed_case_events(store, rubrics, snap.bugs, run_id, at)
     results = bugs.apply_all([*events, *changed], snapshot=snap)
     judged = {v.case_id for v in verdicts}
@@ -140,5 +158,6 @@ def process_run(store: ProjectStore, bugs: BugStore, run_id: str) -> RunReport:
         unjudged_cases=[v.case_id for v in verdicts if kind_of_verdict(v) not in (K.FAIL, K.PASS)],
         no_verdict_cases=[c for c in run.case_ids if c not in judged],
         case_changed=[e.bug_key for e in changed], unverifiable=unverifiable,
+        unresolved_failures=unresolved,
         bad_files=snap.bad)
 

@@ -16,18 +16,13 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from autotester.core.ids import content_id
+from autotester.schema.tracked_bug import no_control
 
 OWNED_FIELDS = ("bug_key", "title", "severity", "screen", "status", "assignee", "first_seen",
                 "last_seen", "count")
 """The only bug fields a sync may write. A sheet column mapped to none of them is never touched."""
 
 _PERSON_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9 _.@/+-]{0,79}")
-
-
-def _clean(value: str, what: str) -> str:
-    if any(ord(ch) < 32 or ord(ch) == 127 for ch in value):
-        raise ValueError(f"{what} must not contain control characters")
-    return value
 
 
 class SheetColumns(BaseModel):
@@ -43,7 +38,7 @@ class SheetColumns(BaseModel):
     @field_validator("sheet_id", "tab")
     @classmethod
     def _no_control(cls, value: str) -> str:
-        return _clean(value, "sheet_id/tab")
+        return no_control(value, "sheet_id/tab")
 
     @model_validator(mode="after")
     def _valid(self) -> SheetColumns:
