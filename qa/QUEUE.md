@@ -18,7 +18,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: this row alone owns projects/pathlynks/**; no other row writes there until it closes
   note: each run writes its own signed row naming target and scope (the approval is the authority for the row, not a replacement); the report goes to Umesh BEFORE any human bug list exists, so T-136 recall stays unavailable until an independent list exists
 
-- [ ] land-integrate-combined - re-land integrate/combined (at780-pii, at780-harden); on current master it fails doctor because stages/reconcile.py reaches 302 lines (limit 300)
+- [x] land-integrate-combined - re-land integrate/combined (at780-pii, at780-harden); on current master it fails doctor because stages/reconcile.py reaches 302 lines (limit 300)
+  closed: 2026-10-11, merged fc0e95b0 (on master); dual check PASS cycle 0, qa/verdicts/land-integrate-combined.md and land-integrate-combined.b.md (checked 23e694a9). The '302 lines' remark in the title is stale: doctor reports no line-limit violation.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: re-land; criticality: high
   files: src/autotester/stages/reconcile.py (298 on master; split or trim to 300 or fewer), src/autotester/core/redact.py, tests/test_reconcile_pii.py, tests/test_redact_pii.py, docs/MAP.md (regenerate with `autotester map`)
@@ -30,7 +31,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: stages/reconcile.py: this row; any other row touching reconcile.py waits
   note: a fresh checker cycle on the re-landed commit; doctor, ruff and the affected tests must be clean
 
-- [ ] land-t203-hosting - re-land wave/t203-hosting as a LOCAL deployment (D-081 item 4); it conflicts with master in ui/routes_runs.py and reuses issue ids AT-782..AT-793, which must be renumbered
+- [x] land-t203-hosting - re-land wave/t203-hosting as a LOCAL deployment (D-081 item 4); it conflicts with master in ui/routes_runs.py and reuses issue ids AT-782..AT-793, which must be renumbered
+  closed: 2026-10-11, merged 82bc4954 (on master); PASS cycle 0, qa/verdicts/land-t203-hosting.md (checked fddbf469). The issue-id renumber is done: rows are AT-862..AT-873 (manifest line 21). Rows that say 'after: land-t203-hosting' are unblocked.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: re-land; criticality: critical
   files: Dockerfile, docker/Caddyfile, docker/DEPLOY.md, docker/compose.prod.yml, docker/entrypoint.sh, .env.example, .gitattributes, src/autotester/core/env.py, schema/run_queue.py, schema/server_settings.py, store/server_settings.py, ui/app.py, ui/routes_live.py, ui/routes_report.py, ui/routes_runs.py, ui/routes_sources.py, ui/run_queue.py, ui/run_queue_view.py, tests/conftest.py (protected file), tests/test_env_loading.py, test_hosting_config.py, test_hosting_deploy.py, test_run_queue.py, test_run_queue_resilience.py, test_server_settings.py, test_ui_runs_queue.py, docs/MAP.md, qa/issues.jsonl rows AT-782..AT-793 (renumber; the checker owns issue status)
@@ -77,6 +79,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   note: senior-software-engineer review is mandatory (zip handling is an attack surface); the live Drive fetch uses gws and no token is copied into the repo
 
 - [ ] t202-any-model-provider - T-202: LiteLLM-backed Provider behind providers.base.Provider (Gemini, Claude, OpenAI, Ollama, OpenAI-compatible chosen by config)
+  status: PASS, unmerged, waiting on gate qa/gates/t168-new-modules.md (dual check PASS cycle 0 at 94c569c0, qa/verdicts/t202-any-model-provider.a.md and .b.md, wave/t202-any-model-provider; new modules and the litellm dependency). Row stays open.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: N src/autotester/providers/ litellm module (file name unknown), providers/__init__.py (registry), pyproject.toml and uv.lock (litellm authorized in this unit only, D-071/D-072), tests/test_providers_litellm*.py (unknown)
@@ -135,6 +138,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   note: email values are never printed or committed and are declared as SecretRef keys
 
 - [ ] t200-schedule - G5 / T-200: scheduled auto-test (manual, fixed or custom time) with single-flight and credential-derived approval
+  status: partial. t200a-schedule-core merged 7e0ef5b9 (PASS, qa/verdicts/t200a-schedule-core.md; does not close T-200). t200b FAIL at cycle 0 (qa/verdicts/t200b-scheduled-test.md, 0d9a3b56); fix cycle 1 built on wave/t200b-scheduled-test (6d6bc318), awaiting check. Row stays open.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: critical
   files: N schema/schedule.py, stages/scheduler.py, cli_schedule.py, ui/routes_schedule.py, tests (names unknown); E schema/project.py
@@ -191,7 +195,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   after: t197-pointers-review; t198a-zip-drive-intake; t198b-dev-portal; t199a-bug-loop; t199b-sheet-sync-dryrun; t200-schedule; t201a-report-delivery; t201b-test-button; t203-local-deploy
   owner: none
 
-- [ ] t153-track-c3-behavioural - T-153: Track C3 behavioural checks against a captured run, graded by the existing independent judge
+- [x] t153-track-c3-behavioural - T-153: Track C3 behavioural checks against a captured run, graded by the existing independent judge
+  closed: 2026-10-11, merged 349f3e97 (on master); dual check PASS cycle 0, qa/verdicts/t153-behavioural-checks.a.md and .b.md.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: unknown (candidates: src/autotester/schema/ai_check.py, stages/ai_catalog.py; the new capture module name is unknown); branch codex/t153-completion and worktrees t152-153, t153-checkB are INPUT only
@@ -202,7 +207,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   after: none (T-152 done)
   owner: unknown
 
-- [ ] t154-track-c4-adversarial - T-154: Track C4 bounded adversarial pass behind consent gate 2, against Pathlynks under the D-081 full approval
+- [x] t154-track-c4-adversarial - T-154: Track C4 bounded adversarial pass behind consent gate 2, against Pathlynks under the D-081 full approval
+  closed: 2026-10-11, build merged bfec5567 (on master); dual check PASS cycle 0, qa/verdicts/t154-adversarial-pass.a.md and .b.md. T-154 itself stays pending on AT-917 (adapter allowlist); see the Candidates section 'T-154 close-out'.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: critical (dual check)
   files: unknown (new probe-set files and stage; scripts/adversarial_proof.py is the done_check target and may not exist yet)
@@ -215,6 +221,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   note: no longer held for a separate approval (D-081 item 3); each firing still needs its own signed row naming target and scope
 
 - [ ] t155-track-c5-report - T-155: Track C5 unified AI test report grouped by tier with judge reason strings
+  status: PASS, unmerged, waiting on gate qa/gates/t168-new-modules.md (qa/verdicts/t155-ai-report.md, PASS cycle 0 at a4308b35, wave/t155-ai-report; new module stages/ai_report.py). Row stays open.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: low
   files: unknown (reuses core/excel.py autosize_columns; stages/report_export.py is 299 lines, so a new split module is likely)
@@ -226,6 +233,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: unknown
 
 - [ ] t178-failure-bundle - T-178 (FB4, FB5): case priority p0-p3 and human pruning of proposals before provider spend
+  status: PASS, unmerged, waiting on gate qa/gates/at792-round-cap.md (dual check PASS at 297207ff, qa/verdicts/t178-failure-bundle-fb4-fb5.r1.a.md and .r1.b.md, wave/t178-failure-bundle-fb4-fb5). Row stays open.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: E src/autotester/schema/case.py (priority), store/project_store.py (AT the 300-line cap: delete_case must still refuse pinned cases, so a split is needed), stages/failure_bundle.py (209 lines), stages/review.py or expand.py (proposal staging; exact file unknown), tests/test_failure_bundle*.py (unknown); worktrees t178 and codex-t178-completion are INPUT only
@@ -258,7 +266,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   after: none (T-176 done)
   owner: stages/agent_loop.py: this row
 
-- [ ] t167-langgraph-regression - T-167: release-triggered visible-browser regression on LangGraph 1.x with consent via interrupt() and crash-resume
+- [x] t167-langgraph-regression - T-167: release-triggered visible-browser regression on LangGraph 1.x with consent via interrupt() and crash-resume
+  closed: 2026-10-11, build merged 476666d6 (on master); dual check PASS cycle 2, qa/verdicts/t167-release-regression.r2.a.md and .r2.b.md (checked 1b6f07e7). T-167 stays open on AT-898 (no FlowPlan producer, RR6); see the Candidates section 'T-167 close-out'.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: critical
   files: E src/autotester/stages/orchestrate.py and orchestrate_runners.py; a new graph module is possible (unknown); pyproject.toml and uv.lock (langgraph 1.x); worktree t167 is INPUT only
@@ -270,6 +279,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: stages/orchestrate.py: this row; pyproject.toml and uv.lock: serialize with t202
 
 - [ ] t168-damage-control-report - T-168: unified damage-control report (regression diff, API failures, workflows, screenshots)
+  status: PASS, unmerged, waiting on gate qa/gates/t168-new-modules.md (dual check PASS cycle 2 at 4b93d952, qa/verdicts/t168-damage-control-report.r2.a.md and .r2.b.md, wave/t168-damage-control-report). Row stays open.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: unknown (report layer; stages/report_export.py is 299 lines, so a split module is likely)
@@ -326,6 +336,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: src/autotester/doctor.py: this row
 
 - [ ] at733-bounded - AT-733 re-planned as ONE bounded unit with a cycle cap (D-080 item 6): a silent profile-cleanup failure must not let a logged-out entry case run logged in
+  status: PASS, unmerged, waiting on gate qa/gates/at792-round-cap.md (qa/verdicts/at733-bounded.md, PASS cycle 0, wave/at733-bounded). Row stays open.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: fix; criticality: high (dual check, false-PASS prevention)
   files: E src/autotester/ui/run_execution.py (_run_entry_case; the wipe error is suppressed with ignore_errors, then browser startup), tests/test_*run_execution* (unknown); candidate branch codex/at733-entry-cleanup (6e0134b7, NOT merged) is INPUT only
@@ -364,6 +375,40 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 | 3 | TODO: T-151 deterministic discovery/context | T-150 done; ai-target AI1/AI8 and D-017 named stages. Synthetic in-root fixtures first, ordinary independent plan/new-file scope validation; no real-target firing authorization. |
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
+
+## Candidates (human picks) — 2026-10-11 at758-759-host-allowlist close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. AT-758, AT-759, AT-760 and AT-761 are now `fixed` (merged 02c5f016). AT-920, AT-921 and AT-924 are test-environment rows, ledger-only and not candidates. All rows below are low as filed by both coordinators; none is browser-reachable today.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Refuse a websocket scope with a disallowed Host in `_OriginGuard` (`ui/helpers.py:274`), so a future websocket route cannot reopen AT-758. No websocket route exists today. | AT-919 |
+| priority: security | Match the raw Host against a strict pattern before `urlparse` and optionally refuse an absolute-form request target (`ui/helpers.py:233`); a tab or CR inside Host is currently stripped. Not browser-reachable. | AT-922 |
+| priority: security | Refuse duplicate Referer and Sec-Fetch-Site headers in `origin_refusal` (still last-wins; Host and Origin are fixed by AT-761). | AT-923 |
+
+## Candidates (human picks) — 2026-10-11 T-154 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Rows AT-909, AT-911, AT-914, AT-915 and AT-918 are ledger-only and are not candidates. T-154 stays pending (adapter allowlist, AT-917; no live adversarial pass has been made).
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Validate `probe_sets` names as single safe path components and assert the resolved path stays under `prompts/probes`: `../outside` loaded and sent a .md from outside the probe directory on the only probe-sending path (operator-controlled, no CLI yet). Severity low as filed by coordinator B. | AT-912 |
+| priority: security | Owner decision: is an adversarial `RunApproval` single-use? Today 3 passes on one `max_probes=4` row sent 12 probes (replayable until expiry). AD2 words the bound per run, so it is within the contract. | AT-913 |
+| priority: security | Require a per-send timeout when the real sender is built: `wall_clock_s` is checked only between sends, so one hung send is unbounded. Do before the first live pass. | AT-911 |
+| low (owner-confirm) | Confirm `PROBE_CEILING=50`, the five probe categories and the probe text, and the Pathlynks endpoint string and production status (CN7), before any live firing. | AT-916 |
+| low (process) | Add `uv run python scripts/adversarial_proof.py` to `qa/adapter.json` `read_only_allowlist` (enforcement/config path, needs an authorizing D-entry) so T-154's done_check can run and close the task. | AT-917 |
+| low | Make refusals uniform: one exception family, and a `refusals.jsonl` row (true requested count) for host, secret, probe-file and bad `wall_clock_s` refusals. | AT-910 |
+| low (test-gap) | Pin the wall-clock refusal, the exact-ceiling case, and the refusal-log scrub of `target=` and `reason=`. | AT-914, AT-915 |
+
+## Candidates (human picks) — 2026-10-11 T-167 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Eight low rows (AT-901..AT-908) are ledger-only and are not candidates.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Validate `--run-id` as a single safe path component before any write: `ProjectPaths.run_dir` joins it unchecked, so `../escaped` created a directory outside `runs/` and more `..` segments reach outside the project. Raised from low to medium by the checker. | AT-900 |
+| priority: S1/S2 (medium, goal-coverage) | Add the FlowPlan producer: nothing in src/ writes a FlowPlan, so a real `autotester release` reports every flow `not run` (RR6; T-167 stays open until this lands). | AT-898 |
+| medium | Make the release pause, approve and decline output usable: show what is approved, give a next step, no 'finished' after decline, no raw traceback. | AT-899 |
 
 ## Candidates (human picks) — 2026-10-11 T-153 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
 

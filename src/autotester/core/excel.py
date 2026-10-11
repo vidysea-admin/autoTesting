@@ -7,7 +7,18 @@ different ways is exactly the "one concept, two places" drift C3 forbids.
 
 from __future__ import annotations
 
+import re
 from typing import Any
+
+# openpyxl refuses to write control characters (IllegalCharacterError). Live
+# console output carries them (AT-530: a Pathlynks crawl's issue detail ended
+# the whole report), so every string cell passes through `clean_cell` once.
+_ILLEGAL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def clean_cell(value: object) -> object:
+    """`value` with control characters removed when it is a string; anything else unchanged."""
+    return _ILLEGAL.sub("", value) if isinstance(value, str) else value
 
 
 def autosize_columns(ws: Any, *, max_width: int = 60) -> None:

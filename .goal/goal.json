@@ -4,7 +4,7 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-11T05:22:52",
+  "updated": "2026-10-11T08:57:03",
   "progress": {
     "total": 92,
     "done": 68,
@@ -885,7 +885,7 @@
         "cmd": "uv run python scripts/adversarial_proof.py",
         "expect_exit": 0
       },
-      "note": "HIGHEST-RISK UNIT IN THE PLAN. Native file-defined probe sets; Garak/PyRIT/DeepTeam are NOT dependencies (D-017). No approval => zero requests sent, asserted at the transport. Probe cap, allowed_domains only, production named explicitly. | D-081 item 3 (Umesh 2026-10-10, 'full approvaal hai'): NO LONGER HELD for a separate approval (supersedes the 2026-09-27 hold); the maker may mint the signed per-run RunApproval row (D-018) for the bounded adversarial pass on pathlynks.vidysea.com with the PATHLYNKS_USER_* test account. Each run still writes its own row naming target and scope; no row => zero requests at the transport. Builds after T-153 (qa/gates/d081-run-approvals.md).",
+      "note": "HIGHEST-RISK UNIT IN THE PLAN. Native file-defined probe sets; Garak/PyRIT/DeepTeam are NOT dependencies (D-017). No approval => zero requests sent, asserted at the transport. Probe cap, allowed_domains only, production named explicitly. | D-081 item 3 (Umesh 2026-10-10, 'full approvaal hai'): NO LONGER HELD for a separate approval (supersedes the 2026-09-27 hold); the maker may mint the signed per-run RunApproval row (D-018) for the bounded adversarial pass on pathlynks.vidysea.com with the PATHLYNKS_USER_* test account. Each run still writes its own row naming target and scope; no row => zero requests at the transport. Builds after T-153 (qa/gates/d081-run-approvals.md). | Merged: t154-adversarial-pass at 575a7c3f via merge commit bfec5567 (dual check PASS cycle 0, verdicts qa/verdicts/t154-adversarial-pass.a.md and qa/verdicts/t154-adversarial-pass.b.md); the task is not closed (status unchanged).",
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
@@ -1110,7 +1110,7 @@
         "cmd": "uv run pytest tests/test_regression_trigger.py",
         "expect_exit": 0
       },
-      "note": "Developer changes trigger the approved project suite; results are durable and compare against the last trusted baseline. | D-041: build on LangGraph 1.x (checkpointer + interrupt() for consent/review); langgraph added to pyproject in this unit. | D-042: runs the lead agent on LangGraph checkpoints.",
+      "note": "Developer changes trigger the approved project suite; results are durable and compare against the last trusted baseline. | D-041: build on LangGraph 1.x (checkpointer + interrupt() for consent/review); langgraph added to pyproject in this unit. | D-042: runs the lead agent on LangGraph checkpoints. | Dual independent PASS cycle2: qa/verdicts/t167-release-regression.r2.a.md + qa/verdicts/t167-release-regression.r2.b.md (earlier cycles: .a/.b, .r1.a/.r1.b); merged on master 476666d6. KEPT OPEN by checker close-out: RR6 'each completed flow leaves a persisted validation plan' has no producer in src (AT-898), so a real release reports every flow not run; the RR6 Verify passes only on a hand-seeded fixture.",
       "attempts": 0,
       "created": "2026-09-10T05:58:09",
       "user_value": "high",
@@ -1679,7 +1679,7 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-200-team-loop.md",
         "expect_exit": 0
       },
-      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Frequency field in schema/project.py; trigger reuses stages/parallel_run.py; must respect RunApproval (D-018).",
+      "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Frequency field in schema/project.py; trigger reuses stages/parallel_run.py; must respect RunApproval (D-018). | Merged (phase A only): t200a-schedule-core at 782bb254 via merge commit 7e0ef5b9 (checker PASS, qa/verdicts/t200a-schedule-core.md); not built yet: phase B (t200b-scheduled-test) is still in repair check (verdict qa/verdicts/t200b-scheduled-test.md), and wiring is held on T-205.",
       "criticality": "high"
     },
     {
@@ -1728,7 +1728,7 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-203-hosted-website.md",
         "expect_exit": 0
       },
-      "note": "D-071: Umesh -- 'abhi vidysea ki internal development team aur product team ke paas chalega, host properly website mai hoga', Linux/Ubuntu server. D-081 item 4 (2026-10-10): proceeds as a LOCAL deployment on the dev machine; the real server host and DNS stay an open HUMAN_GATE (qa/gates/t203-host-and-dns.md) and now gate only the hosted check of T-206. | Acceptance: A team member opens the server URL in a browser, signs in, onboards a project and runs a case; data survives a restart; the Origin/CSRF guard is configured for the server origin; no secret value is baked into the image.",
+      "note": "D-071: Umesh -- 'abhi vidysea ki internal development team aur product team ke paas chalega, host properly website mai hoga', Linux/Ubuntu server. D-081 item 4 (2026-10-10): proceeds as a LOCAL deployment on the dev machine; the real server host and DNS stay an open HUMAN_GATE (qa/gates/t203-host-and-dns.md) and now gate only the hosted check of T-206. | Acceptance: A team member opens the server URL in a browser, signs in, onboards a project and runs a case; data survives a restart; the Origin/CSRF guard is configured for the server origin; no secret value is baked into the image. | Merged (local hosting part only): land-t203-hosting at 05b8b7ba via merge commit 82bc4954 (checker PASS on fddbf469, qa/verdicts/land-t203-hosting.md); not built yet: the server host and DNS are still open (qa/gates/t203-host-and-dns.md) and the local deploy waits on T-204.",
       "criticality": "critical"
     },
     {
@@ -2194,9 +2194,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.61,
-    "eta_days": 14.9
+    "velocity_per_day": 1.6,
+    "eta_days": 15.0
   },
-  "last_deterministic_tick": "2026-10-11T05:22:52",
+  "last_deterministic_tick": "2026-10-11T08:57:03",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }

@@ -1,0 +1,7 @@
+SUCCESS secret='a.b*c(d)[e]{f}$^|x\\y' cli=0 route=200/200 scanner='scanned 1 file(s); 0 leak(s)' leaks=[]
+SUCCESS secret='pässwörd✓€' cli=0 route=200/200 scanner='scanned 1 file(s); 0 leak(s)' leaks=[]
+SUCCESS secret='x<b>&amp;"z' cli=0 route=200/200 scanner='scanned 1 file(s); 0 leak(s)' leaks=[]
+SUCCESS secret='Hunter2Pass' cli=0 route=200/200 scanner='scanned 1 file(s); 0 leak(s)' leaks=[]
+SUCCESS secret='tok=abc/def+ghi==' cli=0 route=200/200 scanner='scanned 1 file(s); 0 leak(s)' leaks=[]
+SUCCESS secret="p&ss<w>o'rdQ9" cli=0 route=200/200 scanner='scanned 1 file(s); 0 leak(s)' leaks=[]
+PCT encoded url: in_object=True in_html=True raw_in_html=False

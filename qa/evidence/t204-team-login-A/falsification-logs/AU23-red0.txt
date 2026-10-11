@@ -1,0 +1,23 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU23-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_auth_deploy_files.py F                                        [100%]
+
+================================== FAILURES ===================================
+_________ test_au23_dockerignore_excludes_the_auth_state_at_any_depth _________
+tests\test_auth_deploy_files.py:18: in test_au23_dockerignore_excludes_the_auth_state_at_any_depth
+    assert ".auth/" in lines and "**/.auth/" in lines
+E   AssertionError: assert ('.auth/' in ['# Contract: qa/contracts/docker.md D6 -- `.env`, `projects/` and `profiles/` are bind-mounted', '# from the host and..., '# snapshots) would ship inside every built image. Patterns use `**/` so nested copies match too.', '**/.venv/', ...])
+============================== warnings summary ===============================
+tests/test_auth_deploy_files.py::test_au23_dockerignore_excludes_the_auth_state_at_any_depth
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_auth_deploy_files.py::test_au23_dockerignore_excludes_the_auth_state_at_any_depth
+======================== 1 failed, 1 warning in 1.00s =========================

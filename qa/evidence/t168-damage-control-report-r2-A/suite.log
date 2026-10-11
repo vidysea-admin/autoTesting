@@ -1,0 +1,24 @@
+[05:39:30] suite lock busy, waiting: {"pid": 57972, "repo": "D:\\autoTesting", "started": 1791676783.8301234, "started_iso": "2026-10-11T05:29:43", "token": "931295237857ef11", "cmd": "shard_suite --repo D:/autoTesting --ref 575a7c3f --shards 4 --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/check-t154-a/suite2 --lock-timeout 900 -- -o addopts="}
+[05:39:48] ref 4b93d952 = 4b93d952; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\aios-shards\autoTesting-20261011-053927
+[05:39:52] collecting whole set (one copy)
+[05:40:34] collected 3397 tests in 251 files; balanced by stored durations (3170/3397 tests known, 7 files at mean); pinned files: none; predicted: s0=497, s1=497, s2=497, s3=497
+[05:40:34] shard 0: pid 14756, 62 units, 715 tests
+[05:40:34] shard 1: pid 45812, 62 units, 829 tests
+[05:40:34] shard 2: pid 32212, 64 units, 1007 tests
+[05:40:34] shard 3: pid 79480, 63 units, 846 tests
+[05:49:01] shard 0 finished rc=1 in 507s
+[05:49:06] shard 3 finished rc=1 in 512s
+[05:49:15] shard 1 finished rc=0 in 521s
+[05:49:52] shard 2 finished rc=1 in 558s
+[05:49:53] re-running 4 failing test(s) alone in shard-0 (load-induced vs real)
+[05:50:27]   shard 0: rc=1 wall=506.6s units=62 tests=715 reported=715
+[05:50:27]   shard 1: rc=0 wall=520.6s units=62 tests=829 reported=829
+[05:50:27]   shard 2: rc=1 wall=557.7s units=64 tests=1007 reported=1007
+[05:50:27]   shard 3: rc=1 wall=511.6s units=63 tests=846 reported=846
+[05:50:27] counts {'passed': 3374, 'failed': 4, 'skipped': 19}; collect proof ok=True (baseline 3397, union 3397, ran 3397)
+[05:50:27]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 0, alone: failed)
+[05:50:27]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 2, alone: passed)
+[05:50:27]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 3, alone: failed)
+[05:50:27]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 3, alone: failed)
+[05:50:27] summary -> C:\Users\Lenovo\AppData\Local\Temp\aios-shards\autoTesting-20261011-053927\summary.json (exit 1)
+exit=1

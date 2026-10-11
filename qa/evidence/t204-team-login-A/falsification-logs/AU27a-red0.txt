@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU27a-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_escalation.py F                                       [100%]
+
+================================== FAILURES ===================================
+________ test_p5_users_manage_cannot_reset_disable_or_delete_an_admin _________
+tests\test_ui_auth_escalation.py:111: in test_p5_users_manage_cannot_reset_disable_or_delete_an_admin
+    assert ops.post(f"/admin/users/{admin_id}/{action}", data=form).status_code == 403, action
+E   AssertionError: password
+E   assert 303 == 403
+E    +  where 303 = <Response [303 See Other]>.status_code
+E    +    where <Response [303 See Other]> = post('/admin/users/1/password', data={'password': 'attacker-pass-1'})
+E    +      where post = <starlette.testclient.TestClient object at 0x0000018D34E46FD0>.post
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_escalation.py::test_p5_users_manage_cannot_reset_disable_or_delete_an_admin
+======================== 1 failed, 1 warning in 2.80s =========================

@@ -90,6 +90,18 @@ def _inline_run_queue(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(run_queue, "_QUEUE", run_queue.RunQueue(spawn=spawn, runner=runner))
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _ui_test_host() -> Iterator[None]:
+    """AT-758: the UI refuses any Host outside its allow-list, and `TestClient` names the host
+    `testserver`. Listing it for the whole session keeps every UI test as it was; a test of the
+    guard itself `monkeypatch.delenv("AUTOTESTER_ALLOWED_HOSTS")` to see the real default."""
+    had_it = "AUTOTESTER_ALLOWED_HOSTS" in os.environ
+    os.environ.setdefault("AUTOTESTER_ALLOWED_HOSTS", "testserver")
+    yield
+    if not had_it:
+        os.environ.pop("AUTOTESTER_ALLOWED_HOSTS", None)
+
+
 @pytest.fixture(scope="session")
 def serve_dir() -> Iterator[Callable[[Path], str]]:
     """Serve a directory over HTTP on an ephemeral localhost port.

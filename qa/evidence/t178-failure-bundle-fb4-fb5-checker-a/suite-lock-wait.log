@@ -1,0 +1,4 @@
+[05:34:31] suite lock busy, waiting: {"pid": 57972, "repo": "D:\\autoTesting", "started": 1791676783.8301234, "started_iso": "2026-10-11T05:29:43", "token": "931295237857ef11", "cmd": "shard_suite --repo D:/autoTesting --ref 575a7c3f --shards 4 --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/check-t154-a/suite2 --lock-timeout 900 -- -o addopts="}
+[05:49:32] BLOCKED: suite lock busy after 901s; holder: {"pid": 5752, "repo": "D:\\autoTesting", "started": 1791677388.5751214, "started_iso": "2026-10-11T05:39:48", "token": "2770d224e353bd31", "cmd": "shard_suite --repo D:/autoTesting --ref 4b93d952 --shards 4 -- -o addopts="}
+[05:49:32] summary -> C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t178a\suite\out\summary.json (exit 3)
+exit=3

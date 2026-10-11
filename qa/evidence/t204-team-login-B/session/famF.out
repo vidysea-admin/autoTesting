@@ -1,0 +1,37 @@
+== F1 unauthenticated state-changing requests write nothing
+ statuses: [('POST', '/admin/users/1/delete', 401), ('POST', '/projects/x/run', 401), ('POST', '/unknown', 401), ('POST', '/auth/logout', 401), ('POST', '/settings/providers', 401), ('POST', '/onboard', 401), ('DELETE', '/', 401), ('PUT', '/admin/groups', 401), ('PATCH', '/admin/groups/1', 401), ('POST', '/admin/groups/1/delete', 401)]
+ audit lines added by 10 unauthenticated state-changing requests: 0
+ unauth GET adds: 0
+== F2 login-failure line, login success, signup lines
+   {'actor': 'ghost@team.test', 'target': '', 'action': 'login-failed'}
+   {'actor': '', 'target': '', 'action': 'login-failed'}
+   {'actor': '', 'target': '', 'action': 'login-failed'}
+   {'actor': 'admin@team.test', 'target': '', 'action': 'login-failed'}
+   {'actor': 'admin@team.test', 'target': 'admin@team.test', 'action': 'login'}
+   {'actor': 'fine@team.test', 'target': 'fine@team.test', 'action': 'signup'}
+ => signup refusals (400) and login 429 leave no trace; login/signup lines are {actor,target,action} only (no method/path/status)
+ 21 failed logins from one address -> audit lines: 20 (21st = 429, unaudited)
+== F3 authenticated state-changing: lines + secrets scan
+   {'actor': 'admin@team.test', 'target': 'dev@team.test', 'action': 'user.password'}
+   {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}
+   {'actor': 'admin@team.test', 'target': 'dev@team.test', 'action': 'user.name'}
+   {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}
+   {'email': 'admin@team.test', 'method': 'POST', 'path': '/settings/providers', 'status': 422}
+   {'email': 'admin@team.test', 'method': 'POST', 'path': '<unmatched>', 'status': 404}
+   {'email': 'admin@team.test', 'method': 'PUT', 'path': '<unmatched>', 'status': 405}
+   {'email': 'admin@team.test', 'method': 'DELETE', 'path': '<unmatched>', 'status': 405}
+   {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 404}
+   {'email': 'admin@team.test', 'method': 'POST', 'path': '/projects/{slug}/run', 'status': 400}
+   {'email': 'admin@team.test', 'method': 'POST', 'path': '/auth/logout', 'status': 303}
+ secrets in audit file: {'query canary': False, 'body canary': False, 'cookie canary': False, 'session cookie': False, 'password': False, 'argon2': False}
+== F4 log injection
+ signups: [('\'x","actor":"admin@team.test","action":"login"}@b.', 400), ('\'a\\\\"b@b.test\'', 303), ('"q\'q@b.test"', 303), ('\'a@b.test\\r\\n{"forged":1}\'', 400), ("'a\\nb@b.test'", 400), ('\'a@b.test\\u2028{"f":1}\'', 400), ("'a\\x85b@b.test'", 400), ("'lone%ED%A0%80@b.test'", 303), ('\'{"x":1}@b.test\'', 303), ("'a@b.test\\x1b[31m'", 400)]
+ every physical \n-delimited audit line is one valid JSON object: True lines: 52
+ python splitlines() count == \n count (no U+2028/U+0085/VT/FF smuggled): True
+ forged top-level keys present: False
+ lines claiming actor=admin action=login (genuine count = 1 real login): 2
+ after display-name/group-name injection: all lines JSON: True splitlines==\n: True
+== F5 summary of line shapes
+   45 ('action', 'actor', 'target')
+   10 ('email', 'method', 'path', 'status')
+ audit file mode (Windows, informational): 666 size bytes: 6343

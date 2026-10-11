@@ -2350,3 +2350,22 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-10)
 
 **Links:** D-080; D-018; D-052; D-053; D-071; D-072; D-074; D-007; T-136; T-145; T-154; T-169; T-198; T-199; T-203; T-204; T-206; AT-653; qa/contracts/bench.md K6-K9; qa/gates/write-policy-tier.md; qa/gates/plan-approved-g10.md
+
+## D-082 | 2026-10-11 | type: decision | status: ACTIVE
+
+**What:** Umesh answered three open HUMAN_GATEs in chat on 2026-10-11. The maker listed them with its recommendation for each ("New-module gate (meri salah C). AU20 wildcard bind (meri salah A). Round-cap waiver (meri salah A).") and Umesh replied: "go for them all".
+1. **New modules: a standing rule (option C of qa/gates/t168-new-modules.md).** A new module needs no per-unit human gate when all four hold: the unit's contract or brief names it; its docstring states its one job; `autotester doctor` is clean with it; and the checker lists it in its verdict. Anything else stays a HUMAN_GATE. The modules of units that already hold a PASS are confirmed by this entry: T-168 (`schema/unified_report.py`, `stages/unified_report.py`, `stages/unified_report_render.py`, `ui/routes_unified_report.py`), T-155 (`stages/ai_report.py`), T-202 (`providers/litellm_provider.py`, `providers/litellm_schema.py`, `providers/images.py`, with the dependency `litellm==1.104.0`), and `stages/ai_judge.py` merged with T-153 (AT-895).
+2. **AU20 on a wildcard bind: option A of qa/gates/t204-au20-wildcard-bind.md.** The app is given its public origin (`AUTOTESTER_PUBLIC_ORIGIN`; the production compose file derives it from `AUTOTESTER_DOMAIN`), and with `AUTOTESTER_HOSTED=1` on a wildcard bind startup raises unless that origin is admitted by the allow-lists. AU20 stays as written. This is one owner-authorised change on T-204 beyond the fix-cycle cap, folded into fix cycle 2.
+3. **D-014 round cap: waived (option A of qa/gates/at792-round-cap.md) for three named units only:** at792-stale-rc2-test (one checker, then merge on PASS), at733-bounded (merge at its PASSed commit), t178-failure-bundle-fb4-fb5 (merge at 297207ff). D-014 itself is unchanged; whether the cap should count per unit instead of per file stays an open owner question.
+
+**Why:** Eight units held a PASS or were close to one and could not merge until these were answered. Group 10 is new surface, so nearly every remaining unit adds modules, and a per-unit gate stopped each one after its PASS. A wrong allow-list should fail at startup with a readable message, not as a 403 on every page.
+
+**Supersedes:** D-057 (scope only) -- D-057 answered the new-module gate for AT-710 alone and chose no standing rule, which left every later unit waiting on a fresh answer; item 1 replaces that scope with a rule a checker can apply, and keeps the gate for any module the rule does not cover.
+
+**Result:** Gate files updated by the maker in the same tick. Merges run only at the exact commits the checkers PASSed. Nothing is pushed by this entry.
+
+**Changes-authorized:** qa/gates/t168-new-modules.md, qa/gates/t204-au20-wildcard-bind.md, qa/gates/at792-round-cap.md, qa/gates/new-module-authorization.md (Answered lines only). No ARCHITECTURE.md prose and no enforcement path is changed.
+
+**Approved-by:** Umesh (chat, 2026-10-11: "go for them all")
+
+**Links:** D-057; D-014; D-072; D-081; T-155; T-168; T-178; T-202; T-204; AT-733; AT-792; AT-895; qa/gates/t168-new-modules.md; qa/gates/t204-au20-wildcard-bind.md; qa/gates/at792-round-cap.md

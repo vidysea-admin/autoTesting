@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU27c-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_escalation.py F                                       [100%]
+
+================================== FAILURES ===================================
+_________ test_p5_a_held_admin_only_key_is_still_admin_only_to_grant __________
+tests\test_ui_auth_escalation.py:72: in test_p5_a_held_admin_only_key_is_still_admin_only_to_grant
+    assert ops.post("/admin/groups", data={"name": f"Copy {perm}", "permission": perm}
+E   AssertionError: settings.manage
+E   assert 303 == 403
+E    +  where 303 = <Response [303 See Other]>.status_code
+E    +    where <Response [303 See Other]> = post('/admin/groups', data={'name': 'Copy settings.manage', 'permission': 'settings.manage'})
+E    +      where post = <starlette.testclient.TestClient object at 0x0000027C80296050>.post
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_escalation.py::test_p5_a_held_admin_only_key_is_still_admin_only_to_grant
+======================== 1 failed, 1 warning in 2.17s =========================

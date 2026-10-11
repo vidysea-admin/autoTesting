@@ -1,0 +1,17 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.44s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________________ test_see_video_is_unsupported ________________________
+
+    def test_see_video_is_unsupported() -> None:
+>       with pytest.raises(Unsupported):
+E       Failed: DID NOT RAISE Unsupported
+
+tests\test_litellm_provider.py:114: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_provider.py::test_see_video_is_unsupported - Failed...
+1 failed in 1.21s

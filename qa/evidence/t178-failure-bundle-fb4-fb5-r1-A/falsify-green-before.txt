@@ -1,0 +1,3 @@
+## m0 pristine copy green-before
+...........                                                              [100%]
+11 passed in 14.34s

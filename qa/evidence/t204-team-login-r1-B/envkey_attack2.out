@@ -1,0 +1,8 @@
+process env keys left: ['APPDATA', 'AUTOTESTER_ALLOWED_HOSTS', 'AUTOTESTER_AUTH_DIR', 'AUTOTESTER_ROOT', 'AUTOTESTER_TEST_NO_AUTO_LOGIN', 'COMPUTERNAME', 'COMSPEC', 'HOMEDRIVE', 'HOMEPATH', 'LOCALAPPDATA', 'OS', 'PATH', 'PATHEXT', 'PROCESSOR_ARCHITECTURE', 'PROGRAMDATA', 'PROGRAMFILES', 'PYTHONDONTWRITEBYTECODE', 'PYTHONIOENCODING', 'SYSTEMDRIVE', 'SYSTEMROOT', 'TEMP', 'TMP', 'USERNAME', 'USERPROF
+E2 onboard bsx: 303
+E2 admin sets provider key: 303
+E2 dotenv sees ANTHROPIC_API_KEY? False ['AUTOTESTER_APPROVAL_KEY', 'HTTP_PROXY']
+E2 restart -> {"AUTOTESTER_APPROVAL_KEY": "changed", "HTTP_PROXY": "changed"}
+E3 dev sets legacy-declared HTTP_PROXY: 303 restart -> {"AUTOTESTER_APPROVAL_KEY": "changed"}
+E3 dev undeclares: 303 restart -> {"AUTOTESTER_APPROVAL_KEY": "changed", "HTTP_PROXY": "changed"}
+E4 declare out-of-namespace on legacy via /secrets: 400
