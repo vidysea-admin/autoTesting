@@ -1,0 +1,15 @@
+        for path in (ROOT / "src").rglob("*.py"):
+            used |= set(re.findall(r"AUTOTESTER_[A-Z_]+[A-Z]", path.read_text(encoding="utf-8")))
+>       assert used - documented == set(), f"undocumented env keys: {sorted(used - documented)}"
+E       AssertionError: undocumented env keys: ['AUTOTESTER_SCHEDULE_GRACE_MINUTES', 'AUTOTESTER_TICK_INTERVAL_S']
+E       assert {'AUTOTESTER_...K_INTERVAL_S'} == set()
+E         
+E         Extra items in the left set:
+E         'AUTOTESTER_SCHEDULE_GRACE_MINUTES'
+E         'AUTOTESTER_TICK_INTERVAL_S'
+E         Use -v to get more diff
+
+tests\test_hosting_deploy.py:67: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+1 failed, 9 passed in 1.74s

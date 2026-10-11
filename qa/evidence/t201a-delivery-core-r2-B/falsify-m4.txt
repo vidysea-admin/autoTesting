@@ -1,0 +1,31 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_m4\src\autotester\__init__.py
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ['x__email__y', 'x'] == ['x']
+E         
+E         At index 0 diff: 'x__email__y' != 'x'
+E         Left contains one more item: 'x'
+E         Use -v to get more diff
+
+tests\test_delivery_failure.py:229: AssertionError
+_________ test_lookups_match_whole_file_names_and_ignore_stray_files __________
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27340/test_lookups_match_whole_file_0')
+
+    def test_lookups_match_whole_file_names_and_ignore_stray_files(tmp_path: Path) -> None:
+        log, transport = DeliveryLog(tmp_path), OkTransport()
+        _mail(log, transport, "run-1", "alice")
+        key = delivery_key("run-1", DeliveryChannel.EMAIL, "alice")
+        for stray in (f"{key}.foo.json", f"{key}.01.json.bak", f"{key}.json"):
+            (log.records_dir / stray).write_text("not a record", encoding="utf-8")
+        assert len(log.records_for_key(key)) == 1 and len(log.records_for_run("run-1")) == 1
+>       assert log.records_for_run("run") == [] and log.records_for_key(key[:-1]) == []
+E       AssertionError: assert ([DeliveryReco...etry_at=None)] == []
+E         
+E         Left contains one more item: DeliveryRecord(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 21, 22, 3, 775962, tzinfo=TzInfo(0)), prov... 'email'>, recipient_user_id='alice', status=<DeliveryStatus.SENT: 'sent'>, error=None, attempts=1, next_retry_at=None)
+E         Use -v to get more diff)
+
+tests\test_delivery_failure.py:242: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_delivery_failure.py::test_run_and_user_ids_that_spell_the_separator_do_not_collide
+FAILED tests/test_delivery_failure.py::test_lookups_match_whole_file_names_and_ignore_stray_files
+2 failed, 128 passed in 40.21s
