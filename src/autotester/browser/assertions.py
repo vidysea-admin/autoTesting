@@ -13,6 +13,9 @@ line).
 
 C7 holds by construction: these functions RECORD facts, they never assign
 PASS/FAIL — the grader still owns the verdict.
+
+`settle` (the bounded wait for that same expected state to appear, on the same probe budget)
+lives here too; `BrowserSession.settle` delegates (moved at T-177 slice 0 for session.py's cap).
 """
 
 from __future__ import annotations
@@ -31,6 +34,58 @@ def _probe(session) -> None:
     budget = getattr(session, "budget", None)
     if budget is not None:
         budget.check(probes=1)
+
+
+def settle(session, expected: ExpectedState | None = None, timeout_ms: int = 8000) -> None:
+    """Best-effort transition observation, except a mandatory budget brake."""
+    if expected and (expected.url or expected.visible_text):
+        _poll_for_expected(session, expected, timeout_ms)
+        return
+    ceiling = session._timeout(timeout_ms).get("timeout", timeout_ms)
+    try:
+        session.page.wait_for_load_state("networkidle", timeout=ceiling)
+    except RunBudgetExceeded:
+        raise
+    except Exception:
+        pass
+    grace = session._timeout(500).get("timeout", 500)
+    try:
+        session.page.wait_for_timeout(grace)
+    except RunBudgetExceeded:
+        raise
+    except Exception:
+        pass
+    session._timeout()
+
+
+def _poll_for_expected(session, expected: ExpectedState, timeout_ms: int) -> None:
+    poll_ms = 250
+    elapsed = 0
+    while elapsed < timeout_ms:
+        _probe(session)
+        session._timeout()
+        try:
+            if expected.url and expected.url in session.page.url:
+                session._timeout()
+                return
+            if expected.visible_text:
+                body = session.page.locator("body").inner_text(**session._timeout())
+                if any(text in body for text in expected.visible_text):
+                    session._timeout()
+                    return
+        except RunBudgetExceeded:
+            raise
+        except Exception:
+            pass
+        delay = session._timeout(min(poll_ms, timeout_ms - elapsed)).get("timeout", poll_ms)
+        try:
+            session.page.wait_for_timeout(delay)
+        except RunBudgetExceeded:
+            raise
+        except Exception:
+            pass
+        session._timeout()
+        elapsed += delay
 
 
 def met(session, expected: ExpectedState) -> bool:

@@ -85,6 +85,17 @@ def host_of(url: str) -> str:
     return (parsed.hostname or "").lower()
 
 
+def bad_scheme(url: str) -> str | None:
+    """The scheme of `url` when it is not http/https, else None (no scheme, or `host:8080/x`).
+
+    Read from the SAME parse `host_of` takes its host from, so the two cannot disagree:
+    `host_of` alone lets `javascript://app.example/%0aalert(1)` through, and a scheme regex
+    on the raw text misses a leading space or a tab inside the scheme, which `urlparse`
+    (like a browser) strips before reading the scheme (T-177 F6)."""
+    scheme = urlparse(url if "//" in url else f"//{url}").scheme.lower()
+    return scheme if scheme not in ("", "http", "https") else None
+
+
 def _host_matches(host: str, domain: str, include_subdomains: bool = True) -> bool:
     domain = domain.lower().lstrip(".")
     return host == domain or (include_subdomains and host.endswith(f".{domain}"))

@@ -7,7 +7,12 @@ into `session.py` so nothing else needs to know it moved.
 
 from __future__ import annotations
 
+import contextlib
+import json
 import os
+import socket
+import time
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -25,8 +30,75 @@ only when a caller opts in via `record_video_dir` below -- this constant is
 never read unless recording is on."""
 
 
+CDP_HOST = "127.0.0.1"
+"""The only interface a Chrome DevTools endpoint is ever bound to (D-075, T-177 F3)."""
+
+PORT_FILE = "DevToolsActivePort"
+"""Written by Chromium itself into the profile dir once its DevTools server listens: line 1 is
+the port it chose, line 2 the unguessable per-launch browser path (`/devtools/browser/<guid>`)."""
+
+ATTACH_TIMEOUT_S = 10.0
+
+
+class CdpEndpointError(RuntimeError):
+    """The DevTools endpoint never appeared, is not this browser's, or reaches past loopback."""
+
+
+def forget_cdp_port(profile_dir: Path) -> None:
+    """Drop a port file a previous browser left behind, so it can never be read as ours."""
+    with contextlib.suppress(OSError):
+        (profile_dir / PORT_FILE).unlink(missing_ok=True)
+
+
+def _published(profile_dir: Path, deadline: float) -> tuple[int, str]:
+    """The (port, browser path) THIS launch's Chromium wrote; wait until it has finished writing."""
+    while True:
+        with contextlib.suppress(OSError, ValueError, IndexError):
+            lines = (profile_dir / PORT_FILE).read_text(encoding="utf-8").splitlines()
+            if lines[1].startswith("/devtools/browser/"):
+                return int(lines[0]), lines[1].strip()
+        if time.monotonic() > deadline:
+            raise CdpEndpointError("the browser did not publish a DevTools port")
+        time.sleep(0.05)
+
+
+def _answers_as(port: int, browser_path: str) -> bool:
+    """True when the listener on `port` is the browser that published `browser_path`."""
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # never via a proxy
+    try:
+        with opener.open(f"http://{CDP_HOST}:{port}/json/version", timeout=2) as reply:
+            return str(json.load(reply).get("webSocketDebuggerUrl", "")).endswith(browser_path)
+    except (OSError, ValueError):
+        return False
+
+
+def _reaches_past_loopback(port: int) -> bool:
+    """True when `port` also accepts on 127.0.0.2, i.e. it is bound to a wildcard, not CDP_HOST."""
+    try:
+        socket.create_connection(("127.0.0.2", port), timeout=1).close()
+    except OSError:
+        return False
+    return True
+
+
+def verified_cdp_url(profile_dir: Path) -> str:
+    """The DevTools URL of the browser just launched on `profile_dir`, or `CdpEndpointError`.
+
+    Chromium is asked for port 0 and picks the port itself, so there is no gap between "found a
+    free port" and "bound it" for another process to use (D-082 item 1). The port is then read
+    back from the file that browser wrote, the listener must answer with that browser's own
+    unguessable path, and it must not also accept beyond loopback. Any doubt refuses."""
+    port, browser_path = _published(profile_dir, time.monotonic() + ATTACH_TIMEOUT_S)
+    if not _answers_as(port, browser_path):
+        raise CdpEndpointError(f"the DevTools listener on port {port} is not this browser")
+    if _reaches_past_loopback(port):
+        raise CdpEndpointError(f"the DevTools listener on port {port} reaches beyond loopback")
+    return f"http://{CDP_HOST}:{port}"
+
+
 def launch_options(
-    project: Project, paths: ProjectPaths, *, record_video_dir: Path | None = None
+    project: Project, paths: ProjectPaths, *, record_video_dir: Path | None = None,
+    expose_cdp: bool = False,
 ) -> dict[str, Any]:
     """Arguments for `launch_persistent_context` (B5): headed by default, own profile.
 
@@ -41,6 +113,11 @@ def launch_options(
     single-choke-point requirement) -- omitted by default, so every caller
     that does not pass it (crawl explorer, manual login, every existing test)
     is unchanged, no video, no behavior change (C2).
+
+    `expose_cdp` (T-177 F3, D-075): when True, Chromium also serves DevTools on a port IT picks
+    (`0`), asked to bind `CDP_HOST` only, so the browser-use fallback can attach to THIS browser
+    instead of launching a second one. False by default: no debug port exists unless a caller
+    asks, per run. Read the port back with `verified_cdp_url`; never pick one here.
     """
     paths.profile_dir.mkdir(parents=True, exist_ok=True)
     slow_mo_ms = int(os.environ.get("AUTOTESTER_SLOW_MO_MS", "0") or "0")
@@ -61,6 +138,8 @@ def launch_options(
             "--disable-dev-shm-usage",
         ],
     }
+    if expose_cdp:
+        options["args"] += [f"--remote-debugging-address={CDP_HOST}", "--remote-debugging-port=0"]
     if record_video_dir is not None:
         record_video_dir.mkdir(parents=True, exist_ok=True)
         options["record_video_dir"] = str(record_video_dir)

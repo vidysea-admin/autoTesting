@@ -29,6 +29,7 @@ append raised `Cannot read properties of null` on a fresh navigation), so
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 
 from autotester.browser.evidence import MASK_CSS
@@ -83,6 +84,12 @@ encoder buffer at `RECORD_VIDEO_SIZE`, on top of
 
 class VideoMixin:
     """`begin_case_video()` / `end_case_video()` -- mixed into `BrowserSession`."""
+
+    def _sweep_orphan_videos(self) -> None:
+        """Sweep only this session's video scratch, never a sibling's (V1)."""
+        scratch = self.state.run_dir / VIDEO_DIR_NAME / self._video_scratch_id
+        if scratch.is_dir():
+            shutil.rmtree(scratch, ignore_errors=True)
 
     def begin_case_video(self, case_id: str) -> None:
         """Swap to a fresh page for `case_id`. A no-op when this session was
