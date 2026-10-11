@@ -1,0 +1,322 @@
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TPQ6H46BHXZHBDXEKSNZ
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=6
+  trial 1: sends=1 records=1 none-returns=3
+  trial 2: sends=1 records=1 none-returns=11
+  trial 3: sends=1 records=1 none-returns=11
+  trial 4: sends=1 records=1 none-returns=4
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TPPEZ5WHYD7F5QFKMC06
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=6
+  trial 1: sends=1 records=1 none-returns=5
+  trial 2: sends=1 records=1 none-returns=4
+  trial 3: sends=1 records=1 none-returns=4
+  trial 4: sends=1 records=1 none-returns=3
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TPP9V03EJFVVXR3CB3SE
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=6
+  trial 1: sends=1 records=1 none-returns=5
+  trial 2: sends=1 records=1 none-returns=11
+  trial 3: sends=1 records=1 none-returns=5
+  trial 4: sends=1 records=1 none-returns=4
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TPPEZMR8MQY1GR9D2YSZ
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=6
+  trial 1: sends=1 records=1 none-returns=3
+  trial 2: sends=1 records=1 none-returns=3
+  trial 3: sends=1 records=1 none-returns=4
+  trial 4: sends=1 records=1 none-returns=3
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TPPAHM29HQY5AY5YGQ2G
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=6
+  trial 1: sends=1 records=1 none-returns=4
+  trial 2: sends=1 records=1 none-returns=11
+  trial 3: sends=1 records=1 none-returns=11
+  trial 4: sends=1 records=1 none-returns=3
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TPS98P0N3X9GSMC6TAV1
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=6
+  trial 1: sends=1 records=1 none-returns=5
+  trial 2: sends=1 records=1 none-returns=11
+  trial 3: sends=1 records=1 none-returns=11
+  trial 4: sends=1 records=1 none-returns=3
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TPQGYWM3YYQCCC9D7AM4
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=5
+  trial 1: sends=1 records=1 none-returns=5
+  trial 2: sends=1 records=1 none-returns=11
+  trial 3: sends=1 records=1 none-returns=3
+  trial 4: sends=1 records=1 none-returns=2
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TX3QMA2PC6M9REPN3RDH
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=8
+  trial 1: sends=1 records=1 none-returns=3
+  trial 2: sends=1 records=1 none-returns=4
+  trial 3: sends=1 records=1 none-returns=7
+  trial 4: sends=1 records=1 none-returns=7
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TX3XMM40V0NT3YJCBKKM
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=8
+  trial 1: sends=1 records=1 none-returns=3
+  trial 2: sends=1 records=1 none-returns=4
+  trial 3: sends=1 records=1 none-returns=7
+  trial 4: sends=1 records=1 none-returns=5
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TX0H4ZEABETY1J2QVTVS
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=1
+  trial 1: sends=1 records=1 none-returns=1
+  trial 2: sends=1 records=1 none-returns=3
+  trial 3: sends=1 records=1 none-returns=6
+  trial 4: sends=1 records=1 none-returns=3
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TX37SC3CZZ3DBYDGAH5Q
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=9
+  trial 1: sends=1 records=1 none-returns=2
+  trial 2: sends=1 records=1 none-returns=4
+  trial 3: sends=1 records=1 none-returns=8
+  trial 4: sends=1 records=1 none-returns=3
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TX2RB9JARBSD7WJPFNS7
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=3
+  trial 1: sends=1 records=1 none-returns=2
+  trial 2: sends=1 records=1 none-returns=4
+  trial 3: sends=1 records=1 none-returns=4
+  trial 4: sends=1 records=1 none-returns=6
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TX0BJ2VB8142CWQDYYXA
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=1
+  trial 1: sends=1 records=1 none-returns=2
+  trial 2: sends=1 records=1 none-returns=3
+  trial 3: sends=1 records=1 none-returns=9
+  trial 4: sends=1 records=1 none-returns=3
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4VHX5DXWNV10EH7RXEA7C
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=6
+  trial 1: sends=1 records=1 none-returns=5
+  trial 2: sends=1 records=1 none-returns=3
+  trial 3: sends=1 records=1 none-returns=2
+  trial 4: sends=1 records=1 none-returns=2
+== 1. key collisions (distinct recipients, shared key / glob) ==
+alice.smith first, then alice: sends=1  second returned recipient='alice.smith' status=sent
+  key(alice)= run-1__email__alice key(alice.smith)= run-1__email__alice.smith
+  files: ['run-1__email__alice.smith.01.json']
+  key collision across (run,user) pairs: True x__email__y__email__z
+  second recipient mailed? sends=1  (1 means the second user was suppressed)
+  records_for_run('x') shows other run's rows: [('x__email__y', 'z')]
+  minted run id sample: run_01M4N4TJJZQC95V3YWD8EZGS94
+== 2. crash between send and record ==
+  +0:00:00: returned=None sends=0
+  +0:05:00: returned=None sends=0
+  +0:09:59: returned=None sends=0
+  after stale: failed attempt started but its outcome was never recorded; not resent None sends= 0
+  days later still terminal, sends= 0 failed
+== 3. concurrent threads, same delivery ==
+  trial 0: sends=1 records=1 none-returns=5
+  trial 1: sends=1 records=1 none-returns=7
+  trial 2: sends=1 records=1 none-returns=6
+  trial 3: sends=1 records=1 none-returns=4
+  trial 4: sends=1 records=1 none-returns=5
+== 4. concurrent PROCESSES, same delivery ==
+  trial 0: total sends across 8 processes = 1; records = 1
+  trial 1: total sends across 8 processes = 1; records = 1
+  trial 2: total sends across 8 processes = 1; records = 1
+== 5. retry schedule / bound ==
+  call 0: sends=1 attempts=1 status=failed next=2026-10-11 12:01:00+00:00
+  call 1: sends=2 attempts=2 status=failed next=2026-10-11 12:06:00+00:00
+  call 2: sends=3 attempts=3 status=failed next=2026-10-11 12:36:00+00:00
+  call 3: sends=4 attempts=4 status=failed next=None
+  call 4: sends=4 attempts=4 status=failed next=None
+  call 5: sends=4 attempts=4 status=failed next=None
+  call 6: sends=4 attempts=4 status=failed next=None
+  call 7: sends=4 attempts=4 status=failed next=None
+  MAX_ATTEMPTS 4 [datetime.timedelta(seconds=60), datetime.timedelta(seconds=300), datetime.timedelta(seconds=1800), None]
+== 6. unexpected exception text with secret + append-only ==
+  stored error: RuntimeError
+  stored error (TransportError, scrub applied): password=[REDACTED] reached TransportError
+  long error truncated to 300
+  second append refused (append-only)
+  address in any file: False
+  KeyboardInterrupt propagates; marker left: ['run-7__email__u1.01.json']
+  next call within 10 min returns: None
