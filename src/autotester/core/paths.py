@@ -181,6 +181,12 @@ class ProjectPaths:
     def source_analysis(self, source_id: str) -> Path:
         return self.source_dir(source_id) / "analysis.json"
 
+    def review_path(self, review_id: str) -> Path:
+        return self.dir / "reviews" / f"{review_id}.json"
+
+    def review_work_dir(self, review_id: str) -> Path:
+        return self.dir / "reviews" / review_id
+
     @property
     def issues(self) -> Path:
         return self.dir / "issues.jsonl"
@@ -221,15 +227,8 @@ class ProjectPaths:
 
     def ensure(self) -> None:
         """Create the directories a project needs. Safe to call repeatedly."""
-        for path in (
-            self.dir,
-            self.sources_dir,
-            self.rubrics_dir,
-            self.scripts_dir,
-            self.runs_dir,
-            self.profile_dir,
-            self.bench_dir,
-        ):
+        for path in (self.dir, self.sources_dir, self.rubrics_dir, self.scripts_dir,
+                     self.runs_dir, self.profile_dir, self.bench_dir):
             path.mkdir(parents=True, exist_ok=True)
 
 
