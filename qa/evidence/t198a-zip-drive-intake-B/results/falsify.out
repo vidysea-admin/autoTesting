@@ -1,0 +1,263 @@
+TI1 65 passed in 1.72s | 12 failed, 53 passed in 2.35s
+TI2 9 passed in 0.70s | 1 failed, 8 passed in 0.98s
+TI3 22 passed in 2.57s | 4 failed, 18 passed in 2.84s
+TI4 40 passed in 6.64s | 11 failed, 29 passed in 7.35s
+TI5 22 passed in 2.59s | 4 failed, 18 passed in 2.43s
+TI6 5 passed in 3.75s | 1 failed, 4 passed in 5.16s
+TI7 39 passed in 1.81s | 3 failed, 36 passed in 2.18s
+TI8 39 passed in 0.53s | 8 failed, 31 passed in 0.89s
+TI9 60 passed in 1.61s | 2 failed, 58 passed in 1.89s
+TI10-seam 12 passed, 1 warning in 2.62s | 2 failed, 10 passed, 1 warning in 1.62s
+TI11 20 passed, 1 warning in 2.42s | 1 failed, 19 passed, 1 warning in 2.11s
+HO30 20 passed, 1 warning in 2.63s | 3 failed, 17 passed, 1 warning in 2.43s
+HO32 33 passed in 0.23s | 3 failed, 30 passed in 0.39s
+HO33 10 passed in 1.68s | 1 failed, 9 passed in 62.68s (0:01:02)
+{
+ "TI1": {
+  "file": "src/autotester/sources/zip_names.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI1/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "65 passed in 1.72s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "12 failed, 53 passed in 2.35s",
+   "failed": [
+    "test_ti1_hostile_member_refused_by_name_never_written_benign_still_registered[..\\\\x.mp4-traversal]",
+    "test_ti1_hostile_member_refused_by_name_never_written_benign_still_registered[a\\\\..\\\\..\\\\x.mp4-traversal]",
+    "test_ti1_hostile_member_refused_by_name_never_written_benign_still_registered[\\\\abs.mp4-absolute]",
+    "test_ti1_hostile_member_refused_by_name_never_written_benign_still_registered[\\\\\\\\host\\\\share\\\\x.mp4-UNC]"
+   ]
+  }
+ },
+ "TI2": {
+  "file": "src/autotester/sources/zip_intake.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI2/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "9 passed in 0.70s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "1 failed, 8 passed in 0.98s",
+   "failed": [
+    "test_ti2_zero_bomb_over_ratio_refused_without_writing"
+   ]
+  }
+ },
+ "TI3": {
+  "file": "src/autotester/sources/zip_intake.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI3/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "22 passed in 2.57s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "4 failed, 18 passed in 2.84s",
+   "failed": [
+    "test_ti3_three_videos_one_pdf_one_text_register_three_and_skip_two",
+    "test_ti3_dotfile_scripts_no_suffix_and_directories_are_never_kept",
+    "test_ti3_allowlist_is_the_ingest_definition_not_a_second_list",
+    "test_ti3_zip_json_gives_every_member_one_outcome_and_exit_0_when_clean"
+   ]
+  }
+ },
+ "TI4": {
+  "file": "src/autotester/sources/intake_commit.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI4/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "40 passed in 6.64s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "11 failed, 29 passed in 7.35s",
+   "failed": [
+    "test_ti4_stored_path_never_contains_text_from_the_member_name[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.mp4]",
+    "test_ti4_stored_path_never_contains_text_from_the_member_name[\\xfcn\\xef/c\\xf6d\\xe9.mp4]",
+    "test_ti4_stored_path_never_contains_text_from_the_member_name[trail.dots...mp4]",
+    "test_ti4_label_and_origin_pass_the_scrubber_before_storage"
+   ]
+  }
+ },
+ "TI5": {
+  "file": "src/autotester/sources/zip_intake.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI5/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "22 passed in 2.59s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "4 failed, 18 passed in 2.43s",
+   "failed": [
+    "test_ti5_corrupt_middle_member_is_failed_others_register_status_partial_exit_2",
+    "test_ti5_a_partial_zip_exits_2_and_the_others_still_register",
+    "test_ti1_the_cli_refuses_a_hostile_member_and_writes_nothing_outside",
+    "test_ti7_fetch_drive_partial_folder_exits_2"
+   ]
+  }
+ },
+ "TI6": {
+  "file": "src/autotester/sources/intake_commit.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI6/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "5 passed in 3.75s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "1 failed, 4 passed in 5.16s",
+   "failed": [
+    "test_ti6_failure_inside_the_copy_never_leaves_a_row_without_its_file"
+   ]
+  }
+ },
+ "TI7": {
+  "file": "src/autotester/sources/drive_verify.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI7/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "39 passed in 1.81s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "3 failed, 36 passed in 2.18s",
+   "failed": [
+    "test_ti7_wrong_md5_is_refused_and_staging_is_removed",
+    "test_ti7_a_wrong_md5_refuses_and_leaves_nothing",
+    "test_ti7_a_failing_video_in_a_folder_is_partial_and_the_rest_register"
+   ]
+  }
+ },
+ "TI8": {
+  "file": "src/autotester/sources/drive_errors.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI8/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "39 passed in 0.53s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "8 failed, 31 passed in 0.89s",
+   "failed": [
+    "test_ti8_each_failure_class_is_typed_and_leaks_nothing[not_authenticated-result0]",
+    "test_ti8_each_failure_class_is_typed_and_leaks_nothing[not_authenticated-result1]",
+    "test_ti8_each_failure_class_is_typed_and_leaks_nothing[permission_denied-result2]",
+    "test_ti8_each_failure_class_is_typed_and_leaks_nothing[not_found-result3]"
+   ]
+  }
+ },
+ "TI9": {
+  "file": "src/autotester/sources/gws_drive.py",
+  "copy_import": "dd7f6/scratchpad/t198a-B/fals/TI9/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "60 passed in 1.61s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "2 failed, 58 passed in 1.89s",
+   "failed": [
+    "test_ti9_declared_size_over_the_limit_is_refused_before_any_download",
+    "test_ti9_the_limit_is_read_when_the_download_starts"
+   ]
+  }
+ },
+ "TI10-seam": {
+  "file": "src/autotester/ui/routes_intake.py",
+  "copy_import": "scratchpad/t198a-B/fals/TI10-seam/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "12 passed, 1 warning in 2.62s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "2 failed, 10 passed, 1 warning in 1.62s",
+   "failed": [
+    "test_ti7_a_pasted_link_fetches_in_the_background_and_the_job_page_shows_the_table",
+    "test_ti10_seam_the_queued_fetch_checks_again_and_a_refusal_fetches_no_bytes"
+   ]
+  }
+ },
+ "TI11": {
+  "file": "src/autotester/ui/intake_upload.py",
+  "copy_import": "d7f6/scratchpad/t198a-B/fals/TI11/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "20 passed, 1 warning in 2.42s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "1 failed, 19 passed, 1 warning in 2.11s",
+   "failed": [
+    "test_ti11_uploaded_by_comes_from_the_gate_and_a_form_field_is_ignored"
+   ]
+  }
+ },
+ "HO30": {
+  "file": "src/autotester/ui/upload_stream.py",
+  "copy_import": "d7f6/scratchpad/t198a-B/fals/HO30/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "20 passed, 1 warning in 2.63s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "3 failed, 17 passed, 1 warning in 2.43s",
+   "failed": [
+    "test_ho30_exactly_the_limit_succeeds_and_one_byte_more_is_a_413_with_nothing_left",
+    "test_ti9_an_endless_body_is_cut_at_the_limit_plus_one_chunk",
+    "test_ho30_a_lying_content_length_changes_nothing"
+   ]
+  }
+ },
+ "HO32": {
+  "file": "src/autotester/sources/drive_link.py",
+  "copy_import": "d7f6/scratchpad/t198a-B/fals/HO32/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "33 passed in 0.23s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "3 failed, 30 passed in 0.39s",
+   "failed": [
+    "test_ti7_accepted_forms_give_the_id[https://docs.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz_-0123/edit-file]",
+    "test_ti7_ho32_every_other_shape_is_refused[https://drive.google.com.evil.io/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz_-0123]",
+    "test_ti7_ho32_every_other_shape_is_refused[https://DRIVE.GOOGLE.COM.evil.io/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz_-0123]"
+   ]
+  }
+ },
+ "HO33": {
+  "file": "src/autotester/sources/gws_runner.py",
+  "copy_import": "d7f6/scratchpad/t198a-B/fals/HO33/src/autotester/__init__.py",
+  "anchor_found": 1,
+  "green": {
+   "rc": 0,
+   "summary": "10 passed in 1.68s"
+  },
+  "red": {
+   "rc": 1,
+   "summary": "1 failed, 9 passed in 62.68s (0:01:02)",
+   "failed": [
+    "test_ti9_download_that_grows_without_end_is_killed_and_removed"
+   ]
+  }
+ }
+}

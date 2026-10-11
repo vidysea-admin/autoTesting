@@ -1,0 +1,1424 @@
+{
+ "h_dotdot_fwd": {
+  "status": "partial",
+  "rows": [
+   [
+    "../evil.mp4",
+    "failed",
+    "refused: path traversal (..)"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "h_dotdot_back": {
+  "status": "partial",
+  "rows": [
+   [
+    "..\\evil.mp4",
+    "failed",
+    "refused: path traversal (..)"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_mid_fwd": {
+  "status": "partial",
+  "rows": [
+   [
+    "a/../../evil.mp4",
+    "failed",
+    "refused: path traversal (..)"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "h_mid_back": {
+  "status": "partial",
+  "rows": [
+   [
+    "a\\..\\..\\evil.mp4",
+    "failed",
+    "refused: path traversal (..)"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.06
+ },
+ "h_abs_fwd": {
+  "status": "partial",
+  "rows": [
+   [
+    "/abs.mp4",
+    "failed",
+    "refused: absolute path"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_abs_back": {
+  "status": "partial",
+  "rows": [
+   [
+    "\\abs.mp4",
+    "failed",
+    "refused: absolute path"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_drive_slash": {
+  "status": "partial",
+  "rows": [
+   [
+    "C:\\x.mp4",
+    "failed",
+    "refused: drive letter"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "h_drive_noslash": {
+  "status": "partial",
+  "rows": [
+   [
+    "C:x.mp4",
+    "failed",
+    "refused: drive letter"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_unc": {
+  "status": "partial",
+  "rows": [
+   [
+    "\\\\host\\share\\x.mp4",
+    "failed",
+    "refused: UNC path"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.06
+ },
+ "h_ads": {
+  "status": "partial",
+  "rows": [
+   [
+    "a.mp4:evil",
+    "failed",
+    "refused: alternate data stream (:)"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.06
+ },
+ "h_ads2": {
+  "status": "partial",
+  "rows": [
+   [
+    "a.mp4::$DATA",
+    "failed",
+    "refused: alternate data stream (:)"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_con": {
+  "status": "partial",
+  "rows": [
+   [
+    "CON.mp4",
+    "failed",
+    "refused: reserved device name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.13
+ },
+ "h_nul": {
+  "status": "partial",
+  "rows": [
+   [
+    "NUL",
+    "failed",
+    "refused: reserved device name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.06
+ },
+ "h_aux_ext": {
+  "status": "partial",
+  "rows": [
+   [
+    "aux.txt",
+    "failed",
+    "refused: reserved device name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_dir_con": {
+  "status": "partial",
+  "rows": [
+   [
+    "ok/CON/x.mp4",
+    "failed",
+    "refused: reserved device name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "h_com1": {
+  "status": "partial",
+  "rows": [
+   [
+    "com1.mp4",
+    "failed",
+    "refused: reserved device name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.06
+ },
+ "h_lpt1_sp": {
+  "status": "ok",
+  "rows": [
+   [
+    "LPT1 .mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.08
+ },
+ "h_con_dot": {
+  "status": "partial",
+  "rows": [
+   [
+    "con..mp4",
+    "failed",
+    "refused: reserved device name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.08
+ },
+ "h_nulbyte": {
+  "status": "partial",
+  "rows": [
+   [
+    "a.mp4\\u0000.exe",
+    "failed",
+    "refused: control character in name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_rlo": {
+  "status": "partial",
+  "rows": [
+   [
+    "\\u202e4pm.exe",
+    "failed",
+    "refused: control character in name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "h_bidi_in_video": {
+  "status": "partial",
+  "rows": [
+   [
+    "clip\\u202e4pm.mp4",
+    "failed",
+    "refused: control character in name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_ctrl": {
+  "status": "partial",
+  "rows": [
+   [
+    "a\\u0007b.mp4",
+    "failed",
+    "refused: control character in name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_newline": {
+  "status": "partial",
+  "rows": [
+   [
+    "a\\u000ab.mp4",
+    "failed",
+    "refused: control character in name"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.08
+ },
+ "h_trail_dot": {
+  "status": "ok",
+  "rows": [
+   [
+    "clip.mp4.",
+    "skipped",
+    "not a recording (no extension); only video files are registered"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_trail_space": {
+  "status": "ok",
+  "rows": [
+   [
+    "clip.mp4 ",
+    "skipped",
+    "not a recording (.mp4 ); only video files are registered"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "h_nfkc_dots": {
+  "status": "ok",
+  "rows": [
+   [
+    "\uff0e\uff0e/evil.mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "h_fullwidth_slash": {
+  "status": "ok",
+  "rows": [
+   [
+    "..\uff0fevil.mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.08
+ },
+ "h_long": {
+  "status": "ok",
+  "rows": [
+   [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.13
+ },
+ "h_unicode_nfd": {
+  "status": "ok",
+  "rows": [
+   [
+    "e\u0301\u0301.mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.08
+ },
+ "h_html": {
+  "status": "ok",
+  "rows": [
+   [
+    "<script>alert(1)</script>.mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "h_img": {
+  "status": "ok",
+  "rows": [
+   [
+    "<img src=x onerror=alert(1)>.mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.06
+ },
+ "h_dotdir": {
+  "status": "ok",
+  "rows": [
+   [
+    "./././evil.mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "h_empty_part": {
+  "status": "ok",
+  "rows": [
+   [
+    "a//b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.09
+ },
+ "mode_symlink": {
+  "status": "partial",
+  "rows": [
+   [
+    "link.mp4",
+    "failed",
+    "refused: symlink entries are not allowed"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "mode_chr": {
+  "status": "partial",
+  "rows": [
+   [
+    "link.mp4",
+    "failed",
+    "refused: device entries are not allowed"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "mode_fifo": {
+  "status": "partial",
+  "rows": [
+   [
+    "link.mp4",
+    "failed",
+    "refused: fifo entries are not allowed"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "mode_sock": {
+  "status": "partial",
+  "rows": [
+   [
+    "link.mp4",
+    "failed",
+    "refused: socket entries are not allowed"
+   ],
+   [
+    "benign.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.03
+ },
+ "dup_names": {
+  "status": "ok",
+  "rows": [
+   [
+    "same.mp4",
+    "registered",
+    null
+   ],
+   [
+    "same.mp4",
+    "registered",
+    null
+   ],
+   [
+    "SAME.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 3,
+  "n_source_rows": 3,
+  "sentinel_ok": true,
+  "secs": 0.1
+ },
+ "dup_bytes": {
+  "status": "ok",
+  "rows": [
+   [
+    "a/clip.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b/clip.mp4",
+    "duplicate",
+    "same bytes are already registered"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "dup_bytes_second_upload": [
+  "duplicate",
+  "duplicate"
+ ],
+ "notzip_garbage": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.02
+ },
+ "notzip_text": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.02
+ },
+ "notzip_empty": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.0
+ },
+ "nonvideo": {
+  "status": "ok",
+  "rows": [
+   [
+    "run.exe",
+    "skipped",
+    "not a recording (.exe); only video files are registered"
+   ],
+   [
+    ".env",
+    "skipped",
+    "not a recording (no extension); only video files are registered"
+   ],
+   [
+    "x.ps1",
+    "skipped",
+    "not a recording (.ps1); only video files are registered"
+   ],
+   [
+    "doc.pdf",
+    "skipped",
+    "not a recording (.pdf); only video files are registered"
+   ],
+   [
+    "noext",
+    "skipped",
+    "not a recording (no extension); only video files are registered"
+   ],
+   [
+    "ok.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "nested": {
+  "status": "partial",
+  "rows": [
+   [
+    "inner.zip",
+    "failed",
+    "refused: nested archive (archives inside archives are not opened)"
+   ],
+   [
+    "a.tar",
+    "failed",
+    "refused: nested archive (archives inside archives are not opened)"
+   ],
+   [
+    "b.7z",
+    "failed",
+    "refused: nested archive (archives inside archives are not opened)"
+   ],
+   [
+    "c.gz",
+    "failed",
+    "refused: nested archive (archives inside archives are not opened)"
+   ],
+   [
+    "sneaky.mp4",
+    "failed",
+    "refused: nested archive (the bytes are an archive)"
+   ],
+   [
+    "gz.mp4",
+    "failed",
+    "refused: nested archive (the bytes are an archive)"
+   ],
+   [
+    "ok.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.05
+ },
+ "entries_cap": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "too many entries (30; limit 20)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.02
+ },
+ "ratio_bomb": {
+  "status": "partial",
+  "rows": [
+   [
+    "bomb.mp4",
+    "failed",
+    "compression ratio 1028:1 exceeds the 100:1 limit"
+   ],
+   [
+    "ok.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "perfile": {
+  "status": "partial",
+  "rows": [
+   [
+    "big.mp4",
+    "failed",
+    "195.31 KiB exceeds the per-file limit of 97.66 KiB"
+   ],
+   [
+    "ok.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "total_cap": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "total uncompressed size 256.38 KiB exceeds the limit of 146.48 KiB"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "video_count": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "video count 25 exceeds the limit of 20"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.03
+ },
+ "archive_size": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "archive size 85.56 KiB exceeds the limit of 9.77 KiB"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.02
+ },
+ "lie_understate": {
+  "status": "failed",
+  "rows": [
+   [
+    "lie.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.03
+ },
+ "lie_overstate": {
+  "status": "failed",
+  "rows": [
+   [
+    "lie.mp4",
+    "failed",
+    "compression ratio 1562500:1 exceeds the 100:1 limit"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.03
+ },
+ "lie_understate_stored": {
+  "status": "failed",
+  "rows": [
+   [
+    "lie.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.03
+ },
+ "lie_bomb_understate": {
+  "status": "failed",
+  "rows": [
+   [
+    "lie.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "zip64": {
+  "status": "ok",
+  "rows": [
+   [
+    "z64.mp4",
+    "registered",
+    null
+   ],
+   [
+    "ok.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.07
+ },
+ "encrypted": {
+  "status": "partial",
+  "rows": [
+   [
+    "secret.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "ok.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 1,
+  "n_source_rows": 1,
+  "sentinel_ok": true,
+  "secs": 0.03
+ },
+ "truncated": {
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.02
+ },
+ "bitflip": {
+  "status": "partial",
+  "rows": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 2,
+  "n_source_rows": 2,
+  "sentinel_ok": true,
+  "secs": 0.08
+ },
+ "name_mismatch_local": {
+  "status": "failed",
+  "rows": [
+   [
+    "aaaaaaaa.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "notes": [
+   "max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)"
+  ],
+  "outside": [],
+  "leftovers": [],
+  "n_recordings": 0,
+  "n_source_rows": 0,
+  "sentinel_ok": true,
+  "secs": 0.04
+ },
+ "many_entries": {
+  "entries": 100000,
+  "zip_bytes": 9777878,
+  "status": "failed",
+  "rows": [
+   [
+    "(archive)",
+    "failed",
+    "too many entries (100000; limit 1000)"
+   ]
+  ],
+  "secs": 8.81,
+  "peak_mb": 55.9
+ }
+}

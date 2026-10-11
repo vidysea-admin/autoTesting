@@ -1,0 +1,61 @@
+{
+ "job_single_writer": {
+  "writer_errors": [
+   "PermissionError",
+   "PermissionError",
+   "PermissionError"
+  ],
+  "n_err": 3,
+  "reader_none": 94,
+  "leftovers": []
+ },
+ "fault_member2": {
+  "status": "partial",
+  "outcomes": [
+   "registered",
+   "failed",
+   "registered"
+  ],
+  "rows": 2,
+  "files": 2,
+  "row_without_file": [],
+  "staging_left": [
+   "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\t198a-B\\miscwork\\root\\.work\\drive-jobs\\demo\\01M4M62SK47SH3SXBPAF6RNYMB.json"
+  ]
+ },
+ "rerun_converges": {
+  "outcomes": [
+   "duplicate",
+   "registered",
+   "duplicate"
+  ],
+  "rows": 3,
+  "files": 3
+ },
+ "orphan_swept": true,
+ "drive_LIEMD5AAAA": [
+  [
+   "failed",
+   "md5 mismatch: the received bytes differ from Drive's checksum"
+  ]
+ ],
+ "drive_SHORTREAD1": [
+  [
+   "failed",
+   "size mismatch: received 3000 bytes, Drive reports 99999"
+  ]
+ ],
+ "drive_lies_rows_added": 0,
+ "drive_lies_leftovers": [],
+ "drive_downloads_closed": true,
+ "many_entries": {
+  "entries": 300000,
+  "zip_mb": 29.8,
+  "secs": 25.9,
+  "peak_ws_before_mb": 97,
+  "peak_ws_after_mb": 270,
+  "bytes_per_entry_mem": 575,
+  "zip_bytes_per_entry": 99,
+  "result": "too many entries (300000; limit 1000)"
+ }
+}
