@@ -50,7 +50,7 @@ FORMULA_STARTS = ("=", "+", "-", "@", chr(9), chr(13))
 
 def _safe(value: str) -> str:
     """A cell starting with `=`, `+`, `-`, `@`, tab or CR can run as a formula in a sheet that
-    parses its input; a leading apostrophe makes it plain text. Applied before the plan is hashed."""
+    parses its input; a leading apostrophe makes it plain text. Applied before the hash."""
     return "'" + value if value[:1] in FORMULA_STARTS else value
 
 
