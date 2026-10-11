@@ -3,7 +3,7 @@
 **Goal task:** T-205 (plan unit G1 `g10-0-headroom`: headroom and shared seams for Group 10)
 **Date:** 2026-10-11
 **Fix cycle:** 1
-**Repair base:** 0b8325b61bf89e2ed66d62ef02ec47f94c211733
+**Repair base:** fb93776bbf216c91c5854e0c5ce58dff8a22e052
 **Dual check:** required (set by the maker at dispatch, 2026-10-11: the diff moves the live-case approval gate, the AT-570 seam, out of `ui/routes_runs.py` into a new module, and a move can drop a gate as easily as a change can. The builder's view was "no": no approval logic, secret handling, login, permission key, tenancy rule or production write is added or changed, and `auth/policy.py` is a pure merge function with no catalogue entries)
 dual-trigger: security src/autotester/stages/run_launcher.py:179 (`require_live_case_approval` called from `prepare_run`; the gate itself is at `:134-151`)
 **Persona walk:** skip (no screen, route, template or command changes; the route table and `--help` listing are held byte-equal by golden snapshots)
@@ -139,5 +139,63 @@ All reds are assertion failures, none an import or setup error. The red counts a
 
 ## Live browser evidence
 Not UI-touching in behaviour: no route, template, command or page changed. Changed paths: src/autotester/stages/run_launcher.py, src/autotester/ui/routes_runs.py, src/autotester/ui/routers.py, src/autotester/ui/app.py, src/autotester/ui/helpers.py, src/autotester/cli.py, src/autotester/cli_subapps.py, src/autotester/auth/__init__.py, src/autotester/auth/policy.py, src/autotester/core/paths.py, src/autotester/core/repo_docs.py, src/autotester/core/safe_names.py, src/autotester/store/filestore.py, src/autotester/store/team_store.py, src/autotester/schema/team_enums.py, src/autotester/schema/schedule.py, src/autotester/schema/project.py, src/autotester/schema/run.py, docs/MAP.md, tests/ (8 new files, 5 goldens).
+
+## Merge-reconcile 1
+Repair base: fb93776b (the PASSed head, ancestor of this head). Merged master: `1c52bf7138f8a5064563df0d7e06b82fd9ab19c8`. Merge commit `b841c232` (parents fb93776b and 1c52bf71, `--no-ff --no-autostash`), then test commit `39b42ca5` (product head for the Pre-check lines below); this manifest commit changes no product file. Merge base was `09828f2d`; master moved 137 commits. Worktree `D:/autoTesting/.worktrees/t205-g10-headroom`; `uv sync` run after the merge (litellm); `autotester.__file__` is inside the worktree. Nothing was run in the main checkout; no `qa/contracts/`, `qa/issues.jsonl` or `qa/verdicts/` edit.
+
+Files changed on both sides since the base (computed): `docs/MAP.md`, `cli.py`, `core/paths.py`, `schema/project.py`, `schema/schedule.py`, `ui/routes_runs.py`. Four conflicted textually; `cli.py` and `core/paths.py` auto-merged and were read: `cli.py` keeps master's `expand_cases` (proposals, `usable_provider`) and `release-report` plus this unit's `register_subapps` (293 lines); `core/paths.py` keeps master's `case_proposals` property beside this unit's `team_path` / `RepoDocs` move. `ui/app.py`, `ui/routers.py`, `auth/` were not changed by master; the `ROUTERS` list equals master's `include_router` calls (same 17 routers, intake rides on `routes_sources`).
+
+### Conflicts and resolutions
+| File | Conflict | Resolution |
+|---|---|---|
+| `docs/MAP.md` | generated | took the branch side, regenerated with `autotester map` |
+| `schema/schedule.py` | master added the five enums in the old home; this unit moved four into `team_enums.py` | master added only ONE new name, `CredentialState` (t200b); the other four were already moved. `CredentialState` is now defined in `schema/team_enums.py` (one concept, one place) and re-exported by `schema/schedule.py` exactly like the other four, so `from autotester.schema.schedule import CredentialState` (`stages/schedule_gate.py`, `tests/test_schedule_gate.py`) still works unedited. No duplicate definition (`test_team_enums_home.py` green) |
+| `schema/project.py` | imports, and the three `Source` provenance fields on both sides | see "Source.origin" below; master's `uploaded_by` / `uploaded_at` descriptions kept (TI11), `ScheduleConfig` import kept |
+| `ui/routes_runs.py` | ~260-line hunk | took the branch file (81 lines) and re-applied every master change, table below |
+| `docs/SNAPSHOT.md` | auto-merged but stale-generated (`doctor` flagged it) | regenerated with `autotester snapshot` (the only diff from master is the "Last decisions" window now ending at D-085; master's own SNAPSHOT lags its DECISIONS.md). The earlier "SNAPSHOT not regenerated" note is superseded |
+| `tests/golden/cli_commands.json` | semantic: the golden pins `--help` as it was at the base; master since added `release-report` (t167) and reworded `expand`'s one-line help (T-178 FB5) | regenerated from the live table in the file's own format (CRLF); the diff is exactly those two rows and no row was removed or reordered |
+
+### Master changes to `ui/routes_runs.py` since the base, and where each lives now
+`git log 09828f2d..master -- src/autotester/ui/routes_runs.py`: `bb76275f`, `b4716509`, merge `ae0220cd` (the reconcile of those two; no change of its own). Master's other units named in the brief (t200b, AT-888, t198a) did not edit this file; `ui/run_execution.py` (AT-733 `b07cc727`, T-202) and `ui/run_queue.py` (priorities) auto-merged and the launcher imports them unchanged.
+
+| Master change | Now lives in |
+|---|---|
+| `bb76275f` FB4: `store.list_cases(priorities=...)` selects the chosen priorities plus pinned p0 | `stages/run_launcher.py` `prepare_run(slug, seams, priorities)` (the `list_cases` call) and `launch_run(..., priorities=)` |
+| `bb76275f` FB4: `trigger_run(slug, priority=Query(...))`, gates checked with the selection, `queue.submit(..., priorities=priority)` | `ui/routes_runs.py` `trigger_run` (15 lines, still thin) |
+| `bb76275f` FB4: the queued run re-checks with `entry.priorities` | `ui/routes_runs.py` `_run_queued` passes `priorities=entry.priorities` to `launch_run` |
+| `b4716509` T-202: judge via `for_role(project, "judge")`, `ProviderError` -> 400 with the model and the one variable to set | `stages/run_launcher.py` `default_judge` (the `RunSeams.judge_factory` default, now `Callable[[Project], Provider]`) and `judge_or_refuse` |
+| `b4716509` T-202: `why_unavailable(judge)` -> 400 "no AI provider is configured (<why>) -- cannot grade a run" | `judge_or_refuse` (same text; a queued run becomes `refused`, HO16/HO19) |
+| `b4716509` T-202: `Provider` typing replaces `LangChainFallbackProvider` in `_Prepared` / `_execute_with_trace` | `Prepared.judge`, `run_cases_traced(judge: Provider)` |
+| `b4716509` T-202: the route module calls `for_role` itself (tests patch `routes_runs.for_role`; `test_provider_factory.py` asserts the call by AST) | `ui/routes_runs.py` `_seams()` builds the judge factory as a one-line closure that calls `for_role`, looked up in this module at call time |
+| `bb76275f` / `b4716509` tests | `tests/test_ui_runs.py`, `test_provider_factory.py`, `test_ui_runs_*`, `test_credential_run_approval.py`, `test_coverage_wiring.py` run unedited except the one line below |
+
+### Test edits made by this reconcile (each flagged for the checker)
+1. `tests/test_ui_runs.py` line 173 (master's new priority test): the patch target `autotester.ui.routes_runs._execute_with_trace` became `autotester.stages.run_launcher.run_cases_traced`. The route no longer owns the executor call (that is the point of TF1; the `_execute_with_trace` name in `routes_runs.py` is only a shim for tests that call it). Same assertions, same fake. Falsified: removing `priorities=entry.priorities` from `_run_queued` turns both parametrised rows red.
+2. `tests/test_run_launcher_approval.py`: the pinned allow-list (TF2 "a new knob must be argued for") gained `priorities` on `launch_run` and `prepare_run`, and the fixture `Judge` accepts the `project` the factory is now asked with. Argument: `priorities` selects which cases the run covers; the approval gate takes `cases` as input, so a smaller selection narrows what is gated and cannot skip it. Every `RunSeams` field sentinel row and the no-approval refusal rows pass unchanged. **Owner / checker to rule** whether `priorities` is an acceptable parameter.
+3. `tests/golden/cli_commands.json`: see the table above.
+4. `tests/test_run_launcher.py`: ADDED one test (the launcher default judge asks the provider factory with the project and role; an unusable or failing judge is a 400). Falsified: `default_judge` returning `None` turns it red. Without it the default judge path had no test, because every route test patches `routes_runs.for_role`.
+
+### Source.origin -- OWNER TO RULE (not blocking)
+Master (t198a): `Source.origin: SourceOrigin | None`, a discriminated union of `UploadOrigin` / `ZipOrigin` / `DriveOrigin` in `schema/intake.py`, each with a string-literal `kind`. This unit (TF6): `Source.origin: SourceOriginKind | None`, a closed `StrEnum` {upload, zip, drive, recording} in `schema/team_enums.py`. Neither type alone satisfies both test sets (`source.origin == DriveOrigin(...)` and `.origin.archive_name` against `origin is SourceOriginKind.ZIP`; `recording` has no detail model).
+
+Smallest consistent form, implemented: the enum stays the one vocabulary and the discriminator, the intake models carry the detail.
+- `schema/intake.py`: each detail model's `kind` is now `Literal[SourceOriginKind.UPLOAD | ZIP | DRIVE]` defaulting to that member (a `StrEnum`, so `origin.kind == "zip"` and the JSON `"kind":"zip"` are unchanged). The three kind strings now exist once, in the enum.
+- `schema/project.py`: `Source.origin: SourceOrigin | SourceOriginKind | None`. A bare enum member is a source with no detail (for example a recording); a detail model is the t198a form. The model form serialises to the same JSON as on master, the enum form to the bare string; `Source.id` is unchanged by either.
+- Both test sets pass with no assertion edited: `test_project_schema_team.py` (14 with `test_team_enums_home.py`), `test_intake_schema.py`, `test_drive_intake`, `test_ui_intake*`, `test_zip_intake_*`. The ti11 hostile payloads (`{"kind":"email"}`, an upload carrying a drive field) and the bad strings `"email"`, `"UPLOAD"`, `""` are still refused.
+- Cost to rule on: the field accepts two shapes. Enum only (detail in a sibling field) would break t198a's `source.origin == DriveOrigin(...)` assertions; models only would break TF6's enum assertions and has no shape for `recording`.
+
+### Pre-check on the final product SHA
+Pre-check[TF1]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_run_launcher.py -p no:xdist -o addopts= -> 6 passed
+Pre-check[TF2]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_run_launcher_approval.py -p no:xdist -o addopts= -> 16 passed
+Pre-check[TF3]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_routers_list.py -p no:xdist -o addopts= -> 4 passed
+Pre-check[TF4]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_policy_merge.py -p no:xdist -o addopts= -> 8 passed
+Pre-check[TF5]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_cli_subapp_hook.py -p no:xdist -o addopts= -> 4 passed (cli.py 293 lines)
+Pre-check[TF6]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_project_schema_team.py tests/test_team_enums_home.py -p no:xdist -o addopts= -> 14 passed
+Pre-check[TF7]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_team_store.py tests/test_safe_names_windows.py -p no:xdist -o addopts= -> 569 passed
+Pre-check[TF8]: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest tests/test_team_enums_home.py -p no:xdist -o addopts= -> 3 passed
+Pre-check: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run pytest <65 files: the unit's set, every test file importing schema.schedule / schema.intake / schema.team_enums / run_launcher / routes_runs, and the files of the master units re-homed (ui_runs*, run_queue*, schedule*, provider*, zip_intake*, drive*, ui_intake*, ui_learn*, cli*, expand*, schema*)> -p no:xdist -o addopts= -> 1525 passed, 1 skipped (run on b841c232; the only change since is the one test added to `tests/test_run_launcher.py`, run above; the skip is `test_ui_runs_serial_entry_mix_live.py`, playwright absent, as at the base)
+Pre-check: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run ruff check src tests scripts -> All checks passed!
+Pre-check: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run autotester doctor -> doctor: clean (run_launcher.py 299 lines, routes_runs.py 81, ui/app.py 271)
+No full suite and no `pytest tests` was run (brief); the integrated-master suite before push covers the rest.
 
 ## Status: ready-for-check
