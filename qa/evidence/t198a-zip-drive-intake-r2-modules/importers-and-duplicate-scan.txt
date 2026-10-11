@@ -1,0 +1,25 @@
+## autotester/cli_intake.py | src importers: ['src/autotester/cli_video.py'] | test files: 0
+   DUP? _finish also in src/autotester/stages/explore.py
+## autotester/core/upload_limit.py | src importers: ['src/autotester/sources/drive_verify.py', 'src/autotester/sources/gws_drive.py', 'src/autotester/sources/zip_intake.py', 'src/autotester/ui/intake_upload.py', 'src/autotester/ui/routes_sources.py', 'src/autotester/ui/upload_stream.py'] | test files: 1
+## autotester/schema/intake.py | src importers: ['src/autotester/cli_intake.py', 'src/autotester/schema/project.py', 'src/autotester/sources/drive_intake.py', 'src/autotester/sources/drive_jobs.py', 'src/autotester/sources/drive_link.py', 'src/autotester/sources/drive_verify.py', 'src/autotester/sources/gws_drive.py', 'src/autotester/sources/intake_commit.py', 'src/autotester/sources/zip_intake.py', 'src/autotester/ui/intake_gate.py', 'src/autotester/ui/intake_upload.py', 'src/autotester/ui/routes_intake.py'] | test files: 11
+## autotester/sources/bounded_write.py | src importers: ['src/autotester/sources/drive_verify.py', 'src/autotester/sources/gws_drive.py', 'src/autotester/sources/gws_runner.py', 'src/autotester/sources/intake_commit.py', 'src/autotester/sources/zip_intake.py', 'src/autotester/ui/upload_stream.py'] | test files: 3
+## autotester/sources/drive_errors.py | src importers: ['src/autotester/sources/drive_intake.py', 'src/autotester/sources/gws_drive.py', 'src/autotester/sources/gws_runner.py'] | test files: 5
+## autotester/sources/drive_intake.py | src importers: ['src/autotester/cli_intake.py', 'src/autotester/ui/routes_intake.py'] | test files: 1
+   DUP? _label also in src/autotester/ui/run_queue_view.py
+   DUP? _report also in src/autotester/stages/reconcile.py
+   DUP? _refusal also in src/autotester/ui/routes_crawl_login.py
+   DUP? _refusal also in src/autotester/ui/routes_learn.py
+   DUP? _refusal also in src/autotester/ui/routes_sources.py
+## autotester/sources/drive_jobs.py | src importers: ['src/autotester/ui/routes_intake.py'] | test files: 1
+## autotester/sources/drive_link.py | src importers: ['src/autotester/cli_intake.py', 'src/autotester/sources/drive_verify.py', 'src/autotester/sources/gws_drive.py', 'src/autotester/ui/routes_intake.py'] | test files: 1
+## autotester/sources/drive_verify.py | src importers: ['src/autotester/sources/drive_intake.py', 'src/autotester/sources/gws_drive.py'] | test files: 2
+## autotester/sources/gws_drive.py | src importers: ['src/autotester/sources/drive_intake.py'] | test files: 1
+   DUP? _PAGE_SIZE also in src/autotester/sources/drive.py
+## autotester/sources/gws_runner.py | src importers: ['src/autotester/sources/gws_drive.py'] | test files: 3
+## autotester/sources/intake_commit.py | src importers: ['src/autotester/cli_intake.py', 'src/autotester/sources/drive_intake.py', 'src/autotester/sources/zip_intake.py', 'src/autotester/ui/intake_upload.py'] | test files: 1
+## autotester/sources/zip_intake.py | src importers: ['src/autotester/cli_intake.py', 'src/autotester/sources/drive_intake.py', 'src/autotester/ui/intake_upload.py'] | test files: 5
+## autotester/sources/zip_names.py | src importers: ['src/autotester/sources/intake_commit.py', 'src/autotester/sources/zip_intake.py', 'src/autotester/ui/intake_upload.py'] | test files: 1
+## autotester/ui/intake_gate.py | src importers: ['src/autotester/ui/intake_upload.py', 'src/autotester/ui/routes_intake.py'] | test files: 1
+## autotester/ui/intake_upload.py | src importers: ['src/autotester/ui/routes_intake.py', 'src/autotester/ui/routes_sources.py'] | test files: 0
+## autotester/ui/routes_intake.py | src importers: ['src/autotester/ui/routes_sources.py'] | test files: 0
+## autotester/ui/upload_stream.py | src importers: ['src/autotester/ui/intake_upload.py', 'src/autotester/ui/routes_intake.py'] | test files: 0
