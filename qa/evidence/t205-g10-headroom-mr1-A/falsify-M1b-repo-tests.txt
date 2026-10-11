@@ -1,0 +1,8 @@
+GREEN-BEFORE rc 0 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+RED-AFTER rc 0
+...............................                                          [100%]
+============================== warnings summary ===============================
+..\..\copy\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\mr1a-1369632204\copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
