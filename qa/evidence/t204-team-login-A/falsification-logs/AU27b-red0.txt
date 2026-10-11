@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU27b-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_escalation.py F                                       [100%]
+
+================================== FAILURES ===================================
+________ test_p5_a_new_group_cannot_carry_more_than_its_creator_holds _________
+tests\test_ui_auth_escalation.py:61: in test_p5_a_new_group_cannot_carry_more_than_its_creator_holds
+    assert ops.post("/admin/groups", data={"name": name, "permission": perm}
+E   AssertionError: Peek
+E   assert 303 == 403
+E    +  where 303 = <Response [303 See Other]>.status_code
+E    +    where <Response [303 See Other]> = post('/admin/groups', data={'name': 'Peek', 'permission': 'report.view@all'})
+E    +      where post = <starlette.testclient.TestClient object at 0x000001A5F8E8D990>.post
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_escalation.py::test_p5_a_new_group_cannot_carry_more_than_its_creator_holds
+======================== 1 failed, 1 warning in 2.39s =========================

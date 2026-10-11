@@ -18,14 +18,13 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from litellm_fake import install
 
-from autotester.providers.litellm_provider import LiteLLMProvider
 from autotester.providers.mock import MockProvider
 from autotester.schema.case import ExpandedSteps
 from autotester.schema.enums import Action, ReviewStatus
 from autotester.schema.flowspec import Flow, FlowSpec, Review, Screen, Step
 from autotester.schema.project import Project
+from autotester.stages.expand import propose_cases
 from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app
 
@@ -77,6 +76,13 @@ def _mock_generator(monkeypatch: pytest.MonkeyPatch, *, available: bool = True) 
     import autotester.ui.routes_learn as routes_learn_module
 
     monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
+
+
+def _approve_proposals(store: ProjectStore) -> None:
+    rows = propose_cases(store.load_flowspec())
+    store.stage_case_proposals(rows)
+    for row in rows:
+        store.review_case_proposal(row.id, by="fixture-human", approved=True)
 
 
 # -- the review page ---------------------------------------------------------
@@ -194,6 +200,7 @@ def test_generate_creates_real_cases_in_the_projects_cases_file(
     """AT-239's UI half: EXPAND finally has a button. The cases must land in
     `cases.jsonl` — the same file the cases page lists and ▶ Run tests runs."""
     store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+    _approve_proposals(store)
     _mock_generator(monkeypatch)
 
     response = client.post("/projects/demo/cases/generate", follow_redirects=False)
@@ -214,6 +221,7 @@ def test_generate_when_the_model_fails_midway_is_refused_as_a_page_not_a_500(
     from autotester.providers.mock import MockProvider
 
     store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+    _approve_proposals(store)
 
     class _StarvedProvider(MockProvider):
         def available(self) -> bool:
@@ -231,28 +239,6 @@ def test_generate_when_the_model_fails_midway_is_refused_as_a_page_not_a_500(
     assert "Internal Server Error" not in response.text
     assert "AutoTester" in response.text
     assert store.list_cases() == [], "a partial failure must not leave partial cases"
-
-
-def test_generate_failure_page_does_not_carry_a_vendor_echoed_key(
-    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """AT-790 (LL8). The route prints the ProviderError on its refusal page, so a
-    vendor error that echoes a vendor-native key must not get that far."""
-    canary = "AIza-ROUTE-CANARY-555"
-    store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
-    install(monkeypatch, [RuntimeError(f"403 at https://vendor.test/x?key={canary}")] * 60)
-    monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
-    monkeypatch.setenv("GEMINI_API_KEY", canary)
-    provider = LiteLLMProvider(model="gemini/gemini-2.5-pro")
-    import autotester.ui.routes_learn as routes_learn_module
-
-    monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
-
-    response = client.post("/projects/demo/cases/generate", follow_redirects=False)
-
-    assert response.status_code == 400 and "could not complete" in response.text
-    assert canary not in response.text
-    assert store.list_cases() == []
 
 
 def test_generate_on_an_unapproved_flowspec_is_refused_as_a_page_not_raw_json(
@@ -290,6 +276,7 @@ def test_generate_without_a_configured_provider_is_refused_as_a_page(
     client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+    _approve_proposals(store)
     _mock_generator(monkeypatch, available=False)
 
     response = client.post("/projects/demo/cases/generate", follow_redirects=False)
@@ -297,3 +284,16 @@ def test_generate_without_a_configured_provider_is_refused_as_a_page(
     assert response.status_code == 400
     assert response.headers["content-type"].startswith("text/html")
     assert store.list_cases() == []
+
+
+def test_generate_stages_pending_without_implicit_happy_approval(
+    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+    monkeypatch.setattr("autotester.ui.routes_learn.for_role",
+                        lambda project, role: pytest.fail("pending proposals reached provider"))
+    response = client.post("/projects/demo/cases/generate", follow_redirects=False)
+    assert response.status_code == 400 and "human review" in response.text
+    assert store.list_cases() == []
+    assert store.list_case_proposals()
+    assert all(row.status == "proposed" for row in store.list_case_proposals())

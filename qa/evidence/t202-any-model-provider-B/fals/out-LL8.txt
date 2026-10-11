@@ -1,0 +1,32 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.41s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_neither_the_key_nor_the_endpoint_appears_in_an_error __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000015D5AD27890>
+
+    def test_neither_the_key_nor_the_endpoint_appears_in_an_error(
+            monkeypatch: pytest.MonkeyPatch) -> None:
+        base = "http://user:pw-canary@models.internal:8000/v1"
+        install(monkeypatch, [RuntimeError(f"cannot reach {base} with key k-canary-key")])
+        monkeypatch.setenv("LITELLM_API_KEY", "k-canary-key")
+        monkeypatch.setenv("LITELLM_API_BASE", base)
+        with pytest.raises(ProviderError) as info:
+            _provider("openai/served").judge("g", Answer)
+        assert no_network, "the real SDK never reached the socket guard"
+        text = str(info.value)
+>       assert "canary" not in text and "models.internal" not in text
+E       AssertionError: assert ('canary' not in 'litellm:ope...k-canary-key'
+E         
+E         'canary' is contained here:
+E           //user:pw-canary@models.internal:8000/v1 with key k-canary-key
+E         ?           ++++++)
+
+tests\test_litellm_guard.py:235: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_guard.py::test_neither_the_key_nor_the_endpoint_appears_in_an_error
+1 failed in 0.58s

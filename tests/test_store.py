@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from autotester.schema.case import Case
+from autotester.schema.case import Case, CaseProposal
 from autotester.schema.enums import Action, CaseClass, CaseKind, SourceKind
 from autotester.schema.flowspec import ExpectedState, Flow, FlowSpec, Screen, Step
 from autotester.schema.project import Project, Source
@@ -222,3 +222,50 @@ def test_update_case_keeps_the_id_cached_and_replaces_in_place(tmp_path: Path) -
     assert len(cases) == 1                   # replaced, never appended twice
     assert cases[0].title == "renamed"
     assert cases[0].id == case.id
+
+
+def test_priority_selection_adds_pinned_p0_once_and_preserves_default_order(tmp_path) -> None:
+    from autotester.store.project_store import PinnedCaseError
+
+    store = ProjectStore("pathlynks", tmp_path)
+    cases = [make_case(flow_id=f"f-{priority}").model_copy(update={"priority": priority})
+             for priority in ["p0", "p1", "p2", "p3"]]
+    for case in cases:
+        store.add_case(case)
+    pinned = Case.model_validate({**make_case(flow_id="bug").model_dump(),
+                                 "pinned": True, "pinned_issue_id": "issue_1"})
+    store.add_case(pinned)
+    assert [c.id for c in store.list_cases()] == [c.id for c in cases] + [pinned.id]
+    assert [c.id for c in store.list_cases(["p0"])] == [cases[0].id, pinned.id]
+    assert [c.id for c in store.list_cases(["p1"])] == [cases[1].id, pinned.id]
+    assert len(store.list_cases(["p0", "p0"])) == 2
+    with pytest.raises(PinnedCaseError):
+        store.delete_case(pinned.id)
+    assert store.delete_case(cases[0].id)  # ordinary p0 is not newly pinned
+
+
+def test_proposal_restage_preserves_only_exact_identity_and_content(tmp_path) -> None:
+    from autotester.stages.expand import propose_cases
+    from autotester.stages.review import approve
+
+    spec = approve(FlowSpec(project="pathlynks", flows=[Flow(
+        id="flow", name="Browse", entry_screen="home", steps=[make_step()],
+    )]), "tester")
+    store = ProjectStore("pathlynks", tmp_path)
+    store.save_flowspec(spec)
+    original = propose_cases(spec)
+    store.stage_case_proposals(original)
+    happy = original[0]
+    approved = store.review_case_proposal(happy.id, "tester", True)
+    store.stage_case_proposals(original)
+    assert store.list_case_proposals()[0] == approved
+    changed = CaseProposal.model_validate({**happy.model_dump(), "id": "", "title": "Changed"})
+    store.stage_case_proposals([changed])
+    current = store.list_case_proposals()[0]
+    assert current.id != happy.id and current.status == "proposed"
+    assert current.reviewed_by is None and current.reviewed_at is None
+    with pytest.raises(ValueError, match="HAPPY"):
+        store.preflight_case_proposals(spec)
+    with pytest.raises(ValueError, match="no current"):
+        store.review_case_proposal(happy.id, "tester", True)
+    assert store.list_cases() == []

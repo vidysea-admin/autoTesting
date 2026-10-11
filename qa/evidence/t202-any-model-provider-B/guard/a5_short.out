@@ -1,0 +1,36 @@
+value    P1 P2 P3 P4 P5   json-strategy(P1)
+'1'      ok  ok  REF REF ok    ok
+'0'      ok  ok  REF REF ok    ok
+'a'      REF REF REF REF REF   REF
+'e'      REF REF REF REF REF   REF
+'ab'     ok  ok  ok  ok  ok    ok
+'th'     REF REF REF ok  REF   REF
+'the'    REF REF REF ok  REF   REF
+'on'     ok  REF ok  ok  ok    REF
+'no'     ok  ok  REF ok  ok    REF
+'yes'    ok  ok  REF ok  ok    ok
+'id'     ok  ok  ok  ok  ok    ok
+'10'     ok  ok  ok  REF ok    ok
+'dev'    ok  ok  ok  ok  ok    ok
+'true'   ok  ok  ok  ok  ok    ok
+'ok'     ok  ok  ok  ok  ok    ok
+'root'   ok  ok  ok  ok  ok    ok
+'8000'   ok  ok  ok  ok  ok    ok
+'admin'  ok  ok  ok  ok  ok    ok
+'x9'     ok  ok  ok  ok  ok    ok
+
+== folded check on short values: does a 2-char secret match inside ordinary words? (MIN_FOLDED_LEN=8 gate) ==
+  'a-b'              folded='ab'           (len 2) ['ok', 'ok', 'ok', 'ok', 'ok']
+  'Q-9'              folded='q9'           (len 2) ['ok', 'ok', 'ok', 'ok', 'ok']
+  'x.y.z'            folded='xyz'          (len 3) ['ok', 'ok', 'ok', 'ok', 'ok']
+  'a b c d'          folded='abcd'         (len 4) ['ok', 'ok', 'ok', 'ok', 'ok']
+  'ab-cd-ef'         folded='abcdef'       (len 6) ['ok', 'ok', 'ok', 'ok', 'ok']
+  'a-b-c-d-e-f-g'    folded='abcdefg'      (len 7) ['ok', 'ok', 'ok', 'ok', 'ok']
+  'the-end'          folded='theend'       (len 6) ['ok', 'ok', 'ok', 'ok', 'ok']
+  'go-to-it-now'     folded='gotoitnow'    (len 9) ['ok', 'ok', 'ok', 'ok', 'ok']
+
+== realistic .env keys of this repo (from .env.example) vs ordinary prompts a stage would send ==
+  page URL = counsellor login URL            REFUSED/ProviderError
+  page URL = user login URL (PUBLIC key)     CALLED(1)
+  logged-in email shown on page              REFUSED/ProviderError
+  URL w/o scheme, folded                     CALLED(1)

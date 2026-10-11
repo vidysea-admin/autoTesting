@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU7-m1
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 35 items / 24 deselected / 11 selected
+
+tests\test_ui_auth_accounts.py ...                                       [ 27%]
+tests\test_ui_auth_escalation.py .....F..                                [100%]
+
+================================== FAILURES ===================================
+__________ test_d074_the_fixed_email_is_compared_case_insensitively ___________
+tests\test_ui_auth_escalation.py:192: in test_d074_the_fixed_email_is_compared_case_insensitively
+    assert accounts.signup("  BOSS@team.TEST", PASSWORD).groups == ["Admin/CEO"]
+E   AssertionError: assert [] == ['Admin/CEO']
+E     
+E     Right contains one more item: 'Admin/CEO'
+E     Use -v to get more diff
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_escalation.py::test_d074_the_fixed_email_is_compared_case_insensitively
+=========== 1 failed, 10 passed, 24 deselected, 1 warning in 6.27s ============

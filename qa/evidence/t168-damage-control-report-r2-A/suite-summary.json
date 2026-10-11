@@ -1,0 +1,116 @@
+{
+  "repo": "D:\\autoTesting",
+  "ref": "4b93d952",
+  "shards": 4,
+  "python": "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+  "pytest_args": [
+    "-o",
+    "addopts="
+  ],
+  "out": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\aios-shards\\autoTesting-20261011-053927",
+  "cpu_load_pct_at_start": 79.0,
+  "blocked_s": 18.0,
+  "lock_reclaimed": [],
+  "sha": "4b93d952d19bdbf561caa61fd8ca77b89cf14365",
+  "seconds": {
+    "extract": 4.0,
+    "collect": 41.9,
+    "rerun": 34.5,
+    "run": 558.7,
+    "overall": 639.3
+  },
+  "wall_s": 639.3,
+  "balance_basis": "stored durations (3170/3397 tests known, 7 files at mean)",
+  "pinned_files": [],
+  "per_shard": [
+    {
+      "shard": 0,
+      "pid": 14756,
+      "rc": 1,
+      "wall_s": 506.6,
+      "units": 62,
+      "tests": 715,
+      "collected": 715,
+      "reported": 715
+    },
+    {
+      "shard": 1,
+      "pid": 45812,
+      "rc": 0,
+      "wall_s": 520.6,
+      "units": 62,
+      "tests": 829,
+      "collected": 829,
+      "reported": 829
+    },
+    {
+      "shard": 2,
+      "pid": 32212,
+      "rc": 1,
+      "wall_s": 557.7,
+      "units": 64,
+      "tests": 1007,
+      "collected": 1007,
+      "reported": 1007
+    },
+    {
+      "shard": 3,
+      "pid": 79480,
+      "rc": 1,
+      "wall_s": 511.6,
+      "units": 63,
+      "tests": 846,
+      "collected": 846,
+      "reported": 846
+    }
+  ],
+  "counts": {
+    "passed": 3374,
+    "failed": 4,
+    "skipped": 19
+  },
+  "failed": [
+    {
+      "nodeid": "tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere",
+      "outcome": "failed",
+      "shard": 0,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log",
+      "outcome": "failed",
+      "shard": 2,
+      "isolated_rerun": "passed"
+    },
+    {
+      "nodeid": "tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads",
+      "outcome": "failed",
+      "shard": 3,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen",
+      "outcome": "failed",
+      "shard": 3,
+      "isolated_rerun": "failed"
+    }
+  ],
+  "failed_still_failing_alone": [
+    "tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere",
+    "tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads",
+    "tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen"
+  ],
+  "collect_proof": {
+    "ok": true,
+    "baseline": 3397,
+    "baseline_unique": 3397,
+    "shard_union": 3397,
+    "ran": 3397,
+    "duplicates_across_shards": [],
+    "missing_from_shards": [],
+    "unexpected_in_shards": [],
+    "collected_but_not_run": []
+  },
+  "durations_file": "C:\\Users\\Lenovo\\AppData\\Local\\aios\\shard-durations\\autoTesting.json",
+  "exit_code": 1
+}

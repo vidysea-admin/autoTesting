@@ -84,7 +84,8 @@ class RunQueue:
 
     # -- public ----------------------------------------------------------------------------
     def submit(self, project: str, *, requested_by: str | None = None,
-               trigger: str = "button", run_id: str | None = None) -> QueueEntry:
+               trigger: str = "button", run_id: str | None = None,
+               priorities: list[str] | None = None) -> QueueEntry:
         """Enqueue a press and start whatever the limits allow. Raises `QueueFull`.
         `run_id`: the caller mints it only after every gate passed (a refused press mints none)."""
         with self._lock:
@@ -94,7 +95,8 @@ class RunQueue:
                 raise QueueFull(f"{waiting} runs of '{project}' are already waiting; "
                                 "wait for one to start")
             entry = QueueEntry(id=run_id or f"run-{ulid()}", project=project,
-                               requested_by=requested_by, trigger=trigger)
+                               requested_by=requested_by, trigger=trigger,
+                               priorities=priorities)
             self._entries.append(entry)
             starts = self._take_startable()
             self._persist()

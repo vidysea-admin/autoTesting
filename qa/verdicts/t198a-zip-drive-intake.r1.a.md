@@ -1,0 +1,40 @@
+# Verdict - t198a-zip-drive-intake, seat A, repair check (fix cycle 1)
+
+Cycle checked: 1
+Bound to: D:/autoTesting. Branch wave/t198a-zip-drive-intake, head 3918a8aa (verified with git rev-parse), product sha 0d17d67d. Repair base 894549ee verified as an ancestor.
+Policy-Version: proportional-verification/2026-10-10.9 (pinned in the manifest). Dual check, coordinator A. Date 2026-10-11.
+
+## Plan (repair check)
+Failed at cycle 0: F1 (TI5), F2 (security, HO30), F3 (TI6). Re-run only those plus affected tests for (fix diff u master-merge diff). The repair diff 894549ee..3918a8aa touches 2 product files (zip_intake.py, upload_stream.py) and 4 test files; the master merge c51a66e4 brought no src or tests change (qa/issues.jsonl and uv.lock identical to master). No UI surface changed, so no browser walk. Read in full: the repair diff (src, tests) and `master...HEAD --stat`: 41 non-qa files, every one in the manifest's What changed (plus .env.example and docs/MAP.md as declared); nothing removed or renamed. Not reused: the builder's Pre-check lines (labelled 0d17d67d, not HEAD); I ran everything myself. `git diff 0d17d67d 3918a8aa -- src tests` is empty, so the product is the one the builder labelled.
+
+VERDICT: PASS
+SCOREBOARD: 3/3 repaired criteria met (TI5/F1, HO30 security/F2, TI6/F3); criteria untouched by the repair keep their cycle-0 result.
+TIER: L (untrusted archive and request-body intake: src/autotester/sources/zip_intake.py:234, src/autotester/ui/upload_stream.py:159)
+
+## Per-item results (commands and evidence: qa/evidence/t198a-zip-drive-intake-r1-A/results.md)
+- F3 / TI6 MET. `git archive 3918a8aa` copy, root interpreter D:/autoTesting/.venv, `-m pytest -p no:xdist -o addopts= tests/test_zip_intake_atomic.py -v` -> 5 passed in 2.86s, kill test PASSED. Child resolves the tree under test: with PYTHONPATH=<copy>/src `autotester.__file__` and `zip_intake.__file__` are in the copy; without it `autotester.__file__` is D:\autoTesting\src and `import autotester.sources.zip_intake` -> ModuleNotFoundError (the cycle-0 failure). Falsify (own copy): drop `env=env` -> 1 passed before, 1 failed after (returncode 1 != 9, ModuleNotFoundError).
+- F1 / TI5 MET (ruling below). 507 byte flips (40 data positions, every local-header byte, every central-record byte of the middle member, STORED/LZMA/BZIP2/DEFLATE) plus 384 edge flips (first and last 48 data bytes): 0 crashes; every data-region flip is `partial` with a.mp4 registered and no staging left (LZMA 8 flips of 384 changed nothing, status ok). Affected set in one process (names, limits, register, atomic, cli_intake, ui_intake, ui_intake_drive, drive_intake) -> 167 passed in 10.37s. Falsify: remove `lzma.LZMAError` and the `NotImplementedError` catch: `-k ti5` 13 passed before, 4 failed after.
+- F2 / HO30 MET. Real app at ASGI level, tracemalloc peak: 1k/10k/100k tiny named fields before the file -> 400 after 70/141/141 KiB pulled, peak 913/1109/567 KiB, 0 sources, no file byte, no staging; 5x15 KiB and 3x16 KiB -> 400, 2x15 KiB -> 303; fields before and after the file part: 28 KiB total ok (303), 4+4x7 KiB -> 400, 3000 tiny after the file -> 400, nothing registered, no staging left; 100,000 repeats of one name -> 400 (total cap counts overwritten values); 400k distinct headers in one part -> 400 at 52 KiB; nameless or empty-name fields are never retained (100,000 of them: 303, peak 601-671 KiB, flat); one nameless 20 KiB field -> 400. Legit form (label + file) works: 1 MiB and 300 MiB (limit 512 MiB) -> 303, peak 103 KiB for both, i.e. memory does not grow with the file. Falsify: caps neutered -> `-k f2` 3 passed before, 3 failed after; same copy, 100,000 tiny fields: 303 and peak 11,469 KiB (1,487 KiB at 10,000) vs 567 KiB with the caps.
+
+## Ruling: extract_version above 6.3 (F1)
+Claim verified. CPython zipfile.py:1442 raises `NotImplementedError("zip file version ...")` inside `_RealGetContents`, in the loop over every central-directory record, so `ZipFile(path)` raises for any such archive; I confirmed it for the version on the first, middle and last member and at 6.4, 9.9, 25.5 (6.3 lists fine and registers all three). The intake returns one archive-level `failed` row ("unsupported zip version"), exit 2, nothing registered, no crash.
+TI5 text: "A corrupt member (bad CRC, truncated, an encrypted member, a member that fails to inflate) is `failed` with a reason and the others still register; the overall status is `partial` and the CLI exit code is non-zero (2), never `ok` / 0 ... An archive that is not a zip at all gives one `failed` and registers nothing." Ruling: TI5 is MET. The criterion's core (R39: a failure is never `ok`/0, no crash, nothing half-registered) holds, and its re-derive cases (flipped data byte, password-protected member, renamed .txt) pass. A member whose central record the reader cannot list is not a member the intake can isolate; it falls under the archive-level `failed` clause, as does any damage to the central directory (my 7 central-record flips per method that give `failed` are the same case). What is NOT delivered is "the others still register" for that one case; the contract does not enumerate it, no real tool writes a version above 6.3, and failure is safe. Residual is filed as a low PROPOSED-ISSUE (P2), not a FAIL.
+
+## Floor, scope, other
+- Falsification: 3 rows (one per repaired criterion), each green in its own copy before and red after; mutants beyond the floor 0. Copies deleted; nothing edited in the worktree or product code.
+- `ruff check` on the 5 changed files: All checks passed. File sizes 257/229/277/186/214 lines (cap 300).
+- Not run (by instruction): full suite, directory-wide pytest, browser walk. Cycle-0 passed criteria whose input files the repair did not touch (TI1-TI4, TI7-TI9, TI11, HO32, HO33) keep their recorded result. TI10 stays HELD on T-204 as the manifest states.
+- Incident: my first import probe ran with cwd = the shared scratchpad root, where a stray `copy.py` (another session's SMTP key copier for .env) shadowed stdlib `copy` and ran twice. Its output was `added: []`; it changed nothing. I printed no values.
+
+FAILURES: none
+CAPABILITY-COVERAGE: 3/3 repaired rows reproduced
+LIVE-BROWSER: not-applicable (no UI file changed in the repair diff)
+ISSUES-WRITTEN: none (coordinator PASS in a dual check)
+EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
+EXPLANATION: All three cycle-0 failures are fixed and each was falsified. The extract_version case is an archive-level `failed` by construction of the stdlib, safe and crash-free, ruled MET with a stated residual.
+
+PROPOSED-ISSUE: {"severity":"low","type":"wording","title":"A corrupt bzip2 member is reported as 'could not be staged (the write failed)' because bz2 raises OSError, which the member handler words as a staging failure","file":"src/autotester/sources/zip_intake.py:187","fix":"catch the decompressor's OSError separately (inside _inflate) and give it the 'corrupt member' reason"}
+PROPOSED-ISSUE: {"severity":"low","type":"gap","title":"One central-record entry the stdlib cannot list (extract_version above 6.3, or a damaged central record) fails the whole archive, so benign sibling videos are not registered; TI5 'others still register' is not delivered for that case","file":"src/autotester/sources/zip_intake.py:234","fix":"only if the owner wants it: a small own central-directory reader that marks the unreadable record failed and lists the rest"}
+PROPOSED-ISSUE: {"severity":"low","type":"hardening","title":"Nameless and empty-name form fields are not counted by MAX_FIELDS or FIELDS_TOTAL_CAP; memory stays flat (measured) but CPU is bounded only by the body limit","file":"src/autotester/ui/upload_stream.py:154","fix":"count every non-file part toward MAX_FIELDS before the name test"}
+
+Metrics: start=2026-10-11T01:28:45Z end=2026-10-11T01:46:00Z wall_min=17 agent_min=17 blocked_min=0 suite_runs=0 repeat_runs=0 mutations=3 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=1035 mutants=0 defects_unit=0 defects_6c=0

@@ -1,0 +1,29 @@
+SAME approve_all calls 24
+SAME approve_some_prune_rest calls 0
+SAME approve_then_prune_one calls 23
+SAME both calls 0
+SAME forged_approved calls 0
+SAME happy_pruned_only calls 0
+DIFF inproc
+   files 
+    base: {'projects/demo/flowspec.json': 'len2178', 'projects/demo/project.json': 'len486'} 
+    head: {'projects/demo/case_proposals.jsonl': (26, {'proposed': 26}, ['-']), 'projects/demo/flowspec.json': 'len2178', 'projects/demo/project.json': 'len486', 'projects/direct/flowspec.json': 'len2180', 'projects/direct/project.json': 'len488'}
+   scenario_exc 
+    base: AttributeError("module 'autotester.stages.expand' has no attribute 'stage_and_review'") 
+    head: None
+SAME malformed calls 0
+SAME no_by calls 0
+SAME no_flowspec calls 0
+SAME nostage calls 0
+SAME other_batch calls 0
+SAME partial_noprune calls 4
+SAME partial_prune calls 2
+SAME proposals calls 0
+SAME provider_flag_unavailable calls 0
+SAME prune_after_approve calls 0
+SAME prune_all_nonhappy calls 0
+SAME prune_only calls 0
+SAME stale_spec calls 0
+SAME unknown calls 0
+SAME unreviewed_spec calls 0
+scenarios 22 diffs 1

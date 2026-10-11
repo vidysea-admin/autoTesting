@@ -1,0 +1,68 @@
+{
+ "approve_rest": [
+  0,
+  "proposal_8f27615cb23c approved happy: Sign in \u2014 happy\nproposal_a3fd4baa326e pruned input_empty: Sign in \u2014 input_empty\nproposal_a17eea758209 pruned input_boundary: Sign in \u2014 input_boundary\nproposal_cdc034118cda approved input_unicode_oversize: Sign in \u2014 input_unicode_oversize\nproposal_231d5ecb16c9 approved double_submit: Sign in \u2014 double_submit\nproposal_e2afa4986084 approved back_refresh_midflow: Sign in \u2014 back_refresh_midflow\nproposal_c389b8de9201 approved network_offline_slow: Sign in \u2014 network_offline_slow\nproposal_7f050d2bc7cd approved server_error: Sign in \u2014 server_error\nproposal_09953908e89f approved viewport_mobile: Sign in \u2014 viewport_mobile\nproposal_3850e1ea3beb approved locale_i18n: Sign in \u2014 locale_i18n\nproposal_61854f8a2195 approved concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_5c1e68c01b06 approved deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_76be5be7289e approved regression_anchor: Sign in \u2014 regression_anchor\n"
+ ],
+ "bogus": [
+  1,
+  "no current proposal to review; review with `autotester expand demo --proposals`\n"
+ ],
+ "both": [
+  1,
+  "a proposal cannot be approved and pruned together; review with `autotester expand demo --proposals`\n"
+ ],
+ "calls_attr": [
+  null,
+  null
+ ],
+ "case_titles": [
+  "Sign in \u2014 back_refresh_midflow",
+  "Sign in \u2014 concurrent_tab",
+  "Sign in \u2014 deeplink_unauth",
+  "Sign in \u2014 double_submit",
+  "Sign in \u2014 happy path",
+  "Sign in \u2014 input_unicode_oversize",
+  "Sign in \u2014 locale_i18n",
+  "Sign in \u2014 network_offline_slow",
+  "Sign in \u2014 regression_anchor",
+  "Sign in \u2014 server_error",
+  "Sign in \u2014 viewport_mobile"
+ ],
+ "generate": [
+  0,
+  "demo: 11 case(s) from 1 flow(s), 11 new\n"
+ ],
+ "list": [
+  0,
+  "proposal_8f27615cb23c proposed happy: Sign in \u2014 happy\nproposal_a3fd4baa326e proposed input_empty: Sign in \u2014 input_empty\nproposal_a17eea758209 proposed input_boundary: Sign in \u2014 input_boundary\nproposal_cdc034118cda proposed input_unicode_oversize: Sign in \u2014 input_unicode_oversize\nproposal_231d5ecb16c9 proposed double_submit: Sign in \u2014 double_submit\nproposal_e2afa4986084 proposed back_refresh_midflow: Sign in \u2014 back_refresh_midflow\nproposal_c389b8de9201 proposed network_offline_slow: Sign in \u2014 network_offline_slow\nproposal_7f050d2bc7cd proposed server_error: Sign in \u2014 server_error\nproposal_09953908e89f proposed viewport_mobile: Sign in \u2014 viewport_mobile\nproposal_3850e1ea3beb proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_61854f8a2195 proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_5c1e68c01b06 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_76be5be7289e proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+ ],
+ "n_cases": 11,
+ "n_rows": 13,
+ "pending_generate": [
+  1,
+  "human approval of HAPPY proposal required; flow is pending; review with `autotester expand demo --proposals`\n"
+ ],
+ "prune_two": [
+  0,
+  "proposal_8f27615cb23c proposed happy: Sign in \u2014 happy\nproposal_a3fd4baa326e pruned input_empty: Sign in \u2014 input_empty\nproposal_a17eea758209 pruned input_boundary: Sign in \u2014 input_boundary\nproposal_cdc034118cda proposed input_unicode_oversize: Sign in \u2014 input_unicode_oversize\nproposal_231d5ecb16c9 proposed double_submit: Sign in \u2014 double_submit\nproposal_e2afa4986084 proposed back_refresh_midflow: Sign in \u2014 back_refresh_midflow\nproposal_c389b8de9201 proposed network_offline_slow: Sign in \u2014 network_offline_slow\nproposal_7f050d2bc7cd proposed server_error: Sign in \u2014 server_error\nproposal_09953908e89f proposed viewport_mobile: Sign in \u2014 viewport_mobile\nproposal_3850e1ea3beb proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_61854f8a2195 proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_5c1e68c01b06 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_76be5be7289e proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+ ],
+ "status": {
+  "Sign in \u2014 back_refresh_midflow": "approved",
+  "Sign in \u2014 concurrent_tab": "approved",
+  "Sign in \u2014 deeplink_unauth": "approved",
+  "Sign in \u2014 double_submit": "approved",
+  "Sign in \u2014 happy": "approved",
+  "Sign in \u2014 input_boundary": "pruned",
+  "Sign in \u2014 input_empty": "pruned",
+  "Sign in \u2014 input_unicode_oversize": "approved",
+  "Sign in \u2014 locale_i18n": "approved",
+  "Sign in \u2014 network_offline_slow": "approved",
+  "Sign in \u2014 regression_anchor": "approved",
+  "Sign in \u2014 server_error": "approved",
+  "Sign in \u2014 viewport_mobile": "approved"
+ },
+ "unsigned_prune": [
+  1,
+  "proposal review requires a human name; review with `autotester expand demo --proposals`\n"
+ ]
+}

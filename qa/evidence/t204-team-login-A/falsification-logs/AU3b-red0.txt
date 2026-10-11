@@ -1,0 +1,26 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU3b-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 4 items
+
+tests\test_ui_auth_login.py ...F                                         [100%]
+
+================================== FAILURES ===================================
+_________ test_au3_bad_cookie_is_refused_and_creates_nothing[expired] _________
+tests\test_ui_auth_login.py:122: in test_au3_bad_cookie_is_refused_and_creates_nothing
+    assert c.get("/", headers=JSON).status_code == 401
+E   AssertionError: assert 200 == 401
+E    +  where 200 = <Response [200 OK]>.status_code
+E    +    where <Response [200 OK]> = get('/', headers={'accept': 'application/json'})
+E    +      where get = <starlette.testclient.TestClient object at 0x000001821BD12FD0>.get
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[expired]
+=================== 1 failed, 3 passed, 1 warning in 3.59s ====================

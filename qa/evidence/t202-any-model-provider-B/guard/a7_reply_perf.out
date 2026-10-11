@@ -1,0 +1,15 @@
+== model reply echoes a value as a JSON key -> pydantic loc -> ProviderError text (schema strategy) ==
+  msg: litellm:openai/gpt-4o judge answer did not match the schema (Zq7!kP2x9Lm4: Extra inputs are not permitted)
+  value in msg: True
+== same, json strategy: repair call carries the key back (guard should refuse it) ==
+  outcome: CALLED(1) | calls: 1 | msg: litellm:openai/gpt-4o: prompt withheld, a credential value reached it
+  value in msg: False
+== over-withholding: assistant repair text '{' is a prefix-echo of any exception containing '{' ==
+  msg: litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)
+== guard latency ==
+  500KB english        CALLED(1)                1.40s
+  500KB 'a'*           CALLED(1)                1.09s
+  200KB '%25'*         CALLED(1)                0.57s
+  200KB '&amp;'*       CALLED(1)                0.38s
+  300KB CJK            CALLED(1)                1.13s
+  300KB base64-ish     CALLED(1)                1.05s

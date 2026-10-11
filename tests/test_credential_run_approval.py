@@ -181,7 +181,7 @@ def test_a_covering_human_row_wins_and_is_not_duplicated(setup) -> None:
     from run_approval_fixture import grant_live_case_approval
     store = setup()
     human = grant_live_case_approval(store, target="https://demo.test/app", max_probes=10**6)
-    assert _cover(store, ApprovalKind.LIVE_CASE).id == human.id
+    assert _cover(store, ApprovalKind.LIVE_CASE).id == human.id  # AT-759: only a human row stays
     assert store.list_approvals() == [human]
 
 
@@ -285,3 +285,16 @@ def test_cli_explore_preflight_passes_with_credentials_and_exits_2_without(setup
     with pytest.raises(typer.Exit) as exc:
         _preflight_consent(bare.load_project(), bare, CrawlBounds())
     assert exc.value.exit_code == 2 and bare.list_approvals() == []
+
+
+@pytest.mark.parametrize("gone", ["env", "domain", "declaration"])
+def test_an_account_row_stops_covering_when_its_credential_is_gone(setup, tmp_path, gone) -> None:
+    from run_approval_fixture import grant_live_case_approval
+    store = setup()
+    _cover(store, ApprovalKind.LIVE_CASE)
+    edit = {"domain": _project(("x.test",)), "declaration": _project(declared=False)}.get(gone)
+    store.save_project(edit) if edit else (tmp_path / ".env").unlink()
+    with pytest.raises(ApprovalRequired):
+        _cover(store, ApprovalKind.LIVE_CASE)
+    human = grant_live_case_approval(store, target="https://demo.test/app")
+    assert _cover(store, ApprovalKind.LIVE_CASE).id == human.id  # AT-759: only a human row stays

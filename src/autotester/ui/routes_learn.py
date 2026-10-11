@@ -36,7 +36,7 @@ from autotester.core.paths import ProjectPaths, RepoDocs
 from autotester.providers import ProviderError, for_role, why_unavailable
 from autotester.schema.enums import ReviewStatus
 from autotester.stages import review as review_stage
-from autotester.stages.expand import expand
+from autotester.stages.expand import expand, propose_cases
 from autotester.store.project_store import ProjectStore
 from autotester.ui import theme
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
@@ -235,6 +235,14 @@ def generate_cases(slug: str):
             _link(f"/projects/{slug}/flowspec", "Review it"))
 
     try:
+        store.stage_case_proposals(propose_cases(spec))
+        store.preflight_case_proposals(spec)
+    except ValueError as exc:
+        return _refusal(
+            slug, "Case proposals need human review", str(exc),
+            f"<p>Review/prune with <code>autotester expand {escape(slug)} --proposals</code>; "
+            "use --approve or --prune with a proposal ID and --by your name.</p>")
+    try:
         why = why_unavailable(provider := for_role(project, "agent"))  # LL2: the one factory
     except ProviderError as exc:
         why = str(exc)
@@ -243,17 +251,9 @@ def generate_cases(slug: str):
                         f"Generating cases needs a model. {why}, so nothing was generated.",
                         _link(f"/projects/{slug}/env", "Add a credential"))
 
-    # AT-264: every OTHER refusal in this route is a themed page (AT-244's
-    # own rule -- "a refusal an operator reaches by clicking is part of the
-    # interface"). A model call is the one step here that can fail AFTER the
-    # gate checks pass, and it genuinely does: providers/gemini.py raises
-    # ProviderError on an unparsed response or a schema mismatch, and this
-    # project's own measured recall (1/7, real model calls) is evidence the
-    # model already misbehaves on this exact path. Uncaught, that reached the
-    # operator as a raw text/plain 500 -- the one inconsistent failure mode in
-    # an otherwise fully themed route.
+    # AT-264: a model failure after the gates is a themed page, never a raw 500
     try:
-        cases = expand(spec, provider, RepoDocs())
+        cases = expand(spec, provider, RepoDocs(), store=store)
     except ProviderError as exc:
         return _refusal(
             slug, "The model could not complete this",

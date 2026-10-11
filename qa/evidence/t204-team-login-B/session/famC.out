@@ -1,0 +1,33 @@
+constants: per_account 5 per_address 20 signups/addr 10 window s 600 max tracked keys 50000
+== C1 20 failures across DIFFERENT emails from one address
+ statuses for 24 attempts: [401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 429, 429, 429, 429]
+ same address, right password for victim: 429 | admin right pw: 429
+ other address, right password: 303
+ 429 headers: {'content-type': 'text/html; charset=utf-8'}
+ 429 body tail: n Too many sign-in attempts. Wait a few minutes and try again. Email Password Sign in No account yet? Sign up 
+== C2 spoofed XFF / X-Real-IP / Forwarded with default app (no proxy middleware)
+ XFF varied per request, 24 failures: [401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 429, 429, 429, 429]
+ X-Real-IP + Forwarded varied: [401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 429, 429, 429, 429]
+ no header, 22 failures: [401, 401, 429, 429] first 429 at attempt 21
+ WITH trusted_hosts='*' (FORWARDED_ALLOW_IPS=*): XFF varied, 40 failures, any 429?: False (spoof bypasses address limit)
+ WITH trusted '*': per-account limit still holds vs XFF-varying single victim: [401, 401, 401, 401, 401, 429, 429, 429, 429, 429]
+ default uvicorn trust (127.0.0.1) + client=10.0.0.2 proxy: XFF ignored -> [429, 429, 429, 429]
+== C3 lock a victim from anywhere
+ attacker 7 wrong logins vs victim: [401, 401, 401, 401, 401, 429, 429]
+ victim (different address), CORRECT password: 429 | n Too many sign-in attempts. Wait a few minutes and try again. Email Password Sign in No account yet? Sign up 
+ 429 body identical existing vs non-existing locked account: True 429 429
+ 429 body identical (address-lock vs account-lock): True
+== C3b expiry (limiter clock is the injectable `_clock`; routes use module singleton)
+ t0 locked: 429
+ t0+599s: 429
+ t0+601s: 303
+ hammered 50x during lock at t0+300; at t0+601 victim right pw: 303 (200/303 => hammering does not extend)
+ 4 failures, 1 success ( 303 ), 1 more failure -> 401 then right pw: 429 (429 => success does not reset counter)
+== C4 Caddy topology: every request arrives from the proxy 10.0.0.2
+ attacker 21 failures with varied XFF: [401, 401, 429]
+ legit admin, right password, other XFF: 429
+ legit victim right password: 429
+== C5 signup limiter
+ 14 signups from one address (XFF varied): [303, 303, 303, 303, 303, 303, 303, 303, 303, 303, 429, 429, 429, 429]
+ users in store: 12
+ Caddy topology, 12 signups with distinct XFF: [303, 303, 303, 303, 303, 303, 303, 303, 303, 303, 429, 429] (11th+ refused for EVERYONE behind the proxy)

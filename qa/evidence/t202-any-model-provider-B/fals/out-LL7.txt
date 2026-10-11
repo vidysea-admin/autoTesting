@@ -1,0 +1,35 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.36s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_one_physical_call_zero_retries_and_usage_recorded ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002155AE6BFD0>
+
+    def test_one_physical_call_zero_retries_and_usage_recorded(monkeypatch: pytest.MonkeyPatch) -> None:
+        fake = install(monkeypatch, [reply(json.dumps(GOOD), prompt_tokens=21, completion_tokens=5)])
+        _with_key(monkeypatch)
+        spans: list[dict[str, Any]] = []
+    
+        class _Trace:
+            def record_llm(self, **kw: Any) -> None:
+                spans.append(kw)
+    
+        provider = _provider()
+        provider.trace = _Trace()  # type: ignore[assignment]
+        provider.judge("grade", Answer, prompt_file="p.md", fed_id="c1")
+        assert len(fake.calls) == 1 and fake.calls[0]["num_retries"] == 0
+        row = provider.usage[0]
+>       assert (row.role, row.calls, row.input_tokens, row.output_tokens) == ("judge", 1, 21, 5)
+E       AssertionError: assert ('judge', 1, 0, 5) == ('judge', 1, 21, 5)
+E         
+E         At index 2 diff: 0 != 21
+E         Use -v to get more diff
+
+tests\test_litellm_provider.py:132: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_provider.py::test_one_physical_call_zero_retries_and_usage_recorded
+1 failed in 0.67s

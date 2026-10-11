@@ -1,0 +1,7 @@
+autotester from: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-pristine\src\autotester\__init__.py
+login 303
+refused reset-admin-password status: 403
+refused self-add-to-admin status: 403
+{'actor': 'mgr@team.test', 'target': 'mgr@team.test', 'action': 'login'}
+{'email': 'mgr@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}
+{'email': 'mgr@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}

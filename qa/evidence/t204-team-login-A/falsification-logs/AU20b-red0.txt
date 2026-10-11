@@ -1,0 +1,25 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU20b-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_surface.py F                                          [100%]
+
+================================== FAILURES ===================================
+____________________ test_au20_hosted_needs_an_allow_list _____________________
+tests\test_ui_auth_surface.py:105: in test_au20_hosted_needs_an_allow_list
+    with pytest.raises(AuthConfigError):
+E   Failed: DID NOT RAISE AuthConfigError
+---------------------------- Captured stderr call -----------------------------
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_surface.py::test_au20_hosted_needs_an_allow_list - ...
+======================== 1 failed, 1 warning in 1.78s =========================

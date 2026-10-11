@@ -1,0 +1,35 @@
+== exact value in prompt (via secrets option) ==
+1ch 'x'                    exact:REFUSED/ProviderError  leak=[]
+2ch 'q9'                   exact:REFUSED/ProviderError  leak=[]
+3ch 'k#7'                  exact:REFUSED/ProviderError  leak=[]
+4ch 'Ab3$'                 exact:REFUSED/ProviderError  leak=[]
+7ch 'Ab3$kL9'              exact:REFUSED/ProviderError  leak=[]
+newline mid                exact:REFUSED/ProviderError  leak=[]
+tab mid                    exact:REFUSED/ProviderError  leak=[]
+CR mid                     exact:REFUSED/ProviderError  leak=[]
+NUL mid                    exact:REFUSED/ProviderError  leak=[]
+trailing newline           exact:REFUSED/ProviderError  leak=[]
+leading space              exact:REFUSED/ProviderError  leak=[]
+regex meta '.*'            exact:REFUSED/ProviderError  leak=[]
+regex '(a|b'               exact:REFUSED/ProviderError  leak=[]
+regex '[x'                 exact:REFUSED/ProviderError  leak=[]
+backslash 'a\b'            exact:REFUSED/ProviderError  leak=[]
+accents                    exact:REFUSED/ProviderError  leak=[]
+CJK                        exact:REFUSED/ProviderError  leak=[]
+emoji                      exact:REFUSED/ProviderError  leak=[]
+cyrillic homoglyph a       exact:REFUSED/ProviderError  leak=[]
+== encoded spellings of non-ASCII / control-char secrets ==
+accents json ensure_ascii            CALLED(1)              leak=[]
+accents decomposed NFD               CALLED(1)              leak=['call0.messages']
+accents percent                      REFUSED/ProviderError  leak=-
+accents html entity                  REFUSED/ProviderError  leak=-
+CJK json ensure_ascii                CALLED(1)              leak=[]
+newline secret json-escaped (\n)     CALLED(1)              leak=[]
+newline secret as space              REFUSED/ProviderError  leak=-
+tab secret json-escaped (\t)         CALLED(1)              leak=[]
+quote secret json-escaped            REFUSED/ProviderError  leak=-
+backslash secret json-escaped        REFUSED/ProviderError  leak=-
+NUL secret json-escaped (\u0000)     CALLED(1)              leak=[]
+trailing-nl 6ch val, bare            CALLED(1)              leak=['call0.messages']
+trailing-nl 8ch val, bare            REFUSED/ProviderError  leak=-
+leading-space 7ch, bare              REFUSED/ProviderError  leak=-

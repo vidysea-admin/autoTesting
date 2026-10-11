@@ -1,0 +1,28 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU13b-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_groups.py F                                           [100%]
+
+================================== FAILURES ===================================
+______________________ test_au13_four_users_two_projects ______________________
+tests\test_ui_auth_groups.py:175: in test_au13_four_users_two_projects
+    assert f"/projects/{slug}'" not in home and f'/projects/{slug}"' not in home
+E   assert ("/projects/beta'" not in '<!doctype h.../main></div>'
+E     
+E     "/projects/beta'" is contained here:
+E       nk' href='/projects/beta'>Beta</a></nav></aside><main><div class='page-header'><div><h1>Projects</h1><p class='subtitle'>Onboard a product once, then let AutoTester keep watching it.</p></div></div><div class='stat-row'><div class='stat'><div class='value'>2</div><div class='label'>projects</div></div><div class='stat'><div class='value'>0</div><div class='label'>cases</div></div><div class='stat'><div class='value'>0</div><div class='label'>latest run clean</div></div><div class='stat'><div class='value'>2</div><div class='label'>never run</d...
+E     
+E     ...Full output truncated (2 lines hidden), use '-vv' to show)
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_groups.py::test_au13_four_users_two_projects - asse...
+======================== 1 failed, 1 warning in 3.28s =========================

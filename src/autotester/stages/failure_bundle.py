@@ -192,15 +192,25 @@ def load_bundle(path: Path) -> BundleManifest:
     """FB1: the manifest of a complete bundle, else raise `PartialBundleError`/`RunMixError`."""
     if path.name.endswith(PARTIAL):
         raise PartialBundleError(f"{path.name} is a .partial: its write did not complete")
-    manifest_path = path / MANIFEST
+    root = path.resolve()  # T-178 containment: every read below is checked against this root
+    if root.name.endswith(PARTIAL):
+        raise PartialBundleError("resolved bundle is a .partial: its write did not complete")
+    manifest_path = (root / MANIFEST).resolve()
+    if not manifest_path.is_relative_to(root):
+        raise PartialBundleError("bundle manifest escapes the bundle directory")
     if not manifest_path.is_file():
         raise PartialBundleError(f"{path} has no {MANIFEST}")
-    manifest = BundleManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+    try:
+        manifest = BundleManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+    except ValueError as exc:  # BundleFile.name refuses non-local names here, before any read
+        raise PartialBundleError("invalid bundle manifest") from exc
     for f in manifest.files:
         if f.run_id != manifest.run_id:
             raise RunMixError(
                 f"{f.name} belongs to run {f.run_id!r}, bundle is {manifest.run_id!r}")
-        target = path / f.name
+        target = (root / f.name).resolve()
+        if not target.is_relative_to(root):
+            raise PartialBundleError("bundle file escapes the bundle directory")
         if not target.is_file() or _sha256(target) != f.sha256:
             raise PartialBundleError(f"{f.name} is missing or does not match its recorded hash")
     missing = [k.value for k in REQUIRED_KINDS if not any(f.kind is k for f in manifest.files)]

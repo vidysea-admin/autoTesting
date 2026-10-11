@@ -1,0 +1,305 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU1-m1
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_login.py F                                            [100%]
+
+================================== FAILURES ===================================
+_______________ test_au1_password_is_argon2id_and_never_stored ________________
+tests\test_ui_auth_login.py:42: in test_au1_password_is_argon2id_and_never_stored
+    login(ADMIN, canary)
+tests\auth_harness.py:49: in login
+    assert resp.status_code == 303, resp.text
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: <!doctype html><title>Sign in — AutoTester</title>
+E   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+E   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap"
+E         rel="stylesheet">
+E   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+E         rel="stylesheet">
+E   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+E         rel="stylesheet">
+E   <style>
+E     :root {
+E       color-scheme: light dark;
+E       --bg: #faf7f2; --surface: #ffffff; --surface-raised: #ffffff; --border: #e6e0d4;
+E       --text: #201d16; --text-dim: #6b6455; --muted: #a49c8a;
+E       --accent: #c2410c; --accent-hover: #9a3412; --accent-text: #fff8f0; --accent-dim: #fbe7d9;
+E       --success: #15803d; --success-bg: #eaf5ec; --danger: #b91c1c; --danger-bg: #fbebeb;
+E       --blocked: #b45309; --blocked-bg: #fdf0dc; --neutral-bg: #efece3;
+E       --radius: 6px; --radius-lg: 10px;
+E       --shadow: 0 1px 2px rgba(32,29,22,.05), 0 2px 8px rgba(32,29,22,.06);
+E       --shadow-lift: 0 4px 16px rgba(32,29,22,.10);
+E       --font-display: "Fraunces", Georgia, serif;
+E       --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+E       --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Consolas, monospace;
+E     }
+E     @media (prefers-color-scheme: dark) {
+E       :root {
+E         --bg: #17140f; --surface: #211d16; --surface-raised: #2a251c; --border: #3a3323;
+E         --text: #f3ede0; --text-dim: #b3a890; --muted: #7d735c;
+E         --accent: #f0803c; --accent-hover: #f79a63; --accent-text: #1a0f04; --accent-dim: #3a2210;
+E         --success: #4ade80; --success-bg: #142a1c; --danger: #f87171; --danger-bg: #2e1616;
+E         --blocked: #fbbf24; --blocked-bg: #2e2210; --neutral-bg: #2a251c;
+E         --shadow: 0 1px 2px rgba(0,0,0,.3); --shadow-lift: 0 8px 24px rgba(0,0,0,.4);
+E       }
+E     }
+E     * { box-sizing: border-box; }
+E     body {
+E       background: var(--bg); color: var(--text); margin: 0; font-family: var(--font-body);
+E       line-height: 1.55; -webkit-font-smoothing: antialiased;
+E       background-image: radial-gradient(var(--border) 0.6px, transparent 0.6px);
+E       background-size: 22px 22px; background-attachment: fixed;
+E     }
+E     .layout { display: flex; align-items: flex-start; }
+E     main { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.75rem 5rem; flex: 1; min-width: 0; }
+E   
+E     .sidebar { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border);
+E                background: var(--surface); padding: 1.6rem 1.1rem; position: sticky;
+E                top: 65px; align-self: flex-start; max-height: calc(100vh - 65px);
+E                overflow-y: auto; }
+E     .sidebar-header { font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase;
+E                        letter-spacing: .06em; color: var(--text-dim); margin-bottom: .8rem; }
+E     .sidebar-nav { display: flex; flex-direction: column; gap: .15rem; }
+E     .sidebar-link { display: block; padding: .45rem .6rem; border-radius: var(--radius);
+E                      color: var(--text-dim); text-decoration: none; font-size: .88rem;
+E                      font-weight: 500; }
+E     .sidebar-link:hover { background: var(--neutral-bg); color: var(--text); }
+E     .sidebar-link.active { background: var(--accent-dim); color: var(--accent-hover);
+E                             font-weight: 600; }
+E     .sidebar-empty { color: var(--muted); font-size: .84rem; margin: 0 0 1rem; }
+E     .sidebar-add { display: block; margin-top: 1rem; padding-top: 1rem;
+E                    border-top: 1px solid var(--border); color: var(--accent);
+E                    text-decoration: none; font-size: .84rem; font-weight: 600; }
+E     .sidebar-add:hover { color: var(--accent-hover); }
+E     @media (max-width: 780px) {
+E       .sidebar { display: none; }
+E     }
+E   
+E     .topbar {
+E       display: flex; align-items: center; justify-content: space-between;
+E       padding: 1rem 1.75rem; background: var(--surface); border-bottom: 1px solid var(--border);
+E       position: sticky; top: 0; z-index: 10; backdrop-filter: blur(6px);
+E     }
+E     .brand { display: flex; align-items: center; gap: .55rem; text-decoration: none;
+E              color: var(--text); }
+E     .brand-mark {
+E       display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 7px;
+E       background: var(--accent); color: var(--accent-text); font-family: var(--font-mono);
+E       font-weight: 600; font-size: .75rem; letter-spacing: .02em;
+E     }
+E     .brand-name { font-family: var(--font-display); font-weight: 650; font-size: 1.2rem;
+E                   font-style: italic; letter-spacing: -.01em; }
+E     .topbar nav { display: flex; gap: 1.6rem; align-items: center; }
+E     .topbar nav a { color: var(--text-dim); text-decoration: none; font-size: .88rem;
+E                     font-weight: 500; }
+E     .topbar nav a:hover { color: var(--text); }
+E     .nav-live { color: var(--success) !important; font-family: var(--font-mono); }
+E   
+E     h1 { font-family: var(--font-display); font-weight: 650; font-size: 2.1rem; margin: 0 0 .3rem;
+E          letter-spacing: -.015em; line-height: 1.15; }
+E     .page-header { display: flex; align-items: flex-end; justify-content: space-between;
+E                    gap: 1rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+E     .subtitle { color: var(--text-dim); margin: 0; font-size: .98rem; }
+E     .breadcrumb { font-family: var(--font-mono); font-size: .78rem; color: var(--muted);
+E                   text-transform: uppercase; letter-spacing: .04em; }
+E     .breadcrumb a { color: var(--muted); text-decoration: none; }
+E     .breadcrumb a:hover { color: var(--accent); }
+E   
+E     /* The trail alone read as a location label, not a control -- every non-home
+E        page gets a real back button beside it. */
+E     .crumbs { display: flex; align-items: center; gap: .85rem; margin-bottom: 1.1rem;
+E               flex-wrap: wrap; }
+E     .btn-back { padding: .34rem .85rem; font-size: .82rem; flex: none; }
+E   
+E     .card {
+E       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+E       padding: 1.4rem 1.6rem; box-shadow: var(--shadow); margin-bottom: 1.4rem;
+E     }
+E     .card h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem;
+E                margin: 0 0 1rem; }
+E     .card-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.1rem; }
+E   
+E     .project-grid {
+E       display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;
+E     }
+E     .project-card {
+E       position: relative; background: var(--surface); border: 1px solid var(--border);
+E       border-radius: var(--radius-lg); padding: 1.3rem 1.4rem 1.3rem 1.6rem; text-decoration: none;
+E       color: var(--text); box-shadow: var(--shadow); transition: box-shadow .15s, transform .15s;
+E       overflow: hidden;
+E     }
+E     .project-card::before {
+E       content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+E       background: var(--accent);
+E     }
+E     .project-card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+E     .project-card .name { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem;
+E                            margin-bottom: .4rem; display: block; }
+E     .project-card .meta { color: var(--text-dim); font-family: var(--font-mono); font-size: .8rem; }
+E     .project-card .card-status { display: block; margin-top: .6rem; }
+E     .project-card .card-status .badge { font-size: .72rem; margin-right: .35rem; }
+E   
+E     .stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+E     .stat {
+E       flex: 1 1 140px; background: var(--surface); border: 1px solid var(--border);
+E       border-radius: var(--radius-lg); padding: 1.1rem 1.3rem; box-shadow: var(--shadow);
+E     }
+E     .stat .value { font-family: var(--font-display); font-size: 1.9rem; font-weight: 650;
+E                    line-height: 1.1; }
+E     .stat .label { color: var(--text-dim); font-size: .78rem; margin-top: .3rem;
+E                    text-transform: uppercase; letter-spacing: .04em; }
+E   
+E     table { border-collapse: collapse; width: 100%; }
+E     th { text-align: left; font-family: var(--font-mono); font-size: .74rem;
+E          text-transform: uppercase; letter-spacing: .05em; color: var(--text-dim);
+E          padding: .55rem .7rem; border-bottom: 1px solid var(--border); }
+E     td { padding: .7rem .7rem; border-bottom: 1px solid var(--border); font-size: .92rem; }
+E     td code { font-family: var(--font-mono); font-size: .85rem; }
+E     tr:last-child td { border-bottom: none; }
+E     tr:hover td { background: var(--neutral-bg); }
+E     .run-results { display: flex; gap: .4rem; flex-wrap: wrap; }
+E     .run-date { color: var(--text-dim); font-size: .82rem; font-family: var(--font-mono); }
+E   
+E     .case-meta { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+E                  margin-bottom: .5rem; }
+E     .scoreboard { font-size: .88rem; color: var(--text-dim); margin: 0 0 .5rem; }
+E     .failure-list { margin: 0 0 .75rem; padding-left: 1.1rem; font-size: .86rem; }
+E     .failure-list li { margin-bottom: .3rem; }
+E     .failure-list code { font-family: var(--font-mono); font-size: .82rem; }
+E   
+E     .flow { display: flex; flex-wrap: wrap; align-items: center; margin-top: .5rem; }
+E     .flow-step { display: block; width: 150px; text-decoration: none; color: inherit; }
+E     .flow-step .thumb { border: 1px solid var(--border); border-radius: var(--radius);
+E                          overflow: hidden; background: var(--neutral-bg);
+E                          transition: border-color .15s; }
+E     .flow-step:hover .thumb { border-color: var(--accent); }
+E     .flow-step img { width: 100%; height: auto; display: block; cursor: zoom-in; }
+E     .flow-step .step-label { display: block; padding: .3rem .1rem 0; font-size: .72rem;
+E                               color: var(--text-dim); font-family: var(--font-mono);
+E                               text-align: center; }
+E     .flow-arrow { color: var(--border); font-size: 1.3rem; padding: 0 .25rem; flex-shrink: 0; }
+E   
+E     .lightbox { display: none; position: fixed; inset: 0; background: rgba(20,16,12,.87);
+E                 z-index: 1000; align-items: center; justify-content: center; padding: 2.5rem; }
+E     .lightbox:target { display: flex; }
+E     .lightbox img { max-width: 94vw; max-height: 88vh; border-radius: var(--radius);
+E                      box-shadow: 0 20px 60px rgba(0,0,0,.5); display: block; }
+E     .lightbox .lightbox-caption { position: absolute; bottom: 1.6rem; left: 50%;
+E                                    transform: translateX(-50%); color: #fff;
+E                                    font-family: var(--font-mono); font-size: .8rem;
+E                                    background: rgba(0,0,0,.55); padding: .3rem .85rem;
+E                                    border-radius: 999px; }
+E   
+E     .flow-tree, .flow-tree ul { list-style: none; margin: 0; padding-left: 1.6rem;
+E                                  position: relative; }
+E     .flow-tree { padding-left: 0; }
+E     .flow-tree li { position: relative; padding: .4rem 0 .4rem 1rem; }
+E     .flow-tree li::before { content: ''; position: absolute; left: 0; top: 0; bottom: 50%;
+E                              width: 1rem; border-left: 1px solid var(--border);
+E                              border-bottom: 1px solid var(--border); }
+E     .flow-tree li::after { content: ''; position: absolute; left: 0; top: 50%; bottom: 0;
+E                             border-left: 1px solid var(--border); }
+E     .flow-tree li:last-child::after { display: none; }
+E     .flow-tree > li::before, .flow-tree > li::after { display: none; }
+E     .tree-node { display: inline-flex; align-items: center; gap: .5rem; font-size: .88rem; }
+E     .tree-node .step-label { font-family: var(--font-mono); font-size: .82rem;
+E                               color: var(--text-dim); }
+E     .tree-leaf { font-weight: 600; }
+E   
+E     form { margin: 0; }
+E     .field { margin-bottom: 1.2rem; }
+E     .field label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .4rem; }
+E     .field .hint { display: block; color: var(--muted); font-size: .8rem; margin-top: .35rem; }
+E     input[type=text], input[type=password], input[type=url], input:not([type]) {
+E       width: 100%; padding: .6rem .75rem; border: 1px solid var(--border);
+E       border-radius: var(--radius); background: var(--bg); color: var(--text);
+E       font-size: .95rem; font-family: var(--font-body);
+E       transition: border-color .12s, box-shadow .12s;
+E     }
+E     input:focus { outline: none; border-color: var(--accent);
+E                   box-shadow: 0 0 0 3px var(--accent-dim); }
+E   
+E     .btn {
+E       display: inline-flex; align-items: center; gap: .45rem; padding: .6rem 1.2rem;
+E       border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface);
+E       color: var(--text); font-size: .9rem; font-weight: 600; cursor: pointer;
+E       text-decoration: none; line-height: 1; font-family: var(--font-body);
+E       transition: border-color .12s, transform .08s;
+E     }
+E     .btn:hover { border-color: var(--accent); }
+E     .btn:active { transform: scale(.97); }
+E     .btn-primary { background: var(--accent); color: var(--accent-text);
+E                    border-color: var(--accent); }
+E     .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+E     .btn-sm { padding: .38rem .75rem; font-size: .82rem; }
+E   
+E     .badge {
+E       display: inline-flex; align-items: center; gap: .3rem; padding: .2rem .65rem;
+E       border-radius: 999px; font-size: .74rem; font-weight: 600; font-family: var(--font-mono);
+E       text-transform: uppercase; letter-spacing: .03em;
+E     }
+E     .badge-pass { background: var(--success-bg); color: var(--success); }
+E     .badge-fail { background: var(--danger-bg); color: var(--danger); }
+E     .badge-blocked { background: var(--blocked-bg); color: var(--blocked); }
+E     .badge-inconclusive { background: var(--neutral-bg); color: var(--text-dim); }
+E   
+E     .empty-state {
+E       text-align: center; padding: 3.5rem 1.5rem; color: var(--text-dim);
+E       border: 1px dashed var(--border); border-radius: var(--radius-lg); background: var(--surface);
+E     }
+E     .empty-state .icon { font-size: 2.2rem; margin-bottom: .7rem; }
+E     .empty-state p { margin: .3rem 0 1.3rem; font-size: .98rem; }
+E   
+E     .live-shell { border: 1px solid var(--border); border-radius: var(--radius-lg);
+E                   overflow: hidden; box-shadow: var(--shadow); }
+E     .live-shell iframe { width: 100%; height: 68vh; border: none; display: block; }
+E     .live-tip { background: var(--surface); border: 1px solid var(--border);
+E                 border-radius: var(--radius-lg); padding: 1.1rem 1.3rem; margin-bottom: 1.4rem; }
+E     .live-tip code { font-family: var(--font-mono); background: var(--neutral-bg);
+E                       padding: .15rem .4rem; border-radius: 4px; font-size: .85rem; }
+E     .live-tip-muted { color: var(--text-dim); font-size: .9rem; }
+E   
+E     /* Destructive action: readable, never the loudest thing on the page. */
+E     .btn-danger { color: var(--danger); border-color: var(--danger); }
+E     .btn-danger:hover { background: var(--danger-bg); }
+E     .row-form { display: flex; gap: .5rem; align-items: center; }
+E     .row-form input { flex: 1 1 auto; min-width: 12rem; }
+E   
+E     /* Crawl pages (T-144). A screen graph is mostly tabular; the one place it
+E        is not is the tree, where indentation carries the discovery depth. */
+E     .meta { color: var(--text-dim); font-size: .85rem; }
+E     .data-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+E     .data-table th, .data-table td { text-align: left; padding: .45rem .6rem;
+E       border-bottom: 1px solid var(--border); vertical-align: top; }
+E     .data-table thead th { color: var(--text-dim); font-weight: 600;
+E       text-transform: uppercase; font-size: .72rem; letter-spacing: .06em; }
+E     .data-table tbody tr:last-child td { border-bottom: none; }
+E     .crawl-tree { list-style: none; margin: 0; padding: 0; }
+E     .crawl-node { display: flex; gap: .75rem; align-items: flex-start;
+E       padding: .6rem 0; border-bottom: 1px solid var(--border);
+E       margin-left: calc(var(--depth, 0) * 1.25rem); }
+E     .crawl-node:last-child { border-bottom: none; }
+E     .crawl-node .thumb { flex: 0 0 auto; }
+E     .crawl-node .thumb img { width: 7rem; border: 1px solid var(--border);
+E       border-radius: var(--radius); display: block; }
+E     .crawl-node-body { min-width: 0; overflow-wrap: anywhere; }
+E   </style>
+E   <header class='topbar'><a class='brand' href='/'><span class='brand-mark'>AT</span><span class='brand-name'>AutoTester</span></a></header><div class='layout'><main style='max-width:440px;margin:40px auto'><h1>Sign in</h1><p class='subtitle' role='alert'>That email and password do not match an active account.</p><div class='card'><form method='post' action='/auth/login'><input type='hidden' name='next' value='/'><div class='field'><label for='email'>Email</label><input id='email' name='email' type='email' required autocomplete='username'></div><div class='field'><label for='password'>Password</label><input id='password' name='password' type='password' required autocomplete='current-password'></div><button class='btn btn-primary' type='submit'>Sign in</button></form><p style='margin-top:14px'>No account yet? <a href='/auth/signup'>Sign up</a></p></div></main></div>
+------------------------------ Captured log call ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/auth/signup "HTTP/1.1 303 See Other"
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/auth/login "HTTP/1.1 401 Unauthorized"
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_login.py::test_au1_password_is_argon2id_and_never_stored
+======================== 1 failed, 1 warning in 2.31s =========================

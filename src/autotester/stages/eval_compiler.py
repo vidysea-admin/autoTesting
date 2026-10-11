@@ -21,6 +21,7 @@ from autotester.schema.scenario import Branch, CompileResult, ScenarioSpec, Unco
 from autotester.stages.expand import expand_flow
 from autotester.stages.knowledge_graph import add_case, build_graph, flow_of
 from autotester.stages.review import require_reviewed
+from autotester.store.project_store import ProjectStore
 
 
 def rollup_workflow(end_to_end: Result | None, steps: Iterable[Result]) -> Result:
@@ -87,12 +88,14 @@ def _compile_scenario(spec: FlowSpec, graph: KnowledgeGraph, scenario: ScenarioS
 
 def compile_evals(spec: FlowSpec, persona: PortalPersona, scenarios: list[ScenarioSpec],
                   provider: Provider, docs: RepoDocs | None = None, *,
-                  release: str | None = None) -> CompileResult:
+                  release: str | None = None, store: ProjectStore | None = None,
+                  proposal_ids: list[str] | None = None) -> CompileResult:
     """Compile evals from an APPROVED FlowSpec, the persona's graph and a scenario list.
 
     A flow with no resolvable graph trace gets no case and costs no model call (EC2); it is
     named in `untraced_flows`. Every scenario branch ends as a case or an `uncovered` row
-    (EC5); each scenario is its own node with its own case set (EC4)."""
+    (EC5); each scenario is its own node with its own case set (EC4). FB5: a traced flow is
+    expanded only from `store`'s approved proposals; with no store it raises, spending 0 calls."""
     require_reviewed(spec)
     graph = build_graph(persona, spec)
     result = CompileResult(graph=graph, total_branches=sum(len(s.branches) for s in scenarios))
@@ -101,8 +104,9 @@ def compile_evals(spec: FlowSpec, persona: PortalPersona, scenarios: list[Scenar
         if node is None or flow_of(graph, node) is None:
             result.untraced_flows.append(flow.id)
             continue
-        result.cases += [c for c in expand_flow(flow, spec.project, provider, docs)
-                         if add_case(graph, c, node, release)]
+        generated = expand_flow(flow, spec.project, provider, docs, store=store,
+                                proposal_ids=proposal_ids)
+        result.cases += [c for c in generated if add_case(graph, c, node, release)]
     for scenario in scenarios:
         cases, uncovered = _compile_scenario(spec, graph, scenario, release)
         result.cases += cases

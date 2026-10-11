@@ -314,5 +314,5 @@ That is the **third** unreachability claim I have made in this repo and the thir
 refuted. The pattern is mine, not the code's, and it should be treated as a standing rule rather
 than a run of bad luck: **I do not get to assert that no mutation can reach a property.**
 
-## Status: STALLED
+## Status: STALLED (resolved: gate qa/gates/at355-guard-shape.md Answered 2026-09-11; superseded work tracked there)
 
