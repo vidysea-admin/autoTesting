@@ -1,0 +1,29 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.38s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_gemini_models_get_the_gemini_dialect_schema _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D5710CB390>
+
+    def test_gemini_models_get_the_gemini_dialect_schema(monkeypatch: pytest.MonkeyPatch) -> None:
+        fake = install(monkeypatch, [reply(json.dumps(GOOD))])
+        monkeypatch.setenv("GEMINI_API_KEY", "gemini-test-key-xyz")
+        _with_key(monkeypatch)
+        _provider("gemini/gemini-2.5-pro").judge("g", Answer)
+        sent = json.dumps(fake.calls[0]["response_format"])
+>       assert "additionalProperties" not in sent and "$defs" not in sent
+E       assert ('additionalProperties' not in '{"type": "j...ct": false}}'
+E         
+E         'additionalProperties' is contained here:
+E         ?           ^^
+E           Inner": {"additionalProperties": false, "properties": {"note": {"title": "Note", "type": "string"}}, "required": ["note"], "title": "Inner", "type": "object"}}, "additionalProperties": false, "properties": {"verdict": {"title": "Verdict", "type": "string"}, "score": {"title": "Score", "type": "integer"}, "inner": {"$ref": "#/$defs/Inner"}}, "required": ["verdict", "score", "inner"], "title": "Answer", "type": "object"}, "strict": false}}
+E         ?           ^^^^^^^^^^^^^^^^^^^^^^)
+
+tests\test_litellm_provider.py:174: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_provider.py::test_gemini_models_get_the_gemini_dialect_schema
+1 failed in 0.61s

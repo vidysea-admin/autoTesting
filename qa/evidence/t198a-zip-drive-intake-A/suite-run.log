@@ -1,0 +1,26 @@
+[06:26:31] ref 894549ee = 894549ee; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at198a-shards\run
+[06:26:35] collecting whole set (one copy)
+[06:27:06] collected 3748 tests in 263 files; balanced by stored durations (3446/3748 tests known, 13 files at mean); split by test: ['tests/test_crawl_inventory_live.py', 'tests/test_explore_completeness.py']; pinned files: none; predicted: s0=680, s1=680, s2=680, s3=680
+[06:27:06] shard 0: pid 45588, 69 units, 1067 tests
+[06:27:06] shard 1: pid 66564, 71 units, 841 tests
+[06:27:06] shard 2: pid 65968, 71 units, 942 tests
+[06:27:06] shard 3: pid 49472, 71 units, 898 tests
+[06:41:26] shard 1 finished rc=1 in 860s
+[06:41:41] shard 0 finished rc=1 in 875s
+[06:43:10] shard 2 finished rc=1 in 964s
+[06:43:18] shard 3 finished rc=1 in 972s
+[06:43:19] re-running 7 failing test(s) alone in shard-0 (load-induced vs real)
+[06:45:06]   shard 0: rc=1 wall=874.6s units=69 tests=1067 reported=1067
+[06:45:06]   shard 1: rc=1 wall=859.5s units=71 tests=841 reported=841
+[06:45:06]   shard 2: rc=1 wall=963.7s units=71 tests=942 reported=942
+[06:45:06]   shard 3: rc=1 wall=971.7s units=71 tests=898 reported=898
+[06:45:06] counts {'passed': 3722, 'skipped': 19, 'failed': 7}; collect proof ok=True (baseline 3748, union 3748, ran 3748)
+[06:45:06]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 0, alone: failed)
+[06:45:06]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 1, alone: failed)
+[06:45:06]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero (shard 1, alone: passed)
+[06:45:06]   failed tests/test_zip_intake_atomic.py::test_ti6_process_killed_between_copy_and_row_heals_on_the_next_intake (shard 1, alone: failed)
+[06:45:06]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 1, alone: failed)
+[06:45:06]   failed tests/test_redact_ignorable_perf.py::test_cjk_heavy_scan_stays_within_a_generous_multiple_of_ascii (shard 2, alone: passed)
+[06:45:06]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 3, alone: failed)
+[06:45:06] summary -> C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at198a-shards\run\summary.json (exit 1)
+exit=1

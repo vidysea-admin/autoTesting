@@ -1,0 +1,28 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU21-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_surface.py F                                          [100%]
+
+================================== FAILURES ===================================
+_________________ test_au21_values_only_for_credentials_view __________________
+tests\test_ui_auth_surface.py:157: in test_au21_values_only_for_credentials_view
+    assert (SENTINEL in page.text) == (name == "admin"), name
+E   AssertionError: sub
+E   assert ('Sentinel-Value-93ad1c' in '<!doctype html><title>Vault — credentials — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.co...d\'><h2>Approvals in force</h2><p class=\'meta\'>No crawl approval is in force for this target.</p></div></main></div>') == ('sub' == 'admin'
+E    +  where '<!doctype html><title>Vault — credentials — AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.co...d\'><h2>Approvals in force</h2><p class=\'meta\'>No crawl approval is in force for this target.</p></div></main></div>' = <Response [200 OK]>.text
+E     
+E     - admin
+E     + sub)
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_surface.py::test_au21_values_only_for_credentials_view
+======================== 1 failed, 1 warning in 3.57s =========================

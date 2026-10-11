@@ -1,0 +1,59 @@
+== E4 CLI: autotester auth bootstrap-admin --email X --password-stdin
+ create: 0 created admin new@team.test (groups: Admin/CEO)  {'canary': False, 'hash': False, 'other_emails': []}
+ reset same email: 0 reset admin new@team.test (groups: Admin/CEO) {'canary': False, 'hash': False, 'other_emails': []}
+ promote existing non-admin (ownership of that account is overwritten, pw reset): 0 reset admin existing@team.test (groups: Admin/CEO) {'canary': False, 'hash': False, 'other_emails': ['existing@team.test']}
+ argv password flag: 2 └─────────────────────────────────────────────────────────────────────────────┘ {'canary': False, 'hash': False, 'other_emails': []}
+ no --password-stdin, piped stdin (non-tty): 2 refused: no terminal to prompt on; pass --password-stdin and pipe the password in {'canary': False, 'hash': False, 'other_emails': []}
+ weak 9 chars: 2 refused: a password needs 10 to 128 characters {'canary': False, 'hash': False, 'other_emails': []}
+ weak 129 chars: 2 refused: a password needs 10 to 128 characters {'canary': False, 'hash': False, 'other_emails': []}
+ weak empty line: 2 refused: a password needs 10 to 128 characters {'canary': False, 'hash': False, 'other_emails': []}
+ weak EOF/no stdin: 2 refused: a password needs 10 to 128 characters {'canary': False, 'hash': False, 'other_emails': []}
+ email 'not-an-email': 2 refused: enter a valid email address {'canary': False, 'hash': False, 'other_emails': []}
+ email 'with space': 2 refused: enter a valid email address {'canary': False, 'hash': False, 'other_emails': []}
+ email 'newline': 2 refused: enter a valid email address {'canary': False, 'hash': False, 'other_emails': []}
+ email 'empty': 2 refused: enter a valid email address {'canary': False, 'hash': False, 'other_emails': []}
+ email 'plus': 0 created admin ad+min@team.test (groups: Admin/CEO) {'canary': False, 'hash': False, 'other_emails': []}
+ email 'unicode': 0 created admin café@team.test (groups: Admin/CEO) {'canary': False, 'hash': False, 'other_emails': []}
+ missing --email: 2 └─────────────────────────────────────────────────────────────────────────────┘
+ nonexistent data dir (created?): 0 created admin nd@team.test (groups: Admin/CEO) dir created: True
+ forced unexpected error (AUTH_DIR is a file): rc 1 leak: {'canary': False, 'hash': False, 'other_emails': []} | stderr lines: 73 | shows locals section: False
+ rich installed: True
+ CLI audit lines: [{'actor': 'cli', 'target': 'new@team.test', 'action': 'admin.create'}, {'actor': 'cli', 'target': 'new@team.test', 'action': 'admin.reset'}, {'actor': 'cli', 'target': 'existing@team.test', 'action': 'admin.reset'}, {'actor': 'cli', 'target': 'ad+min@team.test', 'action': 'admin.create'}, {'actor': 'cli', 'target': 'café@team.test', 'action': 'admin.create'}]
+== E5 bind_host() reads only sys.argv + UVICORN_HOST
+  argv=uvicorn autotester.ui.app:app                                  bind_host='127.0.0.1' loopback_treated=True
+  argv=uvicorn app --host 0.0.0.0                                     bind_host='0.0.0.0' loopback_treated=False
+  argv=uvicorn app --host=0.0.0.0                                     bind_host='0.0.0.0' loopback_treated=False
+  argv=gunicorn -b 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker      bind_host='127.0.0.1' loopback_treated=True
+  argv=hypercorn -b 0.0.0.0:8000                                      bind_host='127.0.0.1' loopback_treated=True
+  argv=fastapi run app.py                                             bind_host='127.0.0.1' loopback_treated=True
+  argv=python -c uvicorn.run(app, host='0.0.0.0')                     bind_host='127.0.0.1' loopback_treated=True
+  argv=uvicorn app --host ::                                          bind_host='::' loopback_treated=False
+  argv=uvicorn app --host 127.0.0.2                                   bind_host='127.0.0.2' loopback_treated=False
+  argv=uvicorn app --host localhost                                   bind_host='localhost' loopback_treated=True
+  UVICORN_HOST=0.0.0.0 -> 0.0.0.0
+== AU17 matrix: AUTH_DISABLED=1 combined with ...
+WARNING: AUTOTESTER_AUTH_DISABLED=1 -- login is OFF (loopback, single-user only)
+  (nothing: loopback)                          -> STARTS (disabled honoured=True)
+  HOSTED=1                                     -> REFUSED: AUTOTESTER_AUTH_DISABLED=1 is refused when AUTOTESTER_HOSTED=1 or the 
+  UVICORN_HOST=0.0.0.0                         -> REFUSED: AUTOTESTER_AUTH_DISABLED=1 is refused when AUTOTESTER_HOSTED=1 or the 
+  argv --host 0.0.0.0                          -> REFUSED: AUTOTESTER_AUTH_DISABLED=1 is refused when AUTOTESTER_HOSTED=1 or the 
+  argv --host=0.0.0.0                          -> REFUSED: AUTOTESTER_AUTH_DISABLED=1 is refused when AUTOTESTER_HOSTED=1 or the 
+WARNING: AUTOTESTER_AUTH_DISABLED=1 -- login is OFF (loopback, single-user only)
+  gunicorn -b 0.0.0.0 (argv has no --host)     -> STARTS (disabled honoured=True)
+WARNING: AUTOTESTER_AUTH_DISABLED=1 -- login is OFF (loopback, single-user only)
+  COOKIE_SECURE unset + https scheme only      -> STARTS (disabled honoured=True)
+  AUTH_DISABLED='true'                         -> STARTS (disabled honoured=False)
+== E6 server bound elsewhere but argv has no host: AUTH_DISABLED honoured, nothing asked
+  anonymous GET /                      -> 200
+  anonymous GET /admin/users           -> 200
+  anonymous GET /admin/groups          -> 200
+  anonymous GET /settings/providers    -> 200
+  anonymous GET /onboard               -> 200
+  anonymous GET /live                  -> 200
+  anonymous GET /healthz               -> 200
+  anonymous GET /docs                  -> 200
+  anonymous GET /openapi.json          -> 200
+  anonymous POST /admin/users/1/delete -> 404
+  anonymous signup while gate disabled -> 303
+  anonymous POST /admin/groups with settings.manage -> 303 audit last: ['{"ts": "2026-10-11T01:20:10.058007+00:00", "email": "local", "method": "POST", "path": "/admin/groups", "status": 303}']
+  bound 0.0.0.0 via gunicorn (argv has no --host), first public signup -> / admins: ['stranger@team.test']

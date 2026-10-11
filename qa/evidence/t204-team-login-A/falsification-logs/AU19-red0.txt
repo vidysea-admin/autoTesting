@@ -1,0 +1,30 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU19-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 3 items
+
+tests\test_ui_auth_host_and_consent.py .FF                               [100%]
+
+================================== FAILURES ===================================
+_ test_au19_a_foreign_host_gets_no_login_page_and_no_session[localhost.evil.com] _
+tests\test_ui_auth_host_and_consent.py:45: in test_au19_a_foreign_host_gets_no_login_page_and_no_session
+    assert got.status_code == 403 and got.content == b"" and "set-cookie" not in got.headers
+E   assert (200 == 403)
+E    +  where 200 = <Response [200 OK]>.status_code
+_ test_au19_a_foreign_host_gets_no_login_page_and_no_session[127.0.0.1.evil.io] _
+tests\test_ui_auth_host_and_consent.py:45: in test_au19_a_foreign_host_gets_no_login_page_and_no_session
+    assert got.status_code == 403 and got.content == b"" and "set-cookie" not in got.headers
+E   assert (200 == 403)
+E    +  where 200 = <Response [200 OK]>.status_code
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[localhost.evil.com]
+FAILED tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[127.0.0.1.evil.io]
+=================== 2 failed, 1 passed, 1 warning in 3.21s ====================

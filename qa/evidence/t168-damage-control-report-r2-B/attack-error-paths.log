@@ -1,0 +1,474 @@
+ERRFILES secret="p&ss<w>o'rdQ9": ['cases.jsonl', 'crawl\\cr1\\crawl.json', 'crawl\\cr1\\network.jsonl', 'flow_plans.jsonl', 'flowspec.json', 'portal_persona.json', 'project.json', 'runs\\rel1\\c1.json', 'runs\\rel1\\c1.verdict.json', 'runs\\rel1\\release.json', 'runs\\rel1\\scope.json']
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-all-fields: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-project: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-flow_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-kind: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-case_class: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" cases.jsonl/line0-title: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" cases.jsonl/garbage-line: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" cases.jsonl/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR "p&ss<w>o'rdQ9" crawl.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" crawl.json/field-project: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" crawl.json/field-status: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-bounds: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-policy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-strategy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-incremental: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-skipped_unchanged: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/field-provider: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" crawl.json/field-stop_reason: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" crawl.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" crawl.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR "p&ss<w>o'rdQ9" network.jsonl/line0-extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" network.jsonl/line0-all-fields: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" network.jsonl/line0-kind: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" network.jsonl/line0-path: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" network.jsonl/line0-masked: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" network.jsonl/garbage-line: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" network.jsonl/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/line0-extra-key: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/line0-all-fields: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/line0-schema_version: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/line0-created_at: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/line0-project: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/line0-flow_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/line0-case_ids: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/garbage-line: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flow_plans.jsonl/truncated: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/extra-key: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/all-fields-secret: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-schema_version: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-created_at: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-project: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-version: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-screens: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-flows: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-source_ids: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-conflicts: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/field-review: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/nested-key: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/truncated: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" flowspec.json/secret-only: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" portal_persona.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-project: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-profile: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-auth: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-screens: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-transitions: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-taught_flows: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-gotchas: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-screenshot_refs: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-history: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/field-graph: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" portal_persona.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR "p&ss<w>o'rdQ9" project.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-slug: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-name: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" project.json/field-base_url: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" project.json/field-allowed_domains: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-write_policy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-max_parallel: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-permitted_surface: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-secrets: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-providers: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/field-test_id_attributes: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" project.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR "p&ss<w>o'rdQ9" c1.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/field-case_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" c1.json/field-outcome: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/field-used_script: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/field-iterations: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/field-duration_s: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/field-evidence: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-run_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-case_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-result: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-scoreboard: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-criteria_met: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-criteria_total: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-failures: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-grader_provider: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-rubric_hash: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/field-images_requested: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" c1.verdict.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR "p&ss<w>o'rdQ9" release.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-run_id: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-project: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-approval_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" release.json/field-git_sha: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" release.json/field-scope: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-finished: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-flagged_bad: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-flagged_reason: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" release.json/field-results: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/field-flows: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" release.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR "p&ss<w>o'rdQ9" scope.json/extra-key: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/all-fields-secret: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-schema_version: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-created_at: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-run_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-project: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-approval_id: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-git_sha: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-max_actions: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-wall_clock_s: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-expected_flow_ids: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-plans: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/field-unplanned_flow_ids: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/nested-key: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/truncated: cli=0 route=200/200 build='ok'
+ERR "p&ss<w>o'rdQ9" scope.json/secret-only: cli=0 route=200/200 build='ok'
+ERRVARIANTS secret="p&ss<w>o'rdQ9" ran=156 bad=0
+ERRFILES secret='Hunter2Pass': ['cases.jsonl', 'crawl\\cr1\\crawl.json', 'crawl\\cr1\\network.jsonl', 'flow_plans.jsonl', 'flowspec.json', 'portal_persona.json', 'project.json', 'runs\\rel1\\c1.json', 'runs\\rel1\\c1.verdict.json', 'runs\\rel1\\release.json', 'runs\\rel1\\scope.json']
+ERR 'Hunter2Pass' cases.jsonl/line0-extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' cases.jsonl/line0-all-fields: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' cases.jsonl/line0-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' cases.jsonl/line0-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' cases.jsonl/line0-id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' cases.jsonl/line0-project: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' cases.jsonl/line0-flow_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' cases.jsonl/line0-kind: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' cases.jsonl/line0-case_class: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' cases.jsonl/line0-title: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' cases.jsonl/garbage-line: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' cases.jsonl/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'Hunter2Pass' crawl.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' crawl.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' crawl.json/field-status: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-bounds: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-policy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-strategy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-incremental: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-skipped_unchanged: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/field-provider: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' crawl.json/field-stop_reason: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' crawl.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' crawl.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'Hunter2Pass' network.jsonl/line0-extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'Hunter2Pass' network.jsonl/line0-all-fields: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'Hunter2Pass' network.jsonl/line0-kind: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'Hunter2Pass' network.jsonl/line0-path: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' network.jsonl/line0-masked: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'Hunter2Pass' network.jsonl/garbage-line: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'Hunter2Pass' network.jsonl/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'Hunter2Pass' flow_plans.jsonl/line0-extra-key: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/line0-all-fields: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/line0-schema_version: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/line0-created_at: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/line0-project: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/line0-flow_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/line0-case_ids: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/garbage-line: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flow_plans.jsonl/truncated: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/extra-key: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/all-fields-secret: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-schema_version: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-created_at: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-version: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-screens: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-flows: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-source_ids: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-conflicts: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/field-review: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/nested-key: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/truncated: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' flowspec.json/secret-only: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' portal_persona.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' portal_persona.json/field-profile: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-auth: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-screens: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-transitions: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-taught_flows: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-gotchas: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-screenshot_refs: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-history: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/field-graph: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' portal_persona.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'Hunter2Pass' project.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-slug: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-name: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' project.json/field-base_url: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' project.json/field-allowed_domains: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-write_policy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-max_parallel: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-permitted_surface: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-secrets: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-providers: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/field-test_id_attributes: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' project.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'Hunter2Pass' c1.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/field-case_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' c1.json/field-outcome: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/field-used_script: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/field-iterations: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/field-duration_s: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/field-evidence: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'Hunter2Pass' c1.verdict.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/field-run_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' c1.verdict.json/field-case_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' c1.verdict.json/field-result: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/field-scoreboard: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' c1.verdict.json/field-criteria_met: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/field-criteria_total: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/field-failures: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/field-grader_provider: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' c1.verdict.json/field-rubric_hash: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' c1.verdict.json/field-images_requested: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' c1.verdict.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'Hunter2Pass' release.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-run_id: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-project: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-approval_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' release.json/field-git_sha: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' release.json/field-scope: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-finished: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-flagged_bad: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-flagged_reason: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' release.json/field-results: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/field-flows: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' release.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'Hunter2Pass' scope.json/extra-key: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/all-fields-secret: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-schema_version: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-created_at: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-run_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-approval_id: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-git_sha: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-max_actions: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-wall_clock_s: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-expected_flow_ids: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-plans: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/field-unplanned_flow_ids: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/nested-key: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/truncated: cli=0 route=200/200 build='ok'
+ERR 'Hunter2Pass' scope.json/secret-only: cli=0 route=200/200 build='ok'
+ERRVARIANTS secret='Hunter2Pass' ran=156 bad=0
+ERRFILES secret='pässwörd✓€': ['cases.jsonl', 'crawl\\cr1\\crawl.json', 'crawl\\cr1\\network.jsonl', 'flow_plans.jsonl', 'flowspec.json', 'portal_persona.json', 'project.json', 'runs\\rel1\\c1.json', 'runs\\rel1\\c1.verdict.json', 'runs\\rel1\\release.json', 'runs\\rel1\\scope.json']
+ERR 'pässwörd✓€' cases.jsonl/line0-extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' cases.jsonl/line0-all-fields: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' cases.jsonl/line0-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' cases.jsonl/line0-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' cases.jsonl/line0-id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' cases.jsonl/line0-project: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' cases.jsonl/line0-flow_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' cases.jsonl/line0-kind: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' cases.jsonl/line0-case_class: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' cases.jsonl/line0-title: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' cases.jsonl/garbage-line: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' cases.jsonl/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/cases.jsonl is not valid); fix or remove t"
+ERR 'pässwörd✓€' crawl.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' crawl.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' crawl.json/field-status: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-bounds: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-policy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-strategy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-incremental: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-skipped_unchanged: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/field-provider: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' crawl.json/field-stop_reason: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' crawl.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' crawl.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/crawl.json is not valid); fix or remove the"
+ERR 'pässwörd✓€' network.jsonl/line0-extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'pässwörd✓€' network.jsonl/line0-all-fields: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'pässwörd✓€' network.jsonl/line0-kind: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'pässwörd✓€' network.jsonl/line0-path: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' network.jsonl/line0-masked: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'pässwörd✓€' network.jsonl/garbage-line: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'pässwörd✓€' network.jsonl/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cr1/network.jsonl is not valid); fix or remove "
+ERR 'pässwörd✓€' flow_plans.jsonl/line0-extra-key: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/line0-all-fields: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/line0-schema_version: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/line0-created_at: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/line0-project: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/line0-flow_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/line0-case_ids: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/garbage-line: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flow_plans.jsonl/truncated: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/extra-key: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/all-fields-secret: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-schema_version: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-created_at: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-version: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-screens: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-flows: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-source_ids: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-conflicts: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/field-review: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/nested-key: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/truncated: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' flowspec.json/secret-only: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' portal_persona.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' portal_persona.json/field-profile: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-auth: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-screens: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-transitions: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-taught_flows: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-gotchas: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-screenshot_refs: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-history: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/field-graph: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' portal_persona.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (demo/portal_persona.json is not valid); fix or "
+ERR 'pässwörd✓€' project.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-slug: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-name: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' project.json/field-base_url: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' project.json/field-allowed_domains: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-write_policy: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-max_parallel: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-permitted_surface: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-secrets: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-providers: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/field-test_id_attributes: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' project.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (cause ValueError); fix or remove the stored fil"
+ERR 'pässwörd✓€' c1.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/field-case_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' c1.json/field-outcome: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/field-used_script: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/field-iterations: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/field-duration_s: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/field-evidence: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.json is not valid); fix or remove the s"
+ERR 'pässwörd✓€' c1.verdict.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/field-run_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' c1.verdict.json/field-case_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' c1.verdict.json/field-result: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/field-scoreboard: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' c1.verdict.json/field-criteria_met: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/field-criteria_total: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/field-failures: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/field-grader_provider: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' c1.verdict.json/field-rubric_hash: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' c1.verdict.json/field-images_requested: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' c1.verdict.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/c1.verdict.json is not valid); fix or remo"
+ERR 'pässwörd✓€' release.json/extra-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/all-fields-secret: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-schema_version: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-created_at: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-run_id: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-project: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-approval_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' release.json/field-git_sha: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' release.json/field-scope: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-finished: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-flagged_bad: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-flagged_reason: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' release.json/field-results: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/field-flows: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/nested-key: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/truncated: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' release.json/secret-only: cli=1 route=500/500 build="ReportUnreadable: a stored record of 'demo' could not be read (rel1/release.json is not valid); fix or remove "
+ERR 'pässwörd✓€' scope.json/extra-key: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/all-fields-secret: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-schema_version: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-created_at: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-run_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-project: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-approval_id: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-git_sha: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-max_actions: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-wall_clock_s: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-expected_flow_ids: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-plans: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/field-unplanned_flow_ids: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/nested-key: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/truncated: cli=0 route=200/200 build='ok'
+ERR 'pässwörd✓€' scope.json/secret-only: cli=0 route=200/200 build='ok'
+ERRVARIANTS secret='pässwörd✓€' ran=156 bad=0

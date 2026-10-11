@@ -1,0 +1,313 @@
+{
+  "pages": [
+    {
+      "name": "project-home",
+      "url": "http://127.0.0.1:8791/projects/demo",
+      "status": 200,
+      "title": "Demo <b>App</b> \u2014 AutoTester",
+      "console_errors": [],
+      "console_error_count": 0,
+      "failed_requests": [],
+      "screenshot": "01-project-home.png"
+    },
+    {
+      "name": "flowspec",
+      "url": "http://127.0.0.1:8791/projects/demo/flowspec",
+      "status": 200,
+      "title": "Demo <b>App</b> \u00b7 FlowSpec \u2014 AutoTester",
+      "console_errors": [],
+      "console_error_count": 0,
+      "failed_requests": [],
+      "screenshot": "02-flowspec.png"
+    },
+    {
+      "name": "refusal-1-after-generate-click",
+      "url": "http://127.0.0.1:8791/projects/demo/cases/generate",
+      "status": 400,
+      "title": "Case proposals need human review \u2014 AutoTester",
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "console_error_count": 1,
+      "failed_requests": [],
+      "screenshot": "03-refusal-1-after-generate-click.png",
+      "body_text": "AT\nAutoTester\nProjects\n+ New project\n\u25cf Live view\n\u2699 Settings\nPROJECTS\nDemo <b>App</b>\n+ New project\nCase proposals need human review\n\nhuman approval of HAPPY proposal required; flow is pending\n\nReview/prune with autotester expand demo --proposals; use --approve or --prune with a proposal ID and --by your name.",
+      "html_has_raw_json": false,
+      "traceback": false,
+      "nav_links": [
+        "AT\n    AutoTester -> /",
+        "Projects -> /",
+        "+ New project -> /onboard",
+        "\u25cf Live view -> /live",
+        "\u2699 Settings -> /settings/providers",
+        "Demo <b>App</b> -> /projects/demo"
+      ],
+      "code_blocks": [
+        "autotester expand demo --proposals"
+      ],
+      "action_links": []
+    },
+    {
+      "name": "cases-list",
+      "url": "http://127.0.0.1:8791/projects/demo/cases",
+      "status": 200,
+      "title": "Cases \u2014 AutoTester",
+      "console_errors": [],
+      "console_error_count": 0,
+      "failed_requests": [],
+      "screenshot": "04-cases-list.png"
+    },
+    {
+      "name": "flowspec-again",
+      "url": "http://127.0.0.1:8791/projects/demo/flowspec",
+      "status": 200,
+      "title": "Demo <b>App</b> \u00b7 FlowSpec \u2014 AutoTester",
+      "console_errors": [],
+      "console_error_count": 0,
+      "failed_requests": [],
+      "screenshot": "05-flowspec-again.png"
+    },
+    {
+      "name": "refusal-2-after-cli-approval",
+      "url": "http://127.0.0.1:8791/projects/demo/cases/generate",
+      "status": 400,
+      "title": "No model provider configured \u2014 AutoTester",
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "console_error_count": 1,
+      "failed_requests": [],
+      "screenshot": "06-refusal-2-after-cli-approval.png",
+      "body_text": "AT\nAutoTester\nProjects\n+ New project\n\u25cf Live view\n\u2699 Settings\nPROJECTS\nDemo <b>App</b>\n+ New project\nNo model provider configured\n\nGenerating cases needs a model. No provider on this machine has credentials, so nothing was generated.\n\nAdd a credential",
+      "traceback": false,
+      "action_links": [
+        "Add a credential -> /projects/demo/env"
+      ]
+    },
+    {
+      "name": "refusal2-onward-link",
+      "url": "http://127.0.0.1:8791/projects/demo/env",
+      "status": 200,
+      "title": "Demo <b>App</b> \u2014 credentials \u2014 AutoTester",
+      "console_errors": [],
+      "console_error_count": 0,
+      "failed_requests": [],
+      "screenshot": "07-refusal2-onward-link.png"
+    },
+    {
+      "name": "report",
+      "url": "http://127.0.0.1:8791/projects/demo/report",
+      "status": 200,
+      "title": "Report \u2014 AutoTester",
+      "console_errors": [],
+      "console_error_count": 0,
+      "failed_requests": [],
+      "screenshot": "08-report.png"
+    }
+  ],
+  "cli": [
+    {
+      "cmd": "expand --proposals",
+      "rc": 0,
+      "out": "proposal_d10a7aa0c621 proposed happy: Sign in \u2014 happy\nproposal_24ae0230a9b1 proposed input_empty: Sign in \u2014 input_empty\nproposal_03e7bab52565 proposed input_boundary: Sign in \u2014 input_boundary\nproposal_9168686cbb91 proposed input_unicode_oversize: Sign in \u2014 input_unicode_oversize\nproposal_e28f77c0df53 proposed double_submit: Sign in \u2014 double_submit\nproposal_c475f23bea76 proposed back_refresh_midflow: Sign in \u2014 back_refresh_midflow\nproposal_f1260121f08e proposed network_offline_slow: Sign in \u2014 network_offline_slow\nproposal_0db56e51f859 proposed server_error: Sign in \u2014 server_error\nproposal_5ce015ae20f8 proposed viewport_mobile: Sign in \u2014 viewport_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_d10a7aa0c621",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_03e7bab52565",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_9168686cbb91",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_e28f77c0df53",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_c475f23bea76",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_f1260121f08e",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_0db56e51f859",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_5ce015ae20f8",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 proposed locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_da90373dc402",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 approved locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d proposed concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_dab7e0d1128d",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 approved locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d approved concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 proposed deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_71226b016521",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 approved locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d approved concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 approved deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d proposed regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "approve proposal_f019dc2e2d9d",
+      "rc": 0,
+      "out": "rt_mobile\nproposal_da90373dc402 approved locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d approved concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 approved deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d approved regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "prune proposal_24ae0230a9b1",
+      "rc": 0,
+      "out": "proposal_c475f23bea76 approved back_refresh_midflow: Sign in \u2014 back_refresh_midflow\nproposal_f1260121f08e approved network_offline_slow: Sign in \u2014 network_offline_slow\nproposal_0db56e51f859 approved server_error: Sign in \u2014 server_error\nproposal_5ce015ae20f8 approved viewport_mobile: Sign in \u2014 viewport_mobile\nproposal_da90373dc402 approved locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d approved concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 approved deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d approved regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "expand --proposals (after review)",
+      "rc": 0,
+      "out": "proposal_d10a7aa0c621 approved happy: Sign in \u2014 happy\nproposal_24ae0230a9b1 pruned input_empty: Sign in \u2014 input_empty\nproposal_03e7bab52565 approved input_boundary: Sign in \u2014 input_boundary\nproposal_9168686cbb91 approved input_unicode_oversize: Sign in \u2014 input_unicode_oversize\nproposal_e28f77c0df53 approved double_submit: Sign in \u2014 double_submit\nproposal_c475f23bea76 approved back_refresh_midflow: Sign in \u2014 back_refresh_midflow\nproposal_f1260121f08e approved network_offline_slow: Sign in \u2014 network_offline_slow\nproposal_0db56e51f859 approved server_error: Sign in \u2014 server_error\nproposal_5ce015ae20f8 approved viewport_mobile: Sign in \u2014 viewport_mobile\nproposal_da90373dc402 approved locale_i18n: Sign in \u2014 locale_i18n\nproposal_dab7e0d1128d approved concurrent_tab: Sign in \u2014 concurrent_tab\nproposal_71226b016521 approved deeplink_unauth: Sign in \u2014 deeplink_unauth\nproposal_f019dc2e2d9d approved regression_anchor: Sign in \u2014 regression_anchor\n"
+    },
+    {
+      "cmd": "expand (no flags, provider unavailable)",
+      "rc": 1,
+      "out": "provider 'langchain-fallback' has no credentials \u2014 run `autotester providers`\n"
+    },
+    {
+      "cmd": "providers",
+      "rc": 0,
+      "out": "available providers: mock\n"
+    }
+  ],
+  "posts": [
+    {
+      "q": "?priority=p0",
+      "status": 400,
+      "ctype": "application/json",
+      "body": "{\"detail\":\"no AI provider is configured (set an API key in .env) -- cannot grade a run\"}",
+      "location": null
+    },
+    {
+      "q": "?priority=p9",
+      "status": 422,
+      "ctype": "application/json",
+      "body": "{\"detail\":[{\"type\":\"literal_error\",\"loc\":[\"query\",\"priority\",0],\"msg\":\"Input should be 'p0', 'p1', 'p2' or 'p3'\",\"input\":\"p9\",\"ctx\":{\"expected\":\"'p0', 'p1', 'p2' or 'p3'\"}}]}",
+      "location": null
+    },
+    {
+      "q": "?priority=p0&priority=p1",
+      "status": 400,
+      "ctype": "application/json",
+      "body": "{\"detail\":\"no AI provider is configured (set an API key in .env) -- cannot grade a run\"}",
+      "location": null
+    },
+    {
+      "q": "",
+      "status": 400,
+      "ctype": "application/json",
+      "body": "{\"detail\":\"no AI provider is configured (set an API key in .env) -- cannot grade a run\"}",
+      "location": null
+    }
+  ],
+  "screenshots": [
+    "01-project-home.png",
+    "02-flowspec.png",
+    "03-refusal-1-after-generate-click.png",
+    "04-cases-list.png",
+    "05-flowspec-again.png",
+    "06-refusal-2-after-cli-approval.png",
+    "07-refusal2-onward-link.png",
+    "08-report.png"
+  ],
+  "failed_requests": [],
+  "generate_button_visible": true,
+  "cases_page_seed_titles": [],
+  "proposal_rows": [
+    [
+      "proposal_d10a7aa0c621",
+      "proposed",
+      "happy"
+    ],
+    [
+      "proposal_24ae0230a9b1",
+      "proposed",
+      "input_empty"
+    ],
+    [
+      "proposal_03e7bab52565",
+      "proposed",
+      "input_boundary"
+    ],
+    [
+      "proposal_9168686cbb91",
+      "proposed",
+      "input_unicode_oversize"
+    ],
+    [
+      "proposal_e28f77c0df53",
+      "proposed",
+      "double_submit"
+    ],
+    [
+      "proposal_c475f23bea76",
+      "proposed",
+      "back_refresh_midflow"
+    ],
+    [
+      "proposal_f1260121f08e",
+      "proposed",
+      "network_offline_slow"
+    ],
+    [
+      "proposal_0db56e51f859",
+      "proposed",
+      "server_error"
+    ],
+    [
+      "proposal_5ce015ae20f8",
+      "proposed",
+      "viewport_mobile"
+    ],
+    [
+      "proposal_da90373dc402",
+      "proposed",
+      "locale_i18n"
+    ],
+    [
+      "proposal_dab7e0d1128d",
+      "proposed",
+      "concurrent_tab"
+    ],
+    [
+      "proposal_71226b016521",
+      "proposed",
+      "deeplink_unauth"
+    ],
+    [
+      "proposal_f019dc2e2d9d",
+      "proposed",
+      "regression_anchor"
+    ]
+  ],
+  "report_text_excerpt": "AT\nAutoTester\nProjects\n+ New project\n\u25cf Live view\n\u2699 Settings\nPROJECTS\nDemo <b>App</b>\n+ New project\n\u2190 Back\nPROJECTS / DEMO / REPORT\nReport\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here.",
+  "report_mentions_queued": false,
+  "cases_page_note": "Cases page lists 5 rows (happy,input_empty,input_boundary,double_submit,concurrent_tab); titles are in input values so inner_text missed them (cases_page_seed_titles=[] is a probe artefact). Priority/pinned not displayed on the page. cases.jsonl stayed at 5 lines after all CLI/UI generate attempts.",
+  "extra_posts": {
+    "unknown_slug_generate": 404,
+    "unknown_slug_run_p0": 404
+  },
+  "server_stopped": true
+}

@@ -1,0 +1,384 @@
+{
+ "variants": {
+  "a_no_origin_no_referer": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "b_origin_evil": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "c_origin_null": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "d_origin_good": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "e_referer_only_evil": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "e2_referer_only_good": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "e3_referer_garbage": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "f1_textplain_origin_evil": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "f2_multipart_origin_evil": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "f3_textplain_no_origin": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "f4_multipart_no_origin": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "f5_textplain_referer_evil": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g1_dup_origin_good_evil": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g2_dup_origin_evil_good": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g3_origin_nonnumeric_port": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g4_origin_star": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g5_origin_empty": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g6_origin_localhost_at_evil": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g7_origin_evil_at_localhost": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g8_sfs_cross_site_no_origin": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g9_sfs_same_site_no_origin": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g10_origin_good_sfs_cross": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "g11_origin_upper": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "g12_origin_trailing_slash": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "g13_origin_with_path": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g14_origin_localhost_evil_com": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g15_origin_127_evil_io": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g16_origin_evil_referer_good": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g17_origin_good_referer_evil": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": false
+  },
+  "g18_origin_ftp": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g19_origin_0000": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g20_origin_127_1": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g21_origin_localhost_dot": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g22_origin_file": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g23_origin_evil_path_localhost": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g24_origin_evil_hash_localhost": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g25_origin_backslash": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g26_origin_tab": {
+   "guard_blocked": 31,
+   "passed_guard": 0,
+   "expected_block": true
+  },
+  "g27_origin_https_same_host": {
+   "guard_blocked": 0,
+   "passed_guard": 31,
+   "expected_block": null
+  }
+ },
+ "violations": [],
+ "extra_bad": [],
+ "get_diff": [
+  [
+   "added",
+   ".work/run_queue.json"
+  ]
+ ],
+ "host": [
+  [
+   "baseline-good-host",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "evil.example",
+   403,
+   []
+  ],
+  [
+   "localhost.evil.com",
+   403,
+   []
+  ],
+  [
+   "127.0.0.1.evil.io",
+   403,
+   []
+  ],
+  [
+   "localhost:8000.evil.com",
+   403,
+   []
+  ],
+  [
+   "testserver.evil.com",
+   403,
+   []
+  ],
+  [
+   "testserver:8000",
+   403,
+   []
+  ],
+  [
+   "TESTSERVER",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "evil.example:80",
+   403,
+   []
+  ],
+  [
+   "localhost@evil.example",
+   403,
+   []
+  ],
+  [
+   "evil.example#@localhost",
+   403,
+   []
+  ],
+  [
+   "evil.example/localhost",
+   403,
+   []
+  ],
+  [
+   "localhost/x",
+   403,
+   []
+  ],
+  [
+   " localhost ",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "[::1]",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "[::1]:8000",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "127.0.0.1",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "localhost.",
+   403,
+   []
+  ],
+  [
+   "0.0.0.0",
+   403,
+   []
+  ],
+  [
+   "evil.example\\localhost",
+   403,
+   []
+  ],
+  [
+   "",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "xn--evil",
+   403,
+   []
+  ],
+  [
+   "testserver\t",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "dup-host-good+evil",
+   403,
+   []
+  ],
+  [
+   "dup-host-evil+good",
+   403,
+   []
+  ],
+  [
+   "no-host",
+   403,
+   []
+  ],
+  [
+   "x-forwarded-host: evil.example (Host good)",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "forwarded: evil.example (Host good)",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "x-host: evil.example (Host good)",
+   200,
+   [
+    "alpha"
+   ]
+  ],
+  [
+   "x-original-host: evil.example (Host good)",
+   200,
+   [
+    "alpha"
+   ]
+  ]
+ ],
+ "unsafe_routes": 31
+}

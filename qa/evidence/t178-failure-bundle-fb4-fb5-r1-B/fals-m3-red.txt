@@ -1,0 +1,8 @@
+>       assert len(provider.prompts) == approved_count
+E       AssertionError: assert 5 == 2
+tests\test_expand.py:194: AssertionError
+>       assert len(provider.prompts) == approved_count
+E       AssertionError: assert 5 == 0
+tests\test_expand.py:194: AssertionError
+FAILED tests/test_expand.py::test_five_nonhappy_proposals_prune_before_spend[2]
+FAILED tests/test_expand.py::test_five_nonhappy_proposals_prune_before_spend[0]

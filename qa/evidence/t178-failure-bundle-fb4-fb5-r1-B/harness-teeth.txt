@@ -1,0 +1,11 @@
+DIFF approve_some_prune_rest
+DIFF approve_then_prune_one
+DIFF happy_pruned_only
+DIFF partial_prune
+DIFF prune_after_approve
+DIFF prune_all_nonhappy
+DIFF prune_only
+scenarios 22 diffs 7
+DIFF both
+DIFF inproc
+scenarios 22 diffs 2
