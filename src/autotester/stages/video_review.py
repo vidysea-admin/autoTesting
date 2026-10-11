@@ -12,6 +12,7 @@ raises `ReviewRefused`. It is a required argument on purpose: there is no permis
 from __future__ import annotations
 
 import logging
+import math
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
@@ -22,7 +23,12 @@ from autotester.core.paths import ProjectPaths
 from autotester.core.pricing import estimate_cost_conservative
 from autotester.core.redact import Redactor, assert_no_raw_secrets
 from autotester.media.probe import probe
-from autotester.media.redacted import FrameSource, RedactedFrames, RedactionError
+from autotester.media.redacted import (
+    FrameSource,
+    RedactedFrames,
+    RedactionError,
+    review_scratch,
+)
 from autotester.providers.base import Provider, ProviderError
 from autotester.schema.media import Transcript
 from autotester.schema.project import Source
@@ -81,9 +87,8 @@ def provider_cost(provider: Provider) -> float:
 
 
 def transcript_hash(t: Transcript | None) -> str:
-    if t is None:
-        return content_hash(None)
-    return content_hash({"engine": t.engine, "segments": [s.model_dump() for s in t.segments]})
+    return content_hash(None if t is None else {
+        "engine": t.engine, "segments": [s.model_dump() for s in t.segments]})
 
 
 def review_id(sha256: str, parse: PointerParse, tx_hash: str,
@@ -149,7 +154,7 @@ def _analyse(*, batches: list[list[float]], frames: FrameSource, provider: Provi
              cost_of: Callable[[Provider], float]) -> _Analysis:
     out = _Analysis()
     for times in batches:
-        if cost_of(provider) >= max_cost_usd:
+        if not cost_of(provider) < max_cost_usd:   # also stops on a NaN cap
             out.stopped = f"spend cap ${max_cost_usd:g} reached"
             break
         pairs = [(t, frames.frame(t)) for t in times]
@@ -218,6 +223,8 @@ def run_review(paths: ProjectPaths, source: Source, video: Path, provider: Provi
                cost_of: Callable[[Provider], float] = provider_cost) -> VideoReview:
     """Run (or return the stored) review. Raises `ReviewRefused` / `PointerErrors` BEFORE any
     provider call; a bad media file or a bad model reply comes back as a typed status."""
+    if not math.isfinite(max_cost_usd):
+        raise ReviewRefused("the spend cap must be a finite number of dollars")
     gate()
     wins = list(windows)
     duration, width, _ = probe_fn(video)
@@ -237,17 +244,18 @@ def run_review(paths: ProjectPaths, source: Source, video: Path, provider: Provi
     plan = plan_frames(duration, parse)
     hidden = [(w.start_s, w.end_s) for w in wins]
     sendable = [t for t in plan.times if not in_any(t, hidden)]
-    try:
-        frames = frames_fn(video, paths.review_work_dir(rid), wins)
-    except RedactionError as exc:
-        raise ReviewRefused(f"redaction check failed: {exc}") from exc
-    shown_tx = visible_transcript(transcript, wins)   # speech inside a window never leaves (TV7.3)
-    prompt_for = _prompter(source.id, duration, parse, shown_tx, redactor, secrets)
-    batches = order_batches(sendable, plan)
-    for times in batches:
-        prompt_for(times)  # secret gate for EVERY prompt before the first call (TV7, C5)
-    run = _analyse(batches=batches, frames=frames, provider=provider,
-                   prompt_for=prompt_for, rid=rid, max_cost_usd=max_cost_usd, cost_of=cost_of)
+    with review_scratch(paths.review_work_dir(rid)) as work:   # nothing outlives the calls (F1)
+        try:
+            frames = frames_fn(video, work, wins)
+        except RedactionError as exc:
+            raise ReviewRefused(f"redaction check failed: {exc}") from exc
+        shown_tx = visible_transcript(transcript, wins)   # speech inside a window never leaves
+        prompt_for = _prompter(source.id, duration, parse, shown_tx, redactor, secrets)
+        batches = order_batches(sendable, plan)
+        for times in batches:
+            prompt_for(times)  # secret gate for EVERY prompt before the first call (TV7, C5)
+        run = _analyse(batches=batches, frames=frames, provider=provider,
+                       prompt_for=prompt_for, rid=rid, max_cost_usd=max_cost_usd, cost_of=cost_of)
     review = _assemble(rid, source, duration, sha, tx, parse, wins, plan.times, run, transcript,
                        redactor, known_sources or {source.id}, cost_of(provider))
     review = _merge_human_status(review, stored)

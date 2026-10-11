@@ -9,7 +9,10 @@ is checked to really be black inside each window: a blackout that is a no-op is 
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Protocol
 
@@ -97,31 +100,53 @@ def verify_blackout(derivative: Path, windows: list[RedactionWindow], scratch: P
     for i, w in enumerate(windows):
         for j, t in enumerate(_samples(w, duration)):
             still = scratch / f"verify_{i}_{j}.png"
-            if not extract_frame(derivative, t, still):
-                raise RedactionError(
-                    f"could not read the copy at {t:g}s to check redaction window "
-                    f"{w.start_s:g}-{w.end_s:g}s")
-            luma = mean_luma(still)
-            still.unlink(missing_ok=True)
+            try:
+                if not extract_frame(derivative, t, still):
+                    raise RedactionError(
+                        f"could not read the copy at {t:g}s to check redaction window "
+                        f"{w.start_s:g}-{w.end_s:g}s")
+                luma = mean_luma(still)
+            finally:
+                still.unlink(missing_ok=True)      # a still of the copy never outlives its check
             if luma is None or luma > BLACK_LUMA:
                 raise RedactionError(
                     f"redaction window {w.start_s:g}-{w.end_s:g}s is not blacked out in the "
                     f"copy (at {t:g}s)")
 
 
+@contextmanager
+def review_scratch(work_dir: Path) -> Iterator[Path]:
+    """A review's work dir (derivative, frames, stills): emptied before use, because a killed or
+    refreshed run may have left files, and removed whole on the way out, whatever happened,
+    Ctrl-C included. Removal never raises, so it cannot mask the error that got us there (F1)."""
+    shutil.rmtree(work_dir, ignore_errors=True)
+    try:
+        yield work_dir
+    finally:
+        shutil.rmtree(work_dir, ignore_errors=True)
+
+
 class RedactedFrames:
     """Frames for one review, cut from the redacted copy (or the source when nothing is redacted).
 
     `windows` empty -> the source itself is the frame origin; the model still only ever sees
-    PNG files under `work_dir`, never a video path."""
+    PNG files under `work_dir`, never a video path. If building the copy or checking it fails
+    (for any reason, Ctrl-C included) the copy is deleted before the error leaves: a copy that
+    did not pass the blackout check must not stay on disk. The caller owns `work_dir` after
+    that and removes it when the review is done (`review_scratch`)."""
 
     def __init__(self, video: Path, work_dir: Path, windows: list[RedactionWindow]) -> None:
         self.work_dir = work_dir
         self.windows = windows
         self.origin = video
         if windows:
-            self.origin = redact_video(video, windows, work_dir / "redacted.mp4")
-            verify_blackout(self.origin, windows, work_dir)
+            derivative = work_dir / "redacted.mp4"
+            try:
+                self.origin = redact_video(video, windows, derivative)
+                verify_blackout(self.origin, windows, work_dir)
+            except BaseException:
+                derivative.unlink(missing_ok=True)
+                raise
 
     def frame(self, t_s: float) -> Path | None:
         out = self.work_dir / "frames" / frame_name(t_s)

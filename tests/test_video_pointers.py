@@ -172,3 +172,28 @@ def test_analysed_plus_not_reviewed_is_an_exact_partition():
         assert e1 == s2
     assert spans.not_reviewed, "dropped frames and redaction must be named"
     assert any(s <= 40.0 and e >= 70.0 for s, e in spans.not_reviewed)
+
+
+def test_pointer_size_limits_are_errors_never_truncation():
+    """P5: a note over the limit, a line past the line limit and an oversized file are refused
+    whole, and the count identity still holds."""
+    from autotester.stages.video_pointers import (
+        MAX_POINTER_FILE_BYTES,
+        MAX_POINTER_LINES,
+        MAX_POINTER_NOTE_CHARS,
+    )
+
+    long = "x" * (MAX_POINTER_NOTE_CHARS + 1)
+    ok = "x" * MAX_POINTER_NOTE_CHARS
+    parsed = _parse(f"1:00 | {long}\nfree {long}\n2:00 | {ok}\n{'y' * MAX_POINTER_NOTE_CHARS}")
+    assert [e.line_no for e in parsed.errors] == [1, 2]
+    assert [p.line_no for p in parsed.parsed] == [3, 4]
+    many = "\n".join(f"0:{n % 60:02d}" for n in range(MAX_POINTER_LINES + 2))
+    parsed = _parse(many)
+    assert [e.line_no for e in parsed.errors] == [MAX_POINTER_LINES + 1, MAX_POINTER_LINES + 2]
+    assert len(parsed.parsed) + len(parsed.errors) == parsed.non_blank_lines
+    huge = _parse("a" * (MAX_POINTER_FILE_BYTES + 1))
+    assert len(huge.errors) == 1 and not huge.parsed
+    assert len(huge.parsed) + len(huge.errors) == huge.non_blank_lines
+    assert not _parse("é" * (MAX_POINTER_FILE_BYTES // 2 + 1)).parsed     # bytes, not characters
+

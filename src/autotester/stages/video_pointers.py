@@ -13,6 +13,12 @@ from autotester.schema.video_pointer import PointerError, PointerLine, PointerPa
 
 MAX_FREE_POINTERS = 3
 """A reviewer may leave at most three free-text pointers per review (R32)."""
+MAX_POINTER_LINES = 100
+"""Most non-blank pointer lines per review (P5: a chosen limit; the contract names none)."""
+MAX_POINTER_NOTE_CHARS = 500
+"""Longest note (or free-text pointer) in characters. It is prompt text, so it is bounded (P5)."""
+MAX_POINTER_FILE_BYTES = 32768
+"""Largest pointer file in bytes (32 KiB); a bigger one is refused unread (P5)."""
 BASE_FRAMES_PER_MIN = 4
 """Base depth: frames per minute analysed outside any pointer window (TV2)."""
 POINTER_FRAMES_PER_MIN = 12
@@ -75,18 +81,35 @@ def _parse_line(raw: str, duration_s: float) -> tuple[PointerLine | None, str]:
     return PointerLine(line_no=1, kind="free", text=head), ""
 
 
+def oversize_parse(size: int) -> PointerParse:
+    """The one-error parse for a pointer file over `MAX_POINTER_FILE_BYTES` (counted as 1 line)."""
+    why = f"pointer file is {size} bytes, over the {MAX_POINTER_FILE_BYTES} byte limit"
+    return PointerParse(non_blank_lines=1, errors=[PointerError(line_no=1, reason=why)])
+
+
 def parse_pointers(text: str, duration_s: float) -> PointerParse:
     """Parse every non-blank line of `text` against a recording of `duration_s` seconds.
 
-    Accepts a BOM, `\\r\\n`/`\\r`/`\\n` endings and surrounding whitespace. Line numbers are
-    1-based physical lines (blank lines count). A fourth free pointer is an error."""
+    Accepts a BOM, `\r\n`/`\r`/`\n` endings and surrounding whitespace. Line numbers are
+    1-based physical lines (blank lines count). A fourth free pointer, a line past
+    `MAX_POINTER_LINES`, a note over `MAX_POINTER_NOTE_CHARS` and a file over
+    `MAX_POINTER_FILE_BYTES` are errors, never truncated."""
+    size = len(text) if len(text) > MAX_POINTER_FILE_BYTES else len(text.encode("utf-8"))
+    if size > MAX_POINTER_FILE_BYTES:
+        return oversize_parse(size)
     out = PointerParse()
     free_seen = 0
     for no, raw in enumerate(_LINE_SPLIT_RE.split(text.lstrip("﻿")), start=1):
         if not raw.strip():
             continue
         out.non_blank_lines += 1
+        if out.non_blank_lines > MAX_POINTER_LINES:
+            out.errors.append(PointerError(
+                line_no=no, reason=f"too many pointer lines (max {MAX_POINTER_LINES})"))
+            continue
         line, why = _parse_line(raw.strip(), duration_s)
+        if line is not None and line.text and len(line.text) > MAX_POINTER_NOTE_CHARS:
+            line, why = None, f"note is {len(line.text)} characters (max {MAX_POINTER_NOTE_CHARS})"
         if line is not None and line.kind == "free":
             free_seen += 1
             if free_seen > MAX_FREE_POINTERS:

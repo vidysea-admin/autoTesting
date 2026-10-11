@@ -12,6 +12,7 @@ guesses nothing. Registered on the `ingest` app in `cli_video.py`.
 from __future__ import annotations
 
 import json
+import math
 from collections.abc import Callable
 from functools import partial
 from pathlib import Path
@@ -28,7 +29,7 @@ from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Source
 from autotester.schema.video_review import RedactionWindow, ReviewPlan, VideoReview
 from autotester.stages.analyze_video import load_transcript
-from autotester.stages.video_pointers import parse_pointers
+from autotester.stages.video_pointers import MAX_POINTER_FILE_BYTES, oversize_parse, parse_pointers
 from autotester.stages.video_review import (
     DEFAULT_MAX_COST_USD,
     PointerErrors,
@@ -42,6 +43,16 @@ from autotester.stages.video_review_render import render_markdown
 from autotester.store.project_store import ProjectStore
 
 EXIT_USAGE, EXIT_POINTERS, EXIT_REFUSED, EXIT_UNREADABLE = 1, 2, 3, 4
+
+
+class CliFail(Exception):
+    """A usage error or a refusal with its exit code. `review_cmd` is the one place that turns it
+    into the note on stderr plus, in json mode, ONE document on stdout (status, reason, exit_code)
+    so no exit path can forget the contract's "valid document on stdout"."""
+
+    def __init__(self, reason: str, code: int = EXIT_USAGE) -> None:
+        super().__init__(reason)
+        self.reason, self.code = reason, code
 
 
 def local_operator_permission() -> None:
@@ -87,6 +98,14 @@ def _doc(payload: object) -> None:
     typer.echo(json.dumps(payload, indent=2, ensure_ascii=False))
 
 
+def _fail(exc: CliFail, as_json: bool) -> int:
+    _say(exc.reason, colour=typer.colors.RED)
+    if as_json:
+        _doc({"status": "refused" if exc.code == EXIT_REFUSED else "usage_error",
+              "reason": exc.reason, "exit_code": exc.code})
+    return exc.code
+
+
 def _pointer_errors(exc: PointerErrors, as_json: bool) -> int:
     errors = exc.parse.errors
     _say(f"pointer file refused: {len(errors)} line(s), nothing was sent to a model",
@@ -94,7 +113,8 @@ def _pointer_errors(exc: PointerErrors, as_json: bool) -> int:
     for e in errors:
         _say(f"  line {e.line_no}: {e.reason}", colour=typer.colors.RED)
     if as_json:
-        _doc({"status": "pointer_errors", "errors": [e.model_dump() for e in errors]})
+        _doc({"status": "pointer_errors", "exit_code": EXIT_POINTERS,
+              "errors": [e.model_dump() for e in errors]})
     return EXIT_POINTERS
 
 
@@ -108,36 +128,33 @@ def _finish(review: VideoReview, as_json: bool) -> int:
 
 def _find_source(store: ProjectStore, project: str, source_id: str) -> Source:
     if store.load_project() is None:
-        _say(f"no project '{project}' yet", colour=typer.colors.RED)
-        raise typer.Exit(EXIT_USAGE)
+        raise CliFail(f"no project '{project}' yet")
     source = next((s for s in store.list_sources() if s.id == source_id), None)
     if source is None or not source.path:
-        _say(f"{project} has no recording {source_id} — try `autotester ingest list`.",
-             colour=typer.colors.RED)
-        raise typer.Exit(EXIT_USAGE)
+        raise CliFail(f"{project} has no recording {source_id} — try `autotester ingest list`.")
     return source
 
 
-def _read_pointers(path: str | None) -> str:
+def _read_pointers(path: str | None, as_json: bool) -> str:
+    """The pointer file's text; a file over the size limit is refused unread (P5, exit 2)."""
     if not path:
         return ""
     try:
+        size = Path(path).stat().st_size
+        if size > MAX_POINTER_FILE_BYTES:
+            raise typer.Exit(_pointer_errors(PointerErrors(oversize_parse(size)), as_json))
         return Path(path).read_bytes().decode("utf-8")
     except (OSError, UnicodeDecodeError) as exc:
-        _say(f"cannot read the pointer file ({type(exc).__name__})", colour=typer.colors.RED)
-        raise typer.Exit(EXIT_USAGE) from None
+        raise CliFail(f"cannot read the pointer file ({type(exc).__name__})") from None
 
 
 def _provider(name: str, model: str | None) -> Provider:
     try:
         prov = providers.get(name, **({"model": model} if model else {}))
     except ProviderError as exc:
-        _say(str(exc), colour=typer.colors.RED)
-        raise typer.Exit(EXIT_USAGE) from None
+        raise CliFail(str(exc)) from None
     if not prov.available():
-        _say(f"provider '{name}' is not available here (no credentials or binary)",
-             colour=typer.colors.RED)
-        raise typer.Exit(EXIT_USAGE)
+        raise CliFail(f"provider '{name}' is not available here (no credentials or binary)")
     return prov
 
 
@@ -150,7 +167,7 @@ def review_cmd(
         "--redact", help="START-END window to black out and mute before a model sees it")] = None,
     provider: str = typer.Option("gemini", "--provider", help="the model frames go to"),
     model: str = typer.Option(None, "--model", help="override the provider's default model"),
-    max_cost: float = typer.Option(DEFAULT_MAX_COST_USD, "--max-cost", min=0.0,
+    max_cost: float = typer.Option(DEFAULT_MAX_COST_USD, "--max-cost",
                                    help="spend cap in USD; the review stops there, as partial"),
     dry_run: bool = typer.Option(False, "--dry-run", help="print the plan; zero model calls"),
     refresh: bool = typer.Option(False, "--refresh", help="re-run even if a review is stored"),
@@ -158,16 +175,30 @@ def review_cmd(
 ) -> None:
     """Review one recording: a flow summary and a short confirm-list citing exact seconds.
     Pointers raise attention; they never hide the rest. Exit 0 ok, 2 pointer errors,
-    3 approval missing, 4 source unreadable."""
+    3 approval missing, 4 source unreadable. With --output json every exit writes one JSON
+    document to stdout."""
     if output not in ("text", "json"):
         _say("--output must be text or json", colour=typer.colors.RED)
         raise typer.Exit(EXIT_USAGE)
-    as_json, store = output == "json", ProjectStore(project)
+    as_json = output == "json"
+    try:
+        _review(project, source_id, pointers, redact or [], provider, model, max_cost,
+                dry_run, refresh, as_json)
+    except CliFail as exc:
+        raise typer.Exit(_fail(exc, as_json)) from None
+
+
+def _review(project: str, source_id: str, pointers: str | None, redact: list[str],
+            provider: str, model: str | None, max_cost: float, dry_run: bool, refresh: bool,
+            as_json: bool) -> None:
+    if not math.isfinite(max_cost) or max_cost < 0:    # NaN or inf would silently remove the cap
+        raise CliFail("--max-cost must be a finite number of dollars, 0 or more")
+    store = ProjectStore(project)
     source = _find_source(store, project, source_id)
     video = Path(source.path or "")
     _require_readable(source, video, as_json)
-    prov, text = _provider(provider, model), _read_pointers(pointers)
-    windows = _windows(redact or [], video)
+    prov, text = _provider(provider, model), _read_pointers(pointers, as_json)
+    windows = _windows(redact, video)
     plan_fn = partial(preview_review, video, text, windows, provider_label=prov.label)
     try:
         if dry_run:
@@ -181,8 +212,7 @@ def review_cmd(
     except PointerErrors as exc:
         raise typer.Exit(_pointer_errors(exc, as_json)) from None
     except ReviewRefused as exc:
-        _say(str(exc), colour=typer.colors.RED)
-        raise typer.Exit(EXIT_REFUSED) from None
+        raise CliFail(str(exc), EXIT_REFUSED) from None
     if code := _finish(review, as_json):
         raise typer.Exit(code)
 
@@ -193,7 +223,8 @@ def _require_readable(source: Source, video: Path, as_json: bool) -> None:
     if why := unreadable_reason(video):
         _say(f"{source.id}: {why}", colour=typer.colors.RED)
         if as_json:
-            _doc({"status": "unreadable", "source_id": source.id, "reason": why})
+            _doc({"status": "unreadable", "source_id": source.id, "reason": why,
+                  "exit_code": EXIT_UNREADABLE})
         raise typer.Exit(EXIT_UNREADABLE)
 
 
@@ -201,8 +232,7 @@ def _windows(specs: list[str], video: Path) -> list[RedactionWindow]:
     try:
         return parse_windows(specs, probe(video)[0])
     except ValueError as exc:
-        _say(str(exc), colour=typer.colors.RED)
-        raise typer.Exit(EXIT_USAGE) from None
+        raise CliFail(str(exc)) from None
 
 
 def _secret_values(store: ProjectStore) -> dict[str, str]:

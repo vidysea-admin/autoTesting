@@ -122,7 +122,7 @@ def test_run_review_end_to_end_hands_the_provider_only_redacted_frames(bright_vi
     assert p.frame_times and not any(1.0 <= t <= 2.0 for t in p.frame_times)
     work = paths.review_work_dir(r.id)
     assert all(work in x.parents for x in p.paths)
-    assert (work / "redacted.mp4").is_file()
+    assert not work.exists()       # the copy and the frames are gone once the calls are done (F1)
     assert any(s <= 1.0 and e >= 2.0 for s, e in r.not_reviewed)
 
 

@@ -240,3 +240,39 @@ def test_secrets_is_a_required_argument_like_the_gate(tmp_path):
     with pytest.raises(TypeError):
         run_review(paths, source, video, RecordingProvider(), None,  # type: ignore[call-arg]
                    gate=lambda: None, probe_fn=lambda _x: (DURATION, 640, 360))
+
+
+def test_a_plain_rerun_keeps_what_a_human_decided_and_makes_no_call(tmp_path):
+    """TV10: the stored review comes back as stored, human-set status included (no --refresh)."""
+    from autotester.store.filestore import write_json
+
+    first = run(tmp_path, RecordingProvider([reply_of([item(), item(time_s=50, seen="gone")])]))
+    paths = make_run(tmp_path)[2]
+    marked = first.model_copy(update={"items": [
+        first.items[0].model_copy(update={"status": "confirmed"}),
+        first.items[1].model_copy(update={"status": "dismissed"})]})
+    write_json(paths.review_path(first.id), marked)
+    p2 = RecordingProvider([reply_of([item()])] * 5)
+    again = run(tmp_path, p2)
+    assert p2.calls == 0 and again.id == first.id
+    assert [i.status for i in again.items] == ["confirmed", "dismissed"]
+
+
+@pytest.mark.parametrize("cap", [float("nan"), float("inf"), float("-inf")])
+def test_a_non_finite_spend_cap_is_refused_before_any_call(tmp_path, cap):
+    p = RecordingProvider([reply_of([item()])] * 5)
+    with pytest.raises(ReviewRefused, match="finite"):
+        run(tmp_path, p, max_cost_usd=cap)
+    assert p.calls == 0
+
+
+def test_the_batch_loop_itself_stops_on_a_nan_cap(tmp_path):
+    """Defence in depth: `cost >= nan` is always False, so the comparison must not be that."""
+    from autotester.stages.video_review import _analyse
+
+    p = RecordingProvider([reply_of([item()])] * 5)
+    out = _analyse(batches=[[1.0], [2.0]], frames=FakeFrames(tmp_path / "v", tmp_path / "w", []),
+                   provider=p, prompt_for=lambda _t: "prompt", rid="rv_x",
+                   max_cost_usd=float("nan"), cost_of=lambda _p: 0.0)
+    assert p.calls == 0 and out.stopped
+

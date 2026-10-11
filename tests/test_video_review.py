@@ -221,3 +221,21 @@ def test_markdown_and_html_exports_carry_the_same_item_ids(tmp_path):
     md_ids = set(re.findall(r"\bit_[0-9a-f]+\b", render_markdown(r)))
     html_ids = set(re.findall(r'data-item-id="(it_[0-9a-f]+)"', render_html(r)))
     assert md_ids == html_ids == {i.id for i in r.items} and len(md_ids) == 4
+
+
+def test_a_model_that_quotes_the_scrubbed_narration_keeps_a_scrubbed_quote(tmp_path):
+    """TV8 mutation "skip the scrub on quotes": the model only ever saw scrubbed narration, so
+    it quotes the scrubbed words. That must still count as a verbatim quote (the narration
+    claim stays) and what is stored is scrubbed, with the raw secret nowhere."""
+    from autotester.core.redact import Redactor
+
+    spoken = f"my password is {CANARY} ok"
+    scrubbed = Redactor({"K": CANARY}).scrub(spoken)
+    assert CANARY not in scrubbed and scrubbed != spoken
+    echo = item(time_s=10, origin="narration", quote=scrubbed, seen="typed it aloud")
+    r = run(tmp_path, RecordingProvider([reply_of([echo])]), transcript((8.0, 14.0, spoken)),
+            secrets={"K": CANARY})
+    (kept,) = r.items
+    assert kept.origin == "narration" and kept.downgrade is None
+    assert kept.quote == scrubbed and CANARY not in r.model_dump_json()
+
