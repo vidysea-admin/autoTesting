@@ -1,0 +1,9 @@
+C1a [helpers] green-before: rc=0 '1 passed, 1 warning in 3.19s' | after: rc=1 '1 failed, 1 warning in 1.64s' importerr=False failed=1
+C1b [helpers] green-before: rc=0 '1 passed, 1 warning in 3.09s' | after: rc=1 '1 failed, 1 warning in 2.25s' importerr=False failed=1
+C1c [helpers (GET exempt from Host check)] green-before: rc=0 '33 passed, 1 warning in 4.24s' | after: rc=1 '22 failed, 11 passed, 1 warning in 5.89s' importerr=False failed=22
+C2a [origin port] green-before: rc=0 '4 passed, 1 warning in 3.82s' | after: rc=1 '4 failed, 1 warning in 2.09s' importerr=False failed=4
+C2b [host port] green-before: rc=0 '33 passed, 1 warning in 4.35s' | after: rc=1 '3 failed, 30 passed, 1 warning in 4.30s' importerr=False failed=3
+C3a [dup origin] green-before: rc=0 '4 passed, 1 warning in 4.19s' | after: rc=1 '1 failed, 3 passed, 1 warning in 1.79s' importerr=False failed=1
+C3b [dup host] green-before: rc=0 '4 passed, 1 warning in 2.96s' | after: rc=1 '1 failed, 3 passed, 1 warning in 3.25s' importerr=False failed=1
+C4a [fallback sees derived rows] green-before: rc=0 '3 passed in 1.00s' | after: rc=1 '2 failed, 1 passed in 1.08s' importerr=False failed=2
+C4b [no-secrets path sees derived rows] green-before: rc=0 '3 passed in 0.64s' | after: rc=1 '1 failed, 2 passed in 1.03s' importerr=False failed=1

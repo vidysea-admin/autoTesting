@@ -1,0 +1,115 @@
+"""Coordinator-B throwaway attacks (never committed)."""
+from __future__ import annotations
+import html as H
+from pathlib import Path
+import pytest
+from fastapi.testclient import TestClient
+from typer.testing import CliRunner
+from test_unified_report_secrets import S, _forms, _seed_everywhere
+from autotester.cli import app as cli_app
+from autotester.schema.enums import EvidenceKind, Outcome
+from autotester.schema.run import Evidence, RawResult
+from autotester.schema.portal_persona import PersonaRevision, PortalPersona
+from autotester.stages import unified_report as ur
+from autotester.stages.unified_report import build_report, unified_html
+from autotester.ui.app import app as ui_app
+
+runner = CliRunner()
+
+@pytest.fixture
+def root(tmp_path, monkeypatch):
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    (tmp_path / ".env").write_text(f'DEMO_PASSWORD="{S}"\n', encoding="utf-8")
+    return tmp_path
+
+def test_a1_route_clean(root):
+    _seed_everywhere(root)
+    body = TestClient(ui_app).get("/projects/demo/damage-report").text
+    assert "fix " in body
+    for f in _forms():
+        assert f not in body, f
+
+def test_a1b_route_run_param(root):
+    _seed_everywhere(root)
+    c = TestClient(ui_app)
+    r = c.get("/projects/demo/damage-report?run=rel1")
+    assert r.status_code == 200
+    for f in _forms():
+        assert f not in r.text
+    r = c.get("/projects/demo/damage-report?run=" + "x"*5)
+    for f in _forms():
+        assert f not in r.text
+    assert S not in c.get("/projects/demo/damage-report?run=../" + S).text
+
+def test_a2_percent_encoded_url(root):
+    import urllib.parse as u
+    store = _seed_everywhere(root)
+    store.save_result("rel1", RawResult(case_id="c1", outcome=Outcome.COMPLETED, evidence=[
+        Evidence(kind=EvidenceKind.NETWORK, path="POST https://demo.test/login?pw=" + u.quote(S, safe="") + " -> 401")]))
+    page = unified_html(store, None)
+    enc = u.quote(S, safe="")
+    print("PERCENT-ENCODED PRESENT:", enc in page)
+    assert enc not in page
+
+def test_a3_loader_exception_message(root):
+    store = _seed_everywhere(root)
+    rec = store.paths.run_release_record("rel1")
+    txt = rec.read_text(encoding="utf-8")
+    rec.write_text(txt.replace('"finished":true', '"finished":"' + S.replace("'", "\u0027") + '"').replace('"finished": true', '"finished": "' + S.replace("'", "\u0027") + '"'), encoding="utf-8")
+    assert S.replace("'", "\u0027") in rec.read_text(encoding="utf-8")
+    r = TestClient(ui_app).get("/projects/demo/damage-report")
+    print("ROUTE", r.status_code, r.text[-400:])
+    out = root / "o.html"
+    res = runner.invoke(cli_app, ["release-report", "demo", "--out", str(out)])
+    print("CLI", res.exit_code, res.output[-400:], repr(res.exception))
+    for f in _forms():
+        assert f not in r.text
+        assert f not in res.output
+        assert not out.exists() or f not in out.read_text(encoding="utf-8")
+
+def test_a4_redactor_fails(root, monkeypatch):
+    _seed_everywhere(root)
+    def boom(store):
+        raise RuntimeError("redactor load failed")
+    monkeypatch.setattr(ur, "_load_redactor", boom)
+    out = root / "x.html"
+    res = runner.invoke(cli_app, ["release-report", "demo", "--out", str(out)])
+    print("REDACTOR-FAIL exit", res.exit_code, "file exists:", out.exists())
+    assert not out.exists()
+
+def test_a4b_empty_redactor_when_env_missing(root):
+    store = _seed_everywhere(root)
+    (root / ".env").unlink()
+    page = unified_html(store, None)
+    print("ENV MISSING -> secret literal present in page (no secret known):", S in page or H.escape(S) in page)
+
+def test_a6_adjacent_join(root):
+    store = _seed_everywhere(root)
+    (root / ".env").write_text('DEMO_PASSWORD="alpha, beta"\n', encoding="utf-8")
+    store.save_portal_persona(PortalPersona(project="demo", history=[PersonaRevision(
+        at="2026-10-03T00:00:00Z", summary="s", new_screens=["alpha", "beta"])]))
+    page = unified_html(store, None)
+    print("ADJACENT JOIN LEAK:", "alpha, beta" in page)
+    assert "alpha, beta" not in page
+
+@pytest.mark.parametrize("sec", ["pass", "fail", "FAIL", "ed"])
+def test_a7_short_secret_breaks_build(root, sec):
+    store = _seed_everywhere(root)
+    (root / ".env").write_text(f'DEMO_PASSWORD="{sec}"\n', encoding="utf-8")
+    try:
+        page = unified_html(store, None)
+        print(sec, "built; leak:", sec in page.replace("pass","").replace("fail",""))
+    except Exception as e:
+        print(sec, "BUILD FAILED:", type(e).__name__, str(e)[:200])
+
+def test_a8_schema_drift_missing_field(root):
+    import json
+    store = _seed_everywhere(root)
+    rec = store.paths.run_release_record("rel1")
+    d = json.loads(rec.read_text(encoding="utf-8"))
+    d.pop("finished")
+    d = {"flagged_reason": S, **d}
+    rec.write_text(json.dumps(d), encoding="utf-8")
+    out = root / "o.html"
+    res = runner.invoke(cli_app, ["release-report", "demo", "--out", str(out)])
+    print("DRIFT-CLI", res.exit_code, S in res.output, res.output[-600:].replace("\n", " | "))

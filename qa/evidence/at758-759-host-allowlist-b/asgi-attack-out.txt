@@ -1,0 +1,76 @@
+autotester from C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\base\src\autotester\ui\helpers.py
+control loopback GET env -> 200 True
+OK  GET env Host=b'evil.example'                               status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'evil.example:8000'                          status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'localhost:8000.evil.com'                    status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'localhost@evil.com'                         status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'evil.com#@localhost'                        status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'evil.com?@localhost'                        status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'evil.com\\@localhost'                       status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'localhost\x00.evil.com'                     status=403 len=0 leak=False loc=[] exc=None
+NOTE tab-in-host (known builder gap): 200
+OK  GET env Host=b'\xff\xfe'                                   status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'loc\xe0lhost'                               status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'127.1'                                      status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'[::1'                                       status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'::1'                                        status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'0.0.0.0'                                    status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'LOCALHOST.evil.com'                         status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'localhost, evil.com'                        status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'localhost evil.com'                         status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'http://localhost'                           status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'//evil.com'                                 status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'localhost:99999999'                         status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'localhost:-1'                               status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'[::ffff:127.0.0.1]'                         status=403 len=0 leak=False loc=[] exc=None
+BAD GET env Host=b'127.0.0.1\r'                                status=200 len=20451 leak=True loc=[] exc=None
+OK  GET env Host=b''                                           status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b' '                                          status=403 len=0 leak=False loc=[] exc=None
+OK  GET env Host=b'testserver'                                 status=403 len=0 leak=False loc=[] exc=None
+OK  no Host header                                             status=403 len=0 leak=False loc=[] exc=None
+OK  dup Host (good,evil)                                       status=403 len=0 leak=False loc=[] exc=None
+OK  dup Host (evil,good)                                       status=403 len=0 leak=False loc=[] exc=None
+OK  dup Host same value                                        status=403 len=0 leak=False loc=[] exc=None
+OK  Host UPPER-name header (raw bytes b'Host')                 status=403 len=0 leak=False loc=[] exc=None
+OK  X-Forwarded-Host good + Host evil                          status=403 len=0 leak=False loc=[] exc=None
+OK  Forwarded host=localhost + Host evil                       status=403 len=0 leak=False loc=[] exc=None
+OK  absolute-form path http://localhost/ + Host evil           status=403 len=0 leak=False loc=[] exc=None
+OK  :authority pseudo header + Host evil                       status=403 len=0 leak=False loc=[] exc=None
+OK  HEAD Host evil                                             status=403 len=0 leak=False loc=[] exc=None
+OK  OPTIONS Host evil                                          status=403 len=0 leak=False loc=[] exc=None
+OK  TRACE Host evil                                            status=403 len=0 leak=False loc=[] exc=None
+OK  PUT Host evil                                              status=403 len=0 leak=False loc=[] exc=None
+OK  DELETE Host evil                                           status=403 len=0 leak=False loc=[] exc=None
+OK  PATCH Host evil                                            status=403 len=0 leak=False loc=[] exc=None
+OK  POST Host evil                                             status=403 len=0 leak=False loc=[] exc=None
+OK  GET Host evil                                              status=403 len=0 leak=False loc=[] exc=None
+OK  CONNECT Host evil                                          status=403 len=0 leak=False loc=[] exc=None
+OK  PROPFIND Host evil                                         status=403 len=0 leak=False loc=[] exc=None
+run/queue-ish routes: ['/projects/{slug}/run', '/projects/{slug}/runs/{run_id}', '/projects/{slug}/runs/{run_id}/videos/{video_path}']
+OK  GET /healthz Host evil                                     status=403 len=0 leak=False loc=[] exc=None
+OK  GET /docs Host evil                                        status=403 len=0 leak=False loc=[] exc=None
+OK  GET /openapi.json Host evil                                status=403 len=0 leak=False loc=[] exc=None
+OK  GET /redoc Host evil                                       status=403 len=0 leak=False loc=[] exc=None
+OK  GET / Host evil                                            status=403 len=0 leak=False loc=[] exc=None
+OK  GET /nonexistent Host evil                                 status=403 len=0 leak=False loc=[] exc=None
+OK  GET /projects/demo/env Host evil                           status=403 len=0 leak=False loc=[] exc=None
+OK  GET /static/x Host evil                                    status=403 len=0 leak=False loc=[] exc=None
+OK  GET // Host evil                                           status=403 len=0 leak=False loc=[] exc=None
+OK  GET /projects/../.env Host evil                            status=403 len=0 leak=False loc=[] exc=None
+OK  GET /projects/{slug}/run Host evil                         status=403 len=0 leak=False loc=[] exc=None
+OK  GET /projects/{slug}/runs/{run_id} Host evil               status=403 len=0 leak=False loc=[] exc=None
+OK  GET /projects/{slug}/runs/{run_id}/videos/{video_path} Host evil status=403 len=0 leak=False loc=[] exc=None
+allowed-host 404 body: 404 b'{"detail":"no project \'nope\'"}'
+OK  POST run Origin=b'http://localhost:8000.evil.com' 403 b'{"detail":"cross-site request refused: origin \'http://localhost:8000.evil.com\' is not allowed (D-066'
+OK  POST run Origin=b'null' 403 b'{"detail":"cross-site request refused: origin \'null\' is not allowed (D-066)"}'
+OK  POST run Origin=b'http://evil.example' 403 b'{"detail":"cross-site request refused: origin \'http://evil.example\' is not allowed (D-066)"}'
+OK  POST run Origin=b'http://localhost@evil.com' 403 b'{"detail":"cross-site request refused: origin \'http://localhost@evil.com\' is not allowed (D-066)"}'
+OK  POST run Origin=b'http://localhost\\@evil.com' 403 b'{"detail":"cross-site request refused: origin \'http://localhost\\\\\\\\@evil.com\' is not allowed (D-066)'
+OK  POST run Origin=b'http://[::1]:8000.evil' 403 b'{"detail":"cross-site request refused: origin \'http://[::1]:8000.evil\' is not allowed (D-066)"}'
+OK  POST run Origin=b'http://localhost:8000\xff' 403 b'{"detail":"cross-site request refused: origin \'http://localhost:8000\xc3\xbf\' is not allowed (D-066)"}'
+OK  POST run Origin=b'' 403 b'{"detail":"cross-site request refused: origin \'\' is not allowed (D-066)"}'
+dup origin 403
+sec-fetch cross-site 403
+websocket scope evil host -> None None
+websocket scope to env route -> None None
+SOME BAD
