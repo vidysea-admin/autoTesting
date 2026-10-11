@@ -1,0 +1,8 @@
+autotester at C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r1-A-copy\src\autotester\__init__.py
+close-during-send (after send call begins): w1.sent=1 w2.sent=0 total_sends=1 records=1 w1_returned_status=failed err=True later_same=True
+close-before-send (after claim, before send): w1.sent=1 w2.sent=0 total_sends=1 records=1 w1_returned_status=failed err=True later_same=True
+close-during-send then w1 send raises: w1.sent=1 w2.sent=0 total_sends=1 records=1 w1_returned_status=failed err=True later_same=True
+close-before-send then w1 send raises: w1.sent=1 w2.sent=0 total_sends=1 records=1 w1_returned_status=failed err=True later_same=True
+ESCAPES ValueError delivery key too long 64 64
+ok 30 64 182
+ok 30 30 99
