@@ -1,0 +1,114 @@
+canaries (prefix only): Zq7-canary- ...
+== B1 storage
+signup admin: 303
+signup u1@team.test (same password): 303
+signup u2@team.test (same password): 303
+   admin@team.test prefix ok: True v/m/t/p: ('19', '65536', '3', '4') salt b64 len: 22 hash len: 43
+   u1@team.test prefix ok: True v/m/t/p: ('19', '65536', '3', '4') salt b64 len: 22 hash len: 43
+   u2@team.test prefix ok: True v/m/t/p: ('19', '65536', '3', '4') salt b64 len: 22 hash len: 43
+distinct salts / distinct full hashes among 3 users with the SAME password: 3 3
+== B2 flows
+admin reset u1 password to PW2: 303
+admin reset with weak: 400 body echoes the weak password: False
+disabled account login: 401
+short password signup: 400 echo: False
+129+ password signup: 400 echo canary: False
+   ('json body', 401, False, 16783)
+   ('json content-type, form body', 401, False, 16783)
+   ('multipart no boundary', 400, False, 43)
+   ('multipart bad boundary', 400, False, 48)
+   ('urlencoded bad percent', 401, False, 16783)
+   ('lone surrogate pct-encoded', 401, False, 16783)
+   ('invalid utf8 byte', 401, False, 16783)
+   ('NUL in password', 401, False, 16783)
+   ('no content-type with body', 401, False, 16783)
+   ('dup password fields', 303, False, 0)
+   ('next=password', 401, True, 16802)
+admin /users/abc/password: 422 echo canary: False {"detail":[{"type":"int_parsing","loc":["path","user_id"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"abc"}]}
+admin reset with lone surrogate: 303
+signup w/ lone-surrogate password: 303 
+== B3 canary scans
+captured log bytes: 2928  canary in logging capture: False
+   file .auth\auth.sqlite3 65536 bytes
+   file .work\audit.jsonl 3127 bytes
+canary in any file under data root: []
+canary in any response body/header/url ( 27 responses ): [('O', 401)]
+audit lines: 26  canary in audit: False
+   audit {'actor': 'admin@team.test', 'target': 'admin@team.test', 'action': 'signup'}
+   audit {'actor': 'u1@team.test', 'target': 'u1@team.test', 'action': 'signup'}
+   audit {'actor': 'u2@team.test', 'target': 'u2@team.test', 'action': 'signup'}
+   audit {'actor': 'admin@team.test', 'target': 'admin@team.test', 'action': 'login'}
+   audit {'actor': 'admin@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'actor': 'nobody@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'actor': 'admin@team.test', 'target': 'admin@team.test', 'action': 'login'}
+   audit {'actor': 'admin@team.test', 'target': 'u1@team.test', 'action': 'user.password'}
+   audit {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}
+   audit {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 400}
+   audit {'actor': 'admin@team.test', 'target': 'u1@team.test', 'action': 'user.disable'}
+   audit {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}
+   audit {'actor': 'u1@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'actor': '', 'target': '', 'action': 'login-failed'}
+   audit {'actor': '', 'target': '', 'action': 'login-failed'}
+   audit {'actor': 'admin@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'actor': 'admin@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'actor': 'admin@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'actor': 'admin@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'actor': '', 'target': '', 'action': 'login-failed'}
+   audit {'actor': 'admin@team.test', 'target': 'admin@team.test', 'action': 'login'}
+   audit {'actor': 'admin@team.test', 'target': '', 'action': 'login-failed'}
+   audit {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 422}
+   audit {'actor': 'admin@team.test', 'target': 'u1@team.test', 'action': 'user.password'}
+   audit {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}
+   audit {'actor': 'sur@team.test', 'target': 'sur@team.test', 'action': 'signup'}
+'argon2' in audit / any response: False False
+== B4 AU2 equality and timing
+  unknown                      status=[401] distinct bodies=1 median=  730.9ms min=  392.3 max= 1252.3 n=25
+  wrong pw                     status=[401] distinct bodies=1 median=  754.8ms min=  395.0 max= 1216.8 n=25
+  disabled (right pw)          status=[401] distinct bodies=1 median=  704.4ms min=  403.5 max= 1209.7 n=25
+  disabled (wrong pw)          status=[401] distinct bodies=1 median=  753.7ms min=  430.5 max= 1464.9 n=25
+  cheap-hash user, wrong pw    status=[401] distinct bodies=1 median=   85.5ms min=   44.7 max=  134.5 n=25
+  right pw                     status=[303] distinct bodies=1 median=  778.5ms min=  380.3 max= 1151.3 n=25
+  failure cases share one body hash: True
+  ratio wrong/unknown=1.03  disabled/unknown=0.96  cheap/unknown=0.12
+  invalid-format email median=767.2ms
+  empty email+password median=804.4ms
+== B5 normalisation
+  signup 'Admin@Team.test'                                  -> 400 an account with this email already exists
+  signup ' a@b.test '                                       -> 303 
+  signup 'a@b.test'                                         -> 400 an account with this email already exists
+  signup 'a@b.test\n'                                       -> 400 an account with this email already exists
+  signup 'A@B.TEST'                                         -> 400 an account with this email already exists
+  signup 'a@b.test%00'                                      -> 303 
+  signup 'a@b.test\x00'                                     -> 400 enter a valid email address
+  signup 'a+tag@b.test'                                     -> 303 
+  signup 'ａ@b.test'                                         -> 303 
+  signup 'İ@b.test'                                         -> 303 
+  signup 'ı@b.test'                                         -> 303 
+  signup 'K@b.test'                                         -> 303 
+  signup 'k@b.test'                                         -> 400 an account with this email already exists
+  signup 'café@b.test'                                      -> 303 
+  signup 'café@b.test'                                     -> 303 
+  signup 'a b@b.test'                                       -> 400 enter a valid email address
+  signup 'a@b@b.test'                                       -> 400 enter a valid email address
+  signup '@b.test'                                          -> 400 enter a valid email address
+  signup 'a@b'                                              -> 400 enter a valid email address
+  signup 'a@.test.'                                         -> 400 enter a valid email address
+  signup '"x"@b.test'                                       -> 303 
+  signup '<i/src=x/onerror=alert(1)>@b.test'                -> 303 
+stored email forms (repr): ['a@b.test', 'a@b.test%00', 'a+tag@b.test', 'ａ@b.test', 'i̇@b.test', 'ı@b.test', 'k@b.test', 'café@b.test', 'café@b.test', '"x"@b.test', '<i/src=x/onerror=alert(1)>@b.test']
+  login UPPER 303
+  login padded 303
+  login trailing newline 303
+  password same NFC 303
+  password NFD of same 401
+  password NFKC fullwidth 401
+  signup pw whitespace-only 12   -> 303   re-login same exact pw -> 303
+  signup pw lead/trail spaces    -> 303   re-login same exact pw -> 303
+  signup pw NUL inside           -> 303   re-login same exact pw -> 303
+  signup pw emoji 10             -> 303   re-login same exact pw -> 303
+  signup pw 9 chars              -> 400   re-login same exact pw -> -
+  signup pw 10 chars             -> 303   re-login same exact pw -> 303
+  signup pw 128                  -> 303   re-login same exact pw -> 303
+  signup pw 129                  -> 400   re-login same exact pw -> -
+fresh signup: 303 location /auth/waiting | duplicate: 400 nt with this email already exists Email Password (10 to 128 characters) Create account Already have an account? Sign in 
+   existing account untouched by dup signup (login with dup-signup pw): 401 (401 expected)

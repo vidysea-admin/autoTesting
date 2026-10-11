@@ -1,0 +1,4 @@
+keys: 50000
+keys after 20 more: 50000 avg ms per record_failure at full table: 30.3
+blocked() ms: 0.023
+fresh victim key tracked: False | blocked after 10 failures: False

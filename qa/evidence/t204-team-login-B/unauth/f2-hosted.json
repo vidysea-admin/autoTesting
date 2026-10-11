@@ -1,0 +1,105 @@
+{
+ "requests": 1986,
+ "status_counts": {
+  "403": 520,
+  "405": 1424,
+  "200": 24,
+  "400": 8,
+  "401": 8
+ },
+ "odd_with_handler": [],
+ "odd_no_handler_sample": [
+  {
+   "m": "POST",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": true,
+   "loc": null
+  },
+  {
+   "m": "POST",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": false,
+   "loc": null
+  },
+  {
+   "m": "PUT",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": true,
+   "loc": null
+  },
+  {
+   "m": "PUT",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": false,
+   "loc": null
+  },
+  {
+   "m": "PATCH",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": true,
+   "loc": null
+  },
+  {
+   "m": "PATCH",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": false,
+   "loc": null
+  },
+  {
+   "m": "DELETE",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": true,
+   "loc": null
+  },
+  {
+   "m": "DELETE",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": false,
+   "loc": null
+  },
+  {
+   "m": "OPTIONS",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": true,
+   "loc": null
+  },
+  {
+   "m": "OPTIONS",
+   "path": "/projects/alpha",
+   "status": 405,
+   "has_handler_for_method": false,
+   "html": false,
+   "loc": null
+  }
+ ],
+ "leaks": [],
+ "diff_excl_audit": [
+  [
+   "changed",
+   ".auth/auth.sqlite3"
+  ]
+ ],
+ "logout": [
+  303,
+  "/auth/login",
+  302
+ ]
+}

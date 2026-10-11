@@ -1,0 +1,82 @@
+{
+ "signup": {
+  "e1": [
+   303,
+   "/auth/waiting"
+  ],
+  "e2": [
+   303,
+   "/auth/waiting"
+  ],
+  "e3": [
+   303,
+   "/auth/waiting"
+  ],
+  "e4": [
+   303,
+   "/auth/waiting"
+  ],
+  "e5": [
+   303,
+   "/auth/waiting"
+  ],
+  "e6": [
+   303,
+   "/auth/waiting"
+  ]
+ },
+ "hits": [],
+ "errs": [
+  [
+   "/auth/signup",
+   400,
+   false
+  ],
+  [
+   "/auth/signup",
+   303,
+   false
+  ],
+  [
+   "/auth/login",
+   401,
+   false
+  ],
+  [
+   "/admin/groups",
+   400,
+   false
+  ],
+  [
+   "/admin/groups",
+   400,
+   false
+  ],
+  [
+   "/admin/users/2/password",
+   303,
+   false
+  ],
+  [
+   "/projects/alpha/access",
+   400,
+   false
+  ],
+  [
+   "/projects/alpha/access",
+   400,
+   false
+  ]
+ ],
+ "views": 240,
+ "headers": {
+  "content-security-policy": [],
+  "x-frame-options": [],
+  "x-content-type-options": [],
+  "referrer-policy": [],
+  "cache-control": [],
+  "content-type": [
+   "text/html; charset=utf-8"
+  ]
+ }
+}
