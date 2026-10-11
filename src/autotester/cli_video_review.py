@@ -2,11 +2,11 @@
 
 One job: turn the command line into a `stages.video_review.run_review` call and its typed outcome
 into an exit code plus text or ONE JSON document on stdout; notes and errors go to stderr.
-Exit codes (contract "CLI contract"): 0 ok or partial, 1 usage error or a failed review,
-2 pointer errors (the whole list, Provider never called), 3 approval or permission missing
-(zero Provider calls), 4 source unreadable. The stage owns every safety property; this module
-composes the gate (permission seam + a recorded per-use approval for project and provider) and
-guesses nothing. Registered on the `ingest` app in `cli_video.py`.
+Exit codes (contract "CLI contract"): 0 ok or partial, 1 usage error, unexpected error or a
+failed review, 2 pointer errors (the whole list, Provider never called), 3 approval or permission
+missing (zero Provider calls), 4 source unreadable, 130 interrupted. In json mode every exit,
+click usage errors included, writes one document with `exit_code`. The stage owns every safety
+property; this module composes the gate. Registered on the `ingest` app in `cli_video.py`.
 """
 
 from __future__ import annotations
@@ -15,14 +15,18 @@ import json
 import math
 from collections.abc import Callable
 from functools import partial
+from itertools import pairwise
 from pathlib import Path
 from typing import Annotated
 
 import typer
+from typer.core import TyperCommand
+from typer.exceptions import TyperException
 
 from autotester import providers
 from autotester.browser.secrets import SecretStore
 from autotester.core.consent import ApprovalRequired, require_approval
+from autotester.core.redact import Redactor
 from autotester.media.probe import probe
 from autotester.providers.base import Provider, ProviderError
 from autotester.schema.enums import ApprovalKind
@@ -42,23 +46,22 @@ from autotester.stages.video_review import (
 from autotester.stages.video_review_render import render_markdown
 from autotester.store.project_store import ProjectStore
 
-EXIT_USAGE, EXIT_POINTERS, EXIT_REFUSED, EXIT_UNREADABLE = 1, 2, 3, 4
+EXIT_USAGE, EXIT_POINTERS, EXIT_REFUSED, EXIT_UNREADABLE, EXIT_INTERRUPTED = 1, 2, 3, 4, 130
 
 
 class CliFail(Exception):
-    """A usage error or a refusal with its exit code. `review_cmd` is the one place that turns it
-    into the note on stderr plus, in json mode, ONE document on stdout (status, reason, exit_code)
-    so no exit path can forget the contract's "valid document on stdout"."""
+    """A usage error, refusal or failure with its exit code; `_fail` turns it into the stderr
+    note plus, in json mode, ONE document (status, reason, exit_code) on stdout."""
 
-    def __init__(self, reason: str, code: int = EXIT_USAGE) -> None:
+    def __init__(self, reason: str, code: int = EXIT_USAGE, status: str | None = None) -> None:
         super().__init__(reason)
         self.reason, self.code = reason, code
+        self.status = status or ("refused" if code == EXIT_REFUSED else "usage_error")
 
 
 def local_operator_permission() -> None:
-    """The CLI runs as the machine's own operator, who holds the repo-root `.env` and the
-    approval key. The hosted route checks `video.upload` through `authorize()` instead (T-204,
-    not on master yet), so this is the single place that check will be wired, never a default."""
+    """The CLI runs as the machine's own operator (holds the repo-root `.env` and approval key).
+    The hosted route checks `video.upload` via `authorize()` (T-204): wire that check here."""
 
 
 def build_gate(store: ProjectStore, project: str, provider: Provider,
@@ -101,9 +104,31 @@ def _doc(payload: object) -> None:
 def _fail(exc: CliFail, as_json: bool) -> int:
     _say(exc.reason, colour=typer.colors.RED)
     if as_json:
-        _doc({"status": "refused" if exc.code == EXIT_REFUSED else "usage_error",
-              "reason": exc.reason, "exit_code": exc.code})
+        _doc({"status": exc.status, "reason": exc.reason, "exit_code": exc.code})
     return exc.code
+
+
+def _wants_json(args: list[str]) -> bool:
+    """`--output json` / `--output=json` in argv. A bare `--output` names no format: stays text."""
+    return "--output=json" in args or any(
+        a == "--output" and nxt == "json" for a, nxt in pairwise(args))
+
+
+class ReviewCommand(TyperCommand):
+    """Click rejects a bad flag (`--max-cost abc`, unknown option, missing argument) before
+    `review_cmd` runs with exit 2 (pointer errors here) and no stdout. Make it exit 1 plus,
+    in json mode, the same document `_fail` writes."""
+
+    def parse_args(self, ctx: typer.Context, args: list[str]) -> list[str]:
+        argv = list(args)                              # the parser consumes `args` in place
+        try:
+            return super().parse_args(ctx, args)
+        except TyperException as exc:                  # typer's click: usage errors
+            exc.show()                                 # usage line + message, to stderr
+            if _wants_json(argv):
+                _doc({"status": "usage_error", "reason": exc.format_message(),
+                      "exit_code": EXIT_USAGE})
+            ctx.exit(EXIT_USAGE)
 
 
 def _pointer_errors(exc: PointerErrors, as_json: bool) -> int:
@@ -119,11 +144,13 @@ def _pointer_errors(exc: PointerErrors, as_json: bool) -> int:
 
 
 def _finish(review: VideoReview, as_json: bool) -> int:
+    """The json document is the stored review plus `exit_code` (an envelope key, never stored)."""
+    code = {"unreadable": EXIT_UNREADABLE, "failed": EXIT_USAGE}.get(review.status, 0)
     if as_json:
-        _doc(review.model_dump(mode="json"))
+        _doc({**review.model_dump(mode="json"), "exit_code": code})
     else:
         typer.echo(render_markdown(review))
-    return {"unreadable": EXIT_UNREADABLE, "failed": EXIT_USAGE}.get(review.status, 0)
+    return code
 
 
 def _find_source(store: ProjectStore, project: str, source_id: str) -> Source:
@@ -174,9 +201,8 @@ def review_cmd(
     output: str = typer.Option("text", "--output", help="text | json (JSON on stdout only)"),
 ) -> None:
     """Review one recording: a flow summary and a short confirm-list citing exact seconds.
-    Pointers raise attention; they never hide the rest. Exit 0 ok, 2 pointer errors,
-    3 approval missing, 4 source unreadable. With --output json every exit writes one JSON
-    document to stdout."""
+    Pointers raise attention; they never hide the rest. Exit 0 ok, 2 pointer errors, 3 approval
+    missing, 4 source unreadable; --output json writes one JSON document on every exit."""
     if output not in ("text", "json"):
         _say("--output must be text or json", colour=typer.colors.RED)
         raise typer.Exit(EXIT_USAGE)
@@ -186,6 +212,30 @@ def review_cmd(
                 dry_run, refresh, as_json)
     except CliFail as exc:
         raise typer.Exit(_fail(exc, as_json)) from None
+    except (typer.Exit, typer.Abort, TyperException):
+        raise
+    except KeyboardInterrupt:
+        fail = CliFail("interrupted; nothing stored", EXIT_INTERRUPTED, "interrupted")
+        raise typer.Exit(_fail(fail, as_json)) from None
+    except Exception as exc:
+        reason = _failure_reason(exc, project, source_id)
+        raise typer.Exit(_fail(CliFail(reason, EXIT_USAGE, "internal_error"), as_json)) from None
+
+
+def _failure_reason(exc: Exception, project: str, source_id: str) -> str:
+    """An unexpected error as one safe line: class name plus message through the Redactor (the
+    project's secrets), the recording's path masked. Never raises; no secrets, no message."""
+    name = type(exc).__name__
+    try:
+        store = ProjectStore(project)
+        text = Redactor(_secret_values(store)).scrub(str(exc))
+        path = next((s.path for s in store.list_sources() if s.id == source_id and s.path), "")
+        for hidden in (path, Path(path).as_posix(), Path(path).name) if path else ():
+            text = text.replace(hidden, "<recording>")
+        text = " ".join(text.split())[:300]
+    except Exception:                                          # last-resort path
+        text = ""
+    return f"unexpected {name} during the review" + (f": {text}" if text else "; nothing stored")
 
 
 def _review(project: str, source_id: str, pointers: str | None, redact: list[str],
@@ -242,7 +292,7 @@ def _secret_values(store: ProjectStore) -> dict[str, str]:
 
 def _print_plan(plan: ReviewPlan, as_json: bool) -> None:
     if as_json:
-        _doc(plan.model_dump(mode="json"))
+        _doc({**plan.model_dump(mode="json"), "exit_code": 0})
         return
     wins = ", ".join(f"{w.start_s:g}s-{w.end_s:g}s" for w in plan.windows) or "none"
     typer.echo(f"plan: {plan.frame_count} frame(s) in {plan.call_count} call(s), "

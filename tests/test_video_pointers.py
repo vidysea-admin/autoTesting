@@ -12,6 +12,8 @@ import pytest
 
 from autotester.stages.video_pointers import (
     MAX_FREE_POINTERS,
+    MAX_POINTER_FILE_BYTES,
+    MAX_POINTER_LINES,
     PointerParse,
     canonical_pointers,
     parse_pointers,
@@ -177,11 +179,7 @@ def test_analysed_plus_not_reviewed_is_an_exact_partition():
 def test_pointer_size_limits_are_errors_never_truncation():
     """P5: a note over the limit, a line past the line limit and an oversized file are refused
     whole, and the count identity still holds."""
-    from autotester.stages.video_pointers import (
-        MAX_POINTER_FILE_BYTES,
-        MAX_POINTER_LINES,
-        MAX_POINTER_NOTE_CHARS,
-    )
+    from autotester.stages.video_pointers import MAX_POINTER_NOTE_CHARS
 
     long = "x" * (MAX_POINTER_NOTE_CHARS + 1)
     ok = "x" * MAX_POINTER_NOTE_CHARS
@@ -196,6 +194,23 @@ def test_pointer_size_limits_are_errors_never_truncation():
     assert len(huge.errors) == 1 and not huge.parsed
     assert len(huge.parsed) + len(huge.errors) == huge.non_blank_lines
     assert not _parse("é" * (MAX_POINTER_FILE_BYTES // 2 + 1)).parsed     # bytes, not characters
-    fat = _parse(("0:10 | " + "z" * 400 + "\n") * MAX_POINTER_LINES)   # every line valid, file too big
+    # every line valid, file too big
+    fat = _parse(("0:10 | " + "z" * 400 + "\n") * MAX_POINTER_LINES)
     assert len(fat.errors) == 1 and not fat.parsed
 
+
+
+def _file_of(n_bytes: int) -> str:
+    """100 valid `0:10 | zzz` lines, exactly `n_bytes` of UTF-8 (the last line absorbs the rest)."""
+    lead = [("0:10 | " + "z" * 320 + "\n") for _ in range(MAX_POINTER_LINES - 1)]
+    last = n_bytes - sum(len(x) for x in lead)
+    return "".join(lead) + "0:10 | " + "z" * (last - 8) + "\n"
+
+
+def test_the_pointer_file_limit_is_exactly_32768_bytes():
+    ok, over = _file_of(MAX_POINTER_FILE_BYTES), _file_of(MAX_POINTER_FILE_BYTES + 1)
+    assert len(ok.encode()) == MAX_POINTER_FILE_BYTES and len(over.encode()) == 32769
+    accepted = _parse(ok)
+    assert not accepted.errors and len(accepted.parsed) == MAX_POINTER_LINES
+    refused = _parse(over)
+    assert len(refused.errors) == 1 and not refused.parsed and "32769" in refused.errors[0].reason

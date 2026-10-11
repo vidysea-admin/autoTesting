@@ -169,3 +169,116 @@ def test_an_oversized_pointer_file_is_refused_unread_and_never_sent(world, monke
     errors = _doc(r)["errors"]
     assert len(errors) == 1 and "bytes" in errors[0]["reason"]
     assert Path(big).name not in r.stdout
+
+
+# --- fix cycle 2: usage errors, unexpected exceptions, interrupts, exit_code everywhere ---------
+
+def _args(source, *extra: str, output: bool = True) -> list[str]:
+    return ["ingest", "review", "demo", source.id, *(["--output", "json"] if output else []),
+            *extra]
+
+
+USAGE_ERRORS = {
+    "cap-abc": ["--max-cost", "abc"],
+    "cap-empty": ["--max-cost", ""],
+    "cap-hex": ["--max-cost", "0x10"],
+    "unknown-option": ["--bogus"],
+    "output-without-value-after-json": ["--output"],       # json was already named earlier
+}
+
+
+@pytest.mark.parametrize("name", list(USAGE_ERRORS))
+def test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code(world, name):
+    store, source, provider, _ = world
+    grant(store)
+    r = runner.invoke(app, _args(source, *USAGE_ERRORS[name]))
+    assert r.exit_code == 1, r.output                  # 2 is the pointer-errors code
+    assert _doc(r) == {"status": "usage_error", "reason": _doc(r)["reason"], "exit_code": 1}
+    assert _doc(r)["reason"] and r.stderr.strip() and provider.calls == 0
+
+
+def test_a_missing_source_argument_is_a_json_usage_error(world):
+    r = runner.invoke(app, ["ingest", "review", "demo", "--output", "json"])
+    assert r.exit_code == 1 and _doc(r)["status"] == "usage_error" and _doc(r)["exit_code"] == 1
+
+
+def test_the_equals_form_of_the_json_flag_is_recognised_too(world):
+    _, source, _, _ = world
+    r = runner.invoke(app, ["ingest", "review", "demo", source.id, "--output=json", "--bogus"])
+    assert r.exit_code == 1 and _doc(r)["status"] == "usage_error"
+
+
+def test_a_usage_error_without_json_stays_text_and_still_avoids_exit_2(world):
+    """Text mode (and `--output` with no value anywhere, so json is unknowable) stays text on
+    stderr with an empty stdout; the exit code is still 1, never the pointer-errors 2."""
+    _, source, _, _ = world
+    bare = [*_args(source, output=False), "--output"]
+    for argv in (_args(source, "--bogus", output=False), bare):
+        r = runner.invoke(app, argv)
+        assert r.exit_code == 1 and r.stdout == "" and r.stderr.strip(), argv
+
+
+@pytest.mark.parametrize("boom", [RuntimeError, OSError], ids=["runtime", "oserror"])
+def test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path(
+        world, monkeypatch, boom):
+    store, source, provider, tmp = world
+    grant(store)
+    (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+    store.save_project(store.load_project().model_copy(update={"secrets": [
+        SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+    video = Path(next(s for s in store.list_sources() if s.id == source.id).path)
+
+    def explode(*_a, **_k):
+        raise boom(f"hunter2-canary-xyz at {video} and {video.name}")
+
+    monkeypatch.setattr(provider, "judge", explode)
+    r = runner.invoke(app, _args(source))
+    assert r.exit_code == 1, r.output
+    doc = _doc(r)
+    assert doc["status"] == "internal_error" and doc["exit_code"] == 1
+    assert set(doc) == {"status", "reason", "exit_code"} and boom.__name__ in doc["reason"]
+    for leak in ("hunter2-canary-xyz", str(video), video.name):
+        assert leak not in r.stdout + r.stderr
+    assert "Traceback" not in r.stderr
+    assert not any((tmp / "projects" / "demo").rglob("rv_*"))      # scratch and review: none
+
+
+def test_ctrl_c_is_one_json_interrupted_document_exit_130_and_cleans_the_scratch(
+        world, monkeypatch):
+    store, source, provider, tmp = world
+    grant(store)
+
+    def interrupt(*_a, **_k):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(provider, "judge", interrupt)
+    r = runner.invoke(app, _args(source, "--redact", "1:00-1:10"))
+    assert r.exit_code == 130, r.output
+    assert _doc(r)["status"] == "interrupted" and _doc(r)["exit_code"] == 130
+    assert set(_doc(r)) == {"status", "reason", "exit_code"}
+    assert not any((tmp / "projects" / "demo").rglob("rv_*"))
+
+
+@pytest.mark.parametrize("extra", [[], ["--dry-run"], ["--max-cost", "1e-9"], ["--max-cost", "0"]],
+                         ids=["ok", "dry-run", "partial", "failed"])
+def test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code(
+        world, extra):
+    store, source, _, _ = world
+    grant(store)
+    r = runner.invoke(app, _args(source, *extra))
+    doc = _doc(r)
+    assert doc["exit_code"] == r.exit_code
+    assert {"ok": 0, "partial": 0, "failed": 1}.get(doc.get("status", "dry"), 0) == r.exit_code
+
+
+def test_exit_code_is_an_envelope_key_not_a_stored_field_and_old_reviews_still_load(world):
+    from autotester.schema.video_review import VideoReview
+    store, source, _, tmp = world
+    grant(store)
+    doc = _doc(runner.invoke(app, _args(source)))
+    stored = next((tmp / "projects" / "demo" / "reviews").glob("rv_*.json"))
+    on_disk = json.loads(stored.read_text(encoding="utf-8"))
+    assert "exit_code" not in on_disk and VideoReview.model_validate(on_disk).id == doc["id"]
+    assert VideoReview.model_validate({k: v for k, v in doc.items() if k != "exit_code"})
+    again = _doc(runner.invoke(app, _args(source)))               # a stored review is re-served
+    assert again["exit_code"] == 0 and again["id"] == doc["id"]

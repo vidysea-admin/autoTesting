@@ -90,7 +90,7 @@ def oversize_parse(size: int) -> PointerParse:
 def parse_pointers(text: str, duration_s: float) -> PointerParse:
     """Parse every non-blank line of `text` against a recording of `duration_s` seconds.
 
-    Accepts a BOM, `\r\n`/`\r`/`\n` endings and surrounding whitespace. Line numbers are
+    Accepts a BOM, `\\r\\n`/`\\r`/`\\n` endings and surrounding whitespace. Line numbers are
     1-based physical lines (blank lines count). A fourth free pointer, a line past
     `MAX_POINTER_LINES`, a note over `MAX_POINTER_NOTE_CHARS` and a file over
     `MAX_POINTER_FILE_BYTES` are errors, never truncated."""
