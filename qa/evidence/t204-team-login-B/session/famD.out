@@ -1,0 +1,220 @@
+seeds: [('admin', 1), ('sub-admin', 2), ('developer', 3), ('tester', 4)]
+custom perms: ['groups.manage', 'users.manage'] | Admin/CEO members: [1, 2] admin ids: 1 2
+== D1 every admin route as every non-admin
+-- actor sub
+  [sub   ] GET /admin/users                               -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [sub   ] GET /admin/groups                              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [sub   ] disable admin                                  -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] delete admin                                   -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] reset admin password                           -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] rename admin                                   -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] self -> Admin/CEO (groups action)              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] none-user -> Admin/CEO                         -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] self -> Developer group (perms not held)       -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] self -> Ops group (settings.manage)            -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [sub   ] create group with project.run@all              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [sub   ] create group with users.manage                 -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [sub   ] tick settings.manage on CustomMgr              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [sub   ] tick credentials.view on Developer             -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [sub   ] edit Sub-admin: add settings.manage            -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [sub   ] rename Admin/CEO                               -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [sub   ] Admin/CEO: add self as member                  -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [sub   ] delete Admin/CEO group                         -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 403}]
+  [sub   ] POST /settings/providers                       -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/settings/providers', 'status': 403}]
+  [sub   ] GET /settings/providers                        -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [sub   ] p-dev: assign SELF                             -> 404  stored-changed=no  note=''  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 404}]
+  [sub   ] p-admin: share to SELF                         -> 404  stored-changed=no  note=''  audit=[{'email': 'sub@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 404}]
+  [sub   ] GET p-admin/access vs missing                  -> 404  stored-changed=no  note=''  audit=[]
+-- actor dev
+  [dev   ] GET /admin/users                               -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [dev   ] GET /admin/groups                              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [dev   ] disable admin                                  -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] delete admin                                   -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] reset admin password                           -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] rename admin                                   -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] self -> Admin/CEO (groups action)              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] none-user -> Admin/CEO                         -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] self -> Developer group (perms not held)       -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] self -> Ops group (settings.manage)            -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [dev   ] create group with project.run@all              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [dev   ] create group with users.manage                 -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [dev   ] tick settings.manage on CustomMgr              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [dev   ] tick credentials.view on Developer             -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [dev   ] edit Sub-admin: add settings.manage            -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [dev   ] rename Admin/CEO                               -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [dev   ] Admin/CEO: add self as member                  -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [dev   ] delete Admin/CEO group                         -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 403}]
+  [dev   ] POST /settings/providers                       -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/settings/providers', 'status': 403}]
+  [dev   ] GET /settings/providers                        -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [dev   ] p-dev: assign SELF                             -> 403  stored-changed=no  note='you do not have permission for this action &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 403}]
+  [dev   ] p-admin: share to SELF                         -> 404  stored-changed=no  note=''  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 404}]
+  [dev   ] GET p-admin/access vs missing                  -> 404  stored-changed=no  note=''  audit=[]
+-- actor tester
+  [tester] GET /admin/users                               -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [tester] GET /admin/groups                              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [tester] disable admin                                  -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] delete admin                                   -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] reset admin password                           -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] rename admin                                   -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] self -> Admin/CEO (groups action)              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] none-user -> Admin/CEO                         -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] self -> Developer group (perms not held)       -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] self -> Ops group (settings.manage)            -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [tester] create group with project.run@all              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [tester] create group with users.manage                 -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [tester] tick settings.manage on CustomMgr              -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [tester] tick credentials.view on Developer             -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [tester] edit Sub-admin: add settings.manage            -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [tester] rename Admin/CEO                               -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [tester] Admin/CEO: add self as member                  -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [tester] delete Admin/CEO group                         -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 403}]
+  [tester] POST /settings/providers                       -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/settings/providers', 'status': 403}]
+  [tester] GET /settings/providers                        -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [tester] p-dev: assign SELF                             -> 404  stored-changed=no  note=''  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 404}]
+  [tester] p-admin: share to SELF                         -> 404  stored-changed=no  note=''  audit=[{'email': 'tester@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 404}]
+  [tester] GET p-admin/access vs missing                  -> 404  stored-changed=no  note=''  audit=[]
+-- actor none
+  [none  ] GET /admin/users                               -> 403  stored-changed=no  note=''  audit=[]
+  [none  ] GET /admin/groups                              -> 403  stored-changed=no  note=''  audit=[]
+  [none  ] disable admin                                  -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] delete admin                                   -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] reset admin password                           -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] rename admin                                   -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] self -> Admin/CEO (groups action)              -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] none-user -> Admin/CEO                         -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] self -> Developer group (perms not held)       -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] self -> Ops group (settings.manage)            -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [none  ] create group with project.run@all              -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [none  ] create group with users.manage                 -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [none  ] tick settings.manage on CustomMgr              -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [none  ] tick credentials.view on Developer             -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [none  ] edit Sub-admin: add settings.manage            -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [none  ] rename Admin/CEO                               -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [none  ] Admin/CEO: add self as member                  -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [none  ] delete Admin/CEO group                         -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 403}]
+  [none  ] POST /settings/providers                       -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/settings/providers', 'status': 403}]
+  [none  ] GET /settings/providers                        -> 403  stored-changed=no  note=''  audit=[]
+  [none  ] p-dev: assign SELF                             -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 403}]
+  [none  ] p-admin: share to SELF                         -> 403  stored-changed=no  note=''  audit=[{'email': 'none@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 403}]
+  [none  ] GET p-admin/access vs missing                  -> 403  stored-changed=no  note=''  audit=[]
+-- actor custom
+  [custom] GET /admin/users                               -> 200  stored-changed=no  note=''  audit=[]
+  [custom] GET /admin/groups                              -> 200  stored-changed=no  note=''  audit=[]
+  [custom] disable admin                                  -> 403  stored-changed=no  note='refused: only an Admin/CEO member can change an Admin/CEO account Acco'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] delete admin                                   -> 403  stored-changed=no  note='refused: only an Admin/CEO member can change an Admin/CEO account Acco'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] reset admin password                           -> 403  stored-changed=no  note='refused: only an Admin/CEO member can change an Admin/CEO account Acco'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] rename admin                                   -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'admin@team.test', 'action': 'user.name'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [custom] self -> Admin/CEO (groups action)              -> 403  stored-changed=no  note='refused: only an Admin/CEO member can change who is in Admin/CEO Accou'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] none-user -> Admin/CEO                         -> 403  stored-changed=no  note='refused: only an Admin/CEO member can change who is in Admin/CEO Accou'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] self -> Developer group (perms not held)       -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Account Grou'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] self -> Ops group (settings.manage)            -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Account Grou'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] create group with project.run@all              -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group Member'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [custom] create group with users.manage                 -> 403  stored-changed=no  note='refused: only an Admin/CEO member can grant users.'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 403}]
+  [custom] tick settings.manage on CustomMgr              -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] tick credentials.view on Developer             -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] edit Sub-admin: add settings.manage            -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] rename Admin/CEO                               -> 403  stored-changed=no  note='refused: only an Admin/CEO member can edit the Admin/CEO group Group n'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] Admin/CEO: add self as member                  -> 403  stored-changed=no  note='refused: only an Admin/CEO member can edit the Admin/CEO group Group n'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] delete Admin/CEO group                         -> 403  stored-changed=no  note='refused: only an Admin/CEO member can delete the Admin/CEO group Group'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 403}]
+  [custom] POST /settings/providers                       -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/settings/providers', 'status': 403}]
+  [custom] GET /settings/providers                        -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[]
+  [custom] p-dev: assign SELF                             -> 404  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 404}]
+  [custom] p-admin: share to SELF                         -> 404  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/projects/{slug}/access', 'status': 404}]
+  [custom] GET p-admin/access vs missing                  -> 404  stored-changed=no  note=''  audit=[]
+== D2 custom (users.manage+groups.manage, NOT Admin) - what IS allowed
+  [custom] reset NON-admin 'victim' pw                    -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'victim@team.test', 'action': 'user.password'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [custom] reset 'sub' (Sub-admin) pw                     -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'sub@team.test', 'action': 'user.password'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [custom] reset 'ops' (settings.manage) pw               -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'ops@team.test', 'action': 'user.password'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+   custom now logs in as ops with the password it set: 303
+   -> /settings/providers as taken-over ops (custom itself gets 403 there): 200  custom itself: 403
+   custom logs in as 'sub' (Sub-admin) w/ reset pw: 303
+  [custom] disable non-admin victim                       -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'victim@team.test', 'action': 'user.disable'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [custom] enable non-admin victim                        -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'victim@team.test', 'action': 'user.enable'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [custom] create empty group                             -> 303  stored-changed=['groups']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'EmptyG', 'action': 'group.create'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 303}]
+  [custom] add self to EmptyG via group edit              -> 303  stored-changed=['memberships']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'EmptyG', 'action': 'group.update'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 303}]
+  [custom] EmptyG tick 'users.manage'                     -> 403  stored-changed=no  note='refused: only an Admin/CEO member can grant users.'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] EmptyG tick ' users.manage'                    -> 403  stored-changed=no  note='refused: only an Admin/CEO member can grant users.'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] EmptyG tick 'USERS.MANAGE'                     -> 400  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [custom] EmptyG tick 'users.manage@'                    -> 400  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [custom] EmptyG tick 'users.manage\x00'                 -> 400  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [custom] EmptyG tick 'users.manage@all'                 -> 400  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [custom] EmptyG tick 'settings.manage'                  -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] EmptyG tick 'credentials.view'                 -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] EmptyG tick 'project.view@all'                 -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] EmptyG tick 'project.view@ALL'                 -> 400  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [custom] EmptyG tick 'project.view@all\n'               -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+  [custom] EmptyG tick 'project.view@all@all'             -> 400  stored-changed=no  note=''  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [custom] EmptyG tick 'live.view'                        -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+== D3 mass assignment / extra fields / dup params
+ signup w/ extra fields: 303 -> groups: [] location: /auth/waiting
+ login w/ extra fields: 303 groups: []
+   mass user /admin/users 403
+   mass user /onboard 403
+   mass user /settings/providers 403
+  [custom] name edit w/ extras (email, password, group_id, disabled) -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'victim@team.test', 'action': 'user.name'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+   victim after: email victim@team.test display Vic groups [] disabled False
+  [custom] group edit w/ seed/id extras, no members_shown -> 303  stored-changed=no  note=''  audit=[{'actor': 'custom@team.test', 'target': 'EmptyG', 'action': 'group.update'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 303}]
+   EmptyG members after (member_id w/o members_shown ignored => unchanged): [7] seed: None
+  [custom] member_id w/ members_shown=0                   -> 303  stored-changed=['memberships']  note=''  audit=[{'actor': 'custom@team.test', 'target': 'EmptyG', 'action': 'group.update'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 303}]
+  [custom] dup group_id=Tester&group_id=Admin (mixed)     -> 403  stored-changed=no  note='refused: only an Admin/CEO member can change who is in Admin/CEO Accou'  audit=[{'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+  [custom] JSON body to groups action (empty form)        -> 303  stored-changed=no  note=''  audit=[{'actor': 'custom@team.test', 'target': 'victim@team.test', 'action': 'user.groups'}, {'email': 'custom@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [dev   ] dev edits own record (name) via admin route    -> 403  stored-changed=no  note='you do not have permission &larr; Back to projects '  audit=[{'email': 'dev@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 403}]
+== D4 IDOR / odd ids as Admin
+  users/'0'/name -> 404
+  users/'-1'/name -> 404
+  users/'99999999999999999999'/name -> 500
+  users/'1.5'/name -> 422
+  users/'abc'/name -> 422
+  users/'%20'/name -> 422
+  users/'1e3'/name -> 422
+  users/'٣'/name -> 422
+  users/'+3'/name -> 303
+  GET groups/'0' -> 404
+  GET groups/'-1' -> 404
+  GET groups/'99999999999999999999' -> 500
+  GET groups/'abc' -> 422
+  GET groups/'1.0' -> 200
+  groups action w/ huge group id -> 400
+  groups action w/ non-int group id -> 400
+  group edit w/ huge member id -> 400
+  unknown action -> 404
+  dev GET /projects/p-admin -> 404 len 16900 | POST access -> 404
+  dev GET /projects/nope -> 404 len 16897 | POST access -> 404
+  dev GET /projects/..%2f..%2fetc -> 404 len 16879 | POST access -> 404
+  dev GET /projects/p-admin%00 -> 404 len 16901 | POST access -> 404
+  dev own project p-dev:
+   dev POST access relation=assigned -> 403
+   dev POST access relation=shared -> 303
+   dev share to unknown vs existing email (enumeration): 400 303
+   tester (shared on p-dev) tries POST access: 403
+   sub (not assigned) GET p-dev/access: 302
+   Admin assigns sub to p-dev: 303
+   sub (assigned, no project.assign) assigns other: 302
+   sub (assigned) shares to other: 302
+== D5 Admin can do the same / AU9 last-admin
+  [admin ] disable ceo2                                   -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'admin@team.test', 'target': 'ceo2@team.test', 'action': 'user.disable'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [admin ] admin disable SELF (ceo2 disabled -> last)     -> 400  stored-changed=no  note='refused: this would leave no enabled Admin/CEO account that can manage'  audit=[{'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 400}]
+  [admin ] admin delete SELF                              -> 400  stored-changed=no  note='refused: this would leave no enabled Admin/CEO account that can manage'  audit=[{'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 400}]
+  [admin ] admin remove self from all groups              -> 400  stored-changed=no  note='refused: this would leave no enabled Admin/CEO account that can manage'  audit=[{'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 400}]
+  [admin ] untick users.manage on Admin/CEO               -> 400  stored-changed=no  note='refused: this would leave no enabled Admin/CEO account that can manage'  audit=[{'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [admin ] remove admin via group member list             -> 400  stored-changed=no  note='refused: this would leave no enabled Admin/CEO account that can manage'  audit=[{'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 400}]
+  [admin ] delete Admin/CEO group                         -> 400  stored-changed=no  note='refused: this would leave no enabled Admin/CEO account that can manage'  audit=[{'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 400}]
+  [admin ] delete disabled ceo2 (leaves sole admin)       -> 303  stored-changed=['users', 'memberships']  note=''  audit=[{'actor': 'admin@team.test', 'target': 'ceo2@team.test', 'action': 'user.delete'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [admin ] enable no-op                                   -> 303  stored-changed=no  note=''  audit=[{'actor': 'admin@team.test', 'target': 'victim@team.test', 'action': 'user.enable'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [admin ] admin adds custom to Admin/CEO (allowed)       -> 303  stored-changed=['memberships']  note=''  audit=[{'actor': 'admin@team.test', 'target': 'custom@team.test', 'action': 'user.groups'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [admin ] admin ticks settings.manage on Ops (allowed)   -> 303  stored-changed=no  note=''  audit=[{'actor': 'admin@team.test', 'target': 'Ops', 'action': 'group.update'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 303}]
+  [admin ] admin creates group w/ credentials.view        -> 303  stored-changed=['groups', 'group_permissions']  note=''  audit=[{'actor': 'admin@team.test', 'target': 'CredView', 'action': 'group.create'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/groups', 'status': 303}]
+  [admin ] admin resets ceo password (now 2 admins: custom + admin) -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'admin@team.test', 'target': 'custom@team.test', 'action': 'user.password'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+  [admin ] admin disable custom (now an Admin) - allowed with other admin -> 303  stored-changed=['users']  note=''  audit=[{'actor': 'admin@team.test', 'target': 'custom@team.test', 'action': 'user.disable'}, {'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 303}]
+final Admin/CEO members: [1] enabled admins: ['admin@team.test']
+== D6 XSS in rendered admin pages (script-tag email/group/display name)
+ /admin/users raw '<script>alert(1)' present: False  raw '<img src=x onerror' present: False  raw '<b onmouseover' present: False  status 200
+  [admin ] admin disable SELF (custom disabled -> sole)   -> 400  stored-changed=no  note='refused: this would leave no enabled Admin/CEO account that can manage'  audit=[{'email': 'admin@team.test', 'method': 'POST', 'path': '/admin/users/{user_id}/{action}', 'status': 400}]
+== D7 destructive edits by a non-admin groups.manage holder (run last; they break the cast)
+  [mgr   ] delete default group Tester (non-admin group)  -> 303  stored-changed=['groups', 'group_permissions', 'memberships']  note=''  audit=[{'actor': 'mgr@team.test', 'target': 'Tester', 'action': 'group.delete'}, {'email': 'mgr@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}/delete', 'status': 303}]
+  [mgr   ] untick all from Developer group                -> 303  stored-changed=['group_permissions']  note=''  audit=[{'actor': 'mgr@team.test', 'target': 'Developer', 'action': 'group.update'}, {'email': 'mgr@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 303}]
+  [mgr   ] untick all from Sub-admin group                -> 303  stored-changed=['group_permissions']  note=''  audit=[{'actor': 'mgr@team.test', 'target': 'Sub-admin', 'action': 'group.update'}, {'email': 'mgr@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 303}]
+   Tester group still there: False | Developer perms now: 0
+   dev (Developer group stripped) now sees: 403
+  [mgr   ] re-tick project.view@own                       -> 403  stored-changed=no  note='refused: you can only grant permissions you hold yourself Group name A'  audit=[{'email': 'mgr@team.test', 'method': 'POST', 'path': '/admin/groups/{group_id}', 'status': 403}]
+   mgr can restore Developer perms?: 403

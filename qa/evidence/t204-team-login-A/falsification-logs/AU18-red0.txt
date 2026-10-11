@@ -1,0 +1,36 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU18-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 3 items
+
+tests\test_ui_auth_host_and_consent.py FFF                               [100%]
+
+================================== FAILURES ===================================
+_ test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/login] __
+tests\test_ui_auth_host_and_consent.py:100: in test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes
+    assert resp.status_code == 403 and _sessions() == before
+E   assert (303 == 403)
+E    +  where 303 = <Response [303 See Other]>.status_code
+_ test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/signup] _
+tests\test_ui_auth_host_and_consent.py:100: in test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes
+    assert resp.status_code == 403 and _sessions() == before
+E   assert (400 == 403)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+_ test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/logout] _
+tests\test_ui_auth_host_and_consent.py:100: in test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes
+    assert resp.status_code == 403 and _sessions() == before
+E   assert (401 == 403)
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/login]
+FAILED tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/signup]
+FAILED tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/logout]
+======================== 3 failed, 1 warning in 3.04s =========================

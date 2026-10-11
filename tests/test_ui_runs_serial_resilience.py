@@ -19,6 +19,9 @@ shape this generalizes to the serial path).
 
 from __future__ import annotations
 
+import shutil
+
+import pytest
 from test_ui_runs import _approve_demo_runs
 from test_ui_runs_parallel_trace import _non_entry_case, client, scratch_root
 
@@ -215,3 +218,83 @@ def test_an_entry_case_crash_still_saves_every_case_and_the_run(
     assert results[entry_case.id].outcome is Outcome.ERRORED
     assert results[other_case.id].outcome is Outcome.COMPLETED
     assert verdicts[other_case.id].result is Result.PASS
+
+
+def _run_entry_and_sibling(client, scratch_root, monkeypatch, width, wipe):
+    """RU5: entry case + sibling at `width`; `wipe` replaces the profile's rmtree."""
+    import autotester.stages.run_case_pipeline as pipeline
+    import autotester.ui.run_execution as execution
+    from autotester.browser.session import BrowserSession
+    from autotester.core.paths import ProjectPaths
+    from autotester.stages.parallel_run import ParallelPlan
+    store, (other,) = _onboard_with_serial_cases(client, scratch_root, n=1)
+    entry = store.add_case(_entry_case())
+    profile = ProjectPaths("demo-entry-test").profile_dir
+    profile.mkdir(parents=True)
+    (profile / "Cookies").write_text("logged-in")
+    routes = _patch_common(monkeypatch)
+    plan = ParallelPlan(width, width, width, "config", 99999.0, 8)
+    monkeypatch.setattr(routes, "plan_parallel_run", lambda *a, **k: plan)
+    built, executed, real_rmtree, real_init = [], [], shutil.rmtree, BrowserSession.__init__
+
+    def tracked_init(self, project, secrets, run_dir, paths=None, **kw):
+        built.append(paths.slug if paths else project.slug)
+        real_init(self, project, secrets, run_dir, paths, **kw)
+
+    def rmtree_stub(path, *a, **kw):
+        keep = str(path) != str(profile) or wipe is None
+        return real_rmtree(path, *a, **kw) if keep else wipe(path)
+
+    def fake_run_case(case_, session):
+        executed.append(case_.id)
+        return RawResult(case_id=case_.id, outcome=Outcome.COMPLETED)
+    real_grade = pipeline.grade
+
+    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+        if result.outcome is not Outcome.COMPLETED:
+            return real_grade(rubric, result, run_id, judge, run_dir=run_dir)
+        return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
+                       grader_provider="x")
+
+    for obj, name, fake in [(BrowserSession, "__init__", tracked_init),
+                            (execution.shutil, "rmtree", rmtree_stub),
+                            (pipeline, "run_case", fake_run_case), (pipeline, "grade", fake_grade)]:
+        monkeypatch.setattr(obj, name, fake)
+    _approve_demo_runs(scratch_root)
+    response = client.post("/projects/demo/run", follow_redirects=False)
+    assert response.status_code == 303, response.text
+    assert store.load_run(run_id := _only_run_id(store)), "the Run must be saved"  # noqa: RUF018
+    return (entry, other, {r.case_id: r for r in store.load_results(run_id)},
+            {v.case_id: v for v in store.load_verdicts(run_id)}, executed, built, profile)
+
+
+@pytest.mark.parametrize("width", [1, 2])
+@pytest.mark.parametrize("mode", ["leaves-directory", "raises-permission-error"])
+def test_an_entry_case_whose_profile_is_not_removed_is_errored_and_never_run(
+    client, scratch_root, monkeypatch, width, mode,
+) -> None:
+    """RU5: a wipe that leaves the profile (or raises) never lets the entry case
+    run: ERRORED naming the path, not PASS; the sibling runs, the Run is saved."""
+    def wipe(path):
+        if mode != "leaves-directory":
+            raise PermissionError("locked by another process")
+
+    entry, other, results, verdicts, executed, built, profile = _run_entry_and_sibling(
+        client, scratch_root, monkeypatch, width, wipe)
+    assert results[entry.id].outcome is Outcome.ERRORED
+    assert str(profile) in (results[entry.id].error or "")
+    assert verdicts[entry.id].result is not Result.PASS
+    assert entry.id not in executed, "the entry case must never run"
+    assert "demo-entry-test" not in built, "no BrowserSession for the entry profile"
+    assert (results[other.id].outcome, verdicts[other.id].result) == (
+        Outcome.COMPLETED, Result.PASS)
+
+
+def test_an_entry_case_with_a_healthy_wipe_still_runs(client, scratch_root, monkeypatch) -> None:
+    """RU5 control: the real removal clears a stale file and the case runs."""
+    entry, _, results, verdicts, executed, built, profile = _run_entry_and_sibling(
+        client, scratch_root, monkeypatch, 1, None)
+    assert not (profile / "Cookies").exists() and entry.id in executed
+    assert "demo-entry-test" in built
+    assert (results[entry.id].outcome, verdicts[entry.id].result) == (
+        Outcome.COMPLETED, Result.PASS)

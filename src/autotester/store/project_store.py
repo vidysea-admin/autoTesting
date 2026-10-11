@@ -1,8 +1,4 @@
-"""Typed convenience over `filestore` for one project's directory.
-
-A thin wrapper — the read/write logic lives once in `filestore`. A new
-artifact kind adds a method here, not a new file format (C1/C3).
-"""
+"""Typed convenience over `filestore` for one project's directory (C1/C3)."""
 
 from __future__ import annotations
 
@@ -12,7 +8,8 @@ from autotester.core.paths import ProjectPaths
 from autotester.schema.analysis import VideoAnalysis
 from autotester.schema.approval import RunApproval
 from autotester.schema.bench import BenchCorpus, BenchTrial
-from autotester.schema.case import Case
+from autotester.schema.case import Case, CasePriority, CaseProposal
+from autotester.schema.enums import ReviewStatus
 from autotester.schema.flowspec import FlowSpec
 from autotester.schema.issue import Issue
 from autotester.schema.media import MediaPrep, Transcript
@@ -36,21 +33,11 @@ from autotester.store.run_store import RUN_AUX_FILES, RunStoreMixin
 
 
 class PinnedCaseError(RuntimeError):
-    """AT-585: `delete_case` raises this for a pinned case -- unpin via
-    `update_case` first if it genuinely must go."""
+    """AT-585: delete refuses pinned cases; explicitly unpin via update_case first."""
 
 
 class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
-    """Load and save one project's artifacts as human-editable files (C6).
-
-    AT-024: `add_source`/`add_case`/`add_request` used to re-read their whole collection (a
-    full JSONL scan) on every call to check idempotency — O(n) per add, O(n^2) for n sequential
-    adds in one loop (e.g. `expand.py` adding a dozen-plus cases per flow). Each keeps a
-    lazily-populated in-memory id cache instead: the first add in a `ProjectStore`'s lifetime
-    still reads the file once, every later add in that instance is an O(1) set check. `list_*()`
-    always reads fresh from disk — it must reflect whatever is actually there, including
-    anything written by another process — only the add-time idempotency check is cached.
-    """
+    """Human-editable artifacts (C6); AT-024 caches add ids, while list reads fresh."""
 
     def __init__(self, slug: str, root: Path | None = None) -> None:
         self.paths = ProjectPaths(slug, root)
@@ -60,14 +47,12 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
         self._issue_ids: set[str] | None = None
         self._node_ids: dict[str, set[str]] | None = None  # keyed by crawl_id
 
-    # -- project --------------------------------------------------------------
     def save_project(self, project: Project) -> None:
         write_json(self.paths.config, project)
 
     def load_project(self) -> Project | None:
         return read_json(self.paths.config, Project)
 
-    # -- sources (immutable, content-addressed) --------------------------------
     def add_source(self, source: Source) -> Source:
         """Idempotent: re-adding an identical source is a no-op, not a duplicate."""
         if self._source_ids is None:
@@ -81,7 +66,6 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
     def list_sources(self) -> list[Source]:
         return read_jsonl(self.paths.sources_index, Source)
 
-    # -- approvals (D-018: consent is a file, not a habit) ---------------------
     def add_approval(self, approval: RunApproval) -> RunApproval:
         append_jsonl(self.paths.approvals, approval)
         return approval
@@ -89,14 +73,12 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
     def list_approvals(self) -> list[RunApproval]:
         return read_jsonl(self.paths.approvals, RunApproval)
 
-    # -- flowspec (single, human-reviewed) -------------------------------------
     def save_flowspec(self, spec: FlowSpec) -> None:
         write_json(self.paths.flowspec, spec)
 
     def load_flowspec(self) -> FlowSpec | None:
         return read_json(self.paths.flowspec, FlowSpec)
 
-    # -- cases (content-addressed; status can change) ---------------------------
     def add_case(self, case: Case) -> Case:
         """Idempotent on id: regenerating a flowspec never duplicates a case."""
         if self._case_ids is None:
@@ -107,52 +89,88 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
         self._case_ids.add(case.id)
         return case
 
-    def list_cases(self) -> list[Case]:
-        return read_jsonl(self.paths.cases, Case)
+    def list_cases(self, priorities: list[CasePriority] | None = None) -> list[Case]:
+        """File order, optionally selected priorities plus every pinned p0, once per id."""
+        rows = read_jsonl(self.paths.cases, Case)
+        if priorities is None:
+            return rows
+        if any(p not in {"p0", "p1", "p2", "p3"} for p in priorities):
+            raise ValueError("unknown case priority")
+        return list({c.id: c for c in rows if c.pinned or c.priority in priorities}.values())
 
     def get_case(self, case_id: str) -> Case | None:
         return next((c for c in self.list_cases() if c.id == case_id), None)
 
     def has_case(self, case_id: str) -> bool:
-        """Whether this id is already on file — the check `add_case` makes
-        silently. A caller that must tell "created" from "already existed"
-        (a create form, say) asks this first; `add_case`'s idempotence is
-        deliberate and stays."""
+        """Cached add-time existence; callers can distinguish created from already present."""
         if self._case_ids is None:
             self._case_ids = {c.id for c in self.list_cases()}
         return case_id in self._case_ids
 
     def update_case(self, case: Case) -> None:
-        """Replace a case in place, keeping its id — so its runs, verdicts and
-        rubric stay attached. Only fields outside `Case.compute_id()`'s payload
-        can change this way; anything else is a different case."""
+        """Replace by id; only fields outside compute_id can change without a new case."""
         upsert_jsonl(self.paths.cases, case, Case)
         if self._case_ids is not None:
             self._case_ids.add(case.id)
 
     def delete_case(self, case_id: str) -> bool:
-        """Remove a case; True when one was removed. Past runs/verdicts stay.
-        AT-585: raises `PinnedCaseError` for a pinned case, never a silent
-        False -- a caller must not mistake "protected" for "not found"."""
+        """Remove a case; AT-585 refuses pinned cases. Past runs/verdicts stay."""
         case = self.get_case(case_id)
         if case is not None and case.pinned:
             raise PinnedCaseError(
-                f"case '{case_id}' is pinned (issue {case.pinned_issue_id}) "
-                "and cannot be pruned"
-            )
+                f"case '{case_id}' is pinned (issue {case.pinned_issue_id}) and cannot be pruned")
         removed = delete_jsonl_row(self.paths.cases, Case, case_id)
         if removed and self._case_ids is not None:
             self._case_ids.discard(case_id)
         return removed
 
-    # -- rubrics (one file per id; `rubrics_dir` existed since design-lock, unused until now) ---
+    def list_case_proposals(self) -> list[CaseProposal]:
+        return read_jsonl(self.paths.case_proposals, CaseProposal)
+
+    def stage_case_proposals(self, proposals: list[CaseProposal]) -> None:
+        """Persist only fresh candidates; identical ids retain their human decisions."""
+        spec = self.load_flowspec()
+        if spec is None or spec.project != self.paths.slug:
+            raise ValueError("save this project's FlowSpec before staging proposals")
+        existing = {p.id for p in self.list_case_proposals()}
+        proposals = [CaseProposal.model_validate(p.model_dump()) for p in proposals]
+        if len({p.slot_id for p in proposals}) != len(proposals):
+            raise ValueError("duplicate proposal slot in staged batch")
+        for proposal in proposals:
+            proposal.require_current(spec)
+            if proposal.status != "proposed":
+                raise ValueError("staging cannot grant proposal approval")
+        for proposal in proposals:
+            if proposal.id not in existing:
+                upsert_jsonl(self.paths.case_proposals, proposal, CaseProposal, key="slot_id")
+                existing.add(proposal.id)
+
+    def review_case_proposal(self, proposal_id: str, by: str, approved: bool) -> CaseProposal:
+        """Human review of an existing current row; pruning HAPPY persists pending."""
+        proposal = next((p for p in self.list_case_proposals() if p.id == proposal_id), None)
+        spec = self.load_flowspec()
+        if proposal is None or spec is None or spec.project != self.paths.slug:
+            raise ValueError("no current proposal to review")
+        proposal.require_current(spec)
+        reviewed = proposal.reviewed(by, approved)
+        upsert_jsonl(self.paths.case_proposals, reviewed, CaseProposal)
+        return reviewed
+
+    def preflight_case_proposals(self, spec: FlowSpec, proposal_ids: list[str] | None = None,
+                                flow_id: str | None = None) -> list[CaseProposal]:
+        """Resolve saved approvals and the entire batch before any provider spend."""
+        saved = self.load_flowspec()
+        if (saved != spec or spec.project != self.paths.slug
+                or spec.review.status != ReviewStatus.APPROVED):
+            raise ValueError("generation requires the exact current approved saved FlowSpec")
+        return CaseProposal.approved_batch(spec, self.list_case_proposals(), proposal_ids, flow_id)
+
     def save_rubric(self, rubric: Rubric) -> None:
         write_json(self.paths.rubrics_dir / f"{rubric.id}.json", rubric)
 
     def load_rubric(self, rubric_id: str) -> Rubric | None:
         return read_json(self.paths.rubrics_dir / f"{rubric_id}.json", Rubric)
 
-    # -- runs (one Run envelope + one RawResult file per case) -------------------
     def save_run(self, run: Run) -> None:
         write_json(self.paths.run_dir(run.id) / "run.json", run)
 
@@ -166,15 +184,10 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
         run_dir = self.paths.run_dir(run_id)
         if not run_dir.exists():
             return []
-        return [
-            model
-            for path in sorted(run_dir.glob("*.json"))
+        return [model for path in sorted(run_dir.glob("*.json"))
             if path.name not in RUN_AUX_FILES and not path.name.endswith(".verdict.json")
-            for model in [read_json(path, RawResult)]
-            if model is not None
-        ]
+            for model in [read_json(path, RawResult)] if model is not None]
 
-    # -- verdicts (one file per case, alongside its RawResult) -------------------
     def save_verdict(self, run_id: str, verdict: Verdict) -> None:
         write_json(self.paths.run_dir(run_id) / f"{verdict.case_id}.verdict.json", verdict)
 
@@ -182,14 +195,9 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
         run_dir = self.paths.run_dir(run_id)
         if not run_dir.exists():
             return []
-        return [
-            model
-            for path in sorted(run_dir.glob("*.verdict.json"))
-            for model in [read_json(path, Verdict)]
-            if model is not None
-        ]
+        return [model for path in sorted(run_dir.glob("*.verdict.json"))
+                for model in [read_json(path, Verdict)] if model is not None]
 
-    # -- bench (seeded corpus + trial scorecards) --------------------------------
     def save_bench_corpus(self, corpus: BenchCorpus) -> None:
         write_json(self.paths.bench_corpus(corpus.id), corpus)
 
@@ -211,7 +219,6 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
         ]
         return [t for t in trials if t.corpus_id == corpus_id]
 
-    # -- Track A: video learning (D-014) -----------------------------------------
     def save_media_prep(self, prep: MediaPrep) -> None:
         write_json(self.paths.source_media(prep.source_id), prep)
 
@@ -233,13 +240,7 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
 
     def list_observations(self, source_id: str,
                           *, skip_unreadable: bool = False) -> list[ModelObservation]:
-        """Every cached model answer for one source.
-
-        `skip_unreadable` is for the one caller that can repair the damage:
-        a half-written observation file (the crash the cache exists to survive)
-        otherwise raises out of `analyze`, and `--force` could not clear it
-        because reading came first. Skipped means re-requested and overwritten,
-        never silently treated as an answer."""
+        """Cached answers; skip_unreadable lets analyze repair torn files by re-requesting."""
         obs_dir = self.paths.source_observations_dir(source_id)
         if not obs_dir.exists():
             return []
@@ -291,7 +292,6 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
     def load_screen_map(self) -> ScreenMap | None:
         return read_json(self.paths.screen_map, ScreenMap)
 
-    # -- portal persona (durable, single JSON store; knowledge.md is its view) --
     def save_portal_persona(self, persona: PortalPersona) -> None:
         write_json(self.paths.portal_persona, persona)
 

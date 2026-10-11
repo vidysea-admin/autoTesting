@@ -1,0 +1,22 @@
+tree: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A758master\src\autotester\__init__.py
+CRAWL baseline (credential present): COVERS by account-derived row appr_072
+CRAWL after .env removed: COVERS by account-derived row appr_072
+CRAWL after credential domain re-scoped: COVERS by account-derived row appr_072
+CRAWL after declaration dropped: COVERS by account-derived row appr_072
+CRAWL after value blanked (key absent): COVERS by account-derived row appr_072
+   rows on disk: 1
+LIVE_CASE baseline (credential present): COVERS by account-derived row appr_863
+LIVE_CASE after .env removed: COVERS by account-derived row appr_863
+LIVE_CASE after credential domain re-scoped: COVERS by account-derived row appr_863
+LIVE_CASE after declaration dropped: COVERS by account-derived row appr_863
+LIVE_CASE after value blanked (key absent): COVERS by account-derived row appr_863
+   rows on disk: 1
+READ baseline (credential present): COVERS by account-derived row appr_e39
+READ after .env removed: COVERS by account-derived row appr_e39
+READ after credential domain re-scoped: COVERS by account-derived row appr_e39
+READ after declaration dropped: COVERS by account-derived row appr_e39
+READ after value blanked (key absent): COVERS by account-derived row appr_e39
+   rows on disk: 1
+ADVERSARIAL with account row present: REFUSED
+human LIVE_CASE row, credential gone: COVERS by human row appr_b01
+ADVERSARIAL, human live_case row only: REFUSED

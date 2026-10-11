@@ -1,0 +1,29 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU1-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_login.py F                                            [100%]
+
+================================== FAILURES ===================================
+_______________ test_au1_password_is_argon2id_and_never_stored ________________
+tests\test_ui_auth_login.py:46: in test_au1_password_is_argon2id_and_never_stored
+    assert int(params["m"]) >= 19 * 1024 and int(params["t"]) >= 2
+E   AssertionError: assert (1024 >= (19 * 1024))
+E    +  where 1024 = int('1024')
+------------------------------ Captured log call ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/auth/signup "HTTP/1.1 303 See Other"
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/auth/login "HTTP/1.1 303 See Other"
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_login.py::test_au1_password_is_argon2id_and_never_stored
+======================== 1 failed, 1 warning in 3.14s =========================

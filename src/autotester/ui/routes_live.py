@@ -3,12 +3,15 @@ a process-freshness probe (`/healthz`, AT-085)."""
 
 from __future__ import annotations
 
+import os
 from datetime import UTC, datetime
+from html import escape
+from pathlib import Path
 
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from autotester.core.paths import repo_root
+import autotester
 from autotester.ui import theme
 
 router = APIRouter()
@@ -20,7 +23,29 @@ router = APIRouter()
 # uvicorn` process (no reloader) happens exactly once, before the first request
 # -- the same "process start" a checker previously read off `ps -o lstart=`.
 _PROCESS_STARTED_AT = datetime.now(UTC)
-_SRC_ROOT = repo_root() / "src" / "autotester"
+
+
+def package_root() -> Path:
+    """The installed `autotester` package. Not `repo_root()`: on a server `AUTOTESTER_ROOT`
+    points at the data volume (projects/, profiles/, .env), which holds no source."""
+    return Path(autotester.__file__).resolve().parent
+
+
+_SRC_ROOT = package_root()
+NOVNC_ENV = "AUTOTESTER_NOVNC_URL"
+_DEFAULT_NOVNC = "http://localhost:6080/vnc.html?autoconnect=true&resize=scale"
+
+
+def novnc_url() -> str:
+    """Where the viewer iframe points. Local docker default is the published port; a server
+    sets `AUTOTESTER_NOVNC_URL` to a same-origin path (`/novnc/vnc.html?...`) served by the
+    reverse proxy, because an http iframe inside an https page is blocked. Only an absolute
+    path or an http(s) URL on localhost is accepted: anything else falls back to the default."""
+    raw = os.environ.get(NOVNC_ENV, "").strip()
+    same_origin = raw.startswith("/") and not raw.startswith("//")
+    local = raw.startswith(("http://localhost:", "http://127.0.0.1:"))
+    hostile = {"'", '"', "<", ">", " "} & set(raw)
+    return raw if (same_origin or local) and not hostile else _DEFAULT_NOVNC
 
 
 @router.get("/live", response_class=HTMLResponse)
@@ -35,8 +60,7 @@ def live_view() -> str:
         "<div class='live-tip live-tip-muted'>To slow a run down, set "
         "<code>AUTOTESTER_SLOW_MO_MS=1500</code> before "
         "<code>docker compose up -d</code>.</div>"
-        "<div class='live-shell'><iframe src='http://localhost:6080/"
-        "vnc.html?autoconnect=true&resize=scale'></iframe></div>"
+        f"<div class='live-shell'><iframe src='{escape(novnc_url())}'></iframe></div>"
     )
     return theme.page("Live view", body)
 

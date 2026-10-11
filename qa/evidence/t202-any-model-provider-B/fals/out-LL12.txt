@@ -1,0 +1,38 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 12.44s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+___ test_a_test_that_forgets_the_fake_fails_loudly_instead_of_going_online ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001AE0EEB8F50>
+no_network = []
+
+    def test_a_test_that_forgets_the_fake_fails_loudly_instead_of_going_online(
+            monkeypatch: pytest.MonkeyPatch, no_network: list[object]) -> None:
+        """LL12: with no fake installed, the real SDK is reached and the first real socket
+        connect raises the guard's error (surfaced inside the typed ProviderError)."""
+        import sys
+    
+        monkeypatch.delitem(sys.modules, "litellm", raising=False)
+        monkeypatch.setenv("LITELLM_MODE", "PRODUCTION")
+        monkeypatch.setenv("LITELLM_LOCAL_MODEL_COST_MAP", "True")
+        monkeypatch.setenv("LITELLM_API_BASE", "http://203.0.113.7:9/v1")
+        monkeypatch.setenv("LITELLM_API_KEY", "sk-test-not-real-0000")
+        with pytest.raises(ProviderError):
+            _provider("openai/served").judge("g", Answer)
+>       assert no_network, "the real SDK never reached the socket guard"
+E       AssertionError: the real SDK never reached the socket guard
+E       assert []
+
+tests\test_litellm_guard.py:294: AssertionError
+---------------------------- Captured stdout call -----------------------------
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_guard.py::test_a_test_that_forgets_the_fake_fails_loudly_instead_of_going_online
+1 failed in 37.07s

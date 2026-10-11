@@ -1,0 +1,402 @@
+{
+ "mode": "hosted",
+ "paths_enumerated": 116,
+ "routes": 71,
+ "requests_total": 2891,
+ "findings": [
+  {
+   "label": "variant",
+   "m": "GET",
+   "p": "/auth/login%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 200 loc None body[:80]='<!doctype html><title>Sign in \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "GET",
+   "p": "/auth/login%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 200 loc None body[:80]='<!doctype html><title>Sign in \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "POST",
+   "p": "/auth/login%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 401 loc None body[:80]='<!doctype html><title>Sign in \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "POST",
+   "p": "/auth/login%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 401 loc None body[:80]='<!doctype html><title>Sign in \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "HEAD",
+   "p": "/auth/login%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 405 loc None body[:80]='<!doctype html><title>405 Method Not Allowed \u2014 AutoTester</title>\\n<link rel=\"pre'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "HEAD",
+   "p": "/auth/login%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 405 loc None body[:80]='{\"detail\":\"Method Not Allowed\"}'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "GET",
+   "p": "/healthz%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 200 loc None body[:80]='{\"ok\":true}'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "GET",
+   "p": "/healthz%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 200 loc None body[:80]='{\"ok\":true}'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "HEAD",
+   "p": "/healthz%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 405 loc None body[:80]='<!doctype html><title>405 Method Not Allowed \u2014 AutoTester</title>\\n<link rel=\"pre'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "HEAD",
+   "p": "/healthz%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 405 loc None body[:80]='{\"detail\":\"Method Not Allowed\"}'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "GET",
+   "p": "/auth/signup%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 200 loc None body[:80]='<!doctype html><title>Sign up \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "GET",
+   "p": "/auth/signup%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 200 loc None body[:80]='<!doctype html><title>Sign up \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "POST",
+   "p": "/auth/signup%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 400 loc None body[:80]='<!doctype html><title>Sign up \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "POST",
+   "p": "/auth/signup%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 400 loc None body[:80]='<!doctype html><title>Sign up \u2014 AutoTester</title>\\n<link rel=\"preconnect\" href=\"'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "HEAD",
+   "p": "/auth/signup%0a",
+   "html": true,
+   "bad": [
+    "not refused: status 405 loc None body[:80]='<!doctype html><title>405 Method Not Allowed \u2014 AutoTester</title>\\n<link rel=\"pre'"
+   ]
+  },
+  {
+   "label": "variant",
+   "m": "HEAD",
+   "p": "/auth/signup%0a",
+   "html": false,
+   "bad": [
+    "not refused: status 405 loc None body[:80]='{\"detail\":\"Method Not Allowed\"}'"
+   ]
+  }
+ ],
+ "windowA": {
+  "requests": 2875,
+  "data_root_diff": [
+   [
+    "added",
+    ".work/audit.jsonl"
+   ]
+  ],
+  "audit_lines_after_windowA": [
+   "{\"ts\": \"2026-10-11T01:06:26.900039+00:00\", \"actor\": \"\", \"target\": \"\", \"action\": \"login-failed\"}",
+   "{\"ts\": \"2026-10-11T01:06:27.666574+00:00\", \"actor\": \"\", \"target\": \"\", \"action\": \"login-failed\"}"
+  ]
+ },
+ "healthz": [
+  {
+   "accept_html": true,
+   "status": 200,
+   "body": "{\"ok\":true}",
+   "ctype": [
+    "application/json"
+   ]
+  },
+  {
+   "accept_html": false,
+   "status": 200,
+   "body": "{\"ok\":true}",
+   "ctype": [
+    "application/json"
+   ]
+  },
+  {
+   "host": "evil.example",
+   "status": 403,
+   "body": ""
+  },
+  {
+   "host": "localhost:8000",
+   "status": 200,
+   "body": "{\"ok\":true}"
+  }
+ ],
+ "public": [
+  {
+   "m": "GET",
+   "p": "/auth/login",
+   "status": 200,
+   "loc": null,
+   "len": 16693,
+   "leak": [],
+   "allow": []
+  },
+  {
+   "m": "HEAD",
+   "p": "/auth/login",
+   "status": 405,
+   "loc": null,
+   "len": 16448,
+   "leak": [],
+   "allow": [
+    "GET"
+   ]
+  },
+  {
+   "m": "OPTIONS",
+   "p": "/auth/login",
+   "status": 302,
+   "loc": "/auth/login?next=/auth/login",
+   "len": 0,
+   "leak": [],
+   "allow": []
+  },
+  {
+   "m": "GET",
+   "p": "/auth/signup",
+   "status": 200,
+   "loc": null,
+   "len": 16820,
+   "leak": [],
+   "allow": []
+  },
+  {
+   "m": "HEAD",
+   "p": "/auth/signup",
+   "status": 405,
+   "loc": null,
+   "len": 16448,
+   "leak": [],
+   "allow": [
+    "GET"
+   ]
+  },
+  {
+   "m": "OPTIONS",
+   "p": "/auth/signup",
+   "status": 302,
+   "loc": "/auth/login?next=/auth/signup",
+   "len": 0,
+   "leak": [],
+   "allow": []
+  }
+ ],
+ "windowB": {
+  "diff": [
+   [
+    "changed",
+    ".auth/auth.sqlite3"
+   ],
+   [
+    "changed",
+    ".work/audit.jsonl"
+   ]
+  ],
+  "responses": [
+   {
+    "p": "/auth/login",
+    "body": "",
+    "status": 401,
+    "leak": [],
+    "echo_email": false
+   },
+   {
+    "p": "/auth/login",
+    "body": "email=nobody%40nowhere.test&password=wro",
+    "status": 401,
+    "leak": [],
+    "echo_email": false
+   },
+   {
+    "p": "/auth/login",
+    "body": "email=%3Cb%3E&password=x",
+    "status": 401,
+    "leak": [],
+    "echo_email": false
+   },
+   {
+    "p": "/auth/signup",
+    "body": "",
+    "status": 400,
+    "leak": [],
+    "echo_email": false
+   },
+   {
+    "p": "/auth/signup",
+    "body": "email=nobody%40nowhere.test&password=wro",
+    "status": 303,
+    "leak": [],
+    "echo_email": false
+   },
+   {
+    "p": "/auth/signup",
+    "body": "email=%3Cb%3E&password=x",
+    "status": 400,
+    "leak": [],
+    "echo_email": false
+   }
+  ],
+  "audit_tail": [
+   "{\"ts\": \"2026-10-11T01:06:33.924478+00:00\", \"actor\": \"nobody@nowhere.test\", \"target\": \"\", \"action\": \"login-failed\"}",
+   "{\"ts\": \"2026-10-11T01:06:34.561488+00:00\", \"actor\": \"\", \"target\": \"\", \"action\": \"login-failed\"}",
+   "{\"ts\": \"2026-10-11T01:06:35.104338+00:00\", \"actor\": \"nobody@nowhere.test\", \"target\": \"nobody@nowhere.test\", \"action\": \"signup\"}"
+  ]
+ },
+ "rows_sample": [
+  {
+   "label": "host",
+   "host": "evil.example",
+   "status": 403,
+   "loc": null,
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "localhost.evil.com",
+   "status": 403,
+   "loc": null,
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "127.0.0.1.evil.io",
+   "status": 403,
+   "loc": null,
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "localhost:8000.evil.com",
+   "status": 403,
+   "loc": null,
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "testserver.evil.com",
+   "status": 403,
+   "loc": null,
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "TESTSERVER",
+   "status": 302,
+   "loc": "/auth/login?next=/projects/alpha/env",
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "localhost@evil.example",
+   "status": 403,
+   "loc": null,
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "evil.example#@localhost",
+   "status": 403,
+   "loc": null,
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "[::1]:8000",
+   "status": 302,
+   "loc": "/auth/login?next=/projects/alpha/env",
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "",
+   "status": 302,
+   "loc": "/auth/login?next=/projects/alpha/env",
+   "leak": []
+  },
+  {
+   "label": "host",
+   "host": "localhost\t",
+   "status": 302,
+   "loc": "/auth/login?next=/projects/alpha/env",
+   "leak": []
+  },
+  {
+   "label": "host-absent",
+   "status": 403
+  },
+  {
+   "label": "host-dup",
+   "status": 403,
+   "text": ""
+  }
+ ]
+}

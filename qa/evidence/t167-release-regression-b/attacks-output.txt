@@ -1,0 +1,16 @@
+Run: uv run --directory <copy of 667a0c64> python attacks.py <copy>   (autotester imported from the copy's src)
+HELD  A1a honest narrow approval (1 action, real cost 3) refused
+BREACH A1b scope.json pre-seeded with max_actions=1 (cost 3) + approval of 1 action -> reached pause=awaiting_human; after yes calls=['c-f1','c-f2','c-f3']
+HELD  A2 resume after approvals file emptied (frozen scope present) -> ApprovalRequired
+HELD  A3a latest trusted earlier release is the baseline (r3 -> r2)
+HELD  A3b later (day5) release not baseline of day4 run (-> r3)
+HELD  A3c unfinished / flagged record not trusted; A3d failing result not trusted; A3e missing result not trusted
+HELD  A3f r4 regressed c-f1 vs r3
+A4 FlowSpec drops f2 between releases -> diff regressed/fixed/new all [] and issues [] (silent)
+HELD  A5a truncated checkpoint refused (JSONDecodeError); A5b foreign-thread checkpoint refused (ValueError)
+HELD  A6 scope.json edited AFTER the pause refused (ApprovalRequired: release scope changed or is missing)
+HELD  A7a decision on a fresh run refused (ValueError) -- but scope.json is left behind
+HELD  A7b decision replay after finish refused
+HELD  A8 non-release StageContext cannot drive a release run (ApprovalRequired)
+A9 run_id '../escaped' accepted; directory created outside runs/
+Order mutants (copies): m7 preflight right after _compile -> 14 passed (equivalent, no disk touched between); m8 right before save_release_scope -> 14 passed (equivalent); m9 right after save_release_scope -> test_rr2_a_forged_scope... red (run dir exists).

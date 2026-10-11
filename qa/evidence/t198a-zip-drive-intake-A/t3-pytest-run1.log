@@ -1,0 +1,21 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\autoTesting\.worktrees\t198a-zip-drive-intake
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 53 items
+
+.worktrees\t198a-zip-drive-intake\tests\test_ui_intake.py .............. [ 26%]
+......                                                                   [ 37%]
+.worktrees\t198a-zip-drive-intake\tests\test_ui_intake_drive.py ........ [ 52%]
+....                                                                     [ 60%]
+.worktrees\t198a-zip-drive-intake\tests\test_drive_intake.py ........... [ 81%]
+..........                                                               [100%]
+
+============================== warnings summary ===============================
+.worktrees\t198a-zip-drive-intake\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t198a-zip-drive-intake\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 53 passed, 1 warning in 22.54s ========================

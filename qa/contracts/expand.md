@@ -15,10 +15,14 @@ matrix derived from observed UI," not a hand-written happy-path test. T-070's ow
 
 ## Criteria
 
-### X1 — Refuses an unreviewed FlowSpec
-`stages/expand.py::expand` calls `stages/review.py::require_reviewed` first — an unapproved
-`FlowSpec` (`DRAFT` or `NEEDS_EDIT`) raises `FlowSpecNotReviewed` before any provider call is
-made, never silently expanding a guess.
+### X1 — Refuses a FlowSpec the review gate still blocks, and only that one
+`stages/expand.py::expand` applies the review gate first (`review-gate.md` R5, which is the rule). A
+spec the gate still blocks raises `FlowSpecNotReviewed` before any provider call is made, never
+silently expanding a guess: a spec at `NEEDS_EDIT`, and a spec with an unreconciled flow (any
+`Flow.kind` unset). A **reconciled** spec at `DRAFT` is not blocked: it expands exactly as at
+`APPROVED` (D-070 item 2; amended 2026-10-11). *Verify:* the R5 tests in `review-gate.md`, run through
+`expand`. *Until the R5 code unit lands, `expand` still calls `require_reviewed` unconditionally, so
+the original behaviour (any `DRAFT` raises) is what the code does today.*
 
 ### X2 — Every flow gets its own happy-path case, unmodified
 `expand_flow` always produces exactly one `CaseClass.HAPPY`/`CaseKind.BEST` case whose steps are
@@ -56,8 +60,9 @@ entry points a person uses**, not only from tests:
   `ProjectStore`, and `expand()` itself still does not persist (this contract's no-fire list keeps
   that the caller's job).
 - `ui/routes_learn.py::generate_cases` (`POST /projects/{slug}/cases/generate`) — the button, shown
-  **only** once `review.status is APPROVED`, so X1 is enforced by the interface as well as by the
-  code behind it.
+  **only** when `expand` would accept the spec (today: `review.status is APPROVED`; after the
+  `review-gate.md` R5 unit: also a reconciled `DRAFT`), so X1 is enforced by the interface as well as
+  by the code behind it.
 
 The button's four refusal paths — **no FlowSpec**, **an unapproved FlowSpec** (X1 reaching the
 UI), **no provider with credentials**, and **a `ProviderError` raised mid-generation by an
@@ -149,3 +154,9 @@ spanning all three `CaseKind`s (best / worst / edge)**, and `autotester expand` 
   AT-670 was already spent by the t191 remap the same day, so the sweep row collided with it and was
   renumbered into the checker's new block (AT-690..AT-709). No criterion, claim or verification line
   changes. Appended rather than edited because this log is append-only. **Links:** AT-690; AT-664.
+
+- 2026-10-11 · owner-authorized (D-070 item 2) · **X1 reworded; X6's button condition follows it.**
+  X1 required every `DRAFT` to raise; D-070 item 2 makes the DRAFT gate status-only for reconciled
+  flows, so X1 now refuses only what `review-gate.md` R5 still blocks (`NEEDS_EDIT`, unreconciled
+  specs). X2-X5 unchanged. The code (`expand.py:137`) still raises on every `DRAFT` until the separate
+  R5 unit lands (D-073). **Links:** D-070; D-073; `review-gate.md` R5.

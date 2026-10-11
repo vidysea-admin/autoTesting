@@ -149,6 +149,18 @@ stricter than the request schema can be: `extra="forbid"` is C1's rule and Gemin
 way to express it, so an unexpected key is caught only here or not at all. Per I13 this needs a
 check, not merely the code - a stub response is enough; no network is required.
 
+### I16 - Ingest leaves the review status DRAFT and nothing waits on it (D-070 item 2; added 2026-10-11)
+A recording becomes a `FlowSpec` without a human step. `ingest_video` and `persist_ingest` leave
+`review.status` at its default `DRAFT` (never `APPROVED`, never `NEEDS_EDIT`), do not call
+`approve`, and do not call `require_reviewed`; no ingest output waits on a human approval before the
+next stage (reconcile, `reconcile.md`) may read it. I6 stands: a human-`APPROVED` spec already on disk
+is still not overwritten without `--replace`, because D-070 removes the dependency on a human, not the
+protection of one's judgement. *Verify:* a `MockProvider` ingest followed by `persist_ingest` into an
+empty project yields `review.status == DRAFT`, `review.by is None`, with no `approve` call;
+`grep -nE "require_reviewed|approve\(" src/autotester/stages/ingest.py` returns nothing; the I6 refusal
+test still passes. *Falsification:* make `persist_ingest` set `ReviewStatus.APPROVED` on write; the
+DRAFT assertion must go red.
+
 ## No-fire list
 
 - **The golden test itself** (">=90% step recall vs a hand-written list on a real demo video") —
@@ -159,7 +171,8 @@ check, not merely the code - a stub response is enough; no network is required.
 - **Merging into an existing `FlowSpec`** — `ingest_video` always produces a fresh `FlowSpec`;
   conflict detection (`Conflict` model) and merge logic are a later unit's job.
 - **The review gate** (`FlowSpec.review.status` draft→approved) — that is T-065, a separate task
-  the plan already names.
+  the plan already names; since D-070 item 2 it is a status only (`review-gate.md` R5), and I16
+  below states the one thing ingest owes it.
 - **Live model calls.** No criterion above requires one; the whole stage is satisfiable against
   `MockProvider`, and `upload_and_wait` is judged on its state machine and error shape rather than
   against the real Files API. Exercising the real Files API is A3/A4 territory, and that is where
@@ -278,3 +291,9 @@ check, not merely the code - a stub response is enough; no network is required.
   AT-670 was already spent by the t191 remap the same day, so the sweep row collided with it and was
   renumbered into the checker's new block (AT-690..AT-709). No criterion, claim or verification line
   changes. Appended rather than edited because this log is append-only. **Links:** AT-690; AT-664.
+
+- 2026-10-11 · owner-authorized (D-070 item 2) · **I16 added; the no-fire note on the review gate
+  updated.** The contract said nothing about what ingest owes the review status after D-070 removed the
+  human-approval dependency for video-derived flows. I16 pins the one checkable part: ingest writes
+  `DRAFT`, never approves and never calls the guard; I6 (an APPROVED spec is not clobbered) is
+  unchanged. Tightening only. **Links:** D-070; `review-gate.md` R5; `reconcile.md` RC10.

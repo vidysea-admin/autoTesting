@@ -19,6 +19,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from hard_timeout import hard_timeout
 from timing_scale import timing_scale
 
 from autotester.browser.observe import PageObserver
@@ -48,14 +49,34 @@ INVENTORY = json.loads((SITE / "inventory.json").read_text(encoding="utf-8"))
 ROUTES = {r["id"]: r for r in INVENTORY["routes"]}
 
 
+FULL = CrawlBounds(
+    max_screens=40, max_actions=200, wall_clock_s=240.0 * timing_scale(), max_depth=6,
+)
+# crawl-live-hang: the crawl's own wall-clock bound plus browser start and the (slow, on a
+# busy host) browser close; a body past this is torn down and fails instead of holding the suite.
+WATCHDOG_S = 600.0 * timing_scale()
+_CHROMIUM_UNAVAILABLE: list[str] = []  # the preflight verdict, decided once per file
+
+
+def _require_chromium() -> None:
+    """Decide "no browser" before the crawl, so a real failure never reads as a skip. A browser
+    launch+close costs seconds, and a minute or more on a busy host, so it runs once per file."""
+    sync_api = pytest.importorskip("playwright.sync_api")
+    if not _CHROMIUM_UNAVAILABLE:
+        try:
+            with sync_api.sync_playwright() as pw:
+                pw.chromium.launch(headless=True).close()
+            _CHROMIUM_UNAVAILABLE.append("")
+        except Exception as exc:  # pragma: no cover - browser binary missing
+            _CHROMIUM_UNAVAILABLE.append(f"chromium unavailable: {type(exc).__name__}")
+    if _CHROMIUM_UNAVAILABLE[0]:
+        pytest.skip(_CHROMIUM_UNAVAILABLE[0])
+
+
+@hard_timeout(WATCHDOG_S, "inventory crawl")
 def _crawl_inventory(tmp_path: Path, base: str,
                      bounds: CrawlBounds) -> tuple[Crawl, list[ScreenNode], list[ScreenEdge]]:
-    sync_api = pytest.importorskip("playwright.sync_api")
-    try:  # decide "no browser" before the crawl, so a real failure never reads as a skip
-        with sync_api.sync_playwright() as pw:
-            pw.chromium.launch(headless=True).close()
-    except Exception as exc:  # pragma: no cover - browser binary missing
-        pytest.skip(f"chromium unavailable: {type(exc).__name__}")
+    _require_chromium()
     url, login = f"{base}{INVENTORY['base']}", f"{base}{INVENTORY['login']['url']}"
     project = Project(slug="inv", name="Inventory", base_url=url,
                       allowed_domains=["127.0.0.1"], headed=False)
@@ -99,11 +120,6 @@ def _entered(route: dict, nodes: list[ScreenNode]) -> bool:
 
 def _reached_ids(nodes: list[ScreenNode]) -> set[str]:
     return {rid for rid, route in ROUTES.items() if _entered(route, nodes)}
-
-
-FULL = CrawlBounds(
-    max_screens=40, max_actions=200, wall_clock_s=240.0 * timing_scale(), max_depth=6,
-)
 
 
 def test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused(

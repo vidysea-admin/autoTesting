@@ -256,11 +256,21 @@ past it". CN1-CN10 retain their fail-closed obligations.
   for the entire requested run, including executor actions, probes and elapsed wall time. No path,
   worker, retry or case resets or bypasses its consumed totals. Stop on a brake, identify the brake
   and record stopped/truncated truth; partial execution never reports completed E2E (C12).
+  *Amendment 2026-10-07 (T-125 integration):* Actions are spent per executed step through
+  `RunBudget.check(actions=...)`, never by a case-level pre-charge. A case refused by an exhausted
+  budget still persists its own ERRORED result and INCONCLUSIVE verdict naming the brake (its error
+  contains `run budget exhausted: <stop_reason>`); no case is skipped, and the EXECUTE stage is
+  recorded `failed`.
 - **Redacted accountability.** Record performed actions, field changes and their prior values,
   button presses, actual bounds and stop reasons in the existing report/trace surfaces after
   redaction. Secret prior values are never copied into accountability records or screenshots.
-- **Remaining gates.** Human FlowSpec review, explicit adversarial authorization, production
-  promotion, project write policy and model-spend gates remain applicable. The D-066 Origin/CSRF check
+- **Remaining gates.** Explicit adversarial authorization, production
+  promotion, project write policy and model-spend gates remain applicable. FlowSpec human review is
+  **not** one of them any more: since D-070 item 2 it is a status only that never blocks case
+  generation from reconciled flows (`review-gate.md` R5, which also says what still blocks), so CN11
+  neither requires it nor replaces it, and a run approval (human-granted or account-derived) is a
+  different thing from a FlowSpec's review status. (Amended 2026-10-11; the code still enforces the
+  old gate until the `review-gate.md` R5 unit lands.) The D-066 Origin/CSRF check
   on state-changing UI routes remains required. CN11 grants no blanket live-account write,
   paid-model-run, production-write or release authority.
 - **Verify:** independently exercise the authorized grant through real preflight/seam checks with
@@ -392,3 +402,15 @@ past it". CN1-CN10 retain their fail-closed obligations.
   ADVERSARIAL grant, the D-066 Origin/CSRF check. **Changes-authorized:** qa/contracts/consent.md
   Purpose, CN1, CN5, CN11, out-of-scope bullet and this log. Contract maintenance only: no runtime
   change. **Links:** D-068; D-063; D-066; D-018; T-145; qa/gates/d063-cn5-vs-cn11.md.
+
+- 2026-10-07 · routine (clarify) · checker-owned: the "One aggregate budget" criterion in CN11 gained an
+  amendment line recording how the merged code (d063 `RunBudget`) spends and reports the brake: actions
+  per executed step via `RunBudget.check(actions=...)`, no case-level pre-charge; a refused case still
+  persists ERRORED + INCONCLUSIVE naming the brake; no case skipped; EXECUTE stage `failed`. Adds no
+  obligation beyond the merged code and weakens none. **Changes-authorized:** qa/contracts/consent.md
+  CN11 "One aggregate budget" + this log. **Links:** T-125 integration rework; D-063.
+
+- 2026-10-11 · owner-authorized (D-070 item 2) · **CN11 "Remaining gates" reconciled with
+  `review-gate.md` R5:** it said "Human FlowSpec review ... remain[s] applicable", which contradicted D-070
+  item 2 (the DRAFT review gate is a status only). Reworded so the three contracts agree. No consent,
+  approval, budget or write-policy criterion changed. **Links:** D-070; `review-gate.md` R5.

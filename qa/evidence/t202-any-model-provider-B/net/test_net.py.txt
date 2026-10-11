@@ -1,0 +1,102 @@
+import socket, asyncio, time, errno
+import pytest
+
+def classify(label, fn):
+    t=time.time()
+    try:
+        r = fn()
+        out = f"RESULT-NO-EXC {r!r}"
+        verdict = "REACHED-THE-WIRE?" 
+    except AssertionError as e:
+        out, verdict = f"AssertionError: {str(e)[:70]}", "REFUSED"
+    except BaseException as e:
+        out = f"{type(e).__name__}: {str(e)[:90]}"
+        verdict = "REACHED-THE-WIRE" if isinstance(e,(TimeoutError,socket.timeout,ConnectionError,OSError,BlockingIOError)) and "tried a real" not in str(e) else "OTHER"
+    print(f"RES|{label}|{verdict}|{time.time()-t:.2f}s|{out}")
+
+def test_all(no_network):
+    T=("192.0.2.1",9)
+    def raw_connect(fam=socket.AF_INET, addr=T, typ=socket.SOCK_STREAM):
+        s=socket.socket(fam,typ); s.settimeout(0.5)
+        try: s.connect(addr)
+        finally: s.close()
+    def ex():
+        s=socket.socket(); s.settimeout(0.5)
+        try: return s.connect_ex(T)
+        finally: s.close()
+    def nonblock():
+        s=socket.socket(); s.setblocking(False)
+        try: return s.connect_ex(("198.51.100.1",9))
+        finally: s.close()
+    def nonblock_connect():
+        s=socket.socket(); s.setblocking(False)
+        try: s.connect(("198.51.100.1",9))
+        finally: s.close()
+    def udp_sendto():
+        s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); s.settimeout(0.5)
+        try: return s.sendto(b"x",("203.0.113.1",9))
+        finally: s.close()
+    def udp_connect():
+        s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        try: s.connect(("203.0.113.1",9)); return s.send(b"x")
+        finally: s.close()
+    def udp_sendto6():
+        s=socket.socket(socket.AF_INET6,socket.SOCK_DGRAM)
+        try: return s.sendto(b"x",("2001:db8::1",9,0,0))
+        finally: s.close()
+    def tcp6():
+        raw_connect(socket.AF_INET6,("2001:db8::1",9,0,0))
+    def csock():
+        import _socket
+        s=_socket.socket(_socket.AF_INET,_socket.SOCK_STREAM); s.settimeout(0.5)
+        try: s.connect(T)
+        finally: s.close()
+    def sub():
+        class S(socket.socket): pass
+        s=S(); s.settimeout(0.5)
+        try: s.connect(T)
+        finally: s.close()
+    def dns(): return socket.getaddrinfo("example.invalid",80)
+    def dns2(): return socket.gethostbyname("example.invalid")
+    def create_conn(): return socket.create_connection(T,timeout=0.5)
+    def aio_sock_connect():
+        async def go():
+            loop=asyncio.get_running_loop(); s=socket.socket(); s.setblocking(False)
+            try: await asyncio.wait_for(loop.sock_connect(s,("203.0.113.1",9)),0.5)
+            finally: s.close()
+        return asyncio.run(go())
+    def aio_open():
+        async def go():
+            await asyncio.wait_for(asyncio.open_connection("203.0.113.1",9),0.5)
+        return asyncio.run(go())
+    def httpclient():
+        import http.client
+        c=http.client.HTTPConnection("192.0.2.1",timeout=0.5); c.request("GET","/")
+    def urlopen():
+        import urllib.request
+        return urllib.request.urlopen("http://192.0.2.1",timeout=0.5)
+    def httpx_get():
+        import httpx
+        with httpx.Client(timeout=0.5) as c: return c.get("http://192.0.2.1")
+    def httpx_async():
+        import httpx
+        async def go():
+            async with httpx.AsyncClient(timeout=0.5) as c: return await c.get("http://192.0.2.1")
+        return asyncio.run(go())
+    def requests_get():
+        import requests
+        return requests.get("http://192.0.2.1",timeout=0.5)
+    def ssl_wrap():
+        import ssl
+        ctx=ssl.create_default_context()
+        with socket.create_connection(("198.51.100.1",443),timeout=0.5) as s: ctx.wrap_socket(s,server_hostname="x")
+    def subproc():
+        import subprocess
+        return subprocess.run(["curl.exe","-s","-m","1","http://192.0.2.1"],capture_output=True,timeout=5).returncode
+    for label,fn in [("socket.connect TCP4 192.0.2.1",raw_connect),("connect_ex 192.0.2.1",ex),("nonblocking connect_ex 198.51.100.1",nonblock),("nonblocking connect 198.51.100.1",nonblock_connect),
+        ("TCP6 connect 2001:db8::1",tcp6),("UDP sendto 203.0.113.1",udp_sendto),("UDP connect+send 203.0.113.1",udp_connect),("UDP6 sendto 2001:db8::1",udp_sendto6),
+        ("_socket.socket (C class) connect",csock),("socket subclass connect",sub),("getaddrinfo example.invalid",dns),("gethostbyname example.invalid",dns2),
+        ("socket.create_connection",create_conn),("asyncio loop.sock_connect",aio_sock_connect),("asyncio open_connection",aio_open),
+        ("http.client.HTTPConnection",httpclient),("urllib.request.urlopen",urlopen),("httpx.Client.get",httpx_get),("httpx.AsyncClient.get",httpx_async),("requests.get",requests_get),("ssl via create_connection",ssl_wrap),("subprocess curl.exe",subproc)]:
+        classify(label,fn)
+    print("RES|fixture attempts recorded:",no_network)

@@ -22,6 +22,10 @@ projects/*/runs/
 # state, same as runs/, not a deliverable to hand-commit per project
 projects/*/rubrics/
 
+# Adversarial-pass run records and the refusal audit log (T-154/D-017) -- local, probe
+# traffic can carry product data; the log is read by the report, never committed
+projects/*/ai/
+
 # Video chunks and extracted frames (host-side media prep, Track A/D-014) --
 # large binary derived state, regenerable from the registered source
 projects/*/sources/*/chunks/
@@ -75,3 +79,4 @@ projects/*/issues.jsonl
 # maker-checker parallel wave worktrees (AIOS /maker convention)
 .worktrees/
 .claude/settings.json.bak-*
+HANDOFF.md

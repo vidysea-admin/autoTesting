@@ -1,0 +1,12 @@
+{
+ "unit": "land-t203-hosting", "head": "05b8b7ba", "code": "fddbf469", "port": 8123, "host": "127.0.0.1",
+ "data_root": "D:/autoTesting/.worktrees/land-t203-hosting/.work/checker-walk",
+ "contract_rows": {"HO16": "observed: press returns 303 at once, queued then running then done, FIFO; redirect goes to /report not a run page; depth cap 429 with reason",
+                   "HO17": "observed: cap 2 -> 2 running + gamma queued; same project 1 running + others queued; FIFO release",
+                   "HO18": "observed in UI: seeded running became interrupted with reason at boot; slots released after finish",
+                   "HO21": "partial: requested_by/trigger stored but not displayed on the queue panel; no auth layer exercised"},
+ "console_errors": {"phase1": 1, "phase2": 1, "js_page_errors": 0, "note": "both are the expected 400/429 resource responses"},
+ "blocked_capability": [],
+ "defects": ["queue panel omits requested_by/trigger (ui/run_queue_view.py:25-31)", "no-runs empty state shown under a running queue (ui/routes_report.py:221-223)", "interrupted reason says 'press Test again' vs button 'Run tests' (ui/run_queue.py:112-113)", "mobile queue table overflows card"],
+ "harness_stubs_phase2": ["routes_runs._prepare_run no-op", "queue runner replaced by blocking fake"]
+}

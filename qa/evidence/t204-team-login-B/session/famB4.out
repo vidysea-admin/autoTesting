@@ -1,0 +1,8 @@
+  unknown                        status=[401] bodies=1 median= 113.3ms p10= 100.5 p90= 135.2 n=25
+  wrong pw                       status=[401] bodies=1 median= 112.6ms p10= 105.1 p90= 120.9 n=25
+  disabled (right pw)            status=[401] bodies=1 median= 112.1ms p10= 102.9 p90= 120.5 n=25
+  disabled (wrong pw)            status=[401] bodies=1 median= 110.7ms p10= 101.9 p90= 134.1 n=25
+  invalid-format email           status=[401] bodies=1 median= 113.1ms p10= 107.0 p90= 129.3 n=25
+  legacy cheap-hash, wrong pw    status=[401] bodies=1 median=  16.5ms p10=  14.4 p90=  18.2 n=25
+  right pw                       status=[303] bodies=1 median= 124.3ms p10= 116.7 p90= 143.7 n=25
+  failure cases (unknown/wrong/disabled x2/invalid) one body hash: True

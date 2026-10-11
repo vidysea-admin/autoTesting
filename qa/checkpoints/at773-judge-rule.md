@@ -12,3 +12,9 @@ Completed:
 
 Remaining: full suite (queued 6th) under D:/autoTesting/.work/suite.lock; then the merge, re-run of grade tests, issue rows and push. Lock not taken: held by the t203 checker at 19:29 IST, and the coordinator set the queue order.
 Attribution: claude-sonnet-subagent checker; verdict qa/verdicts/at773-judge-rule.md.
+
+## Resume 1 of 2 (2026-10-11, head 7a1509ee; code identity unchanged from 4acce31b)
+- R1 branch head 7a1509ee = cycle-0 verdict commit on top of 4acce31b; diff between them is qa files only. Result: unchanged code identity.
+- R2 `tick.mjs --lint-manifest` on the branch manifest: exit 1 (ERROR no-pre-check, ERROR mutant-cap). Result: not dispatchable, BLOCKED-PROCESS written. C1-C6 above are reusable on resume 2 only if src/tests hashes stay as at 4acce31b.
+- R3 merge forecast: merge-tree clean (tree 79391b0d), merged-tree grade tests 54 passed. Evidence: qa/evidence/at773-judge-rule/resume1-2026-10-11.md.
+- Still remaining after the maker fixes the manifest: acceptance end to end re-run by this checker (reuse per .9-5 once Pre-check lines carry t= and blobs=), class attack (every assertion kind, multiple assertions with one unmet, missing/unreadable evidence, retired/errored case), one falsification per criterion in a throwaway copy, P1/P4 follow-up decision.

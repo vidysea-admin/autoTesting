@@ -7,6 +7,8 @@ hand-computed detection-rate number anywhere in this module or its callers.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from autotester.schema.bench import BenchCorpus, BenchTrial, Finding, SeededBug
 from autotester.schema.enums import Participant, Result
 from autotester.schema.verdict import Verdict
@@ -36,13 +38,17 @@ def findings_from_verdicts(
 
 def run_autotester_trial(
     trial_id: str, corpus: BenchCorpus, verdicts: list[Verdict], case_bug_map: dict[str, str],
-    duration_s: float,
+    duration_s: float | None = None, *,
+    ordering: Literal[
+        "independent_parallel", "human_read_ai_first", "ai_read_human_first", "unknown"
+    ] = "unknown",
 ) -> BenchTrial:
     """The real participant: findings derived mechanically from a real
     execute+grade run, never hand-adjusted afterward."""
     return BenchTrial(
         id=trial_id, corpus_id=corpus.id, participant=Participant.AUTOTESTER,
         participant_label="autotester-real-run",
+        kind="autotester", ordering=ordering,
         findings=findings_from_verdicts(verdicts, case_bug_map),
         duration_s=duration_s,
     )
@@ -51,29 +57,29 @@ def run_autotester_trial(
 def oracle_human_trial(
     trial_id: str, corpus: BenchCorpus, duration_s: float | None = None
 ) -> BenchTrial:
-    """Documented baseline, not a live trial (qa/contracts/bench.md Purpose):
-    a perfect-precision, perfect-recall reviewer who finds exactly the seeded
-    bugs and nothing else. `participant_label` says so explicitly so no
-    downstream reader can mistake this for a real timed human run.
+    """Synthetic fixture oracle, typed separately from a live human.
 
-    AT-543: `duration_s` is measured-when-a-real-human-runs, never hardcoded.
-    A literal 300.0 here produced a scorecard whose "AutoTester wins on time"
-    row compared a real 13.6 s against a made-up constant. `None` (the default)
-    scores the human side with `duration_s=0.0` — which every comparison
-    surface must render as *unmeasured*, not as a winning margin. A caller who
-    has actually timed a human passes the real number."""
+    Missing duration stays unavailable; supplying timing never changes its kind.
+    """
+    if corpus.mode != "fixture" or any(
+        bug.provenance != "fixture_seeded" for bug in corpus.seeded_bugs
+    ):
+        raise ValueError("oracle requires explicit fixture ground truth")
     findings = [
-        Finding(text=f"{bug.location}: {bug.detect_hint}", matched_bug_id=bug.id)
+        Finding(text=f"{bug.location}: {bug.detect_hint}", matched_bug_id=bug.id,
+                provenance="independent")
         for bug in corpus.seeded_bugs
     ]
     return BenchTrial(
         id=trial_id, corpus_id=corpus.id, participant=Participant.HUMAN,
         participant_label="human-oracle-baseline", findings=findings,
-        duration_s=duration_s if duration_s is not None else 0.0,
+        kind="human_oracle", ordering="independent_parallel", duration_s=duration_s,
     )
 
 
-def scorecard(corpus: BenchCorpus, trials: list[BenchTrial]) -> dict[str, dict[str, float]]:
+def scorecard(
+    corpus: BenchCorpus, trials: list[BenchTrial]
+) -> dict[str, dict[str, float | int | str | None]]:
     """Every entry is `trial.score(corpus)` verbatim — the only place a
     detection-rate/false-positive-rate number is computed in this system."""
     return {
@@ -87,5 +93,5 @@ def seeded_bug(
 ) -> SeededBug:
     return SeededBug(
         id=bug_id, description=description, location=location, detect_hint=detect_hint,
-        severity=severity,
+        severity=severity, provenance="fixture_seeded",
     )

@@ -1,0 +1,38 @@
+GREEN-BEFORE
+.                                                                        [100%]
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 2.11s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_a_project_spec_beats_the_env_default_and_is_per_role __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000022559812DD0>
+
+    def test_a_project_spec_beats_the_env_default_and_is_per_role(
+            monkeypatch: pytest.MonkeyPatch) -> None:
+        install(monkeypatch, [])
+        monkeypatch.setenv("AUTOTESTER_MODEL", "gemini/gemini-2.5-pro")
+        project = _project_with(judge="litellm:openai/gpt-4o")
+>       assert providers.for_role(project, "judge").label == "litellm:openai/gpt-4o"
+E       AssertionError: assert 'litellm:gemi...emini-2.5-pro' == 'litellm:openai/gpt-4o'
+E         
+E         - litellm:openai/gpt-4o
+E         + litellm:gemini/gemini-2.5-pro
+
+tests\test_provider_factory.py:95: AssertionError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t202-any-model-provider\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_factory.py::test_a_project_spec_beats_the_env_default_and_is_per_role
+1 failed, 1 warning in 1.29s

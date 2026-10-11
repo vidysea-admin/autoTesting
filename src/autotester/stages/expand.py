@@ -9,10 +9,11 @@ from __future__ import annotations
 
 from autotester.core.paths import RepoDocs
 from autotester.providers.base import Provider, load_skill_prompt
-from autotester.schema.case import Case, ExpandedSteps
+from autotester.schema.case import Case, CaseProposal, ExpandedSteps
 from autotester.schema.enums import KIND_BY_CLASS, Action, CaseClass
 from autotester.schema.flowspec import Flow, FlowSpec
 from autotester.stages.review import require_reviewed
+from autotester.store.project_store import ProjectStore
 
 SKILL_NAME = "expand-case"  # src/autotester/skills/expand-case/SKILL.md (T-175, was expand_case_v1)
 
@@ -111,31 +112,77 @@ def _expanded_case(
     )
 
 
-def expand_flow(
-    flow: Flow, project: str, provider: Provider, docs: RepoDocs | None = None
-) -> list[Case]:
-    """One flow -> one Case per applicable CaseClass (HAPPY, plus every other
-    class the model didn't decline)."""
-    docs = docs or RepoDocs()
+def propose_cases(spec: FlowSpec) -> list[CaseProposal]:
+    """Prepare a deterministic step-less taxonomy for human review, with no provider calls."""
+    require_reviewed(spec)
+    return [CaseProposal(
+        project=spec.project, flow_id=flow.id,
+        spec_fingerprint=CaseProposal.fingerprint_for(spec), case_class=case_class,
+        title=f"{flow.name} — {case_class.value}",
+        rationale=("the flow's own observed steps" if case_class is CaseClass.HAPPY
+                   else CLASS_DESCRIPTIONS[case_class]),
+    ) for flow in spec.flows for case_class in applicable_classes(flow)]
+
+
+def stage_and_review(store: ProjectStore, spec: FlowSpec, approve: list[str],
+                     prune: list[str], by: str) -> list[CaseProposal]:
+    """Stage this spec's proposals, apply the human's approve/prune decisions, return the rows."""
+    rows = propose_cases(spec)
+    store.stage_case_proposals(rows)
+    if set(approve) & set(prune):
+        raise ValueError("a proposal cannot be approved and pruned together")
+    for proposal_id in approve + prune:
+        store.review_case_proposal(proposal_id, by=by, approved=proposal_id in approve)
+    ids = {p.id for p in rows}
+    return [p for p in store.list_case_proposals() if p.id in ids]
+
+
+def _reviewed_batch(spec: FlowSpec, store: ProjectStore | None,
+                    proposal_ids: list[str] | None = None,
+                    flow_id: str | None = None) -> list[CaseProposal]:
+    if store is None:
+        raise ValueError("saved human-reviewed case proposals are required")
+    batch = store.preflight_case_proposals(spec, proposal_ids, flow_id)
+    canonical = {p.slot_id for p in propose_cases(spec)}
+    if any(p.slot_id not in canonical for p in batch):
+        raise ValueError("proposal differs from the staged current taxonomy")
+    return batch
+
+
+def _expand_reviewed_flow(flow: Flow, project: str, provider: Provider,
+                          docs: RepoDocs, proposals: list[CaseProposal]) -> list[Case]:
     cases = [_happy_case(flow, project)]
-    for case_class in applicable_classes(flow):
-        if case_class is CaseClass.HAPPY:
+    for proposal in proposals:
+        if proposal.flow_id != flow.id or proposal.case_class is CaseClass.HAPPY:
             continue
-        prompt = build_expand_prompt(flow, case_class, docs)
-        expanded = provider.act(prompt, ExpandedSteps,
-                                prompt_file=SKILL_NAME, fed_id=flow.id)
-        case = _expanded_case(flow, project, case_class, expanded)
+        prompt = build_expand_prompt(flow, proposal.case_class, docs)
+        expanded = provider.act(prompt, ExpandedSteps, prompt_file=SKILL_NAME, fed_id=flow.id)
+        case = _expanded_case(flow, project, proposal.case_class, expanded)
         if case is not None:
             cases.append(case)
     return cases
 
 
-def expand(spec: FlowSpec, provider: Provider, docs: RepoDocs | None = None) -> list[Case]:
-    """FlowSpec -> every flow's cases. Requires `spec.review.status == APPROVED`
-    (`require_reviewed` raises otherwise) — the review gate this stage exists to
-    respect, not bypass."""
+def expand_flow(
+    flow: Flow, project: str, provider: Provider, docs: RepoDocs | None = None,
+    *, store: ProjectStore | None = None, proposal_ids: list[str] | None = None,
+) -> list[Case]:
+    """Expand one exact saved flow after its persisted proposal approvals are checked."""
+    spec = store.load_flowspec() if store else None
+    if spec is None or spec.project != project or spec.flow(flow.id) != flow:
+        raise ValueError("flow differs from the current saved FlowSpec")
     require_reviewed(spec)
+    batch = _reviewed_batch(spec, store, proposal_ids, flow.id)
+    return _expand_reviewed_flow(flow, project, provider, docs or RepoDocs(), batch)
+
+
+def expand(spec: FlowSpec, provider: Provider, docs: RepoDocs | None = None,
+           *, store: ProjectStore | None = None,
+           proposal_ids: list[str] | None = None) -> list[Case]:
+    """Generate only saved approved proposals; check every flow before the first model call."""
+    require_reviewed(spec)
+    batch = _reviewed_batch(spec, store, proposal_ids)
     cases: list[Case] = []
     for flow in spec.flows:
-        cases.extend(expand_flow(flow, spec.project, provider, docs))
+        cases.extend(_expand_reviewed_flow(flow, spec.project, provider, docs or RepoDocs(), batch))
     return cases

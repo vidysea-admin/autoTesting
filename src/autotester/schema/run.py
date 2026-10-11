@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.core.ids import run_id as _mint_run_id
 from autotester.schema.base import Artifact
@@ -87,6 +87,20 @@ class Run(Artifact):
     started_at: datetime | None = None
     finished_at: datetime | None = None
     usage: list[ProviderUsage] = Field(default_factory=list)
+    catalog_runnable_counts: dict[
+        Literal["static", "behavioural", "adversarial"], Annotated[int, Field(strict=True, ge=0)]
+    ] | None = Field(
+        default=None,
+        description="CT6: measured runnable class entries per catalog tier; None is NOT_RECORDED",
+    )
+
+    @field_validator("catalog_runnable_counts")
+    @classmethod
+    def _complete_catalog_counts(cls, value):
+        if value is not None and set(value) != {"static", "behavioural", "adversarial"}:
+            raise ValueError("catalog runnable counts must include all three tiers")
+        return value
+
     parallel_n: int | None = Field(
         default=None,
         description="T-173/D-041: cases that ran concurrently in this run; None means the run "

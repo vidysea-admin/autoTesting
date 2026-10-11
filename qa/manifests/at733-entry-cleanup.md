@@ -1,6 +1,6 @@
 # AT-733 — logged-out entry-profile cleanup honesty
 
-Status: building
+Status: superseded-by at733-bounded (D-080 item 6, 2026-10-10: this open-ended unit is stopped; the defect AT-733 stays open and is re-planned as one bounded unit with a cycle cap, see qa/QUEUE.md; candidate branch codex/at733-entry-cleanup is not merged)
 Fix cycle: 1
 Criticality: HIGH
 Dual check: required (false-PASS prevention)

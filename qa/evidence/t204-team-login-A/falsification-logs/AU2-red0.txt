@@ -1,0 +1,24 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU2-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_login.py F                                            [100%]
+
+================================== FAILURES ===================================
+_______________________ test_au2_failures_are_identical _______________________
+tests\test_ui_auth_login.py:62: in test_au2_failures_are_identical
+    assert len({a.content for a in answers}) == 1
+E   assert 2 == 1
+E    +  where 2 = len({b'<!doctype html><title>Sign in \xe2\x80\x94 AutoTester</title>\n<link rel="preconnect" href="https://fonts.gstatic.c...utton></form><p style=\'margin-top:14px\'>No account yet? <a href=\'/auth/signup\'>Sign up</a></p></div></main></div>'})
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_login.py::test_au2_failures_are_identical - assert ...
+======================== 1 failed, 1 warning in 2.89s =========================

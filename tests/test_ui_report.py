@@ -29,12 +29,17 @@ def client() -> TestClient:
     return TestClient(app)
 
 
-def _seed_project_with_two_runs(scratch_root: Path) -> ProjectStore:
+def _demo_store(scratch_root: Path) -> ProjectStore:
     store = ProjectStore("demo", scratch_root)
     store.save_project(
         Project(slug="demo", name="Demo", base_url="https://demo.test",
-                 allowed_domains=["demo.test"])
+                allowed_domains=["demo.test"])
     )
+    return store
+
+
+def _seed_project_with_two_runs(scratch_root: Path) -> ProjectStore:
+    store = _demo_store(scratch_root)
     for case_id, flow_id in (
         ("case_1", "flow_login"), ("case_2", "flow_login"), ("case_3", "flow_profile"),
     ):
@@ -52,7 +57,6 @@ def _seed_project_with_two_runs(scratch_root: Path) -> ProjectStore:
         ))
     return store
 
-
 def test_report_lists_every_run_newest_first(client: TestClient, scratch_root: Path) -> None:
     store = _seed_project_with_two_runs(scratch_root)
     (store.paths.runs_dir / "zzz-crawl-artifacts").mkdir()
@@ -66,7 +70,6 @@ def test_report_lists_every_run_newest_first(client: TestClient, scratch_root: P
     assert "/projects/demo/runs/run_2" in text
     assert "zzz-crawl-artifacts" not in text
 
-
 def test_run_view_returns_404_for_a_directory_without_a_run(
     client: TestClient, scratch_root: Path
 ) -> None:
@@ -79,15 +82,8 @@ def test_run_view_returns_404_for_a_directory_without_a_run(
     assert "Run not found" in response.text
     assert "No case results in this run yet" not in response.text
 
-
-def test_run_view_embeds_a_real_screenshot_inline(
-    client: TestClient, scratch_root: Path
-) -> None:
-    store = ProjectStore("demo", scratch_root)
-    store.save_project(
-        Project(slug="demo", name="Demo", base_url="https://demo.test",
-                 allowed_domains=["demo.test"])
-    )
+def test_run_view_embeds_a_real_screenshot_inline(client, scratch_root):
+    store = _demo_store(scratch_root)
     run_dir = store.paths.run_dir("run_1")
     store.save_run(Run(id="run_1", project="demo", case_ids=["case_1"]))
     (run_dir / "01-shot.png").write_bytes(
@@ -121,9 +117,7 @@ def test_run_view_says_so_honestly_when_a_case_has_no_screenshots(
     assert "no screenshots captured" in response.text
 
 
-def test_report_offers_real_excel_and_html_downloads(
-    client: TestClient, scratch_root: Path
-) -> None:
+def test_report_offers_real_excel_and_html_downloads(client, scratch_root):
     store = _seed_project_with_two_runs(scratch_root)
     (store.paths.runs_dir / "zzz-crawl-artifacts").mkdir()
 
@@ -182,11 +176,7 @@ def test_run_view_shows_scoreboard_and_grader_not_just_a_bare_badge(
     client: TestClient, scratch_root: Path
 ) -> None:
     """Umesh, on a screenshot of this page: 'non informational too'."""
-    store = ProjectStore("demo", scratch_root)
-    store.save_project(
-        Project(slug="demo", name="Demo", base_url="https://demo.test",
-                 allowed_domains=["demo.test"])
-    )
+    store = _demo_store(scratch_root)
     store.save_run(Run(id="run_1", project="demo", case_ids=["case_1"]))
     store.save_result("run_1", RawResult(case_id="case_1", outcome=Outcome.COMPLETED))
     store.save_verdict("run_1", Verdict(
@@ -206,11 +196,7 @@ def test_run_view_screenshots_link_to_a_matching_lightbox_target(
 ) -> None:
     """Umesh: thumbnails were readable but too small to read detail without
     clicking -- each thumbnail must open a full-size CSS-only lightbox."""
-    store = ProjectStore("demo", scratch_root)
-    store.save_project(
-        Project(slug="demo", name="Demo", base_url="https://demo.test",
-                 allowed_domains=["demo.test"])
-    )
+    store = _demo_store(scratch_root)
     run_dir = store.paths.run_dir("run_1")
     store.save_run(Run(id="run_1", project="demo", case_ids=["case_1"]))
     (run_dir / "01-shot.png").write_bytes(b"\x89PNG\r\n\x1a\n")
@@ -237,11 +223,7 @@ def test_run_view_orders_the_step_flow_by_step_order_not_evidence_order(
 ) -> None:
     """The DFS-style trace must show the literal sequence the case walked --
     if evidence arrives out of order, step_order must still win."""
-    store = ProjectStore("demo", scratch_root)
-    store.save_project(
-        Project(slug="demo", name="Demo", base_url="https://demo.test",
-                 allowed_domains=["demo.test"])
-    )
+    store = _demo_store(scratch_root)
     run_dir = store.paths.run_dir("run_1")
     store.save_run(Run(id="run_1", project="demo", case_ids=["case_1"]))
     (run_dir / "a.png").write_bytes(b"\x89PNG\r\n\x1a\n")
@@ -264,16 +246,10 @@ def test_run_view_orders_the_step_flow_by_step_order_not_evidence_order(
     assert text.index(">first<") < text.index(">second<")
 
 
-def test_run_view_shows_failure_reasons_for_a_fail(
-    client: TestClient, scratch_root: Path
-) -> None:
+def test_run_view_shows_failure_reasons_for_a_fail(client, scratch_root):
     from autotester.schema.verdict import Failure
 
-    store = ProjectStore("demo", scratch_root)
-    store.save_project(
-        Project(slug="demo", name="Demo", base_url="https://demo.test",
-                 allowed_domains=["demo.test"])
-    )
+    store = _demo_store(scratch_root)
     store.save_run(Run(id="run_1", project="demo", case_ids=["case_1"]))
     store.save_result("run_1", RawResult(case_id="case_1", outcome=Outcome.COMPLETED))
     store.save_verdict("run_1", Verdict(
@@ -287,3 +263,36 @@ def test_run_view_shows_failure_reasons_for_a_fail(
 
     assert "login form still visible" in response.text
     assert "check the redirect wait" in response.text
+
+
+@pytest.mark.parametrize("counts", [None, {"static": 0, "behavioural": 2, "adversarial": 5}])
+def test_run_view_reports_measured_class_counts_or_legacy_absence(client, scratch_root, counts):
+    store = _seed_project_with_two_runs(scratch_root)
+    run = store.load_run("run_2")
+    store.save_run(run.model_copy(update={"catalog_runnable_counts": counts}))
+    response = client.get("/projects/demo/runs/run_2")
+    assert response.status_code == 200
+    assert "Catalog runnable-class counts" in response.text
+    if counts is None:
+        assert "NOT_RECORDED" in response.text
+    else:
+        assert all(f"{tier}: {value}" in response.text for tier, value in counts.items())
+
+
+def test_run_view_lists_cheap_tier_failures_first_ahead_of_passes(client, scratch_root):
+    """CT6(4)/D-071: a failed static case precedes a failed adversarial one, in a
+    failures section ahead of passes -- not case-id order (b_adv sorts before c_static)."""
+    store = _demo_store(scratch_root)
+    rows = (("a_pass", CaseClass.HAPPY, Result.PASS),
+            ("b_adv", CaseClass.SERVER_ERROR, Result.FAIL),
+            ("c_static", CaseClass.INPUT_EMPTY, Result.FAIL))
+    store.save_run(Run(id="run_1", project="demo", case_ids=[r[0] for r in rows]))
+    for cid, case_class, result in rows:
+        store.add_case(Case(id=cid, project="demo", flow_id="f", kind=CaseKind.BEST,
+                            case_class=case_class, title=f"T {cid}"))
+        store.save_result("run_1", RawResult(case_id=cid, outcome=Outcome.COMPLETED))
+        store.save_verdict("run_1", Verdict(run_id="run_1", case_id=cid, result=result,
+                                            grader_provider="mock", rubric_hash="rub_x"))
+    text = client.get("/projects/demo/runs/run_1").text
+    assert text.index("<h2>Failures</h2>") < text.index("T c_static") < text.index("T b_adv")
+    assert text.index("T b_adv") < text.index("T a_pass")

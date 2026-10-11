@@ -1,0 +1,15 @@
+== image_url data part (non-text parts never scanned) ==
+  outcome: CALLED(1)
+  decoded data-URL contains secret value: True
+== secret in prompt AND in an attached image-part-only (text part clean) -> CALLED means unscanned ==
+== schema carrying a secret in a Field description (tools / response_format are not scanned) ==
+  CALLED with secret in kwargs: ['response_format']
+  json strategy (instruction is in the TEXT, scanned): ProviderError litellm:openai/gpt-4o: prompt withheld, a credential value reached it
+== config keys exempt from the guard may carry credentials ==
+  LITELLM_API_BASE userinfo password   CALLED(1)
+  LITELLM_API_BASE path token          CALLED(1)
+  OLLAMA_BASE_URL query key            CALLED(1)
+  AUTOTESTER_MODEL value               CALLED(1)
+== secrets option retained in provider.options (serialisable surface?) ==
+  p.options = {'model': 'openai/gpt-4o', 'secrets': ['Zq7!kP2x9Lm4']}
+  repr(p) contains secret: False | label: litellm:openai/gpt-4o

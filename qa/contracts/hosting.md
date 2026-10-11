@@ -73,8 +73,9 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
   *BUILD-HOST.* `serves:` D-072#7.
 - **HO11 — The deploy guide exists and is exercised.** `docker/DEPLOY.md` (new path under the existing `docker/`) covers, in order: server
   prerequisites (Ubuntu LTS, Docker, UFW), the two env files, building on the server from a tag (the image never leaves the box; the repo
-  is public), seeding `projects/`, **creating the first account before the port is exposed to the team** (first account = admin, `auth.md`
-  AU7; use `AUTOTESTER_FIRST_ADMIN_EMAIL` or keep 80/443 closed until done), setting the Host/Origin keys, the interim without a domain
+  is public), seeding `projects/`, **creating the admin account before the port is exposed to the team** (on the hosted server the first admin is the
+  account whose email equals `AUTOTESTER_FIRST_ADMIN_EMAIL`, not the first account created; with it unset nobody is auto-promoted and
+  the admin is created through the CLI, `auth.md` AU7; keep 80/443 closed until done), setting the Host/Origin keys, the interim without a domain
   (HO13), backup and restore (HO36), upgrade, and rollback. It holds no secret and no real hostname beyond what Umesh accepts publishing.
   A checker follows the guide literally on a fresh Ubuntu container or VM and records the transcript. *BUILD-HOST* (container follow-
   through) + *SERVER-GATED* (the real server). `serves:` D-072#7.
@@ -132,8 +133,8 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
 
 - **HO22 — A per-project schedule with three modes.** A `ScheduleConfig` (`schema/`, `extra="forbid"`) per project has
   `mode` in `manual` (button only, the default), `fixed` (one preset daily time, a `HH:MM`), or `custom` (a time the user selects: a
-  one-off date-time, or a weekly set of weekdays + `HH:MM`). Each schedule stores an IANA timezone (default `AUTOTESTER_TIMEZONE`, else
-  UTC) and is DST-correct (a 02:30 slot on a spring-forward day fires once, not zero or twice). Invalid values (25:00, unknown zone,
+  one-off date-time, or a weekly set of weekdays + `HH:MM`). Each schedule stores a timezone that is **UTC or IST only** (IST = fixed +05:30, no DST; D-078; default `AUTOTESTER_TIMEZONE` when it is
+  UTC or IST, else UTC), so there is no DST to get wrong and no zone database is needed. Invalid values (25:00, a zone other than UTC or IST,
   past one-off, empty weekday set) are refused and store nothing. Setting a schedule needs `schedule.manage` on that project.
   `serves:` D-072#9. *LOCAL.*
 - **HO23 — The scheduler uses the queue and fires exactly once.** A due slot enqueues one entry (`trigger=schedule`,
@@ -241,3 +242,7 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
   HS13 -> HO30/HO31, HS14 -> HO36, HS15 -> HO8, HS16 -> HO6, HS17 -> HO14, HS18 -> HO37, HS19 -> HO34. Changed by D-072: the proposal's
   fixed "one run at a time, 409 for the second" became a queue with an admin-set cap (default 2) and one run per project; the Google
   sign-in assumption became email + password (`auth.md`); the schedule, report-mail and video rows are new.
+- 2026-10-11 · owner-authorized (D-078) · **HO22:** the schedule timezone is `UTC` or `IST` only (IST = fixed +05:30, no DST), replacing
+  "an IANA timezone ... DST-correct"; "unknown zone" in the refusal list becomes "a zone other than UTC or IST". · why: D-078 (Umesh, chat
+  2026-10-07, no `tzdata` dependency). Same text as the checker's commit 29ce74e8 on branch `wave/g5-schedule-core`, brought onto master
+  with the `team-schedule.md` TS1/TS2 amendment that cites this row. No other hosting row changed.

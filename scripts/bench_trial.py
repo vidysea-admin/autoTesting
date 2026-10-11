@@ -147,7 +147,7 @@ def main() -> None:
     duration_s = time.monotonic() - t0
 
     corpus = BenchCorpus(
-        id="corpus_regression_demo_login",
+        id="corpus_regression_demo_login", mode="fixture",
         app="regression-demo", build_ref="login.broken.html",
         seeded_bugs=[
             bench.seeded_bug(
@@ -164,10 +164,11 @@ def main() -> None:
     case_bug_map = {login_case.id: "bug_login_password"}  # home_case NOT mapped -> FAIL there = FP
     ai_trial = bench.run_autotester_trial(
         f"trial_ai_{ulid()}", corpus, verdicts, case_bug_map, duration_s,
+        ordering="independent_parallel",
     )
     # AT-543: the human side has never been timed by a real tester — passing a
     # hardcoded 300.0 turned the scorecard's "wins on time" row into a
-    # comparison against a made-up constant. 0.0 = unmeasured, honestly.
+    # comparison against a made-up constant. None preserves unavailable timing.
     human_trial = bench.oracle_human_trial(f"trial_human_{ulid()}", corpus)
     store.save_bench_trial(ai_trial)
     store.save_bench_trial(human_trial)

@@ -1,0 +1,32 @@
+commit 97465d5d83605f2dda459bdd46f28790335c2a63
+Merge: 4b93d952 a0adcb31
+Author: umesh <umeshsugara@vidysea.com>
+Date:   Sun Oct 11 09:22:20 2026 +0530
+
+    merge: master into t168-damage-control-report (reconcile advice-site guard, keep both sites, count 24)
+    
+    Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+
+diff --cc tests/test_cli_advice_resolves.py
+index b8c3e901,e137e588..83bb2c05
+--- a/tests/test_cli_advice_resolves.py
++++ b/tests/test_cli_advice_resolves.py
+@@@ -175,7 -176,7 +176,8 @@@ EXPECTED_SITES = 
+      ("stages/ingest.py", "ingest register"),
+      ("stages/media_prep.py", "ingest prep"),
+      ("stages/review.py", "flowspec approve"),
+ +    ("stages/unified_report.py", "release"),
++     ("ui/routes_learn.py", "expand"),
+  }
+  """Every place this codebase tells a human to run something, frozen.
+  
+@@@ -192,7 -193,7 +194,7 @@@ interpolates it), so this set has ten e
+  asserted separately. AT-110 added a second `core/consent.py` "approve" site
+  (re-grant an unsigned approval), so that command now has two sites as well."""
+  
+- EXPECTED_SITE_COUNT = 22
+ -EXPECTED_SITE_COUNT = 23
+++EXPECTED_SITE_COUNT = 24
+  
+  
+  def test_no_advice_site_can_vanish_unnoticed() -> None:

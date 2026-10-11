@@ -1,0 +1,136 @@
+{
+  "repo": "D:\\autoTesting",
+  "ref": "894549ee",
+  "shards": 4,
+  "python": "D:\\autoTesting\\.venv\\Scripts\\python.exe",
+  "pytest_args": [
+    "-o",
+    "addopts="
+  ],
+  "out": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\at198a-shards\\run",
+  "cpu_load_pct_at_start": 76.0,
+  "blocked_s": 0.0,
+  "lock_reclaimed": [],
+  "sha": "894549eeac2ad2576a69f05c48ea41a8afbec009",
+  "seconds": {
+    "extract": 4.1,
+    "collect": 31.2,
+    "rerun": 106.9,
+    "run": 972.7,
+    "overall": 1115.2
+  },
+  "wall_s": 1115.2,
+  "balance_basis": "stored durations (3446/3748 tests known, 13 files at mean); split by test: ['tests/test_crawl_inventory_live.py', 'tests/test_explore_completeness.py']",
+  "pinned_files": [],
+  "per_shard": [
+    {
+      "shard": 0,
+      "pid": 45588,
+      "rc": 1,
+      "wall_s": 874.6,
+      "units": 69,
+      "tests": 1067,
+      "collected": 1067,
+      "reported": 1067
+    },
+    {
+      "shard": 1,
+      "pid": 66564,
+      "rc": 1,
+      "wall_s": 859.5,
+      "units": 71,
+      "tests": 841,
+      "collected": 841,
+      "reported": 841
+    },
+    {
+      "shard": 2,
+      "pid": 65968,
+      "rc": 1,
+      "wall_s": 963.7,
+      "units": 71,
+      "tests": 942,
+      "collected": 942,
+      "reported": 942
+    },
+    {
+      "shard": 3,
+      "pid": 49472,
+      "rc": 1,
+      "wall_s": 971.7,
+      "units": 71,
+      "tests": 898,
+      "collected": 898,
+      "reported": 898
+    }
+  ],
+  "counts": {
+    "passed": 3722,
+    "skipped": 19,
+    "failed": 7
+  },
+  "failed": [
+    {
+      "nodeid": "tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen",
+      "outcome": "failed",
+      "shard": 0,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log",
+      "outcome": "failed",
+      "shard": 1,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero",
+      "outcome": "failed",
+      "shard": 1,
+      "isolated_rerun": "passed"
+    },
+    {
+      "nodeid": "tests/test_zip_intake_atomic.py::test_ti6_process_killed_between_copy_and_row_heals_on_the_next_intake",
+      "outcome": "failed",
+      "shard": 1,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere",
+      "outcome": "failed",
+      "shard": 1,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_redact_ignorable_perf.py::test_cjk_heavy_scan_stays_within_a_generous_multiple_of_ascii",
+      "outcome": "failed",
+      "shard": 2,
+      "isolated_rerun": "passed"
+    },
+    {
+      "nodeid": "tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads",
+      "outcome": "failed",
+      "shard": 3,
+      "isolated_rerun": "failed"
+    }
+  ],
+  "failed_still_failing_alone": [
+    "tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen",
+    "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log",
+    "tests/test_zip_intake_atomic.py::test_ti6_process_killed_between_copy_and_row_heals_on_the_next_intake",
+    "tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere",
+    "tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads"
+  ],
+  "collect_proof": {
+    "ok": true,
+    "baseline": 3748,
+    "baseline_unique": 3748,
+    "shard_union": 3748,
+    "ran": 3748,
+    "duplicates_across_shards": [],
+    "missing_from_shards": [],
+    "unexpected_in_shards": [],
+    "collected_but_not_run": []
+  },
+  "durations_file": "C:\\Users\\Lenovo\\AppData\\Local\\aios\\shard-durations\\autoTesting.json",
+  "exit_code": 1
+}

@@ -15,6 +15,7 @@ from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import RepoDocs
+from autotester.core.redact import Redactor
 from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
@@ -126,7 +127,7 @@ def _screenshot_paths(result: RawResult, run_dir: Path | None) -> list[Path]:
 
 def _withheld(
     run_id: str, result: RawResult, rubric: Rubric, prompt: str,
-    secrets: SecretStore | None,
+    secrets: SecretStore | None, redactor: Redactor | None = None,
 ) -> Verdict | None:
     """A BLOCKED verdict when a credential reached the grading prompt, else None.
 
@@ -134,10 +135,13 @@ def _withheld(
     credential that reached a rubric (e.g. via a case title feeding `claim_of`)
     would otherwise 500 every subsequent run with no way back. Fail this case
     loudly and safely instead, naming no value."""
-    if secrets is None:
+    if secrets is None and redactor is None:
         return None
     try:
-        secrets.guard_prompt(prompt)
+        if redactor is not None:
+            redactor.assert_clean(prompt)
+        if secrets is not None:
+            secrets.guard_prompt(prompt)
     except ValueError as exc:
         return _verdict(
             run_id, result, rubric, verdict_result=Result.BLOCKED,
@@ -173,7 +177,7 @@ def _outcome_verdict(result: RawResult, rubric: Rubric, run_id: str) -> Verdict 
 
 def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
           docs: RepoDocs | None = None, run_dir: Path | None = None,
-          secrets: SecretStore | None = None) -> Verdict:
+          secrets: SecretStore | None = None, redactor: Redactor | None = None) -> Verdict:
     """Judge one case's execution against `rubric`. Never sees the case's own steps.
 
     `secrets`, when given, gates the built prompt through
@@ -190,7 +194,7 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
         return outcome
 
     prompt = build_grade_prompt(rubric, result, docs or RepoDocs())
-    withheld = _withheld(run_id, result, rubric, prompt, secrets)
+    withheld = _withheld(run_id, result, rubric, prompt, secrets, redactor)
     if withheld is not None:
         return withheld
 

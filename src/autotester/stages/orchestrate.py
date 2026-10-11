@@ -1,14 +1,16 @@
-"""ORCHESTRATE: drive the stage pipeline as a resumable learn-or-explore run.
+"""ORCHESTRATE: drive the stage pipeline as a resumable LangGraph run (D-041, T-167).
 
 One job — `run_or_resume(project, ctx)` chooses the entry path ONCE (teaching
-material -> learn, credentials only -> explore), then runs each not-yet-done
-stage in order, persisting a `RunState` checkpoint after every transition so an
-interrupted run re-enters the first non-done stage without redoing completed
-work. The stages themselves are the existing pure `run(input, ctx) -> artifact`
-functions (`stages/orchestrate_runners.py` wraps INGEST/DISCOVER/MODEL); this
-module owns only the sequencing, the checkpoint ledger, and the mode choice. It
-adds NO new approval mechanism — both paths propose into a DRAFT FlowSpec and
-stop at the existing review gate (contract orchestrator.md OR1-OR6, D-036).
+material -> learn, credentials only -> explore, a frozen `ReleaseScope` ->
+release), then walks the not-yet-done stages as a LangGraph `StateGraph` whose
+durable checkpointer (`orchestrate_checkpoint.py`) is the resume authority: an
+interrupted run re-enters the first non-done stage without redoing completed work
+(OR2/RR1) and a raising stage is recorded `failed` and re-entered (OR4/RR1).
+`state.json` is the human-readable `RunState` projection of the same ledger. The
+stages are the existing `run(input, ctx) -> artifact` functions; this module owns
+only sequencing. It adds NO approval mechanism: a release is refused before
+anything is written unless its signed `RunApproval` covers it, and its
+`interrupt()` is a human pause layered on top of that gate (RR2, D-041).
 """
 
 from __future__ import annotations
@@ -18,13 +20,25 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Any, TypedDict
+
+from langgraph.graph import END, START, StateGraph
+from langgraph.types import Command, interrupt
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.trace import TraceWriter
 from autotester.schema.base import utc_now
 from autotester.schema.enums import SourceKind
 from autotester.schema.project import Project, Source
+from autotester.schema.release import ReleaseDecision, ReleaseScope
 from autotester.schema.run_state import RunState, StageCheckpoint, StageName
+from autotester.stages.orchestrate_checkpoint import FileCheckpointer
+from autotester.stages.orchestrate_gate import (
+    check_lineage,
+    paused_view,
+    reenter,
+    release_preflight,
+)
 from autotester.store.filestore import read_json, write_json
 from autotester.store.project_store import ProjectStore
 
@@ -44,20 +58,19 @@ EXPLORE_PIPELINE = (
     StageName.DISCOVER, StageName.MODEL, StageName.EXPAND,
     StageName.EXECUTE, StageName.GRADE, StageName.REPORT,
 )
+RELEASE_PIPELINE = (StageName.CONFIRM, StageName.EXECUTE, StageName.GRADE,
+                    StageName.COMPARE, StageName.REPORT)
 
-# A StageRunner does one stage's work: it reads the previous stage's
-# `artifact_ref`, runs the existing stage, persists its own typed artifact, and
-# returns the new `artifact_ref`. The driver never reaches inside — it only
-# threads refs and records status, so each stage reads only the prior artifact
-# (OR6). A stage with no registered runner is a STOP point, not a failure: the
-# autonomous run wires {INGEST|DISCOVER, MODEL} and halts at the review gate.
+# A StageRunner reads the previous stage's `artifact_ref`, runs the existing stage, persists
+# its own typed artifact and returns the new ref; the driver only threads refs (OR6). A stage
+# with no registered runner is a STOP point, not a failure (the review gate).
 StageRunner = Callable[["StageContext", "str | None"], str]
 
 
 @dataclass
 class StageContext:
     """Live dependencies for one run — the store to persist through, the
-    `run_id` that keys this lineage's `state.json` (OR5), and the stage runners.
+    `run_id` that keys this lineage's ledger (OR5), and the stage runners.
 
     NOT a schema model: it duplicates no persisted shape, following the
     `ExploreRuntime` convention (`stages/explore.py`). `clock` is injectable so
@@ -74,10 +87,11 @@ class StageContext:
     default and a caller never has to remember to wire it (RT1)."""
     secrets: SecretStore | None = None
     """The project's credential boundary (`browser/secrets.py`), threaded into
-    the auto-built `trace`'s redactor exactly like `stages/execute.py:101` /
-    `stages/explore.py:230` thread it into their own evidence. AT-561: without
-    this, the default `trace` above fell back to an unredacted `Redactor({})`
-    and the RT6/C5 gate could never fire on a real run."""
+    the auto-built `trace`'s redactor and the checkpoint serializer (AT-561)."""
+    release_scope: ReleaseScope | None = None
+    """Set only for a release run (RR2/RR6): the frozen scope whose approval is checked first."""
+    decision: ReleaseDecision | None = None
+    """The human's answer to a paused release (RR2). Absent = a resume stays paused."""
 
     def __post_init__(self) -> None:
         if self.trace is None:
@@ -97,6 +111,12 @@ class StageContext:
                 )
             self.trace = TraceWriter(self.store.paths.run_trace(self.run_id), self.run_id,
                                      redactor)
+
+
+class GraphState(TypedDict):
+    """The graph's single channel: the `RunState` as JSON."""
+
+    state: dict[str, Any]
 
 
 def choose_mode(sources: list[Source]) -> tuple[str, str]:
@@ -126,12 +146,18 @@ def load_or_create(project: Project, ctx: StageContext) -> RunState:
     existing = read_json(_state_path(ctx), RunState)
     if existing is not None:
         return existing
-    mode, reason = choose_mode(ctx.store.list_sources())
-    pipeline = LEARN_PIPELINE if mode == "learn" else EXPLORE_PIPELINE
+    scope = ctx.release_scope
+    if scope is not None:
+        mode, reason = "release", "all persisted flow plans; frozen scope"
+        pipeline = RELEASE_PIPELINE
+    else:
+        mode, reason = choose_mode(ctx.store.list_sources())
+        pipeline = LEARN_PIPELINE if mode == "learn" else EXPLORE_PIPELINE
     now = ctx.clock()
     return RunState(
         run_id=ctx.run_id, project_slug=project.slug, mode=mode, mode_reason=reason,
         stages=[StageCheckpoint(stage=s) for s in pipeline], created=now, updated=now,
+        scope_fingerprint=scope.fingerprint if scope else None,
     )
 
 
@@ -158,11 +184,11 @@ def _record(ctx: StageContext, state: RunState, index: int,
     return _persist(ctx, state.model_copy(update={"stages": stages}))
 
 
-def _run_stage(ctx: StageContext, state: RunState, index: int) -> tuple[RunState, bool]:
+def _run_stage(ctx: StageContext, state: RunState, index: int) -> RunState:
     """Run one stage: mark it `running`, invoke its runner with the previous
     stage's `artifact_ref`, and record `done`+ref on success or `failed`+error
-    on a raise (OR4) — persisting after each transition. Returns whether the
-    driver may continue to the next stage."""
+    on a raise (OR4) — persisting after each transition. The graph then stops
+    at a `failed` stage; the next `run_or_resume` re-enters it."""
     prev = state.stages[index - 1].artifact_ref if index > 0 else None
     runner = ctx.runners[state.stages[index].stage]
     state = _record(ctx, state, index, state.stages[index].model_copy(
@@ -173,31 +199,97 @@ def _run_stage(ctx: StageContext, state: RunState, index: int) -> tuple[RunState
         failed = state.stages[index].model_copy(update={
             "status": "failed", "error": f"{type(exc).__name__}: {exc}",
             "finished": ctx.clock()})
-        return _record(ctx, state, index, failed), False
+        return _record(ctx, state, index, failed)
     done = state.stages[index].model_copy(update={
         "status": "done", "artifact_ref": ref, "error": None, "finished": ctx.clock()})
-    return _record(ctx, state, index, done), True
+    return _record(ctx, state, index, done)
+
+
+def _confirm(ctx: StageContext, state: RunState, index: int) -> RunState:
+    """RR2: pause the release on `interrupt()` for a human answer. Reached only after
+    `_release_preflight` found a covering `RunApproval`; the answer never stands in for one."""
+    waiting = state.stages[index].model_copy(update={"status": "awaiting_human"})
+    state = _record(ctx, state, index, waiting)
+    scope = ctx.release_scope
+    answer = interrupt({"project": state.project_slug, "run_id": state.run_id,
+                        "scope_fingerprint": state.scope_fingerprint,
+                        "flow_ids": scope.expected_flow_ids if scope else [],
+                        "case_ids": scope.case_ids if scope else []})
+    decision = ReleaseDecision.model_validate(answer)
+    state = state.model_copy(update={"release_decision": decision})
+    done = waiting.model_copy(update={"status": "done", "finished": ctx.clock(),
+                                      "artifact_ref": str(ctx.store.paths.run_release_scope(
+                                          state.run_id))})
+    state = _record(ctx, state, index, done)
+    if decision.approved:
+        return state
+    skipped = [c if i <= index else c.model_copy(update={"status": "skipped"})
+               for i, c in enumerate(state.stages)]
+    return _persist(ctx, state.model_copy(update={"stages": skipped}))
+
+
+def _route(ctx: StageContext, values: GraphState) -> str:
+    """Next node: the first non-done stage that has a runner (or CONFIRM). A `failed`
+    stage, a stage with no runner, or a finished pipeline ends this invocation."""
+    pending = RunState.model_validate(values["state"]).next_pending()
+    if pending is None or pending.status == "failed":
+        return END
+    ready = pending.stage in ctx.runners or pending.stage is StageName.CONFIRM
+    return pending.stage.value if ready else END
+
+
+def _compile(ctx: StageContext, checkpointer: FileCheckpointer):  # type: ignore[no-untyped-def]
+    graph = StateGraph(GraphState)
+
+    def make_node(stage: StageName) -> Callable[[GraphState], GraphState]:
+        def node(values: GraphState) -> GraphState:
+            state = RunState.model_validate(values["state"])
+            index = next(i for i, c in enumerate(state.stages) if c.stage is stage)
+            step = _confirm if stage is StageName.CONFIRM else _run_stage
+            return {"state": step(ctx, state, index).model_dump(mode="json")}
+        return node
+
+    def route(values: GraphState) -> str:
+        return _route(ctx, values)
+
+    graph.add_conditional_edges(START, route)
+    for stage in StageName:
+        graph.add_node(stage.value, make_node(stage))
+        graph.add_conditional_edges(stage.value, route)
+    return graph.compile(checkpointer=checkpointer)
 
 
 def run_or_resume(project: Project, ctx: StageContext) -> RunState:
     """Run (or resume) the pipeline for `project`, returning its `RunState`.
 
-    Loads or creates the run's ledger, then walks the stages in order:
-    - a `done`/`skipped` stage is never re-run, so its artifact is never
-      rewritten (OR2 — resume enters at the first non-done stage);
-    - a stage with no registered runner is a STOP point left `pending` (the
-      autonomous run halts here at the review gate, and a later, more fully
-      wired invocation resumes it);
-    - the first stage that fails stops the walk, leaving its `failed`
-      checkpoint for the next call to re-enter (OR4).
+    The checkpointer is the authority; `state.json` (or a fresh ledger) seeds a thread
+    that has no checkpoint yet. Per call:
+    - a `done`/`skipped` stage is never re-run, so its artifact is never rewritten (OR2);
+    - a stage with no registered runner is a STOP point left `pending`;
+    - the first stage that fails stops the walk, leaving its `failed` checkpoint for the
+      next call to re-enter (OR4);
+    - a release paused on `interrupt()` stays paused until `ctx.decision` answers it (RR2).
     """
-    state = _persist(ctx, load_or_create(project, ctx))
-    for index, checkpoint in enumerate(state.stages):
-        if checkpoint.status in ("done", "skipped"):
-            continue
-        if checkpoint.stage not in ctx.runners:
-            break
-        state, proceed = _run_stage(ctx, state, index)
-        if not proceed:
-            break
-    return state
+    release_preflight(project, ctx)
+    thread = f"{project.slug}:{ctx.run_id}"
+    saver = FileCheckpointer(ctx.store.paths.run_dir(ctx.run_id) / "checkpoint.json",
+                             thread_id=thread,
+                             redactor=ctx.secrets.redactor() if ctx.secrets else None)
+    graph = _compile(ctx, saver)
+    config: Any = {"configurable": {"thread_id": thread}}
+    snapshot = graph.get_state(config)
+    state = paused_view(snapshot) if snapshot.values else load_or_create(project, ctx)
+    check_lineage(project, ctx, state)
+    if ctx.release_scope is not None:
+        ctx.store.save_release_scope(ctx.release_scope)
+    paused = any(task.interrupts for task in snapshot.tasks)
+    if paused and ctx.decision is None:
+        return _persist(ctx, state)
+    if ctx.decision is not None and not paused:
+        raise ValueError("a human reply needs an existing paused release")
+    if paused:
+        payload: Any = Command(resume=ctx.decision.model_dump(mode="json"))
+    else:
+        payload = None if snapshot.next else reenter(state)
+    graph.invoke(payload, config=config, durability="sync")
+    return _persist(ctx, paused_view(graph.get_state(config)))

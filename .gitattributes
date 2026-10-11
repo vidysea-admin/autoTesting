@@ -1,1 +1,3 @@
 qa/issues.jsonl merge=union
+# Shell scripts run inside the Linux container: a CRLF checkout on Windows breaks their shebang.
+*.sh text eol=lf

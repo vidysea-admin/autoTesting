@@ -16,7 +16,28 @@ from autotester.schema import (
     Step,
     Verdict,
 )
+from autotester.schema.case import AgentFix, CaseProposal
 from autotester.schema.enums import Action, CaseClass, CaseKind, Result, WritePolicy
+from autotester.schema.run import Run
+
+
+def test_catalog_counts_roundtrip_zero_and_legacy_absence() -> None:
+    counts = {"static": 0, "behavioural": 2, "adversarial": 1}
+    run = Run(project="demo", catalog_runnable_counts=counts)
+    assert Run.model_validate_json(run.model_dump_json()).catalog_runnable_counts == counts
+    assert Run(project="demo").catalog_runnable_counts is None
+
+
+@pytest.mark.parametrize("counts", [
+    {}, {"static": 0, "behavioural": 0},
+    {"static": 0, "behavioural": 0, "adversarial": -1},
+    {"static": False, "behavioural": 0, "adversarial": 0},
+    {"static": 0.0, "behavioural": 0, "adversarial": 0},
+    {"static": 0, "behavioural": 0, "adversarial": 0, "extra": 0},
+])
+def test_catalog_counts_reject_malformed_measurements(counts) -> None:
+    with pytest.raises(ValidationError):
+        Run(project="demo", catalog_runnable_counts=counts)
 
 
 def make_step(order: int = 1, value: str | None = None) -> Step:
@@ -131,3 +152,43 @@ def test_secret_ref_rejects_lowercase_keys() -> None:
 def test_verdict_actionable_failure_requires_cited_failures() -> None:
     bare = Verdict(run_id="r", case_id="c", result=Result.FAIL)
     assert not bare.is_actionable_failure
+
+
+@pytest.mark.parametrize("priority", ["p0", "p1", "p2", "p3"])
+def test_case_priority_and_legacy_default_preserve_identity(priority) -> None:
+    case = Case(project="p", flow_id="flow", kind=CaseKind.BEST,
+                case_class=CaseClass.HAPPY, title="happy", steps=[make_step()], priority=priority)
+    assert Case.model_validate_json(case.model_dump_json()).priority == priority
+    legacy = Case.model_validate(case.model_dump(exclude={"priority"}))
+    assert legacy.priority == "p2"
+    assert legacy.id == case.id
+    with pytest.raises(ValidationError):
+        Case.model_validate({**case.model_dump(), "priority": "p4"})
+
+
+def test_pinned_legacy_and_fixed_case_remain_p0_with_issue_trace() -> None:
+    case = Case(project="p", flow_id="flow", kind=CaseKind.BEST,
+                case_class=CaseClass.HAPPY, title="issue repro", steps=[make_step()],
+                pinned=True, pinned_issue_id="issue_1", priority="p3")
+    assert case.priority == "p0"
+    assert Case.model_validate(case.model_dump(exclude={"priority"})).priority == "p0"
+    fixed = case.with_fixed_step(1, AgentFix(action=Action.FILL, target="new field",
+                                          reasoning="correct locator"))
+    assert fixed.priority == "p0" and fixed.pinned
+    assert fixed.pinned_issue_id == "issue_1"
+    assert fixed.id != case.id
+
+
+def test_case_proposal_rejects_steps_changed_identity_and_anonymous_review() -> None:
+    proposal = CaseProposal(project="p", flow_id="flow", spec_fingerprint="snapshot",
+                            case_class=CaseClass.INPUT_EMPTY, title="empty", rationale="required")
+    assert "steps" not in proposal.model_dump()
+    for change in ({"steps": []}, {"title": "changed"}, {"rationale": "changed"},
+                   {"status": "approved"}, {"status": "pruned"}):
+        with pytest.raises(ValidationError):
+            CaseProposal.model_validate({**proposal.model_dump(), **change})
+    with pytest.raises(ValueError, match="human name"):
+        proposal.reviewed(" ", True)
+    approved = proposal.reviewed("tester", True)
+    assert approved.reviewed_by == "tester" and approved.reviewed_at is not None
+    assert CaseProposal.model_validate_json(approved.model_dump_json()).status == "approved"

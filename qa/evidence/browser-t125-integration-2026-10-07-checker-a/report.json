@@ -1,0 +1,59 @@
+{
+  "steps": [
+    {
+      "step": "project page",
+      "link_count": 1,
+      "console_errors": 0
+    },
+    {
+      "step": "click Test catalog",
+      "landing_url": "http://127.0.0.1:8793/projects/demo/catalog",
+      "ok": true
+    }
+  ],
+  "browser": "chromium 151.0.7922.34",
+  "catalog_text": "← Back\nPROJECTS / DEMO / CATALOG\nTest catalog\n5\nRUNNABLE NOW\n15\nCASE CLASSES\nDemo catalog\nCASE CLASS\tTIER\tAPPLICABLE\tSTATUS\nhappy\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\ninput_boundary\tstatic\tyes\tRUNNABLE\ninput_empty\tstatic\tyes\tRUNNABLE\ninput_unicode_oversize\tstatic\tyes\tRUNNABLE\nlocale_i18n\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\nregression_anchor\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\nviewport_mobile\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\nback_refresh_midflow\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\nconcurrent_tab\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\ndeeplink_unauth\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\ndouble_submit\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\nauth_expired_session\tadversarial\tyes\tRUNNABLE\nauth_wrong_creds\tadversarial\tyes\tRUNNABLE\nnetwork_offline_slow\tadversarial\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\n\nserver_error\tadversarial\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env\nStandard packs\nSTANDARD PACK\tAPPLICABLE\tSTATUS\nMonth/year picker\tno\tNOT APPLICABLE\nExcel column-mapping upload\tno\tNOT APPLICABLE\nOAuth sign-up carry-over\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+  "catalog_html_len": 20367,
+  "catalog_tables": 2,
+  "catalog_rows": 18,
+  "catalog_row_texts": [
+    "happy\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "input_boundary\tstatic\tyes\tRUNNABLE",
+    "input_empty\tstatic\tyes\tRUNNABLE",
+    "input_unicode_oversize\tstatic\tyes\tRUNNABLE",
+    "locale_i18n\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "regression_anchor\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "viewport_mobile\tstatic\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "back_refresh_midflow\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "concurrent_tab\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "deeplink_unauth\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "double_submit\tbehavioural\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "auth_expired_session\tadversarial\tyes\tRUNNABLE",
+    "auth_wrong_creds\tadversarial\tyes\tRUNNABLE",
+    "network_offline_slow\tadversarial\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "server_error\tadversarial\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env",
+    "Month/year picker\tno\tNOT APPLICABLE",
+    "Excel column-mapping upload\tno\tNOT APPLICABLE",
+    "OAuth sign-up carry-over\tyes\tMISSING CREDENTIAL\nset GOOGLE_SIGNUP_TOKEN in the repo-root .env"
+  ],
+  "catalog_console_errors": 0,
+  "run_text": "← Back\nPROJECTS / DEMO / REPORT / RUN\nRun run_1\n1\n✓ PASS\n2\n✕ FAIL\n\nCatalog runnable-class counts — static: 0, behavioural: 2, adversarial: 5\n\nFailures\nT c_static\ncompleted\n✕ FAIL\njudged by mock\n\nno screenshots captured\n\nT b_adv\ncompleted\n✕ FAIL\njudged by mock\n\nno screenshots captured\n\nOther results\nT a_pass\ncompleted\n✓ PASS\njudged by mock\n\nno screenshots captured",
+  "run_h2": [
+    "Failures",
+    "T c_static",
+    "T b_adv",
+    "Other results",
+    "T a_pass"
+  ],
+  "run_console_errors": 0,
+  "nope_status": 404,
+  "nope_text": "AT\nAutoTester\nProjects\n+ New project\n● Live view\n⚙ Settings\nPROJECTS\nDemo\n+ New project\n404 Not Found\n\nno project 'nope'\n\n← Back to projects",
+  "nope_console_errors": 1,
+  "console_all": [
+    [
+      "http://127.0.0.1:8793/projects/nope/catalog",
+      "error",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  ]
+}

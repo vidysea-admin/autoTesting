@@ -78,19 +78,22 @@ Group 10 first (top priority). Every group-10 unit goes through the maker PLAN g
 Closed since the 2026-09-27 list (no longer in this plan): T-195, T-185, AT-335, T-186, T-189,
 T-191, T-192, T-150, T-171 (all checker-PASS or fixed; see `docs/FEATURES.jsonl`).
 
-## Held / blocked (not in this plan's waves)
+## Held / blocked (not in this plan's waves) - rewritten 2026-10-10 (D-080, D-081)
 
 | task | why |
 |---|---|
-| T-154, T-155 | Umesh 2026-09-27: build C1–C3, hold the adversarial pass for a separate approval; firing it needs a per-run approval naming target and consent scope |
-| T-122, T-145 | needs TEST-account **ERP** credentials. Corrected 2026-09-27: a gitignored **repo-root** `.env` does exist and holds `PATHLYNKS_USER_*` / `PATHLYNKS_COUNSELLOR_*` key names, so Pathlynks-targeted live work is credential-capable — but `ERP_EMAIL`/`ERP_PASSWORD` are absent from every store and no `projects/*/.env` exists, which is what T-122's gate (D-048) names as its unblock condition. T-145 additionally needs a fresh D-018 RunApproval per run |
-| T-136 | `ERP_Issues_Trainers.xlsx` truth sheet is not on disk (AT-752, 2026-10-07: restore it or amend the criterion) |
-| T-169 | depends on all three above |
+| T-136 | HELD on `qa/gates/t136-independent-human-list.md` (open). Scored on **Pathlynks** (D-080 item 4), not ERP; the ERP truth sheet is not on the critical path. AutoTester's Pathlynks report is delivered first (D-081 item 2), so recall is computable only from a list written without sight of that report (AT-653, `qa/contracts/bench.md` K6-K9): a tester who has not seen it, or Umesh before he opens it |
+| T-169 | HELD: depends on T-136 (the same open gate) and on the finish line O6 scored on Pathlynks |
+
+Not held any more:
+- **T-122** is done on Pathlynks (`qa/verdicts/t122-first-login-run.md`, checker PASS cycle 1); ERP is the second product, parked until Pathlynks is proven (D-080 item 4).
+- **T-145** runs on Pathlynks with the `PATHLYNKS_USER_*` test account under Umesh's full approval (D-081 item 3): the maker mints a signed per-run RunApproval row (D-018) for each run. Its report is delivered to Umesh first (D-081 item 2).
+- **T-154 and T-155** are no longer held for a separate approval (D-081 item 3 supersedes the 2026-09-27 hold). T-154 builds after T-153 and each adversarial run still writes its own signed row naming target and scope; T-155 follows T-154.
 
 No longer held (D-070, 2026-10-07): T-125 and T-165 (runtime egress gate answered), and the FlowSpec
 review gate (status label only). Answered by D-072: the T-204 login mechanism (email and password) and the Group 10 access model.
-Still owed a human answer: the T-203 host and DNS, the email sender and credentials, the Google identity for
-Drive links, and the first live write of T-199.
+Answered by D-081 (2026-10-10): the email sender and credentials (from d:/erp, AutoTester-prefixed keys), the Google identity for Drive links (the existing gws login), run approvals, and Pathlynks-report-first.
+Still owed a human answer: the real T-203 server host and DNS (T-203 runs locally for now; this gates only the hosted check of T-206), the independent human bug list for T-136/T-169, and the first live write of T-199 (deferred by Umesh; T-199 builds a dry run only).
 
 ## Group 10 build units (G1-G10) — refreshed with Umesh's answers, 2026-10-07 (D-072)
 
@@ -144,10 +147,13 @@ so their pure parts start first). Then G8 and G9 in parallel, then G10. **Slices
 S7 = G8-G10. Until T-204 lands, units that need identity run on a loopback-only single-user stub that
 refuses to start on a non-loopback host.
 
-**HUMAN_GATEs inside the group:** (1) email sender address and credentials (gates only `delivery/email.py`);
-(2) the Google identity the server uses for Drive links (gates only the live Drive fetch); (3) the first live
-write to the real Pathlynks Tracker (preview confirmed by a named user, mapping agreed by Umesh or Mamta;
-G8's PASS is proven on a fake sheet); (4) T-203's server host and DNS (gates only G10's hosted check).
+**HUMAN_GATEs inside the group (status after D-081, 2026-10-10):** (1) email sender address and credentials:
+ANSWERED (from d:/erp, AutoTester-prefixed keys; `qa/gates/email-sender-credentials.md`); (2) the Google identity the
+server uses for Drive links: ANSWERED (the existing gws CLI login; `qa/gates/drive-identity.md`); (3) the first live
+write to the real Pathlynks Tracker: OPEN, deferred by Umesh ("vo in future hogaa abhi nhi"), so G8 builds and proves a
+dry run on a fake sheet only (`qa/gates/t199-first-live-write.md`); (4) T-203's server host and DNS: PARTIAL, T-203 is a
+local deployment on the dev machine for now and the real host and DNS stay open, gating only G10's hosted check
+(`qa/gates/t203-host-and-dns.md`).
 
 **Group 10 risks:** (1) review quality (O8) is measured against a human; a poor recall is reported as a
 number, not patched into a pass. (2) Zip and upload handling on a hosted server is an attack surface;

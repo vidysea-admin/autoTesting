@@ -1,0 +1,135 @@
+{
+ "F1a scheduler.py imports pipeline module": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "1 passed in 7.89s"
+  ],
+  "after": [
+   "tests\\test_schedule_tick.py:225: AssertionError",
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively",
+   "1 failed in 15.13s"
+  ]
+ },
+ "F1b schedule_gate.py lazy BrowserSession import in gate": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "1 passed in 6.76s"
+  ],
+  "after": [
+   "tests\\test_schedule_tick.py:225: AssertionError",
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively",
+   "1 failed in 0.65s"
+  ]
+ },
+ "F1c allowed module ui/env_editor.py reaches browser.session": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "1 passed in 5.15s"
+  ],
+  "after": [
+   "tests\\test_schedule_tick.py:225: AssertionError",
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively",
+   "1 failed in 9.00s"
+  ]
+ },
+ "F1d schedule_tick.py imports playwright directly (blind-spot probe)": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 0,
+  "before": [
+   "1 passed in 3.69s"
+  ],
+  "after": [
+   ".                                                                        [100%]",
+   "1 passed in 10.15s"
+  ]
+ },
+ "F1e schedule_tick.py imports run_and_grade_case by name": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 4,
+  "before": [
+   "1 passed in 8.77s"
+  ],
+  "after": [
+   "E   ImportError: cannot import name 'run_and_grade_case' from 'autotester.stages.explore' (C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\stages\\explore.py)",
+   "=========================== short test summary info ===========================",
+   "ERROR tests/test_schedule_tick.py",
+   "1 error in 2.04s"
+  ]
+ },
+ "F2a purge shared-file refusal disabled": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "1 passed in 0.80s"
+  ],
+  "after": [
+   "tests\\test_schedule_marker.py:188: Failed",
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_marker.py::test_purge_refuses_a_records_file_shared_with_another_project_and_changes_nothing",
+   "1 failed in 2.27s"
+  ]
+ },
+ "F2b records path is one shared file": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "2 passed in 21.53s"
+  ],
+  "after": [
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_marker.py::test_every_acknowledged_append_by_a_neighbour_survives_purges_of_another_project",
+   "FAILED tests/test_schedule_marker.py::test_purge_removes_only_that_projects_markers_and_record_file_and_is_idempotent",
+   "2 failed in 24.09s"
+  ]
+ },
+ "P3 scrub gets a default": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "1 passed in 0.83s"
+  ],
+  "after": [
+   "tests\\test_schedule_gate.py:161: Failed",
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_gate.py::test_scrub_is_a_required_field_so_a_caller_cannot_forget_it",
+   "1 failed in 1.35s"
+  ]
+ },
+ "P5 signing_key_available always True": {
+  "import_path_copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\b\\copies\\m\\src\\autotester\\__init__.py",
+  "in_copy": true,
+  "green_before_rc": 0,
+  "after_rc": 1,
+  "before": [
+   "1 passed in 2.41s"
+  ],
+  "after": [
+   "tests\\test_schedule_gate.py:198: AssertionError",
+   "=========================== short test summary info ===========================",
+   "FAILED tests/test_schedule_gate.py::test_the_dry_run_preview_agrees_with_the_real_gate_when_the_signing_key_is_lost",
+   "1 failed in 0.92s"
+  ]
+ }
+}

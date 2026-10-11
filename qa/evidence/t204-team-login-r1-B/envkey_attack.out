@@ -1,0 +1,115 @@
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+process env keys left: ['APPDATA', 'AUTOTESTER_ALLOWED_HOSTS', 'AUTOTESTER_AUTH_DIR', 'AUTOTESTER_ROOT', 'AUTOTESTER_TEST_NO_AUTO_LOGIN', 'COMPUTERNAME', 'COMSPEC', 'HOMEDRIVE', 'HOMEPATH', 'LOCALAPPDATA', 'OS', 'PATH', 'PATHEXT', 'PROCESSOR_ARCHITECTURE', 'PROGRAMDATA', 'PROGRAMFILES', 'PYTHONDONTWRITEBYTECODE', 'PYTHONIOENCODING', 'SYSTEMDRIVE', 'SYSTEMROOT', 'TEMP', 'TMP', 'USERNAME', 'USERPROFILE', 'WINDIR']
+baseline restart exports: ['ANTHROPIC_API_KEY', 'AUTOTESTER_APPROVAL_KEY', 'HTTP_PROXY', 'PLAYWRIGHT_BROWSERS_PATH']
+A onboard http/HTTP_PROXY                               http 400                       unexpected_exported=[]
+A onboard node/NODE_OPTIONS                             http 303                       unexpected_exported=[]
+A onboard ld/LD_PRELOAD                                 http 303                       unexpected_exported=[]
+A onboard ssl/SSL_CERT_FILE                             http 303                       unexpected_exported=[]
+A onboard requests/REQUESTS_CA_BUNDLE                   http 303                       unexpected_exported=[]
+A onboard no/NO_PROXY                                   http 303                       unexpected_exported=[]
+A onboard all/ALL_PROXY                                 http 303                       unexpected_exported=[]
+A onboard git/GIT_SSH_COMMAND                           http 303                       unexpected_exported=[]
+A onboard uv/UV_INDEX_URL                               http 303                       unexpected_exported=[]
+A onboard litellm/LITELLM_API_BASE                      http 303                       unexpected_exported=[]
+A onboard openai/OPENAI_BASE_URL                        http 400                       unexpected_exported=[]
+A onboard gemini/GEMINI_BASE_URL                        http 400                       unexpected_exported=[]
+A onboard google/GOOGLE_API_KEY                         http 400                       unexpected_exported=[]
+A onboard ollama/OLLAMA_HOST                            http 400                       unexpected_exported=[]
+A onboard anthropic/ANTHROPIC_BASE_URL                  http 400                       unexpected_exported=[]
+A onboard anthropic-base/ANTHROPIC_BASE_URL             http 303                       unexpected_exported=[]
+A onboard a/A_X                                         http 303                       unexpected_exported=[]
+A onboard a1/A1_X                                       http 303                       unexpected_exported=[]
+A onboard b-/B_X                                        http 303                       unexpected_exported=[]
+A onboard c--d/C_D_X                                    http 303                       unexpected_exported=[]
+A onboard bash/BASH_ENV                                 http 303                       unexpected_exported=[]
+A onboard pythonpath/PYTHONPATH_X                       http 303                       unexpected_exported=[]
+A onboard autotester/AUTOTESTER_X                       http 400                       unexpected_exported=[]
+A onboard autotester-x/AUTOTESTER_X_Y                   http 400                       unexpected_exported=[]
+A onboard auto/AUTO_X                                   http 303                       unexpected_exported=[]
+A onboard autotest/AUTOTEST_X                           http 303                       unexpected_exported=[]
+A onboard playwright/PLAYWRIGHT_BROWSERS_PATH           http 400                       unexpected_exported=[]
+A onboard uvicorn/UVICORN_HOST                          http 303                       unexpected_exported=[]
+A onboard sslkeylog/SSLKEYLOG_FILE                      http 303                       unexpected_exported=[]
+A onboard proxy/PROXY_X                                 http 303                       unexpected_exported=[]
+B value vt                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value ff                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value fs                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value gs                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value rs                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value nel                                             http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value ls                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value ps                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value bs                                              http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value bsq                                             http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value eq                                              http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value interp                                          http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value exp                                             http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value nul                                             http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value hash                                            http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value sp                                              http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value q1                                              http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value q2                                              http 303/303 dotenv_LD=[]      unexpected_exported=[]
+B value q1q2                                            http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B value q3                                              http 400/303 dotenv_LD=[]      unexpected_exported=[]
+B after all values, ANTHROPIC_API_KEY still exported?: True
+dotenv keys now: ['A1_X', 'ALL_PROXY', 'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'AUTOTESTER_APPROVAL_KEY', 'AUTOTEST_X', 'AUTO_X', 'A_X', 'BASH_ENV', 'B_X', 'C_D_X', 'GIT_SSH_COMMAND', 'HTTP_PROXY', 'INJQ2_K', 'LD_PRELOAD', 'LITELLM_API_BASE', 'NODE_OPTIONS', 'NO_PROXY', 'PLAYWRIGHT_BROWSERS_PATH', 'PROXY_X', 'PYTHONPATH_X', 'REQUESTS_CA_BUNDLE', 'SSLKEYLOG_FILE', 'SSL_CERT_FILE', 'UVICORN_HOST', 'UV_INDEX_URL', 'ZZFF_K', 'ZZFS_K', 'ZZGS_K', 'ZZLS_K', 'ZZNEL_K', 'ZZPS_K', 'ZZQ1Q2_K', 'ZZQ1_K', 'ZZQ2_K', 'ZZQ3_K', 'ZZRS_K', 'ZZVT_K']
+C corrupt project.json                                  namespace by dirname           unexpected_exported=[]
+C project.json renamed away (dir kept)                  no glob hit                    unexpected_exported=['ORPH_PROXY']
+C project dir deleted (operator action)                 orphan key                     unexpected_exported=['ORPH_PROXY']
+D env/add ok                               http 303
+D env/add HTTP_PROXY                       http 400
+D env/add AUTOTESTER_X                     http 403
+D env/add ANTHROPIC_API_KEY                http 403
+D secrets decl HTTP_PROXY                  http 400
+D secrets decl RT_Z                        http 303
+D env set RT_Z                             http 303
+D env set undeclared HTTP_PROXY            http 400
+D secrets del RT_Z                         http 303
+D settings provider as dev                 http 403
+D env/add key lower                        http 400
+D env/add key fullwidth                    http 400
+D env/add key nl                           http 400
+D env/add key eq                           http 400
+D env/add key nul                          http 400
+D env/add key sp                           http 400
+D env/add key export                       http 400
+D env/add key bare                         http 400
+D env/add key bare-noul                    http 400
+D after all route attempts                                                             unexpected_exported=[]
+D .env keys: ['A1_X', 'ALL_PROXY', 'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'AUTOTESTER_APPROVAL_KEY', 'AUTOTEST_X', 'AUTO_X', 'A_X', 'BASH_ENV', 'B_X', 'C_D_X', 'GIT_SSH_COMMAND', 'HTTP_PROXY', 'INJQ2_K', 'LD_PRELOAD', 'LITELLM_API_BASE', 'NODE_OPTIONS', 'NO_PROXY', 'ORPH_PROXY', 'PLAYWRIGHT_BROWSERS_PATH', 'PROXY_X', 'PYTHONPATH_X', 'REQUESTS_CA_BUNDLE', 'RT_BASE', 'RT_NEW', 'RT_Z', 'SSLKEYLOG_FILE', 'SSL_CERT_FILE', 'UVICORN_HOST', 'UV_INDEX_URL', 'ZZFF_K', 'ZZFS_K', 'ZZGS_K', 'ZZLS_K', 'ZZNEL_K', 'ZZPS_K', 'ZZQ1Q2_K', 'ZZQ1_K', 'ZZQ2_K', 'ZZQ3_K', 'ZZRS_K', 'ZZVT_K']python-dotenv could not parse statement starting at line 34
+python-dotenv could not parse statement starting at line 36
+
+E alpha-beta key from alpha: 400
+E alpha claims ALPHA_BETA_X after alpha-beta exists: 400
+E alpha-beta onboard with alpha's ALPHA_BETA_X (alpha has it): 400
+E legacy declared HTTP_PROXY: set via /env: 303 exported: []
+E legacy undeclare: 303 exported: []
+F litellm-op onboard: 400 {"detail":"a credential key is already in use; choose a project-specific key"}
+F op-dummy line overwritten by dev?: True
+F LITELLM_OP_KEY exported at restart?: False  SSL_OP_CERT exported?: False
+F provider keys exported: ['ANTHROPIC_API_KEY', 'AUTOTESTER_APPROVAL_KEY']
+TOTAL unexpected exports across attack rows: 2

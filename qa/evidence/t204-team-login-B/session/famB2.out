@@ -1,0 +1,15 @@
+{"kind": "control", "field": "password", "size": 129, "status": 401, "seconds": 0.01, "body_mb": 0.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "control", "field": "password", "size": 1000000, "status": 401, "seconds": 0.01, "body_mb": 1.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "control", "field": "password", "size": 50000000, "status": 401, "seconds": 0.01, "body_mb": 50.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "login", "field": "password", "size": 129, "status": 401, "seconds": 0.12, "body_mb": 0.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "login", "field": "password", "size": 1000000, "status": 401, "seconds": 0.12, "body_mb": 1.0, "peakWS_delta_mb": 5.0, "tracemalloc_peak_mb": 2.0}
+{"kind": "login", "field": "password", "size": 50000000, "status": 400, "seconds": 0.04, "body_mb": 50.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "login", "field": "email", "size": 129, "status": 401, "seconds": 0.14, "body_mb": 0.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "login", "field": "email", "size": 1000000, "status": 401, "seconds": 0.14, "body_mb": 1.0, "peakWS_delta_mb": 5.0, "tracemalloc_peak_mb": 6.0}
+{"kind": "login", "field": "email", "size": 50000000, "status": 400, "seconds": 0.03, "body_mb": 50.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "signup", "field": "password", "size": 129, "status": 400, "seconds": 0.03, "body_mb": 0.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "signup", "field": "password", "size": 1000000, "status": 400, "seconds": 0.03, "body_mb": 1.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 2.0}
+{"kind": "signup", "field": "password", "size": 50000000, "status": 400, "seconds": 0.04, "body_mb": 50.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "signup", "field": "email", "size": 129, "status": 303, "seconds": 0.15, "body_mb": 0.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
+{"kind": "signup", "field": "email", "size": 1000000, "status": 400, "seconds": 0.04, "body_mb": 1.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 6.0}
+{"kind": "signup", "field": "email", "size": 50000000, "status": 400, "seconds": 0.04, "body_mb": 50.0, "peakWS_delta_mb": 0.0, "tracemalloc_peak_mb": 0.0}
