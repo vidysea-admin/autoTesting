@@ -96,6 +96,7 @@
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
+| `schema/tracked_bug.py` | A tracked bug and the events that move it: the data shapes of T-199a (team-bug-loop TB1-TB6). |
 | `schema/unified_report.py` | The damage-control report's typed shape: one run's four evidence classes plus crawl coverage. |
 | `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
 | `schema/ux_report.py` | The advisory UX artifacts: `UXFinding`, `UXCaseOutcome`, `UXReport` (PU2). |
@@ -127,6 +128,7 @@
 | `stages/ai_report.py` | AI REPORT: one Excel workbook of a project's stored Track C evidence, grouped by tier (T-155). |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
+| `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
@@ -189,6 +191,7 @@
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
+| `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory (C1/C3). |
@@ -402,6 +405,11 @@
 | `ServerSettings` (`schema/server_settings.py`) | What the admin chose; absent fields keep the documented defaults. |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
+| `BugStatus` (`schema/tracked_bug.py`) |  |
+| `EventKind` (`schema/tracked_bug.py`) | What happened, in the loop's vocabulary. The first seven are verdict-derived; `case_changed` |
+| `BugSeed` (`schema/tracked_bug.py`) | What a bug is made of when its first FAIL opens it. |
+| `BugEvent` (`schema/tracked_bug.py`) | One fact. `ref` is the idempotency token: a verdict ref (`run/case`), an issue ref |
+| `TrackedBug` (`schema/tracked_bug.py`) | One bug, as folded from its events. Never written to disk. |
 | `RegressionSection` (`schema/unified_report.py`) | RR3/RR6: the release's single issues log and its diff against the trusted baseline. |
 | `ApiFailure` (`schema/unified_report.py`) | One first-party response the product answered badly (NA1). `status` None = unreadable. |
 | `ApiSection` (`schema/unified_report.py`) |  |
