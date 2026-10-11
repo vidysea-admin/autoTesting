@@ -1,0 +1,5 @@
+stored files: 11
+{'runs': 362, 'built': 147, 'unreadable': 215, 'unavail': 0, 'other_exc': 0, 'leaks': 0, 'undecl_echo': 0}
+== leaks
+== undecl_echo
+== other_exc
