@@ -344,7 +344,7 @@
 | `ScheduleZone` (`schema/schedule.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
 | `SlotOutcome` (`schema/schedule.py`) | What a tick decided for one slot. A record carries exactly one of these. |
 | `SchedulerHealth` (`schema/schedule.py`) |  |
-| `CredentialState` (`schema/schedule.py`) | Why the TS5 gate admits or refuses a scheduled run; the value leads the slot record's detail. |
+| `CredentialState` (`schema/schedule.py`) | Why the TS5 gate admits or refuses a run; the value leads the slot record's detail. |
 | `ScheduleInvalid` (`schema/schedule.py`) | A value was refused at save. `field` names it; the caller stores nothing. |
 | `WeeklyRule` (`schema/schedule.py`) |  |
 | `ScheduleConfig` (`schema/schedule.py`) |  |
