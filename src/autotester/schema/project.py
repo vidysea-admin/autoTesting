@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -10,6 +11,7 @@ from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
 from autotester.schema.schedule import ScheduleConfig
+from autotester.schema.team_enums import SourceOriginKind
 from autotester.schema.user_persona import PERSONA_ID_PATTERN, UXPolicy
 
 DEFAULT_VISION_PROVIDER = "gemini"
@@ -119,6 +121,9 @@ class Source(Artifact):
     recorded_on: str | None = Field(
         default=None, description="ISO date, e.g. the Excel 'Date' column"
     )
+    uploaded_by: str | None = Field(default=None, description="user id of who added it (Group 10)")
+    uploaded_at: datetime | None = Field(default=None, description="when it was added (Group 10)")
+    origin: SourceOriginKind | None = Field(default=None, description="how it arrived (Group 10)")
 
     def model_post_init(self, _context: object) -> None:
         if not self.id:

@@ -9,7 +9,7 @@ network in a run).
 
 from __future__ import annotations
 
-import ast
+import inspect
 import json
 from pathlib import Path
 
@@ -117,13 +117,57 @@ def test_a_covering_approval_proceeds_and_records_who_and_how(world, entry) -> N
     assert saved.via == kwargs.get("via")
 
 
+PINNED = {
+    "launch_run": {"slug", "run_id", "trigger", "requested_by", "slot_key", "via", "seams"},
+    "prepare_run": {"slug", "seams"},
+    "require_live_case_approval": {"project", "store", "cases", "secrets", "account_keys"},
+}
+PINNED_SEAMS = {"judge_factory", "planner", "free_ram_mb", "ledger"}
+
+
 def test_the_gate_is_not_a_parameter() -> None:
-    """No flag, however named, lets a caller skip the approval check."""
-    tree = ast.parse(Path(run_launcher.__file__).read_text(encoding="utf-8"))
-    banned = ("skip", "bypass", "force", "unchecked", "no_approval", "approved", "trusted")
-    for fn in (n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)):
-        names = [a.arg for a in fn.args.args + fn.args.kwonlyargs]
-        assert not [a for a in names if any(b in a.lower() for b in banned)], (fn.name, names)
+    """The launcher's whole input surface is an exact, pinned allow-list: every parameter of
+    `launch_run`, `prepare_run` and the gate, and every `RunSeams` field. A new knob of any
+    name (or a `**kwargs`) fails here and must be argued for, with the gate still unskippable."""
+    for name, expected in PINNED.items():
+        params = inspect.signature(getattr(run_launcher, name)).parameters
+        assert all(p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in params.values()), name
+        assert set(params) == expected, (name, sorted(set(params) ^ expected))
+    assert set(RunSeams._fields) == PINNED_SEAMS, sorted(set(RunSeams._fields) ^ PINNED_SEAMS)
+
+
+class Marker:
+    """A truthy stand-in for any seam value: callable, delegating, and claiming every flag."""
+
+    def __init__(self, inner: object) -> None:
+        self.inner = inner
+
+    def __bool__(self) -> bool:
+        return True
+
+    def __call__(self, *args: object, **kwargs: object) -> object:
+        return self.inner(*args, **kwargs)
+
+    def __getattr__(self, name: str) -> object:
+        return getattr(self.inner, name, True)
+
+
+@pytest.mark.parametrize("sentinel", ["marker", "true"])
+@pytest.mark.parametrize("field", RunSeams._fields)
+def test_no_seam_value_skips_the_approval(world, field, sentinel, tmp_path) -> None:
+    """Every `RunSeams` field, set to a truthy sentinel, still ends in a refusal with nothing
+    created: the field list is read from the class, so a future `skip_approval` seam is covered
+    the moment it exists."""
+    store, seams = world
+    current = getattr(seams, field)
+    value = True if sentinel == "true" or isinstance(current, bool) else Marker(current)
+    before = _listing(tmp_path)
+    with pytest.raises(Exception) as raised:      
+        launch_run("demo", seams=seams._replace(**{field: value}), **ENTRY_POINTS["manual"])
+    if isinstance(raised.value, LaunchRefused):
+        assert raised.value.status == 403 and "no approval exists" in raised.value.reason
+    assert _listing(tmp_path) == before and not store.paths.runs_dir.exists()
+    assert Counters.sessions == 0 and Counters.judgments == 0
 
 
 def test_a_run_json_written_before_this_unit_loads_unchanged() -> None:

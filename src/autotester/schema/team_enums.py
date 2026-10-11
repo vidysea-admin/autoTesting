@@ -1,10 +1,11 @@
 """The Group 10 (team features) vocabulary file: every closed value set the team units add.
 
 One job: be the single home of the Group 10 closed vocabularies (schedule mode and zone, slot
-outcome, scheduler health, how a run was requested). `schema/enums.py` stays the home of every
-pre-existing vocabulary and is at its 300-line cap, so nothing new goes there. A value defined
+outcome, scheduler health, how a run was requested, where a source came from).
+`schema/enums.py` stays the home of every pre-existing vocabulary and is at its 300-line cap,
+so nothing new goes there. A value defined
 in both files, or re-typed as a bare literal in a stage, is a defect (one concept, one place);
-`tests/test_team_enums_home.py` checks both. Later units (delivery status, source origin)
+`tests/test_team_enums_home.py` checks both. Later units (delivery status)
 append their vocabulary here.
 """
 
@@ -49,3 +50,15 @@ class RunVia(StrEnum):
     """Which surface asked for a run (`Run.via`); `None` means the original UI Run button."""
 
     TEAM_BUTTON = "team_button"
+
+
+class SourceOriginKind(StrEnum):
+    """Where a `Source` came from (`Source.origin`); `None` means it predates provenance.
+
+    The members are the contract's own example set (TF6: upload | zip | drive | recording);
+    T-198 extends this enum in place with whatever detail it needs."""
+
+    UPLOAD = "upload"
+    ZIP = "zip"
+    DRIVE = "drive"
+    RECORDING = "recording"
