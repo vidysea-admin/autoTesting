@@ -66,7 +66,7 @@ class Hostile:
             head = b"HTTP/1.1 200 OK\r\n"
             end = time.monotonic() + 5  # a drip is finite: a missing deadline fails an assert
             if self.mode == "drip_body":
-                self._send(conn, head + b"Content-Length: 100000\r\n\r\n")
+                self._send(conn, head + b"Content-Length: 60000\r\n\r\n")
                 while not self.stopping.is_set() and time.monotonic() < end:
                     self._send(conn, b" ")
                     time.sleep(0.1)
