@@ -198,4 +198,5 @@ Pre-check: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run ruff ch
 Pre-check: 39b42ca542e567a8b8ec9981eb8ac6ae34959d0c uv --directory . run autotester doctor -> doctor: clean (run_launcher.py 299 lines, routes_runs.py 81, ui/app.py 271)
 No full suite and no `pytest tests` was run (brief); the integrated-master suite before push covers the rest.
 
-## Status: ready-for-check
+## Status: checked-PASS
+Merged: 09fc65a8
