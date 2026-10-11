@@ -9,26 +9,17 @@ bounded crawl must be judged on impossible to miss: **why it stopped**, and
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 from openpyxl import Workbook
 
 from autotester.core.excel import autosize_columns
+from autotester.core.excel import clean_cell as _clean
 from autotester.schema.crawl import Crawl, CrawlCoverage, CrawlIssue
 from autotester.schema.enums import EdgeOutcome, IssueKind
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
 from autotester.stages.explore_status import displayed_reason, displayed_status
 from autotester.store.project_store import ProjectStore
-
-# openpyxl refuses to write control characters (IllegalCharacterError). Live
-# console output carries them (AT-530: a Pathlynks crawl's issue detail ended
-# the whole report), so every string cell passes through this once.
-_ILLEGAL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
-
-
-def _clean(value: object) -> object:
-    return _ILLEGAL.sub("", value) if isinstance(value, str) else value
 
 _REFUSED = (
     EdgeOutcome.DENIED_POLICY,
