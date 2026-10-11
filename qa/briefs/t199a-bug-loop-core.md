@@ -15,7 +15,7 @@ its sync state in its own model keyed by `bug_key`.
 | TB3 verdicts only | **part**: `kind_of_verdict(Verdict or None)` is the only reader; no `RawResult` import; unevidenced PASS and verdict-less results change nothing | reading a run's verdicts off disk, the replay path |
 | TB4 honest close | **part**: `closed_by_runs`/`closed_by_verdicts` kept; `case_changed` makes an open bug `stale`, never `fixed` | detecting a deleted case or changed criterion (needs `ProjectStore`); the pinned-case test (the core never touches cases) |
 | TB5 adapter in `stages/issues.py` | **full**: one function, <= 58 added lines, file <= 300 | - |
-| TB6 idempotent | **part**: an event applied twice, a whole batch replayed after a crash, 2 racing writers: same bytes / same state | the processed-run marker (event ids make it redundant here; the run-reading slice decides) |
+| TB6 idempotent | **part**: an event applied twice, a batch replayed after a crash, 6 racing threads and 6 racing processes: same files, no event lost | the processed-run marker (event ids make it redundant here; the run-reading slice decides) |
 | TB7 tracker page | **held**; the data side, the `assign` event, is built | route, template, `report.view` / `project.edit` enforcement (T-204/T-205) |
 
 ## Lifecycle: events and the table (one dict per state in `stages/bug_loop.py`)
@@ -50,21 +50,24 @@ reserved actor `system:bug-loop`; a user actor on a status event is refused `act
 - G5 TB6 names a "processed-run marker"; event ids give the same result without the late-verdict loss (old probe P1). Marker held.
 - G6 `reopened` as `open` (f), `assign` in all states (j), a FAIL verdict with no cited failure maps to `inconclusive` (cannot name a criterion), "PASS cites evidence" read as every criterion met and no screenshot owed (the old branch's ruling).
 - G7 notes: the contract defines no note concept; none built.
+- G8 time order: events are replayed by `(at, event_id)`; equal times tie by id. A PASS older than the latest FAIL therefore cannot close the bug. `close_passes` is a store argument, not in the log (a changed N re-folds old history).
+- G9 the actor is an unauthenticated string here; T-204's route must set it from the session, never from a request. An actor-refused event writes nothing.
 
 ## Design
 
-State is a fold of an append-only event log (`bug_events.jsonl` in a directory the caller passes). History is never rewritten; `fold` is the single interpreter, so a racing
-writer's event is applied in file order, or skipped as a duplicate (`event_id = content_id(bug_key, ref)`, first wins). Appends and reads use `store/filestore.py`
-`append_jsonl`/`read_jsonl` (the repo's helper; no second lock helper, no `fcntl`, R65). A torn tail line from a power cut raises loudly with `path:line`.
+State is a fold of a set of events, never stored. Each event is one file `bug_events/<event_id>.json` in a directory the caller passes, written whole by `store/filestore.py::write_json`
+(the repo's atomic writer; no second lock helper, no `fcntl`, R65). A shared append log was built first and rejected: on Windows concurrent appends from two processes lose and tear lines
+(a reviewer's probe), and the repo has no cross-process lock. `event_id = content_id(bug_key, ref)`, so the same event is the same file. `trace` replays the set in `(at, event_id)` order, so
+state depends on the events alone, not on write order or arrival time (a late verdict lands where its time puts it). A file that does not parse raises with its path.
 
 ## Files
 
 - New `src/autotester/schema/tracked_bug.py` (<= 175): `BugStatus`, `EventKind`, `BugSeed`, `BugEvent`, `TrackedBug`, `case_bug_key`, `SYSTEM_ACTOR`. C1: `extra="forbid"`.
 - New `src/autotester/stages/bug_loop.py` (<= 250): the table, `judge`, `fold`, `kind_of_verdict`. Pure, no I/O.
-- New `src/autotester/store/bug_store.py` (<= 120): `BugStore(root, close_passes)`: `apply`, `apply_all`, `bugs`, `get`, `history`.
+- New `src/autotester/store/bug_store.py` (<= 120): `BugStore(root, close_passes)`: `apply`, `apply_all`, `events`, `bugs`, `get`, `history`.
 - Edit `src/autotester/stages/issues.py` (242 lines, +<= 58): `issue_to_bug_event`, the only key derivation from an `Issue`.
 - New `tests/test_bug_loop.py`, `tests/test_bug_store.py`, `tests/bug_loop_fixture.py`; manifest `qa/manifests/t199a-bug-loop-core.md`; `docs/MAP.md` via `autotester map`.
 - Held (after t205/t204 merge): `ui/routes_tracker.py`, any route, CLI command, `Project.bug_close_passes`, `core/paths.py` helper, sheet client, `process_run` over a run directory.
 
-New modules (D-082 item 1): `schema/tracked_bug.py` (tracked bug, events, key); `stages/bug_loop.py` (the lifecycle table and its fold); `store/bug_store.py` (append-only bug event log under a caller-given directory).
+New modules (D-082 item 1): `schema/tracked_bug.py` (tracked bug, events, key); `stages/bug_loop.py` (the lifecycle table and its fold); `store/bug_store.py` (one-file-per-event bug log under a caller-given directory).
 `store/bug_store.py` is the third, named here so `bug_loop.py` stays pure and under the cap.
