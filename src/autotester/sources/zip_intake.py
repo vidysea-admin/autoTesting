@@ -16,6 +16,7 @@ and TI11 (origin = the archive name and member path). A zip is untrusted input, 
 
 from __future__ import annotations
 
+import lzma
 import zipfile
 import zlib
 from collections.abc import Callable
@@ -175,7 +176,7 @@ def _extract_one(ctx: _Ctx, zf: zipfile.ZipFile, plan: _Plan, staging: Path, ind
             return _fail(plan, f"inflated past the {what}; the member was removed"), 0
         except _NestedByContent:
             return _fail(plan, "refused: nested archive (the bytes are an archive)"), 0
-        except (zipfile.BadZipFile, zlib.error, EOFError):
+        except (zipfile.BadZipFile, zlib.error, lzma.LZMAError, EOFError):
             return _fail(plan, "corrupt member (bad checksum or truncated data)"), 0
         except NotImplementedError:
             return _fail(plan, "unsupported compression method"), 0
@@ -233,6 +234,9 @@ def expand_zip(store: ProjectStore, archive: Path, *, archive_name: str | None =
         zf = zipfile.ZipFile(archive)
     except (zipfile.BadZipFile, OSError):
         return _failed_report(name, "not a zip archive (or it cannot be read)", notes)
+    except NotImplementedError:  # a member declares a zip version the stdlib will not list
+        return _failed_report(name, "unsupported zip version (a member needs a newer zip "
+                                    "reader than this one)", notes)
     with zf:
         infos = zf.infolist()
         if len(infos) > limits.max_entries:

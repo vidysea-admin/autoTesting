@@ -13,7 +13,15 @@ import hashlib
 import zipfile
 from pathlib import Path
 
-from asgi_helpers import BOUNDARY, CHUNK, endless, multipart_head, post_stream
+from asgi_helpers import (
+    BOUNDARY,
+    CHUNK,
+    chunked,
+    endless,
+    multipart_head,
+    multipart_tail,
+    post_stream,
+)
 from ui_intake_support import (  # noqa: F401  (fixtures)
     DRIVE,
     MIB,
@@ -95,6 +103,47 @@ def test_ho30_a_lying_content_length_changes_nothing(store, tmp_path):
 
 def test_ti9_a_request_with_no_content_length_still_works(store):
     assert post_stream(UPLOAD, _body("a.mp4", video("nolen")))[0] == 303
+
+
+def _fields(count: int, size: int) -> dict[str, str]:
+    return {f"f{i}": "v" * size for i in range(count)}
+
+
+def test_f2_many_small_form_fields_are_refused_early_and_write_no_file_byte(store, tmp_path):
+    """1,000 tiny fields ahead of the file: refused 400 near the cap, not read to the end."""
+    _limit(tmp_path, 2 * MIB)
+    head = multipart_head("a.mp4", extra=_fields(1000, 100))
+    status, _, served = post_stream(UPLOAD, [head, *chunked(b"V" * 4096), multipart_tail()])
+    assert status == 400 and store.list_sources() == [] and _leftovers(tmp_path) == []
+    assert served.bytes <= len(head)  # the whole head is one chunk; nothing after it was pulled
+    assert not (tmp_path / ".work" / "uploads").exists() or not list(
+        (tmp_path / ".work" / "uploads").rglob("*"))
+
+
+def test_f2_a_few_large_fields_are_refused_by_the_total_cap(store, tmp_path):
+    """Five fields of 15 KiB each pass the per-field cap but break the total field cap."""
+    _limit(tmp_path, 2 * MIB)
+    status, _, _ = post_stream(UPLOAD, _body("a.mp4", video("a"), extra=_fields(5, 15 * 1024)))
+    assert status == 400 and store.list_sources() == [] and _leftovers(tmp_path) == []
+
+
+def test_f2_the_reader_holds_a_bounded_amount_however_many_fields_arrive(tmp_path):
+    """Feed the parser directly: it raises before the retained fields pass the caps."""
+    import pytest
+    from python_multipart.multipart import MultipartParser
+
+    from autotester.ui import upload_stream as us
+
+    reader = us._Reader(tmp_path / "stage", 2 * MIB)
+    parser = MultipartParser(BOUNDARY.encode(), reader.callbacks())
+    head = multipart_head("a.mp4", extra=_fields(5000, 200))
+    with pytest.raises(us.UploadRefused) as caught:
+        for start in range(0, len(head), 1024):
+            parser.write(head[start:start + 1024])
+    assert caught.value.status == 400
+    kept = sum(len(k) + len(v) for k, v in reader.fields.items())
+    assert len(reader.fields) <= us.MAX_FIELDS and kept <= us.FIELDS_TOTAL_CAP
+    assert not (tmp_path / "stage").exists()
 
 
 def test_a_body_that_is_not_multipart_is_refused_cleanly(store):

@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
+import zipfile
 from pathlib import Path
 
 import pytest
 from zip_fixtures import (
+    add_member,
     build_zip,
     flip_data_byte,
     make_store,
@@ -139,6 +142,53 @@ def test_ti5_corrupt_middle_member_is_failed_others_register_status_partial_exit
     assert {s.label for s in _rows(store)} == {"a.mp4", "c.mp4"}
     assert report.status is IntakeStatus.PARTIAL and report.exit_code == 2
     assert not list((tmp_path / ".work" / "intake").glob("*/*"))
+
+
+def _noise(tag: str, size: int = 6000) -> bytes:
+    """Bytes that barely compress (so a flipped byte lands inside real compressed data)."""
+    out, n = b"", 0
+    while len(out) < size:
+        out += hashlib.sha256(f"{tag}{n}".encode()).digest()
+        n += 1
+    return out[:size]
+
+
+@pytest.mark.parametrize("method", [zipfile.ZIP_LZMA, zipfile.ZIP_BZIP2, zipfile.ZIP_DEFLATED])
+@pytest.mark.parametrize("fraction", [0.2, 0.5, 0.8])
+def test_ti5_a_damaged_compressed_member_is_failed_whatever_the_decompressor_raises(
+        tmp_path, method, fraction):
+    """LZMA raises LZMAError, bzip2 OSError, deflate zlib.error: each is one failed member."""
+    store = make_store(tmp_path)
+    archive = tmp_path / "in.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        for tag in ("a", "b", "c"):
+            add_member(zf, f"{tag}.mp4", _noise(tag), compress=method)
+    with zipfile.ZipFile(archive) as zf:
+        info = zf.getinfo("b.mp4")
+        offset = info.header_offset + 30 + len(info.orig_filename.encode()) + len(info.extra)
+        offset += int(info.compress_size * fraction)
+    raw = bytearray(archive.read_bytes())
+    raw[offset] ^= 0xFF
+    archive.write_bytes(bytes(raw))
+    report = _run(store, archive)
+    assert [m.member for m in _by_outcome(report, IntakeOutcome.FAILED)] == ["b.mp4"]
+    assert {s.label for s in _rows(store)} == {"a.mp4", "c.mp4"}
+    assert report.status is IntakeStatus.PARTIAL and report.exit_code == 2
+    assert not list((tmp_path / ".work" / "intake").glob("*/*"))
+
+
+def test_ti5_a_zip_version_python_cannot_read_is_a_failed_report_not_a_crash(tmp_path):
+    """extract_version 9.9: the stdlib refuses to list such an archive; the intake must not crash."""
+    store = make_store(tmp_path)
+    archive = tmp_path / "in.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        add_member(zf, "a.mp4", video("a"))
+        info = zipfile.ZipInfo("b.mp4")
+        info.extract_version = 99
+        zf.writestr(info, video("b"))
+    report = _run(store, archive)
+    assert report.status is IntakeStatus.FAILED and report.exit_code == 2
+    assert "version" in report.members[0].reason and _rows(store) == []
 
 
 def test_ti5_password_protected_member_is_failed_not_success(tmp_path):

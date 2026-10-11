@@ -30,6 +30,10 @@ from autotester.stages.ingest import NotARecording, require_recording_suffix
 FORM_OVERHEAD = 256 * 1024
 """Headers and small text fields around the file; the body as a whole may not pass limit + this."""
 FIELD_CAP = 16 * 1024
+MAX_FIELDS = 8
+FIELDS_TOTAL_CAP = 32 * 1024
+"""At most this many text fields, and this many bytes of them together, are kept (the form
+only uses `label`); more is refused so memory cannot grow with the body."""
 HEADER_CAP = 8 * 1024
 FORM_CAP = 64 * 1024
 FILE_FIELD = "recording"
@@ -89,6 +93,7 @@ class _Reader:
         self._value = b""
         self._file_done = False
         self._current_is_file = False
+        self._kept = 0
 
     def callbacks(self) -> dict:
         return {"on_part_begin": self._begin, "on_header_field": self._hfield,
@@ -151,7 +156,15 @@ class _Reader:
             self._handle.close()
             self._handle, self._file_done = None, True
         elif not self._current_is_file and self._name:
-            self.fields[self._name] = self._buffer.decode("utf-8", "replace")
+            self._keep_field()
+
+    def _keep_field(self) -> None:
+        if self._name not in self.fields and len(self.fields) >= MAX_FIELDS:
+            raise UploadRefused(400, "That upload has too many form fields.")
+        self._kept += len(self._name) + len(self._buffer)
+        if self._kept > FIELDS_TOTAL_CAP:
+            raise UploadRefused(400, "The form fields in that upload are too long.")
+        self.fields[self._name] = self._buffer.decode("utf-8", "replace")
 
     @property
     def complete(self) -> bool:
