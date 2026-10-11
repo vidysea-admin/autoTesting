@@ -1,0 +1,4 @@
+{"src": "81d0e7f5", "startup": "STARTED", "GET /healthz Host 10.0.0.5:8000": 403, "POST /auth/login Origin http://10.0.0.5:8000": 403}
+{"src": "738e1f12", "startup": "STARTED", "GET /healthz Host 10.0.0.5:8000": 403, "POST /auth/login Origin http://10.0.0.5:8000": 403}
+{"src": "27a3a0a9", "startup": "RAISED", "msg": "the server's own origin http://10.0.0.5:8000 or https://10.0.0.5:8000 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be th"}
+{"src": "dd7b49e5", "startup": "RAISED", "msg": "the server's own origin http://10.0.0.5:8000 or https://10.0.0.5:8000 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be th"}
