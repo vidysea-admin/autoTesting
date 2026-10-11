@@ -3,8 +3,8 @@
 Its one job is the bridge from a run directory to the bug store (TB3, TB4, TB6). It reads
 `Verdict` files and never a `RawResult`: `bug_loop.kind_of_verdict` is the only door from a grade to
 an event kind, and this module only decides which bugs the kind is about. A FAIL verdict opens or
-repeats one bug per failing criterion; every other verdict is an event of the kind the door gave, for
-each bug of that case (the store keeps only the ones that can move a bug).
+repeats one bug per failing criterion; every other verdict is an event of the kind the door gave,
+for each bug of that case (the store keeps only the ones that can move a bug).
 
 A bug whose case was deleted, or whose criterion was edited or removed, gets a `case_changed` event
 and becomes `stale`, never `fixed` (TB4). A rubric that cannot be loaded is reported, not guessed.

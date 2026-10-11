@@ -64,7 +64,8 @@ def test_p3_a_snapshot_taken_by_the_caller_is_reused_not_read_again(
 
 # -- P4: a bad event file is contained, named, and loses no valid event -------------------------
 
-@pytest.mark.parametrize("content", ["", '{"schema_version": 1, "event_id": "bev_', "[]", "\x00\x01"])
+@pytest.mark.parametrize(
+    "content", ["", '{"schema_version": 1, "event_id": "bev_', "[]", "\x00\x01"])
 def test_p4_a_corrupt_event_file_does_not_stop_the_store_and_is_named(
         tmp_path: Path, content: str) -> None:
     store = _store(tmp_path)

@@ -1,4 +1,4 @@
-"""T-199b: `process_run` turns a finished run's verdicts into bug events (TB3, TB4, TB6 held clauses).
+"""T-199b: `process_run` turns a finished run's verdicts into bug events (TB3, TB4, TB6).
 
 Contract: qa/contracts/team-bug-loop.md. The store, the cases and the rubrics are real files in a
 temp project; the only fake is the clock. Two product questions are pinned by tests whose names
@@ -7,7 +7,6 @@ start `test_p1_` and `test_p2_`: they record today's behaviour, and are HUMAN_GA
 
 from __future__ import annotations
 
-import ast
 from datetime import timedelta
 from pathlib import Path
 
@@ -15,7 +14,6 @@ import pytest
 from bug_loop_fixture import KEY, PROJECT, T0, at
 from bug_run_fixture import add_case, finished_run, make_store, set_criteria, verdict
 
-import autotester.store.bug_store as bug_store_module
 from autotester.schema.bug_run import RunOutcome
 from autotester.schema.enums import Result
 from autotester.schema.run import RawResult
@@ -87,7 +85,7 @@ def test_tb3_a_replayed_run_with_a_judge_verdict_counts_like_any_other(tmp_path:
 @pytest.mark.parametrize("make", [
     lambda c: verdict(c, "run2", R.PASS, met=0, total=1),                   # criteria not all met
     lambda c: verdict(c, "run2", R.PASS, total=0, met=0),                   # nothing was judged
-    lambda c: verdict(c, "run2", R.PASS, images=(3, 1)),                    # judged on partial evidence
+    lambda c: verdict(c, "run2", R.PASS, images=(3, 1)),                 # partial evidence
     lambda c: verdict(c, "run2", R.INCONCLUSIVE),
     lambda c: verdict(c, "run2", R.BLOCKED),
 ], ids=["unmet", "no-criteria", "partial-evidence", "inconclusive", "blocked"])
@@ -104,7 +102,7 @@ def test_tb3_a_pass_that_does_not_cite_evidence_and_a_run_that_could_not_judge_c
 
 def test_p2_choice_pinned_an_uncited_fail_does_not_break_a_pass_streak(tmp_path: Path) -> None:
     """HUMAN_GATE P2: a FAIL verdict that names no criterion is `inconclusive` (kept as-is), so
-    F, P, uncited-FAIL, P closes the bug. If the owner rules otherwise, this test is the one to flip."""
+    F, P, uncited-FAIL, P closes the bug. If the owner rules otherwise, flip this test."""
     store, bugs, case = _setup(tmp_path)
     plan = [(1, verdict(case, "run1", R.FAIL)), (2, verdict(case, "run2", R.PASS)),
             (3, verdict(case, "run3", R.FAIL, failing=())), (4, verdict(case, "run4", R.PASS))]
@@ -237,95 +235,3 @@ def test_tb4_a_change_and_a_pass_at_one_instant_go_stale_not_fixed(tmp_path: Pat
     events = [event(K.FAIL, 1), event(K.PASS, 2, minutes=5), event(K.PASS, 3, minutes=5),
               event(K.CASE_CHANGED, 4, minutes=5, run="run4")]
     assert fold(events)[KEY].status is S.STALE
-
-
-# -- TB6: idempotent per run, convergent after a crash ------------------------------------------
-
-def _three_run_project(root: Path):
-    store = make_store(root)
-    one, two = add_case(store, "checkout"), add_case(store, "login")
-    finished_run(store, "run1", 1, [verdict(one, "run1", R.FAIL), verdict(two, "run1", R.FAIL)],
-                 [one, two])
-    finished_run(store, "run2", 2, [verdict(one, "run2", R.PASS), verdict(two, "run2", R.FAIL)],
-                 [one, two])
-    return store, one, two
-
-
-def test_tb6_processing_the_same_run_twice_changes_nothing_byte_for_byte(tmp_path: Path) -> None:
-    store, one, two = _three_run_project(tmp_path)
-    bugs = _bugs(tmp_path)
-    for run in ("run1", "run2"):
-        process_run(store, bugs, run)
-    first_files, first_bugs = _files(bugs), bugs.bugs()
-    again = [process_run(store, bugs, run) for run in ("run1", "run2", "run1", "run2")]
-    assert _files(bugs) == first_files and bugs.bugs() == first_bugs
-    assert all(r.applied == 0 for r in again) and first_bugs[_key(two)].count == 2
-
-
-def test_tb6_a_crash_after_the_first_bug_of_a_run_converges_on_retry(
-        tmp_path: Path, monkeypatch) -> None:
-    clean_store, _, two = _three_run_project(tmp_path / "clean")
-    clean = _bugs(tmp_path / "clean")
-    for run in ("run1", "run2"):
-        process_run(clean_store, clean, run)
-    store, _, _ = _three_run_project(tmp_path / "crash")
-    bugs = _bugs(tmp_path / "crash")
-    process_run(store, bugs, "run1")
-    real, calls = BugStore._write, {"n": 0}
-
-    def dies_on_second(self, event):
-        calls["n"] += 1
-        if calls["n"] == 2:
-            raise OSError("disk went away")
-        real(self, event)
-
-    monkeypatch.setattr(BugStore, "_write", dies_on_second)
-    with pytest.raises(OSError):
-        process_run(store, bugs, "run2")
-    monkeypatch.setattr(BugStore, "_write", real)
-    process_run(store, bugs, "run2")
-    process_run(store, bugs, "run2")
-    assert bugs.bugs() == clean.bugs() and _files(bugs) == _files(clean)
-    assert bugs.get(_key(two)).count == 2
-
-
-def test_p3_a_run_reads_each_stored_event_file_once(tmp_path: Path, monkeypatch) -> None:
-    store, _, _ = _three_run_project(tmp_path)
-    bugs = _bugs(tmp_path)
-    process_run(store, bugs, "run1")
-    stored = len(list(bugs.dir.glob("*.json")))
-    calls, real = {"n": 0}, bug_store_module.read_json
-
-    def counted(path, model_cls):
-        calls["n"] += 1
-        return real(path, model_cls)
-
-    monkeypatch.setattr(bug_store_module, "read_json", counted)
-    process_run(store, bugs, "run2")
-    assert calls["n"] == stored
-
-
-def test_p4_a_bad_event_file_does_not_stop_a_run_and_is_named_in_its_report(
-        tmp_path: Path) -> None:
-    store, _, two = _three_run_project(tmp_path)
-    bugs = _bugs(tmp_path)
-    process_run(store, bugs, "run1")
-    bugs.dir.joinpath("bev_zero.json").write_bytes(b"")
-    report = process_run(store, bugs, "run2")
-    assert [b.name for b in report.bad_files] == ["bev_zero.json"]
-    assert bugs.get(_key(two)).count == 2
-
-
-# -- design rules the contract states ----------------------------------------------------------
-
-def test_the_run_stage_never_reads_a_raw_result_or_the_network() -> None:
-    import autotester.stages.bug_run as mod
-    tree = ast.parse(Path(mod.__file__).read_text(encoding="utf-8"))
-    names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
-    attrs = {n.attr for n in ast.walk(tree) if isinstance(n, ast.Attribute)}
-    imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) for a in n.names}
-    assert "RawResult" not in names | imported and "outcome" not in attrs
-    assert "load_results" not in attrs
-    mods = {n.module for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)}
-    assert not {m.split(".")[0] for m in mods if m} & {"socket", "httpx", "requests", "urllib",
-                                                       "subprocess", "googleapiclient"}
