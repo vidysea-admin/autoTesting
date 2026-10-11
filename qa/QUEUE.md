@@ -405,6 +405,27 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-12 PROPOSED-ISSUE back-fill: t178, t168, t155, t200b, at733, at773 + D-085 item 3 (checker)
+
+Never built until a human moves one out of this section with `approved: <date>`. These units were merged on a PASS but their PROPOSED-ISSUE lines were never minted; AT-928..AT-951 are minted now. t155 needed nothing (AT-925..AT-927 already minted by its checker). No S1/S2 row; the security and data-write rows are listed first. AT-934, AT-936, AT-937, AT-938, AT-941, AT-945, AT-946, AT-947 and AT-949 are ledger-only and are not candidates.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security (medium) | Scrub the span dict before `json.dumps` in `stages/failure_bundle.py::_write_parts`: a secret containing a newline or tab survives into `trace.jsonl` as `ab\ncd1234` and `assert_clean` misses it. Latent until `build_failure_bundle` is wired (AT-787). Do it before the wiring lands. | AT-928 |
+| priority: security (medium) | `case_proposals.jsonl` stores `reviewed_by` (the `--by` text) and a flow-name copy unscrubbed; the store layer never calls `Redactor.scrub` (C5). | AT-929 |
+| priority: security (medium, data-write) | Make `schedule_store.purge_project` crash-safe: it catches `OSError` only, so `SystemExit` or a hard kill leaves markers and records half purged and a stale `.purge-<uuid>` dir. Roll back on `BaseException` and let the next purge reclaim stale dirs. | AT-943 |
+| priority: security (low, data-write) | `purge_project` guard gaps: a torn or unknown-field foreign row in a legacy shared file does not stop the purge, any `records_path` is accepted, and a tick after a purge recreates an orphan marker. | AT-944 |
+| priority: security (low) | Percent-encoded secret in a stored first-party network URL reaches the unified report (`Redactor.scrub` matches exact bytes only). Fix in capture (T-170) or in scrub. Seat B proposed medium at cycle 1. | AT-939 |
+| priority: security (low) | Failure bundle: a secret in a screenshot source suffix becomes an on-disk file name; derive the suffix from an allow-list. Unreachable today. | AT-931 |
+| priority: security (low) | `scripts/check_no_secrets.py` reads clean on a secret with a quote or backslash stored JSON-escaped; use `Redactor.contains_folded`. | AT-932 |
+| priority: security (low, owner decision) | Do case-proposal approval rows need the `RunApproval` HMAC? Today `reviewed` is any non-blank name and the rows are unsigned (same trust level as editing `cases.jsonl`). | AT-930 |
+| low | `compile_evals` preflights per flow, so approved flows spend provider calls before a later pending flow refuses; preflight every traced flow first (`eval_compiler.py:107`). | AT-933 |
+| low | `routes_learn.generate_cases` stages proposals before the provider-availability refusal (brief section 10 asked for availability first). | AT-935 |
+| low | Report route on a corrupt `project.json` is an untyped 500 with a pydantic traceback in the server log (`ui/helpers.py::_load_project_or_404` outside the typed handler). | AT-940 |
+| low | TS6 import guard misses obfuscated dynamic imports and third-party browser drivers (`import playwright.sync_api`). | AT-942 |
+| low | G6 wording vs code: a judge `BLOCKED` passes through `grade()` unchanged; clamp it or word G6 as "never PASS". Also `execute.py::_assertions_unmet` matches "unmet" anywhere and can mark a met item ASSERTION_FAILED (false INCONCLUSIVE only). | AT-948, AT-950 |
+| low (D-085 item 3) | Move the five page fragments and the Drive form out of `ui/intake_upload.py` into one sibling `ui/` module (t198a follow-up, no behaviour change). Needs the new-module gate answer first. | AT-951 |
+
 ## Candidates (human picks) — 2026-10-11 at758-759-host-allowlist close-out (checker, from the dual-check PROPOSED-ISSUE lines)
 
 Never built until a human moves one out of this section with `approved: <date>`. AT-758, AT-759, AT-760 and AT-761 are now `fixed` (merged 02c5f016). AT-920, AT-921 and AT-924 are test-environment rows, ledger-only and not candidates. All rows below are low as filed by both coordinators; none is browser-reachable today.
