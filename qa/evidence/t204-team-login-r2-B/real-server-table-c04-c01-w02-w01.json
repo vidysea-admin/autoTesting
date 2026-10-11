@@ -1,0 +1,115 @@
+[
+ {
+  "id": "c01-lan-hosts-bare-custom-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18500",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "192.168.1.4"
+  },
+  "pid": 68408,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:18500 or https://192.168.1.4:18500 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless it is the scheme's default, in AUTOTESTER_ALLOWED_ORIGINS (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18500",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18500",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "agree": true
+ },
+ {
+  "id": "c04-lan-origin-http-port",
+  "cmd": "uvicorn autotester.ui.app:app --host 192.168.1.4 --port 18503",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://192.168.1.4:18503"
+  },
+  "pid": 35376,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18503",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   },
+   {
+    "scheme": "https",
+    "host": "192.168.1.4:18503",
+    "GET": 200,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": false
+ },
+ {
+  "id": "w01-wild4-missing-public",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18533",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com"
+  },
+  "pid": 58292,
+  "expect": "raise",
+  "note": "",
+  "startup": "raised",
+  "exit": 3,
+  "message": "autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)",
+  "guard_would_serve": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "agree": false
+ },
+ {
+  "id": "w02-wild4-public-right",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18534",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "qa.example.com",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://qa.example.com",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://qa.example.com"
+  },
+  "pid": 10320,
+  "expect": "start",
+  "note": "",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "https",
+    "host": "qa.example.com",
+    "GET": 200,
+    "POST": 303,
+    "served": true
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": true,
+  "all_probes_served": true
+ }
+]

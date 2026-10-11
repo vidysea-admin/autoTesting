@@ -9,9 +9,9 @@ file with its run id and hash so a loader can prove the bundle complete (FB1).
 from __future__ import annotations
 
 from enum import StrEnum
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.schema.base import Artifact
 
@@ -50,6 +50,16 @@ class BundleFile(BaseModel):
     run_id: str
     sha256: str
     step_order: int | None = None
+
+    @field_validator("name")
+    @classmethod
+    def _bundle_relative_name(cls, value: str) -> str:
+        parts = value.split("/")
+        if (not value or "\\" in value or ":" in value or "\x00" in value
+                or PurePosixPath(value).is_absolute()
+                or any(part in {"", ".", ".."} for part in parts)):
+            raise ValueError("bundle file must have a relative POSIX name without traversal")
+        return value
 
 
 class BundleManifest(Artifact):

@@ -12,7 +12,9 @@ not discovered mid-crawl.
 
 from __future__ import annotations
 
-from autotester.browser.secrets import SecretStore
+import os
+
+from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.consent import (
     ACCOUNT_KINDS,
     ApprovalRequired,
@@ -23,7 +25,7 @@ from autotester.core.consent import (
     validate_account_bounds,
     validate_account_scope,
 )
-from autotester.core.ids import SigningKeyMissing, ensure_approval_key
+from autotester.core.ids import APPROVAL_KEY_ENV, SigningKeyMissing, ensure_approval_key
 from autotester.core.redact import placeholder_keys
 from autotester.schema.approval import RunApproval
 from autotester.schema.crawl import CrawlBounds, SafetyPolicy
@@ -99,6 +101,21 @@ def _credential_approval(
     except (SigningKeyMissing, ValueError, OSError, TimeoutError) as exc:
         # Never echo malformed history rows, file contents or env values.
         raise ApprovalRequired(f"the approval key is unavailable ({type(exc).__name__})") from None
+
+
+def signing_key_available(store: ProjectStore) -> bool:
+    """Read-only twin of `ensure_approval_key`'s refusal, so a preview can agree with the real
+    gate without writing: False only when no key is configured AND signed approval history
+    exists (a lost key is never re-minted). Writes nothing, creates no lock file."""
+    if os.environ.get(APPROVAL_KEY_ENV):
+        return True
+    try:
+        env = store.paths.env_file
+        if env.is_file() and parse_env(env.read_text(encoding="utf-8")).get(APPROVAL_KEY_ENV):
+            return True
+        return not any(row.signature for row in _approval_history(store))
+    except (OSError, ValueError):
+        return False
 
 
 def _default_account_keys(project: Project, store: ProjectStore, secrets: SecretStore) -> set[str]:

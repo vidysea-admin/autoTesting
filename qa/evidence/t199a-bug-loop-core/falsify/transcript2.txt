@@ -1,0 +1,223 @@
+======================================================================
+ROW TB1
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB1
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB1\src\autotester\__init__.py
+GREEN: 1 passed in 0.89s (20.0s)
+rootdir line: []
+EDIT src/autotester/schema/tracked_bug.py:61  BEFORE: '{"project": project, "case_id": case_id, "criterion_id": criterion_id}'  AFTER: '{"project": project, "case_id": case_id}'
+RED/after-mutant: 1 failed in 1.92s (23.1s)
+--- failing detail ---
+E   AssertionError: assert 1 == 2
+E    +  where 1 = len({'bug_0b76afb9c36f': TrackedBug(bug_key='bug_0b76afb9c36f', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...None, evidence_run_id='run2', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])})
+E    +    where {'bug_0b76afb9c36f': TrackedBug(bug_key='bug_0b76afb9c36f', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...None, evidence_run_id='run2', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])} = bugs()
+E    +      where bugs = <autotester.store.bug_store.BugStore object at 0x00000179D64D3610>.bugs
+FAILED tests/test_bug_store.py::test_tb1_two_failing_criteria_on_one_case_are_two_bugs
+======================================================================
+ROW TB2a
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2a
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2a\src\autotester\__init__.py
+GREEN: 45 passed, 50 deselected in 1.04s (32.3s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:75  BEFORE: '_LIVE = _row(Move.REFAIL, Move.PASS_STEP, Move.MARK_STALE, Move.ASSIGN)'  AFTER: '_LIVE = {**_row(Move.REFAIL, Move.PASS_STEP, Move.MARK_STALE, Move.ASSIGN), K.INCONCLUSIVE: Move.PASS_STEP}'
+RED/after-mutant: 2 failed, 43 passed, 50 deselected in 2.27s (34.0s)
+--- failing detail ---
+E   AssertionError: assert (<Effect.APPL... 'pass_step'>) == (<Effect.UNCH... 'unchanged'>)
+E     
+E     At index 0 diff: <Effect.APPLIED: 'applied'> != <Effect.UNCHANGED: 'unchanged'>
+E     Use -v to get more diff
+E   AssertionError: assert (<Effect.APPL... 'pass_step'>) == (<Effect.UNCH... 'unchanged'>)
+E     
+E     At index 0 diff: <Effect.APPLIED: 'applied'> != <Effect.UNCHANGED: 'unchanged'>
+E     Use -v to get more diff
+FAILED tests/test_bug_loop.py::test_tb2_every_cell_of_the_table[open-inconclusive]
+FAILED tests/test_bug_loop.py::test_tb2_every_cell_of_the_table[reopened-inconclusive]
+======================================================================
+ROW TB2b
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2b
+PRE copy C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_PRE C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_PRE\src\autotester\__init__.py
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2b\src\autotester\__init__.py
+PRECHECK -k 'tb1': 7 passed, 116 deselected in 1.87s (64.2s)
+PRECHECK -k 'tb2': 54 passed, 69 deselected in 8.85s (20.7s)
+PRECHECK -k 'tb3': 10 passed, 113 deselected in 1.12s (24.0s)
+PRECHECK -k 'tb4': 3 passed, 120 deselected in 0.90s (24.1s)
+GREEN: 123 passed in 62.71s (0:01:02) (119.4s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:125  BEFORE: 'if len(refs) < n:'  AFTER: 'if len(refs) < 1:'
+PRECHECK -k 'tb5': 3 passed, 120 deselected in 5.08s (37.5s)
+RED/after-mutant: 14 failed, 109 passed in 57.20s (98.3s)
+--- failing detail ---
+E   AssertionError: assert <BugStatus.FIXED: 'fixed'> is <BugStatus.OPEN: 'open'>
+E    +  where <BugStatus.FIXED: 'fixed'> = TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id='C1', criterion_fp='f...ass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=['run10'], closed_by_verdicts=['run10/case_aaaaaaaaaaaa']).status
+E   AssertionError: assert (<BugStatus.F...: 'fixed'>, 0) == (<BugStatus.OPEN: 'open'>, 1)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.OPEN: 'open'>
+E     Use -v to get more diff
+E   AssertionError: assert (<BugStatus.F...fixed'>, 0, 2) == (<BugStatus.O...'open'>, 1, 2)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.OPEN: 'open'>
+E     Use -v to get more diff
+E   AssertionError: assert (<BugStatus.F...: 'fixed'>, 0) == (<BugStatus.OPEN: 'open'>, 1)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.OPEN: 'open'>
+E     Use -v to get more diff
+E   AssertionError: assert ['run2'] == ['run2', 'run3']
+E     
+E     Right contains one more item: 'run3'
+E     Use -v to get more diff
+E   AssertionError: assert <BugStatus.FIXED: 'fixed'> is <BugStatus.STALE: 'stale'>
+E    +  where <BugStatus.FIXED: 'fixed'> = TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id='C1', criterion_fp='f... pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=['run2'], closed_by_verdicts=['run2/case_aaaaaaaaaaaa']).status
+E    +  and   <BugStatus.STALE: 'stale'> = S.STALE
+E   AssertionError: assert (<BugStatus.F...: 'fixed'>, 0) == (<BugStatus.R...reopened'>, 1)
+E     
+E     At index 0 diff: <BugStatus.FIXED: 'fixed'> != <BugStatus.REOPENED: 'reopened'>
+E     Use -v to get more diff
+======================================================================
+ROW TB3
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB3
+PRECHECK -k 'tb6 or concurrent or racing': 8 passed, 115 deselected in 53.86s (98.3s)
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB3\src\autotester\__init__.py
+GREEN: 9 passed, 86 deselected in 0.73s (26.2s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:110  BEFORE: 'return K.PASS if proven else K.PASS_UNEVIDENCED'  AFTER: 'return K.PASS'
+RED/after-mutant: 3 failed, 6 passed, 86 deselected in 2.28s (48.2s)
+--- failing detail ---
+E   AssertionError: assert <EventKind.PASS: 'pass'> is <EventKind.PASS_UNEVIDENCED: 'pass_unevidenced'>
+E    +  where <EventKind.PASS: 'pass'> = kind_of_verdict(Verdict(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 27, 54, 445093, tzinfo=datetime.timezone.utc)...met=1, criteria_total=2, failures=[], grader_provider='', rubric_hash='', note=None, images_requested=0, images_seen=0))
+E   AssertionError: assert <EventKind.PASS: 'pass'> is <EventKind.PASS_UNEVIDENCED: 'pass_unevidenced'>
+E    +  where <EventKind.PASS: 'pass'> = kind_of_verdict(Verdict(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 27, 54, 445093, tzinfo=datetime.timezone.utc)...met=0, criteria_total=0, failures=[], grader_provider='', rubric_hash='', note=None, images_requested=0, images_seen=0))
+E   AssertionError: assert <EventKind.PASS: 'pass'> is <EventKind.PASS_UNEVIDENCED: 'pass_unevidenced'>
+E    +  where <EventKind.PASS: 'pass'> = kind_of_verdict(Verdict(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 27, 54, 445093, tzinfo=datetime.timezone.utc)...met=2, criteria_total=2, failures=[], grader_provider='', rubric_hash='', note=None, images_requested=2, images_seen=1))
+FAILED tests/test_bug_loop.py::test_tb3_a_verdict_maps_to_one_event_kind_none_changes_nothing[verdict4-pass_unevidenced]
+FAILED tests/test_bug_loop.py::test_tb3_a_verdict_maps_to_one_event_kind_none_changes_nothing[verdict5-pass_unevidenced]
+FAILED tests/test_bug_loop.py::test_tb3_a_verdict_maps_to_one_event_kind_none_changes_nothing[verdict6-pass_unevidenced]
+======================================================================
+ROW TB4
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB4
+FULL three files: 123 passed in 80.74s (0:01:20) (104.8s)
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB4\src\autotester\__init__.py
+['rootdir: C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\g_PRE', 'collected 95 items / 50 deselected / 45 selected', '=============== 45/95 tests collected (50 deselected) in 0.64s ================']
+GREEN: 1 passed, 94 deselected in 0.68s (27.0s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:150  BEFORE: '"status": S.STALE, "pass_streak": 0'  AFTER: '"status": S.FIXED, "pass_streak": 0'
+RED/after-mutant: 1 failed, 94 deselected in 2.18s (22.0s)
+--- failing detail ---
+E   AssertionError: assert <BugStatus.FIXED: 'fixed'> is <BugStatus.STALE: 'stale'>
+E    +  where <BugStatus.FIXED: 'fixed'> = TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id='C1', criterion_fp='f...=None, evidence_run_id='run1', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[]).status
+E    +  and   <BugStatus.STALE: 'stale'> = S.STALE
+FAILED tests/test_bug_loop.py::test_tb4_a_changed_case_makes_an_open_bug_stale_and_it_can_never_become_fixed
+======================================================================
+ROW TB5
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB5
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB5\src\autotester\__init__.py
+GREEN: 1 passed, 24 deselected in 0.69s (20.0s)
+rootdir line: []
+EDIT src/autotester/stages/issues.py:123  BEFORE: 'ref=f"issue/{issue.id}"'  AFTER: 'ref=f"issue/{issue.id}/{__import__(\'uuid\').uuid4().hex}"'
+RED/after-mutant: 1 failed, 24 deselected in 2.60s (22.6s)
+--- failing detail ---
+E   AssertionError: assert <Effect.APPLIED: 'applied'> is <Effect.DUPLICATE: 'duplicate'>
+E    +  where <Effect.APPLIED: 'applied'> = Applied(effect=<Effect.APPLIED: 'applied'>, reason=<Move.REFAIL: 'refail'>, bug=TrackedBug(bug_key='iss_f79fdba60a3f',...e=None, evidence_run_id=None, pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])).effect
+E    +    where Applied(effect=<Effect.APPLIED: 'applied'>, reason=<Move.REFAIL: 'refail'>, bug=TrackedBug(bug_key='iss_f79fdba60a3f',...e=None, evidence_run_id=None, pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])) = apply(BugEvent(schema_version=1, event_id='bev_058d76e56083', bug_key='iss_f79fdba60a3f', kind=<EventKind.FAIL: 'fail'>, ref..._id=None, criterion_fp='', title='Save button silent', screen='Settings', severity=<Severity.S2: 'S2'>), assignee=None))
+E    +      where apply = <autotester.store.bug_store.BugStore object at 0x000002707C9D3FD0>.apply
+E    +      and   BugEvent(schema_version=1, event_id='bev_058d76e56083', bug_key='iss_f79fdba60a3f', kind=<EventKind.FAIL: 'fail'>, ref..._id=None, criterion_fp='', title='Save button silent', screen='Settings', severity=<Severity.S2: 'S2'>), assignee=None) = issue_to_bug_event(Issue(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 30, 29, 704855, tzinfo=datetime.timezone.utc), ...ueCategory.OTHER: 'other'>, confidence=<Confidence.MEDIUM: 'medium'>, status=<IssueStatus.OPEN: 'open'>, human_id=None))
+E    +        where Issue(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 19, 30, 29, 704855, tzinfo=datetime.timezone.utc), ...ueCategory.OTHER: 'other'>, confidence=<Confidence.MEDIUM: 'medium'>, status=<IssueStatus.OPEN: 'open'>, human_id=None) = _issue()
+E    +  and   <Effect.DUPLICATE: 'duplicate'> = Effect.DUPLICATE
+FAILED tests/test_bug_store.py::test_tb5_a_video_found_issue_becomes_one_bug_keyed_by_its_fingerprint
+======================================================================
+ROW TB6
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6\src\autotester\__init__.py
+GREEN: 1 passed, 24 deselected in 0.72s (24.0s)
+rootdir line: []
+EDIT src/autotester/store/bug_store.py:80  BEFORE: 'known = {p.stem for p in self.dir.glob("bev_*.json")}'  AFTER: 'known = set()'
+RED/after-mutant: 1 failed, 24 deselected in 2.17s (21.8s)
+--- failing detail ---
+E   AssertionError: assert (<Effect.APPLIED: 'applied'> is <Effect.DUPLICATE: 'duplicate'>)
+E    +  where <Effect.APPLIED: 'applied'> = Applied(effect=<Effect.APPLIED: 'applied'>, reason=<Move.OPEN: 'open'>, bug=TrackedBug(bug_key='bug_6425286942c1', pro...None, evidence_run_id='run1', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])).effect
+E    +  and   <Effect.DUPLICATE: 'duplicate'> = Effect.DUPLICATE
+FAILED tests/test_bug_store.py::test_tb6_applying_an_event_twice_changes_nothing_and_writes_nothing
+======================================================================
+ROW TB6order
+copy: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6order
+autotester.__file__: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6order\src\autotester\__init__.py
+GREEN: 1 passed, 24 deselected in 0.84s (33.0s)
+rootdir line: []
+EDIT src/autotester/stages/bug_loop.py:209  BEFORE: 'sorted(events, key=order_key)'  AFTER: 'list(events)'
+======================================================================
+RED/after-mutant: 1 failed, 24 deselected in 2.18s (33.7s)
+--- failing detail ---
+E   AssertionError: assert {'bug_6425286..._verdicts=[])} == {'bug_6425286..._verdicts=[])}
+E     
+E     Differing items:
+E     {'bug_6425286942c1': TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...iya', evidence_run_id='run4', pass_streak=0, streak_runs=[], streak_refs=[], closed_by_runs=[], closed_by_verdicts=[])} != {'bug_6425286942c1': TrackedBug(bug_key='bug_6425286942c1', project='demo', case_id='case_aaaaaaaaaaaa', criterion_id=...pass_streak=1, streak_runs=['run5'], streak_refs=['run5/case_aaaaaaaaaaaa'], closed_by_runs=[], closed_by_verdicts=[])}
+E     Use -v to get more diff
+FAILED tests/test_bug_store.py::test_the_fold_is_a_function_of_the_event_set_not_of_its_order
+ROW TB6-marker-equivalent C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6marker C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6marker\src\autotester\__init__.py
+TB2b re-run in mutated copy (loop+store only) C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB2b
+14 failed, 106 passed in 6.24s
+FAILED tests/test_bug_loop.py::test_tb2_n_consecutive_passes_close_the_bug_and_k_below_n_do_not[3-open]
+FAILED tests/test_bug_loop.py::test_tb2_default_n_is_two_and_one_pass_leaves_it_open
+FAILED tests/test_bug_loop.py::test_tb2_a_fail_between_passes_breaks_the_run_but_an_unjudged_result_does_not
+FAILED tests/test_bug_loop.py::test_tb2_a_run_that_could_not_judge_neither_opens_nor_closes
+FAILED tests/test_bug_loop.py::test_tb4_a_fixed_bug_lists_the_runs_and_verdicts_that_closed_it
+FAILED tests/test_bug_loop.py::test_tb4_a_changed_case_makes_an_open_bug_stale_and_it_can_never_become_fixed
+FAILED tests/test_bug_store.py::test_tb6_replaying_an_old_pass_after_a_later_fail_cannot_close_the_bug
+FAILED tests/test_bug_store.py::test_a_pass_older_than_the_latest_fail_does_not_count_toward_closing
+FAILED tests/test_bug_store.py::test_a_refused_event_writes_nothing_but_a_state_dependent_one_is_kept
+FAILED tests/test_bug_store.py::test_close_passes_below_one_is_refused - Asse...
+FAILED tests/test_bug_store.py::test_the_fold_is_a_function_of_the_event_set_not_of_its_order
+FAILED tests/test_bug_store.py::test_trace_says_what_each_event_did_in_time_order
+FAILED tests/test_bug_store.py::test_the_same_ref_with_a_different_kind_is_a_different_event_in_either_order
+FAILED tests/test_bug_store.py::test_equal_timestamps_put_the_fail_before_the_pass
+--- is test_tb2_default_n_is_two_and_one_pass_leaves_it_open red?  True
+GREEN full three files: 123 passed in 52.44s (84.1s)
+EDIT src/autotester/store/bug_store.py:57 BEFORE 'return self.dir / f"{event_id}.json"' AFTER 'return self.dir / f"{event_id}_{__import__(\'uuid\').uuid4().hex}.json"'
+EDIT src/autotester/store/bug_store.py:100 BEFORE '        if target.exists():\n            return\n' AFTER ''
+EDIT src/autotester/store/bug_store.py:80 BEFORE 'known = {p.stem for p in self.dir.glob("bev_*.json")}' AFTER 'known = set()'
+AFTER-MUTANT full three files: 5 failed, 118 passed in 54.35s (74.5s)
+FAILED tests/test_bug_store.py::test_tb6_applying_an_event_twice_changes_nothing_and_writes_nothing
+FAILED tests/test_bug_store.py::test_tb6_processing_a_whole_run_twice_gives_identical_stores
+FAILED tests/test_bug_store.py::test_tb6_a_crash_after_bug_one_of_two_converges_on_retry
+FAILED tests/test_bug_store_concurrency.py::test_concurrent_threads_lose_no_event_and_never_corrupt_a_file
+FAILED tests/test_bug_store_concurrency.py::test_concurrent_processes_lose_no_event_and_never_corrupt_a_file
+E   assert (<Effect.DUPLICATE: 'duplicate'> is <Effect.DUPLICATE: 'duplicate'> and {'bev_4d65b9d...  }\r\n}\r\n'} == {'bev_4d65b9d...  }\r\n}\r\n'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'bev_4d65b9d7e750_c8526f5f5fca41fca3e7a2e63b650f38.json': b'{\r\n  "schema_ver'
+E                                                                b'sion": 1,\r\n  "ev'
+E                                                                b'ent_id": "bev_4d'
+E                                                                b'65b9d7e750",\r\n  '...
+E     
+E     ...Full output truncated (29 lines hidden), use '-vv' to show)
+E   assert {'bev_1ccdc86...\n}\r\n', ...} == {'bev_1ccdc86...  }\r\n}\r\n'}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Left contains 4 more items:
+E     {'bev_1ccdc86aa3f9_60c7b673be6b4044b1fe5ae4ae31aacd.json': b'{\r\n  "schema_ver'
+E                                                                b'sion": 1,\r\n  "ev'
+E                                                                b'ent_id": "bev_1c'
+E                                                                b'cdc86aa3f9",\r\n  '...
+E     
+E     ...Full output truncated (94 lines hidden), use '-vv' to show
+E   assert {'bev_4d65b9d...  }\r\n}\r\n'} == {'bev_4d65b9d...  }\r\n}\r\n'}
+E     
+E     Left contains 3 more items:
+E     {'bev_4d65b9d7e750_02b12592899b4866bbaeca151addf8ea.json': b'{\r\n  "schema_ver'
+E                                                                b'sion": 1,\r\n  "ev'
+E                                                                b'ent_id": "bev_4d'
+E                                                                b'65b9d7e750",\r\n  '
+E                                                                b'"bug_key": "bug_'...
+E     
+E     ...Full output truncated (157 lines hidden), use '-vv' to show
+E   AssertionError: assert (180 == (5 + (6 * 25)))
+E   AssertionError: assert 270 == (5 + (6 * 40))
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6marker\src\autotester\__init__.py
+files: 9 count: 3 effects2: ['duplicate', 'duplicate', 'duplicate']
+EXTRA (on top of marker mutant) bug_loop.py:165 removed judge()'s `event.event_id in seen` DUPLICATE guard
+5 failed, 115 passed in 3.84s
+FAILED tests/test_bug_loop.py::test_an_event_already_seen_is_a_duplicate - As...
+FAILED tests/test_bug_store.py::test_tb6_applying_an_event_twice_changes_nothing_and_writes_nothing
+FAILED tests/test_bug_store.py::test_tb6_processing_a_whole_run_twice_gives_identical_stores
+FAILED tests/test_bug_store.py::test_tb6_a_crash_after_bug_one_of_two_converges_on_retry
+FAILED tests/test_bug_store.py::test_tb5_a_video_found_issue_becomes_one_bug_keyed_by_its_fingerprint
+files: 9 count: 9 effects2: ['applied', 'applied', 'applied']

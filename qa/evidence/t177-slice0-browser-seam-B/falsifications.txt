@@ -1,0 +1,35 @@
+### B5  node test_launch_options_carry_no_debug_port_unless_asked (+ not_exposed) GREEN
+autotester from C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fal-B\src\autotester\__init__.py
+====================== 2 passed, 11 deselected in 0.88s =======================
+141:    if True:
+### B5 RED after edit
+autotester from C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fal-B\src\autotester\__init__.py
+FAILED tests/test_browser_session_cdp.py::test_launch_options_carry_no_debug_port_unless_asked
+FAILED tests/test_browser_session_cdp.py::test_not_started_or_not_exposed_is_none_and_never_probes_a_port
+====================== 2 failed, 11 deselected in 0.41s =======================
+### B5 restored
+autotester from C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fal-B\src\autotester\__init__.py
+====================== 2 passed, 11 deselected in 0.89s =======================
+### B6  bad_scheme -> return None
+====================== 15 passed, 53 deselected in 0.11s ======================
+-- after edit (bad_scheme always None)
+FAILED tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[wss://app.pathlynks.test/x]
+FAILED tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[blob://app.pathlynks.test/x]
+================= 9 failed, 6 passed, 53 deselected in 0.41s ==================
+-- restored
+====================== 15 passed, 53 deselected in 0.11s ======================
+### AF3 check_destination ignores the scheme (drop 'bad or')
+-- after edit
+FAILED tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[wss://app.pathlynks.test/x]
+FAILED tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[blob://app.pathlynks.test/x]
+====================== 9 failed, 59 deselected in 1.77s =======================
+-- restored
+====================== 9 passed, 59 deselected in 0.14s =======================
+### B9 close() no longer clears cdp_url / port file
+====================== 1 passed, 12 deselected in 3.38s =======================
+-- after edit
+tests\test_browser_session_cdp.py:168: AssertionError
+FAILED tests/test_browser_session_cdp.py::test_teardown_closes_the_endpoint_and_forgets_the_port_file
+====================== 1 failed, 12 deselected in 11.97s ======================
+-- restored
+====================== 1 passed, 12 deselected in 3.47s =======================

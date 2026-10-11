@@ -1,0 +1,72 @@
+=== GREEN-BEFORE (-k test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted and wild-hosts-only-no-origin) ===
+============================= test session starts =============================
+collected 68 items / 67 deselected / 1 selected
+
+tests\test_ui_auth_own_origin.py .                                       [100%]
+
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-hosts-only-no-origin]
+================= 1 passed, 67 deselected, 1 warning in 6.50s =================
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== DIFF ===
+--- config.py(orig)
++++ config.py(mutant)
+@@ -131,3 +131,3 @@
+     host = name if port in {None, {"http": 80, "https": 443}[parts.scheme]} else f"{name}:{port}"
+-    if not (_host_allowed(host) and _origin_allowed(f"{parts.scheme}://{host}")):
++    if not (_host_allowed(host)):
+         raise AuthConfigError(
+
+=== RED-AFTER named (-k) ===
+============================= test session starts =============================
+collected 68 items / 67 deselected / 1 selected
+
+tests\test_ui_auth_own_origin.py F                                       [100%]
+
+================================== FAILURES ===================================
+_ test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-hosts-only-no-origin] _
+tests\test_ui_auth_own_origin.py:211: in test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted
+    with pytest.raises(AuthConfigError, match="AUTOTESTER_PUBLIC_ORIGIN"):
+E   Failed: DID NOT RAISE AuthConfigError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-hosts-only-no-origin]
+================= 1 failed, 67 deselected, 1 warning in 5.49s =================
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== FULL FILE after edit ===
+============================= test session starts =============================
+collected 68 items
+
+tests\test_ui_auth_own_origin.py ....................................... [ 57%]
+.........FF..................                                            [100%]
+
+================================== FAILURES ===================================
+E   Failed: DID NOT RAISE AuthConfigError
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M4\tests\test_ui_auth_own_origin.py:211: Failed: DID NOT RAISE AuthConfigError
+E   Failed: DID NOT RAISE AuthConfigError
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M4\tests\test_ui_auth_own_origin.py:211: Failed: DID NOT RAISE AuthConfigError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-wrong-scheme]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted[wild-hosts-only-no-origin]
+============= 2 failed, 66 passed, 1 warning in 299.74s (0:04:59) =============
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead

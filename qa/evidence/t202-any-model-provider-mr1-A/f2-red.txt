@@ -1,0 +1,12 @@
+        canary = "AIza-ROUTE-CANARY-555"
+        install(monkeypatch, [RuntimeError(f"403 at https://vendor.test/x?key={canary}")] * 60)
+        monkeypatch.setenv("GEMINI_API_KEY", canary)
+        assert response.status_code == 400 and "could not complete" in response.text
+>       assert canary not in response.text
+E       AssertionError: assert 'AIza-ROUTE-CANARY-555' not in '<!doctype h.../main></div>'
+E         
+E         'AIza-ROUTE-CANARY-555' is contained here:
+E           est/x?key=AIza-ROUTE-CANARY-555</p><p style='margin-top:14px'><a class='btn' href='/projects/demo/env'>Check the provider&#x27;s credentials</a></p></div></main></div>
+E         ?           +++++++++++++++++++++
+tests\test_ui_learn_vendor_echo.py:36: AssertionError
+======================== 1 failed, 1 warning in 32.84s ========================

@@ -1,0 +1,20 @@
+== head expose=0 video=0
+1:autotester from: D:\autoTesting\.worktrees\check-t177s0-b\src\autotester\__init__.py expose False video False
+2:started 1.2s
+3:Timeout (0:01:10)!
+== head expose=0 video=1
+1:autotester from: D:\autoTesting\.worktrees\check-t177s0-b\src\autotester\__init__.py expose False video True
+2:started 1.0s
+3:Timeout (0:01:10)!
+== head expose=1 video=0
+1:autotester from: D:\autoTesting\.worktrees\check-t177s0-b\src\autotester\__init__.py expose True video False
+2:started 2.1s
+3:Timeout (0:01:10)!
+== master expose=0 video=0
+1:autotester from: D:\autoTesting\.worktrees\check-t177s0-b-master\src\autotester\__init__.py expose False video False
+2:started 1.6s
+3:Timeout (0:01:10)!
+== master expose=0 video=1
+1:autotester from: D:\autoTesting\.worktrees\check-t177s0-b-master\src\autotester\__init__.py expose False video True
+2:started 1.4s
+3:Timeout (0:01:10)!

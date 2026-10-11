@@ -67,6 +67,15 @@ class SchedulerHealth(StrEnum):
     STALE = "stale"
 
 
+class CredentialState(StrEnum):
+    """Why the TS5 gate admits or refuses a run; the value leads the slot record's detail."""
+
+    PROVISIONED = "provisioned"
+    NO_SECRETREF = "no_secretref"                      # the project declares no credential
+    SECRETREF_WITHOUT_VALUE = "secretref_without_value"  # declared, but no value is set
+    TARGET_OUTSIDE_DOMAINS = "target_outside_domains"  # a value, but not for this target
+
+
 class ScheduleInvalid(ValueError):
     """A value was refused at save. `field` names it; the caller stores nothing."""
 
@@ -239,3 +248,22 @@ class SlotClaim(BaseModel):
     claimed_at: datetime
     intended: SlotOutcome = Field(description="enqueued | catch_up | missed, as decided at claim")
     superseded_by: str | None = None
+
+
+class TickReport(BaseModel):
+    """What one `autotester schedule tick` did: the JSON document of `--output json`.
+
+    `exit_code`: 0 nothing due or all handled, 2 a slot blocked / refused / failed or a project
+    errored, 3 a config was invalid. `errors` holds `<project>: <ExceptionClass>` only (a
+    message may carry a secret). `would_fire` / `would_block` are filled by `--dry-run` alone."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    tick_at: datetime
+    dry_run: bool = False
+    exit_code: int = Field(0, ge=0, le=3)
+    records: list[SlotRecord] = Field(default_factory=list)
+    would_fire: list[str] = Field(default_factory=list)
+    would_block: list[str] = Field(default_factory=list)
+    invalid: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)

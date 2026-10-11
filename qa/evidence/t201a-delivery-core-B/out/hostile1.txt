@@ -1,0 +1,95 @@
+== baseline ==
+normal                                                                 -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+
+== project_name (-> Subject and body) ==
+project_name='Shop\r\nBcc: x@evil.test'                                -> schema:ValidationError
+project_name='Shop\nBcc: x@evil.test'                                  -> schema:ValidationError
+project_name='Shop\u2028Bcc: x@evil.test'                              -> transport:ValueError
+project_name='Shop\x85Bcc: x@evil.test'                                -> transport:ValueError
+project_name='Shop\x0bBcc: x@evil.test'                                -> schema:ValidationError
+project_name='Shop\x00x'                                               -> schema:ValidationError
+project_name='=?utf-8?b?QmNjOiB4QGV2aWwudGVzdA==?='                    -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Bcc: x@evil.test - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='=?utf-8?q?Shop=0D=0ABcc:_x@evil.test?='                  -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Shop\r\nBcc: x@evil.test - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='Shop <evil@x.test>'                                      -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Shop <evil@x.test> - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='Shop; Bcc: x@evil.test'                                  -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Shop; Bcc: x@evil.test - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='Shop, Bcc: x@evil.test'                                  -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Shop, Bcc: x@evil.test - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='Ünï shop \u202e'                                         -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Ünï shop \u202e - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='Shop"quote'                                              -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Shop"quote - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='Subject: spoof'                                          -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Subject: spoof - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+project_name='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   -> schema:ValidationError
+project_name='$project ${run_id} $$'                                   -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: $project ${run_id} $$ - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+
+== coverage_line / body smuggling ==
+coverage_line='.'                                                      -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+      body lines: ['..', '.']
+coverage_line='..'                                                     -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+      body lines: ['...', '.']
+coverage_line='Coverage ok\x85.'                                       -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+      body lines: ['Coverage ok', '.', '.']
+coverage_line='x\r\n.\r\nMAIL FROM:<a@b.test>'                         -> schema:ValidationError
+coverage_line='-- '                                                    -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+      body lines: ['-- ', '.']
+coverage_line='=3D =\n'                                                -> schema:ValidationError
+
+== sender_name ==
+sender_name='Eve\r\nBcc: x@y.test'                                     -> schema:ValidationError
+sender_name='Eve <evil@example.com>'                                   -> sent; From='"Eve <evil@example.com>" <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+sender_name='=?utf-8?b?RXZl?= <e@e.test>'                              -> sent; From='"Eve <e@e.test>" <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+sender_name='Eve, Mallory <m@x.test>'                                  -> sent; From='"Eve, Mallory <m@x.test>" <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+sender_name='Eve "the" tester'                                         -> sent; From='"Eve \\"the\\" tester" <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+sender_name='Ünï'                                                      -> sent; From='Ünï <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+sender_name='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA         -> sent; From='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+sender_name='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA         -> schema:ValidationError
+sender_name='\u2028x'                                                  -> sent; From='\u2028x <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+
+== report_url ==
+report_url='javascript:alert(1)'                                       -> schema:ValidationError
+report_url='JaVaScRiPt:alert(1)'                                       -> schema:ValidationError
+report_url='//evil.example/x'                                          -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+report_url='///evil.example/x'                                         -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+report_url='https://user:pw@evil.example/x'                            -> schema:ValidationError
+report_url='https://evil.example@good.example.test/x'                  -> schema:ValidationError
+report_url='https://evil.example/x?token=1'                            -> schema:ValidationError
+report_url='https://evil.example/x#f'                                  -> schema:ValidationError
+report_url='/runs/r1#f'                                                -> schema:ValidationError
+report_url='/runs/r1?t=1'                                              -> schema:ValidationError
+report_url='/runs/run-0001'                                            -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+report_url='https://tester.example.test:8443/runs/r1'                  -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+report_url='https://x.test:99999/'                                     -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+report_url='http://127.0.0.1/'                                         -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+report_url='ftp://evil.example/x'                                      -> schema:ValidationError
+report_url='data:text/html,<script>'                                   -> schema:ValidationError
+report_url='/\\evil.example'                                           -> schema:ValidationError
+report_url='\\\\evil.example\\x'                                       -> schema:ValidationError
+report_url='https://evil.example/\r\nBcc: x@y.test'                    -> schema:ValidationError
+report_url='https://é.test/x'                                          -> schema:ValidationError
+report_url='https://good.example.test/runs/r1 evil'                    -> schema:ValidationError
+report_url='https://good.example.test/a%0d%0aBcc:x'                    -> schema:ValidationError
+report_url='https://good.example.test/%2e%2e/x'                        -> schema:ValidationError
+report_url='/'                                                         -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+report_url='https://a.b/'                                              -> sent; From='AutoTester <noreply@example.com>' To=['alice.rcpt@example.com'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<alice.rcpt@example.com>
+
+== recipient address ==
+address='a@x.test,b@y.test'                                            -> schema:ValidationError
+address='a@x.test\r\nRCPT TO:<b@y.test>'                               -> schema:ValidationError
+address='a@x.test b@y.test'                                            -> schema:ValidationError
+address='"a b"@x.test'                                                 -> schema:ValidationError
+address='a@x.test>'                                                    -> schema:ValidationError
+address='<a@x.test>'                                                   -> schema:ValidationError
+address='a@[127.0.0.1]'                                                -> schema:ValidationError
+address='a@x.test\n'                                                   -> schema:ValidationError
+address='a@x.t€st'                                                     -> schema:ValidationError
+address='a@x.test;b@y.test'                                            -> schema:ValidationError
+address='a+tag@x.test'                                                 -> sent; From='AutoTester <noreply@example.com>' To=['a+tag@x.test'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<a+tag@x.test>
+address='Alice <a@x.test>'                                             -> schema:ValidationError
+address='a@localhost'                                                  -> schema:ValidationError
+address='a@x'                                                          -> schema:ValidationError
+address='.a@x.test'                                                    -> transport:InvalidHeaderDefect
+address='a..b@x.test'                                                  -> transport:InvalidHeaderDefect
+address='A@X.TEST'                                                     -> sent; From='AutoTester <noreply@example.com>' To=['A@X.TEST'] Cc=None Bcc=None ReplyTo=None Subject='AutoTester report: Demo Shop - failed' fromAddrs=1 toAddrs=1 parts=1 rcpt TO:<A@X.TEST>
+address='a@x.test.'                                                    -> schema:ValidationError
+
+== model_construct bypass (defence in depth below the schema) ==
+bad address (CRLF) via model_construct -> failed ValueError | extra RCPT seen by server: []
+CRLF subject via model_construct -> failed ValueError

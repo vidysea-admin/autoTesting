@@ -1,0 +1,237 @@
+{
+ "": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ " 0.0.0.0": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ " 10.0.0.5 ": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ " ::": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "*": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "--port": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "0": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "0.0": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "0.0.0": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "0.0.0.0": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "0.0.0.0\t": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "0.0.0.0 ": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "0.0.0.00": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "0.00.0.0": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "00.0.0.0": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "0000:0000:0000:0000:0000:0000:0000:0000": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ "0:0:0:0:0:0:0:0": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ "0:0:0:0:0:0:0:1": {
+  "bindable": true,
+  "bound": "::1",
+  "wild": false
+ },
+ "0:0::0": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ "0::": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ "0x0.0.0.0": {
+  "bindable": true,
+  "bound": "0.0.0.0",
+  "wild": true
+ },
+ "10.0.0.5": {
+  "bindable": true,
+  "bound": "concrete-non-local(99 [Errno 99] Cannot assign requested address)",
+  "wild": false
+ },
+ "10.0.0.5 ": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "10.9.9.9": {
+  "bindable": true,
+  "bound": "concrete-non-local(99 [Errno 99] Cannot assign requested address)",
+  "wild": false
+ },
+ "127.0.0.1": {
+  "bindable": true,
+  "bound": "127.0.0.1",
+  "wild": false
+ },
+ "127.0.0.2": {
+  "bindable": true,
+  "bound": "127.0.0.2",
+  "wild": false
+ },
+ "127.1": {
+  "bindable": true,
+  "bound": "127.0.0.1",
+  "wild": false
+ },
+ "2001:DB8::5": {
+  "bindable": true,
+  "bound": "concrete-non-local(99 [Errno 99] Cannot assign requested address)",
+  "wild": false
+ },
+ "2001:db8::5": {
+  "bindable": true,
+  "bound": "concrete-non-local(99 [Errno 99] Cannot assign requested address)",
+  "wild": false
+ },
+ "::": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ ":: ": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "::0": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ "::0.0.0.0": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ "::0:0": {
+  "bindable": true,
+  "bound": "::",
+  "wild": true
+ },
+ "::1": {
+  "bindable": true,
+  "bound": "::1",
+  "wild": false
+ },
+ "::FFFF:0.0.0.0": {
+  "bindable": true,
+  "bound": "::ffff:0.0.0.0",
+  "wild": true
+ },
+ "::ffff:0.0.0.0": {
+  "bindable": true,
+  "bound": "::ffff:0.0.0.0",
+  "wild": true
+ },
+ "::ffff:127.0.0.1": {
+  "bindable": true,
+  "bound": "::ffff:127.0.0.1",
+  "wild": false
+ },
+ "INTRANET.Example": {
+  "bindable": true,
+  "bound": "hostname-assumed-resolvable",
+  "wild": false
+ },
+ "LOCALHOST": {
+  "bindable": true,
+  "bound": "127.0.0.1",
+  "wild": false
+ },
+ "[2001:db8::5]": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "[::1]": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "[::]": {
+  "bindable": false,
+  "bound": "linux gaierror: [Errno -2] Name or service not known",
+  "wild": null
+ },
+ "fe80::1%lo": {
+  "bindable": true,
+  "bound": "concrete-non-local(22 [Errno 22] Invalid argument)",
+  "wild": false
+ },
+ "intranet.example": {
+  "bindable": true,
+  "bound": "hostname-assumed-resolvable",
+  "wild": false
+ },
+ "intranet.example.": {
+  "bindable": true,
+  "bound": "hostname-assumed-resolvable",
+  "wild": false
+ },
+ "localhost": {
+  "bindable": true,
+  "bound": "127.0.0.1",
+  "wild": false
+ }
+}

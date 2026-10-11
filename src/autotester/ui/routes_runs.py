@@ -7,9 +7,9 @@ file under the C2 line cap).
 from __future__ import annotations
 
 from pathlib import Path
-from typing import NamedTuple
+from typing import Annotated, NamedTuple
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import RedirectResponse
 
 from autotester.browser.secrets import SecretStore
@@ -18,9 +18,10 @@ from autotester.core.consent import ApprovalRequired
 from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import placeholder_keys
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers import for_role, why_unavailable
+from autotester.providers.base import Provider, ProviderError
 from autotester.schema.approval import RunApproval
-from autotester.schema.case import Case
+from autotester.schema.case import Case, CasePriority
 from autotester.schema.catalog import TIER_BY_CLASS, Catalog
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import Action, ApprovalKind
@@ -120,7 +121,7 @@ def _plan_under_shared_budget(project: Project, run_id: str) -> ParallelPlan:
 def _execute_with_trace(
     store: ProjectStore, run_id: str, secrets: SecretStore, project: Project,
     cases: list[Case], entry_flags: list[bool], run_dir: Path, paths: ProjectPaths,
-    slug: str, judge: LangChainFallbackProvider, approval: RunApproval,
+    slug: str, judge: Provider, approval: RunApproval,
     catalog_snapshot: Catalog | None = None,
 ) -> ParallelPlan:
     """AT-562/AT-564: build this run's `StageContext` with the project's real
@@ -158,11 +159,24 @@ def _execute_with_trace(
     return plan
 
 
+def _judge_or_400(project: Project) -> Provider:
+    """The project's judge, or a 400 saying why none can serve (LL11): the model and the one
+    variable to set, never a key, a prompt or an endpoint value. The queue turns the 400 of a
+    queued run into `refused` (HO16/HO19), so a run launches no browser without a judge."""
+    try:
+        judge = for_role(project, "judge")
+    except ProviderError as exc:
+        raise HTTPException(400, str(exc)) from None
+    if why := why_unavailable(judge):
+        raise HTTPException(400, f"no AI provider is configured ({why}) -- cannot grade a run")
+    return judge
+
+
 class _Prepared(NamedTuple):
     store: ProjectStore
     project: Project
     cases: list[Case]
-    judge: LangChainFallbackProvider
+    judge: Provider
     paths: ProjectPaths
     secrets: SecretStore
     approval: RunApproval
@@ -170,7 +184,7 @@ class _Prepared(NamedTuple):
     cat: Catalog
 
 
-def _prepare_run(slug: str) -> _Prepared:
+def _prepare_run(slug: str, priorities: list[CasePriority] | None = None) -> _Prepared:
     """Everything a run needs, with every gate evaluated (400/403 as `HTTPException`).
 
     Called when the press arrives (so a refusal is immediate) and again when the queue starts the
@@ -181,14 +195,10 @@ def _prepare_run(slug: str) -> _Prepared:
     AT-562/AT-564: this is the live entry point wired to the T-172/T-173
     machinery those goal-coverage gaps named -- see `_execute_with_trace`."""
     store, project = _load_project_or_404(slug)
-    cases = store.list_cases()
+    cases = store.list_cases(priorities=priorities)  # FB4: selected priorities + pinned p0
     if not cases:
         raise HTTPException(400, f"project '{slug}' has no cases to run")
-    judge = LangChainFallbackProvider()
-    if not judge.available():
-        raise HTTPException(
-            400, "no AI provider is configured (set an API key in .env) -- cannot grade a run"
-        )
+    judge = _judge_or_400(project)
     paths = ProjectPaths(slug)
     secrets = SecretStore.load(project, paths.env_file, strict=False)
     account_keys = _require_declared_values(project, secrets, slug, cases)
@@ -199,14 +209,15 @@ def _prepare_run(slug: str) -> _Prepared:
 
 
 @router.post("/projects/{slug}/run")
-def trigger_run(slug: str) -> RedirectResponse:
+def trigger_run(slug: str, priority: Annotated[list[CasePriority] | None, Query()] = None
+                ) -> RedirectResponse:
     """Queue a real run and return at once (RU1-RU4; T-203/D-072 G6 replaced v1's synchronous
     wait). Validation and consent are checked now, so 400/403 come back immediately; the run
     itself starts when the server-wide limit and the project's single-flight slot allow
     (`ui/run_queue.py`), and the report page shows it as queued, then running."""
-    _prepare_run(slug)
+    _prepare_run(slug, priority)
     try:
-        get_queue().submit(slug, run_id=f"run-{ulid()}")   # minted only after the gates passed
+        get_queue().submit(slug, run_id=f"run-{ulid()}", priorities=priority)  # id: after the gates
     except QueueFull as exc:
         raise HTTPException(429, str(exc)) from exc
     return RedirectResponse(f"/projects/{slug}/report", status_code=303)
@@ -215,7 +226,7 @@ def trigger_run(slug: str) -> RedirectResponse:
 def _run_queued(entry: QueueEntry) -> None:
     """The queue's executor: re-check every gate, then run the whole project as run `entry.id`."""
     try:
-        prepared = _prepare_run(entry.project)
+        prepared = _prepare_run(entry.project, entry.priorities)
     except HTTPException as exc:
         raise RunRefused(str(exc.detail)) from exc
     _execute_and_record(prepared, entry.id)

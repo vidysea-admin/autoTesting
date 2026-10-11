@@ -83,7 +83,8 @@ def test_run_refuses_when_no_ai_provider_is_configured(
 
     import autotester.ui.routes_runs as routes_runs_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _UnavailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _UnavailableProvider())
 
     response = client.post("/projects/demo/run", follow_redirects=False)
 
@@ -126,7 +127,8 @@ def test_run_executes_every_case_and_redirects_to_the_report(
     import autotester.ui.routes_runs as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
 
@@ -144,6 +146,39 @@ def _only_run_id(store: ProjectStore) -> str:
     run_ids = sorted(p.name for p in store.paths.runs_dir.iterdir() if p.is_dir())
     assert len(run_ids) == 1
     return run_ids[0]
+
+
+@pytest.mark.parametrize("priority,expected", [("p0", ["p0", "pin"]), ("p1", ["p1", "pin"])])
+def test_trigger_runs_exact_selected_priority_plus_pinned_once(
+    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch,
+    priority: str, expected: list[str],
+) -> None:
+    from types import SimpleNamespace
+
+    from autotester.schema.case import Case
+    from autotester.schema.enums import CaseClass, CaseKind
+
+    _onboard_demo(client)
+    store = ProjectStore("demo", scratch_root)
+    rows = [store.add_case(Case(project="demo", flow_id=name, kind=CaseKind.BEST,
+            case_class=CaseClass.HAPPY, title=name, priority="p3" if name == "pin" else name,
+            pinned=name == "pin")) for name in ["p0", "p1", "p2", "pin"]]
+    _approve_demo_runs(scratch_root)
+    seen = []
+
+    def execute(store_, run_id, secrets, project, cases, *args):
+        seen.extend(c.id for c in cases)
+        return SimpleNamespace(n=1, bound_by="config")
+
+    monkeypatch.setattr("autotester.ui.routes_runs._execute_with_trace", execute)
+    monkeypatch.setattr("autotester.ui.routes_runs.for_role",
+                        lambda project, role: SimpleNamespace(available=lambda: True))
+    response = client.post(f"/projects/demo/run?priority={priority}", follow_redirects=False)
+    wanted = [c.id for c in rows if c.flow_id in expected]
+    assert response.status_code == 303 and seen == wanted
+    assert store.load_run(_only_run_id(store)).case_ids == wanted
+    assert len(seen) == 2 and len(set(seen)) == 2
+    assert client.post("/projects/demo/run?priority=p9").status_code == 422
 
 
 def test_is_entry_case_matches_the_projects_own_base_url(scratch_root: Path) -> None:
@@ -217,7 +252,8 @@ def test_entry_case_gets_an_isolated_wiped_profile_not_the_shared_one(
     import autotester.ui.routes_runs as routes_runs_module
     import autotester.ui.run_execution as run_execution_module
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
     monkeypatch.setattr(run_execution_module, "run_and_grade_case_resilient",
                         fake_run_and_grade_case_resilient)
 

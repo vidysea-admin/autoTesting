@@ -67,6 +67,11 @@ class ProjectPaths:
         return self.dir / "cases.jsonl"
 
     @property
+    def case_proposals(self) -> Path:
+        """Step-less candidates and their human review, separate from executable cases."""
+        return self.dir / "case_proposals.jsonl"
+
+    @property
     def rubrics_dir(self) -> Path:
         return self.dir / "rubrics"
 
@@ -216,15 +221,8 @@ class ProjectPaths:
 
     def ensure(self) -> None:
         """Create the directories a project needs. Safe to call repeatedly."""
-        for path in (
-            self.dir,
-            self.sources_dir,
-            self.rubrics_dir,
-            self.scripts_dir,
-            self.runs_dir,
-            self.profile_dir,
-            self.bench_dir,
-        ):
+        for path in (self.dir, self.sources_dir, self.rubrics_dir, self.scripts_dir,
+                     self.runs_dir, self.profile_dir, self.bench_dir):
             path.mkdir(parents=True, exist_ok=True)
 
 

@@ -1,0 +1,3 @@
+autotester: D:\autoTesting\.worktrees\check-at888\src\autotester\__init__.py
+MSG: browser session died (RuntimeError: BrowserContext.new_page: Failed to open a new tab) and could not be restarted: OSError: launch failed --user-data-dir=C:\Users\Lenovo\AppData\Local\Temp\at888scrub_09iay2qg\profiles\at888s token=[REDACTED]:PROBE_SECRET_X
+secret leaked: False | profile path leaked: True | profile dir name leaked: True

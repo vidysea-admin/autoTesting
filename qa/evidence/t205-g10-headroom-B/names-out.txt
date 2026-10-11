@@ -1,0 +1,76 @@
+'..'                                       refused
+'.'                                        refused
+''                                         refused
+'a/b'                                      refused
+'a\\b'                                     refused
+'C:'                                       refused
+'C:x'                                      refused
+'c:\\x'                                    refused
+'/etc/x'                                   refused
+'\\\\srv\\sh'                              refused
+'a\x00b'                                   refused
+'CON'                                      refused
+'con'                                      refused
+'nul'                                      refused
+'NUL.txt'                                  refused
+'com1'                                     refused
+'COM\xb9'                                  ACCEPTED
+'lpt\xb3'                                  ACCEPTED
+'CONIN$'                                   ACCEPTED
+'CONOUT$'                                  ACCEPTED
+'CLOCK$'                                   ACCEPTED
+'a.'                                       refused
+'a '                                       refused
+'a. '                                      refused
+' a'                                       ACCEPTED
+'a:b'                                      refused
+'nul:'                                     ACCEPTED
+'con:'                                     ACCEPTED
+'a:$DATA'                                  refused
+'a<b'                                      ACCEPTED
+'a>b'                                      ACCEPTED
+'a"b'                                      ACCEPTED
+'a|b'                                      ACCEPTED
+'a?b'                                      ACCEPTED
+'a*b'                                      ACCEPTED
+'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   refused
+'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   ACCEPTED
+'a\u2215b'                                 ACCEPTED
+'a\uff0fb'                                 ACCEPTED
+'a\u2216b'                                 ACCEPTED
+'a\uff3cb'                                 ACCEPTED
+'a\u2024\u2024'                            ACCEPTED
+'\u2024\u2024'                             ACCEPTED
+'a\uff0e'                                  ACCEPTED
+'..\u200b'                                 ACCEPTED
+'.\u200b.'                                 refused
+'a\n'                                      refused
+'a\r'                                      refused
+'\x7f'                                     refused
+'a\u202eb'                                 ACCEPTED
+'~1'                                       ACCEPTED
+'PROGRA~1'                                 ACCEPTED
+'a.lnk'                                    ACCEPTED
+'...'                                      refused
+'con.'                                     refused
+'aux.x.y'                                  refused
+'Prn'                                      refused
+--slot keys
+'demo:fixed:2026-10-11T09:30Z' -> demo%3Afixed%3A2026-10-11T09%3A30Z
+'..' refused
+'a/b' refused
+'con' refused
+'CON:x' -> CON%3Ax
+'a.' refused
+'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx refused
+'a b' -> a%20b
+'\xe9' -> %C3%A9
+--slug
+'demo' ACCEPTED
+'demo\n' refused
+'Demo' refused
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa refused
+'con' refused
+'nul' refused
+'a.b' refused
+--team_path zero parts: R\.work\team

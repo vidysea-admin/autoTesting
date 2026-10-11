@@ -28,7 +28,7 @@ from autotester.schema.video_review import ReviewReply
 from autotester.stages.video_pointers import parse_pointers
 from autotester.stages.video_review import run_review
 from autotester.stages.video_review_prompt import PLACEHOLDERS, build_review_prompt, load_template
-from autotester.stages.video_review_render import render_html, render_markdown
+from autotester.stages.video_review_render import render_markdown, render_review_html
 
 
 def test_two_valid_items_stay_two_and_the_review_says_fewer_than_four(tmp_path):
@@ -104,7 +104,7 @@ def test_hallucinated_second_and_unknown_source_never_reach_items_or_exports(tmp
     assert [i.seen for i in r.items] == ["good"]
     assert sorted(x.reason for x in r.rejected) == (
         ["time_outside_recording"] * 3 + ["unknown_source"])
-    for text in (render_markdown(r), render_html(r)):
+    for text in (render_markdown(r), render_review_html(r)):
         assert "good" in text
         assert not any(w in text for w in ("farout", "negative", "foreign", "edge"))
     assert all(0 <= i.time_s <= DURATION and i.source_id == SRC for i in r.items)
@@ -150,7 +150,7 @@ def test_silence_and_unreadable_are_never_reported_as_nothing_said(tmp_path, tx,
     items = [item(origin="narration", quote="anything"), item(time_s=30, seen="v")]
     r = run(tmp_path, RecordingProvider([reply_of(items)]), tx)
     assert r.narration_state == state and not any(i.origin == "narration" for i in r.items)
-    for text in (render_markdown(r), render_html(r)):
+    for text in (render_markdown(r), render_review_html(r)):
         assert phrase in text.lower()
         assert not any(w in text.lower() for w in FORBIDDEN)
 
@@ -176,7 +176,7 @@ def test_a_planted_secret_never_reaches_disk_exports_logs_or_the_prompt(tmp_path
     with caplog.at_level(logging.DEBUG):
         r = run(tmp_path, p, tx, pointer_text=f"0:10 | note {CANARY}", secrets={"PW": CANARY})
     stored = (tmp_path / "root" / "projects" / "p" / "reviews" / f"{r.id}.json")
-    blobs = [stored.read_text("utf-8"), render_markdown(r), render_html(r), caplog.text,
+    blobs = [stored.read_text("utf-8"), render_markdown(r), render_review_html(r), caplog.text,
              *p.prompts]
     assert all(CANARY not in b for b in blobs)
     assert r.items[0].origin == "narration"          # the scrubbed quote still verifies
@@ -219,7 +219,7 @@ def test_markdown_and_html_exports_carry_the_same_item_ids(tmp_path):
     items = [item(time_s=10 + i, seen=f"s{i}") for i in range(4)]
     r = run(tmp_path, RecordingProvider([reply_of(items)]))
     md_ids = set(re.findall(r"\bit_[0-9a-f]+\b", render_markdown(r)))
-    html_ids = set(re.findall(r'data-item-id="(it_[0-9a-f]+)"', render_html(r)))
+    html_ids = set(re.findall(r'data-item-id="(it_[0-9a-f]+)"', render_review_html(r)))
     assert md_ids == html_ids == {i.id for i in r.items} and len(md_ids) == 4
 
 

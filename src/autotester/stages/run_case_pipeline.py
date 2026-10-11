@@ -156,11 +156,12 @@ def run_and_grade_case(
     (INCONCLUSIVE by rule, never a PASS) instead of spending a model call per case."""
     store = store or ProjectStore(case.project)
     session.begin_case_video(case.id)
+    restarts = _take_session_events(session)
     try:
         scripted = run_scripted(case, session, store, run_case)
     finally:
         video_rel = session.end_case_video()
-    result = scripted.result
+    result = _with_events(scripted.result, restarts)
     rubric = _rubric_for(case, store)
     if scripted.mode == "replay" and not judge_replays and _judgeable(result):
         verdict = _unjudged_replay(result, run_id)
@@ -169,6 +170,18 @@ def run_and_grade_case(
                         secrets=session.secrets)
     _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
     return result, verdict
+
+
+def _take_session_events(session: BrowserSession) -> list[Evidence]:
+    """AT-888: browser-session restarts `begin_case_video` just performed for THIS case."""
+    take = getattr(session, "take_session_events", None)
+    return list(take()) if callable(take) else []
+
+
+def _with_events(result: RawResult, events: list[Evidence]) -> RawResult:
+    """Restart events become evidence on the case's result (`run_case` slices evidence after
+    `begin_case_video`, so it cannot see them itself)."""
+    return result.model_copy(update={"evidence": [*events, *result.evidence]}) if events else result
 
 
 def run_and_grade_case_resilient(
@@ -190,8 +203,9 @@ def run_and_grade_case_resilient(
     grading is caught, and it produces an `INCONCLUSIVE` verdict naming the
     grader failure instead of propagating."""
     session.begin_case_video(case.id)
+    restarts = _take_session_events(session)
     try:
-        result = run_scripted(case, session, store, run_case).result
+        result = _with_events(run_scripted(case, session, store, run_case).result, restarts)
     finally:
         video_rel = session.end_case_video()
     try:

@@ -1,0 +1,37 @@
+case                                         door       dang  flows(before->after)  ver     verdict  extra
+1 no rediscovery                             cli        0     1->3 new=2   4->5   draft     OK  
+1 no rediscovery                             ui         0     1->3 new=2   4->5   draft     OK  
+1 no rediscovery                             orch       0     1->3 new=2   4->5   draft     OK  
+2 rediscovered mid-flow                      cli        0     1->3 new=2   4->5   draft     OK  entry/exit refs [('node_731f2b58a8db', 'node_7045d6a47a17'), ('node_731f2b58a8db', 'node_f5b3023713cb')]
+2 rediscovered mid-flow                      ui         0     1->3 new=2   4->5   draft     OK  entry/exit refs [('node_731f2b58a8db', 'node_7045d6a47a17'), ('node_731f2b58a8db', 'node_f5b3023713cb')]
+2 rediscovered mid-flow                      orch       0     1->3 new=2   4->5   draft     OK  
+3 rediscovered entry+exit                    cli        0     1->3 new=2   4->5   draft     OK  entry/exit refs [('scr_home', 'scr_detail'), ('scr_home', 'node_f5b3023713cb')]
+3 rediscovered entry+exit                    ui         0     1->3 new=2   4->5   draft     OK  entry/exit refs [('scr_home', 'scr_detail'), ('scr_home', 'node_f5b3023713cb')]
+3 rediscovered entry+exit                    orch       0     1->3 new=2   4->5   draft     OK  
+4 two nodes -> same screen                   cli        0     1->3 new=2   4->5   draft     OK  entry/exit refs [('node_731f2b58a8db', 'scr_dash'), ('node_731f2b58a8db', 'node_4fe43baad56c')]
+4 two nodes -> same screen                   ui         0     1->3 new=2   4->5   draft     OK  entry/exit refs [('node_731f2b58a8db', 'scr_dash'), ('node_731f2b58a8db', 'node_4fe43baad56c')]
+4 two nodes -> same screen                   orch       0     1->3 new=2   4->5   draft     OK  
+1 no rediscovery                             cross      flow ids equal across doors: True
+2 rediscovered mid-flow                      cross      flow ids equal across doors: True
+3 rediscovered entry+exit                    cross      flow ids equal across doors: True
+4 two nodes -> same screen                   cross      flow ids equal across doors: True
+5a re-crawl mid-rediscovery [2nd merge, same crawl] cli        0     3->3 new=0   5->5   draft     OK  version 5->5; flows 3->3
+5a re-crawl mid-rediscovery [3rd merge, new crawl id] cli        0     3->3 new=0   5->5   draft     OK  version 5->5; bytes-same-after-3rd=True
+5b re-crawl same-screen [2nd merge, same crawl] cli        0     3->3 new=0   5->5   draft     OK  version 5->5; flows 3->3
+5b re-crawl same-screen [3rd merge, new crawl id] cli        0     3->3 new=0   5->5   draft     OK  version 5->5; bytes-same-after-3rd=True
+5a re-crawl mid-rediscovery [2nd merge, same crawl] ui         0     3->3 new=0   5->5   draft     OK  version 5->5; flows 3->3
+5a re-crawl mid-rediscovery [3rd merge, new crawl id] ui         0     3->3 new=0   5->5   draft     OK  version 5->5; bytes-same-after-3rd=True
+5b re-crawl same-screen [2nd merge, same crawl] ui         0     3->3 new=0   5->5   draft     OK  version 5->5; flows 3->3
+5b re-crawl same-screen [3rd merge, new crawl id] ui         0     3->3 new=0   5->5   draft     OK  version 5->5; bytes-same-after-3rd=True
+5a re-crawl mid-rediscovery [2nd merge, same crawl] orch       0     3->3 new=0   5->5   draft     OK  version 5->5; flows 3->3
+5a re-crawl mid-rediscovery [3rd merge, new crawl id] orch       0     3->3 new=0   5->5   draft     OK  version 5->5; bytes-same-after-3rd=True
+5b re-crawl same-screen [2nd merge, same crawl] orch       0     3->3 new=0   5->5   draft     OK  version 5->5; flows 3->3
+5b re-crawl same-screen [3rd merge, new crawl id] orch       0     3->3 new=0   5->5   draft     OK  version 5->5; bytes-same-after-3rd=True
+5c recrawl adds a new leaf (Settings)        cli        0     3->4 new=1   5->6   draft     OK  expected exactly +1 version; got 5->6
+5c recrawl adds a new leaf (Settings)        ui         0     3->4 new=1   5->6   draft     OK  expected exactly +1 version; got 5->6
+6 flows-only crawl                           cli        0     1->3 new=2   4->5   draft     OK  review.by=None at=None screens 5->5
+6 flows-only crawl                           ui         0     1->3 new=2   4->5   draft     OK  review.by=None at=None screens 5->5
+6 flows-only crawl                           orch       0     1->3 new=2   4->5   draft     OK  review.by=None at=None screens 5->5
+7 real cycle (A<->B, no root)                cli        0     1->1 new=0   4->5   draft     OK  crawl flows added: 0
+7 real cycle (A<->B, no root)                ui         0     1->1 new=0   4->5   draft     OK  crawl flows added: 0
+7 real cycle (A<->B, no root)                orch       0     1->1 new=0   4->5   draft     OK  crawl flows added: 0

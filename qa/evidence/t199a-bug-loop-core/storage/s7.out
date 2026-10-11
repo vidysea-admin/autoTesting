@@ -1,0 +1,8 @@
+apply #50: this call 42.2 ms; mean of last 10 49.7 ms; cumulative 2.57 s
+apply #100: this call 138.5 ms; mean of last 10 85.9 ms; cumulative 6.20 s
+apply #200: this call 130.2 ms; mean of last 10 172.4 ms; cumulative 19.26 s
+apply #400: this call 805.3 ms; mean of last 10 458.6 ms; cumulative 70.22 s
+first call ms 47.59090000879951
+bugs() on 1000 files: 803 ms (warm cache)
+single apply at 1000 files: 808 ms
+duplicate apply at 1001 files: 501 ms

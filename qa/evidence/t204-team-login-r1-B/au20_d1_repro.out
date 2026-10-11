@@ -1,0 +1,10 @@
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+['10.0.0.5', '--port', '8443'] H='10.0.0.5' O='' -> startup ok | real Host header 10.0.0.5:8443 allowed=False | bare Host allowed=True
+['10.0.0.5', '--port', '8443'] H='' O='https://10.0.0.5' -> startup ok | real Host header 10.0.0.5:8443 allowed=False | bare Host allowed=True
+['10.0.0.5', '--port', '8443'] H='10.0.0.5:8443' O='' -> startup ok | real Host header 10.0.0.5:8443 allowed=True | bare Host allowed=False
+['10.0.0.5'] H='10.0.0.5' O='' -> startup ok | real Host header 10.0.0.5:8000 allowed=False | bare Host allowed=True
+['10.0.0.5', '--port', '80'] H='10.0.0.5' O='' -> startup ok | real Host header 10.0.0.5:80 allowed=False | bare Host allowed=True

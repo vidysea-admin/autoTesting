@@ -1,0 +1,14 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/venv-b2` and will be ignored; use `--active` to target the active environment instead
+Uninstalled 1 package in 6ms
+Installed 1 package in 141ms
+............................................................             [100%]
+============================== warnings summary ===============================
+..\venv-b2\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\venv-b2\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_explore_flows_doors.py::test_orchestrated_discover_parks_flow_proposals_in_its_draft
+  <string>:11: RuntimeWarning: StageContext for run 'run1' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+60 passed, 2 warnings in 56.50s

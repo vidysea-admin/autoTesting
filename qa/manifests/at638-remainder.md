@@ -227,7 +227,7 @@ fabricating a falsification table for prose.
 Not UI-touching — no surface changed. `qa/feedback-inbox.md` and this manifest are the only paths
 touched; neither renders anywhere in the product.
 
-## Status: cycle-1 FAIL — HUMAN_GATE. NOT merged, and no cycle 2 will be started.
+## Status: cycle-1 FAIL; branch merged to master 2026-09-28 (aa368f8d); gate qa/gates/at638-four-contract-files-authorization.md ANSWERED 2026-09-27 (D-054); the four contracts now exist (c6f31f50)
 
 ## Close-out (maker orchestrator, 2026-09-27)
 

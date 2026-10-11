@@ -1,0 +1,14 @@
+{
+ "pairs": 520,
+ "distinct_keys": 520,
+ "distinct_keys_casefold": 520,
+ "exceptions": [],
+ "wrong_message_counts": {},
+ "records_for_key_wrong": [],
+ "records_for_run_wrong": [],
+ "record_files": 520,
+ "attempt_files": 520,
+ "total_messages": 520,
+ "stray": [],
+ "passes": 4
+}

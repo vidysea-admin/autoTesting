@@ -17,7 +17,7 @@ from autotester.stages import video_pointers, video_review_plan
 from autotester.stages.video_review import unreadable_reason
 from autotester.stages.video_review_items import overlapping
 from autotester.stages.video_review_plan import plan_review
-from autotester.stages.video_review_render import render_html, render_markdown
+from autotester.stages.video_review_render import render_markdown, render_review_html
 
 
 @pytest.mark.parametrize("engine", ["none", "unreadable"])
@@ -53,7 +53,7 @@ def test_dry_run_cost_of_an_unpriced_provider_is_not_zero():
 
 def test_tv9_review_says_no_baseline_to_compare_and_never_matches_the_product(tmp_path):
     r = run(tmp_path, RecordingProvider([reply_of([item()])]))
-    for text in (render_markdown(r), render_html(r)):
+    for text in (render_markdown(r), render_review_html(r)):
         assert "no baseline to compare" in text.lower()
         assert "matches the product" not in text.lower()
 

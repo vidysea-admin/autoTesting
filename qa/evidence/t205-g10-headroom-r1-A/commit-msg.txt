@@ -1,0 +1,5 @@
+qa(checker): t205-g10-headroom r1 A BLOCKED-PROCESS fb93776b
+
+All criteria met on the checks run; suite-only retry owed (machine lock held by D:/hei-sweep for the full 15 min wait).
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>

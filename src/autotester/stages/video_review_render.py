@@ -57,7 +57,7 @@ def render_markdown(review: VideoReview) -> str:
     return "\n".join(out) + "\n"
 
 
-def render_html(review: VideoReview) -> str:
+def render_review_html(review: VideoReview) -> str:
     esc = html.escape
     head = "".join(f"<th>{h}</th>" for h in HEAD)
     cells = ["".join(f"<td>{esc(c)}</td>" for c in _row(i)) for i in review.items]

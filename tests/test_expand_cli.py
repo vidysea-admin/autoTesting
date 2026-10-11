@@ -27,6 +27,7 @@ from autotester.schema.case import ExpandedSteps
 from autotester.schema.enums import Action, CaseClass, ReviewStatus
 from autotester.schema.flowspec import Flow, FlowSpec, Review, Step
 from autotester.schema.project import Project
+from autotester.stages.expand import propose_cases
 from autotester.store.project_store import ProjectStore
 
 runner = CliRunner()
@@ -49,12 +50,18 @@ def _login_flow() -> Flow:
     )
 
 
-def _seed(root: Path, *, status: ReviewStatus = ReviewStatus.APPROVED) -> ProjectStore:
+def _seed(root: Path, *, status: ReviewStatus = ReviewStatus.APPROVED,
+          reviewed: bool = True) -> ProjectStore:
     store = ProjectStore("demo", root)
     store.save_project(Project(slug="demo", name="Demo", base_url="https://demo.test",
                                allowed_domains=["demo.test"]))
     store.save_flowspec(FlowSpec(project="demo", review=Review(status=status),
                                  flows=[_login_flow()]))
+    if reviewed and status is ReviewStatus.APPROVED:
+        rows = propose_cases(store.load_flowspec())
+        store.stage_case_proposals(rows)
+        for row in rows:
+            store.review_case_proposal(row.id, by="fixture-human", approved=True)
     return store
 
 
@@ -120,6 +127,25 @@ def test_expand_refuses_an_unreviewed_flowspec_and_writes_nothing(
     assert result.exit_code == 1, result.output
     assert "not approved" in result.output
     assert store.list_cases() == []
+
+
+def test_cli_proposal_review_is_signed_and_pending_generation_spends_nothing(
+    root: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = _seed(root, reviewed=False)
+    monkeypatch.setattr("autotester.cli.providers.get",
+                        lambda *args: pytest.fail("pending proposals reached provider"))
+    pending = runner.invoke(app, ["expand", "demo"])
+    assert pending.exit_code == 1 and store.list_cases() == []
+    listed = runner.invoke(app, ["expand", "demo", "--proposals"])
+    rows = store.list_case_proposals()
+    assert listed.exit_code == 0 and rows[0].id in listed.output
+    assert all("steps" not in row.model_dump() and row.status == "proposed" for row in rows)
+    unsigned = runner.invoke(app, ["expand", "demo", "--approve", rows[0].id])
+    assert unsigned.exit_code == 1 and store.list_case_proposals()[0].status == "proposed"
+    signed = runner.invoke(app, ["expand", "demo", "--approve", rows[0].id, "--by", "human"])
+    assert signed.exit_code == 0
+    assert store.list_case_proposals()[0].reviewed_by == "human"
 
 
 def test_expand_on_a_project_that_does_not_exist_refuses_cleanly(root: Path) -> None:

@@ -1,0 +1,12 @@
+== unset
+      AUTOTESTER_PUBLIC_ORIGIN: https://localhost
+== domain
+      AUTOTESTER_PUBLIC_ORIGIN: https://qa.example.com
+== public
+      AUTOTESTER_PUBLIC_ORIGIN: http://192.168.1.20:8000
+== public-empty
+      AUTOTESTER_PUBLIC_ORIGIN: https://localhost
+== domain-empty
+      AUTOTESTER_PUBLIC_ORIGIN: https://localhost
+== both
+      AUTOTESTER_PUBLIC_ORIGIN: http://1.2.3.4:8000

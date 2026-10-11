@@ -1,0 +1,27 @@
+[F7] autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F7\src\autotester\__init__.py
+[F7] BASELINE rc=0
+21 passed in 67.95s (0:01:07)
+[F7] mutated function=build_expand_prompt; hunk old=`.replace("{{ORIGINAL_STEPS}}", mask_pii(steps_text))` new=`.replace("{{ORIGINAL_STEPS}}", steps_text)`
+[F7] MUTATED rc=1
+py::test_the_provider_never_receives_the_raw_value[email-in-value]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[email-in-target]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[phone-in-value]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[bare-ten-digit-phone]
+FAILED tests/test_expand_redaction.py::test_without_a_saved_project_the_pii_mask_still_applies
+FAILED tests/test_expand_redaction.py::test_build_expand_prompt_masks_pii_on_its_own
+6 failed, 15 passed in 80.58s (0:01:20)
+ 
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F7\tests\test_expand_redaction.py:83: assert False
+E   assert False
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F7\tests\test_expand_redaction.py:83: assert False
+E   assert False
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F7\tests\test_expand_redaction.py:130: assert False
+E   AssertionError: assert ('ada.lovelace@example.org' not in '# expand_ca...tionale`).\n'
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-at890\fz-F7\tests\test_expand_redaction.py:136: AssertionError: assert ('ada.lovelace@example.org' not in '# expand_ca...tionale`).\n'
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[email-in-value]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[email-in-target]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[phone-in-value]
+FAILED tests/test_expand_redaction.py::test_the_provider_never_receives_the_raw_value[bare-ten-digit-phone]
+FAILED tests/test_expand_redaction.py::test_without_a_saved_project_the_pii_mask_still_applies
+FAILED tests/test_expand_redaction.py::test_build_expand_prompt_masks_pii_on_its_own
+6 failed, 15 passed in 80.58s (0:01:20)

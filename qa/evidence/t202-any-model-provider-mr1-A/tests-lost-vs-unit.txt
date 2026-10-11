@@ -1,0 +1,1 @@
+tests/test_ui_learn.py:def test_generate_failure_page_does_not_carry_a_vendor_echoed_key

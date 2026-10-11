@@ -11,6 +11,7 @@ from pathlib import Path
 import typer
 
 from autotester import providers
+from autotester.cli_intake import register_intake_commands
 from autotester.cli_video_review import ReviewCommand, review_cmd
 from autotester.core.paths import RepoDocs
 from autotester.schema.enums import ReviewStatus
@@ -291,3 +292,6 @@ def map_product_cmd(project: str = typer.Argument(..., help="project slug")) -> 
     typer.secho(
         f"{project}: {len(screen_map.screens)} screen(s), "
         f"{len(screen_map.journeys)} journey(s)", fg=typer.colors.GREEN)
+
+
+register_intake_commands(app)  # T-198a: `ingest zip` and `ingest fetch-drive`

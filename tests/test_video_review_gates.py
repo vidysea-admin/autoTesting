@@ -81,8 +81,8 @@ def test_redacted_frames_never_reach_the_provider_and_redaction_comes_first(tmp_
     assert all(video != x and video not in x.parents for x in p.paths)
     assert any(s <= 120.0 and e >= 180.0 for s, e in r.not_reviewed)
     assert "Redacted on request" in r.coverage_note
-    from autotester.stages.video_review_render import render_html, render_markdown
-    assert "Not reviewed" in render_markdown(r) and "Not reviewed" in render_html(r)
+    from autotester.stages.video_review_render import render_markdown, render_review_html
+    assert "Not reviewed" in render_markdown(r) and "Not reviewed" in render_review_html(r)
 
 
 def test_a_failed_redaction_check_refuses_before_any_call(tmp_path):

@@ -1,0 +1,7 @@
+nul: first  True
+nul: second True
+nul: file exists? True
+ab:stream first  True
+ab:stream second False
+listing: ['.work', '.work\\team', '.work\\team\\ab']
+control: plain marker first/second: True False

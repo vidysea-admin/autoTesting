@@ -32,6 +32,7 @@ from autotester.schema.enums import CaseClass, CaseKind, IssueOrigin
 from autotester.schema.flowspec import Step
 from autotester.schema.issue import Issue
 from autotester.schema.project import Source
+from autotester.schema.tracked_bug import SYSTEM_ACTOR, BugEvent, BugSeed, EventKind
 from autotester.store.project_store import PinnedCaseError, ProjectStore
 
 ISSUE_COLUMNS = [
@@ -106,6 +107,21 @@ def derive_issues(analysis: VideoAnalysis, source: Source, project: str) -> list
         )
         for issue in analysis.issues
     ]
+
+
+def issue_to_bug_event(issue: Issue) -> BugEvent:
+    """T-199a TB1/TB5: the ONE place a bug key is derived from an `Issue`.
+
+    A video-found bug's key is the `Issue.id` fingerprint (project, source, screen, category, time
+    bucket, title), so re-analysing a recording, or two runs of it, name the same bug and no run id,
+    time, path or screenshot hash can enter the key. The bug is opened by a FAIL event keyed by the
+    issue id, so adopting the same issue twice is a duplicate, and from there only the bug loop
+    moves its status (R44).
+    """
+    seed = BugSeed(bug_key=issue.id, project=issue.project, title=issue.title[:200],
+                   screen=issue.screen, severity=issue.severity)
+    return BugEvent(bug_key=issue.id, kind=EventKind.FAIL, ref=f"issue/{issue.id}",
+                    at=issue.created_at, actor=SYSTEM_ACTOR, seed=seed)
 
 
 def pin_issue_as_case(

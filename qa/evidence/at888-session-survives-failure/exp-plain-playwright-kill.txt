@@ -1,0 +1,30 @@
+== headed video mode: 0 0 taskkill
+killed 5
+same-driver RELAUNCH OK 1.4 s
+browser procs now 9
+== headed video mode: 0 1 taskkill
+killed 5
+same-driver RELAUNCH OK 14.2 s
+browser procs now 10
+== headed video mode: 1 1 taskkill
+  code: 'EPIPE'
+}
+
+Node.js v24.18.1
+== headed video mode: 0 1 taskkill (HOW=new-driver)
+killed 5
+new-driver RELAUNCH OK 106.0 s
+browser procs now 5
+== headed video mode: 1 1 taskkill (HOW=new-driver)
+killed 8
+new-driver RELAUNCH FAILED 70.5 s TimeoutError BrowserType.launch_persistent_context: Timeout 40000ms exceeded. Call log:   - <launching> C:\Users\Lenovo\AppData\Local\ms-playwright\chromium-1234\chrome-win6
+new-driver RELAUNCH FAILED 71.2 s TimeoutError BrowserType.launch_persistent_context: Timeout 40000ms exceeded. Call log:   - <launching> C:\Users\Lenovo\AppData\Local\ms-playwright\chromium-1234\chrome-win6
+browser procs now 7
+== TOPONLY headed video mode: 1 1 taskkill
+killed 1
+new-driver RELAUNCH OK 161.6 s
+browser procs now 9
+== TOPONLY headed video mode: 0 1 taskkill
+killed 1
+new-driver RELAUNCH OK 99.4 s
+browser procs now 5

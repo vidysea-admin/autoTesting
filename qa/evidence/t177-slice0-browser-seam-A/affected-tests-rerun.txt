@@ -1,0 +1,272 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+autotester.__file__ D:\autoTesting\.worktrees\t177-slice0-browser-seam\src\autotester\__init__.py
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- D:\autoTesting\.worktrees\t177-slice0-browser-seam\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\autoTesting\.worktrees\t177-slice0-browser-seam
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 163 items
+
+tests/test_browser_session_cdp.py::test_launch_options_carry_no_debug_port_unless_asked PASSED [  0%]
+tests/test_browser_session_cdp.py::test_launch_args_never_hold_a_non_loopback_debugging_address[True-True] PASSED [  1%]
+tests/test_browser_session_cdp.py::test_launch_args_never_hold_a_non_loopback_debugging_address[True-False] PASSED [  1%]
+tests/test_browser_session_cdp.py::test_launch_args_never_hold_a_non_loopback_debugging_address[False-True] PASSED [  2%]
+tests/test_browser_session_cdp.py::test_launch_args_never_hold_a_non_loopback_debugging_address[False-False] PASSED [  3%]
+tests/test_browser_session_cdp.py::test_not_started_or_not_exposed_is_none_and_never_probes_a_port PASSED [  3%]
+tests/test_browser_session_cdp.py::test_exposed_session_reports_the_port_the_browser_chose PASSED [  4%]
+tests/test_browser_session_cdp.py::test_teardown_closes_the_endpoint_and_forgets_the_port_file PASSED [  4%]
+tests/test_browser_session_cdp.py::test_an_endpoint_that_is_not_this_browser_is_refused_and_torn_down PASSED [  5%]
+tests/test_browser_session_cdp.py::test_a_stale_port_file_never_becomes_the_url PASSED [  6%]
+tests/test_browser_session_cdp.py::test_a_wildcard_bound_endpoint_is_refused PASSED [  6%]
+tests/test_browser_session_cdp.py::test_cdp_url_is_read_only PASSED      [  7%]
+tests/test_browser_session_cdp.py::test_owed_gap_a_second_tab_opened_during_a_recorded_case_has_no_mask PASSED [  7%]
+tests/test_browser_session_cdp_live.py::test_a_real_browser_serves_devtools_on_loopback_only_and_closes_at_teardown PASSED [  8%]
+tests/test_browser_session_cdp_live.py::test_a_real_session_that_did_not_ask_has_no_devtools_port PASSED [  9%]
+tests/test_browser.py::test_launch_options_are_headed_by_default_with_a_project_profile PASSED [  9%]
+tests/test_browser.py::test_destination_outside_allowed_domains_is_refused PASSED [ 10%]
+tests/test_browser.py::test_refusal_message_never_embeds_the_raw_destination PASSED [ 11%]
+tests/test_browser.py::test_goto_refuses_before_touching_the_page PASSED [ 11%]
+tests/test_browser.py::test_fill_resolves_secret_for_current_page_host_and_tags_the_input PASSED [ 12%]
+tests/test_browser.py::test_fill_refuses_secret_when_page_has_drifted_off_domain PASSED [ 12%]
+tests/test_browser.py::test_screenshot_masks_before_capture_and_records_masked_evidence PASSED [ 13%]
+tests/test_browser.py::test_screenshot_retries_once_on_the_known_transient_protocol_error PASSED [ 14%]
+tests/test_browser.py::test_screenshot_gives_up_after_a_second_consecutive_failure PASSED [ 14%]
+tests/test_browser.py::test_screenshot_does_not_retry_a_different_error PASSED [ 15%]
+tests/test_browser.py::test_evidence_paths_are_scrubbed PASSED           [ 15%]
+tests/test_browser.py::test_request_human_surfaces_blocked_hitl PASSED   [ 16%]
+tests/test_browser.py::test_no_process_wide_browser_kill_anywhere_in_the_codebase PASSED [ 17%]
+tests/test_browser.py::test_close_only_closes_own_context_and_is_idempotent PASSED [ 17%]
+tests/test_browser.py::test_real_headless_launch_navigates_a_data_url PASSED [ 18%]
+tests/test_video_parallel_sweep.py::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video FAILED [ 19%]
+tests/test_secrets.py::test_parse_env_handles_comments_quotes_and_export PASSED [ 19%]
+tests/test_secrets.py::test_declared_key_missing_from_env_raises_and_names_the_key PASSED [ 20%]
+tests/test_secrets.py::test_missing_env_file_raises_rather_than_silently_empty PASSED [ 20%]
+tests/test_secrets.py::test_undeclared_key_is_reported_and_never_loaded PASSED [ 21%]
+tests/test_secrets.py::test_resolve_substitutes_on_an_allowed_host PASSED [ 22%]
+tests/test_secrets.py::test_resolve_passes_through_plain_values_untouched PASSED [ 22%]
+tests/test_secrets.py::test_resolve_rejects_a_key_the_project_never_declared PASSED [ 23%]
+tests/test_secrets.py::test_guard_prompt_blocks_a_prompt_carrying_a_raw_secret PASSED [ 23%]
+tests/test_secrets.py::test_resolve_refuses_a_host_outside_the_secret_scope PASSED [ 24%]
+tests/test_secrets.py::test_subdomains_of_a_scoped_domain_are_allowed PASSED [ 25%]
+tests/test_secrets.py::test_lookalike_domain_is_not_a_subdomain PASSED   [ 25%]
+tests/test_secrets.py::test_secret_scoped_narrower_than_the_project_allowlist_is_still_refused PASSED [ 26%]
+tests/test_secrets.py::test_resolve_for_navigation_substitutes_a_bare_placeholder PASSED [ 26%]
+tests/test_secrets.py::test_resolve_for_navigation_substitutes_a_placeholder_embedded_in_a_url PASSED [ 27%]
+tests/test_secrets.py::test_resolve_for_navigation_passes_plain_urls_through_untouched PASSED [ 28%]
+tests/test_secrets.py::test_resolve_for_navigation_rejects_an_undeclared_key PASSED [ 28%]
+tests/test_secrets.py::test_resolve_for_navigation_rejects_a_missing_value PASSED [ 29%]
+tests/test_secrets.py::test_resolve_for_navigation_refuses_a_secret_scoped_to_a_different_domain PASSED [ 30%]
+tests/test_secrets.py::test_host_of_strips_scheme_port_and_case PASSED   [ 30%]
+tests/test_secrets.py::test_at001_empty_host_fails_closed PASSED         [ 31%]
+tests/test_secrets.py::test_at001_blank_domain_is_rejected_at_declaration PASSED [ 31%]
+tests/test_secrets.py::test_at002_short_secret_is_still_guarded_and_masked PASSED [ 32%]
+tests/test_secrets.py::test_at003_inline_comment_is_stripped_from_unquoted_values PASSED [ 33%]
+tests/test_secrets.py::test_at004_undeclared_values_are_masked_but_never_resolvable PASSED [ 33%]
+tests/test_secrets.py::test_at005_non_strict_load_still_fails_closed_at_resolve PASSED [ 34%]
+tests/test_secrets.py::test_at006_tab_comment_and_quoted_then_comment PASSED [ 34%]
+tests/test_secrets.py::test_at007_backslash_and_userinfo_destinations_fail_closed PASSED [ 35%]
+tests/test_secrets.py::test_redactor_masks_every_loaded_value PASSED     [ 36%]
+tests/test_secrets.py::test_repr_never_renders_a_value PASSED            [ 36%]
+tests/test_secrets.py::test_masked_field_keys_reports_what_screenshots_must_hide PASSED [ 37%]
+tests/test_browser_navigation_secrets.py::test_goto_resolves_a_bare_secret_placeholder_navigation_target PASSED [ 38%]
+tests/test_browser_navigation_secrets.py::test_goto_resolves_a_secret_embedded_in_a_literal_url PASSED [ 38%]
+tests/test_browser_navigation_secrets.py::test_goto_still_refuses_a_resolved_destination_outside_project_domains PASSED [ 39%]
+tests/test_browser_navigation_secrets.py::test_goto_refuses_a_secret_scoped_to_a_different_domain_than_it_resolves_to PASSED [ 39%]
+tests/test_browser_navigation_secrets.py::test_goto_passes_a_plain_url_through_unchanged PASSED [ 40%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test-False-None] PASSED [ 41%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test-False-True] PASSED [ 41%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test-False-False] PASSED [ 42%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test-True-None] PASSED [ 42%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test-True-True] PASSED [ 43%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test-True-False] PASSED [ 44%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[child.auth.pathlynks.test-False-None] PASSED [ 44%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[child.auth.pathlynks.test-False-True] PASSED [ 45%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[child.auth.pathlynks.test-False-False] PASSED [ 46%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[child.auth.pathlynks.test-True-None] PASSED [ 46%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[child.auth.pathlynks.test-True-True] PASSED [ 47%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[child.auth.pathlynks.test-True-False] PASSED [ 47%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[sibling.pathlynks.test-False-None] PASSED [ 48%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[sibling.pathlynks.test-False-True] PASSED [ 49%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[sibling.pathlynks.test-False-False] PASSED [ 49%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[sibling.pathlynks.test-True-None] PASSED [ 50%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[sibling.pathlynks.test-True-True] PASSED [ 50%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[sibling.pathlynks.test-True-False] PASSED [ 51%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[pathlynks.test-False-None] PASSED [ 52%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[pathlynks.test-False-True] PASSED [ 52%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[pathlynks.test-False-False] PASSED [ 53%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[pathlynks.test-True-None] PASSED [ 53%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[pathlynks.test-True-True] PASSED [ 54%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[pathlynks.test-True-False] PASSED [ 55%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[notauth.pathlynks.test-False-None] PASSED [ 55%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[notauth.pathlynks.test-False-True] PASSED [ 56%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[notauth.pathlynks.test-False-False] PASSED [ 57%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[notauth.pathlynks.test-True-None] PASSED [ 57%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[notauth.pathlynks.test-True-True] PASSED [ 58%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[notauth.pathlynks.test-True-False] PASSED [ 58%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test.evil.test-False-None] PASSED [ 59%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test.evil.test-False-True] PASSED [ 60%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test.evil.test-False-False] PASSED [ 60%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test.evil.test-True-None] PASSED [ 61%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test.evil.test-True-True] PASSED [ 61%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_binds_both_resolution_paths[auth.pathlynks.test.evil.test-True-False] PASSED [ 62%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[false] PASSED [ 63%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[true] PASSED [ 63%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[] PASSED [ 64%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[0] PASSED [ 65%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[1] PASSED [ 65%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[None] PASSED [ 66%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[invalid6] PASSED [ 66%]
+tests/test_browser_navigation_secrets.py::test_secret_host_mode_requires_a_real_boolean[invalid7] PASSED [ 67%]
+tests/test_browser_navigation_secrets.py::test_saved_pathlynks_config_isolates_each_role_host[PATHLYNKS_USER_EMAIL-pathlynks.vidysea.com] PASSED [ 68%]
+tests/test_browser_navigation_secrets.py::test_saved_pathlynks_config_isolates_each_role_host[PATHLYNKS_USER_PASSWORD-pathlynks.vidysea.com] PASSED [ 68%]
+tests/test_browser_navigation_secrets.py::test_saved_pathlynks_config_isolates_each_role_host[PATHLYNKS_COUNSELLOR_EMAIL-dev-new.vidysea.com] PASSED [ 69%]
+tests/test_browser_navigation_secrets.py::test_saved_pathlynks_config_isolates_each_role_host[PATHLYNKS_COUNSELLOR_PASSWORD-dev-new.vidysea.com] PASSED [ 69%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[javascript://app.pathlynks.test/%0aalert(1)] PASSED [ 70%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[JavaScript://app.pathlynks.test/x] PASSED [ 71%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[ javascript://app.pathlynks.test/x] PASSED [ 71%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[java\tscript://app.pathlynks.test/x] PASSED [ 72%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[data://app.pathlynks.test/x] PASSED [ 73%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[file://app.pathlynks.test/x] PASSED [ 73%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[ftp://app.pathlynks.test/x] PASSED [ 74%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[wss://app.pathlynks.test/x] PASSED [ 74%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host[blob://app.pathlynks.test/x] PASSED [ 75%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_lets_http_https_and_schemeless_urls_through[https://app.pathlynks.test/x] PASSED [ 76%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_lets_http_https_and_schemeless_urls_through[HTTP://app.pathlynks.test/x] PASSED [ 76%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_lets_http_https_and_schemeless_urls_through[app.pathlynks.test/x] PASSED [ 77%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_lets_http_https_and_schemeless_urls_through[app.pathlynks.test:8080/x] PASSED [ 77%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_lets_http_https_and_schemeless_urls_through[//app.pathlynks.test/x] PASSED [ 78%]
+tests/test_browser_navigation_secrets.py::test_bad_scheme_lets_http_https_and_schemeless_urls_through[https://app.pathlynks.test] PASSED [ 79%]
+tests/test_browser_settle.py::test_settle_calls_wait_for_load_state_then_a_short_grace_wait PASSED [ 79%]
+tests/test_browser_settle.py::test_settle_still_takes_the_grace_wait_when_network_never_idles PASSED [ 80%]
+tests/test_browser_settle.py::test_settle_polls_for_expected_url_and_returns_the_instant_it_changes PASSED [ 80%]
+tests/test_browser_settle.py::test_settle_polls_for_expected_visible_text_and_returns_the_instant_it_appears PASSED [ 81%]
+tests/test_browser_settle.py::test_settle_gives_up_after_its_bound_when_expected_never_appears PASSED [ 82%]
+tests/test_browser_settle.py::test_browser_observation_phases_never_swallow_deadline[settle] PASSED [ 82%]
+tests/test_browser_settle.py::test_browser_observation_phases_never_swallow_deadline[poll] PASSED [ 83%]
+tests/test_browser_settle.py::test_browser_observation_phases_never_swallow_deadline[assert] PASSED [ 84%]
+tests/test_browser_settle.py::test_browser_observation_phases_never_swallow_deadline[retry] PASSED [ 84%]
+tests/test_browser_settle.py::test_browser_startup_checks_before_and_after_launch PASSED [ 85%]
+tests/test_browser_actions.py::test_launch_options_still_importable_from_session_after_the_move PASSED [ 85%]
+tests/test_browser_actions.py::test_current_url_reads_the_page_without_a_direct_page_touch PASSED [ 86%]
+tests/test_browser_actions.py::test_go_back_calls_the_page_and_records_url_evidence PASSED [ 87%]
+tests/test_browser_actions.py::test_hover_composes_the_locator PASSED    [ 87%]
+tests/test_browser_actions.py::test_press_key_with_a_locator_targets_that_element PASSED [ 88%]
+tests/test_browser_actions.py::test_press_key_without_a_locator_uses_the_keyboard PASSED [ 88%]
+tests/test_browser_actions.py::test_scroll_uses_the_mouse_wheel_with_a_default_delta PASSED [ 89%]
+tests/test_browser_actions.py::test_scroll_accepts_a_custom_delta PASSED [ 90%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[plain] PASSED [ 90%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[placeholder] PASSED [ 91%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[password] PASSED [ 92%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[masked] PASSED [ 92%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[previous] PASSED [ 93%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[noninput] PASSED [ 93%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[classify_fail] PASSED [ 94%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[read_fail] PASSED [ 95%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[redact] PASSED [ 95%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[new_mask] PASSED [ 96%]
+tests/test_browser_actions.py::test_fill_receipt_observes_values_but_never_reads_secrets[escaped] PASSED [ 96%]
+tests/test_browser_actions.py::test_fill_receipt_brakes_preserve_only_successful_action[beforeprobe] PASSED [ 97%]
+tests/test_browser_actions.py::test_fill_receipt_brakes_preserve_only_successful_action[afterprobe] PASSED [ 98%]
+tests/test_browser_actions.py::test_fill_receipt_brakes_preserve_only_successful_action[beforetime] PASSED [ 98%]
+tests/test_browser_actions.py::test_fill_receipt_brakes_preserve_only_successful_action[aftertime] PASSED [ 99%]
+tests/test_browser_actions.py::test_failed_fill_never_records_a_successful_receipt PASSED [100%]
+
+================================== FAILURES ===================================
+______ test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video ______
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-25755/test_two_sessions_sharing_a_ru0')
+serve_dir = <function serve_dir.<locals>._serve at 0x000001A2316A5580>
+
+    def test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video(
+        tmp_path: Path, serve_dir: Callable[[Path], str],
+    ) -> None:
+        """Mirrors `default_session_factory`: two real `BrowserSession`s, same
+        `run_dir`, different profile dirs (own `ProjectPaths`) -- exactly how
+        parallel siblings are constructed. Thread B finishes recording first (its
+        page is closed, so Playwright has flushed the `.webm` to disk) but is
+        held, by an `Event`, in the window before its rename to safety. Thread A
+        finishes its own case cleanly, then closes its session -- the moment the
+        unfixed sweep can destroy B's file. B is then released to attempt its
+        rename and the test asserts its file survived."""
+        _skip_if_no_chromium()
+        base = serve_dir(SITE)
+        project = _project(f"{base}/login.html")
+        secrets = SecretStore.load(project, tmp_path / ".env", strict=False)
+        run_dir = tmp_path / "shared_run"
+    
+        b_unrenamed = threading.Event()  # B: recording flushed to disk, rename not yet done
+        a_closed = threading.Event()     # A: end_case_video() + close() (the sweep) both ran
+        errors: list[BaseException] = []
+        results: dict[str, object] = {}
+    
+        def _run_a() -> None:
+            session = BrowserSession(project, secrets, run_dir,
+                                     ProjectPaths("video-parallel-demo-a", tmp_path),
+                                     record_video=True)
+            try:
+                session.start()
+                session.begin_case_video("case_a")
+                session.page.goto(f"{base}/login.html")
+                rel = session.end_case_video()
+                if rel != "case_a.webm":
+                    raise AssertionError(f"A's own video path unexpected: {rel!r}")
+                if not b_unrenamed.wait(timeout=_WAIT_S):
+                    raise AssertionError("B never reached the unrenamed window")
+                session.close()  # the sweep this unit is fixing
+            except BaseException as exc:  # surfaced on the main thread below
+                errors.append(exc)
+            finally:
+                a_closed.set()
+    
+        def _run_b() -> None:
+            session = BrowserSession(project, secrets, run_dir,
+                                     ProjectPaths("video-parallel-demo-b", tmp_path),
+                                     record_video=True)
+            try:
+                session.start()
+                session.begin_case_video("case_b")
+                session.page.goto(f"{base}/login.html")
+                # Replicate end_case_video()'s first step by hand, stopping
+                # BEFORE the rename -- the exact non-atomic window a faster
+                # sibling's close() can land in.
+                page, case_id = session._page, session._video_case_id
+                video = page.video
+                session._page = None
+                page.close()
+                temp_path = Path(video.path())
+                if not temp_path.exists():
+                    raise AssertionError("B's finished recording did not exist before signalling A")
+                results["temp_path"] = temp_path
+                results["case_id"] = case_id
+                b_unrenamed.set()
+                if not a_closed.wait(timeout=_WAIT_S):
+                    raise AssertionError("A never finished closing")
+                final_path = run_dir / f"{case_id}.webm"
+                if temp_path.exists():
+                    temp_path.replace(final_path)
+                results["final_path"] = final_path
+            except BaseException as exc:  # surfaced on the main thread below
+                errors.append(exc)
+            finally:
+                session.close()
+    
+        t_a = threading.Thread(target=_run_a, name="session-a")
+        t_b = threading.Thread(target=_run_b, name="session-b")
+        t_b.start()
+        t_a.start()
+        t_a.join(timeout=_WAIT_S + 5)
+        t_b.join(timeout=_WAIT_S + 5)
+    
+>       assert not errors, f"thread(s) raised: {errors!r}"
+E       AssertionError: thread(s) raised: [AssertionError('A never finished closing')]
+E       assert not [AssertionError('A never finished closing')]
+
+tests\test_video_parallel_sweep.py:140: AssertionError
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - - [11/Oct/2026 11:21:13] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/Oct/2026 11:21:17] "GET /login.html HTTP/1.1" 200 -
+=========================== short test summary info ===========================
+FAILED tests/test_video_parallel_sweep.py::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video
+================== 1 failed, 162 passed in 520.61s (0:08:40) ==================
