@@ -3,7 +3,8 @@
 Contract: qa/contracts/expand.md (X6); core-invariants.md C5 (unchanged; the criterion the repaired test proves)
 Issues: none new. Follow-up to qa/manifests/at887-crawl-to-flows.md (merged 4f806daa), whose manifest named this integration risk ("re-run tests/test_ui_learn_guard.py after the merge").
 Authority: no D-entry needed; test-only edit, no contract, product, conftest or fixture touched.
-Status: ready-for-merge (test-lane)
+Status: merged-no-check (test-lane)
+Merged: c6a28053f1ce848956db8490679b07e0a5e6293b
 Fix cycle: 0
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: S
