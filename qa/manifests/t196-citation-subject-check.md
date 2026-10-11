@@ -416,3 +416,27 @@ claims in contracts, gates and docs; the K1/K2 amendment text in L10 and resolvi
 the .3-versus-.9 dual-check wording; the real-tree doctor going green (including the SNAPSHOT claims).
 
 Metrics: start=2026-10-10T19:01:00Z end=2026-10-10T19:49:08Z wall_min=unavailable agent_min=unavailable blocked_min=29 suite_runs=0 repeat_runs=0 mutations=4 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=0 mutants=0 defects_unit=0 defects_6c=0
+
+## Code slice takeover, 2026-10-11 (second build subagent, Fix cycle 0, policy .9)
+
+Status stays BUILDING. Nothing here is a PASS claim; the checker track below still gates ready-for-check.
+
+Takeover facts: the worktree was clean on arrival (two `git status --porcelain` reads 09:11 and 09:12 IST, both empty);
+the predecessor had already committed the 2026-10-07 uncommitted state (6a0da470) and merged master (14a9b465), so there
+was no dirty state to commit first. Every inherited file was read against the brief; no defect found in seals.py,
+review_block.py, citations.py, schema/ledger.py, or the doctor/cli hunks. cli.py doctor hunk is net +2 over the merge base
+(295 -> 297). I wrote one thing: a fixture for the one L10 falsifier the predecessor did not run (swap to an existing
+unrelated id), as a parametrized case in tests/test_citations.py::test_l10_quote_uses_only_full_unambiguous_what (a
+quotation that exists only in a second, unrelated decision entry's What must fail as subject-mismatch against the first); one blank line was
+dropped to stay at the 300-line cap.
+
+Pre-check[L10]: b9dbfdde uv run --offline pytest --noconftest -p no:cacheprovider -p no:xdist -o addopts= tests/test_citations.py tests/test_citation_seals.py tests/test_citation_known_disputed.py -> exit 0, 101 passed in 51.74s (env PYTEST_CURRENT_TEST=governance-tests PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 AUTOTESTER_APPROVAL_KEY=synthetic-governance-key; code tree at this manifest commit is identical to b9dbfdde)
+Also on the code tree: tests/test_doctor.py tests/test_ledger_checks.py tests/test_ledger.py tests/test_schema.py tests/test_product_map.py -> 114 passed in 45.82s (run on a64ce9de, before the test-only commit); `uv run ruff check src tests scripts` -> All checks passed! (re-run on b9dbfdde).
+
+Falsify[L10]: tests/test_citations.py::test_l10_quote_uses_only_full_unambiguous_what green@b9dbfdde (12 passed with -k full_unambiguous); throwaway copy of src+tests+pyproject outside the worktree (session scratchpad, PYTHONPATH to the copy), citations.py `_compare_quote` `_quote_text(quote) not in bodies[0]` -> `not in " ".join(<every entry's What>)` (the swap-to-an-unrelated-id mutant) RED 1 failed, 11 passed: only the new unrelated-entry-quote case, `AssertionError: no decision-citation-subject-mismatch` at tests/test_citations.py:184; the copy was deleted, the worktree untouched. The predecessor's three falsifiers (seal hash comparison, coverage-append, What comparison) stand from 14a9b465; code was not changed since, so they still apply, and the four named L10 falsifiers (swap, quote moved into Why, coverage enforcement removed, seal hash comparison removed) are all now run.
+
+Real-tree doctor on b9dbfdde: `uv run autotester doctor` exit 1, 2271 violations (1896 decision-citation-coverage, 375 decision-citation-declaration), plus 2 non-blocking decision-citation-known-disputed rows (K1 docs/DECISIONS.md:80, K2 docs/DECISIONS.md:209) and 0 sealed rows. Expected before the checker track; unchanged from the predecessor's count. No stale-MAP or stale-SNAPSHOT row.
+
+Checker-owned track still owed (maker dispatches; builders must not do these): (1) record the K1/K2 ruling (the owner's two recorded answers) in L10 as a contract amendment and resolve ISS-t196-citation-subjects-k1k2 in qa/issues.jsonl; (2) reconcile L10's "tier L and two blind final coordinator checks" with policy .9 (this manifest declares Dual check: no); (3) independent review rows for the 1879 occurrences with no current review (1383 in qa/manifests and qa/verdicts) and refresh the 17 stale rows, using sealed-record rows (reviewer /checker or Umesh) where a closed manifest, verdict or full decision entry qualifies; (4) canonical migration of mutable authorization claims in qa/contracts/*.md, gates and docs (375 declaration rows), each plan-approved independently; (5) real-tree doctor green. WARNING: `uv run autotester doctor` is the adapter verify command; merging this branch before (3)-(5) land turns doctor red for every other unit.
+
+Metrics: start=2026-10-11T03:40:00Z end=2026-10-11T03:50:00Z wall_min=10 agent_min=10 blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=0 mutants=0 defects_unit=0 defects_6c=0
