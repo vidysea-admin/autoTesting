@@ -1,0 +1,8 @@
+{
+ "slug": "demo",
+ "name": "Demo",
+ "base_url": "https://demo.test",
+ "allowed_domains": ["demo.test"],
+ "schedule": {"mode": "fixed", "fixed_at": "09:30", "timezone": "UTC", "owner": "user-1"},
+ "tracker": {}
+}

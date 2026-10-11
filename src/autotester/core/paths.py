@@ -9,6 +9,12 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from autotester.core.repo_docs import RepoDocs
+from autotester.core.safe_names import SLUG_PATTERN, safe_name
+
+__all__ = ["ENV_ROOT", "SLUG_PATTERN", "ProjectPaths", "RepoDocs", "repo_root", "team_path",
+           "work_dir"]
+
 ENV_ROOT = "AUTOTESTER_ROOT"
 
 
@@ -234,66 +240,10 @@ def work_dir(root: Path | None = None) -> Path:
     return path
 
 
-class RepoDocs:
-    """Repo-level documents: the living map, the ledger, the history, the router."""
+def team_path(*parts: str, root: Path | None = None) -> Path:
+    """A path under the team data root, `<data root>/.work/team/` (T-205/TF7).
 
-    def __init__(self, root: Path | None = None, *, prompts_dir: Path | None = None,
-                 skills_dir: Path | None = None) -> None:
-        self.root = root or repo_root()
-        self._root_given = root is not None
-        self._prompts_dir_override = prompts_dir
-        self._skills_dir_override = skills_dir
-
-    @property
-    def docs_dir(self) -> Path:
-        return self.root / "docs"
-
-    @property
-    def architecture(self) -> Path:
-        return self.docs_dir / "ARCHITECTURE.md"
-
-    @property
-    def snapshot(self) -> Path:
-        return self.docs_dir / "SNAPSHOT.md"
-
-    @property
-    def map(self) -> Path:
-        """Generated directory map + schema summary (kept out of ARCHITECTURE's 150-line budget)."""
-        return self.docs_dir / "MAP.md"
-
-    @property
-    def features(self) -> Path:
-        return self.docs_dir / "FEATURES.jsonl"
-
-    @property
-    def decisions(self) -> Path:
-        return self.docs_dir / "DECISIONS.md"
-
-    @property
-    def router(self) -> Path:
-        """`CLAUDE.md` carries the "open X when Y" table."""
-        return self.root / "CLAUDE.md"
-
-    @property
-    def goal(self) -> Path:
-        return self.root / ".goal" / "goal.json"
-
-    @property
-    def prompts_dir(self) -> Path:
-        """Prompts ship WITH THE CODE, so the DATA root (`AUTOTESTER_ROOT`) must not move
-        them (AT-132). An EXPLICIT `root` still wins; pass `prompts_dir=` to substitute a
-        stub tree by name (AT-137)."""
-        if self._prompts_dir_override is not None:
-            return self._prompts_dir_override
-        if self._root_given:
-            return self.root / "src" / "autotester" / "prompts"
-        return Path(__file__).resolve().parents[1] / "prompts"
-
-    @property
-    def skills_dir(self) -> Path:
-        """Migrated-prompt `SKILL.md` folders (T-175/D-041); code-owned like `prompts_dir`."""
-        if self._skills_dir_override is not None:
-            return self._skills_dir_override
-        if self._root_given:
-            return self.root / "src" / "autotester" / "skills"
-        return Path(__file__).resolve().parents[1] / "skills"
+    Every part is checked by `core.safe_names.safe_name`, so a slug, id or encoded slot key
+    that could escape the root raises `UnsafeName` before any file is touched. `.work/` is
+    ignored by git and by `.dockerignore`, so nothing under it is ever committed or baked in."""
+    return (root or repo_root()) / ".work" / "team" / Path(*(safe_name(p) for p in parts))
