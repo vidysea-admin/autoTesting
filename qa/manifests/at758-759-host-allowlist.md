@@ -1,6 +1,6 @@
 # Manifest — at758-759-host-allowlist (Host allow-list for the hosted UI; account-derived approvals only through the credential path)
 
-## Status: ready-for-check
+## Status: checked-PASS (dual: A qa/verdicts/at758-759-host-allowlist.a.md, B qa/verdicts/at758-759-host-allowlist.b.md; cycle 0, checked c642dcb5; merged 02c5f016)
 
 **Contract:** qa/contracts/hosting.md HO7, HO9, HO13 (Origin/Host keys), HO38 (no regression); qa/contracts/consent.md CN1, CN5, CN11 (as amended per D-068); qa/contracts/ui.md U3 unchanged (the env page still displays values, gate G4 is open)
 **Goal task:** T-203 follow-up / prerequisite of T-204 (login builds on this guard)
