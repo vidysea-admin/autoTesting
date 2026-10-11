@@ -21,6 +21,7 @@
 | `browser/video.py` | Per-case video recording for `BrowserSession` (T-191/AT-587). |
 | `cli.py` | Command line. Every action the UI offers is available here first. |
 | `cli_crawl.py` | Crawl commands — `autotester explore` and `autotester report crawl`. |
+| `cli_intake.py` | `autotester ingest zip` and `ingest fetch-drive`: hand over recordings without the browser. |
 | `cli_issues.py` | `autotester issues` — turn an analysis into the sheet a human tester reads. |
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
@@ -38,6 +39,7 @@
 | `core/redact_fold.py` | Credential folding: normalise a string so a case, punctuation, homoglyph, |
 | `core/redact_wrap.py` | Whitespace normalisation for the exact-encoding needle search, and a |
 | `core/trace.py` | The redacted per-run trace: `TraceWriter` appends one JSON line per stage |
+| `core/upload_limit.py` | The ONE accessor for the admin upload limit (`max_upload_bytes`), read at request time. |
 | `core/urls.py` | URL templating: the identity input a crawled screen shares with the |
 | `doctor.py` | Design enforcement. Runs the rules that keep this repo readable. |
 | `ledger/checks.py` | Design rules over the project's RECORDS, as opposed to its source files. |
@@ -76,6 +78,7 @@
 | `schema/evidence_tombstone.py` | Sidecar tag for a unit's evidence spec whose `kills` node-ids moved out from |
 | `schema/failure_bundle.py` | Failure-bundle shapes (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
 | `schema/flowspec.py` | The FlowSpec — the system's understanding of the product under test. |
+| `schema/intake.py` | Shapes for video intake: zip limits, the per-member report, and where a source came from. |
 | `schema/issue.py` | A video-derived issue — its own artifact, deliberately NOT a `CaseClass`. |
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
 | `schema/ledger.py` | The feature ledger row and the relitigation verdict. Contract: qa/contracts/living-ledger.md. |
@@ -99,11 +102,22 @@
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
+| `sources/bounded_write.py` | One bounded, hashing copy for every intake path (zip member, Drive fetch). |
 | `sources/drive.py` | Google Drive folder listing + file fetch, and the OAuth device-flow token |
+| `sources/drive_errors.py` | The ways a Drive fetch fails, each with its own fixed, human message (TI8, HO33). |
+| `sources/drive_intake.py` | Drive intake: one pasted link or id becomes registered sources, or an honest typed failure. |
+| `sources/drive_jobs.py` | Persist one Drive fetch job so the page can poll it and a restart cannot lose its result. |
+| `sources/drive_link.py` | Parse a pasted Google Drive link (or a bare id) into a `DriveRef`: only an id survives. |
 | `sources/drive_register.py` | Registration for DRIVE sources: `register_drive` -> `Source` rows. |
+| `sources/drive_verify.py` | Drive fetch verification: bound the download, check size and md5, stage it, or remove it. |
 | `sources/email.py` | Parsing for EMAIL sources: `.eml`/`.mbox` LOCAL files only. |
 | `sources/email_register.py` | Registration for EMAIL sources: `register_email` -> `Source` rows. |
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
+| `sources/gws_drive.py` | The real Drive seam: the existing `gws` CLI login behind `DriveFetcher` (metadata, list, fetch). |
+| `sources/gws_runner.py` | Run the `gws` CLI as a subprocess: an argument list, a timeout, a size watch, no shell. |
+| `sources/intake_commit.py` | Atomic video registration, the per-project intake lock, staging and orphan sweep. |
+| `sources/zip_intake.py` | Safe zip expansion: one video source per video member, everything else accounted for. |
+| `sources/zip_names.py` | Zip member-name vetting that behaves identically under Windows and Ubuntu path rules. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/adversarial.py` | ADVERSARIAL: a bounded pass of file-defined probes at one AI endpoint. It records, never judges. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
@@ -188,6 +202,8 @@
 | `ui/env_editor.py` | The one legitimate WRITE path to the repo-root `.env` (every other module |
 | `ui/error_pages.py` | App-wide `HTTPException` -> HTML page, split out of `ui/app.py` to keep that |
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |
+| `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
+| `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
 | `ui/routes_catalog.py` | The test catalog page: one row per `CaseClass`, a green runnable count, and |
@@ -196,6 +212,7 @@
 | `ui/routes_crawls.py` | The explorer, on screen: crawl history, one crawl's screen graph, its |
 | `ui/routes_credentials.py` | The credentials editor: values shown (editable, passwords masked with a |
 | `ui/routes_flow_diagram.py` | The BFS-style companion to `routes_report.py`'s DFS per-run step flow: |
+| `ui/routes_intake.py` | The Google Drive door of Add-videos: paste a link, get a background job and its result page. |
 | `ui/routes_issues.py` | Operator-facing video issue ledger and its human-compatible workbook. |
 | `ui/routes_learn.py` | The learning loop on screen — review the FlowSpec, generate cases, see the asks. |
 | `ui/routes_live.py` | Presentation-only noVNC page for watching the container's real browser, plus |
@@ -212,6 +229,7 @@
 | `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
+| `ui/upload_stream.py` | Read one multipart upload from the wire into a staged file, stopping at the admin limit. |
 <!-- /generated:map -->
 
 ## Schema summary
@@ -295,6 +313,18 @@
 | `StepRef` (`schema/flowspec.py`) | A step the report points a human at: which flow, which step, which second. |
 | `Possibility` (`schema/flowspec.py`) | A variant flow -- another way the task was done, never an error (RC10). |
 | `ReconcileReport` (`schema/flowspec.py`) | What reconcile decided, in a form a human can audit. No timestamps (RC11). |
+| `IntakeOutcome` (`schema/intake.py`) | Exactly one of these per zip member that is listed (TI3). |
+| `IntakeStatus` (`schema/intake.py`) | Overall result. `partial` is never reported as `ok` (TI5). |
+| `ZipLimits` (`schema/intake.py`) | The archive-level caps beside the per-file one (which is the admin upload limit). |
+| `UploadOrigin` (`schema/intake.py`) | A file picked in the browser; `file_name` is the name the client sent. |
+| `ZipOrigin` (`schema/intake.py`) | A member of a zip: the archive's name and the member's path inside it. |
+| `DriveOrigin` (`schema/intake.py`) | A Google Drive file, by its id (never its name or a link carrying a token). |
+| `MemberResult` (`schema/intake.py`) | One row of the per-member table the CLI prints and the Add-videos page shows. |
+| `IntakeReport` (`schema/intake.py`) | What one zip intake did. `exit_code` is 0 only when nothing failed. |
+| `DriveRef` (`schema/intake.py`) | A pasted Drive link or bare id, parsed to the only thing that is ever used: the id. |
+| `DriveItem` (`schema/intake.py`) | One Drive file's metadata as Drive reports it. `name` is untrusted text: it may become |
+| `IntakeActor` (`schema/intake.py`) | Who the sign-in gate says is adding videos (TI10, TI11). `email` is None until T-204's |
+| `DriveJob` (`schema/intake.py`) | One pasted Drive link being fetched in the background (HO33). Holds the Drive id and the |
 | `Issue` (`schema/issue.py`) | One row of "what's wrong", derived from a video and (optionally) matched |
 | `IssueKind` (`schema/issue_kind.py`) | What kind of problem a crawl-detected `CrawlIssue` is. |
 | `FeatureEvent` (`schema/ledger.py`) | One dated event in the life of a feature: planned, live, updated, or retired. |
