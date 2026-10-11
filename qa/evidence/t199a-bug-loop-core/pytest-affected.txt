@@ -1,0 +1,14 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck199a
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 123 items
+
+tests\test_bug_loop.py ................................................. [ 39%]
+..............................................                           [ 77%]
+tests\test_bug_store.py .........................                        [ 97%]
+tests\test_bug_store_concurrency.py ...                                  [100%]
+
+============================ 123 passed in 51.27s =============================

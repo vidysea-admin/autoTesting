@@ -1,0 +1,24 @@
+expected bugs 5
+0 ok 600 600 []
+1 ok 600 600 []
+2 ok 600 600 []
+3 ok 600 600 []
+4 ok 600 600 []
+5 ok 600 600 []
+6 ok 600 600 []
+7 ok 600 600 []
+8 ok 600 600 []
+9 ok 600 600 []
+bad rounds 0
+same 0 ok 1 []
+same 1 ok 1 []
+same 2 ok 1 []
+same 3 ok 1 []
+same 4 ok 1 []
+same 5 ok 1 []
+same 6 ok 1 []
+same 7 ok 1 []
+same 8 ok 1 []
+same 9 ok 1 []
+same bad 0
+diff-at outcomes Counter({(50, 'run_B', ()): 11, (5, 'run_A', ()): 9})

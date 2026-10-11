@@ -1,0 +1,51 @@
+bug_key='../../x': effect=refused/no_bug; new=['proj', 'proj\\bug_events', 'proj\\bug_events\\bev_bd593f53b4f6.json'] id=bev_bd593f53b4f6
+ref='../../x': effect=refused/no_bug; new=['proj\\bug_events\\bev_4a3cdc07f057.json'] id=bev_4a3cdc07f057
+bug_key='a/b': effect=refused/no_bug; new=['proj\\bug_events\\bev_46822c4accb2.json'] id=bev_46822c4accb2
+ref='a/b': effect=refused/no_bug; new=['proj\\bug_events\\bev_76c5f077a9e7.json'] id=bev_76c5f077a9e7
+bug_key='C:\\x': effect=refused/no_bug; new=['proj\\bug_events\\bev_8ca017fd43d4.json'] id=bev_8ca017fd43d4
+ref='C:\\x': effect=refused/no_bug; new=['proj\\bug_events\\bev_ee5461361451.json'] id=bev_ee5461361451
+bug_key='..\\..\\evil': effect=refused/no_bug; new=['proj\\bug_events\\bev_fa8066aeb51d.json'] id=bev_fa8066aeb51d
+ref='..\\..\\evil': effect=refused/no_bug; new=['proj\\bug_events\\bev_ecc120eae853.json'] id=bev_ecc120eae853
+bug_key='a\x00b': effect=refused/no_bug; new=['proj\\bug_events\\bev_f28f24abe34b.json'] id=bev_f28f24abe34b
+ref='a\x00b': ValidationError: '1 validation error for BugEvent\nref\n  Value error, ref/assignee must not contain control characters '
+bug_key='xxxxxxxxxxxxxxxxxxxx': effect=refused/no_bug; new=['proj\\bug_events\\bev_685cf9f3471f.json'] id=bev_685cf9f3471f
+ref='xxxxxxxxxxxxxxxxxxxx': ValidationError: '1 validation error for BugEvent\nref\n  String should have at most 200 characters [type=string_too_lon'
+bug_key='ünï\u202ecode😀': effect=refused/no_bug; new=['proj\\bug_events\\bev_388bd35a2f1a.json'] id=bev_388bd35a2f1a
+ref='ünï\u202ecode😀': effect=refused/no_bug; new=['proj\\bug_events\\bev_544d698eaeda.json'] id=bev_544d698eaeda
+bug_key='CON': effect=refused/no_bug; new=['proj\\bug_events\\bev_bc672f561068.json'] id=bev_bc672f561068
+ref='CON': effect=refused/no_bug; new=['proj\\bug_events\\bev_5cfa04b46bb9.json'] id=bev_5cfa04b46bb9
+bug_key='aux.txt': effect=refused/no_bug; new=['proj\\bug_events\\bev_cc6074576605.json'] id=bev_cc6074576605
+ref='aux.txt': effect=refused/no_bug; new=['proj\\bug_events\\bev_59ffce43478a.json'] id=bev_59ffce43478a
+bug_key='bev_..': effect=refused/no_bug; new=['proj\\bug_events\\bev_df1ed2c215ec.json'] id=bev_df1ed2c215ec
+ref='bev_..': effect=refused/no_bug; new=['proj\\bug_events\\bev_7c2beae62335.json'] id=bev_7c2beae62335
+bug_key='a:b': effect=refused/no_bug; new=['proj\\bug_events\\bev_91f2c4b453af.json'] id=bev_91f2c4b453af
+ref='a:b': effect=refused/no_bug; new=['proj\\bug_events\\bev_891a9dbb216f.json'] id=bev_891a9dbb216f
+tree: ['proj', 'proj\\bug_events', 'proj\\bug_events\\bev_388bd35a2f1a.json', 'proj\\bug_events\\bev_46822c4accb2.json', 'proj\\bug_events\\bev_4a3cdc07f057.json', 'proj\\bug_events\\bev_544d698eaeda.json', 'proj\\bug_events\\bev_59ffce43478a.json', 'proj\\bug_events\\bev_5cfa04b46bb9.json', 'proj\\bug_events\\bev_685cf9f3471f.json', 'proj\\bug_events\\bev_76c5f077a9e7.json', 'proj\\bug_events\\bev_7c2beae62335.json', 'proj\\bug_events\\bev_891a9dbb216f.json', 'proj\\bug_events\\bev_8ca017fd43d4.json', 'proj\\bug_events\\bev_91f2c4b453af.json', 'proj\\bug_events\\bev_bc672f561068.json', 'proj\\bug_events\\bev_bd593f53b4f6.json', 'proj\\bug_events\\bev_cc6074576605.json', 'proj\\bug_events\\bev_df1ed2c215ec.json', 'proj\\bug_events\\bev_ecc120eae853.json', 'proj\\bug_events\\bev_ee5461361451.json', 'proj\\bug_events\\bev_f28f24abe34b.json', 'proj\\bug_events\\bev_fa8066aeb51d.json']
+files outside bug_events: ['proj\\bug_events']
+all names bev_<12hex>.json: True
+actor refused '../x'
+actor refused 'user:..\\..\\x'
+actor refused 'a\x00'
+actor refused 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+actor refused ''
+actor refused ' lead'
+actor ACCEPTED 'user:/etc/passwd'
+actor ACCEPTED 'user:a/../../b'
+assignee ACCEPTED '../../x'
+assignee refused 'a\nb'
+assignee refused 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+assignee refused 'a\x00'
+assignee ACCEPTED 'C:\\x'
+seed refused '../../x'
+seed refused 'a/b'
+seed refused 'iss_000000000000/../x'
+seed refused 'iss_0123456789ab\n'
+seed w/ case refused
+hostile event_id refused
+missing dir exists? False
+ missing-dir events -> []
+ missing-dir bugs -> {}
+ missing-dir history -> []
+ missing-dir get -> None
+ missing-dir apply_all([]) -> []
+ apply creates dir: True applied abs= C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s5rel2\bug_events
