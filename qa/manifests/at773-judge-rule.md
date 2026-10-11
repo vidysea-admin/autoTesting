@@ -49,4 +49,6 @@ Base in the copy: `19 passed` (grade_assertion_rule + test_grade).
 
 Metrics: start=2026-10-07T00:00:00Z end=2026-10-07T00:00:00Z wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=5 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-06.6
 
-**Status:** ready-for-check
+**Status:** checked-PASS
+
+Merged to master as 6ee02779 (head 1e0aed21); verdict: qa/verdicts/at773-judge-rule.md (checker PASS, master e69ffb78).
