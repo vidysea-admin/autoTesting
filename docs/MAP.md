@@ -26,6 +26,7 @@
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
 | `cli_release.py` | `autotester release` / `release-log` — the release manager's way to run the whole suite (T-167). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
+| `cli_video_review.py` | `autotester ingest review`: a pointer-guided review of one recording (T-197, CLI half). |
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
 | `core/excel.py` | Workbook presentation helpers shared by every Excel exporter. |
@@ -50,6 +51,7 @@
 | `media/chunks.py` | Split a recording into overlapping chunks a vision model can actually read. |
 | `media/frames.py` | Pull a single still out of a recording, at a second the model named. |
 | `media/probe.py` | Ask ffmpeg what a recording actually is, and whether ffmpeg is here at all. |
+| `media/redacted.py` | The redacted derivative of a recording, and the frames cut from it (TV7). |
 | `media/transcribe.py` | Get a recording's narration — reusing a sidecar first, transcribing last. |
 | `providers/anthropic.py` | Anthropic provider: the `agent` and `judge` roles via the Messages API. |
 | `providers/base.py` | The provider seam. Every model call in the system goes through this interface. |
@@ -93,6 +95,8 @@
 | `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
 | `schema/ux_report.py` | The advisory UX artifacts: `UXFinding`, `UXCaseOutcome`, `UXReport` (PU2). |
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
+| `schema/video_pointer.py` | The shape of a human's pointer file once parsed (T-197 / TV1). |
+| `schema/video_review.py` | The typed review of one recording: summary, confirm-list, what was and was not looked at (T-197). |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
 | `sources/drive.py` | Google Drive folder listing + file fetch, and the OAuth device-flow token |
@@ -165,7 +169,13 @@
 | `stages/synthetic_values.py` | The synthetic value generator (X10-b, D-029): what the crawler types. |
 | `stages/text_lines.py` | Number lines by  |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
+| `stages/video_pointers.py` | Parse a reviewer's pointer file into typed lines and a whole error list (TV1). |
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
+| `stages/video_review.py` | Review one recording with human pointers: the typed, redacted, capped, idempotent run (T-197). |
+| `stages/video_review_items.py` | Turn a model reply into validated confirm-list items (TV3, TV4, TV5, TV6). |
+| `stages/video_review_plan.py` | Which seconds of a recording get looked at, and which do not (TV2, TV7 preview). |
+| `stages/video_review_prompt.py` | Build the model prompt for one batch of frames, and say what narration there is (TV5, TV6). |
+| `stages/video_review_render.py` | Render a stored review as Markdown or HTML with the identical item set (TV10, TV4, TV6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory. |
@@ -372,6 +382,18 @@
 | `Failure` (`schema/verdict.py`) | One unmet criterion, with the evidence that shows it. |
 | `Judgment` (`schema/verdict.py`) | Raw judge output for one grading call — the stage fills in run_id, case_id, |
 | `Verdict` (`schema/verdict.py`) | The judge's output for one case in one run. |
+| `PointerLine` (`schema/video_pointer.py`) | One accepted line. `kind` is `time` (one second), `window` (a range) or `free` |
+| `PointerError` (`schema/video_pointer.py`) | One refused line. The raw text is deliberately not kept: it may carry a secret. |
+| `PointerParse` (`schema/video_pointer.py`) | Everything a pointer file said. Count identity (TV1): |
+| `RedactionWindow` (`schema/video_review.py`) | `[start_s, end_s]` of one source a human blanked out (frames) and muted (audio). |
+| `FramePlan` (`schema/video_review.py`) | Which seconds will be looked at, and which stretches the reviewer pointed at. |
+| `Spans` (`schema/video_review.py`) | `analysed` and `not_reviewed` tile `[0, duration_s]` exactly: no gap, no overlap. |
+| `ReviewPlan` (`schema/video_review.py`) | The `--dry-run` preview: what a run WOULD do. Producing it makes zero provider calls. |
+| `ReplyItem` (`schema/video_review.py`) | One item as a model returned it: every field optional, nothing trusted yet. |
+| `ReviewReply` (`schema/video_review.py`) | The shape asked of the model. A reply that does not validate is a `failed` review. |
+| `ConfirmItem` (`schema/video_review.py`) | One line of the confirm-list. `status` is a human's; a model can never set it. |
+| `RejectedItem` (`schema/video_review.py`) | An item that failed validation. Kept with its reason, never rendered, never blank. |
+| `VideoReview` (`schema/video_review.py`) | The stored review. `id` is derived from content (TV10), never from a clock. |
 <!-- /generated:schema -->
 
 ## Scripts

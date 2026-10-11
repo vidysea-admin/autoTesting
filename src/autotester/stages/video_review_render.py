@@ -12,6 +12,8 @@ import html
 from autotester.schema.video_review import ConfirmItem, VideoReview
 from autotester.stages.video_review_prompt import clock
 
+BASELINE_NOTE = ("No baseline to compare: this review is not matched against the product's "
+                 "crawled map, so it says nothing about whether the recording agrees with it.")
 HEAD = ("id", "time", "screen", "seen", "suggestion", "severity", "origin", "status")
 
 
@@ -34,7 +36,8 @@ def _lines(review: VideoReview) -> list[tuple[str, str]]:
     """(label, text) header lines shared by both formats."""
     out = [("Status", review.status + (f" ({review.reason})" if review.reason else "")),
            ("Summary", review.summary or "(none)"),
-           ("Narration", review.narration_note), ("Coverage", review.coverage_note)]
+           ("Narration", review.narration_note), ("Coverage", review.coverage_note),
+           ("Baseline", BASELINE_NOTE)]
     if review.count_note:
         out.append(("Count", review.count_note))
     if review.overflow:

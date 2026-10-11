@@ -197,6 +197,17 @@ def _prompter(source_id: str, duration: float, parse: PointerParse,
     return prompt_for
 
 
+def unreadable_reason(video: Path, probe_fn: Callable[[Path], tuple[float, int, int]] = probe
+                      ) -> str | None:
+    """Why this recording cannot be reviewed (missing, empty, corrupt, audio-only), or None."""
+    if not video.is_file() or video.stat().st_size == 0:
+        return "recording is missing or empty"
+    duration, width, _ = probe_fn(video)
+    if duration <= 0 or width <= 0:
+        return "recording is corrupt or has no video track"
+    return None
+
+
 def run_review(paths: ProjectPaths, source: Source, video: Path, provider: Provider,
                transcript: Transcript | None, *, gate: ReviewGate, secrets: dict[str, str],
                pointer_text: str = "", windows: Sequence[RedactionWindow] = (),
@@ -212,8 +223,7 @@ def run_review(paths: ProjectPaths, source: Source, video: Path, provider: Provi
     duration, width, _ = probe_fn(video)
     sha = file_sha256(video) if video.is_file() else ""
     tx = transcript_hash(transcript)
-    if not video.is_file() or video.stat().st_size == 0 or duration <= 0 or width <= 0:
-        why = "recording is missing, empty, corrupt or has no video track"
+    if why := unreadable_reason(video, lambda _p: (duration, width, 0)):
         return _unreadable(content_id("rv", {"src": sha, "bad": pointer_text, "tx": tx}),
                            source, sha, why, tx)
     parse = parse_pointers(pointer_text, duration)

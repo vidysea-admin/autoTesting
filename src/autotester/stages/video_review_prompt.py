@@ -37,7 +37,7 @@ def narration_state(transcript: Transcript | None) -> NarrationState:
     or `speech`. Never conflated: silence is not verification (AT-134)."""
     if transcript is not None and transcript.engine == "unreadable":
         return "unreadable"
-    if transcript is not None and transcript.segments:
+    if transcript is not None and transcript.engine != "none" and transcript.segments:
         return "speech"
     return "none"
 

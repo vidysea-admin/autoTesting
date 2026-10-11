@@ -35,8 +35,8 @@ def _text(v: object) -> str | None:
 
 
 def overlapping(transcript: Transcript | None, t: float) -> list[TranscriptSegment]:
-    if transcript is None:
-        return []
+    if transcript is None or narration_state(transcript) != "speech":
+        return []   # F6: segments carried by a none/unreadable engine are not narration
     return [s for s in transcript.segments
             if s.start - NARRATION_SLACK_S <= t <= s.end + NARRATION_SLACK_S]
 

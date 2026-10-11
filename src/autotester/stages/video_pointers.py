@@ -13,6 +13,10 @@ from autotester.schema.video_pointer import PointerError, PointerLine, PointerPa
 
 MAX_FREE_POINTERS = 3
 """A reviewer may leave at most three free-text pointers per review (R32)."""
+BASE_FRAMES_PER_MIN = 4
+"""Base depth: frames per minute analysed outside any pointer window (TV2)."""
+POINTER_FRAMES_PER_MIN = 12
+"""Pointer depth, a whole multiple of base depth so the denser grid contains the base grid."""
 
 _TIME = r"(?:(\d{1,2}):)?(\d{1,3}):(\d{1,2})"
 _TIME_RE = re.compile(rf"^(~)?{_TIME}(?:-{_TIME})?$")

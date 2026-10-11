@@ -8,13 +8,11 @@ the base grid, so the with-pointers set is a superset of the without set by cons
 
 from __future__ import annotations
 
-from autotester.core.pricing import estimate_cost
+from autotester.core.pricing import estimate_cost_conservative
 from autotester.schema.video_pointer import PointerParse
 from autotester.schema.video_review import FramePlan, RedactionWindow, ReviewPlan, Span, Spans
+from autotester.stages.video_pointers import BASE_FRAMES_PER_MIN, POINTER_FRAMES_PER_MIN
 
-BASE_FRAMES_PER_MIN = 4
-POINTER_FRAMES_PER_MIN = 12
-"""Pointer depth, a whole multiple of base depth so the denser grid contains the base grid."""
 POINTER_HALF_WINDOW_S = 20.0
 """A single-second pointer (`12:30`) is read as `12:30 +- this`: reviewers' times are rough."""
 FRAMES_PER_CALL = 12
@@ -122,7 +120,7 @@ def plan_review(duration_s: float, parse: PointerParse, windows: list[RedactionW
     hidden = [(w.start_s, w.end_s) for w in windows]
     sendable = [t for t in plan.times if not in_any(t, hidden)]
     calls = len(order_batches(sendable, plan))
-    cost = estimate_cost(provider_label,
+    cost = estimate_cost_conservative(provider_label,
                          calls * PROMPT_TOKENS_PER_CALL + len(sendable) * TOKENS_PER_FRAME,
                          calls * OUTPUT_TOKENS_PER_CALL)
     return ReviewPlan(frame_count=len(sendable),
