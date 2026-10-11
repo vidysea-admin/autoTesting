@@ -1,0 +1,17 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\t201a-r2A-master-1886
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 9 items / 7 deselected / 2 selected
+
+tests\test_core.py .                                                     [ 50%]
+tests\test_hosting_config.py .                                           [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\t201a-r2A-master-1886\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 2 passed, 7 deselected, 1 warning in 31.60s =================
