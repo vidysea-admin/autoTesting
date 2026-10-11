@@ -43,6 +43,7 @@
 | R28 | Advisory UX findings with a UserPersona, severity-scored, that NEVER change PASS/FAIL | O3 | should | `persona-ux-advisory.md` 🎯 |
 | R29 | Run video on FAIL/INCONCLUSIVE only, last 20 kept, secrets masked exactly as in screenshots | O3 | should | `run-video.md` 🎯 |
 | R30 | Below-the-UI AI-target checks: read-only discovery, deterministic signals, a check registry, behavioural checks graded by the existing judge | O3 | should | 🎯 T-150–T-153 |
+| R30a | One AI test report per project, grouped by tier (static, behavioural, adversarial) with every tier shown even at 0; a blocked check shown as BLOCKED with its reason and action, never as a pass; each judged row carries the judge's own reason strings; refused adversarial attempts listed; no secret in any cell (D-017, goal T-155; R30 extended to T-155; T-154 still has no row, ISS-t150-1) | O3, O4 | should | `ai-target.md` AI9-AI14 🎯 T-155 |
 | R31 | Two-mode acceptance measured against a human on bugs / false positives / coverage / time | O6 | must | `bench.md` ✅ engine, 🎯 numbers |
 | R32 | Accept a pointer file or form per video: approximate timestamps (`12:30`, `1:02:03`, `~12:30`, `12:30-14:00`) and 2-3 free-text pointers. A line that does not parse is returned with its line number and reason, never dropped | O8 | must | `team-video-review.md` TV1 (proposed) |
 | R33 | Return a typed review: flow summary plus a confirm-list of at most 5 items, each `time / screen / seen / suggestion / severity`, each citing a second inside the recording and the source id | O8, O3 | must | TV3, TV4 |

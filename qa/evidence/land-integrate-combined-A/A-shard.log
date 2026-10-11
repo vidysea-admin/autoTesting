@@ -1,0 +1,28 @@
+[01:44:00] suite lock busy, waiting: {"pid": 71416, "repo": "D:\\autoTesting\\.worktrees\\t167-release-regression", "started": 1791663213.4923866, "started_iso": "2026-10-11T01:43:33", "token": "11c881fcbd6a492d", "cmd": "shard_suite --repo D:/autoTesting/.worktrees/t167-release-regression --ref 667a0c64 --python D:/autoTesting/.worktrees/t167-release-regression/.venv/Scripts/python.exe --shards 1 --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/check-t167-a/suite --lock-timeout 900 -- -o addopts="}
+[01:44:54] ref 23e694a9 = 23e694a9; 6 shards; out C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A\shards
+[01:45:03] collecting whole set (one copy)
+[01:45:53] collected 3035 tests in 233 files; balanced by test count (no stored durations); pinned files: none; predicted: s0=506, s1=506, s2=506, s3=506, s4=506, s5=505
+[01:45:53] shard 0: pid 57600, 37 units, 506 tests
+[01:45:53] shard 1: pid 74724, 39 units, 506 tests
+[01:45:53] shard 2: pid 59520, 39 units, 506 tests
+[01:45:53] shard 3: pid 47536, 39 units, 506 tests
+[01:45:53] shard 4: pid 80676, 40 units, 506 tests
+[01:45:53] shard 5: pid 77820, 39 units, 505 tests
+[01:49:12] shard 1 finished rc=1 in 199s
+[01:52:20] shard 3 finished rc=1 in 387s
+[01:54:53] shard 2 finished rc=0 in 540s
+[01:55:41] shard 4 finished rc=0 in 588s
+[02:00:28] shard 0 finished rc=0 in 875s
+[02:03:42] shard 5 finished rc=0 in 1069s
+[02:03:43] re-running 3 failing test(s) alone in shard-0 (load-induced vs real)
+[02:04:21]   shard 0: rc=0 wall=875.3s units=37 tests=506 reported=506
+[02:04:21]   shard 1: rc=1 wall=199.2s units=39 tests=506 reported=506
+[02:04:21]   shard 2: rc=0 wall=540.2s units=39 tests=506 reported=506
+[02:04:21]   shard 3: rc=1 wall=386.9s units=39 tests=506 reported=506
+[02:04:21]   shard 4: rc=0 wall=588.3s units=40 tests=506 reported=506
+[02:04:21]   shard 5: rc=0 wall=1068.8s units=39 tests=505 reported=505
+[02:04:21] counts {'passed': 3013, 'skipped': 19, 'failed': 3}; collect proof ok=True (baseline 3035, union 3035, ran 3035)
+[02:04:21]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 1, alone: failed)
+[02:04:21]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 3, alone: failed)
+[02:04:21]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 3, alone: passed)
+[02:04:22] summary -> C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\A\shards\summary.json (exit 1)

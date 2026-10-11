@@ -8,3 +8,4 @@
 {"scanned_at": "2026-09-25T06:03:06", "project": "D:/autoTesting", "days": 1, "main_tokens": 592741322, "sub_tokens": 796283777, "opus_sub_share": 0.0, "sub_agents": 42, "sweep": "2026-09-25 f1b8569..8a97eca"}
 {"scanned_at": "2026-09-27T13:49:28", "project": "D:/autoTesting", "days": 1, "main_tokens": 432947471, "sub_tokens": 770021335, "opus_sub_share": 0.16, "sub_agents": 113}
 {"scanned_at": "2026-10-07T10:53:00", "project": "D:/autoTesting", "days": 1, "main_tokens": 93980517, "sub_tokens": 207379180, "opus_sub_share": 0.0, "sub_agents": 54, "compactions_auto": 5, "classifier_outages": 0, "sweep": "2026-10-07 2aed300e..72fafe7c"}
+{"scanned_at": "2026-10-11T00:52:21", "project": "D:/autoTesting", "days": 1, "main_tokens": 44932523, "sub_tokens": 368332334, "opus_sub_share": 0.0, "sub_agents": 46, "compactions_auto": 6, "classifier_outages": 0, "sweep": "2026-10-11 72fafe7c..4f8f5da1"}

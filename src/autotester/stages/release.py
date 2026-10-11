@@ -17,23 +17,18 @@ from autotester.browser.secrets import SecretStore
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
-from autotester.schema.release import FlowPlan, ReleaseDecision, ReleaseScope
+from autotester.schema.release import ReleaseDecision, ReleaseScope
 from autotester.schema.run_state import RunState, StageName
 from autotester.stages.explore_consent import covering_approval
 from autotester.stages.orchestrate import StageContext, StageRunner, run_or_resume
+from autotester.stages.orchestrate_gate import plans_cost
 from autotester.stages.release_compare import make_compare_runner, make_report_runner
-from autotester.stages.run_budget import WALL_CLOCK_PER_ACTION_S, action_cost
+from autotester.stages.run_budget import WALL_CLOCK_PER_ACTION_S
 from autotester.store.project_store import ProjectStore
 
 
 class ReleaseError(RuntimeError):
     """A release cannot be scoped (no FlowSpec flows) — named, never a silent empty run."""
-
-
-def _plan_cost(store: ProjectStore, plans: list[FlowPlan]) -> int:
-    """Actions the release will spend: each planned case's declared steps (min 1)."""
-    cases = {c for p in plans for c in p.case_ids}
-    return sum(action_cost(case) if (case := store.get_case(c)) else 1 for c in sorted(cases))
 
 
 def build_scope(project: Project, store: ProjectStore, *, run_id: str, approval_id: str,
@@ -64,7 +59,7 @@ def _frozen_or_new(project: Project, store: ProjectStore, run_id: str,
     plans = store.list_flow_plans()
     spec = store.load_flowspec()
     in_scope = [p for p in plans if spec and p.flow_id in {f.id for f in spec.flows}]
-    actions = max(1, _plan_cost(store, in_scope))
+    actions = max(1, plans_cost(store, in_scope))
     bounds = CrawlBounds(max_actions=actions, wall_clock_s=actions * WALL_CLOCK_PER_ACTION_S)
     approval = covering_approval(project, store, bounds, kind=ApprovalKind.LIVE_CASE,
                                  secrets=secrets)  # RR2: ApprovalRequired, nothing written

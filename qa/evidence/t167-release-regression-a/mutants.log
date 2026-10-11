@@ -1,0 +1,31 @@
+=== rr1 (-k rr1) 01:35:18
+FAILED tests/test_regression_trigger.py::test_rr1_a_done_stage_is_not_redone_when_the_checkpointer_is_the_only_record
+1 failed, 2 passed, 15 deselected in 1.74s
+=== rr2a (-k rr2) 01:35:30
+FAILED tests/test_regression_trigger.py::test_rr2_a_forged_scope_cannot_skip_the_gate_through_run_or_resume
+1 failed, 4 passed, 13 deselected in 2.85s
+=== rr2b (-k rr2) 01:35:41
+5 passed, 13 deselected in 2.12s
+=== rr2c (-k rr2) 01:35:53
+5 passed, 13 deselected in 2.22s
+=== rr2d (-k rr2) 01:36:02
+FAILED tests/test_regression_trigger.py::test_rr2_a_forged_scope_cannot_skip_the_gate_through_run_or_resume
+1 failed, 4 passed, 13 deselected in 2.13s
+=== rr3 (-k rr3) 01:36:10
+FAILED tests/test_regression_trigger.py::test_rr3_a_human_flagged_release_is_never_a_baseline
+1 failed, 3 passed, 14 deselected in 6.34s
+=== rr4 (-k rr4) 01:36:22
+FAILED tests/test_regression_trigger.py::test_rr4_release_modules_construct_no_verdict_and_do_not_import_the_grader[autotester.stages.release]
+1 failed, 2 passed, 15 deselected in 1.67s
+=== rr4b (-k rr4) 01:36:30
+E       AssertionError: assert 'failed' == '0/1'
+E         + failed
+FAILED tests/test_regression_trigger.py::test_rr4_every_result_in_the_record_is_what_the_grader_returned
+1 failed, 2 passed, 15 deselected in 1.82s
+=== rr5 (-k rr5) 01:36:38
+FAILED tests/test_regression_trigger.py::test_rr5_langgraph_is_declared_and_doctor_finds_no_undeclared_import
+1 failed, 17 deselected in 0.82s
+=== rr6 (-k rr6) 01:36:45
+FAILED tests/test_regression_trigger.py::test_rr6_one_run_one_log_names_both_failures_and_passes_the_third
+FAILED tests/test_regression_trigger.py::test_rr6_a_flow_without_a_plan_is_reported_not_run_never_omitted
+2 failed, 16 deselected in 2.52s

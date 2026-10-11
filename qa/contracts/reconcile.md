@@ -1,6 +1,7 @@
 # Contract — reconcile (video knowledge graph → product knowledge graph, no human gate)
 
-**Status:** DRAFT (goes ACTIVE on the first checker PASS of this unit).
+**Status:** ACTIVE (2026-10-11; the first checker PASS of this unit is `qa/verdicts/reconcile.md`, cycle 0,
+`VERDICT: PASS`, commit 004955a8, RC1-RC14).
 **Tier:** M (additive, default-valued schema fields that old files still load without a rewrite and a
 new stage; no consent, credential, approval or deletion boundary changes. It becomes L only if the maker
 adds a migration that rewrites stored FlowSpec files, or touches `review.py` — both are out of scope here).
@@ -188,3 +189,7 @@ that proves it and for RC6/RC11/RC12 a sabotage line (break the behaviour, show 
   the proposal: determinism and quote-checking are separate criteria (RC11, RC3); added RC8 same-named flow id collision
   (found in `ingest._to_flow`, `Flow.id` is a hash of `name` only); added RC10's explicit "reconcile never
   reads the review status" check; the 0.8/0.5 bands are made boundary-testable and single-sourced (RC5).
+- 2026-10-11 - routine (status change only; no criterion changed) - **DRAFT -> ACTIVE.** The status line
+  set the condition "goes ACTIVE on reconcile's first checker PASS". That PASS is on disk and on master:
+  `qa/verdicts/reconcile.md` (cycle 0, single checker, commit 004955a8, RC1-RC14, 27 falsifications). Nothing was edited, added or weakened in any criterion; this records the
+  transition the header already promised. **Links:** reconcile; qa/verdicts/.

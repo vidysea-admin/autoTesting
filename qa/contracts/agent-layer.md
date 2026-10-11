@@ -148,7 +148,8 @@ instruction the model is asked to obey.
   the budget breach; a fixture budget set above requirement → the same job completes normally.)
 - **AL12 — A fixture comparison, agent-vs-pipeline, reports bugs found, false positives, tokens
   and wall time.** The same fixture product/job is run once through the plain pipeline
-  (`stages/orchestrate.py::run_or_resume`) and once through the Deep Agents lead agent, and a
+  (`stages/orchestrate.py::run_or_resume` for the learn/explore stages up to the review gate, then each approved case through
+  `stages/run_case_pipeline.py:143::run_and_grade_case`, the seam the UI run and CLI use) and once through the Deep Agents lead agent, and a
   comparison report records, for each: bugs found, false-positive count, total tokens, wall-clock
   time — the same axes `docs/ARCHITECTURE.md`'s north star names (`stages/bench.py:76::scorecard`
   precedent - `schema/bench.py` holds only the data models). (Falsifiable: run the comparison script on a seeded fixture corpus twice (once per
@@ -217,3 +218,10 @@ separate refusal paths.
   this contract is DRAFT and the line is a precedent citation inside a falsifiability note.
   **Changes-authorized:** qa/contracts/agent-layer.md (the T-181 comparison note) + Amendment log (this
   entry). **Links:** AT-691.
+- 2026-10-11 - routine (correct; no criterion weakened) - **AL12's "plain pipeline" entry point named precisely.** AL12 named
+  `stages/orchestrate.py::run_or_resume` as the plain path whose bugs-found and false-positive numbers are compared. Verified in code:
+  `run_or_resume` wires only {INGEST|DISCOVER, MODEL} and halts at the review gate (`stages/orchestrate.py:53`, `:189`); it never
+  executes or grades a case, so it cannot produce either number. Case execution and grading is `run_and_grade_case`
+  (`stages/run_case_pipeline.py:143`; resilient wrapper `:174`, used by `ui/run_execution.py:52`). AL12 now names both: the stage walk
+  up to the gate, then the per-case seam. The four axes, the seeded-fixture verify and AL13 are unchanged. AL1's `deepagents>=1.7`
+  floor was **not** touched (NEEDS-OWNER). **Links:** T-181; AL12; AL13; AT-691.

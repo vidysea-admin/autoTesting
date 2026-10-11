@@ -1,0 +1,69 @@
+{
+  "steps": [
+    {
+      "step": "alpha press1 (keyboard Enter)",
+      "url": "http://127.0.0.1:8123/projects/alpha/report",
+      "panel": "Run queue\n\nServer: 1 of 2 run slots busy, 0 waiting. One run per project at a time.\n\nSTATUS\tTIME\nRUNNING\t20:19:41 UTC\nREFUSED\t07:00:02 UTC credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running.\nDONE\t06:05:00 UTC run-SEED-DONE\nINTERRUPTED\t20:19:20 UTC the server restarted while this run was in progress; it was not re-run -- press Test again\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here.",
+      "meta_refresh": 1
+    },
+    {
+      "step": "beta press1",
+      "url": "http://127.0.0.1:8123/projects/beta/report",
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 0 waiting. One run per project at a time.\n\nSTATUS\tTIME\nRUNNING\t20:19:41 UTC\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "gamma press1 (2 slots busy)",
+      "url": "http://127.0.0.1:8123/projects/gamma/report",
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 1 waiting. One run per project at a time.\n\nSTATUS\tTIME\nQUEUED (#1)\t20:19:42 UTC\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "alpha press2",
+      "url": "http://127.0.0.1:8123/projects/alpha/report",
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 2 waiting. One run per project at a time.\n\nSTATUS\tTIME\nRUNNING\t20:19:41 UTC\nQUEUED (#2)\t20:19:42 UTC\nREFUSED\t07:00:02 UTC credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running.\nDONE\t06:05:00 UTC run-SEED-DONE\nINTERRUPTED\t20:19:20 UTC the server restarted while this run was in progress; it was not re-run -- press Test again\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "alpha press3",
+      "url": "http://127.0.0.1:8123/projects/alpha/report",
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 3 waiting. One run per project at a time.\n\nSTATUS\tTIME\nRUNNING\t20:19:41 UTC\nQUEUED (#2)\t20:19:42 UTC\nQUEUED (#3)\t20:19:43 UTC\nREFUSED\t07:00:02 UTC credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running.\nDONE\t06:05:00 UTC run-SEED-DONE\nINTERRUPTED\t20:19:20 UTC the server restarted while this run was in progress; it was not re-run -- press Test again\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "alpha press4",
+      "url": "http://127.0.0.1:8123/projects/alpha/report",
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 4 waiting. One run per project at a time.\n\nSTATUS\tTIME\nRUNNING\t20:19:41 UTC\nQUEUED (#2)\t20:19:42 UTC\nQUEUED (#3)\t20:19:43 UTC\nQUEUED (#4)\t20:19:43 UTC\nREFUSED\t07:00:02 UTC credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running.\nDONE\t06:05:00 UTC run-SEED-DONE\nINTERRUPTED\t20:19:20 UTC the server restarted while this run was in progress; it was not re-run -- press Test again\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "alpha press5 (depth cap)",
+      "url": "http://127.0.0.1:8123/projects/alpha/run",
+      "body": "AT\nAutoTester\nProjects\n+ New project\n\u25cf Live view\n\u2699 Settings\nPROJECTS\nAlpha Shop\nBeta Shop\nGamma Shop\n+ New project\n429 Too Many Requests\n\n3 runs of 'alpha' are already waiting; wait for one to start\n\n\u2190 Back to projects"
+    },
+    {
+      "step": "alpha report full queue",
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 4 waiting. One run per project at a time.\n\nSTATUS\tTIME\nRUNNING\t20:19:41 UTC\nQUEUED (#2)\t20:19:42 UTC\nQUEUED (#3)\t20:19:43 UTC\nQUEUED (#4)\t20:19:43 UTC\nREFUSED\t07:00:02 UTC credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running.\nDONE\t06:05:00 UTC run-SEED-DONE\nINTERRUPTED\t20:19:20 UTC the server restarted while this run was in progress; it was not re-run -- press Test again\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "gamma auto-refresh after alpha released (no manual reload)",
+      "seconds_to_running": 5.2,
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 3 waiting. One run per project at a time.\n\nSTATUS\tTIME\nRUNNING\t20:19:44 UTC\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "alpha after release of run1",
+      "panel": "Run queue\n\nServer: 2 of 2 run slots busy, 3 waiting. One run per project at a time.\n\nSTATUS\tTIME\nQUEUED (#1)\t20:19:42 UTC\nQUEUED (#2)\t20:19:43 UTC\nQUEUED (#3)\t20:19:43 UTC\nREFUSED\t07:00:02 UTC credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running.\nDONE\t06:05:00 UTC run-SEED-DONE\nDONE\t20:19:44 UTC run-01M4KQH9W2F1RT8CVN2487HBY1\nINTERRUPTED\t20:19:20 UTC the server restarted while this run was in progress; it was not re-run -- press Test again\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this project to see a report here."
+    },
+    {
+      "step": "alpha final",
+      "panel": "Run queue\n\nServer: 0 of 2 run slots busy, 0 waiting. One run per project at a time.\n\nSTATUS\tTIME\nREFUSED\t07:00:02 UTC credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running. credential DEMO_PASS has no value yet. Enter it on the project's Credentials page before running.\nDONE\t06:05:00 UTC run-SEED-DONE\nDONE\t20:19:56 UTC run-01M4KQHC7ER9TA22BBX6PERJQR\nDONE\t20:19:54 UTC run-01M4KQHBSM2RRY0H52Z66H5MH6\nDONE\t20:19:53 UTC run-01M4KQHBDT177VN228TBFC7ZVY\nDONE\t20:19:44 UTC run-01M4KQH9W2F1RT8CVN2487HBY1\nINTERRUPTED\t20:19:20 UTC the server restarted while this run was in progress; it was not re-run -- press Test again\n\ud83d\udccb\n\nno runs yet \u2014 run a case against this proje"
+    }
+  ],
+  "focus_visible_outline": "auto 1px",
+  "mobile_scrollwidth_vs_client": [
+    422,
+    390
+  ],
+  "table_th_count": 2,
+  "unlabelled_buttons": 0,
+  "console_errors": {
+    "http://127.0.0.1:8123/projects/alpha/run": [
+      "Failed to load resource: the server responded with a status of 429 (Too Many Requests)"
+    ]
+  }
+}

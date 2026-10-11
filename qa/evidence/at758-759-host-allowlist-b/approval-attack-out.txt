@@ -1,0 +1,17 @@
+from C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-fresh\src\autotester\stages\explore_consent.py
+OK  CRAWL: credential removed -> refused
+OK  CRAWL: credential back -> covers again
+OK  LIVE_CASE: credential removed -> refused
+OK  LIVE_CASE: credential back -> covers again
+OK  READ: credential removed -> refused
+OK  READ: credential back -> covers again
+OK  re-scoped domain -> refused
+OK  declaration dropped -> refused
+OK  ADVERSARIAL with derived row -> refused
+approvals path attr: ['approvals']
+OK  another project's derived row copied in + no credential -> refused
+OK  human row covers w/o credential (not derived)
+OK  narrow human + derived + no cred -> refused
+OK  run narrowed to an unprovisioned key -> refused
+OK  tampered derived row + no cred -> refused
+ALL OK

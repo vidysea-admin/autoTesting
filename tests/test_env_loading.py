@@ -57,6 +57,20 @@ def test_an_already_exported_value_is_never_overwritten(tmp_path: Path, monkeypa
     assert os.environ["ALPHA"] == "from-the-shell"
 
 
+def test_an_empty_inherited_value_does_not_shadow_the_data_env_file(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    """AT-863: a server operator copies `.env.example` to `/etc/autotester/server.env`, so the
+    compose `env_file` hands the container `ANTHROPIC_API_KEY=""`. That empty string must not
+    block `<data>/.env`, where the real key lives."""
+    monkeypatch.delenv(TEST_MARKER, raising=False)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
+    (tmp_path / ".env").write_text("ANTHROPIC_API_KEY=sk-from-data-env\n", encoding="utf-8")
+
+    assert load_repo_env(tmp_path) == ["ANTHROPIC_API_KEY"]
+    assert os.environ["ANTHROPIC_API_KEY"] == "sk-from-data-env"
+
+
 def test_a_missing_env_file_is_not_an_error(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv(TEST_MARKER, raising=False)
 

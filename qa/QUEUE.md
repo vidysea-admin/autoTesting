@@ -1,5 +1,7 @@
 # qa/QUEUE.md — checker sweep queue (top-3 recommended next units)
 
+- GRILL: real two-mode acceptance thresholds for D-023/T-169 (AT-281) -- unanswered; the contract covers it by a pointer only. (2026-10-11 sweep: the AT-218 GRILL line and the intent Q1 GRILL line were removed, both answered: `qa/gates/at218-vacuous-guard-class.md` 2026-09-26, `docs/intent.md` Q1 2026-10-07.)
+
 ## Approved 2026-10-10 (D-081): buildable rows, dependency order (added by d081-plan-refresh)
 
 Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below is `approved: 2026-10-10`. Rows are in dependency order; rows on separate lanes may run in parallel. Worktrees and branches named in a row are INPUTS to re-land unit by unit, never state to merge wholesale (D-080 item 1). Lanes follow `qa/adapter.json` `parallel.lanes` (code max 4, browser max 1). `unknown` marks a fact the repo does not state; the maker resolves it at plan time. Group 10 follows the wave order of `docs/plan.md` (G1; G2, G3, G4; G5, G6, G7; G8, G9; G10), with the T-203 re-land first because it and G1 both edit `ui/routes_runs.py` and `ui/app.py`.
@@ -363,6 +365,43 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-11 T-153 close-out (checker, from the dual-check PROPOSED-ISSUE lines)
+
+Never built until a human moves one out of this section with `approved: <date>`. Five low rows (AT-893..AT-897) are ledger-only and are not candidates.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security | Escape or fence the target's response text in `stages/ai_judge.py::_evidence` so it cannot forge evidence rows in the judge prompt (reproduced: a response carrying `- [network] tools_called[0]: ...` renders as a real evidence line and can steer a JUDGED check). Medium. | AT-892 |
+
+## Candidates (human picks) — 2026-10-11 T-145 live-run review (checker, read-only, report `.work/pathlynks-report/`)
+
+Never built until a human moves one out of this section with `approved: <date>`. Findings about the product under test (Pathlynks) are not ledger rows and are listed in the checker's report only. Existing open rows that already cover a T-145 claim and were not duplicated: AT-773 (judge PASSes a failed assertion), AT-774 (retired cases are run), AT-840 (judge sends prompts and screenshots with no mask), AT-654 (no setting yields typing on production; this is why 11 typing actions were refused), AT-113 (screen the crawler cannot return to).
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security (data boundary) | Mask or guard `stages/expand.py::build_expand_prompt` before `provider.act`; the T-145 expand sent 42 step values (4 email-shaped, 2 phone-shaped) to the provider unmasked. Pairs with AT-840 (judge screenshots). | AT-890, AT-840 |
+| priority: S1/S2 (high) | One failed case must not take the rest of a tier down: 34 of the 37 inconclusive cases failed on a dead browser. Prove the cause with two passing shared-session cases first, then fix `browser/video.py` `end_case_video` and add a session restart. Without this a rerun still tests nothing. | AT-888 |
+| priority: S1/S2 (high) | Turn a crawl's screens into reviewable student flows so `expand` has something to expand, and warn before a run when no case's first target exists on the crawled surface. | AT-887 |
+| priority: security (consent record) | HUMAN_GATE for Umesh: is `pathlynks.vidysea.com` production? Approval `appr_ce61e4420ac9` is signed `production: false`; the gate file and the T-145 row say production, `project.json` says dev. Inert this run (no typing), live the moment typing is enabled. | AT-891, AT-654 |
+| medium | AT-226 precheck races a client-side redirect on a live session; `login_failed` carries no cause. | AT-889 |
+
+## Candidates (human picks) — 2026-10-11 sweep (Mode B sharded, window 72fafe7c..4f8f5da1, master 057b6dbb)
+
+Never built until a human moves one out of this section with `approved: <date>`. **BACKSTOP RED** on 4f8f5da1 (2836 passed, 20 skipped, 4 failed, 4 shards, 2301 s): no `backstop:` stamp, so the next sweep with a changed tree is a backstop run again. **No `HOLD:` line:** no behavioural regression or security defect is traced to a checked-PASS feature's changed files. The one deterministic red (AT-792) is a stale test of a contract-conformant product; the other three are load-sensitive and unresolved (AT-750, AT-725, AT-858). `qa/checkpoints/baseline-reds.md` was not created (see AT-750). No new S1/S2 or security row this sweep; the carried S1/S2 rows below in the 2026-10-07 section stand (its first row, AT-744, is now fixed but see AT-853).
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| medium (top 1) | Make the suite green: repair the stale `test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen` by passing a Transcript that contains the narration (RC3 holds, no assertion weakened), and fix the hook-output decode failure behind `test_hook_prints_the_report_and_exits_zero_on_a_healthy_log` (test encoding plus hook UTF-8 output). | AT-792, AT-858 |
+| medium (top 2) | Remove the unconditional `require_reviewed` from `stages/expand.py:137` and `stages/eval_compiler.py:96` so a reconciled DRAFT spec generates, per review-gate R5 and D-070 item 2. | AT-850 |
+| medium (top 3) | Fix the maker-owned bookkeeping that misleads the loop: `Queue TODO: 0` counts only `\| TODO \|` cells while 29 `- [ ]` rows exist, and T-197..T-206 done_checks name verdict files no unit produces and pass on a FAIL verdict. | AT-851, AT-853 |
+| medium | `qa/loop.md` contradicts the policy (cap 3 vs 2, no no-progress or quota pause state, pre-D-081 HUMAN_GATE). | AT-854, AT-754 |
+| medium | T-206 has no contract criterion; checker authors one before it is built. | AT-855 |
+| medium | Shared checker tool `shard_suite.py` doubles `-q` against this repo's `addopts`; out of repo, human-gated. | AT-860 |
+| low | Load-sensitive reds need one idle-host solo run on a git archive of the baseline sha before they can be recorded as baseline reds; redact scan trend 3.43 s to 9.14 s. | AT-750, AT-725 |
+| low | Row hygiene: mc-precommit false `ready-for-check` warnings, north_star still names ERP first, intent Q4 unticked, catalog screen without an intent trio, `report_export` silent skip, 16 files at 298-300 lines. | AT-852, AT-856, AT-857, AT-861, AT-859, AT-739 |
+
+Closed this sweep: AT-745 (at113 cycle 4 PASS, merged). Annotated: AT-634 (3 more rows without `regression_check`), AT-656 (AT-772 byte-identical duplicate), AT-649, AT-746 (4 gates without a literal `Answered:`), AT-281.
+
 ## Candidates (human picks) — 2026-10-07 sweep, report `qa/sweeps/2026-10-07-sweep.md`
 
 Candidates are never built until a human moves one out of this section with `approved: <date>`. Source: sharded Mode B (3 shards + consolidation), window 2aed300e..72fafe7c, working tree dirty.
@@ -437,10 +476,7 @@ carry two rows); AT-711; AT-644; AT-634 (rows fixed without a `regression_check`
 
 ## GRILL — human decision, not a build row (carried)
 
-- GRILL: recurring vacuous-guard prevention policy (AT-218). Unanswered, carried.
-- GRILL: real two-mode acceptance thresholds for D-023/T-169 (AT-281). Carried.
 - GRILL (AT-402): structure-before-code review of `visual_order.js`. Carried.
-- GRILL: intent Q1 audience internal-tool vs external-ui (`docs/intent.md:82`) -- unanswered, not PARKED. It sets how expensive every persona walk is.
 
 **Explicitly NOT judged this sweep:** `at673` (`qa/manifests/at673-sessionstart-unclosed-detector.md`,
 `qa/hooks/mc-sessionstart.ps1`, `tests/test_mc_sessionstart_unclosed.py`) and rows AT-713/714/715 and

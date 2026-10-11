@@ -264,8 +264,13 @@ past it". CN1-CN10 retain their fail-closed obligations.
 - **Redacted accountability.** Record performed actions, field changes and their prior values,
   button presses, actual bounds and stop reasons in the existing report/trace surfaces after
   redaction. Secret prior values are never copied into accountability records or screenshots.
-- **Remaining gates.** Human FlowSpec review, explicit adversarial authorization, production
-  promotion, project write policy and model-spend gates remain applicable. The D-066 Origin/CSRF check
+- **Remaining gates.** Explicit adversarial authorization, production
+  promotion, project write policy and model-spend gates remain applicable. FlowSpec human review is
+  **not** one of them any more: since D-070 item 2 it is a status only that never blocks case
+  generation from reconciled flows (`review-gate.md` R5, which also says what still blocks), so CN11
+  neither requires it nor replaces it, and a run approval (human-granted or account-derived) is a
+  different thing from a FlowSpec's review status. (Amended 2026-10-11; the code still enforces the
+  old gate until the `review-gate.md` R5 unit lands.) The D-066 Origin/CSRF check
   on state-changing UI routes remains required. CN11 grants no blanket live-account write,
   paid-model-run, production-write or release authority.
 - **Verify:** independently exercise the authorized grant through real preflight/seam checks with
@@ -404,3 +409,8 @@ past it". CN1-CN10 retain their fail-closed obligations.
   persists ERRORED + INCONCLUSIVE naming the brake; no case skipped; EXECUTE stage `failed`. Adds no
   obligation beyond the merged code and weakens none. **Changes-authorized:** qa/contracts/consent.md
   CN11 "One aggregate budget" + this log. **Links:** T-125 integration rework; D-063.
+
+- 2026-10-11 · owner-authorized (D-070 item 2) · **CN11 "Remaining gates" reconciled with
+  `review-gate.md` R5:** it said "Human FlowSpec review ... remain[s] applicable", which contradicted D-070
+  item 2 (the DRAFT review gate is a status only). Reworded so the three contracts agree. No consent,
+  approval, budget or write-policy criterion changed. **Links:** D-070; `review-gate.md` R5.

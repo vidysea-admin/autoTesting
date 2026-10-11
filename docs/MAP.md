@@ -30,6 +30,7 @@
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
 | `core/excel.py` | Workbook presentation helpers shared by every Excel exporter. |
 | `core/ids.py` | Identifier generation. The ONLY place ids are minted. |
+| `core/localtime.py` | Fixed-offset time zones and local-to-UTC conversion for the scheduler. |
 | `core/paths.py` | Filesystem layout. The ONLY place project paths are constructed. |
 | `core/pricing.py` | Per-token cost estimates for LLM-call trace spans (D-041 phase 1, RT4). |
 | `core/redact.py` | Secret redaction. Every log line and stored artifact passes through here. |
@@ -80,10 +81,13 @@
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
 | `schema/release.py` | Release regression shapes: a flow's persisted plan, a run's scope, its record and diff. |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
+| `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
 | `schema/scenario.py` | A written scenario list, and what compiling it produced (T-166, EC4/EC5). |
+| `schema/schedule.py` | The per-project schedule (G5, R51): a typed, bounded setting plus the slot-record vocabulary. |
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
+| `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
 | `schema/unified_report.py` | The damage-control report's typed shape: one run's four evidence classes plus crawl coverage. |
 | `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
@@ -98,7 +102,9 @@
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
+| `stages/ai_capture.py` | AI CAPTURE: exercise one AI endpoint and record what happened. It observes and never decides. |
 | `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
+| `stages/ai_judge.py` | AI JUDGE: map captured observations into the existing grade stage's evidence and rubric. |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
@@ -148,6 +154,9 @@
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
+| `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |
+| `stages/schedule_time.py` | Slot arithmetic: which UTC instants does a schedule mean to fire at, inside a window? |
+| `stages/scheduler.py` | The scheduler core (G5): which slots are due, who may claim them, and what a tick records. |
 | `stages/score.py` | SCORE: compare AutoTester's issues against a human tester's own sheet. |
 | `stages/screen_identity.py` | Screen identity: the rules that decide when two screens are one. |
 | `stages/script_replay.py` | SCRIPT_REPLAY: record a working live run's locators as a `Script`, then replay it for free. |
@@ -163,6 +172,7 @@
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory. |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
+| `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
@@ -190,6 +200,8 @@
 | `ui/routes_unified_report.py` | The damage-control report as a page (T-168): the lead's two-step route from the project page. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
+| `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
+| `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 <!-- /generated:map -->
@@ -201,6 +213,9 @@
 |---|---|
 | `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
 | `AiCheckMethod` (`schema/ai_check.py`) | Who decides a check: code from recorded facts, or the independent judge (C7). |
+| `AiReply` (`schema/ai_check.py`) | What an AI endpoint answered, as the transport seam hands it to the capturer. |
+| `AiExchange` (`schema/ai_check.py`) | One prompt and what was observed of its answer. Facts only: no verdict lives here (C7). |
+| `AiCapture` (`schema/ai_check.py`) | A captured run of one check against one endpoint: observation, never judgement. |
 | `AiSignalKind` (`schema/ai_target.py`) | Observed lexical facts; never runtime claims or check selection. |
 | `AiTargetKind` (`schema/ai_target.py`) | The four positive target kinds specified by the approved T-151 plan. |
 | `Classification` (`schema/ai_target.py`) | Strict naming response; evidence and checks are never model-controlled. |
@@ -311,6 +326,9 @@
 | `RawResult` (`schema/run.py`) | One case's execution record. |
 | `RunBounds` (`schema/run.py`) | The `RunApproval` bounds a run ACTUALLY ran under (AT-660/CN10). |
 | `Run` (`schema/run.py`) | One regression run over a set of cases. |
+| `QueueStatus` (`schema/run_queue.py`) |  |
+| `QueueEntry` (`schema/run_queue.py`) |  |
+| `RunQueueFile` (`schema/run_queue.py`) | The on-disk form (`<data root>/.work/run_queue.json`). |
 | `StageName` (`schema/run_state.py`) | The pipeline stages a run drives, in canonical order. |
 | `StageCheckpoint` (`schema/run_state.py`) | One stage's durable record within a run. |
 | `RunState` (`schema/run_state.py`) | The ledger for one run, keyed by `run_id` (`OR5`: one run_id, one lineage). |
@@ -318,6 +336,15 @@
 | `ScenarioSpec` (`schema/scenario.py`) | One declared scenario variant of a flow. Its own graph node and case set (EC4). |
 | `UncoveredBranch` (`schema/scenario.py`) | A scenario branch that produced no case, with the one reason why (EC5). |
 | `CompileResult` (`schema/scenario.py`) | What `stages/eval_compiler.py::compile_evals` produced. |
+| `ScheduleMode` (`schema/schedule.py`) |  |
+| `ScheduleZone` (`schema/schedule.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
+| `SlotOutcome` (`schema/schedule.py`) | What a tick decided for one slot. A record carries exactly one of these. |
+| `SchedulerHealth` (`schema/schedule.py`) |  |
+| `ScheduleInvalid` (`schema/schedule.py`) | A value was refused at save. `field` names it; the caller stores nothing. |
+| `WeeklyRule` (`schema/schedule.py`) |  |
+| `ScheduleConfig` (`schema/schedule.py`) |  |
+| `SlotRecord` (`schema/schedule.py`) | One append-only line per slot decision. Holds no secret: ids, instants and a short cause. |
+| `SlotClaim` (`schema/schedule.py`) | The content of a claim marker: what the winning tick decided, so a crash can be re-driven. |
 | `ElementRef` (`schema/screen_graph.py`) | One interactive element found by `browser/enumerate.js`. |
 | `PageObservation` (`schema/screen_graph.py`) | One page-visit's raw material: its url/title and interactive elements. |
 | `ScreenNode` (`schema/screen_graph.py`) | One distinct screen the crawl found. Identity is structural |
@@ -327,6 +354,7 @@
 | `MappedScreen` (`schema/screenmap.py`) | One screen folded across every recording that showed it. |
 | `Journey` (`schema/screenmap.py`) | One recording's ordered path through screens. |
 | `ScreenMap` (`schema/screenmap.py`) | The product map: every learned screen plus the journeys that visited them. |
+| `ServerSettings` (`schema/server_settings.py`) | What the admin chose; absent fields keep the documented defaults. |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
 | `RegressionSection` (`schema/unified_report.py`) | RR3/RR6: the release's single issues log and its diff against the trusted baseline. |
