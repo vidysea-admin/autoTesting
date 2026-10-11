@@ -178,7 +178,7 @@ def test_ti5_a_damaged_compressed_member_is_failed_whatever_the_decompressor_rai
 
 
 def test_ti5_a_zip_version_python_cannot_read_is_a_failed_report_not_a_crash(tmp_path):
-    """extract_version 9.9: the stdlib refuses to list such an archive; the intake must not crash."""
+    """extract_version 9.9: the stdlib refuses to list it; the intake must not crash."""
     store = make_store(tmp_path)
     archive = tmp_path / "in.zip"
     with zipfile.ZipFile(archive, "w") as zf:

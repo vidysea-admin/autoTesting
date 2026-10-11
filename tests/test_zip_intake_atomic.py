@@ -126,9 +126,10 @@ def test_ti6_process_killed_between_copy_and_row_heals_on_the_next_intake(tmp_pa
     script = tmp_path / "kill.py"
     script.write_text(_KILL_SCRIPT, encoding="utf-8")
     # The child must import the tree under test, not whatever tree the venv's editable install
-    # points at (a clean copy run with another checkout's venv would otherwise import the wrong one).
+    # points at (a clean copy run with another checkout's venv would import the wrong one).
     src = str(Path(__file__).resolve().parents[1] / "src")
-    env = {**os.environ, "PYTHONPATH": os.pathsep.join(filter(None, [src, os.environ.get("PYTHONPATH")]))}
+    path = os.pathsep.join(filter(None, [src, os.environ.get("PYTHONPATH")]))
+    env = {**os.environ, "PYTHONPATH": path}
     done = subprocess.run([sys.executable, str(script), str(tmp_path), str(archive)],
                           capture_output=True, text=True, timeout=120, env=env)
     assert done.returncode == 9
