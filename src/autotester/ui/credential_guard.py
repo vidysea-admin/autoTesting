@@ -16,7 +16,7 @@ from urllib.parse import unquote_plus
 
 from fastapi import HTTPException
 
-from autotester.browser.secrets import SecretStore, parse_env
+from autotester.browser.secrets import SecretStore
 from autotester.core.env import (
     PROVIDER_KEYS,
     SERVER_PREFIX,
@@ -38,13 +38,12 @@ def refuse_server_key(key: str) -> None:
 
 def refuse_reserved_slug(slug: str) -> None:
     """AU21: a new project's key prefix must not cover a key the server reads or a variable
-    this process or the shared `.env` already holds -- else its namespace would swallow it
-    (`load_repo_env` never exports a project namespace). Existing projects are unaffected."""
+    this process already holds (a shell export, or a `.env` key loaded at start) -- else its
+    namespace would swallow it, because `load_repo_env` never exports a project namespace.
+    Existing projects are unaffected; the `.env` file itself is not consulted, since an
+    operator fills `PATHLYNKS_*` there before onboarding `pathlynks`."""
     ns = key_namespace(slug)
-    env_file = repo_root() / ".env"
-    held = [*os.environ, *(parse_env(env_file.read_text(encoding="utf-8"))
-                           if env_file.exists() else {})]
-    if (any(k.startswith(ns) for k in (*PROVIDER_KEYS, *held))
+    if (any(k.startswith(ns) for k in (*PROVIDER_KEYS, *os.environ))
             or ns.startswith(SERVER_PREFIX) or SERVER_PREFIX.startswith(ns)):
         raise HTTPException(400, f"the key prefix {ns} of that slug is used by a setting on "
                                  "this server; choose a different slug")

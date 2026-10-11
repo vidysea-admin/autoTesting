@@ -116,7 +116,7 @@ def test_au21_a_slug_that_swallows_a_server_key_is_refused_at_onboarding(
 
 def test_au21_a_slug_that_swallows_a_variable_the_server_has_is_refused(
         root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """A set process variable (shell or `.env`) the new project's prefix would cover."""
+    """A process variable (shell export, or a `.env` key loaded at start) the prefix would cover."""
     monkeypatch.setenv("HTTP_PROXY", "http://operator.test:3128")
     dev = team()["dev"]
     assert _onboard(dev, "http", "HTTP_USER") == 400
@@ -151,3 +151,12 @@ def test_au21_env_editor_refuses_a_declared_server_key(root: Path) -> None:
     assert resp.status_code == 403
     assert "EVIL" not in parse_env((root / ".env").read_text(encoding="utf-8")
                                    if (root / ".env").exists() else "").values()
+
+
+def test_au21_onboarding_after_filling_env_still_works(root: Path) -> None:
+    """The operator fills `DEMO_*` in `.env` first and then onboards `demo`: the slug rule
+    reads the process, not the file, so that workflow is unchanged."""
+    (root / ".env").write_text("DEMO_PASSWORD=pw" + chr(10), encoding="utf-8")
+    dev = team()["dev"]
+    assert _onboard(dev, "demo", "DEMO_PASSWORD") == 400  # key already in `.env`: as before
+    assert _onboard(dev, "demo", "DEMO_OTHER") == 303
