@@ -14,6 +14,10 @@ services:
       - /etc/autotester/server.env   # server settings + keys; mode 600, never in git
     environment:
       AUTOTESTER_ROOT: /data         # projects/, profiles/, .env and .work/ all live here
+      # The origin users open (AU20). The app binds 0.0.0.0, so it cannot know it: startup
+      # refuses to run unless this is set and admitted by AUTOTESTER_ALLOWED_HOSTS / _ORIGINS.
+      # With a domain it is https://<domain>; for the no-domain interim set it yourself.
+      AUTOTESTER_PUBLIC_ORIGIN: ${AUTOTESTER_PUBLIC_ORIGIN:-https://${AUTOTESTER_DOMAIN:-localhost}}
       DISPLAY: ":99"
     volumes:
       - ${AUTOTESTER_DATA:-/srv/autotester/data}:/data

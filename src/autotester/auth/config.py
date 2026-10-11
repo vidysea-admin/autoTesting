@@ -6,11 +6,13 @@ from __future__ import annotations
 
 import os
 import sys
+from urllib.parse import urlparse
 
 HOSTED_ENV = "AUTOTESTER_HOSTED"
 DISABLED_ENV = "AUTOTESTER_AUTH_DISABLED"
 COOKIE_SECURE_ENV = "AUTOTESTER_COOKIE_SECURE"
 FIRST_ADMIN_ENV = "AUTOTESTER_FIRST_ADMIN_EMAIL"
+PUBLIC_ORIGIN_ENV = "AUTOTESTER_PUBLIC_ORIGIN"
 _LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 _WILDCARD = {"", "*", "0.0.0.0", "::"}  # bound to everything: no single own origin is knowable
 
@@ -94,8 +96,44 @@ def _check_hosted() -> None:
             f"{HOSTED_ENV}=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS "
             "naming the server")
     if bind_host().strip().lower() in _WILDCARD:
-        return  # HELD: what a wildcard bind must name is open, qa/gates/t204-au20-wildcard-bind.md
+        _check_public_origin(required=True)  # owner gate answer option A (D-082)
+        return
     _check_own_origin()
+    _check_public_origin(required=False)
+
+
+def _check_public_origin(required: bool) -> None:
+    """AU20: `AUTOTESTER_PUBLIC_ORIGIN` is the origin users open. A wildcard bind (`0.0.0.0`,
+    `::`, the container) cannot know it, so it must be set there (`required`); when set anywhere
+    it must be a bare origin the Host and Origin guards both admit. Wrong at startup, never a
+    403 on every request."""
+    raw = os.environ.get(PUBLIC_ORIGIN_ENV, "").strip()
+    if not raw:
+        if required:
+            raise AuthConfigError(
+                f"{PUBLIC_ORIGIN_ENV} is required when the server binds every address "
+                "(--host 0.0.0.0 or ::): set it to the origin users open, for example "
+                "https://qa.example.com or http://192.168.1.20:8000 (AU20)")
+        return
+    from autotester.ui.helpers import _host_allowed, _origin_allowed
+    try:
+        parts = urlparse(raw.rstrip("/").lower())
+        port = parts.port
+        valid = (parts.scheme in {"http", "https"} and bool(parts.hostname)
+                 and not (parts.username or parts.path or parts.query or parts.fragment))
+    except ValueError:
+        valid = False
+    if not valid:
+        raise AuthConfigError(
+            f"{PUBLIC_ORIGIN_ENV}={raw!r} is not an origin: use scheme://host[:port] with no "
+            "path, such as https://qa.example.com (AU20)")
+    name = f"[{parts.hostname}]" if ":" in parts.hostname else parts.hostname
+    host = name if port in {None, {"http": 80, "https": 443}[parts.scheme]} else f"{name}:{port}"
+    if not (_host_allowed(host) and _origin_allowed(f"{parts.scheme}://{host}")):
+        raise AuthConfigError(
+            f"{PUBLIC_ORIGIN_ENV}={parts.scheme}://{host} is not allowed: its Host must be in "
+            "AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin "
+            "itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)")
 
 
 def _browser_hosts(name: str, port: str) -> list[tuple[str, str]]:

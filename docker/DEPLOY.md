@@ -61,6 +61,13 @@ AUTOTESTER_ALLOWED_ORIGINS=https://<your-domain>
 AUTOTESTER_MAX_CONCURRENT_RUNS=2
 ```
 
+The container binds every address, so the app cannot know the address users type. Compose gives
+it `AUTOTESTER_PUBLIC_ORIGIN` (`https://<AUTOTESTER_DOMAIN>` when that is set, or the value you set
+in the shell or the compose `.env`). Startup refuses to run unless that origin is admitted by the two
+lists above (its host in `AUTOTESTER_ALLOWED_HOSTS` or an origin entry, and the origin itself, with
+the port unless it is the default, in `AUTOTESTER_ALLOWED_ORIGINS`), so a wrong value shows up in
+`docker compose logs autotester`, not as a 403 on every page.
+
 Set `AUTOTESTER_ALLOWED_ORIGINS` once the server is reachable by name: the Origin guard (D-066)
 refuses a state-changing request from any other origin. `AUTOTESTER_ALLOWED_HOSTS` belongs to
 the Host allow-list (AT-758): any request, GET included, whose Host header is not loopback, the
@@ -121,7 +128,9 @@ release; the live view is reachable only from inside the compose network until t
 
 Over plain http to an IP, set in `server.env`: `AUTOTESTER_ALLOWED_HOSTS=<server-ip>`,
 `AUTOTESTER_ALLOWED_ORIGINS=http://<server-ip>:8000`, `AUTOTESTER_COOKIE_SECURE=0`, and start
-with `AUTOTESTER_BIND=0.0.0.0`. Docker publishes ports around UFW, so a `ufw` rule does not
+with `AUTOTESTER_BIND=0.0.0.0`. In the shell (or the compose `.env`) that runs `docker compose`,
+also set `AUTOTESTER_PUBLIC_ORIGIN=http://<server-ip>:8000`: without it compose assumes
+`https://localhost` and the app refuses to start. Docker publishes ports around UFW, so a `ufw` rule does not
 restrict port 8000: limit it in your cloud provider's firewall to your office address, or bind
 `AUTOTESTER_BIND` to one interface address. Passwords cross the network unencrypted in this
 mode: use it for a short trial only, and move to step 7. `docker compose -f docker/compose.prod.yml

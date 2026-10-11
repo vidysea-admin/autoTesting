@@ -142,6 +142,17 @@ def test_compose_needs_no_domain_unless_the_https_profile_is_used() -> None:
     assert _prod()["services"]["caddy"]["profiles"] == ["https"]
 
 
+def test_app_service_is_told_its_public_origin_for_the_wildcard_bind() -> None:
+    """AU20 (owner gate answer, D-082): the app binds 0.0.0.0 and cannot know the address users
+    open, so compose passes AUTOTESTER_PUBLIC_ORIGIN to the app service, derived from the domain."""
+    env = _prod()["services"]["autotester"]["environment"]
+    assert "AUTOTESTER_DOMAIN" in env["AUTOTESTER_PUBLIC_ORIGIN"]
+    assert env["AUTOTESTER_PUBLIC_ORIGIN"].count("${") == 2
+    guide = (ROOT / "docker" / "DEPLOY.md").read_text(encoding="utf-8")
+    assert "AUTOTESTER_PUBLIC_ORIGIN" in guide and "AUTOTESTER_PUBLIC_ORIGIN" in (
+        ROOT / ".env.example").read_text(encoding="utf-8")
+
+
 def test_deploy_guide_claims_only_what_the_compose_file_does() -> None:
     """AT-864: the guide once sent operators to an SSH tunnel to 6080, which compose only
     `expose`s (nothing listens on the host), and described a Host allow-list (AT-758) that is

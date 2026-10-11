@@ -1,8 +1,9 @@
 """AU20 second clause: "the server's own origin must be an allowed one; otherwise startup
 raises". Startup and the request-time guard (AU18 origin, AU19 host) must agree: for every
 configuration the test client asks the real app, from the Host and Origin a browser at the bind
-would send, and startup raises exactly when no such request is served. The wildcard bind
-(`0.0.0.0`, `::`) is HELD on `qa/gates/t204-au20-wildcard-bind.md` and keeps today's rule."""
+would send, and startup raises exactly when no such request is served. A wildcard bind
+(`0.0.0.0`, `::`) names its origin through `AUTOTESTER_PUBLIC_ORIGIN` (owner gate answer,
+option A, D-082; `qa/gates/t204-au20-wildcard-bind.md`)."""
 
 from __future__ import annotations
 
@@ -143,15 +144,80 @@ def test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string(
             check_startup()
 
 
-@pytest.mark.parametrize("wildcard", ["0.0.0.0", "::", "*", ""])
-def test_au20_wildcard_bind_is_held_and_keeps_todays_rule(
-        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, wildcard: str) -> None:
-    """HELD on qa/gates/t204-au20-wildcard-bind.md: a wildcard bind needs a parsed, non-empty
-    list and no own-origin check (none is defined there). The owner's answer replaces this."""
+WILD4, WILD6 = ["--host", "0.0.0.0"], ["--host", "::"]  # the wildcard binds
+QA = "https://qa.example.com"
+LAN = "http://192.168.1.20:8000"
+# (id, argv, hosts, origins, AUTOTESTER_PUBLIC_ORIGIN, starts, (scheme, Host a browser sends))
+PUBLIC = [
+    ("wild-missing", WILD4, "qa.example.com", QA, "", False, None),
+    ("wild6-missing", WILD6, "", QA, "", False, None),
+    ("wild-bare-host-malformed", WILD4, "", QA, "qa.example.com", False, None),
+    ("wild-scheme-malformed", WILD4, "", QA, "ftp://qa.example.com", False, None),
+    ("wild-path-malformed", WILD4, "", QA, QA + "/app", False, None),
+    ("wild-port-malformed", WILD4, "", QA, QA + ":abc", False, None),
+    ("wild-no-host-malformed", WILD4, "", QA, "https://", False, None),
+    ("wild-userinfo-malformed", WILD4, "", QA, "https://me@qa.example.com", False, None),
+    ("wild-star-malformed", WILD4, "", QA, "*", False, None),
+    ("wild-wrong-host", WILD4, "", "https://other.example.com", QA, False,
+     ("https", "qa.example.com")),
+    ("wild-wrong-port", WILD4, "", "http://192.168.1.20:8001", LAN, False,
+     ("http", "192.168.1.20:8000")),
+    ("wild-wrong-scheme", WILD4, "", "http://qa.example.com", QA, False,
+     ("https", "qa.example.com")),
+    ("wild-hosts-only-no-origin", WILD4, "qa.example.com", "", QA, False,
+     ("https", "qa.example.com")),
+    ("wild-right-https", WILD4, "", QA, QA, True, ("https", "qa.example.com")),
+    ("wild6-right-https", WILD6, "", QA, QA, True, ("https", "qa.example.com")),
+    ("wild-right-explicit-default-port", WILD4, "", QA, QA + ":443", True,
+     ("https", "qa.example.com")),
+    ("wild-right-slash-and-caps", WILD4, "", QA, "HTTPS://QA.Example.com/", True,
+     ("https", "qa.example.com")),
+    ("wild-right-lan-http", WILD4, "", LAN, LAN, True, ("http", "192.168.1.20:8000")),
+    ("wild-right-ipv6", WILD4, "", "https://[2001:db8::5]", "https://[2001:db8::5]", True,
+     ("https", "[2001:db8::5]")),
+    ("wild-right-loopback", WILD4, "at.example", "", "http://localhost:8000", True,
+     ("http", "localhost:8000")),
+    ("concrete-no-public-origin-unchanged", H + P, "", "https://10.0.0.5:8443", "", True, None),
+    ("concrete-public-right", H + P, "", f"https://10.0.0.5:8443 {QA}", QA, True,
+     ("https", "qa.example.com")),
+    ("concrete-public-not-allowed", H + P, "", "https://10.0.0.5:8443", QA, False,
+     ("https", "qa.example.com")),
+    ("concrete-public-malformed", H + P, "", "https://10.0.0.5:8443", "qa.example.com", False,
+     None),
+    ("loopback-public-not-allowed", ["--host", "127.0.0.1"], "at.example", "", QA, False,
+     ("https", "qa.example.com")),
+    ("loopback-no-public-origin-unchanged", ["--host", "127.0.0.1"], "at.example", "", "", True,
+     None),
+]
+
+
+@pytest.mark.parametrize(("argv", "hosts", "origins", "public", "starts", "reach"),
+                         [pytest.param(*c[1:], id=c[0]) for c in PUBLIC])
+def test_au20_a_wildcard_bind_needs_its_public_origin_and_every_set_one_is_admitted(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, argv: list[str], hosts: str,
+        origins: str, public: str, starts: bool, reach: tuple[str, str] | None) -> None:
+    """Owner gate answer, option A (D-082): `AUTOTESTER_PUBLIC_ORIGIN` is required on a wildcard
+    bind and, wherever set, must be admitted by the Host and Origin guards. For every origin
+    that parses, the real app is asked from that origin and must agree with startup."""
     gate_on(tmp_path, monkeypatch)
-    _hosted(monkeypatch, ["--host", wildcard, "--port", "8000"], "at.example", "")
-    check_startup()
+    account(ADMIN)
+    _hosted(monkeypatch, argv, hosts, origins)
+    monkeypatch.setenv("AUTOTESTER_PUBLIC_ORIGIN", public)
+    if reach is not None:
+        assert _served(*reach) == starts
+    if starts:
+        check_startup()
+    else:
+        with pytest.raises(AuthConfigError, match="AUTOTESTER_PUBLIC_ORIGIN"):
+            check_startup()
+
+
+@pytest.mark.parametrize("wildcard", ["0.0.0.0", "::", "*", ""])
+def test_au20_a_wildcard_bind_still_needs_a_parsed_allow_list_entry(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, wildcard: str) -> None:
+    gate_on(tmp_path, monkeypatch)
     _hosted(monkeypatch, ["--host", wildcard], "*", "")
+    monkeypatch.setenv("AUTOTESTER_PUBLIC_ORIGIN", QA)
     with pytest.raises(AuthConfigError, match="needs"):
         check_startup()
 
