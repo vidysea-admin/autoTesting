@@ -1,0 +1,21 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.37s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_a_prompt_carrying_a_secret_never_reaches_litellm ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029FFC007610>
+
+    def test_a_prompt_carrying_a_secret_never_reaches_litellm(monkeypatch: pytest.MonkeyPatch) -> None:
+        fake = install(monkeypatch, [reply(json.dumps(GOOD))])
+        _with_key(monkeypatch)
+>       with pytest.raises(ProviderError) as info:
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_litellm_guard.py:72: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_guard.py::test_a_prompt_carrying_a_secret_never_reaches_litellm
+1 failed in 0.81s

@@ -1,0 +1,12 @@
+drive job 01M4M62SK47SH3SXBPAF6RNYMS failed
+Traceback (most recent call last):
+  File "D:\autoTesting\.worktrees\t198a-zip-drive-intake\src\autotester\ui\routes_intake.py", line 55, in _run_job
+    report = intake_drive(store, ref, drive_factory(store), uploaded_by=actor.email,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\t198a-zip-drive-intake\src\autotester\sources\drive_intake.py", line 185, in intake_drive
+    item = drive.metadata(ref.id)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t198a-B\attack\http_attack.py", line 301, in metadata
+    self.calls.append(("metadata", i)); raise RuntimeError("must not be called")
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: must not be called

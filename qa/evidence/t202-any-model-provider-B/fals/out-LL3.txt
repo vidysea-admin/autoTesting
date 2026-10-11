@@ -1,0 +1,21 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.50s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_schema_mismatch_is_an_error_not_a_coerced_answer ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C8B4DEFD90>
+
+    def test_schema_mismatch_is_an_error_not_a_coerced_answer(monkeypatch: pytest.MonkeyPatch) -> None:
+        install(monkeypatch, [reply(json.dumps({"verdict": "pass"}))])
+        _with_key(monkeypatch)
+>       with pytest.raises(ProviderError, match="judge"):
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_litellm_provider.py:97: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_provider.py::test_schema_mismatch_is_an_error_not_a_coerced_answer
+1 failed in 0.80s

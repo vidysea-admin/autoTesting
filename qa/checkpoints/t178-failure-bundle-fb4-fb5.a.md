@@ -14,6 +14,6 @@ Attribution: checker coordinator A, verdict qa/verdicts/t178-failure-bundle-fb4-
 | secrets | secrets-probes/*.py (fake secret, throwaway root) | see verdict; PROPOSED-ISSUE P1-P3 |
 | browser | headless Chromium vs 127.0.0.1:8791, copy of a7d3fa6c, throwaway AUTOTESTER_ROOT | evidence dir browser-t178-...-checker-a |
 | seam counts | git log per file + verdict scan | see verdict ruling |
-| full suite | shard_suite --shards 4 | NOT RUN: lock busy 901 s, exit 3 (REMAINING) |
+| full suite (resume 1 of 2) | shard_suite --repo D:/autoTesting --ref a7d3fa6c --shards 4 -- -o addopts= (started 06:02:48 IST) | 3066 passed, 7 failed, 19 skipped; 1 new red: tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed (28 passed on 3d8f7d5a); other reds on the master list or passed alone |
 
-Resume point: run only the full suite on a7d3fa6c (`--shards 4`), check `test_env_example_documents_every_key_the_code_reads` on master if it is red, then convert the verdict. Every other row above keeps its result while a7d3fa6c and the files above are unchanged.
+Resume point: none; verdict FAIL (cycle 0). Previous CONTINUE-NEEDED verdict kept as qa/verdicts/t178-failure-bundle-fb4-fb5.a.r0-1.md.

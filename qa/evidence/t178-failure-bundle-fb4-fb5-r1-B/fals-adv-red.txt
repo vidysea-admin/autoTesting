@@ -1,0 +1,8 @@
+E       AssertionError: advice sites changed.
+E         gone: []
+E         new: [('cli.py', 'expand')]
+E       assert {('cli.py', '...s list'), ...} == {('cli.py', '...gister'), ...}
+E         
+E         Extra items in the left set:
+E         ('cli.py', 'expand')
+E         Use -v to get more diff
