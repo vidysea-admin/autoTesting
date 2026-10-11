@@ -249,6 +249,21 @@ def test_al6_a_secret_in_a_stage_result_never_reaches_the_model(
     assert RAW not in stored.read_text("utf-8")
 
 
+def test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result(
+        tmp_path: Path, spies: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
+    from autotester.schema.agent_layer import ToolOutcome
+    ctx = _ctx(tmp_path, spies)
+    name = AgentToolName.GET_CATALOG
+    monkeypatch.setitem(tools._HANDLERS, name, lambda c, a: ToolOutcome(
+        tool="get_catalog", ok=True, summary=f"typed {RAW} into the form"))
+    out = _go(ctx, "get_catalog")
+    assert out.ok and RAW not in out.model_dump_json()  # exact value: scrubbed to a placeholder
+    monkeypatch.setitem(tools._HANDLERS, name, lambda c, a: ToolOutcome(
+        tool="get_catalog", ok=True, summary=f"typed {RAW[::-1]} into the form"))
+    folded = _go(ctx, "get_catalog")
+    assert folded.refusal is RefusalClass.SECRET and RAW[::-1] not in folded.model_dump_json()
+
+
 def test_al6_a_real_grade_withholds_a_prompt_carrying_a_secret(tmp_path: Path) -> None:
     ctx = _ctx(tmp_path, Spies())
     ctx.judge = MockProvider(responses={"judge": [Judgment(result=Result.PASS)]})
