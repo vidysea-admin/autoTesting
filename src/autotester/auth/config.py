@@ -4,7 +4,6 @@ settings). Reads the process environment only; refuses to start on an unsafe mix
 
 from __future__ import annotations
 
-import ipaddress
 import os
 import sys
 
@@ -25,20 +24,28 @@ def hosted() -> bool:
 
 
 def _option(name: str) -> str | None:
-    """The value of a `--name value` / `--name=value` uvicorn option in argv, else None."""
+    """The value of a `--name value` / `--name=value` uvicorn option in argv, else None.
+    The LAST one wins, as it does in uvicorn (click)."""
+    found = None
     argv = sys.argv
     for i, arg in enumerate(argv):
         if arg == name and i + 1 < len(argv):
-            return argv[i + 1]
-        if arg.startswith(name + "="):
-            return arg.split("=", 1)[1]
-    return None
+            found = argv[i + 1]
+        elif arg.startswith(name + "="):
+            found = arg.split("=", 1)[1]
+    return found
 
 
 def bind_host() -> str:
     """The address uvicorn was told to bind (`--host`), else uvicorn's default."""
     found = _option("--host")
     return found if found is not None else os.environ.get("UVICORN_HOST", "127.0.0.1")
+
+
+def bind_port() -> str:
+    """The port uvicorn was told to bind (`--port`, else `UVICORN_PORT`, else 8000)."""
+    found = _option("--port") or os.environ.get("UVICORN_PORT", "").strip()
+    return str(int(found)) if found.isdigit() else "8000"
 
 
 def auth_disabled() -> bool:
@@ -73,35 +80,47 @@ def check_startup() -> None:
               "signup will be made an admin. Create the first admin with "
               "`autotester auth bootstrap-admin --email <address> --password-stdin`, or set "
               f"{FIRST_ADMIN_ENV} in the server's .env (D-074).", file=sys.stderr)
-    if hosted() and not (os.environ.get("AUTOTESTER_ALLOWED_HOSTS", "").strip()
-                         or os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").strip()):
+    if hosted():
+        _check_hosted()
+
+
+def _check_hosted() -> None:
+    """AU20: a parsed allow-list entry exists (a `*` or `,` is not one: the list parser drops
+    it), and a server bound to one address is reachable under that address (own origin).
+    The request-time guard is asked, so startup and the guard cannot disagree."""
+    from autotester.ui.helpers import _listed  # lazy: `ui` imports `auth` at load
+    if not (_listed("AUTOTESTER_ALLOWED_HOSTS") or _listed("AUTOTESTER_ALLOWED_ORIGINS")):
         raise AuthConfigError(
             f"{HOSTED_ENV}=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS "
             "naming the server")
-    if hosted():
-        _check_own_origin()
+    if bind_host().strip().lower() in _WILDCARD:
+        return  # HELD: what a wildcard bind must name is open, qa/gates/t204-au20-wildcard-bind.md
+    _check_own_origin()
+
+
+def _browser_hosts(name: str, port: str) -> list[tuple[str, str]]:
+    """(scheme, Host header) a browser at this bind sends: the port is left out only when it is
+    the scheme's default (80 for http, 443 for https)."""
+    return [(scheme, name if port == default else f"{name}:{port}")
+            for scheme, default in (("http", "80"), ("https", "443"))]
 
 
 def _check_own_origin() -> None:
-    """AU20: "the server's own origin must be an allowed one". Known only for a server bound
-    to one concrete address (`--host 10.0.0.5 [--port 8443]`): that address, with or without
-    the port, must be allowed as a Host or an origin. Loopback is always allowed (AU19). A
-    wildcard bind (`0.0.0.0`, `::`, the shipped container) names no single origin -- the
-    public name belongs to the proxy -- so nothing is guessed there."""
+    """AU20: "the server's own origin must be an allowed one", for a bind on one address. For
+    some scheme, the Host a browser would send must pass the Host guard (AU19) AND the origin it
+    would send must pass the Origin guard (AU18): the guards' own functions decide. Loopback
+    passes by their rules, not by a rule here."""
+    from autotester.ui.helpers import _host_allowed, _origin_allowed
     host = bind_host().strip().lower()
-    try:
-        loopback = ipaddress.ip_address(host).is_loopback
-    except ValueError:
-        loopback = False
-    if loopback or host in _LOOPBACK or host in _WILDCARD:
+    name = host if host.startswith("[") or ":" not in host else f"[{host}]"
+    forms = _browser_hosts(name, bind_port())
+    if any(_host_allowed(h) and _origin_allowed(f"{s}://{h}") for s, h in forms):
         return
-    from autotester.ui.helpers import _host_allowed  # lazy: `ui` imports `auth` at load
-    name = f"[{host}]" if ":" in host else host
-    port = _option("--port") or "8000"
-    if not (_host_allowed(name) or _host_allowed(f"{name}:{port}")):
-        raise AuthConfigError(
-            f"the server's own origin {name}:{port} is not allowed: list it in "
-            "AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS (AU20)")
+    raise AuthConfigError(
+        f"the server's own origin {' or '.join(f'{s}://{h}' for s, h in forms)} is not "
+        "allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed "
+        "origin) and the origin itself, with the port unless it is the scheme's default, in "
+        "AUTOTESTER_ALLOWED_ORIGINS (AU20)")
 
 
 def cookie_secure(scheme: str) -> bool:
