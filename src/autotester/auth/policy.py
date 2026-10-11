@@ -56,9 +56,9 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "", "/cases/new", "/cases", "/edit", "/flowspec", "/requests", "/sources",
         "/product-map", "/flow-diagram", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
-        "/issues/{issue_id}/pin", "/env", "/access", "/catalog")},
+        "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}")},
     **{("GET", _P + tail): _REPORT for tail in (
-        "/runs/{run_id}", "/report", "/report.xlsx", "/report.html")},
+        "/runs/{run_id}", "/report", "/report.xlsx", "/report.html", "/damage-report")},
     ("GET", _P + "/runs/{run_id}/videos/{video_path:path}"): _VIDEO,
     ("GET", _P + "/frames/{source_id}/{name:path}"): _VIDEO,
     **{("POST", _P + tail): _EDIT for tail in (
@@ -66,7 +66,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "/login-case", "/flowspec/approve", "/flowspec/request-edit", "/cases/generate",
         "/crawls/{crawl_id}/merge", "/issues/{issue_id}/pin", "/sources",
         "/sources/{source_id}/analyze", "/env/url")},
-    ("POST", _P + "/sources/upload"): _project(K.VIDEO_UPLOAD),
+    **{("POST", _P + tail): _project(K.VIDEO_UPLOAD) for tail in (
+        "/sources/upload", "/sources/drive")},   # T-198: file and Drive-link intake
     **{("POST", _P + tail): _RUN for tail in ("/run", "/explore", "/crawl-approval")},
     **{("POST", _P + tail): _CRED for tail in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},

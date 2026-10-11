@@ -8,6 +8,7 @@ many bytes the app actually pulled, and collect the response.
 from __future__ import annotations
 
 import asyncio
+import os
 from collections.abc import AsyncIterator, Iterable, Iterator
 from typing import Any
 
@@ -76,6 +77,22 @@ async def _post(path: str, chunks: Iterable[bytes], headers: dict[str, str], ser
     return status, body
 
 
+def _sign_in(headers: dict[str, str]) -> None:
+    """T-204: this helper bypasses `TestClient`, so tests/conftest.py's signed-in patch does not
+    reach it; send the same suite-admin session cookie in the test's own scratch store. Skipped
+    when the test has no scratch store (it must never touch the real repo's `.auth/`)."""
+    import auth_login_fixture
+
+    from autotester.ui.auth_middleware import SESSION_COOKIES
+
+    if not auth_login_fixture.enabled():
+        return
+    if not os.environ.get("AUTOTESTER_ROOT") and "AUTOTESTER_AUTH_DIR" not in os.environ:
+        return
+    token = auth_login_fixture.ensure_session()
+    headers["cookie"] = "; ".join(f"{name}={token}" for name in SESSION_COOKIES)
+
+
 def post_stream(path: str, chunks: Iterable[bytes], *, content_length: int | None = None,
                 content_type: str | None = None, host: str = "testserver"
                 ) -> tuple[int, bytes, Served]:
@@ -84,6 +101,7 @@ def post_stream(path: str, chunks: Iterable[bytes], *, content_length: int | Non
                "host": host}
     if content_length is not None:
         headers["content-length"] = str(content_length)
+    _sign_in(headers)
     served = Served()
     status, body = asyncio.run(_post(path, chunks, headers, served))
     return status, body, served
