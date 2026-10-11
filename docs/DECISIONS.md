@@ -2387,3 +2387,20 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-11)
 
 **Links:** D-081; D-072; T-198; T-199; T-201; T-203; T-206; qa/briefs/t201a-report-delivery.md; qa/gates/t199-first-live-write.md; qa/gates/t203-host-and-dns.md
+
+## D-084 | 2026-10-11 | type: decision | status: ACTIVE
+
+**What:** The Pathlynks live run of 2026-10-11 (T-145) returned 37 of 41 cases INCONCLUSIVE for reasons on AutoTester's side. The maker listed the causes (AT-887, AT-888, AT-774, AT-773) and said the fixes were Candidates that needed Umesh's approval. Umesh replied in chat: "37 INCONCLUSIVE kyun --- mujhse clear krr lee aur khatam krr and dexcison lee". Maker's reading: the fixes for the causes of those 37 are approved for build, and the design choices inside them are the maker's to make.
+1. **Approved for build (moved out of Candidates, approved: 2026-10-11):** AT-888 (one failed case must not take the shared browser session down for the rest of its batch), AT-887 (a crawl's screens become reviewable flows so case generation has the product's real screens), AT-890 (the case-expansion prompt is masked before it reaches a provider; same file as AT-887, built with it), AT-773 (the judge must not PASS a case whose own evidence shows an unmet assertion), AT-774 (a retired case is not run).
+2. **Maker's design decisions under this entry:** for the student test account, cases come from the crawled student screens; the four flows taken from the older admin/CRM video are not run against this account. AT-774 is built after T-205 merges because it edits the run-selection code T-205 is moving. AT-888 is built in parallel with T-177 slice 0 although both touch browser/session.py and browser/video.py; whichever merges second reconciles.
+3. **Not decided here:** AT-891 (whether pathlynks.vidysea.com is recorded as production in the approval) stays Umesh's answer. No rerun with typing happens before it is answered.
+
+**Why:** A run in which 90 percent of cases test nothing cannot produce the Pathlynks bug list Umesh asked for first (D-081 item 2). Every one of the causes is in AutoTester, not in Pathlynks.
+
+**Result:** Builders dispatched in their own worktrees. Each unit still needs its own checker PASS before merge. No rerun has been fired by this entry.
+
+**Changes-authorized:** qa/QUEUE.md (the five rows move from Candidates to the buildable queue with approved: 2026-10-11). No ARCHITECTURE.md prose, no enforcement path.
+
+**Approved-by:** Umesh (chat, 2026-10-11)
+
+**Links:** D-081; D-082; T-145; AT-773; AT-774; AT-887; AT-888; AT-890; AT-891; .work/pathlynks-report/SUMMARY.md
