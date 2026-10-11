@@ -1,0 +1,80 @@
+autotester from: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\src\src\autotester\__init__.py
+
+=== 3. may_email x NotificationPref (default off; ticked AND still allowed to view) ===
+| pref | can_view_report | may_email |
+|---|---|---|
+| no pref stored (None) | True | False |
+| no pref stored (None) | False | False |
+| default NotificationPref(user) | True | False |
+| default NotificationPref(user) | False | False |
+| ticked=False | True | False |
+| ticked=False | False | False |
+| ticked=True | True | True |
+| ticked=True | False | False |
+default value of email_run_reports: False
+NotificationPref(extra field 'to') -> rejected ValidationError
+NotificationPref(extra 'cc') -> rejected ValidationError
+NotificationPref(string 'yes') -> accepted, email_run_reports=True
+NotificationPref(string 'on') -> accepted, email_run_reports=True
+NotificationPref(int 1) -> accepted, email_run_reports=True
+NotificationPref(string 'false') -> accepted, email_run_reports=False
+NotificationPref(int 2) -> rejected ValidationError
+NotificationPref(None) -> rejected ValidationError
+NotificationPref(user_id '../x') -> rejected ValidationError
+NotificationPref(user_id 'a b') -> rejected ValidationError
+NotificationPref(missing user_id) -> rejected ValidationError
+may_email(pref of a different user, can_view=True) -> True (signature has no recipient parameter)
+may_email signature: (pref: 'NotificationPref | None', *, can_view_report: 'bool') -> 'bool'
+deliver_once signature: (log: 'DeliveryLog', transport: 'MailTransport', to: 'Recipient', message: 'RenderedMessage', *, run_id: 'str', now: 'datetime', scrub: 'Callable[[str], str]', channel: 'DeliveryChannel' = <DeliveryChannel.EMAIL: 'email'>, max_attempts: 'int' = 4) -> 'DeliveryRecord | None'
+
+=== 4. deliver_once idempotency, counted on the loopback server ===
+4a sequential x3 (same run/channel/recipient): sent sent sent | server messages: 1 | record files: ['run-0001__email__u-7f3.01.json']
+4b 8 threads at once: server messages: 1 | returns: ['None', 'None', 'None', 'None', 'None', 'None', 'None', 'sent'] | exceptions: [] | records: [(1, 'sent')]
+4b2 4 OS processes at once: server messages: 1 | stdout: ['None', 'sent', 'None', 'None'] | stderr: []
+4c after crash: records: 0 markers: ['run-0001__email__u-7f3.01.json'] server messages: 1
+   replay +2m -> None | +9m59 -> None |
+   +10m01 -> ('failed', 1, 'attempt started but its outcome was never recorded; not resent', None) |
+   +3h -> ('failed', 1, None) | server messages total: 1
+4d claim-then-die (nothing sent): +1m -> None | +11m -> ('failed', 'attempt started but its outcome was never recorded; not resent') | +1d -> failed | server messages: 0 (a never-sent mail is lost: documented at-most-once)
+4e clock-skewed second worker closes a live attempt: second -> ('failed', 'attempt started but its outcome was never recorded; not resent') | first -> RAISED FileExistsError: a record for this attempt already exists | server messages: 1 | records: [(1, 'failed')]
+
+=== 4f key collision between user ids that share a dotted prefix ===
+alice.smith first -> sent attempts 1 | then alice -> sent attempts 1 recipient_user_id in returned record: alice.smith | rcpts the server saw: ['rcpt TO:<smith@example.com>'] | messages: 1
+files: ['run-0001__email__alice.smith.01.json']
+records_for_key(alice) -> [('alice.smith', 'sent')]
+both rejected: alice.smith attempts 1 | alice attempts 1 (alice's first try should be attempt 1) | rcpt tries seen: 1
+
+=== 5. retry schedule ===
+RETRY_DELAYS: ['0:01:00', '0:05:00', '0:30:00'] MAX_ATTEMPTS: 4 STALE_AFTER: 0:10:00
+retry_delay(1) = 0:01:00   next_retry_at(NOW,1) = 2026-10-11 12:01:00+00:00
+retry_delay(2) = 0:05:00   next_retry_at(NOW,2) = 2026-10-11 12:05:00+00:00
+retry_delay(3) = 0:30:00   next_retry_at(NOW,3) = 2026-10-11 12:30:00+00:00
+retry_delay(4) = None   next_retry_at(NOW,4) = None
+retry_delay(5) = None   next_retry_at(NOW,5) = None
+retry_delay(6) = None   next_retry_at(NOW,6) = None
+retry_delay(0) raises ValueError
+inbox.py mentions sleep/time.time/datetime.now/utcnow: []
+always-failing transport, max_attempts=1000: [(1, 'failed', '0:01:00'), (2, 'failed', '0:05:00'), (3, 'failed', '0:30:00'), (4, 'failed', None)] | send calls: 4
+   further calls after the bound sent: 0
+not-due test: send calls at t0, +59s, +60s -> 2 (expected 2)
+
+=== 6. outbox + selection + config ===
+select_transport(empty env) -> OutboxAdapter; is_configured=False
+select_transport(password only) -> OutboxAdapter; is_configured=False
+select_transport(no FROM) -> OutboxAdapter; is_configured=False
+select_transport(port abc) -> OutboxAdapter; is_configured=False
+select_transport(port 0) -> OutboxAdapter; is_configured=False
+select_transport(port 99999) -> OutboxAdapter; is_configured=False
+select_transport(host with space) -> OutboxAdapter; is_configured=False
+select_transport(bad sender) -> OutboxAdapter; is_configured=False
+select_transport(sender name CRLF) -> OutboxAdapter; is_configured=False
+select_transport(sender name 100) -> SmtpAdapter; is_configured=True
+select_transport(full) -> SmtpAdapter; is_configured=True
+outbox files after 2 deliveries: ['run-0001__email__u-7f3.eml']
+outbox message To: alice.rcpt@example.com | From: AutoTester <autotester@localhost.invalid> | multipart: False | Cc/Bcc: None None
+outbox key traversal: '../x': refused; 'a/b': refused; 'a\\b': refused; 'x..y': refused; '': refused; '.hidden': refused; 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk': refused; 
+under TEST_MARKER, host smtp.example.com -> failed live SMTP is disabled under test | sockets opened: []
+   host 'localhost.example.com' under marker -> live SMTP is disabled under test
+   host '127.0.0.2' under marker -> live SMTP is disabled under test
+   host '0.0.0.0' under marker -> live SMTP is disabled under test
+   host '[::1]': config rejected
