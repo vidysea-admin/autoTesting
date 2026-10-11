@@ -3,7 +3,7 @@
 Contract: qa/contracts/failure-bundle.md (FB4, FB5 judged here; FB1-FB3 already PASS, `qa/verdicts/t178-failure-bundle.md`, must keep passing); review-gate.md shape; core-invariants C2/C5
 Goal task: T-178 (stays pending until a checker PASS here; the maker closes it)
 Brief: qa/briefs/t178-failure-bundle-fb4-fb5.md
-Status: ready-for-check
+Status: checked-PASS (merged 1ddbb377, D-082)
 Fix cycle: 1
 Repair base: a7d3fa6c (checker seat A full suite FAIL: tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed; the unit's two `autotester expand <slug> --proposals` advice sites were not registered)
 Integrated master: 8791b76bf97ff0bfdd65e2228afb70bb65f37b1f (merge commit 2587a7b18699e5e24036dd8bf14922f51fc3ee77); conflicts only in src/autotester/cli.py and src/autotester/core/paths.py (both docstring-only, master's wording taken)
