@@ -6,8 +6,9 @@
 **Goal task:** T-202
 **Date:** 2026-10-11
 **Fix cycle:** 0
-Branch: wave/t202-any-model-provider · Base: master 3d8f7d5a · Source: wave/t202-litellm code commits 769358e5 + c27133d8 (never PASSed; qa-only commits and its issue rows not carried; the branch and `codex/t202-completion` are untouched)
-Product commit under check: fe0f5be98766f6341593451e0205d458f281a115 (b4716509 plus one test assertion; this manifest is the only later change)
+Branch: wave/t202-any-model-provider · Base: master 3d8f7d5a (integrated, see below) · Source: wave/t202-litellm code commits 769358e5 + c27133d8 (never PASSed; qa-only commits and its issue rows not carried; the branch and `codex/t202-completion` are untouched)
+Product commit under check: 8e66190b (fe0f5be9, then the integration merges 8a9bafaa and 41aff5a5, then a one-line test registry swap; this manifest is the only later change)
+Integrated master: 259b122d (merge commit 41aff5a5; an earlier merge of 7201a820 is 8a9bafaa). Master brought T-153, T-167 (the `release` command) and T-154. Conflict: `uv.lock` only (took master's lock, ran `uv lock`: litellm==1.104.0 and its closure re-added, 123 packages, additions only, `uv lock --check` clean). `cli.py` auto-merged to 304 lines, so expand's provider resolution moved into the existing `cli_orchestrate.py::usable_provider` (cli.py is 295, cli_orchestrate.py 276); `tests/test_cli_advice_resolves.py::EXPECTED_SITES` swaps `("cli.py", "providers")` for `("cli_orchestrate.py", "providers")` because the advice text moved (no assertion weakened). `qa/issues.jsonl` is identical to master's. `pyproject.toml` merged automatically (litellm pin kept).
 Executor: claude-sonnet-subagent (maker build subagent)
 
 Policy-Version: proportional-verification/2026-10-10.9
@@ -22,7 +23,7 @@ Note for the coordinator: the brief (section 1) says `Dual check: no`; the dispa
 - New (from `wave/t202-litellm`, content as built there plus the AT-790 fix): `providers/litellm_provider.py` (267 lines), `providers/litellm_schema.py` (88), `providers/images.py` (26); `tests/litellm_fake.py`, `tests/test_litellm_provider.py`, `tests/test_litellm_guard.py`, `tests/test_provider_factory.py`. D-072 item 2 authorizes the modules.
 - `providers/__init__.py` (edited in place): `litellm` registered; `parse_spec`, `for_role(project, role)` (the one factory), `why_unavailable` (changed here: None when ready, else the provider's reason or a plain fallback, so callers need one `if`).
 - `ui/routes_runs.py`: `_judge_or_400` + `_prepare_run` calls it, so the ONE construction site serves both the press and the queue's start-time re-check (`_run_queued` already turns the 400 into `refused`, hosting HO16/HO19); annotations `Provider`. `ui/run_execution.py`: annotations only. `ui/routes_learn.py`: `for_role(project, "agent")`; a malformed spec is now a refusal page (the old branch gave a 500); file stays at 300 lines.
-- `cli.py::expand_cases` (LL11, not on the old branch): `--provider` takes `litellm:<model>` (`parse_spec`), a bad spec or an unavailable provider exits 1 with the one-line reason before any model call.
+- `cli.py::expand_cases` calls `cli_orchestrate.usable_provider` (LL11, not on the old branch): `--provider` takes `litellm:<model>` (`parse_spec`), a bad spec or an unavailable provider exits 1 with the one-line reason before any model call.
 - LL10: `_load_litellm` sets `litellm.telemetry = False`. Verified in the installed 1.104.0 source: the package has NO `telemetry` attribute or switch (no phone-home code found; `LITELLM_MODE=PRODUCTION` + local cost map stop the `.env` load and the cost-map fetch). The assignment makes the contract's literal check true and is a no-op on this pin. Contract wording may want an amendment.
 - Dependency: `litellm==1.104.0` exact pin in `pyproject.toml`; `uv.lock` taken from the source branch (additions only, +1548 lines: litellm's transitive closure, no existing package changed or removed); `uv lock --check` clean on master's base. No other dependency changed. Chosen by the earlier unit; no `uv add` was needed.
 - `.env.example`: keys only. The placeholder `AUTOTESTER_MODEL=` that hosting added under "Group 10 placeholders" moved into "Model providers" (one key, one place). `docs/MAP.md` regenerated.
@@ -46,21 +47,21 @@ Note for the coordinator: the brief (section 1) says `Dual check: no`; the dispa
 - **LL14 — Design rules and one concept.** New modules obey the doctor rules; a class or function is defined once; `autotester doctor` and `ruff check` pass.
 
 ## Verification
-Pre-check: fe0f5be9 uv run pytest -p no:xdist <brief section 6 set> tests/test_ui_runs_queue.py tests/test_expand_cli.py tests/test_execute_serial_evidence_scope.py tests/test_pinned_regression.py -> 239 passed, 1 warning in 69.73s t=76 (no full suite, no directory run; ruff clean, doctor clean, uv lock --check clean on fe0f5be9)
-Pre-check[LL1]: fe0f5be9 uv run pytest -p no:xdist tests/test_provider_factory.py -k "parse_spec or round_trippable" -> 14 passed, 17 deselected t=5
-Pre-check[LL2]: fe0f5be9 uv run pytest -p no:xdist tests/test_provider_factory.py -k "ll2 or neither_route or asks_the_factory or malformed" -> 10 passed, 21 deselected t=5 (the three-way TestClient test, the AST no-construction test, the factory-called tests)
-Pre-check[LL3]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed in 0.54s t=6 (schema, tool, json+one repair, garbage JSON, mismatch)
-Pre-check[LL4]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run as LL3; `test_see_video_is_unsupported`); vision stays with gemini by registry, not touched
-Pre-check[LL5]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_guard.py -> 21 passed in 31.21s t=37 (stage guard through `grade()`, provider guard direct, repair call, undeclared `.env` value, exported key)
-Pre-check[LL6]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run; `test_one_physical_call_zero_retries_and_usage_recorded`, repair-counts test)
-Pre-check[LL7]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run; usage and trace span with `provider == label`)
-Pre-check[LL8]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_guard.py -> 21 passed (same run as LL5; kwargs from env, `os.environ` unchanged, canary key and endpoint through every error path, AT-790 echo tests)
-Pre-check[LL9]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run; gemini dialect and plain schema tests)
-Pre-check[LL10]: fe0f5be9 uv run pytest -p no:xdist tests/test_litellm_guard.py -> 21 passed (same run; subprocess `sys.modules` check, fake callbacks, and the REAL pinned SDK loaded in a subprocess with socket connect disabled: telemetry False, callback lists empty)
-Pre-check[LL11]: fe0f5be9 uv run pytest -p no:xdist tests/test_provider_factory.py -k "ll11 or learn_route" -> 4 passed, 27 deselected t=4 (queued run `refused` with model + variable and no browser, CLI one line exit 1, CLI malformed spec, learn route malformed spec); `available()` cases and the run-route 400 are in `test_litellm_guard.py` and the LL2 tests above
-Pre-check[LL12]: fe0f5be9 uv run pytest -p no:xdist tests/test_providers.py tests/test_langchain_fallback.py tests/test_ensemble_honesty.py -> 29 passed, 1 warning t=6 (no assertion edited; `no_network` is applied to all three new test files)
-Pre-check[LL13]: fe0f5be9 uv lock --check -> Resolved 118 packages in 2ms (no change); `test_litellm_is_pinned_to_one_exact_version_in_pyproject` is in the LL3 run
-Pre-check[LL14]: fe0f5be9 uv run ruff check src tests scripts -> All checks passed!; uv run autotester doctor -> doctor: clean
+Pre-check: 8e66190b uv run pytest -p no:xdist <brief section 6 set> tests/test_ui_runs_queue.py tests/test_expand_cli.py tests/test_execute_serial_evidence_scope.py tests/test_pinned_regression.py -> 319 passed, 1 warning in 83.01s t=89 (adds tests/test_cli_advice_resolves.py, test_cli_surface.py, test_cli_harness_safety.py; no full suite, no directory run; ruff clean, doctor clean, uv lock --check clean on fe0f5be9)
+Pre-check[LL1]: 8e66190b uv run pytest -p no:xdist tests/test_provider_factory.py -k "parse_spec or round_trippable" -> 14 passed, 17 deselected t=5
+Pre-check[LL2]: 8e66190b uv run pytest -p no:xdist tests/test_provider_factory.py -k "ll2 or neither_route or asks_the_factory or malformed" -> 10 passed, 21 deselected t=5 (the three-way TestClient test, the AST no-construction test, the factory-called tests)
+Pre-check[LL3]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed in 0.36s t=4 (schema, tool, json+one repair, garbage JSON, mismatch)
+Pre-check[LL4]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run as LL3; `test_see_video_is_unsupported`); vision stays with gemini by registry, not touched
+Pre-check[LL5]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_guard.py -> 21 passed in 25.58s t=31 (stage guard through `grade()`, provider guard direct, repair call, undeclared `.env` value, exported key)
+Pre-check[LL6]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run; `test_one_physical_call_zero_retries_and_usage_recorded`, repair-counts test)
+Pre-check[LL7]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run; usage and trace span with `provider == label`)
+Pre-check[LL8]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_guard.py -> 21 passed (same run as LL5; kwargs from env, `os.environ` unchanged, canary key and endpoint through every error path, AT-790 echo tests)
+Pre-check[LL9]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_provider.py -> 16 passed (same run; gemini dialect and plain schema tests)
+Pre-check[LL10]: 8e66190b uv run pytest -p no:xdist tests/test_litellm_guard.py -> 21 passed (same run; subprocess `sys.modules` check, fake callbacks, and the REAL pinned SDK loaded in a subprocess with socket connect disabled: telemetry False, callback lists empty)
+Pre-check[LL11]: 8e66190b uv run pytest -p no:xdist tests/test_provider_factory.py -k "ll11 or learn_route" -> 4 passed, 27 deselected t=4 (queued run `refused` with model + variable and no browser, CLI one line exit 1, CLI malformed spec, learn route malformed spec); `available()` cases and the run-route 400 are in `test_litellm_guard.py` and the LL2 tests above
+Pre-check[LL12]: 8e66190b uv run pytest -p no:xdist tests/test_providers.py tests/test_langchain_fallback.py tests/test_ensemble_honesty.py -> 29 passed, 1 warning t=7 (no assertion edited; `no_network` is applied to all three new test files)
+Pre-check[LL13]: 8e66190b uv lock --check -> Resolved 123 packages in 2ms (no change; diff against master's lock is additions only, 1555 lines, 0 removed); `test_litellm_is_pinned_to_one_exact_version_in_pyproject` is in the LL3 run
+Pre-check[LL14]: 8e66190b uv run ruff check src tests scripts -> All checks passed!; uv run autotester doctor -> doctor: clean
 
 ## Falsification (each in a throwaway copy of the committed tree under the session scratchpad, since deleted; the bound tree was never touched; runner `fals.py`, output below)
 - LL1 parse_spec drops the model: 14 passed -> 3 failed.
