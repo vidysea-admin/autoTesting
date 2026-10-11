@@ -17,7 +17,7 @@ from pathlib import Path
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers.base import Provider
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
 from autotester.schema.enums import Outcome
@@ -34,7 +34,7 @@ from autotester.store.project_store import ProjectStore
 
 
 def _run_and_grade_resilient(
-    case: Case, session: BrowserSession, judge: LangChainFallbackProvider, run_id: str,
+    case: Case, session: BrowserSession, judge: Provider, run_id: str,
     store: ProjectStore,
 ) -> tuple[RawResult, Verdict]:
     """Never let one case take the whole run down (AT-574). `run_and_grade_
@@ -76,7 +76,7 @@ def _wipe_entry_profile(profile: Path) -> None:
 
 def _run_entry_case(
     case: Case, project: Project, secrets: SecretStore, run_dir: Path, slug: str,
-    judge: LangChainFallbackProvider, run_id: str, store: ProjectStore,
+    judge: Provider, run_id: str, store: ProjectStore,
     *, budget: RunBudget,
 ) -> tuple[RawResult, Verdict]:
     """A dedicated, wiped-before-every-run profile so an entry-screen case is
@@ -108,7 +108,7 @@ def _run_entry_case(
 
 def _run_cases_serially(
     cases: list[Case], entry_flags: list[bool], project: Project, secrets: SecretStore,
-    run_dir: Path, paths: ProjectPaths, slug: str, judge: LangChainFallbackProvider,
+    run_dir: Path, paths: ProjectPaths, slug: str, judge: Provider,
     run_id: str, store: ProjectStore,
     *, budget: RunBudget,
 ) -> None:
@@ -149,7 +149,7 @@ def _run_cases_serially(
 
 def _run_entry_cases(
     entry_cases: list[Case], project: Project, secrets: SecretStore, run_dir: Path,
-    slug: str, judge: LangChainFallbackProvider, run_id: str, store: ProjectStore,
+    slug: str, judge: Provider, run_id: str, store: ProjectStore,
     *, budget: RunBudget,
 ) -> None:
     """The serial entry-case leg of a parallel run: each entry case keeps its
@@ -166,7 +166,7 @@ def _run_entry_cases(
 
 def _run_cases_in_parallel(
     cases: list[Case], entry_flags: list[bool], plan: ParallelPlan, project: Project,
-    secrets: SecretStore, run_dir: Path, slug: str, judge: LangChainFallbackProvider,
+    secrets: SecretStore, run_dir: Path, slug: str, judge: Provider,
     run_id: str, store: ProjectStore, approval: RunApproval,
     *, budget: RunBudget,
 ) -> None:

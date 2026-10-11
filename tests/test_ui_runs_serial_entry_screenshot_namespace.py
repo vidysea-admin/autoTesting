@@ -94,7 +94,8 @@ def test_entry_and_ordinary_case_screenshots_never_collide_on_disk(
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(
+        routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
 
     def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,

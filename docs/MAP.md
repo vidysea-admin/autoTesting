@@ -56,7 +56,10 @@
 | `providers/gemini.py` | Gemini provider: the `vision` role (video understanding), plus `agent`/`judge` |
 | `providers/gemini_files.py` | Upload a video to the Files API and wait until the service can actually read it. |
 | `providers/gemini_schema.py` | Turn a Pydantic model into a schema Gemini's `response_schema` will accept. |
+| `providers/images.py` | One job: turn a prompt plus screenshot files into OpenAI-style message content. |
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
+| `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
+| `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |

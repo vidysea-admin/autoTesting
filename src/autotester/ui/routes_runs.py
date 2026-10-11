@@ -18,7 +18,8 @@ from autotester.core.consent import ApprovalRequired
 from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import placeholder_keys
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers import for_role, why_unavailable
+from autotester.providers.base import Provider, ProviderError
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case, CasePriority
 from autotester.schema.catalog import TIER_BY_CLASS, Catalog
@@ -120,7 +121,7 @@ def _plan_under_shared_budget(project: Project, run_id: str) -> ParallelPlan:
 def _execute_with_trace(
     store: ProjectStore, run_id: str, secrets: SecretStore, project: Project,
     cases: list[Case], entry_flags: list[bool], run_dir: Path, paths: ProjectPaths,
-    slug: str, judge: LangChainFallbackProvider, approval: RunApproval,
+    slug: str, judge: Provider, approval: RunApproval,
     catalog_snapshot: Catalog | None = None,
 ) -> ParallelPlan:
     """AT-562/AT-564: build this run's `StageContext` with the project's real
@@ -158,11 +159,24 @@ def _execute_with_trace(
     return plan
 
 
+def _judge_or_400(project: Project) -> Provider:
+    """The project's judge, or a 400 saying why none can serve (LL11): the model and the one
+    variable to set, never a key, a prompt or an endpoint value. The queue turns the 400 of a
+    queued run into `refused` (HO16/HO19), so a run launches no browser without a judge."""
+    try:
+        judge = for_role(project, "judge")
+    except ProviderError as exc:
+        raise HTTPException(400, str(exc)) from None
+    if why := why_unavailable(judge):
+        raise HTTPException(400, f"no AI provider is configured ({why}) -- cannot grade a run")
+    return judge
+
+
 class _Prepared(NamedTuple):
     store: ProjectStore
     project: Project
     cases: list[Case]
-    judge: LangChainFallbackProvider
+    judge: Provider
     paths: ProjectPaths
     secrets: SecretStore
     approval: RunApproval
@@ -184,11 +198,7 @@ def _prepare_run(slug: str, priorities: list[CasePriority] | None = None) -> _Pr
     cases = store.list_cases(priorities=priorities)  # FB4: selected priorities + pinned p0
     if not cases:
         raise HTTPException(400, f"project '{slug}' has no cases to run")
-    judge = LangChainFallbackProvider()
-    if not judge.available():
-        raise HTTPException(
-            400, "no AI provider is configured (set an API key in .env) -- cannot grade a run"
-        )
+    judge = _judge_or_400(project)
     paths = ProjectPaths(slug)
     secrets = SecretStore.load(project, paths.env_file, strict=False)
     account_keys = _require_declared_values(project, secrets, slug, cases)

@@ -158,7 +158,7 @@ def test_every_site_is_reported_with_a_line_a_human_can_open() -> None:
 
 EXPECTED_SITES = {
     ("cli.py", "expand"),
-    ("cli.py", "providers"),
+    ("cli_orchestrate.py", "providers"),   # T-202: expand's refusal moved here from cli.py
     ("cli_orchestrate.py", "ingest register"),
     ("cli_issues.py", "ingest analyze"),
     ("cli_issues.py", "ingest list"),

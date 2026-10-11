@@ -224,11 +224,7 @@ def expand_cases(
     except (ValueError, review_stage.FlowSpecNotReviewed) as exc:
         typer.secho(f"{exc}; review with `autotester expand {project} --proposals`", fg="yellow")
         raise typer.Exit(1) from None
-    model = providers.get(provider)
-    if not model.available():
-        typer.secho(f"provider '{provider}' has no credentials — run `autotester providers`",
-                    fg="red")
-        raise typer.Exit(1)
+    model = cli_orchestrate.usable_provider(provider)   # LL11: refuses before any model call
     try:
         cases = expand_stage.expand(spec, model, store=store_)
     except (ValueError, review_stage.FlowSpecNotReviewed, ProviderError) as exc:
