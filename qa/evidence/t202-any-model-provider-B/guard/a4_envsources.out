@@ -1,0 +1,39 @@
+== exported (process-env) secrets NOT in the vendor-key list, not in .env ==
+  AWS_SECRET_ACCESS_KEY  CALLED(1)              leak=['call0.messages']
+  AZURE_API_KEY          CALLED(1)              leak=['call0.messages']
+  MISTRAL_API_KEY        CALLED(1)              leak=['call0.messages']
+  GROQ_API_KEY           CALLED(1)              leak=['call0.messages']
+  HF_TOKEN               CALLED(1)              leak=['call0.messages']
+  OPENROUTER_API_KEY     CALLED(1)              leak=['call0.messages']
+  DEEPSEEK_API_KEY       CALLED(1)              leak=['call0.messages']
+  COHERE_API_KEY         CALLED(1)              leak=['call0.messages']
+  AZURE_API_BASE         CALLED(1)              leak=['call0.messages']
+  control: listed names
+  OPENAI_API_KEY         REFUSED/ProviderError 
+  ANTHROPIC_API_KEY      REFUSED/ProviderError 
+  GEMINI_API_KEY         REFUSED/ProviderError 
+  GOOGLE_API_KEY         REFUSED/ProviderError 
+  LITELLM_API_KEY        REFUSED/ProviderError 
+== same names but ALSO in the repo-root .env (load_repo_env path) ==
+  AZURE in .env: REFUSED/ProviderError
+== .env parse shapes: does the value the provider guards equal what a human thinks is the secret? ==
+  export prefix                                           REFUSED/ProviderError
+  double-quoted                                           REFUSED/ProviderError
+  single-quoted                                           REFUSED/ProviderError
+  hash no space                                           REFUSED/ProviderError
+  hash w/ space comment                                   REFUSED/ProviderError
+  interpolation ${A}                                      REFUSED/ProviderError
+  interpolation literal ${A} (raw text a user may type)   CALLED(1)
+  CRLF line ends                                          REFUSED/ProviderError
+  BOM first line                                          REFUSED/ProviderError
+== multi-line secret (PEM-like) in quoted .env value; prompt carries ONE line ==
+  one 52-char line of the key: CALLED(1) leak= ['call0.messages']
+  whole PEM: REFUSED/ProviderError
+  whole PEM, newlines->space: REFUSED/ProviderError
+== whitespace-only / junk values (DoS?) ==
+  K=' ' (single space)       REFUSED/ProviderError
+  K="\n"                     CALLED(1)
+  K='x'                      REFUSED/ProviderError
+== unreadable / odd .env files ==
+  invalid UTF-8 .env: REFUSED/ProviderError exc= ProviderError('litellm:openai/gpt-4o: prompt withheld, a credential value reached it')
+  .env is a directory: CALLED

@@ -1,0 +1,23 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 4.21s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_litellm_is_pinned_to_one_exact_version_in_pyproject ___________
+
+    def test_litellm_is_pinned_to_one_exact_version_in_pyproject() -> None:
+        """LL13: an exact `==` pin (the lock side is `uv lock --check`)."""
+        root = Path(__file__).resolve().parents[1]
+        deps = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))["project"][
+            "dependencies"]
+        pins = [d for d in deps if d.split("==")[0].split(">")[0].split("<")[0].strip() == "litellm"]
+>       assert len(pins) == 1 and "==" in pins[0] and not any(c in pins[0] for c in "<>~!^*")
+E       AssertionError: assert (1 == 1 and '==' in 'litellm>=1.104.0')
+E        +  where 1 = len(['litellm>=1.104.0'])
+
+tests\test_litellm_provider.py:206: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_provider.py::test_litellm_is_pinned_to_one_exact_version_in_pyproject
+1 failed in 6.38s

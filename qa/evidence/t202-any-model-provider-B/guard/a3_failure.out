@@ -1,0 +1,33 @@
+== secret value in vendor exception ==
+exact secret                                   calls=1 needle_in_msg=False msg='litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)'
+secret lowercased                              calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: auth failed for zq7!kp2x9lm4'
+secret percent-encoded                         calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: GET /x?key=Zq7%21kP2x9Lm4'
+secret base64                                  calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: Authorization: Basic WnE3IWtQMng5TG00'
+secret json-escaped (\u0021)                   calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: {"bad":"Zq7\\u0021kP2x9Lm4"}'
+secret reversed                                calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad 4mL9x2Pk!7qZ'
+secret split by space                          calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad Z q 7 ! k P 2 x 9 L m 4'
+secret split (first 6 / last 6)                calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad Zq7!kP ... 2x9Lm4'
+secret html entities                           calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad &#90;&#113;&#55;&#33;&#107;&#80;&#50;&#120;&#57;&#76;&#109;&#52;'
+== endpoint api_key / api_base in vendor exception ==
+api_key exact                                  calls=1 needle_in_msg=False msg='litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)'
+api_key lowercased                             calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad key sk-endpointkey-abc123xyz'
+api_key percent-encoded                        calls=1 needle_in_msg=False msg='litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)'
+api_key base64                                 calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: Bearer-b64 c2stRW5kcG9pbnRLZXktQWJDMTIzeHl6'
+api_key last 12 chars only                     calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad key ...ey-AbC123xyz'
+api_base exact                                 calls=1 needle_in_msg=False msg='litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)'
+api_base lowercased host                       calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: connect to https://inference.example.com/v1/chat/completions'
+api_base host only                             calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: connect to Inference.Example.Com:443'
+== prompt echo in vendor exception (LL8 'message does not contain the prompt') ==
+echo prompt first 30 chars                     calls=1 needle_in_msg=False msg='litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)'
+echo prompt chars 31..120                      calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad request: s the dashboard after the user signs in with the form. The login page sh'
+echo prompt tail                               calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad request: ...board after the user signs in with the form. TAIL-MARKER-XYZ'
+echo prompt JSON-escaped (newline in first 30) calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad request: Line one\\nLine two is here ok'
+echo prompt with quotes JSON-escaped           calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: bad: {"content": "He said \\"go now\\" to the user and left"}'
+echo prompt, 1 space collapsed                 calls=1 needle_in_msg=False msg='litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)'
+echo prompt 300-char limit boundary (299)      calls=1 needle_in_msg=True msg='litellm:openai/gpt-4o judge call failed: RuntimeError: xxxxxxxxxxhboard after the user signs in with the form. The login page shows the dash'
+long exception 301+ chars with prompt echo     calls=1 needle_in_msg=False msg='litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)'
+== exceptions that carry nested cause/context ==
+str: litellm:openai/gpt-4o judge call failed: RuntimeError: (details withheld)
+__cause__: None | __suppress_context__: True | __context__ str: auth Zq7!kP2x9Lm4 and Grade this: The login page sho
+leak places: ['exc.__context__.str(programmatic)']  + (only programmatic __context__ shows):
+also: ProviderError.__traceback__ frames keep locals: frame run.env_text; found

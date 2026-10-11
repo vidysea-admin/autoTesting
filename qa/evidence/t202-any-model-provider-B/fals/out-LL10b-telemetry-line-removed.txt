@@ -1,0 +1,45 @@
+GREEN-BEFORE
+..                                                                       [100%]
+2 passed in 16.28s
+
+AFTER-EDIT
+.F                                                                       [100%]
+================================== FAILURES ===================================
+________ test_the_real_pinned_sdk_is_quiet_after_the_provider_loads_it ________
+
+    def test_the_real_pinned_sdk_is_quiet_after_the_provider_loads_it() -> None:
+        """LL10 against the real package, not the fake: telemetry False, no callback list
+        non-empty, and not one socket connect while it is imported (the pinned version has no
+        `litellm.telemetry` switch of its own; the provider sets the attribute so it reads False)."""
+        code = chr(10).join([
+            "import socket",
+            "def refuse(*a, **k): raise AssertionError('network touched')",
+            "socket.socket.connect = refuse",
+            "from autotester.providers.litellm_provider import LiteLLMProvider",
+            "LiteLLMProvider(model='openai/gpt-4o').available()",
+            "import litellm",
+            "assert litellm.telemetry is False",
+            "assert not (litellm.success_callback or litellm.failure_callback or litellm.callbacks)",
+            "print('quiet')"])
+        done = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=240)
+>       assert done.returncode == 0 and "quiet" in done.stdout, done.stderr[-800:]
+E       AssertionError: teError(f"module {__name__!r} has no attribute {name!r}")
+E         AttributeError: module 'litellm' has no attribute 'telemetry'
+E         Exception ignored in: <function BaseEventLoop.__del__ at 0x0000018A027FCCC0>
+E         Traceback (most recent call last):
+E           File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 695, in __del__
+E             self.close()
+E           File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 696, in close
+E             self._close_self_pipe()
+E           File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\asyncio\proactor_events.py", line 776, in _close_self_pipe
+E             self._ssock.close()
+E             ^^^^^^^^^^^
+E         AttributeError: 'ProactorEventLoop' object has no attribute '_ssock'
+E         
+E       assert (1 == 0)
+E        +  where 1 = CompletedProcess(args=['D:\\autoTesting\\.worktrees\\t202-any-model-provider\\.venv\\Scripts\\python.exe', '-c', "impo...n    self._ssock.close()\n    ^^^^^^^^^^^\nAttributeError: \'ProactorEventLoop\' object has no attribute \'_ssock\'\n').returncode
+
+tests\test_litellm_guard.py:145: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_guard.py::test_the_real_pinned_sdk_is_quiet_after_the_provider_loads_it
+1 failed, 1 passed in 15.63s

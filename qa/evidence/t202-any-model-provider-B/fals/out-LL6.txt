@@ -1,0 +1,32 @@
+GREEN-BEFORE
+.                                                                        [100%]
+1 passed in 0.42s
+
+AFTER-EDIT
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_one_physical_call_zero_retries_and_usage_recorded ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019E944AF750>
+
+    def test_one_physical_call_zero_retries_and_usage_recorded(monkeypatch: pytest.MonkeyPatch) -> None:
+        fake = install(monkeypatch, [reply(json.dumps(GOOD), prompt_tokens=21, completion_tokens=5)])
+        _with_key(monkeypatch)
+        spans: list[dict[str, Any]] = []
+    
+        class _Trace:
+            def record_llm(self, **kw: Any) -> None:
+                spans.append(kw)
+    
+        provider = _provider()
+        provider.trace = _Trace()  # type: ignore[assignment]
+        provider.judge("grade", Answer, prompt_file="p.md", fed_id="c1")
+>       assert len(fake.calls) == 1 and fake.calls[0]["num_retries"] == 0
+E       AssertionError: assert (1 == 1 and 1 == 0)
+E        +  where 1 = len([{'model': 'openai/gpt-4o', 'messages': [{'role': 'user', 'content': 'grade'}], 'num_retries': 1, 'timeout': 120, ...}])
+E        +    where [{'model': 'openai/gpt-4o', 'messages': [{'role': 'user', 'content': 'grade'}], 'num_retries': 1, 'timeout': 120, ...}] = <module 'litellm'>.calls
+
+tests\test_litellm_provider.py:130: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_litellm_provider.py::test_one_physical_call_zero_retries_and_usage_recorded
+1 failed in 0.73s
