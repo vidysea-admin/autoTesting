@@ -1,0 +1,144 @@
+=== headless 0
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+LAUNCH ARGS: ['--disable-blink-features=AutomationControlled', '--no-sandbox', '--disable-dev-shm-usage']
+PIDS: [16424, 38208, 60920, 78292] names: ['chrome-headless-shell.exe']
+PIDs whose real cmdline has a remote-debugging flag: [60920, 78292]
+BROWSER PROC 78292 chrome-headless-shell.exe C:\Users\Lenovo\AppData\Local\ms-playwright\chromium_headless_shell-1234\chrome-headless-shell-win64\chrome-headless-shell.exe --disable-fie ... False False
+LISTENERS: []
+PORTFILE exists: False None
+cdp_url: None
+AFTER close: cdp_url None portfile exists False
+leftover procs for profile: []
+=== headless 1
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+LAUNCH ARGS: ['--disable-blink-features=AutomationControlled', '--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0']
+PIDS: [21492, 43344, 55196, 62416] names: ['chrome-headless-shell.exe']
+PIDs whose real cmdline has a remote-debugging flag: [21492, 43344]
+BROWSER PROC 21492 chrome-headless-shell.exe C:\Users\Lenovo\AppData\Local\ms-playwright\chromium_headless_shell-1234\chrome-headless-shell-win64\chrome-headless-shell.exe --disable-fie ... True True
+LISTENERS: [('127.0.0.1:59923', 21492)]
+PORTFILE exists: True ['59923', '/devtools/browser/e50b7127-7526-489f-8bad-dca89b57d09a']
+cdp_url: http://127.0.0.1:59923
+accepts 127.0.0.1: True
+accepts 127.0.0.2: False
+LAN ip 192.168.1.4 accepts: False
+accepts ::1: False
+accepts localhost(any family): True
+version: HeadlessChrome/151.0.7922.34 ws://127.0.0.1:59923/devtools/browser/e50b7127-7526-489f-8bad-dca89b57d09a
+ws path matches portfile line2: True
+listener owner pids for port: [21492] in our tree: True
+tabs via /json/list: ['about:blank']
+AFTER close: cdp_url None portfile exists False
+port closed: True
+leftover procs for profile: []
+=== headed 0
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+LAUNCH ARGS: ['--disable-blink-features=AutomationControlled', '--no-sandbox', '--disable-dev-shm-usage']
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 14, in <module>
+    pids, by = procs_for_profile(paths.profile_dir)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad\common.py", line 28, in procs_for_profile
+    rows = json.loads(out)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Invalid control character at: line 1 column 316081 (char 316080)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 39, in <module>
+    pids_before = pids
+                  ^^^^
+NameError: name 'pids' is not defined
+=== headed 1
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+LAUNCH ARGS: ['--disable-blink-features=AutomationControlled', '--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0']
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 14, in <module>
+    pids, by = procs_for_profile(paths.profile_dir)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad\common.py", line 28, in procs_for_profile
+    rows = json.loads(out)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Invalid control character at: line 1 column 277691 (char 277690)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 39, in <module>
+    pids_before = pids
+                  ^^^^
+NameError: name 'pids' is not defined
+=== headed 0
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 2, in <module>
+    from common import *
+SyntaxError: source code string cannot contain null bytes
+=== headed 1
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 2, in <module>
+    from common import *
+SyntaxError: source code string cannot contain null bytes
+=== headed 0
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 2, in <module>
+    from common import *
+SyntaxError: source code string cannot contain null bytes
+=== headed 1
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\p1_bind.py", line 2, in <module>
+    from common import *
+SyntaxError: source code string cannot contain null bytes
+=== headed 0
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+LAUNCH ARGS: ['--disable-blink-features=AutomationControlled', '--no-sandbox', '--disable-dev-shm-usage']
+PIDS: [15284, 24720, 35768, 41948, 57072, 65828, 66204, 66328] names: ['chrome.exe']
+PIDs whose real cmdline has a remote-debugging flag: [15284, 66204, 66328]
+BROWSER PROC 66328 chrome.exe C:\Users\Lenovo\AppData\Local\ms-playwright\chromium-1234\chrome-win64\chrome.exe --disable-field-trial-config --disable-background-networki ... False False
+LISTENERS: []
+PORTFILE exists: False None
+cdp_url: None
+AFTER close: cdp_url None portfile exists False
+leftover procs for profile: []
+=== headed 1
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+LAUNCH ARGS: ['--disable-blink-features=AutomationControlled', '--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0']
+PIDS: [5992, 10904, 16416, 21888, 46412, 65292, 78632] names: ['chrome.exe']
+PIDs whose real cmdline has a remote-debugging flag: [5992, 16416, 65292]
+BROWSER PROC 65292 chrome.exe C:\Users\Lenovo\AppData\Local\ms-playwright\chromium-1234\chrome-win64\chrome.exe --disable-field-trial-config --disable-background-networki ... True True
+LISTENERS: [('127.0.0.1:49470', 65292)]
+PORTFILE exists: True ['49470', '/devtools/browser/8ccff00f-72fb-45c6-a650-6a89e51105e7']
+cdp_url: http://127.0.0.1:49470
+accepts 127.0.0.1: True
+accepts 127.0.0.2: False
+LAN ip 192.168.1.4 accepts: False
+accepts ::1: False
+accepts localhost(any family): True
+version: Chrome/151.0.7922.34 ws://127.0.0.1:49470/devtools/browser/8ccff00f-72fb-45c6-a650-6a89e51105e7
+ws path matches portfile line2: True
+listener owner pids for port: [65292] in our tree: True
+tabs via /json/list: ['about:blank']
+AFTER close: cdp_url None portfile exists False
+port closed: True
+leftover procs for profile: []
