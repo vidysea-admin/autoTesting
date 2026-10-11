@@ -88,4 +88,4 @@ AD1 ("exactly as it found it") against AD7 (a refusal appends a line) is built a
 ## Live browser evidence
 Not UI-touching — no surface changed. Changed paths: src/autotester/stages/adversarial.py, src/autotester/schema/ai_probe.py, src/autotester/prompts/probes/*.md, scripts/adversarial_proof.py, tests/test_adversarial.py, .gitignore, docs/MAP.md.
 
-## Status: ready-for-check
+## Status: checked-PASS (dual: A qa/verdicts/t154-adversarial-pass.a.md, B qa/verdicts/t154-adversarial-pass.b.md; cycle 0, checked 575a7c3f; merged bfec5567)
