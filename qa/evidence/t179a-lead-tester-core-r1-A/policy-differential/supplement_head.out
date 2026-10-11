@@ -1,0 +1,25 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head\src\autotester\__init__.py
+target | HEAD guard._destination | act-time (resolve_for_navigation+check_destination)
+'{{SECRET:BASE}}/x' | ACCEPT | ACCEPT host=app.example.test
+'{{SECRET:BASE}}' | ACCEPT | ACCEPT host=app.example.test
+'{{SECRET:LOGINURL}}' | ACCEPT | ACCEPT host=app.example.test
+'{{SECRET:HOST}}/x' | ACCEPT | ACCEPT host=app.example.test
+'https://{{SECRET:HOST}}/x' | REFUSE | ACCEPT host=app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://{{SECRET:HOST}}' | REFUSE | ACCEPT host=app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'//{{SECRET:HOST}}/x' | REFUSE | ACCEPT host=app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://{{SECRET:HOST}}:8443/x' | REFUSE | ACCEPT host=app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://{{SECRET:SUB}}.app.example.test/x' | REFUSE | ACCEPT host=api.app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://{{SECRET:SUB}}.{{SECRET:HOST}}/x' | REFUSE | ACCEPT host=api.app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://app.example.test:{{SECRET:PORT}}/x' | ACCEPT | ACCEPT host=app.example.test
+'https://app.example.test/{{SECRET:APP_PASS}}' | ACCEPT | ACCEPT host=app.example.test
+'http{{SECRET:PORT}}://app.example.test/x' | ACCEPT | ACCEPT host=app.example.test
+'https://app.example.test/x\n' | REFUSE | ACCEPT host=app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://app.example.test/x\r\n' | REFUSE | ACCEPT host=app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://app.example.test/x\t' | REFUSE | ACCEPT host=app.example.test   <== NARROWS (guard refuses, act-time accepts)
+'https://app.example.test/x ' | ACCEPT | ACCEPT host=app.example.test
+'{{SECRET:NOSUCH}}/x' | ACCEPT | REFUSE UndeclaredSecret   (guard accepts, act-time refuses: harmless)
+'/reports' | ACCEPT | REFUSE NavigationRefused   (guard accepts, act-time refuses: harmless)
+'/home' | ACCEPT | REFUSE NavigationRefused   (guard accepts, act-time refuses: harmless)
+'Admin portal URL' | ACCEPT | REFUSE NavigationRefused   (guard accepts, act-time refuses: harmless)
+'reports' | ACCEPT | REFUSE NavigationRefused   (guard accepts, act-time refuses: harmless)
+'app.example.test/x' | ACCEPT | ACCEPT host=app.example.test

@@ -1,0 +1,73 @@
+== (a) BEFORE edit (expect green)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4c\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4c
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 32 items
+
+tests\test_agent_read_only.py ................................           [100%]
+
+============================= 32 passed in 2.67s ==============================
+== (c) AFTER edit (expect red on intended assertion)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4c\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4c
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 32 items
+
+tests\test_agent_read_only.py .........................F.....F           [100%]
+
+================================== FAILURES ===================================
+_______ test_read_only_refuses_each_state_changing_step[fill-Name-   ] ________
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27423/test_read_only_refuses_each_st25')
+spy = <test_agent_tools.Spies object at 0x0000020B77F0E2D0>
+action = <Action.FILL: 'fill'>, target = 'Name', value = '   '
+
+    @pytest.mark.parametrize(("action", "target", "value"), _REFUSED_RO)
+    def test_read_only_refuses_each_state_changing_step(
+            tmp_path: Path, spy: Spies, action: Action, target: str, value: str | None) -> None:
+        _, out = _run(tmp_path, spy, RO, _one(action, target, value))
+>       assert not out.ok and out.refusal in (RefusalClass.WRITE_POLICY, RefusalClass.DESTINATION)
+E       AssertionError: assert (not True)
+E        +  where True = ToolOutcome(tool='run_case', ok=True, refusal=None, summary='outcome completed', artifact_ref='result:case_5c1aabebefe3').ok
+
+tests\test_agent_read_only.py:76: AssertionError
+_ test_read_only_refuses_each_state_changing_step[fill-Password-{{SECRET:APP_PASS}}] _
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27423/test_read_only_refuses_each_st31')
+spy = <test_agent_tools.Spies object at 0x0000020B7808BD10>
+action = <Action.FILL: 'fill'>, target = 'Password'
+value = '{{SECRET:APP_PASS}}'
+
+    @pytest.mark.parametrize(("action", "target", "value"), _REFUSED_RO)
+    def test_read_only_refuses_each_state_changing_step(
+            tmp_path: Path, spy: Spies, action: Action, target: str, value: str | None) -> None:
+        _, out = _run(tmp_path, spy, RO, _one(action, target, value))
+>       assert not out.ok and out.refusal in (RefusalClass.WRITE_POLICY, RefusalClass.DESTINATION)
+E       AssertionError: assert (not True)
+E        +  where True = ToolOutcome(tool='run_case', ok=True, refusal=None, summary='outcome completed', artifact_ref='result:case_d962bc365410').ok
+
+tests\test_agent_read_only.py:76: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_agent_read_only.py::test_read_only_refuses_each_state_changing_step[fill-Name-   ]
+FAILED tests/test_agent_read_only.py::test_read_only_refuses_each_state_changing_step[fill-Password-{{SECRET:APP_PASS}}]
+======================== 2 failed, 30 passed in 3.84s =========================
+== (d) RESTORED (expect green); cmp:
+identical-to-HEAD
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4c\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4c
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 32 items
+
+tests\test_agent_read_only.py ................................           [100%]
+
+============================= 32 passed in 2.62s ==============================
+DONE

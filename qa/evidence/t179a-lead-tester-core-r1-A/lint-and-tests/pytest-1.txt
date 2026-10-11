@@ -1,0 +1,13 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 131 items
+
+tests\test_agent_tools.py ..............                                 [ 10%]
+tests\test_agent_read_only.py .......................................... [ 42%]
+........................................................................ [ 97%]
+...                                                                      [100%]
+
+============================ 131 passed in 10.55s =============================

@@ -1,0 +1,10 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\merge
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 40 items
+
+tests\test_doctor.py ........................................            [100%]
+
+============================= 40 passed in 17.32s =============================

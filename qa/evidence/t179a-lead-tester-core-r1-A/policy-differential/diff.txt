@@ -1,0 +1,676 @@
+rows total=357 differing=165
+  demo/allow_writes: 34 of 95
+  demo/read_only: 69 of 95
+  demo/test_account: 34 of 95
+  ip4/allow_writes: 2 of 6
+  ip4/read_only: 3 of 6
+  ip4/test_account: 2 of 6
+  ip6/allow_writes: 1 of 5
+  ip6/read_only: 2 of 5
+  ip6/test_account: 1 of 5
+  ip6b/allow_writes: 3 of 3
+  ip6b/read_only: 3 of 3
+  ip6b/test_account: 3 of 3
+  lhost/allow_writes: 2 of 10
+  lhost/read_only: 4 of 10
+  lhost/test_account: 2 of 10
+demo | test_account | NAVIGATE:'https://app.example.test./x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'app.example.test.'
+demo | test_account | NAVIGATE:'https://user:pw@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | test_account | NAVIGATE:'https://app.example.test\\x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | test_account | NAVIGATE:'https://evil.test\\@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | test_account | NAVIGATE:'\thttps://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'//evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | test_account | NAVIGATE:'https://xn--bcher-kva.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'xn--bcher-kva.example.test'
+demo | test_account | NAVIGATE:'https://аpp.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'аpp.example.test'
+demo | test_account | NAVIGATE:'javascript:alert(1)'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'javascript'
+demo | test_account | NAVIGATE:'javascript://app.example.test/%0aalert(1)'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'data:text/html,<b>x</b>'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'data'
+demo | test_account | NAVIGATE:'file:///etc/passwd'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | test_account | NAVIGATE:'file://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'about:blank'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'about'
+demo | test_account | NAVIGATE:'ftp://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'ws://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'https://evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | test_account | NAVIGATE:'https://evil.test/app.example.test'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | test_account | NAVIGATE:'https://app.example.test.evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'app.example.test.evil.test'
+demo | test_account | NAVIGATE:'https://evilapp.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evilapp.example.test'
+demo | test_account | NAVIGATE:'https://app.example.test/x\ny'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'https://app.exa\tmple.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'https://app.example.test/x\x00'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'https://app.example.test/x\x7f'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | test_account | NAVIGATE:'https://[invalid/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE ValueError  host_of: EXC ValueError
+demo | test_account | NAVIGATE:'https://app.example.test@evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | test_account | NAVIGATE:'https://@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | test_account | NAVIGATE:'localhost:3000/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost'
+demo | test_account | NAVIGATE:'mailto:a@app.example.test'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | test_account | NAVIGATE:'https://{{SECRET:HOST}}/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | test_account | NAVIGATE:'https://{{SECRET:HOST}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | test_account | NAVIGATE:'//{{SECRET:HOST}}/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | test_account | NAVIGATE:'https://{{SECRET:HOST}}:8443/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | test_account | NAVIGATE:'https://user:{{SECRET:APP_PASS}}@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE SecretScopeError  host_of: ''
+demo | allow_writes | NAVIGATE:'https://app.example.test./x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'app.example.test.'
+demo | allow_writes | NAVIGATE:'https://user:pw@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | allow_writes | NAVIGATE:'https://app.example.test\\x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | allow_writes | NAVIGATE:'https://evil.test\\@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | allow_writes | NAVIGATE:'\thttps://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'//evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | allow_writes | NAVIGATE:'https://xn--bcher-kva.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'xn--bcher-kva.example.test'
+demo | allow_writes | NAVIGATE:'https://аpp.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'аpp.example.test'
+demo | allow_writes | NAVIGATE:'javascript:alert(1)'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'javascript'
+demo | allow_writes | NAVIGATE:'javascript://app.example.test/%0aalert(1)'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'data:text/html,<b>x</b>'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'data'
+demo | allow_writes | NAVIGATE:'file:///etc/passwd'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | allow_writes | NAVIGATE:'file://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'about:blank'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'about'
+demo | allow_writes | NAVIGATE:'ftp://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'ws://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'https://evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | allow_writes | NAVIGATE:'https://evil.test/app.example.test'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | allow_writes | NAVIGATE:'https://app.example.test.evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'app.example.test.evil.test'
+demo | allow_writes | NAVIGATE:'https://evilapp.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evilapp.example.test'
+demo | allow_writes | NAVIGATE:'https://app.example.test/x\ny'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'https://app.exa\tmple.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'https://app.example.test/x\x00'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'https://app.example.test/x\x7f'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | allow_writes | NAVIGATE:'https://[invalid/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE ValueError  host_of: EXC ValueError
+demo | allow_writes | NAVIGATE:'https://app.example.test@evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | allow_writes | NAVIGATE:'https://@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | allow_writes | NAVIGATE:'localhost:3000/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost'
+demo | allow_writes | NAVIGATE:'mailto:a@app.example.test'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | allow_writes | NAVIGATE:'https://{{SECRET:HOST}}/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | allow_writes | NAVIGATE:'https://{{SECRET:HOST}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | allow_writes | NAVIGATE:'//{{SECRET:HOST}}/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | allow_writes | NAVIGATE:'https://{{SECRET:HOST}}:8443/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | allow_writes | NAVIGATE:'https://user:{{SECRET:APP_PASS}}@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE SecretScopeError  host_of: ''
+demo | read_only | CLICK:Save
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Save changes
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Place order
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Confirm
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Apply now
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Register
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Sign up
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Add to cart
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:Sign in
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:हटाएं
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | CLICK:खाता हटाएं
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | PRESS_KEY:Enter
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | PRESS_KEY:None
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | PRESS_KEY:Delete
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | PRESS_KEY:Tab
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | FILL:''
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | FILL:'   '
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | FILL:None
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | FILL:'{{SECRET:APP_PASS}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time:   host_of: 
+demo | read_only | NAVIGATE:'https://app.example.test/account/delete?id=1&confirm=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://app.example.test/logout'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://app.example.test/reports?page=2'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'/reports'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'/home'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'Admin portal URL'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'admin portal url'
+demo | read_only | NAVIGATE:'{{SECRET:APP_PASS}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: REFUSE SecretScopeError  host_of: '{{secret'
+demo | read_only | NAVIGATE:'https://app.example.test/{{SECRET:APP_PASS}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://app.example.test./x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'app.example.test.'
+demo | read_only | NAVIGATE:'https://user:pw@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'https://app.example.test\\x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'https://evil.test\\@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'\thttps://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'//app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'//evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | read_only | NAVIGATE:'https://xn--bcher-kva.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'xn--bcher-kva.example.test'
+demo | read_only | NAVIGATE:'https://аpp.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'аpp.example.test'
+demo | read_only | NAVIGATE:'javascript:alert(1)'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'javascript'
+demo | read_only | NAVIGATE:'javascript://app.example.test/%0aalert(1)'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'data:text/html,<b>x</b>'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'data'
+demo | read_only | NAVIGATE:'file:///etc/passwd'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'file://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'about:blank'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'about'
+demo | read_only | NAVIGATE:'ftp://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'ws://app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | read_only | NAVIGATE:'https://evil.test/app.example.test'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | read_only | NAVIGATE:'https://app.example.test.evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'app.example.test.evil.test'
+demo | read_only | NAVIGATE:'https://evilapp.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evilapp.example.test'
+demo | read_only | NAVIGATE:'https://app.example.test/x\ny'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://app.exa\tmple.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://app.example.test/x\x00'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://app.example.test/x\x7f'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'https://[invalid/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE ValueError  host_of: EXC ValueError
+demo | read_only | NAVIGATE:'https://app.example.test@evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'https://@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'https://app.example.test?x=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'app.example.test'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: 'app.example.test'
+demo | read_only | NAVIGATE:'evil.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'evil.test'
+demo | read_only | NAVIGATE:'localhost:3000/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost'
+demo | read_only | NAVIGATE:'mailto:a@app.example.test'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+demo | read_only | NAVIGATE:'{{SECRET:BASE}}/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | read_only | NAVIGATE:'https://{{SECRET:HOST}}/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | read_only | NAVIGATE:'{{SECRET:LOGINURL}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | read_only | NAVIGATE:'{{SECRET:BASE}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | read_only | NAVIGATE:'https://{{SECRET:HOST}}'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | read_only | NAVIGATE:'//{{SECRET:HOST}}/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | read_only | NAVIGATE:'https://{{SECRET:HOST}}:8443/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: ACCEPT host=app.example.test  host_of: '{{secret'
+demo | read_only | NAVIGATE:'https://user:{{SECRET:APP_PASS}}@app.example.test/x'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE SecretScopeError  host_of: ''
+lhost | test_account | NAVIGATE:'http://127.0.0.1:3000/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '127.0.0.1'
+lhost | test_account | NAVIGATE:'http://localhost.evil.test/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost.evil.test'
+lhost | allow_writes | NAVIGATE:'http://127.0.0.1:3000/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '127.0.0.1'
+lhost | allow_writes | NAVIGATE:'http://localhost.evil.test/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost.evil.test'
+lhost | read_only | NAVIGATE:'http://localhost:3000/app/x?y=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=localhost  host_of: 'localhost'
+lhost | read_only | NAVIGATE:'http://127.0.0.1:3000/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '127.0.0.1'
+lhost | read_only | NAVIGATE:'/app'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: ''
+lhost | read_only | NAVIGATE:'http://localhost.evil.test/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost.evil.test'
+ip4 | test_account | NAVIGATE:'http://localhost:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost'
+ip4 | test_account | NAVIGATE:'http://127.0.0.2/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '127.0.0.2'
+ip4 | allow_writes | NAVIGATE:'http://localhost:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost'
+ip4 | allow_writes | NAVIGATE:'http://127.0.0.2/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '127.0.0.2'
+ip4 | read_only | NAVIGATE:'http://127.0.0.1/x?y=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=127.0.0.1  host_of: '127.0.0.1'
+ip4 | read_only | NAVIGATE:'http://localhost:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: 'localhost'
+ip4 | read_only | NAVIGATE:'http://127.0.0.2/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '127.0.0.2'
+ip6 | test_account | NAVIGATE:'http://[::2]:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::2'
+ip6 | allow_writes | NAVIGATE:'http://[::2]:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::2'
+ip6 | read_only | NAVIGATE:'http://[::1]/x?y=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=write_policy sess=0 runs=0
+    act_time: ACCEPT host=::1  host_of: '::1'
+ip6 | read_only | NAVIGATE:'http://[::2]:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::2'
+ip6b | test_account | NAVIGATE:'http://[::1]:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | test_account | NAVIGATE:'http://[::1]/x?y=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | test_account | MULTI:form
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | allow_writes | NAVIGATE:'http://[::1]:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | allow_writes | NAVIGATE:'http://[::1]/x?y=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | allow_writes | MULTI:form
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | read_only | NAVIGATE:'http://[::1]:8080/'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | read_only | NAVIGATE:'http://[::1]/x?y=1'
+    BASE: ok=True ref=- sess=1 runs=1
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'
+ip6b | read_only | MULTI:form
+    BASE: ok=False ref=write_policy sess=0 runs=0
+    HEAD: ok=False ref=destination sess=0 runs=0
+    act_time: REFUSE NavigationRefused  host_of: '::1'

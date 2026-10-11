@@ -1,0 +1,8 @@
+HEAD TA/AW rows where guard let it through (sessions=1) but check_destination refuses (act-time), same in BASE:
+  demo NAVIGATE:'/reports' | REFUSE NavigationRefused
+  demo NAVIGATE:'/home' | REFUSE NavigationRefused
+  demo NAVIGATE:'Admin portal URL' | REFUSE NavigationRefused
+  demo NAVIGATE:'{{SECRET:APP_PASS}}' | REFUSE SecretScopeError
+  demo NAVIGATE:'evil.test/x' | REFUSE NavigationRefused
+  demo MULTI:form-barepath | REFUSE NavigationRefused
+  lhost NAVIGATE:'/app' | REFUSE NavigationRefused

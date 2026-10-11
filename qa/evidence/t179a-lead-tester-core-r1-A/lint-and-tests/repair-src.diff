@@ -1,0 +1,345 @@
+diff -ru -x __pycache__ -x .venv base/src/autotester/agents/guards.py head/src/autotester/agents/guards.py
+--- base/src/autotester/agents/guards.py	2026-10-12 01:31:36.000000000 +0530
++++ head/src/autotester/agents/guards.py	2026-10-12 02:38:37.000000000 +0530
+@@ -3,15 +3,25 @@
+ 
+ Nothing here is a prompt. Each function either returns/raises from an EXISTING guard
+ (`core.consent.require_approval`, `explore_safety.deny_reason`, `SecretStore.guard_prompt`) or,
+-for the one gap -- `execute.run_case` has no write-policy check of its own -- applies
+-`deny_reason` to the case's steps. A model instruction cannot reach any of this.
++for the one gap -- `execute.run_case` and the browser session have no write-policy check, and a
++stored `Step` carries no DOM facts (no `is_form_submit`) -- decides from what the step says.
++
++Under READ_ONLY that decision is fail-closed (table: the T-179a manifest): only step kinds that
++cannot change state by construction run (reads, waits, assertions, hover, scroll, back, and a
++GET navigation to an in-domain http(s) URL), plus the declared login case's credential entry.
++`deny_reason` stays the one name deny-function. A model instruction cannot reach any of this.
+ """
+ 
+ from __future__ import annotations
+ 
+-from autotester.browser.secrets import SecretStore
++import re
++from dataclasses import dataclass
++from urllib.parse import unquote, urlsplit
++
++from autotester.browser.secrets import SecretStore, host_of
+ from autotester.core.consent import require_approval
+ from autotester.core.redact import PLACEHOLDER_RE
++from autotester.schema.agent_layer import RefusalClass
+ from autotester.schema.approval import RunApproval
+ from autotester.schema.case import Case
+ from autotester.schema.crawl import CrawlBounds
+@@ -22,7 +32,18 @@
+ from autotester.stages import explore_safety
+ from autotester.store.project_store import ProjectStore
+ 
+-_DATA_ACTIONS = frozenset({Action.FILL, Action.SELECT, Action.UPLOAD})
++_READS = frozenset({Action.WAIT, Action.ASSERT, Action.BACK, Action.HOVER, Action.SCROLL})
++_WEB = ("http", "https")
++_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
++DESTINATION_REFUSED = "destination is not an http(s) URL inside the allowed domains"
++
++
++@dataclass
++class _Walk:
++    """Where we are in one case: is it the declared login, and was a credential just typed."""
++
++    login: bool
++    credential_pending: bool = False
+ 
+ 
+ def guard_model_bound(secrets: SecretStore, text: str) -> str:
+@@ -45,29 +66,96 @@
+         target=project.base_url, actions=len(case.steps))
+ 
+ 
+-def _is_login_value(value: str | None) -> bool:
+-    """A step that only types `{{SECRET:KEY}}` placeholders is a credential entry, not a write."""
+-    return value is None or PLACEHOLDER_RE.sub("", value).strip() == ""
++def _declared_credential(value: str | None, project: Project) -> bool:
++    """Only `{{SECRET:KEY}}` placeholders of keys the project declares, and nothing else."""
++    if not value or PLACEHOLDER_RE.sub("", value).strip() != "":
++        return False
++    declared = {ref.key for ref in project.secrets}
++    return all(key in declared for key in PLACEHOLDER_RE.findall(value))
++
++
++def _click_denied(name: str, project: Project) -> str | None:
++    """The crawler's own name deny-function, asked about a name (the one deny concept)."""
++    element = ElementRef(role="button", name=name, selector=name)
++    return explore_safety.deny_reason(element, explore_safety.policy_for(project))
++
++
++def _destination(target: str, project: Project) -> tuple[str | None, str]:
++    """(why not, the cleaned target). Absolute and protocol-relative URLs must be http(s) inside
++    the allowed domains at EVERY policy (the session refuses the same hosts at act time); a bare
++    path or a description has no destination to judge: left to the session unless READ_ONLY."""
++    if _CONTROL.search(target):
++        return DESTINATION_REFUSED, target
++    cleaned = target.strip()
++    try:
++        parts = urlsplit(cleaned)
++    except ValueError:
++        return DESTINATION_REFUSED, cleaned
++    if parts.scheme and parts.scheme not in _WEB:
++        return DESTINATION_REFUSED, cleaned
++    if parts.scheme or cleaned.startswith("//"):
++        host = host_of(cleaned)
++        if not host or not project.allows_domain(host):
++            return DESTINATION_REFUSED, cleaned
++    return None, cleaned
++
++
++def _navigate_refusal(step: Step, project: Project, walk: _Walk) -> tuple[str | None, bool]:
++    """(reason, is_destination). READ_ONLY allows only a placeholder-free absolute http(s) GET
++    with no query (the declared login may carry one) whose path and fragment pass `deny_reason`."""
++    why, url = _destination(step.target, project)
++    if why is not None:
++        return why, True
++    if project.write_policy is not WritePolicy.READ_ONLY:
++        return None, False
++    parts = urlsplit(url)
++    if not parts.scheme or PLACEHOLDER_RE.search(url):
++        return "navigate needs an absolute http(s) URL without placeholders", False
++    if parts.query and not walk.login:
++        return "navigate with a query string can change state", False
++    return _click_denied(unquote(f"{parts.path} {parts.fragment}"), project), False
++
++
++def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
++    """Fail closed: what is not listed as safe, or as the login's credential entry, is refused."""
++    action = step.action
++    if action in _READS:
++        return None
++    if action is Action.FILL and walk.login and _declared_credential(step.value, project):
++        walk.credential_pending = True
++        return None
++    enter = action is Action.PRESS_KEY and step.value in (None, "Enter")
++    if (action is Action.CLICK or enter) and walk.login and walk.credential_pending:
++        walk.credential_pending = False  # one submit per credential entry
++        return _click_denied(step.target, project) if action is Action.CLICK else None
++    if action is Action.FILL:
++        return "fill outside the declared login's credential entry"
++    return f"{action.value} can change state"
+ 
+ 
+-def _step_refusal(step: Step, project: Project) -> str | None:
+-    if step.action in _DATA_ACTIONS:
+-        if project.write_policy is WritePolicy.READ_ONLY and not _is_login_value(step.value):
+-            return f"{step.action.value} with a literal value"
+-        return None
++def _step_refusal(step: Step, project: Project, walk: _Walk) -> tuple[str | None, RefusalClass]:
++    if step.action is Action.NAVIGATE:
++        why, is_destination = _navigate_refusal(step, project, walk)
++        return why, RefusalClass.DESTINATION if is_destination else RefusalClass.WRITE_POLICY
++    if project.write_policy is WritePolicy.READ_ONLY:
++        return _read_only_refusal(step, project, walk), RefusalClass.WRITE_POLICY
+     if step.action is Action.CLICK:
+-        element = ElementRef(role="button", name=step.target, selector=step.target)
+-        return explore_safety.deny_reason(element, explore_safety.policy_for(project))
+-    return None
++        return _click_denied(step.target, project), RefusalClass.WRITE_POLICY
++    return None, RefusalClass.WRITE_POLICY
+ 
+ 
+-def write_policy_refusal(case: Case, project: Project) -> str | None:
+-    """Why this case may not run under the project's `write_policy`, or None. Clicks go through
+-    the crawler's own `deny_reason` (never-click and destructive names at every policy but
+-    ALLOW_WRITES); under READ_ONLY a step that types a literal value is refused too."""
++def write_policy_refusal(case: Case, project: Project) -> tuple[RefusalClass, str] | None:
++    """(refusal class, why) if this case may not run under the project's `write_policy`, else
++    None. A NAVIGATE outside the allowed http(s) domains is refused at every policy; above
++    READ_ONLY nothing is added to the click deny-list the crawler already applies."""
++    walk = _Walk(login=project.login_case_id is not None and case.id == project.login_case_id)
+     for step in sorted(case.steps, key=lambda s: s.order):
+-        why = _step_refusal(step, project)
+-        if why is not None:
+-            return (f"refused under write_policy {project.write_policy.value}: "
+-                    f"step {step.order} ({step.action.value} {step.target!r}): {why}")
++        why, kind = _step_refusal(step, project, walk)
++        if why is None:
++            continue
++        where = f"step {step.order} ({step.action.value})"
++        if kind is RefusalClass.DESTINATION:
++            return kind, f"refused: {where}: {why}"
++        return kind, (f"refused under write_policy {project.write_policy.value}: "
++                      f"{where} {step.target!r}: {why}")
+     return None
+diff -ru -x __pycache__ -x .venv base/src/autotester/agents/tools.py head/src/autotester/agents/tools.py
+--- base/src/autotester/agents/tools.py	2026-10-12 01:31:36.000000000 +0530
++++ head/src/autotester/agents/tools.py	2026-10-12 02:38:37.000000000 +0530
+@@ -10,7 +10,7 @@
+ from __future__ import annotations
+ 
+ from collections.abc import Callable
+-from typing import Any
++from typing import Any, cast
+ 
+ from pydantic import BaseModel, ValidationError
+ 
+@@ -83,19 +83,31 @@
+                                f"{crawl.actions} actions")
+ 
+ 
++def _withhold_if_credential(ctx: AgentContext, model: BaseModel) -> None:
++    """The release gate's own detector, applied BEFORE a write: nothing it would refuse (a
++    reversed, encoded or folded secret the exact-value scrub misses) is ever put on disk."""
++    try:
++        guards.guard_model_bound(ctx.secrets, model.model_dump_json())
++    except ValueError:
++        raise _Refused(RefusalClass.SECRET,
++                       "result withheld: it carried a credential; nothing was stored") from None
++
++
+ def _scrubbed(ctx: AgentContext, result: RawResult) -> RawResult:
+     """Persist and return only scrubbed text (C5), whatever the stage let through."""
+     cleaned = ctx.secrets.redactor().scrub_obj(result.model_dump(mode="json"))
+-    return RawResult.model_validate(cleaned)
++    clean = RawResult.model_validate(cleaned)
++    _withhold_if_credential(ctx, clean)
++    return clean
+ 
+ 
+ def _run_case(ctx: AgentContext, args: RunCaseArgs) -> ToolOutcome:
+     case = ctx.store.get_case(args.case_id)
+     if case is None or not case.steps:
+         raise _Refused(RefusalClass.NOTHING_TO_DO, "no such case, or it has no steps to run")
+-    why = guards.write_policy_refusal(case, ctx.project)
+-    if why is not None:
+-        raise _Refused(RefusalClass.WRITE_POLICY, why)
++    refused = guards.write_policy_refusal(case, ctx.project)
++    if refused is not None:
++        raise _Refused(*refused)
+     guards.live_case_approval(ctx.store, ctx.project, case)
+     with ctx.open_session(None) as session:
+         result = _scrubbed(ctx, execute.run_case(case, session))
+@@ -131,6 +143,7 @@
+     verdict = grade.grade(rubric, result, ctx.run_id, ctx.judge, ctx.docs,
+                           run_dir=ctx.store.paths.run_dir(ctx.run_id), secrets=ctx.secrets,
+                           redactor=ctx.secrets.redactor())
++    _withhold_if_credential(ctx, verdict)
+     ctx.store.save_verdict(ctx.run_id, verdict)
+     return ToolOutcome(tool="grade_case", ok=True, artifact_ref=f"verdict:{case.id}",
+                        summary=f"{verdict.result.value}: {verdict.scoreboard}")
+@@ -165,15 +178,87 @@
+         raise _Refused(RefusalClass.BAD_ARGUMENTS, f"invalid arguments ({bad})") from None
+ 
+ 
+-def dispatch(ctx: AgentContext, name: str, raw_args: dict[str, Any]) -> ToolOutcome:
+-    """Run one model-requested tool call. A refusal is returned, never raised."""
++_MAX_NAME, _MAX_CHARS, _MAX_NODES, _MAX_DEPTH = 100, 16_384, 256, 6
++
++
++def _too_big() -> _Refused:
++    return _Refused(RefusalClass.BAD_ARGUMENTS,
++                    "arguments are too big, too deep or not plain data")
++
++
++def _scalar_text(node: object) -> str | None:
++    """The text of a leaf, `""` for a leaf that cannot hold a credential, None if not plain data."""
++    if isinstance(node, str):
++        return node
++    if node is None or isinstance(node, bool):
++        return ""
++    if (isinstance(node, int) and node.bit_length() <= 256) or isinstance(node, float):
++        return repr(node)
++    return None
++
++
++def _children(node: object) -> list[object]:
++    """The keys and values of a container, size-checked BEFORE they are expanded."""
++    if isinstance(node, dict):
++        items = [*node, *node.values()]
++    elif isinstance(node, (list, tuple)):
++        items = list(node)
++    else:
++        return []
++    if len(items) > _MAX_NODES:
++        raise _too_big()
++    return items
++
++
++def _call_texts(name: object, raw_args: object) -> list[str]:
++    """Every real string of a call (name, keys, leaves), bounded in size, depth and node count
++    and walked iteratively, so hostile nesting can neither recurse nor stall the secret scan."""
++    if not isinstance(name, str) or len(name) > _MAX_NAME:
++        raise _Refused(RefusalClass.UNKNOWN_TOOL, "no such tool")
++    if not isinstance(raw_args, dict):
++        raise _Refused(RefusalClass.BAD_ARGUMENTS, "arguments must be an object")
++    texts, chars, nodes = [name], len(name), 0
++    stack: list[tuple[object, int]] = [(raw_args, 0)]
++    while stack:
++        node, depth = stack.pop()
++        nodes += 1
++        if depth > _MAX_DEPTH or nodes > _MAX_NODES:
++            raise _too_big()
++        if isinstance(node, dict) and not all(isinstance(k, str) for k in node):
++            raise _Refused(RefusalClass.BAD_ARGUMENTS, "argument names must be text")
++        if isinstance(node, (dict, list, tuple)):
++            stack.extend((child, depth + 1) for child in _children(node))
++            continue
++        text = _scalar_text(node)
++        if text is None:
++            raise _too_big()
++        texts.append(text)
++        chars += len(text)
++        if chars > _MAX_CHARS:
++            raise _too_big()
++    return texts
++
++
++def _error_text(ctx: AgentContext, exc: Exception) -> str:
++    """`ExcType: message`, scrubbed THEN truncated (a cut secret would escape the scrub)."""
++    try:
++        text = f"{type(exc).__name__}: {exc}"
++    except Exception:  # a hostile __str__ must not become a raw escape
++        text = type(exc).__name__
++    return ctx.secrets.redactor().scrub(text)[:300]
++
++
++def _dispatch(ctx: AgentContext, name: object, raw_args: object) -> ToolOutcome:
+     try:
+-        guards.guard_model_bound(ctx.secrets, f"{name} {raw_args!r}")
++        for text in _call_texts(name, raw_args):
++            guards.guard_model_bound(ctx.secrets, text)
++    except _Refused as refused:
++        return _refusal("unknown", refused.kind, refused.detail)
+     except ValueError:
+         return _refusal("unknown", RefusalClass.SECRET,
+                         "refused: the call carried a credential value; use {{SECRET:KEY}}")
+-    known = name in {n.value for n in Name}
+-    label = name if known else "unknown"
++    name, raw_args = cast(str, name), cast(dict[str, Any], raw_args)  # _call_texts proved both
++    label = name if name in {n.value for n in Name} else "unknown"
+     try:
+         tool, args = _validate(name, raw_args)
+         outcome = _HANDLERS[tool](ctx, args)
+@@ -181,4 +266,15 @@
+         outcome = _refusal(label, refused.kind, refused.detail)
+     except ApprovalRequired as exc:
+         outcome = _refusal(label, RefusalClass.APPROVAL, str(exc))
++    except Exception as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
++        outcome = _refusal(label, RefusalClass.STAGE_ERROR, _error_text(ctx, exc))
+     return _release(ctx, outcome)
++
++
++def dispatch(ctx: AgentContext, name: Any, raw_args: Any) -> ToolOutcome:
++    """Run one model-requested tool call. A refusal or failure is RETURNED, never raised, and
++    carries no unscrubbed text and no caller-supplied name."""
++    try:
++        return _dispatch(ctx, name, raw_args)
++    except Exception:  # last resort (never BaseException): a fixed typed result with no detail
++        return _refusal("unknown", RefusalClass.STAGE_ERROR, "the tool call failed")
+diff -ru -x __pycache__ -x .venv base/src/autotester/schema/agent_layer.py head/src/autotester/schema/agent_layer.py
+--- base/src/autotester/schema/agent_layer.py	2026-10-12 01:31:36.000000000 +0530
++++ head/src/autotester/schema/agent_layer.py	2026-10-12 02:38:37.000000000 +0530
+@@ -41,6 +41,8 @@
+     SECRET = "secret"
+     APPROVAL = "approval"
+     WRITE_POLICY = "write_policy"
++    DESTINATION = "destination"
++    STAGE_ERROR = "stage_error"
+     NOTHING_TO_DO = "nothing_to_do"
+ 
+ 

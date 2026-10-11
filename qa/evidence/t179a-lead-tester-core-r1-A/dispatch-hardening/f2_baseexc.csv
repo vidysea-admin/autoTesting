@@ -1,0 +1,68 @@
+source,exc,result
+run_case,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+run_case,SystemExit,PROPAGATED SystemExit
+run_case,GeneratorExit,PROPAGATED GeneratorExit
+run_case,CancelledError,PROPAGATED CancelledError
+run_case,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=run_case
+run_case,BaseException,PROPAGATED BaseException
+open_session,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+open_session,SystemExit,PROPAGATED SystemExit
+open_session,GeneratorExit,PROPAGATED GeneratorExit
+open_session,CancelledError,PROPAGATED CancelledError
+open_session,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=run_case
+open_session,BaseException,PROPAGATED BaseException
+judge,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+judge,SystemExit,PROPAGATED SystemExit
+judge,GeneratorExit,PROPAGATED GeneratorExit
+judge,CancelledError,PROPAGATED CancelledError
+judge,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=grade_case
+judge,BaseException,PROPAGATED BaseException
+get_case,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+get_case,SystemExit,PROPAGATED SystemExit
+get_case,GeneratorExit,PROPAGATED GeneratorExit
+get_case,CancelledError,PROPAGATED CancelledError
+get_case,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=run_case
+get_case,BaseException,PROPAGATED BaseException
+catalog,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+catalog,SystemExit,PROPAGATED SystemExit
+catalog,GeneratorExit,PROPAGATED GeneratorExit
+catalog,CancelledError,PROPAGATED CancelledError
+catalog,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=get_catalog
+catalog,BaseException,PROPAGATED BaseException
+crawl,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+crawl,SystemExit,PROPAGATED SystemExit
+crawl,GeneratorExit,PROPAGATED GeneratorExit
+crawl,CancelledError,PROPAGATED CancelledError
+crawl,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=crawl
+crawl,BaseException,PROPAGATED BaseException
+persona,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+persona,SystemExit,PROPAGATED SystemExit
+persona,GeneratorExit,PROPAGATED GeneratorExit
+persona,CancelledError,PROPAGATED CancelledError
+persona,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=get_persona
+persona,BaseException,PROPAGATED BaseException
+save_result,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+save_result,SystemExit,PROPAGATED SystemExit
+save_result,GeneratorExit,PROPAGATED GeneratorExit
+save_result,CancelledError,PROPAGATED CancelledError
+save_result,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=run_case
+save_result,BaseException,PROPAGATED BaseException
+save_verdict,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+save_verdict,SystemExit,PROPAGATED SystemExit
+save_verdict,GeneratorExit,PROPAGATED GeneratorExit
+save_verdict,CancelledError,PROPAGATED CancelledError
+save_verdict,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=grade_case
+save_verdict,BaseException,PROPAGATED BaseException
+load_results,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+load_results,SystemExit,PROPAGATED SystemExit
+load_results,GeneratorExit,PROPAGATED GeneratorExit
+load_results,CancelledError,PROPAGATED CancelledError
+load_results,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=grade_case
+load_results,BaseException,PROPAGATED BaseException
+load_rubric,KeyboardInterrupt,PROPAGATED KeyboardInterrupt
+load_rubric,SystemExit,PROPAGATED SystemExit
+load_rubric,GeneratorExit,PROPAGATED GeneratorExit
+load_rubric,CancelledError,PROPAGATED CancelledError
+load_rubric,MemoryError,RETURNED ToolOutcome refusal=stage_error tool=grade_case
+load_rubric,BaseException,PROPAGATED BaseException
+run_case,Exception whose __str__ raises KeyboardInterrupt,PROPAGATED KeyboardInterrupt

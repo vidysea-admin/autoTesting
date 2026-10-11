@@ -1,0 +1,64 @@
+== (a) BEFORE edit (expect green)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_agent_read_only.py .                                          [100%]
+
+============================== 1 passed in 1.72s ==============================
+== (c) AFTER edit (expect red on intended assertion)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_agent_read_only.py F                                          [100%]
+
+================================== FAILURES ===================================
+______ test_a_stage_session_or_judge_failure_is_a_scrubbed_typed_refusal ______
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27375/test_a_stage_session_or_judge_0')
+spy = <test_agent_tools.Spies object at 0x000001FAF7A0BAD0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001FAF79F6550>
+
+    def test_a_stage_session_or_judge_failure_is_a_scrubbed_typed_refusal(
+            tmp_path: Path, spy: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
+        ctx, _ = _run(tmp_path, spy, AW, _one(A.WAIT, "x"))
+        case = ctx.store.add_case(_case(_one(A.WAIT, "y")))
+    
+        def boom(text: str) -> Any:
+            def _raise(*_a: Any, **_k: Any) -> Any:
+                raise RuntimeError(text)
+            return _raise
+        monkeypatch.setattr(tools.execute, "run_case", boom(f"login failed for {RAW}"))
+        out = _go(ctx, "run_case", {"case_id": case.id})
+        assert out.refusal is RefusalClass.STAGE_ERROR and RAW not in out.model_dump_json()
+>       assert "RuntimeError" in out.summary
+E       AssertionError: assert 'RuntimeError' in 'the tool call failed'
+E        +  where 'the tool call failed' = ToolOutcome(tool='unknown', ok=False, refusal=<RefusalClass.STAGE_ERROR: 'stage_error'>, summary='the tool call failed', artifact_ref=None).summary
+
+tests\test_agent_read_only.py:186: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_agent_read_only.py::test_a_stage_session_or_judge_failure_is_a_scrubbed_typed_refusal
+============================== 1 failed in 5.27s ==============================
+== (d) RESTORED (expect green); cmp:
+identical-to-HEAD
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_agent_read_only.py .                                          [100%]
+
+============================== 1 passed in 3.41s ==============================
+DONE
