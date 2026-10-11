@@ -1,0 +1,75 @@
+== A1 cookie flags
+local signup first: 303 ['at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax']
+local http login: 303 / ['at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax']
+local https-base login: 303 ['__Host-at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax; Secure']
+local + XFP https via uvicorn ProxyHeadersMiddleware(trusted *): 303 ['__Host-at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax; Secure']
+local + raw XFP https header, app alone (no proxy middleware): 303 ['at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax']
+hosted http-base login: 303 ['__Host-at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax; Secure']
+hosted + COOKIE_SECURE=0 login: 303 ['at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax']
+hosted + COOKIE_SECURE=0 + https base: 303 ['at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax']
+hosted + COOKIE_SECURE='': ['__Host-at_session=<tok>; HttpOnly; Max-A']
+hosted + COOKIE_SECURE='false': ['__Host-at_session=<tok>; HttpOnly; Max-A']
+hosted + COOKIE_SECURE='00': ['__Host-at_session=<tok>; HttpOnly; Max-A']
+hosted + COOKIE_SECURE=' 0 ': ['at_session=<tok>; HttpOnly; Max-Age=4320']
+logout set-cookie (unauth): 401 []
+== A2 fixation
+login with preset cookie: new cookie value != preset: True
+attacker value present in sessions table: 0
+preset cookie used after login: 401
+two logins same user -> distinct ids: True  token length: 43
+sessions rows now: 14  stored hash length: {'l': 64}
+raw token appears in sqlite file bytes: False
+hosted preset __Host- cookie -> new id: True __Host-at_session=<tok>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax; Secure
+== A3 logout
+GET / with cookie: 200
+GET /auth/logout: 405 sessions before/after: 16 16 cookie still valid: 200
+POST logout: 303 /auth/login ['__Host-at_session=""; expires=Sun, 11 Oct 2026 01:03:09 GMT; HttpOnly; Max-Age=0; Path=/; SameSite=lax; Secure', 'at_session=""; expires=Sun, 11 Oct 2026 01:03:09 GMT; HttpOnly; Max-Age=0; Path=/; SameSite=lax'] rows: 16 -> 15
+replay old cookie html/json: 302 401
+logout again with dead cookie: 401
+logout with evil Origin (live cookie first):
+  -> 403 cookie still valid: 200
+== A4 expiry
+SESSION_HOURS='1': Max-Age=3600 row lifetime hours=1.00
+SESSION_HOURS='0': Max-Age=3600 row lifetime hours=1.00
+SESSION_HOURS='-5': Max-Age=3600 row lifetime hours=1.00
+SESSION_HOURS='abc': Max-Age=43200 row lifetime hours=12.00
+SESSION_HOURS='999999': Max-Age=604800 row lifetime hours=168.00
+SESSION_HOURS='': Max-Age=43200 row lifetime hours=12.00
+aged row (expires_at=2000) -> request: 401  row dropped after refusal: True
+created_at ancient but expires_at future (check is on expires_at only): 200
+== A5 tampered cookie
+  valid                        -> 200
+  flip last char               -> 401
+  truncated                    -> 401
+  appended                     -> 401
+  empty                        -> 401
+  100KB                        -> 401
+  129 chars                    -> 401
+  128 chars                    -> 401
+  dup bad,good                 -> 200
+  dup good,bad                 -> 401
+  quoted                       -> 200
+  space-padded                 -> 200
+  wrong name                   -> 401
+  __Host- name in local mode   -> 200
+  two Cookie headers (bad first, good second): 200
+  two Cookie headers (good first, bad second): 401
+  unicode value (utf-8 bytes): 401
+hosted cookie name: __Host-at_session
+  hosted: __Host- cookie works: 200
+  hosted: plain at_session with same value (cookie tossing): 401
+  hosted: plain bad + __Host- good: 200
+  hosted: __Host- bad + plain good: 401
+== A6 state change takes effect on next request (disable/delete/reset/group)
+dev baseline /onboard: 200
+group dev->tester: 303  next /onboard: 403  /: 200
+group -> none: 303  next / json/html: 403 403
+re-add dev group: /onboard 200
+disable: 303  next: 401  login: 401
+enable: old cookie (revoked at disable): 401  fresh login: 303
+two concurrent sessions both valid: 200 200
+after logout of one: d2 401  d3 200
+admin reset pw: 303  d3 next: 401  old pw login: 401  new pw login: 303
+delete: 303  d4 next: 401  sessions rows for user: 0
+== A7 restart persistence
+new process, old cookie: 200 

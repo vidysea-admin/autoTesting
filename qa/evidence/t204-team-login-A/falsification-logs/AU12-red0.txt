@@ -1,0 +1,46 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU12-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 33 items / 13 deselected / 20 selected
+
+tests\test_ui_auth_groups.py .F.......F...F...F..                        [100%]
+
+================================== FAILURES ===================================
+___________________ test_au12_scope_table[owner-sub-admin] ____________________
+tests\test_ui_auth_groups.py:59: in test_au12_scope_table
+    assert authorize(who, PermissionKey.PROJECT_VIEW, res) == (relation in EXPECT_VIEW[seed])
+E   AssertionError: assert True == ('owner' in {'assigned'})
+E    +  where True = authorize(Principal(user_id=1, email='me@team.test', display_name='', permissions=frozenset({'live.view', 'project.run@assigned'...re@assigned', 'access.approve@assigned', 'video.upload@assigned', 'credentials.edit@assigned', 'video.view@assigned'})), <PermissionKey.PROJECT_VIEW: 'project.view'>, ResourceRef(project_slug='p', owner_email='me@team.test', assignees=frozenset(), shared_with=frozenset(), video_id=None))
+E    +    where <PermissionKey.PROJECT_VIEW: 'project.view'> = PermissionKey.PROJECT_VIEW
+___________________ test_au12_scope_table[shared-sub-admin] ___________________
+tests\test_ui_auth_groups.py:59: in test_au12_scope_table
+    assert authorize(who, PermissionKey.PROJECT_VIEW, res) == (relation in EXPECT_VIEW[seed])
+E   AssertionError: assert True == ('shared' in {'assigned'})
+E    +  where True = authorize(Principal(user_id=1, email='me@team.test', display_name='', permissions=frozenset({'live.view', 'project.run@assigned'...re@assigned', 'access.approve@assigned', 'video.upload@assigned', 'credentials.edit@assigned', 'video.view@assigned'})), <PermissionKey.PROJECT_VIEW: 'project.view'>, ResourceRef(project_slug='p', owner_email='x@t.test', assignees=frozenset(), shared_with=frozenset({'me@team.test'}), video_id=None))
+E    +    where <PermissionKey.PROJECT_VIEW: 'project.view'> = PermissionKey.PROJECT_VIEW
+____________________ test_au12_scope_table[none-sub-admin] ____________________
+tests\test_ui_auth_groups.py:59: in test_au12_scope_table
+    assert authorize(who, PermissionKey.PROJECT_VIEW, res) == (relation in EXPECT_VIEW[seed])
+E   AssertionError: assert True == ('none' in {'assigned'})
+E    +  where True = authorize(Principal(user_id=1, email='me@team.test', display_name='', permissions=frozenset({'live.view', 'project.run@assigned'...re@assigned', 'access.approve@assigned', 'video.upload@assigned', 'credentials.edit@assigned', 'video.view@assigned'})), <PermissionKey.PROJECT_VIEW: 'project.view'>, ResourceRef(project_slug='p', owner_email='x@t.test', assignees=frozenset(), shared_with=frozenset(), video_id=None))
+E    +    where <PermissionKey.PROJECT_VIEW: 'project.view'> = PermissionKey.PROJECT_VIEW
+___________________ test_au12_scope_table[legacy-sub-admin] ___________________
+tests\test_ui_auth_groups.py:59: in test_au12_scope_table
+    assert authorize(who, PermissionKey.PROJECT_VIEW, res) == (relation in EXPECT_VIEW[seed])
+E   AssertionError: assert True == ('legacy' in {'assigned'})
+E    +  where True = authorize(Principal(user_id=1, email='me@team.test', display_name='', permissions=frozenset({'live.view', 'project.run@assigned'...re@assigned', 'access.approve@assigned', 'video.upload@assigned', 'credentials.edit@assigned', 'video.view@assigned'})), <PermissionKey.PROJECT_VIEW: 'project.view'>, ResourceRef(project_slug='p', owner_email=None, assignees=frozenset(), shared_with=frozenset(), video_id=None))
+E    +    where <PermissionKey.PROJECT_VIEW: 'project.view'> = PermissionKey.PROJECT_VIEW
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_groups.py::test_au12_scope_table[owner-sub-admin]
+FAILED tests/test_ui_auth_groups.py::test_au12_scope_table[shared-sub-admin]
+FAILED tests/test_ui_auth_groups.py::test_au12_scope_table[none-sub-admin] - ...
+FAILED tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-sub-admin]
+=========== 4 failed, 16 passed, 13 deselected, 1 warning in 2.05s ============

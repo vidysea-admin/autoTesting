@@ -1,0 +1,25 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU9-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_accounts.py F                                         [100%]
+
+================================== FAILURES ===================================
+__________________ test_au9_last_admin_cannot_be_locked_out ___________________
+tests\test_ui_auth_accounts.py:160: in test_au9_last_admin_cannot_be_locked_out
+    assert _act(admin, uid, action, **form).status_code == 400
+E   AssertionError: assert 303 == 400
+E    +  where 303 = <Response [303 See Other]>.status_code
+E    +    where <Response [303 See Other]> = _act(<starlette.testclient.TestClient object at 0x000002095F9DF190>, 1, 'disable', **{})
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_accounts.py::test_au9_last_admin_cannot_be_locked_out
+======================== 1 failed, 1 warning in 2.64s =========================

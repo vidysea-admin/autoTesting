@@ -1,0 +1,11100 @@
+[
+ {
+  "case": "healthy-stored",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "healthy-deflate",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "healthy-bzip2",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "healthy-lzma",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "healthy-zip64-forced",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "healthy-ver63",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "flip-stored-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-first-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-first-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-first-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-first-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-stored-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-middle-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-middle-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-middle-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-middle-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-stored-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-last-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-last-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-last-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-stored-last-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-stored-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-stored-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-stored-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-first-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-first-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-first-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-first-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-deflate-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-middle-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-middle-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-middle-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-middle-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-deflate-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-last-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-last-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-last-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-deflate-last-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-deflate-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-deflate-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-deflate-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-first-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-first-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-first-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-first-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-bzip2-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-middle-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-middle-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-middle-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-middle-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-bzip2-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-last-0.2",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-last-0.5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-last-0.8",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-bzip2-last-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-bzip2-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-bzip2-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-bzip2-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-lzma-first-0.0",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "flip-lzma-first-0.2",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "flip-lzma-first-0.5",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "flip-lzma-first-0.8",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "flip-lzma-first-0.99",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-first-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-first-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-first-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-lzma-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-lzma-middle-0.0",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "flip-lzma-middle-0.2",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "flip-lzma-middle-0.5",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "flip-lzma-middle-0.8",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "flip-lzma-middle-0.99",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "trunc-consistent-lzma-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-middle-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-middle-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-middle-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-lzma-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-lzma-last-0.0",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "flip-lzma-last-0.2",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-lzma-last-0.5",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-lzma-last-0.8",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flip-lzma-last-0.99",
+  "raised": "LZMAError: Corrupt input data",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 695, in decompress",
+   "    result = self._decomp.decompress(data)",
+   "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "_lzma.LZMAError: Corrupt input data"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-last-0.0",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-last-0.4",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-consistent-lzma-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "trunc-claimfull-lzma-last-0.9",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "wrongcrc-lzma-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-1-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-1-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-1-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-6-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-6-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-6-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-9-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-9-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-9-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-10-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-10-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-10-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-18-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-18-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-18-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-19-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-19-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-19-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-20-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-20-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-20-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-93-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-93-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-93-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-94-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-94-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-94-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-95-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-95-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-95-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-96-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-96-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-96-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-97-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-97-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-97-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-98-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-98-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-98-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-99-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-99-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-99-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-255-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-255-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-255-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-65535-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-65535-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "method-65535-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-encrypted-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-encrypted-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-encrypted-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-patched-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-patched-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-patched-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-strong-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-strong-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "unsupported compression method"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-strong-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "unsupported compression method"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-enc+masked-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-enc+masked-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-enc+masked-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-enc+strong-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-enc+strong-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-enc+strong-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "flags-masked-first",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "flags-masked-middle",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "flags-masked-last",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "enc-central-only-first",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "enc-central-only-middle",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "enc-central-only-last",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "encrypted member (password-protected zips are not supported)"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "ver-20-first-both",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-first-central",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-first-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-middle-both",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-middle-central",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-middle-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-last-both",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-last-central",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-20-last-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-first-both",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-first-central",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-first-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-middle-both",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-middle-central",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-middle-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-last-both",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-last-central",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-63-last-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-64-first-both",
+  "raised": "NotImplementedError: zip file version 6.4",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 6.4"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-64-first-central",
+  "raised": "NotImplementedError: zip file version 6.4",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 6.4"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-64-first-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-64-middle-both",
+  "raised": "NotImplementedError: zip file version 6.4",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 6.4"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-64-middle-central",
+  "raised": "NotImplementedError: zip file version 6.4",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 6.4"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-64-middle-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-64-last-both",
+  "raised": "NotImplementedError: zip file version 6.4",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 6.4"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-64-last-central",
+  "raised": "NotImplementedError: zip file version 6.4",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 6.4"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-64-last-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-99-first-both",
+  "raised": "NotImplementedError: zip file version 9.9",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 9.9"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-99-first-central",
+  "raised": "NotImplementedError: zip file version 9.9",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 9.9"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-99-first-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-99-middle-both",
+  "raised": "NotImplementedError: zip file version 9.9",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 9.9"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-99-middle-central",
+  "raised": "NotImplementedError: zip file version 9.9",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 9.9"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-99-middle-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-99-last-both",
+  "raised": "NotImplementedError: zip file version 9.9",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 9.9"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-99-last-central",
+  "raised": "NotImplementedError: zip file version 9.9",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 9.9"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-99-last-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-255-first-both",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-255-first-central",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-255-first-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-255-middle-both",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-255-middle-central",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-255-middle-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-255-last-both",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-255-last-central",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-255-last-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-65535-first-both",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-65535-first-central",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-65535-first-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-65535-middle-both",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-65535-middle-central",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-65535-middle-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-65535-last-both",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-65535-last-central",
+  "raised": "NotImplementedError: zip file version 25.5",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 25.5"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "ver-65535-last-local",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "ver-99-lzma-middle",
+  "raised": "NotImplementedError: zip file version 9.9",
+  "tb": [
+   "    self._RealGetContents()",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1443, in _RealGetContents",
+   "    raise NotImplementedError(\"zip file version %.1f\" %",
+   "NotImplementedError: zip file version 9.9"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "lzma-badprops",
+  "raised": "LZMAError: Invalid or unsupported options",
+  "tb": [
+   "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 689, in decompress",
+   "    lzma._decode_filter_properties(lzma.FILTER_LZMA1,",
+   "_lzma.LZMAError: Invalid or unsupported options"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "lzma-psize-huge",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "lzma-psize-zero",
+  "raised": "LZMAError: Invalid or unsupported options",
+  "tb": [
+   "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 689, in decompress",
+   "    lzma._decode_filter_properties(lzma.FILTER_LZMA1,",
+   "_lzma.LZMAError: Invalid or unsupported options"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "lzma-short3",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "lzma-short5",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "lzma-garbage",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "lzma-empty",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-deflate-noise",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-deflate-empty",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-deflate-zeros",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-bzip2-noise",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-bzip2-empty",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-bzip2-zeros",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-lzma-noise",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-lzma-empty",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "garbage-lzma-zeros",
+  "raised": "LZMAError: Invalid or unsupported options",
+  "tb": [
+   "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 689, in decompress",
+   "    lzma._decode_filter_properties(lzma.FILTER_LZMA1,",
+   "_lzma.LZMAError: Invalid or unsupported options"
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "zip64-ok-first",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "zip64-ok-middle",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "zip64-ok-last",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "zip64-extra-short-first",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-short-middle",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-short-last",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-empty-first",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-empty-middle",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-empty-last",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-huge-first",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "total uncompressed size 4.29497e+09 GiB exceeds the limit of 9.31 GiB"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-huge-middle",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "total uncompressed size 4.29497e+09 GiB exceeds the limit of 9.31 GiB"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-huge-last",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "total uncompressed size 4.29497e+09 GiB exceeds the limit of 9.31 GiB"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-wrongsize-first",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "zip64-extra-wrongsize-middle",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "zip64-extra-wrongsize-last",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "zip64-extra-truncfield-first",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-truncfield-middle",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-extra-truncfield-last",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-neg-offset-first",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-neg-offset-middle",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "zip64-neg-offset-last",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-sig-middle",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-count-high",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "cd-count-low",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "cd-cd-offset-wrong",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "could not be staged (the write failed)"
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-cd-size-wrong",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-name-len-overflow",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4PK\\u0001\\u0002?\\u0000\\u0014\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000!\\u0000\u00e5|\u2559(p\\u0017\\u0000\\u0000p\\u0017\\u0000\\u0000\\u0005\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u000...",
+    "failed",
+    "refused: control character in name"
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "cd-extra-len-overflow",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-comment-len-lies",
+  "raised": null,
+  "status": "ok",
+  "exit": 0,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "registered",
+    null
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "b.mp4",
+    "e0a5410f302dfd75d34b644d9cdd4921977b026099fb26fd0bb1ebec963a6ca4"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 3
+ },
+ {
+  "case": "cd-no-eocd",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-cd-truncated",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-local-offset-bad",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 1
+ },
+ {
+  "case": "cd-local-offset-past-eof",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "cd-local-name-differs",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "cd-utf8-flag-bad-name",
+  "raised": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 1: invalid start byte",
+  "tb": [
+   "  File \"C:\\Users\\Lenovo\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\Lib\\zipfile.py\", line 1430, in _RealGetContents",
+   "    filename = filename.decode('utf-8')",
+   "               ^^^^^^^^^^^^^^^^^^^^^^^^",
+   "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 1: invalid start byte"
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "cd-nul-name",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b\\u0000.mp4",
+    "failed",
+    "refused: control character in name"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "cd-csize-exceeds-file",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "cd-usize-lie-small",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "corrupt member (bad checksum or truncated data)"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "cd-usize-lie-big",
+  "raised": null,
+  "status": "partial",
+  "exit": 2,
+  "members": [
+   [
+    "a.mp4",
+    "registered",
+    null
+   ],
+   [
+    "b.mp4",
+    "failed",
+    "2.79 GiB exceeds the per-file limit of 10 MiB"
+   ],
+   [
+    "c.mp4",
+    "registered",
+    null
+   ]
+  ],
+  "rows": [
+   [
+    "a.mp4",
+    "0f2aaa106a21f3b441ccda0f23cd3fc9df546a1f1925af7d6e3bbc707ea8ee92"
+   ],
+   [
+    "c.mp4",
+    "891770aab133ee337a2871f7da5aa33353abf993eea0ad9d08312f10ec92faa9"
+   ]
+  ],
+  "leftover": [
+   "projects\\demo\\sources.jsonl"
+  ],
+  "src_files": 2
+ },
+ {
+  "case": "not-a-zip-text",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ },
+ {
+  "case": "empty-file",
+  "raised": null,
+  "status": "failed",
+  "exit": 2,
+  "members": [
+   [
+    "(archive)",
+    "failed",
+    "not a zip archive (or it cannot be read)"
+   ]
+  ],
+  "rows": [],
+  "leftover": [],
+  "src_files": 0
+ }
+]

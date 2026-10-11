@@ -1,0 +1,881 @@
+{
+ "bad": [
+  [
+   "hidden next not same-site",
+   "/\u007f/evil.example",
+   "/\u007f/evil.example"
+  ]
+ ],
+ "rows": [
+  [
+   "POST login dev",
+   "https://evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "https://evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "https://evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "http://evil.example/x",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "http://evil.example/x",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "http://evil.example/x",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "//evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "//evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "//evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "///evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "///evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "///evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/\\evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/\\evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\\evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "\\\\evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "\\\\evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "\\\\evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "\\/evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "\\/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "\\/evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "javascript:alert(1)",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "javascript:alert(1)",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "javascript:alert(1)",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "data:text/html,<script>1</script>",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "data:text/html,<script>1</script>",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "data:text/html,<script>1</script>",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "%2f%2fevil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "%2f%2fevil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "%2f%2fevil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "%2F%2Fevil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "%2F%2Fevil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "%2F%2Fevil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/\t/evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/\t/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\t/evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/\n/evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/\n/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\n/evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/\r\nSet-Cookie: pwn=1",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/\r\nSet-Cookie: pwn=1",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\r\nSet-Cookie: pwn=1",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "https:evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "https:evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "https:evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "https:/evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "https:/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "https:/evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/@evil.example",
+   303,
+   "/@evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/@evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/@evil.example",
+   200,
+   "/@evil.example"
+  ],
+  [
+   "POST login dev",
+   "@evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "@evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "@evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/%2f/evil.example",
+   303,
+   "/%2f/evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/%2f/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/%2f/evil.example",
+   200,
+   "/%2f/evil.example"
+  ],
+  [
+   "POST login dev",
+   "/.//evil.example",
+   303,
+   "/.//evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/.//evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/.//evil.example",
+   200,
+   "/.//evil.example"
+  ],
+  [
+   "POST login dev",
+   "/../../evil.example",
+   303,
+   "/../../evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/../../evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/../../evil.example",
+   200,
+   "/../../evil.example"
+  ],
+  [
+   "POST login dev",
+   "/ /evil.example",
+   303,
+   "/%20/evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/ /evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/ /evil.example",
+   200,
+   "/ /evil.example"
+  ],
+  [
+   "POST login dev",
+   "/\u007f/evil.example",
+   303,
+   "/%7F/evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/\u007f/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\u007f/evil.example",
+   200,
+   "/\u007f/evil.example"
+  ],
+  [
+   "POST login dev",
+   "/\u200b/evil.example",
+   303,
+   "/%E2%80%8B/evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/\u200b/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\u200b/evil.example",
+   200,
+   "/\u200b/evil.example"
+  ],
+  [
+   "POST login dev",
+   "/\u2215evil.example",
+   303,
+   "/%E2%88%95evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/\u2215evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\u2215evil.example",
+   200,
+   "/\u2215evil.example"
+  ],
+  [
+   "POST login dev",
+   "/\uff0fevil.example",
+   303,
+   "/%EF%BC%8Fevil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/\uff0fevil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\uff0fevil.example",
+   200,
+   "/\uff0fevil.example"
+  ],
+  [
+   "POST login dev",
+   "evil.example",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "evil.example",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/projects/alpha",
+   303,
+   "/projects/alpha"
+  ],
+  [
+   "POST login nogroup",
+   "/projects/alpha",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/projects/alpha",
+   200,
+   "/projects/alpha"
+  ],
+  [
+   "POST login dev",
+   "/projects/alpha?x=//evil.example",
+   303,
+   "/projects/alpha?x=//evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/projects/alpha?x=//evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/projects/alpha?x=//evil.example",
+   200,
+   "/projects/alpha?x=//evil.example"
+  ],
+  [
+   "POST login dev",
+   "/#//evil.example",
+   303,
+   "/#//evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/#//evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/#//evil.example",
+   200,
+   "/#//evil.example"
+  ],
+  [
+   "POST login dev",
+   "/?next=//evil.example",
+   303,
+   "/?next=//evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/?next=//evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/?next=//evil.example",
+   200,
+   "/?next=//evil.example"
+  ],
+  [
+   "POST login dev",
+   "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...(len 3001)",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...(len 3001)",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...(len 3001)",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/ok\\..\\..\\evil",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/ok\\..\\..\\evil",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/ok\\..\\..\\evil",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/%5Cevil.example",
+   303,
+   "/%5Cevil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/%5Cevil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/%5Cevil.example",
+   200,
+   "/%5Cevil.example"
+  ],
+  [
+   "POST login dev",
+   "/%09/evil.example",
+   303,
+   "/%09/evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/%09/evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/%09/evil.example",
+   200,
+   "/%09/evil.example"
+  ],
+  [
+   "POST login dev",
+   "/\u0000/evil",
+   303,
+   "/"
+  ],
+  [
+   "POST login nogroup",
+   "/\u0000/evil",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/\u0000/evil",
+   200,
+   "/"
+  ],
+  [
+   "POST login dev",
+   "/auth/login?next=//evil.example",
+   303,
+   "/auth/login?next=//evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/auth/login?next=//evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/auth/login?next=//evil.example",
+   200,
+   "/auth/login?next=//evil.example"
+  ],
+  [
+   "POST login dev",
+   "/;@evil.example",
+   303,
+   "/;@evil.example"
+  ],
+  [
+   "POST login nogroup",
+   "/;@evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login hidden",
+   "/;@evil.example",
+   200,
+   "/;@evil.example"
+  ],
+  [
+   "GET raw next=%2f%2fevil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=%252f%252fevil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=/%5cevil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=//evil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=https://evil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=%5c%5cevil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=/%09/evil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=%0d%0a/evil",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next=/ok&next=//evil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw next[]=//evil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "GET raw NEXT=//evil.example",
+   "",
+   200,
+   "/"
+  ],
+  [
+   "POST signup",
+   "//evil.example",
+   303,
+   "/auth/waiting"
+  ],
+  [
+   "GET login while signed in",
+   "//evil.example",
+   200,
+   null
+  ]
+ ],
+ "unauth": [
+  [
+   "/projects/alpha/env",
+   302,
+   "/auth/login?next=/projects/alpha/env"
+  ],
+  [
+   "//evil.example/x",
+   302,
+   "/auth/login?next=/"
+  ],
+  [
+   "/\\evil.example",
+   302,
+   "/auth/login?next=/"
+  ],
+  [
+   "/%2f%2fevil.example",
+   302,
+   "/auth/login?next=/"
+  ],
+  [
+   "/projects/a%0d%0aSet-Cookie:x=1",
+   302,
+   "/auth/login?next=/projects/aSet-Cookie%3Ax%3D1"
+  ],
+  [
+   "/%5Cevil.example",
+   302,
+   "/auth/login?next=/"
+  ],
+  [
+   "/projects/alpha?next=//evil.example",
+   302,
+   "/auth/login?next=/projects/alpha"
+  ],
+  [
+   "/x%00y",
+   302,
+   "/auth/login?next=/"
+  ],
+  [
+   "/\u00fc",
+   302,
+   "/auth/login?next=/%C3%BC"
+  ],
+  [
+   "/@evil.example",
+   302,
+   "/auth/login?next=/%40evil.example"
+  ],
+  [
+   "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...(len 3001)",
+   302,
+   "/auth/login?next=/"
+  ],
+  [
+   "/a%09b",
+   302,
+   "/auth/login?next=/ab"
+  ],
+  [
+   "/;//evil.example",
+   302,
+   "/auth/login?next=/%3B//evil.example"
+  ],
+  [
+   "/projects/alpha/env%0a",
+   302,
+   "/auth/login?next=/projects/alpha/env"
+  ]
+ ]
+}

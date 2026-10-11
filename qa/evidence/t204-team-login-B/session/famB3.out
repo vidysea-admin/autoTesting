@@ -1,0 +1,13 @@
+urlencoded password  1 MB -> 401 '<!doctype html><title>Sign in — AutoTester</title> <link rel="preconnect" href="https://fo'
+urlencoded password  2 MB -> 400 '{"detail":"Field exceeded maximum size of 1024KB."}'
+urlencoded password  4 MB -> 400 '{"detail":"Field exceeded maximum size of 1024KB."}'
+urlencoded password  8 MB -> 400 '{"detail":"Field exceeded maximum size of 1024KB."}'
+urlencoded password 16 MB -> 400 '{"detail":"Field exceeded maximum size of 1024KB."}'
+urlencoded password 32 MB -> 400 '{"detail":"Field exceeded maximum size of 1024KB."}'
+multipart password part 0.5 MB -> 401 '<!doctype html><title>Sign in — AutoTester</title>\n<link rel="preconnect" href="https://fo'
+multipart password part 1 MB -> 401 '<!doctype html><title>Sign in — AutoTester</title>\n<link rel="preconnect" href="https://fo'
+multipart password part 2 MB -> 400 '{"detail":"Part exceeded maximum size of 1024KB."}'
+1000 urlencoded fields -> 401
+1001 urlencoded fields -> 400
+5000 urlencoded fields -> 400
+starlette 1.6.0

@@ -1,0 +1,22 @@
+## m1 red-after
+E       assert (0 == 1)
+E        +  where 0 = <Result okay>.exit_code
+FAILED tests/test_expand_cli.py::test_cli_proposal_review_is_signed_and_pending_generation_spends_nothing
+1 failed, 24 passed in 13.42s
+## m2 red-after
+25 passed in 13.54s
+## m3 red-after
+E   Failed: pending proposals reached provider
+FAILED tests/test_expand_cli.py::test_cli_proposal_review_is_signed_and_pending_generation_spends_nothing
+1 failed, 24 passed in 14.62s
+## m4 red-after
+E       AssertionError: advice sites changed.
+E         gone: []
+E         new: [('ui/routes_learn.py', 'expand')]
+E       assert {('cli.py', '...s list'), ...} == {('cli.py', '...s list'), ...}
+E         
+E         Extra items in the left set:
+E         ('ui/routes_learn.py', 'expand')
+E         Use -v to get more diff
+FAILED tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed
+1 failed in 6.30s

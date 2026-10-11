@@ -1,0 +1,374 @@
+[
+ {
+  "case": "empty-names-x200k-then-file",
+  "status": 413,
+  "msg": "That upload is larger than the 2 MiB limit the administrator set. Send a smaller file, or ",
+  "served_bytes": 2424832,
+  "peak_mib": 1.0,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "empty-names-endless-no-file",
+  "status": 413,
+  "msg": "That upload is larger than the 1 MiB limit the administrator set. Send a smaller file, or ",
+  "served_bytes": 1376256,
+  "peak_mib": 0.29,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 1,
+  "err": null
+ },
+ {
+  "case": "dup-name-label-x20000-then-file",
+  "status": 400,
+  "msg": "The form fields in that upload are too long.",
+  "served_bytes": 458752,
+  "peak_mib": 0.29,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "distinct-names-x9-then-file",
+  "status": 400,
+  "msg": "That upload has too many form fields.",
+  "served_bytes": 5648,
+  "peak_mib": 0.13,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "distinct-names-x8-then-file",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 5578,
+  "peak_mib": 0.85,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "distinct-names-x9-AFTER-file",
+  "status": 400,
+  "msg": "That upload has too many form fields.",
+  "served_bytes": 5648,
+  "peak_mib": 0.13,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "dup-name-AFTER-file-x20000",
+  "status": 400,
+  "msg": "The form fields in that upload are too long.",
+  "served_bytes": 458752,
+  "peak_mib": 0.29,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "nofilename-recording-parts-x50",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 8968,
+  "peak_mib": 0.08,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "nofilename-recording-parts-x8-then-file-9th-name",
+  "status": 400,
+  "msg": "That upload has too many form fields.",
+  "served_bytes": 5667,
+  "peak_mib": 0.13,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "name-7900B-x5-then-file",
+  "status": 400,
+  "msg": "That upload could not be read as a form.",
+  "served_bytes": 44868,
+  "peak_mib": 0.21,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "name-9000B-header-over-cap",
+  "status": 400,
+  "msg": "That upload could not be read as a form.",
+  "served_bytes": 14086,
+  "peak_mib": 0.15,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "value-16384-single-then-file",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 21474,
+  "peak_mib": 0.14,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "value-16385-single-then-file",
+  "status": 400,
+  "msg": "A form field in that upload is too long.",
+  "served_bytes": 21475,
+  "peak_mib": 0.19,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "value-16384-x2-then-file",
+  "status": 400,
+  "msg": "The form fields in that upload are too long.",
+  "served_bytes": 37922,
+  "peak_mib": 0.23,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "value-16384-and-small-sum-just-over-32K",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 37975,
+  "peak_mib": 0.16,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "value-just-under-total: 16384 + 16300",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 37838,
+  "peak_mib": 0.16,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "single-field-endless-value",
+  "status": 400,
+  "msg": "A form field in that upload is too long.",
+  "served_bytes": 65606,
+  "peak_mib": 0.24,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 1,
+  "err": null
+ },
+ {
+  "case": "headers-distinct-in-one-part-4MiB",
+  "status": 400,
+  "msg": "That upload could not be read as a form.",
+  "served_bytes": 65536,
+  "peak_mib": 0.25,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 64,
+  "err": null
+ },
+ {
+  "case": "headers-distinct-in-one-part-8MiB",
+  "status": 400,
+  "msg": "That upload could not be read as a form.",
+  "served_bytes": 65536,
+  "peak_mib": 0.25,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 64,
+  "err": null
+ },
+ {
+  "case": "headers-distinct-in-one-part-16MiB",
+  "status": 400,
+  "msg": "That upload could not be read as a form.",
+  "served_bytes": 65536,
+  "peak_mib": 0.25,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 64,
+  "err": null
+ },
+ {
+  "case": "headers-distinct-in-FILE-part-8MiB",
+  "status": 400,
+  "msg": "That upload could not be read as a form.",
+  "served_bytes": 65536,
+  "peak_mib": 0.25,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 64,
+  "err": null
+ },
+ {
+  "case": "many-empty-parts-no-headers-8MiB",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 8393632,
+  "peak_mib": 0.29,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 64,
+  "err": null
+ },
+ {
+  "case": "one-byte-chunks-valid-with-label",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 5095,
+  "peak_mib": 0.07,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "one-byte-chunks-9-fields",
+  "status": 400,
+  "msg": "That upload has too many form fields.",
+  "served_bytes": 652,
+  "peak_mib": 0.12,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "split-boundary-marker-7byte-chunks-valid",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 5095,
+  "peak_mib": 0.07,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "filename-no-content",
+  "status": 400,
+  "msg": "That file is empty.",
+  "served_bytes": 191,
+  "peak_mib": 0.12,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ },
+ {
+  "case": "distinct-names-x50000-then-file",
+  "status": 400,
+  "msg": "That upload has too many form fields.",
+  "served_bytes": 65536,
+  "peak_mib": 0.25,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 8,
+  "err": null
+ },
+ {
+  "case": "distinct-names-x150000-then-file",
+  "status": 400,
+  "msg": "That upload has too many form fields.",
+  "served_bytes": 65536,
+  "peak_mib": 0.25,
+  "rows": 0,
+  "leftover_files": [],
+  "uploads_dirs": [],
+  "limit_mib": 16,
+  "err": null
+ },
+ {
+  "case": "valid-baseline",
+  "status": 303,
+  "msg": "",
+  "served_bytes": 5095,
+  "peak_mib": 0.07,
+  "rows": 1,
+  "leftover_files": [],
+  "uploads_dirs": [
+   ".work\\uploads\\demo"
+  ],
+  "limit_mib": 2,
+  "err": null
+ }
+]
