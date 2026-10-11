@@ -67,6 +67,19 @@ def test_p5_a_new_group_cannot_carry_more_than_its_creator_holds(root: Path) -> 
                     ).status_code == 303
 
 
+def test_p5_a_held_admin_only_key_is_still_admin_only_to_grant(root: Path) -> None:
+    """AU27: a non-Admin who HOLDS settings.manage + users.manage + credentials.view may not hand
+    them to a new group; the held-permission check alone would let it through."""
+    held = ("groups.manage", "settings.manage", "users.manage", "credentials.view")
+    _, ops_id = _delegate(*held)
+    ops = login("ops@team.test")
+    for perm in held[1:]:
+        assert ops.post("/admin/groups", data={"name": f"Copy {perm}", "permission": perm}
+                        ).status_code == 403, perm
+    assert [g.name for g in groups.list_groups() if g.name.startswith("Copy")] == []
+    assert groups.get_group(ops_id).permissions == sorted(held)
+
+
 def test_p5_admin_still_grants_everything(root: Path) -> None:
     account(ADMIN)
     admin = login(ADMIN)
