@@ -141,9 +141,7 @@ def ledger_check() -> None:
 
 
 @ledger_app.command("relitigation")
-def ledger_relitigation(
-    unit_text: str, provider: str = typer.Option("mock", "--provider")
-) -> None:
+def ledger_relitigation(unit_text: str, provider: str = typer.Option("mock", "--provider")) -> None:
     """Gate check before a unit is built: is this a retired feature coming back?"""
     docs = RepoDocs()
     retired = store.retired(store.load_events(docs.features))
@@ -294,6 +292,7 @@ report_app.command("crawl")(cli_crawl.report_crawl)
 app.command("orchestrate")(cli_orchestrate.orchestrate_cmd)
 app.command("release")(cli_release.release_cmd)
 app.command("release-log")(cli_release.release_log_cmd)
+app.command("release-report")(cli_release.release_report_cmd)
 
 
 def main() -> None:
