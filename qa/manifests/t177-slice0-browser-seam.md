@@ -3,13 +3,13 @@
 **Unit:** T-177 browser-use fallback, SLICE 0 only: the browser seam. No SDK, no dependency change, no agent code, no `ui/` wiring. Ported from `wave/t177-followup` @ 205302b4 where it was right, rewritten where the plan review or my own reading found it wrong.
 **Brief:** `qa/briefs/t177-browser-use-fallback.md` (Phase A of `.work/t177-takeover/plan.md`, file subset only).
 **Branch / base:** `wave/t177-slice0-browser-seam` on master 808cdf7f.
-**Code commit (pre-check sha):** f8fdbd33 (fix cycle 1; cycle 0 code was d2d463a9). The manifest commit after it changes only this file.
+**Code commit (pre-check sha):** a8f2b9fb (fix cycle 2; code last changed at 3c252872, the two commits after it change only the new test file; cycle 1 code was f8fdbd33, cycle 0 d2d463a9). The manifest commit after it changes only this file.
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (security control: a DevTools endpoint on a browser holding credentials; a destination-check change)
 Dual check: required
-dual-trigger: security src/autotester/browser/launch.py:142 (the `--remote-debugging-port=0` / `--remote-debugging-address` arguments, the only place a DevTools port is requested)
-Fix cycle: 1
-Repair base: 3495ee61
+dual-trigger: security src/autotester/browser/launch.py:208 (the `--remote-debugging-port=0` / `--remote-debugging-address` arguments, the only place a DevTools port is requested)
+Fix cycle: 2
+Repair base: 0a4859a1
 Executor: claude-sonnet-subagent (maker build subagent)
 Status: ready-for-check
 Full-suite trigger: none run by the builder. Shared surface touched: `BrowserSession` (every run), `check_destination` (every navigation), `settle` (every step). The maker should schedule one integration suite under the machine lock.
@@ -29,12 +29,13 @@ Authority: D-075 "`browser/session.py` gains a read-only `cdp_url` property so t
 
 | Path | Lines now | Change |
 |---|---|---|
-| `src/autotester/browser/launch.py` | 147 (was 68) | `launch_options(expose_cdp=False)`; `verified_cdp_url`, `forget_cdp_port`, `CdpEndpointError`. Candidate's `loopback_port()` / `cdp_endpoint()` / `cdp_port=` removed. |
+| `src/autotester/browser/launch.py` | 213 (was 68) | `launch_options(expose_cdp=False)`; `verified_cdp_url`, `forget_cdp_port`, `CdpEndpointError`; cycle 2: `PROBE_DEADLINE_S`, `PROBE_MAX_BYTES`, `_fetch_version`, `_hard_close`, `_answers_as` rewritten. Candidate's `loopback_port()` / `cdp_endpoint()` / `cdp_port=` removed. |
 | `src/autotester/browser/session.py` | **270 (was 299)** | `expose_cdp` ctor arg, `_publish_cdp`, read-only `cdp_url`, teardown forgets the endpoint; `settle()` body moved out; `_sweep_orphan_videos` moved out. |
 | `src/autotester/browser/assertions.py` | 258 (was 203) | receives `settle(session, ...)` and `_poll_for_expected(session, ...)` verbatim (`self` -> `session`). |
 | `src/autotester/browser/video.py` | 157 (was 150) | `_sweep_orphan_videos` moved here (candidate, unchanged). |
 | `src/autotester/browser/secrets.py` | 284 (was 273) | `bad_scheme` (rewritten, see below). |
-| `tests/test_browser_session_cdp.py` | 249 | new (candidate's file rewritten): 13 tests, no browser. |
+| `tests/test_browser_session_cdp.py` | 299 | new (candidate's file rewritten): 23 tests, no browser. At the cap, so cycle 2 did not touch it. |
+| `tests/test_browser_cdp_probe_hostile.py` | 170 | new at cycle 2: 11 tests, a hostile raw-socket loopback listener, no browser. |
 | `tests/test_browser_session_cdp_live.py` | 77 | new: 2 tests, real headless Chromium on `about:blank`; skips when no Chromium. |
 | `tests/test_browser_navigation_secrets.py` | 191 (was 160) | `bad_scheme` cases added to an existing secrets file. |
 | `docs/MAP.md`, `docs/SNAPSHOT.md` | regenerated | SNAPSHOT was already stale on master (doctor's one violation, D-082 missing); regenerated with `autotester snapshot`. |
@@ -48,7 +49,7 @@ Not touched: `pyproject.toml`, `uv.lock`, `stages/*`, `prompts/*`, `schema/*`, `
   - `launch.py:142`: candidate asked for a caller-chosen port. Now `--remote-debugging-port=0`; Chromium picks it.
   - `launch.py:53-97` `_published` / `verified_cdp_url`: new. Reads the port Chromium wrote to `<profile>/DevToolsActivePort`, requires the listener to answer `/json/version` with that file's own `/devtools/browser/<guid>` path, and refuses if the port also accepts on 127.0.0.2 (a wildcard bind).
   - `secrets.py::bad_scheme`: the candidate's regex on the raw text MISSED ` javascript://app/x` (leading space) and `java<TAB>script://app/x`, which `urlparse` and a browser both normalise to `javascript`. I reproduced the bypass red first (2 of 9 cases), then replaced the regex with the same `urlparse` call `host_of` uses, so the two cannot disagree.
-  - `session.py::start/close`: stale `DevToolsActivePort` removed before launch and at teardown; any endpoint doubt closes the context and raises `CdpEndpointError`.
+  - `session.py::start/close`: stale `DevToolsActivePort` removed before launch and at teardown; any endpoint doubt closes the context and raises `CdpEndpointError`. The claim is exactly this (cycle 2): the identity probe has ONE monotonic overall deadline of `PROBE_DEADLINE_S` = 2.0 s covering connect + headers + body (a watchdog shuts the socket at the deadline), reads at most `PROBE_MAX_BYTES` = 64 KiB (a `/json/version` reply is a few hundred bytes; a larger declared `Content-Length`, or more bytes than that, is refused), follows no redirect (only a 200 from 127.0.0.1 on the port file's port is read; a 3xx is "not this browser" and no other host or port is contacted), and every `Exception` from reading, parsing or validating the reply (`RecursionError` included) is "not this browser". `KeyboardInterrupt` / `SystemExit` are not caught by the probe and still propagate through the existing cleanup in `start()`.
 - **New (plan review items 2 and 3):** `settle`/`_poll_for_expected` move; the owed-gap test.
 
 ## How the port window was closed (plan review item 1)
@@ -67,14 +68,27 @@ DevTools bounds, each tested: OFF by default (`test_launch_options_carry_no_debu
 
 `video.py::begin_case_video` adds the secret-mask init script to the ONE page it creates. **A second tab opened during a recorded case is recorded without the mask.** Not changed here. Recorded as a passing test, `tests/test_browser_session_cdp.py::test_owed_gap_a_second_tab_opened_during_a_recorded_case_has_no_mask`, which asserts today's behaviour and must be flipped by the slice that masks at context level (`run-video.md` V3/V4 are the criteria it would violate once the agent can open tabs).
 
-## Pre-check (final code commit f8fdbd33, fix cycle 1; per-file runs, `-p no:xdist -p no:cacheprovider -o addopts=`, no full suite)
+## Pre-check (final code commit a8f2b9fb, fix cycle 2; per-file runs, `-p no:xdist -p no:cacheprovider -o addopts=`, no full suite; `autotester.__file__` confirmed inside the worktree)
 
-Pre-check[B5]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_session_cdp.py tests/test_browser_session_cdp_live.py -> 25 passed (23 unit incl. the 6 new repair tests + 2 live)
-Pre-check[B6]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_navigation_secrets.py tests/test_browser.py -> 83 passed (68 + 15)
-Pre-check[B9]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_session_cdp.py tests/test_browser.py -> 38 passed (teardown; the repair paths close the context and remove the port file)
-Pre-check[AF3]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_navigation_secrets.py -> 68 passed (scheme half, unchanged by this cycle)
-Pre-check: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_settle.py -> 10 passed (incl. test_browser_startup_checks_before_and_after_launch, see below)
-Pre-check: f8fdbd33 one file at a time, each uv --directory <worktree> run pytest tests/test_<f>.py -> explore_modal 6 passed (t=366s), explore_replay 11 passed (t=57s), explore_typing 10 passed (t=300s), explore_secret_scrubbing 3 passed, parallel_run_session_crash 1 passed, video_evidence 2 passed (t=167s). (The B5/B6/B9/AF3 counts above are the per-file totals of the 118-pass batch.)
+Pre-check[B5]: a8f2b9fb uv --directory <worktree> run pytest tests/test_browser_session_cdp.py tests/test_browser_session_cdp_live.py tests/test_browser_cdp_probe_hostile.py -> 36 passed (23 + 2 live headless Chromium + 11 hostile-listener)
+Pre-check[B6]: a8f2b9fb uv --directory <worktree> run pytest tests/test_browser_navigation_secrets.py tests/test_browser.py -> 68 + 15 passed
+Pre-check[B9]: a8f2b9fb uv --directory <worktree> run pytest tests/test_browser_session_cdp.py tests/test_browser.py -> teardown paths, covered by the 36 + 15 above, 0 failures
+Pre-check[AF3]: a8f2b9fb uv --directory <worktree> run pytest tests/test_browser_navigation_secrets.py -> 68 passed (unchanged by this cycle)
+Pre-check: a8f2b9fb uv --directory <worktree> run pytest tests/test_browser_settle.py tests/test_browser_navigation_secrets.py -> 78 passed (10 settle + 68)
+Pre-check: a8f2b9fb uv --directory <worktree> run ruff check src tests scripts -> All checks passed; uv --directory <worktree> run autotester doctor -> clean
+Pre-check: a8f2b9fb the cycle-1 per-file explore_modal / explore_replay / explore_typing / video_evidence runs were not repeated: this cycle changed only `launch.py::_answers_as` (plus constants and two helpers) and a new test file.
+
+Line counts: launch.py 213, hostile test file 170, test_browser_session_cdp.py 299 (untouched), session.py 281; no function over 50.
+
+
+## Cycle 1 pre-check history (superseded by the section above; code f8fdbd33)
+
+Cycle-1 check[B5]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_session_cdp.py tests/test_browser_session_cdp_live.py -> 25 passed (23 unit incl. the 6 new repair tests + 2 live)
+Cycle-1 check[B6]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_navigation_secrets.py tests/test_browser.py -> 83 passed (68 + 15)
+Cycle-1 check[B9]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_session_cdp.py tests/test_browser.py -> 38 passed (teardown; the repair paths close the context and remove the port file)
+Cycle-1 check[AF3]: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_navigation_secrets.py -> 68 passed (scheme half, unchanged by this cycle)
+Cycle-1 check: f8fdbd33 uv --directory <worktree> run pytest tests/test_browser_settle.py -> 10 passed (incl. test_browser_startup_checks_before_and_after_launch, see below)
+Cycle-1 check: f8fdbd33 one file at a time, each uv --directory <worktree> run pytest tests/test_<f>.py -> explore_modal 6 passed (t=366s), explore_replay 11 passed (t=57s), explore_typing 10 passed (t=300s), explore_secret_scrubbing 3 passed, parallel_run_session_crash 1 passed, video_evidence 2 passed (t=167s). (The B5/B6/B9/AF3 counts above are the per-file totals of the 118-pass batch.)
 
 Run in one batch on f8fdbd33 (cdp, cdp_live, settle, browser, navigation_secrets): 118 passed, no failure. Earlier in the cycle, a broader run (cdp_live, browser_actions, navigation_secrets, settle, unreadable, manual_login, agent_loop) on the first repair draft had ONE failure, `test_browser_settle.py::test_browser_startup_checks_before_and_after_launch`: its fake context has no `close()`, so the new `self.close()` on the failed start raised `AttributeError` and masked the `RunBudgetExceeded` the test expects. Repaired in the source (not the test): the failure-path teardown is `_close_quietly()`, so a `close()` error never masks the error being raised; the other 127 tests of that run passed. The existing test now passes unedited.
 `uv --directory <worktree> run ruff check src tests scripts` -> All checks passed. `uv --directory <worktree> run autotester doctor` -> clean. Line counts: launch.py 159, session.py 281, test_browser_session_cdp.py 299 (no new test file: the file stays under 300); no function over 50.
@@ -117,6 +131,38 @@ Nothing bounds it, and no mechanism was added. `BrowserSession.close()` calls `s
 The copy was made before `_close_quietly` was added (it uses plain `self.close()`); that helper is pinned by `test_browser_startup_checks_before_and_after_launch`, red on the plain-`close()` version and green now.
 
 Not falsified: the live test file (it needs a real browser and is the cross-check of the unit tests); the owed-gap test (it records a gap, it guards no behaviour).
+
+## Fix cycle 2 - what was repaired (checker A's FAIL r1, F1a; checker B's P1/P2/P3)
+
+`src/autotester/browser/launch.py`: `_answers_as` (was the urllib opener + `json.load` to EOF) now calls `_fetch_version`, which speaks plain `http.client` over a socket it opens itself to `127.0.0.1:<port file port>`. Tests are in the NEW file `tests/test_browser_cdp_probe_hostile.py` (a raw-socket hostile loopback listener; `tests/test_browser_session_cdp.py` is at 299 lines and was not touched). All run against the real `verified_cdp_url` / `BrowserSession.start()` with no browser; the live file is the cross-check on real Chromium (2 passed).
+
+| Point | Repair | Test(s) |
+|---|---|---|
+| 1a overall deadline | `PROBE_DEADLINE_S` = 2.0 s, one `time.monotonic()` deadline for connect + headers + body; a `threading.Timer` watchdog shuts the socket at the deadline (so a header or body trickle cannot outlast it) and the read loop re-checks the clock | `test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]`, `[drip_headers]` (1 byte / 0.1 s, 0.6 s deadline, refused in under 2 s); `test_a_hostile_reply_closes_the_exposed_browser[drip_body]` through `start()` |
+| 1b byte cap | `PROBE_MAX_BYTES` = 64 KiB (64 * 1024): a larger declared `Content-Length` is refused up front, and the read loop never takes more than cap + 1 bytes | `test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]`, `[padded_undeclared]` (the padded reply carries the RIGHT guid, so only the cap can refuse it); `test_a_huge_reply_is_not_buffered` (300 MB declared, listener sent under 16 MiB) |
+| 2 any parse/validation error | `except Exception` around read + `json.loads` + validation (`BaseException` is NOT caught, so `KeyboardInterrupt` / `SystemExit` still reach the cleanup in `start()`) | `test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error` (50,000 `[`, under the cap, raises `RecursionError` in the parser); `test_a_hostile_reply_closes_the_exposed_browser[deep]` through `start()` |
+| 3 no redirect | status must be 200 or the reply is "not this browser"; the client opens exactly one connection, to `127.0.0.1:<port file port>`; no proxy | `test_a_redirect_is_never_followed[loopback_port]` (the Location is a second loopback port serving the right guid, `hits == 0`), `[other_host]` (Location `http://localhost:<port>`, a raw listener that records accepts, `connections == 0`); `test_a_hostile_reply_closes_the_exposed_browser[redirect]` |
+
+Red first: with only the two constants added and the old `_answers_as`, 7 of the 8 non-drip tests failed (cap 2, huge 1, deep 2 incl. through `start()`, redirect 2) and the drip tests never finished (the old `json.load` waits for the listener to stop); that run was stopped by task id.
+
+Happy path, measured (this host, FakeDevTools on loopback, median of 10): identity probe old urllib 3.3 ms, new 6.7 ms (thread + socket setup): no visible change. Real headless Chromium through the live file: both tests pass, so a real `/json/version` reply (Content-Length, JSON) is accepted.
+
+**Point 4 (`_reaches_past_loopback` timeout): measured, NOT changed.** On this host a loopback-only listener probed from 127.0.0.2 gives `TimeoutError` at 1.00-1.02 s with the current 1 s timeout, and `ConnectionRefusedError` at 2.03-2.05 s with a 2.5 s timeout (3 runs each; script in the session scratchpad). Raising the timeout so that a timeout counts as doubt would therefore move every exposed `start()` from about 1.0 s to about 2.05 s in this check: +1.03 s per run, a doubling of this step, for a case (a wildcard bind with a full accept queue) that Chromium did not produce here (checker B, item 4). Left as the known residual d below.
+
+### Fix cycle 2 falsifications (throwaway copy of src, tests, scripts, pyproject on C: under the session scratchpad, run with `PYTHONPATH=<copy>/src:<copy>/scripts:<copy>/tests`, `autotester.__file__` confirmed inside the copy; green before, red after, restored green; the copy was deleted after)
+
+| Repaired point | Edit in the copy (reverts the repair) | Red node(s) | Green / red / restored |
+|---|---|---|---|
+| overall deadline | `while time.monotonic() < deadline:` -> `while True:` and the watchdog interval -> `1e6` | `..._cut_off_at_the_overall_deadline[drip_body]`, `[drip_headers]` ("held start() for 5.1s against a 0.6s deadline"), `test_a_hostile_reply_closes_the_exposed_browser[drip_body]` | 11 / 8 / 11 |
+| byte cap | cap check, declared-length check and the `PROBE_MAX_BYTES + 1 - size` read size removed | `..._padded_past_the_byte_cap_is_refused[*]` (2), `test_a_huge_reply_is_not_buffered` (314,977,612 bytes sent) | 11 / 8 / 11 |
+| RecursionError | `except Exception:` -> `except (OSError, ValueError, http.client.HTTPException):` | `test_a_deeply_nested_reply_...` and `...closes_the_exposed_browser[deep]` raise `RecursionError` | 11 / 9 / 11 |
+| no redirect | on a 301/302, return `urllib.request.urlopen(Location).read()` | `test_a_redirect_is_never_followed[loopback_port]`, `[other_host]` (DID NOT RAISE) | 11 / 9 / 11 |
+
+A first deadline falsification showed only `drip_headers` red: the `drip_body` test had declared `Content-Length: 100000`, over the cap, so the cap refused it before the deadline mattered. Repaired in the test (declares 60000, under the cap) and re-run: both drip tests and the `start()` one went red. Not falsified: `except Exception` versus `BaseException` (KeyboardInterrupt propagation is a property of not catching it; nothing tests it).
+
+## Known, not repaired in cycle 2 (the last allowed cycle)
+
+Same as items a-c below plus: the unbounded `BrowserSession.close()` wait, `playwright.stop()` raising on a failure path, and the second-tab mask gap. Item d (`_reaches_past_loopback` passes a wildcard bind whose probe times out) is measured and left, see point 4 above. New residual e: the watchdog bounds the probe, but the exposed browser stays up for up to `PROBE_DEADLINE_S` (2 s) while a hostile listener is being probed; it is closed immediately after.
 
 ## Known, not repaired in this cycle (for the checkers to rule on; do not fix)
 
