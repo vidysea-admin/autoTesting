@@ -13,8 +13,8 @@ import http.client
 import json
 import os
 import socket
+import threading
 import time
-import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -41,6 +41,12 @@ the port it chose, line 2 the unguessable per-launch browser path (`/devtools/br
 
 ATTACH_TIMEOUT_S = 10.0
 
+PROBE_DEADLINE_S = 2.0
+"""One monotonic deadline for the whole identity probe (connect + headers + body), not per read."""
+
+PROBE_MAX_BYTES = 64 * 1024
+"""Most bytes of a `/json/version` reply ever read (a real one is a few hundred)."""
+
 
 class CdpEndpointError(RuntimeError):
     """The DevTools endpoint never appeared, is not this browser's, or reaches past loopback."""
@@ -64,16 +70,64 @@ def _published(profile_dir: Path, deadline: float) -> tuple[int, str]:
         time.sleep(0.05)
 
 
-def _answers_as(port: int, browser_path: str) -> bool:
-    """True when the listener on `port` is the browser that published `browser_path`."""
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # never via a proxy
+def _hard_close(sock: socket.socket) -> None:
+    """Watchdog action: unblock whatever read is stuck on `sock`, from another thread."""
+    with contextlib.suppress(OSError):
+        sock.shutdown(socket.SHUT_RDWR)
+    sock.close()
+
+
+def _fetch_version(port: int) -> bytes:
+    """The body of `GET http://127.0.0.1:<port>/json/version`, within ONE monotonic deadline
+    (`PROBE_DEADLINE_S`, connect + headers + body) and at most `PROBE_MAX_BYTES` bytes.
+
+    Talks to CDP_HOST:port only: no proxy, and no redirect is followed (only a 200 is a body).
+    A watchdog closes the socket at the deadline, so a listener that trickles headers or body
+    cannot outlast it. Anything else raises; the caller reads every error as "not this browser"."""
+    deadline = time.monotonic() + PROBE_DEADLINE_S
+    sock = socket.create_connection((CDP_HOST, port), timeout=PROBE_DEADLINE_S)
+    watchdog = threading.Timer(max(deadline - time.monotonic(), 0.0), _hard_close, (sock,))
+    watchdog.daemon = True
+    watchdog.start()
+    conn = http.client.HTTPConnection(CDP_HOST, port)
+    conn.sock = sock  # the connection we made; the client never opens another
     try:
-        with opener.open(f"http://{CDP_HOST}:{port}/json/version", timeout=2) as reply:
-            body = json.load(reply)
-    except (OSError, ValueError, http.client.HTTPException):  # non-HTTP bytes, bad JSON, no answer
+        conn.request("GET", "/json/version")
+        reply = conn.getresponse()
+        if reply.status != 200:
+            raise ValueError(f"status {reply.status}")  # a redirect included
+        if int(reply.getheader("Content-Length") or 0) > PROBE_MAX_BYTES:
+            raise ValueError("reply too large")
+        chunks: list[bytes] = []
+        size = 0
+        while time.monotonic() < deadline:
+            piece = reply.read1(PROBE_MAX_BYTES + 1 - size)
+            if not piece:
+                if time.monotonic() >= deadline:
+                    break
+                return b"".join(chunks)
+            chunks.append(piece)
+            size += len(piece)
+            if size > PROBE_MAX_BYTES:
+                raise ValueError("reply too large")
+        raise TimeoutError("the DevTools probe passed its deadline")
+    finally:
+        watchdog.cancel()
+        conn.close()
+
+
+def _answers_as(port: int, browser_path: str) -> bool:
+    """True when the listener on `port` is the browser that published `browser_path`.
+
+    Any error at all (a hang past the deadline, too many bytes, a redirect, non-HTTP bytes, bad
+    or absurdly nested JSON incl. `RecursionError`) is "not this browser". `Exception`, not
+    `BaseException`: KeyboardInterrupt / SystemExit still propagate to the caller's cleanup."""
+    try:
+        body = json.loads(_fetch_version(port))
+        url = body.get("webSocketDebuggerUrl", "") if isinstance(body, dict) else ""
+        return str(url).endswith(browser_path)
+    except Exception:  # every doubt about this endpoint is a refusal
         return False
-    url = body.get("webSocketDebuggerUrl", "") if isinstance(body, dict) else ""
-    return str(url).endswith(browser_path)
 
 
 def _reaches_past_loopback(port: int) -> bool:
