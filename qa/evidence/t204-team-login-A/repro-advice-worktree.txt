@@ -1,0 +1,15 @@
+E         
+E         Extra items in the left set:
+E         ('auth/config.py', 'auth bootstrap-admin')
+E         Use -v to get more diff
+
+tests\test_cli_advice_resolves.py:203: AssertionError
+============================== warnings summary ===============================
+tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed
+======================== 1 failed, 1 warning in 4.22s =========================

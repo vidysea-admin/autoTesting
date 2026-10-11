@@ -1,0 +1,23 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU3-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_login.py F                                            [100%]
+
+================================== FAILURES ===================================
+______________________ test_au3_cookie_flags_plain_http _______________________
+tests\test_ui_auth_login.py:85: in test_au3_cookie_flags_plain_http
+    assert "httponly" in header and "samesite=lax" in header and "path=/" in header
+E   AssertionError: assert ('httponly' in 'at_session=<redacted>; max-age=43200; path=/; samesite=lax')
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_login.py::test_au3_cookie_flags_plain_http - Assert...
+======================== 1 failed, 1 warning in 2.67s =========================
