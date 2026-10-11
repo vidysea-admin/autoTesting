@@ -1,0 +1,10 @@
+M4_safe_no_conin | BEFORE rc 0 568 passed, 1 deselected in 16.03s | AFTER rc 1 26 failed, 542 passed, 1 deselected in 46.29s
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[conin$]
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[conin$.txt]
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[conin$.tar.gz]
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[conin$ .log]
+M4b_safe_no_rstrip | BEFORE rc 0 568 passed, 1 deselected in 23.89s | AFTER rc 1 90 failed, 478 passed, 1 deselected in 98.11s (0:01:38)
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[con .log]
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[CON .log]
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[Con .log]
+     FAILED tests/test_safe_names_windows.py::test_every_reserved_device_form_is_refused[prn .log]
