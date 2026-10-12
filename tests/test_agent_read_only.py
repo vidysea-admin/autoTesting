@@ -258,3 +258,28 @@ def test_get_persona_calls_the_wrapped_reader(
     monkeypatch.setattr(ctx.store, "load_portal_persona", lambda: calls.append(1) or real())
     out = _go(ctx, "get_persona")
     assert out.ok and out.artifact_ref == "persona:demo" and calls == [1]
+
+
+# -- D-086 HG-1: benign clicks run under READ_ONLY; everything else keeps its guard -------------
+@pytest.mark.parametrize("name", ["Home", "Next", "Search", "Reports", "Details", "Close"])
+def test_read_only_runs_a_benign_click(tmp_path: Path, spy: Spies, name: str) -> None:
+    _, out = _run(tmp_path, spy, RO, _one(A.CLICK, name))
+    assert out.ok and spy.sessions == 1 and spy.count("run_case") == 1
+
+
+@pytest.mark.parametrize("name", ["Delete account", "Log out", "Sign out", "Submit", "Save",
+                                  "Place order", "Sign in", ""])
+def test_read_only_still_refuses_a_destructive_or_commit_click(
+        tmp_path: Path, spy: Spies, name: str) -> None:
+    _, out = _run(tmp_path, spy, RO, _one(A.CLICK, name))
+    assert out.refusal is RefusalClass.WRITE_POLICY and "read_only" in out.summary
+    assert spy.sessions == 0 and spy.count("run_case") == 0
+
+
+def test_the_click_relaxation_does_not_unlock_the_other_write_steps(
+        tmp_path: Path, spy: Spies) -> None:
+    for i, step in enumerate([(A.FILL, "Name", "Eve"), (A.SELECT, "Plan", "pro"),
+                              (A.UPLOAD, "CV", "cv.pdf"), (A.PRESS_KEY, "", "Enter")]):
+        _, out = _run(tmp_path / f"s{i}", spy, RO, _one(*step))
+        assert out.refusal is RefusalClass.WRITE_POLICY
+    assert spy.sessions == 0 and spy.count("run_case") == 0
