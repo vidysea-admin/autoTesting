@@ -60,4 +60,6 @@ def rules(root: Path) -> list[str]:
 
 
 def blocking(root: Path) -> list[doctor.Violation]:
-    return doctor.blocking(citations.check_citation_subjects(root))
+    """Strict view (as if the D-087 advisory mode were promoted): coverage counts as blocking."""
+    return [v for v in citations.check_citation_subjects(root)
+            if v.rule not in ("decision-citation-sealed", "decision-citation-known-disputed")]

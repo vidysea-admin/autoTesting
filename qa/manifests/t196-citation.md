@@ -1,8 +1,8 @@
 # Manifest - t196-citation (resume 2026-10-12)
 
 Contract: qa/contracts/living-ledger.md L10. Brief: qa/briefs/t196-citation-subject-check.md. Detail manifest: qa/manifests/t196-citation-subject-check.md.
-Fix cycle: 0
-Status: BLOCKED-needs-owner (NOT ready-for-check)
+Fix cycle: 1
+Status: ready-for-check
 
 ## Result
 - Branch wave/t196-citation merged with origin/master (clean). Code slice (scanner, seals, known-disputed split, doctor wiring) already present.
@@ -19,3 +19,8 @@ Status: BLOCKED-needs-owner (NOT ready-for-check)
 - /checker or Umesh: independent review plus seal rows for closed manifests, verdicts and decision entries; independent classification of the rest.
 - /checker: canonical migration of contract claims; record K1/K2 ruling in L10; resolve the K1/K2 issue row.
 - Until then merging this branch turns doctor red for every unit. Do not merge.
+
+## Fix cycle 1 (D-087 item 3)
+- Per D-087 item 3 (docs/DECISIONS.md), T-196 merges in ADVISORY mode. Coverage and declaration findings (2314 / 372) are non-blocking warnings; wrong-subject, subject-unavailable and dangling citations stay blocking. Supersedes the BLOCKED-needs-owner section above.
+- Mechanism: src/autotester/ledger/advisory.py (ADVISORY_CITATION, NON_BLOCKING, blocking, warning_summary); doctor CLI prints counts per rule plus first 5 items. Promote later by emptying ADVISORY_CITATION.
+- Tests: tests/test_citation_advisory.py (5); seal fixtures use the strict view. 146 passed across the 5 per-file runs; ruff clean; `autotester doctor` clean with warnings.

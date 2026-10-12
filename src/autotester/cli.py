@@ -50,9 +50,10 @@ def doctor() -> None:
     """Check the repo against the design rules that keep it readable."""
     violations = doctor_module.run()
     hard = doctor_module.blocking(violations)
-    for violation in violations:
-        typer.secho(str(violation),
-                    fg=typer.colors.RED if violation in hard else typer.colors.YELLOW)
+    for violation in hard:
+        typer.secho(str(violation), fg=typer.colors.RED)
+    for line in doctor_module.warning_summary(violations):
+        typer.secho(line, fg=typer.colors.YELLOW)
     if not hard:
         typer.secho("doctor: clean", fg=typer.colors.GREEN)
         raise typer.Exit(0)

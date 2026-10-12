@@ -16,6 +16,9 @@ from importlib.metadata import packages_distributions
 from pathlib import Path
 
 from autotester.core.paths import RepoDocs, repo_root
+from autotester.ledger.advisory import NON_BLOCKING, blocking, warning_summary
+
+__all__ = ["NON_BLOCKING", "blocking", "warning_summary"]
 
 MAX_FILE_LINES = 300
 MAX_FUNCTION_LINES = 50
@@ -254,15 +257,6 @@ def check_docs_routed(root: Path) -> list[Violation]:
         if path.endswith(".md"):
             out.append(Violation("router-dangling", path, "router names a doc that does not exist"))
     return out
-
-
-NON_BLOCKING = frozenset({"decision-citation-sealed", "decision-citation-known-disputed"})
-"""Informational rows: reported and counted, but they alone do not fail doctor (L10)."""
-
-
-def blocking(violations: list[Violation]) -> list[Violation]:
-    """The violations that make doctor exit nonzero."""
-    return [v for v in violations if v.rule not in NON_BLOCKING]
 
 
 def run(root: Path | None = None) -> list[Violation]:

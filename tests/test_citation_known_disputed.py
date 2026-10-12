@@ -100,9 +100,9 @@ def test_cli_doctor_exits_zero_when_only_informational_rows_remain(
     assert CliRunner().invoke(cli.app, ["doctor"]).exit_code == 1
 
 
-def test_doctor_blocking_ignores_only_the_two_informational_rules() -> None:
+def test_doctor_blocking_ignores_only_the_informational_and_advisory_rules() -> None:
     soft = [doctor.Violation("decision-citation-sealed", "x", "n"),
             doctor.Violation("decision-citation-known-disputed", "x", "n")]
-    hard = doctor.Violation("decision-citation-coverage", "x", "n")
+    hard = doctor.Violation("decision-citation-subject-mismatch", "x", "n")
     assert doctor.blocking([*soft, hard]) == [hard]
     assert doctor.blocking(soft) == []
