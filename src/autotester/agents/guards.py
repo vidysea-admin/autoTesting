@@ -16,6 +16,7 @@ http(s) URL), plus the declared login case's credential entry.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from urllib.parse import unquote, urlsplit
 
@@ -89,6 +90,36 @@ def _click_denied(name: str, project: Project) -> str | None:
     return explore_safety.deny_reason(element, explore_safety.policy_for(project))
 
 
+# Cyrillic/Greek lookalikes of Latin letters, folded after NFKC (small, cheap; not a full table).
+_CONFUSABLES = {  # code point -> Latin letter (Cyrillic a e o p c x y i s j d h, Greek o v i)
+    cp: ch for cp, ch in zip(
+        (0x430, 0x435, 0x43E, 0x440, 0x441, 0x445, 0x443, 0x456, 0x455, 0x458, 0x501, 0x4BB,
+         0x3BF, 0x3BD, 0x3B9), "aeopcxyisjdhovi", strict=True)}
+_CONFUSABLE_TABLE = str.maketrans(_CONFUSABLES)
+_UNNAMED = "unnamed control"
+
+
+def _click_names(name: str) -> tuple[str, ...]:
+    """A click target as the person sees it, in two readings: NFKC, lookalikes folded, case folded,
+    separators and whitespace collapsed (`normalise_label`), with invisible/format characters
+    dropped (`De<ZWSP>lete`) and with them read as a space (`Save<ZWSP>draft`)."""
+    text = unicodedata.normalize("NFKC", name)
+    out = []
+    for hidden in ("", " "):
+        seen = "".join(hidden if unicodedata.category(ch) == "Cf" else (" " if ch.isspace() else ch)
+                       for ch in text)
+        out.append(explore_safety.normalise_label(seen.translate(_CONFUSABLE_TABLE).casefold()))
+    return tuple(dict.fromkeys(out))
+
+
+def _click_refusal(name: str, project: Project) -> str | None:
+    """Deny-list, never-click and unnamed (blank after cleaning) checks for a click target."""
+    names = _click_names(name)
+    if not any(names):
+        return _UNNAMED
+    return next((why for n in names if (why := _click_denied(n, project))), None)
+
+
 def _check_refuses(target: str, project: Project) -> bool:
     """The browser seam's own destination check (`check_destination`), asked of `target`."""
     try:
@@ -152,11 +183,11 @@ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
     enter = action is Action.PRESS_KEY and step.value in (None, "Enter")
     if (action is Action.CLICK or enter) and walk.login and walk.credential_pending:
         walk.credential_pending = False  # one submit per credential entry
-        return _click_denied(step.target, project) if action is Action.CLICK else None
+        return _click_refusal(step.target, project) if action is Action.CLICK else None
     if action is Action.CLICK:  # D-086 HG-1: benign clicks run; deny-list/never-click still hold
-        return _click_denied(step.target, project) or (
+        return _click_refusal(step.target, project) or (
             "click on a control named like a commit can change state"
-            if _COMMIT_NAME.search(step.target) else None)
+            if any(_COMMIT_NAME.search(n) for n in _click_names(step.target)) else None)
     if action is Action.FILL:
         return "fill outside the declared login's credential entry"
     return f"{action.value} can change state"
@@ -169,7 +200,7 @@ def _step_refusal(step: Step, project: Project, walk: _Walk) -> tuple[str | None
     if project.write_policy is WritePolicy.READ_ONLY:
         return _read_only_refusal(step, project, walk), RefusalClass.WRITE_POLICY
     if step.action is Action.CLICK:
-        return _click_denied(step.target, project), RefusalClass.WRITE_POLICY
+        return _click_refusal(step.target, project), RefusalClass.WRITE_POLICY
     return None, RefusalClass.WRITE_POLICY
 
 
