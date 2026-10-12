@@ -2442,3 +2442,20 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-12)
 
 **Links:** D-018; D-041; D-053; D-075; D-081; T-136; T-145; T-169; T-177; T-179; T-203; qa/gates/t179a-hg1-readonly-click.md; qa/gates/t203-host-and-dns.md; qa/gates/t136-independent-human-list.md
+
+## D-087 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered three maker questions in the Claude Code session on 2026-10-12 by picking options.
+1. **AT-651 (environment model; a production secret leaking to prepod):** option A. Each environment is a separate project (for example pathlynks-prod and pathlynks-prepod), each with its own secrets and approvals. Secret host scoping changes from suffix match to EXACT host match, so a production secret is never filled on another host. An `environments` schema concept is NOT adopted now.
+2. **AT-644 (`qa/.last-tick` truncation guard):** Umesh confirms his 2026-09-27 approval of a guard against truncating or partial writes of `qa/.last-tick`. This entry is the record of that approval.
+3. **T-196 (citation subject check):** merge in ADVISORY mode. Coverage and declaration findings (about 2313 coverage and 372 declaration) are reported as warnings and do not turn doctor red. Wrong-subject and dangling citations remain blocking if the unit already treats them so. Seal and review rows are added gradually. A later decision may promote the check to blocking.
+
+**Why:** AT-651 decides how secrets are kept apart across environments. AT-644 needed its approval on record. T-196 would otherwise turn doctor red on thousands of existing citations.
+
+**Result:** No code change has been made by this entry. The maker dispatches AT-651, AT-644 and the T-196 merge next.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** AT-644; AT-651; T-196
