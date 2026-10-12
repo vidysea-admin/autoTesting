@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-174 [high] CLI contract (--output json, documented exit codes, --dry-run) + AutoTester MCP server (run tests, get report, get catalog) (D-041)
 - T-177 [high] browser-use fallback actuator for unknown screens with typed outputs; revives agent_loop.run_with_fallback (AT-253) (D-041)
 ## Last decisions (computed status)
-- D-083 2026-10-11 decision ACTIVE
 - D-084 2026-10-11 decision ACTIVE
 - D-085 2026-10-12 decision ACTIVE
 - D-086 2026-10-12 decision ACTIVE
 - D-087 2026-10-12 decision ACTIVE
+- D-088 2026-10-12 decision ACTIVE
