@@ -8,6 +8,11 @@
 <!-- generated:map -->
 | Module | One job |
 |---|---|
+| `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
+| `agents/evidence_tools.py` | The read-only evidence tools (T-180, AL8): `read_result`, `read_rubric`, `read_verdict`. |
+| `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
+| `agents/subagents.py` | The five subagents of the lead tester and the one place their tool allowlists live (T-180, |
+| `agents/tools.py` | The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6). |
 | `auth/policy.py` | Merge each unit's own `ROUTE_POLICY` into the one central route-policy table (TF4, AU12/AU14). |
 | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
 | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
@@ -73,6 +78,7 @@
 | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `schema/agent_layer.py` | The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist, |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
@@ -108,6 +114,7 @@
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/sheet_plan.py` | The shapes of a tracker-sheet sync PLAN (T-199b dry run; contract TB9, TB10, TB11, TB13 in part). |
+| `schema/subagent.py` | The shape of one subagent of the lead tester (T-180, D-042, AL8-AL10): its name, the skill |
 | `schema/team_enums.py` | The Group 10 (team features) vocabulary file: every closed value set the team units add. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
 | `schema/tracked_bug.py` | A tracked bug and the events that move it: the data shapes of T-199a (team-bug-loop TB1-TB6). |
@@ -270,6 +277,16 @@
 <!-- generated:schema -->
 | Model | Meaning |
 |---|---|
+| `AgentToolName` (`schema/agent_layer.py`) | The stage tools in this slice. `report` and `capture_network` join with the rest of T-179. |
+| `ToolEffect` (`schema/agent_layer.py`) | What a tool can do to the outside world. T-180 allowlists subagents by this. |
+| `RefusalClass` (`schema/agent_layer.py`) | Why a tool call produced no action. A refusal is a result, never an exception the |
+| `ToolSpec` (`schema/agent_layer.py`) | One tool: its name, effect, and the existing function it wraps (C3). |
+| `CrawlArgs` (`schema/agent_layer.py`) | Bounds the model REQUESTS; the approval decides whether they are granted. |
+| `RunCaseArgs` (`schema/agent_layer.py`) |  |
+| `GradeCaseArgs` (`schema/agent_layer.py`) |  |
+| `ReadCaseArgs` (`schema/agent_layer.py`) | Evidence reads (T-180): which case's stored artifact to read; the run is trusted context. |
+| `EmptyArgs` (`schema/agent_layer.py`) | Tools that take nothing (`get_persona`, `get_catalog`): everything is trusted context. |
+| `ToolOutcome` (`schema/agent_layer.py`) | What a tool call returns to the model. `summary` is scrubbed before it is built, and the |
 | `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
 | `AiCheckMethod` (`schema/ai_check.py`) | Who decides a check: code from recorded facts, or the independent judge (C7). |
 | `AiReply` (`schema/ai_check.py`) | What an AI endpoint answered, as the transport seam hands it to the capturer. |
@@ -451,6 +468,9 @@
 | `SheetPlan` (`schema/sheet_plan.py`) | What a sync would write. `plan_hash` is derived from the content and checked on load. |
 | `SyncMemory` (`schema/sheet_plan.py`) | What we last wrote, per bug and column, so a later human edit is told from our own value. |
 | `PlanConfirmation` (`schema/sheet_plan.py`) | A named person saw the plan with this hash. Whether that person holds `project.edit` is |
+| `SubagentName` (`schema/subagent.py`) |  |
+| `SubagentSpec` (`schema/subagent.py`) | One subagent. Frozen: the allowlist cannot be widened after construction. |
+| `SubagentInvocation` (`schema/subagent.py`) | What ONE subagent is handed (AL9): its own prompt, the task text, the files the lead |
 | `ScheduleMode` (`schema/team_enums.py`) |  |
 | `ScheduleZone` (`schema/team_enums.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
 | `SlotOutcome` (`schema/team_enums.py`) | What a tick decided for one slot. A record carries exactly one of these. |
