@@ -86,7 +86,9 @@ def host_of(url: str) -> str:
 
 
 def _norm_host(value: str) -> str:
-    return value.strip().lower().lstrip(".").rstrip(".")
+    v = value.strip().lower()
+    # One trailing dot (FQDN form) only; never strip leading or repeated dots.
+    return v[:-1] if v.endswith(".") else v
 
 
 def _host_matches(host: str, domain: str, include_subdomains: bool = False) -> bool:
