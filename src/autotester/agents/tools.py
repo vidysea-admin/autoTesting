@@ -9,6 +9,7 @@ refusal comes back as a `ToolOutcome`, never as something the model can argue wi
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from typing import Any, cast
 
@@ -83,14 +84,30 @@ def _crawl(ctx: AgentContext, args: CrawlArgs) -> ToolOutcome:
                                f"{crawl.actions} actions")
 
 
+_UNICODE_ESC = re.compile(r"\\u([0-9a-fA-F]{4})")
+
+
+def _carries_credential(ctx: AgentContext, data: dict[str, Any]) -> bool:
+    """True if any DECODED string of `data` (a key or a leaf, also read with a literal
+    backslash-u escape turned into its character) trips the secret gate, or `data` is past the
+    call caps: what cannot be checked is withheld. Never the JSON text, where a TAB is a
+    backslash-t and the fold never sees the separator."""
+    try:
+        for text in _call_texts("result", data)[1:]:
+            for form in (text, _UNICODE_ESC.sub(lambda m: chr(int(m[1], 16)), text)):
+                guards.guard_model_bound(ctx.secrets, form)
+    except (ValueError, _Refused):
+        return True
+    return False
+
+
 def _withhold_if_credential(ctx: AgentContext, model: BaseModel) -> None:
     """The release gate's own detector, applied BEFORE a write: nothing it would refuse (a
-    reversed, encoded or folded secret the exact-value scrub misses) is ever put on disk."""
-    try:
-        guards.guard_model_bound(ctx.secrets, model.model_dump_json())
-    except ValueError:
+    reversed, encoded, folded or separator-split secret the exact-value scrub misses) is ever
+    put on disk."""
+    if _carries_credential(ctx, model.model_dump(mode="json")):
         raise _Refused(RefusalClass.SECRET,
-                       "result withheld: it carried a credential; nothing was stored") from None
+                       "result withheld: it carried a credential; nothing was stored")
 
 
 def _scrubbed(ctx: AgentContext, result: RawResult) -> RawResult:
@@ -158,9 +175,7 @@ _HANDLERS: dict[Name, Callable[[AgentContext, Any], ToolOutcome]] = {
 def _release(ctx: AgentContext, outcome: ToolOutcome) -> ToolOutcome:
     """Scrub, then gate, the one thing that goes back to the model (AL6)."""
     clean = outcome.model_copy(update={"summary": ctx.secrets.redactor().scrub(outcome.summary)})
-    try:
-        guards.guard_model_bound(ctx.secrets, clean.model_dump_json())
-    except ValueError:
+    if _carries_credential(ctx, clean.model_dump(mode="json")):
         return _refusal(outcome.tool, RefusalClass.SECRET,
                         "result withheld: it carried a credential")
     return clean
@@ -239,13 +254,17 @@ def _call_texts(name: object, raw_args: object) -> list[str]:
     return texts
 
 
-def _error_text(ctx: AgentContext, exc: Exception) -> str:
-    """`ExcType: message`, scrubbed THEN truncated (a cut secret would escape the scrub)."""
+def _stage_error(ctx: AgentContext, label: str, exc: Exception) -> ToolOutcome:
+    """`ExcType: message` as a typed refusal: scrubbed, then gated WHOLE, then truncated (a cut
+    encoded secret would escape a gate that ran after the cut)."""
     try:
         text = f"{type(exc).__name__}: {exc}"
     except Exception:  # a hostile __str__ must not become a raw escape
         text = type(exc).__name__
-    return ctx.secrets.redactor().scrub(text)[:300]
+    text = ctx.secrets.redactor().scrub(text)
+    if _carries_credential(ctx, {"error": text}):
+        return _refusal(label, RefusalClass.SECRET, "result withheld: the error had a credential")
+    return _refusal(label, RefusalClass.STAGE_ERROR, text[:300])
 
 
 def _dispatch(ctx: AgentContext, name: object, raw_args: object) -> ToolOutcome:
@@ -267,7 +286,7 @@ def _dispatch(ctx: AgentContext, name: object, raw_args: object) -> ToolOutcome:
     except ApprovalRequired as exc:
         outcome = _refusal(label, RefusalClass.APPROVAL, str(exc))
     except Exception as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
-        outcome = _refusal(label, RefusalClass.STAGE_ERROR, _error_text(ctx, exc))
+        outcome = _stage_error(ctx, label, exc)
     return _release(ctx, outcome)
 
 
