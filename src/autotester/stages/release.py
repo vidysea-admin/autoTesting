@@ -15,9 +15,9 @@ from datetime import datetime
 
 from autotester.browser.secrets import SecretStore
 from autotester.schema.crawl import CrawlBounds
-from autotester.schema.enums import ApprovalKind
+from autotester.schema.enums import ApprovalKind, CaseStatus
 from autotester.schema.project import Project
-from autotester.schema.release import ReleaseDecision, ReleaseScope
+from autotester.schema.release import FlowPlan, ReleaseDecision, ReleaseScope
 from autotester.schema.run_state import RunState, StageName
 from autotester.stages.explore_consent import covering_approval
 from autotester.stages.orchestrate import StageContext, StageRunner, run_or_resume
@@ -49,6 +49,21 @@ def build_scope(project: Project, store: ProjectStore, *, run_id: str, approval_
         unplanned_flow_ids=[f for f in expected if f not in by_flow], **extra)
 
 
+def derive_flow_plans(project: Project, store: ProjectStore) -> list[FlowPlan]:
+    """AT-898 / RR6 producer: each FlowSpec flow with approved cases gets its plan (those case
+    ids, in store order); a flow with none keeps whatever plan is already stored. Reads only."""
+    spec = store.load_flowspec()
+    if spec is None:
+        return store.list_flow_plans()
+    by_flow = {p.flow_id: p for p in store.list_flow_plans()}
+    cases = [c for c in store.list_cases() if c.status is CaseStatus.APPROVED]
+    for flow in spec.flows:
+        ids = list(dict.fromkeys(c.id for c in cases if c.flow_id == flow.id))
+        if ids:
+            by_flow[flow.id] = FlowPlan(project=project.slug, flow_id=flow.id, case_ids=ids)
+    return list(by_flow.values())
+
+
 def _frozen_or_new(project: Project, store: ProjectStore, run_id: str,
                    secrets: SecretStore | None, git_sha: str | None,
                    created_at: datetime | None) -> ReleaseScope:
@@ -56,13 +71,15 @@ def _frozen_or_new(project: Project, store: ProjectStore, run_id: str,
     frozen = store.load_release_scope(run_id)
     if frozen is not None:
         return frozen
-    plans = store.list_flow_plans()
+    plans = derive_flow_plans(project, store)
     spec = store.load_flowspec()
     in_scope = [p for p in plans if spec and p.flow_id in {f.id for f in spec.flows}]
     actions = max(1, plans_cost(store, in_scope))
     bounds = CrawlBounds(max_actions=actions, wall_clock_s=actions * WALL_CLOCK_PER_ACTION_S)
     approval = covering_approval(project, store, bounds, kind=ApprovalKind.LIVE_CASE,
                                  secrets=secrets)  # RR2: ApprovalRequired, nothing written
+    for plan in in_scope:  # AT-898: persist only after the gate passed
+        store.save_flow_plan(plan)
     return build_scope(project, store, run_id=run_id, approval_id=approval.id,
                        max_actions=actions, git_sha=git_sha, created_at=created_at)
 

@@ -56,3 +56,57 @@ def test_both_answers_at_once_is_refused(store: ProjectStore) -> None:
 def test_release_log_for_an_unknown_run_says_so(store: ProjectStore) -> None:
     result = runner.invoke(app, ["release-log", "demo", "nope"])
     assert result.exit_code == 1 and "no release record" in result.output
+
+
+@pytest.mark.parametrize("bad", ["..", "../escaped", "..\\escaped", "/abs/x", "C:\\x", "a/b", "."])
+def test_at900_unsafe_run_id_is_refused_before_any_write(store: ProjectStore, bad: str,
+                                                        tmp_path: Path) -> None:
+    grant_live_case_approval(store)
+    before = set(tmp_path.rglob("*"))
+    result = runner.invoke(app, ["release", "demo", "--run-id", bad])
+    assert result.exit_code == 1 and "invalid --run-id" in result.output
+    assert set(tmp_path.rglob("*")) == before
+    assert not (tmp_path.parent / "escaped").exists()
+
+
+def test_at900_encoded_separators_stay_one_segment_under_runs(store: ProjectStore) -> None:
+    for rid in ("..%2fescaped", "%2e%2e", "a%5cb"):
+        d = store.paths.run_dir(rid)
+        assert d.parent == store.paths.runs_dir
+    with pytest.raises(ValueError):
+        store.paths.run_dir("../x")
+
+
+def test_at898_release_persists_flow_plans_from_approved_cases(store: ProjectStore) -> None:
+    from autotester.schema.case import Case
+    from autotester.schema.enums import CaseClass, CaseKind, CaseStatus
+    from autotester.schema.release import FlowPlan  # noqa: F401
+    store.paths.flow_plans.unlink()  # no hand-seeded plan: the producer must make it
+    case = store.add_case(Case(project="demo", flow_id="f1", kind=CaseKind.BEST,
+                               case_class=CaseClass.HAPPY, title="t",
+                               status=CaseStatus.APPROVED))
+    grant_live_case_approval(store)
+    res = runner.invoke(app, ["release", "demo", "--run-id", "rel1"])
+    assert res.exit_code == 0 and "flows to run: 1" in res.output
+    assert [p.case_ids for p in store.list_flow_plans()] == [[case.id]]
+    assert store.load_release_scope("rel1").plans[0].flow_id == "f1"
+
+
+def test_at899_pause_shows_scope_and_approve_decline_say_what_happened(
+        store: ProjectStore) -> None:
+    grant_live_case_approval(store)
+    paused = runner.invoke(app, ["release", "demo", "--run-id", "rel1", "--git-sha", "abc123"])
+    assert "abc123" in paused.output and "flows to run: 1" in paused.output
+    assert "1 cases" in paused.output
+    bad = runner.invoke(app, ["release", "demo", "--run-id", "rel1", "--decline-by", "rm"])
+    assert "declined by rm" in bad.output and "finished - see" not in bad.output
+    again = runner.invoke(app, ["release", "demo", "--run-id", "rel1", "--approve-by", "rm"])
+    assert again.exit_code == 1 and "Traceback" not in again.output
+    assert "cannot answer release rel1" in again.output
+
+
+def test_at899_approve_names_the_next_step(store: ProjectStore) -> None:
+    grant_live_case_approval(store)
+    runner.invoke(app, ["release", "demo", "--run-id", "rel2"])
+    ok = runner.invoke(app, ["release", "demo", "--run-id", "rel2", "--approve-by", "rm"])
+    assert "approved by rm" in ok.output and "Next:" in ok.output

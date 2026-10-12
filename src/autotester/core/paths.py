@@ -124,7 +124,8 @@ class ProjectPaths:
         return self.root / "profiles" / self.slug
 
     def run_dir(self, run_id: str) -> Path:
-        return self.runs_dir / run_id
+        """`runs/<run_id>`; the id must be one safe path segment (AT-900), else `UnsafeName`."""
+        return self.runs_dir / safe_name(run_id)
 
     @property
     def flow_plans(self) -> Path:
