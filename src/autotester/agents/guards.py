@@ -42,7 +42,8 @@ _CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 # says it commits something (the crawler's `is_form_submit` is unknowable here) stays refused.
 _COMMIT_NAME = re.compile(
     r"\b(save|place order|confirm|register|sign ?up|sign ?in|log ?in|add to cart|buy|purchase|"
-    r"update|create|apply|book|upload|import)\b", re.IGNORECASE)
+    r"update|create|apply|book|upload|import|close account|deactivate|delete account|"
+    r"remove account|cancel subscription|unsubscribe)\b", re.IGNORECASE)
 DESTINATION_REFUSED = "destination is not an http(s) URL inside the allowed domains"
 
 
@@ -59,6 +60,8 @@ def guard_model_bound(secrets: SecretStore, text: str) -> str:
     return secrets.guard_prompt(text)
 
 
+# TODO(d088-followups): pass production=project.production to require_approval once
+# Project.production and the unit land on master (absent today; do not cherry-pick).
 def crawl_approval(store: ProjectStore, project: Project, bounds: CrawlBounds) -> RunApproval:
     """The signed, unexpired human approval covering exactly these bounds, or `ApprovalRequired`.
     Reads existing rows only: an agent can never mint one (D-018)."""
@@ -97,6 +100,8 @@ _CONFUSABLES = {  # code point -> Latin letter (Cyrillic a e o p c x y i s j d h
          0x3BF, 0x3BD, 0x3B9), "aeopcxyisjdhovi", strict=True)}
 _CONFUSABLE_TABLE = str.maketrans(_CONFUSABLES)
 _UNNAMED = "unnamed control"
+# Invisible fillers that are neither Cf nor whitespace (Braille blank, Hangul fillers).
+_FILLERS = frozenset("⠀ㅤᅟᅠﾠ")
 
 
 def _click_names(name: str) -> tuple[str, ...]:
@@ -106,8 +111,8 @@ def _click_names(name: str) -> tuple[str, ...]:
     text = unicodedata.normalize("NFKC", name)
     out = []
     for hidden in ("", " "):
-        seen = "".join(hidden if unicodedata.category(ch) == "Cf" else (" " if ch.isspace() else ch)
-                       for ch in text)
+        seen = "".join(hidden if unicodedata.category(ch) == "Cf" else (
+            " " if ch.isspace() or ch in _FILLERS else ch) for ch in text)
         out.append(explore_safety.normalise_label(seen.translate(_CONFUSABLE_TABLE).casefold()))
     return tuple(dict.fromkeys(out))
 
