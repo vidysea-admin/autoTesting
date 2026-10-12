@@ -5,7 +5,7 @@
 Contract: qa/contracts/agent-layer.md AL8, AL9, AL10 (T-180 group). AL5/AL6/AL7 not re-owned here (see Held).
 Goal task: T-180. Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (security: grader holds no action tools; per-subagent allowlists)
-Fix cycle: 0
+Fix cycle: 1 (merge-only fix; resolved docs conflicts to master)
 Branch: wave/t180-subagents, base 806f27a4 (t179a PASS f54af1ac merged with master a7e8acad; docs/MAP.md, SNAPSHOT.md and a checkpoint file took master's side in the merge, then MAP regenerated).
 Dual check: no. Diff touches no core/consent.py, core/redact.py or browser/secrets.py, nor agents/guards.py. The grader allowlist is enforced at ONE site: `agents/subagents.py::SUBAGENTS` plus the import-time READ-only check there.
 Persona walk: skip (agent layer, no screen).
