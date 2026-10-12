@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 from openpyxl import load_workbook
+from symlink_support import link_dir, link_file
 
 from autotester.schema.case import Case
 from autotester.schema.enums import (
@@ -126,7 +127,7 @@ def test_png_embedding_refuses_a_symlinked_allowed_directory(tmp_path: Path) -> 
     (outside / "secret.png").write_bytes(b"must-not-leak")
     allowed = tmp_path / "project" / "runs" / "run-1"
     allowed.parent.mkdir(parents=True)
-    allowed.symlink_to(outside, target_is_directory=True)
+    link_dir(allowed, outside)
 
     assert report_export.png_base64(allowed / "secret.png", allowed, tmp_path / "project") is None
 
@@ -137,7 +138,7 @@ def test_png_embedding_refuses_a_file_symlink(tmp_path: Path) -> None:
     outside = tmp_path / "secret.png"
     outside.write_bytes(b"must-not-leak")
     link = allowed / "shot.png"
-    link.symlink_to(outside)
+    link_file(link, outside)
 
     assert report_export.png_base64(link, allowed, tmp_path / "project") is None
 
