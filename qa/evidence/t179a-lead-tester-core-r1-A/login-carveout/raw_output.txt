@@ -1,0 +1,81 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head\src\autotester\__init__.py
+P1    OK  as-expected  s=1 rc=1 chg=True | login: NAV?query, FILL user, FILL pass, CLICK Sign in | outcome completed
+P2    OK  as-expected  s=1 rc=1 chg=True | same with PRESS_KEY Enter | outcome completed
+P3    OK  as-expected  s=1 rc=1 chg=True | same with PRESS_KEY value None | outcome completed
+P4    OK  as-expected  s=1 rc=1 chg=True | PRESS_KEY Enter on locator 'Password' | outcome completed
+P5    OK  as-expected  s=1 rc=1 chg=True | credential fill with no submit at all | outcome completed
+A1    REF as-expected  s=0 rc=0 chg=False | identical login steps, case id != login_case_id (decoy is logi | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+A2    REF as-expected  s=0 rc=0 chg=False | identical login steps, login_case_id None | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+B1    REF as-expected  s=0 rc=0 chg=False | extra CLICK 'Continue' after submit | refused under write_policy read_only: step 5 (click) 'Continue': click can change state
+B2    REF as-expected  s=0 rc=0 chg=False | extra Enter after CLICK submit | refused under write_policy read_only: step 5 (press_key) '': press_key can change state
+B3    REF as-expected  s=0 rc=0 chg=False | second submit CLICK after Enter submit, no new fill | refused under write_policy read_only: step 5 (click) 'Sign in': click can change state
+B4    OK  UNEXPECTED   s=1 rc=1 chg=True | two full sequences: fill,submit,fill,submit (benign names) | outcome completed
+B4b   OK  UNEXPECTED   s=1 rc=1 chg=True | three sequences, one per credential fill | outcome completed
+B5    REF as-expected  s=0 rc=0 chg=False | CLICK 'Sign in' BEFORE any credential fill | refused under write_policy read_only: step 2 (click) 'Sign in': click can change state
+B6    REF as-expected  s=0 rc=0 chg=False | Enter BEFORE any credential fill | refused under write_policy read_only: step 2 (press_key) '': press_key can change state
+B7    REF as-expected  s=0 rc=0 chg=False | submit CLICK 'Delete account' after credential | refused under write_policy read_only: step 4 (click) 'Delete account': destructive-name deny-list
+B8    REF as-expected  s=0 rc=0 chg=False | submit CLICK 'Log out' after credential | refused under write_policy read_only: step 4 (click) 'Log out': never-click pattern (logout/sign-out
+B9    REF as-expected  s=0 rc=0 chg=False | PRESS_KEY Delete after credential | refused under write_policy read_only: step 4 (press_key) '': press_key can change state
+B10   REF as-expected  s=0 rc=0 chg=False | PRESS_KEY Tab after credential | refused under write_policy read_only: step 4 (press_key) '': press_key can change state
+B11   OK  UNEXPECTED   s=1 rc=1 chg=True | CLICK 'Place order' as the one submit | outcome completed
+B12   OK  UNEXPECTED   s=1 rc=1 chg=True | CLICK 'Save' as the one submit | outcome completed
+B13   OK  UNEXPECTED   s=1 rc=1 chg=True | CLICK 'Transfer funds' as the one submit | outcome completed
+B14   OK  UNEXPECTED   s=1 rc=1 chg=True | Enter on locator 'Search' after credential | outcome completed
+B15   REF as-expected  s=0 rc=0 chg=False | credential, literal FILL 'Name' Eve, then submit | refused under write_policy read_only: step 4 (fill) 'Name': fill outside the declared login's creden
+B16   OK  as-expected  s=1 rc=1 chg=True | submit then WAIT/HOVER/SCROLL/BACK/ASSERT | outcome completed
+B17   REF as-expected  s=0 rc=0 chg=False | SELECT after submit | refused under write_policy read_only: step 5 (select) 'Plan': select can change state
+B18   REF as-expected  s=0 rc=0 chg=False | UPLOAD after submit | refused under write_policy read_only: step 5 (upload) 'CV': upload can change state
+B19   OK  as-expected  s=1 rc=1 chg=True | credential, HOVER Delete account, CLICK Sign in | outcome completed
+B20   REF as-expected  s=0 rc=0 chg=False | credential, WAIT, Enter, CLICK (read keeps pending, 2nd submit | refused under write_policy read_only: step 6 (click) 'Sign in': click can change state
+C1    REF as-expected  s=0 rc=0 chg=False | FILL value 'x{{SECRET:APP_PASS}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C2    REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP_PASS}}x' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C3    OK  as-expected  s=1 rc=1 chg=True | FILL value '{{SECRET:APP_PASS}}{{SECRET:APP_PASS}}' | outcome completed
+C3b   OK  as-expected  s=1 rc=1 chg=True | FILL value '{{SECRET:APP_USER}}{{SECRET:APP_PASS}}' | outcome completed
+C4    OK  as-expected  s=1 rc=1 chg=True | FILL value ' {{SECRET:APP_PASS}} ' | outcome completed
+C4b   OK  as-expected  s=1 rc=1 chg=True | FILL value '{{SECRET:APP_PASS}}\n' | outcome completed
+C4c   OK  as-expected  s=1 rc=1 chg=True | FILL value '{{SECRET:APP_PASS}}\xa0' | outcome completed
+C4d   REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP_PASS}}\u200b' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C5    REF as-expected  s=0 rc=0 chg=False | FILL value '' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C6    REF as-expected  s=0 rc=0 chg=False | FILL value None | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C7    REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:OTHER}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C7b   REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP_PASS}}{{SECRET:OTHER}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C8    REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:app_pass}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C9    REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP_PASS}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C9b   REF as-expected  s=0 rc=0 chg=False | FILL value '{{ SECRET:APP_PASS }}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C10   REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:{{SECRET:APP_PASS}}}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C10b  REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP_{{SECRET:APP_PASS}}}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C11   OK  as-expected  s=1 rc=1 chg=True | FILL value '{{SECRET:APP_PASS}}' | outcome completed
+C12   REF as-expected  s=0 rc=0 chg=False | FILL value '｛｛SECRET:APP_PASS｝｝' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C12b  REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP_PAЅS}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C12c  REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP＿PASS}}' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C13   REF as-expected  s=0 rc=0 chg=False | FILL value '{{SECRET:APP_PASS}}\x00' | refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's cr
+C14   OK  UNEXPECTED   s=1 rc=1 chg=True | declared credential typed into non-credential field 'Search' | outcome completed
+C15   OK  UNEXPECTED   s=1 rc=1 chg=True | declared credential typed into non-credential field 'Comment' | outcome completed
+C16   OK  UNEXPECTED   s=1 rc=1 chg=True | declared credential typed into non-credential field 'Amount' | outcome completed
+C17   OK  UNEXPECTED   s=1 rc=1 chg=True | declared credential typed into non-credential field 'Delete co | outcome completed
+C18   OK  UNEXPECTED   s=1 rc=1 chg=True | after login: NAV /feed, FILL 'Comment' <APP_PASS>, CLICK 'Post | outcome completed
+D1    REF as-expected  s=0 rc=0 chg=False | login + CLICK 'Save' | refused under write_policy read_only: step 5 (click) 'Save': click can change state
+D2    REF as-expected  s=0 rc=0 chg=False | login + FILL 'Name' Eve | refused under write_policy read_only: step 5 (fill) 'Name': fill outside the declared login's creden
+D3    OK  UNEXPECTED   s=1 rc=1 chg=True | login + NAV /x?id=1 (2nd navigate with query) | outcome completed
+D4    REF as-expected  s=0 rc=0 chg=False | login + NAV /account/delete?id=1&confirm=1 | refused under write_policy read_only: step 5 (navigate) 'https://app.example.test/account/delete?id=
+D5    REF as-expected  s=0 rc=0 chg=False | login + NAV /logout?x=1 | refused under write_policy read_only: step 5 (navigate) 'https://app.example.test/logout?x=1': never
+D5b   OK  UNEXPECTED   s=1 rc=1 chg=True | login + NAV /account?action=delete&confirm=1 (deny word only i | outcome completed
+D5c   OK  UNEXPECTED   s=1 rc=1 chg=True | login + NAV /transfer?to=eve&amount=100 | outcome completed
+D5d   REF as-expected  s=0 rc=0 chg=False | login + NAV /login#delete (fragment deny word) | refused under write_policy read_only: step 5 (navigate) 'https://app.example.test/login#delete': des
+D6    REF as-expected  s=0 rc=0 chg=False | login + NAV https://evil.test/login?x=1 | refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains
+D6b   REF as-expected  s=0 rc=0 chg=False | login + NAV https://evil.test\@app.example.test/?x=1 | refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains
+D6c   REF as-expected  s=0 rc=0 chg=False | login + NAV https://app.example.test@evil.test/?x=1 | refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains
+D7    REF as-expected  s=0 rc=0 chg=False | login + NAV javascript:alert(1) | refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains
+D7b   REF as-expected  s=0 rc=0 chg=False | login NAV with placeholder in query | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?pw={{SECRET:
+D8    REF as-expected  s=0 rc=0 chg=False | login + NAV //evil.test/x?y=1 | refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains
+D9    REF as-expected  s=0 rc=0 chg=False | login + NAV bare path /x?y=1 | refused under write_policy read_only: step 5 (navigate) '/x?y=1': navigate needs an absolute http(s)
+D10   OK  as-expected  s=1 rc=1 chg=True | login + NAV http://app.example.test/x (http scheme) | outcome completed
+E1    REF as-expected  s=0 rc=0 chg=False | login_case_id None, case id literally 'login' | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+E2    REF as-expected  s=0 rc=0 chg=False | login_case_id = nonexistent id | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+E3    REF as-expected  s=0 rc=0 chg=False | login_case_id 'Login', case id 'login' | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+E4    REF as-expected  s=0 rc=0 chg=False | login_case_id 'login', case id 'Login' | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+E5    REF as-expected  s=0 rc=0 chg=False | login_case_id 'login ', case id 'login' | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+E6    REF as-expected  s=0 rc=0 chg=False | login_case_id 'login', case id 'login ' | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+E7    OK  as-expected  s=1 rc=1 chg=True | login_case_id 'login' == case id 'login' (control) | outcome completed
+E8    REF as-expected  s=0 rc=0 chg=False | login_case_id '' (empty), generated case id | refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome
+UNEXPECTED: ['B4', 'B4b', 'B11', 'B12', 'B13', 'B14', 'C14', 'C15', 'C16', 'C17', 'C18', 'D3', 'D5b', 'D5c']

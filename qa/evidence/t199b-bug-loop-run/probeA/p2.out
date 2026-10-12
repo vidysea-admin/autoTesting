@@ -1,0 +1,28 @@
+autotester: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\copy\src\autotester\__init__.py
+2a files: 30
+2a read_json calls for process_run on 30+ events store: 30 files now 33 applied 3
+   snapshot alone: 33
+   second process_run (dup): 33
+2b snapshot ok; bad:
+    bev_arr.json | bev_arr.json: 1 validation error for BugEvent
+    bev_empty.json | bev_empty.json: 1 validation error for BugEvent
+    bev_obj.json | bev_obj.json: 5 validation errors for BugEvent
+    bev_ro.json | bev_ro.json: 1 validation error for BugEvent
+    bev_torn.json | bev_torn.json: 1 validation error for BugEvent
+    bev_wrongname@20261001T090100000000Z.json | file name is not this event's name
+   fold unchanged: True events 3
+   names listed in dir: ['bev_1ccdc86aa3f9@20261001T090300000000Z.json', 'bev_4d65b9d7e750@20261001T090100000000Z.json', 'bev_53e62fafcb65@20261001T090200000000Z.json', 'bev_arr.json', 'bev_empty.json', 'bev_obj.json', 'bev_ro.json', 'bev_torn.json', 'bev_wrongname@20261001T090100000000Z.json', 'bev_x.txt', 'other.json']
+2b own file corrupt -> bad count 7 events 2
+   after re-apply file restored: False
+   file at e1 name holding other valid event -> after apply(e1): content is e1? False other.event_id bev_febeac53b8fc e1 bev_4d65b9d7e750
+   snapshot bad after: ['bev_1ccdc86aa3f9@20261001T090300000000Z.json', 'bev_arr.json', 'bev_empty.json']
+2c now+5min: ('applied', 'open', 1)
+2c now+5min+1us: ('refused', 'implausible_time', 0)
+2c 2020-01-01Z: ('applied', 'open', 1)
+2c 2020-01-01Z-1us: ('refused', 'implausible_time', 0)
+2c +05:30 same instant as 2020-01-01Z: ('applied', 'open', 1)
+2c +05:30 1us before: ('refused', 'implausible_time', 0)
+2c naive raises at model: ValidationError 1 validation error for BugEvent
+2c refused first: refused 0
+2c clock caught up: applied 1
+2c same instant +05:30 vs UTC filename equal: True bev_4d65b9d7e750@20261001T090500000000Z.json

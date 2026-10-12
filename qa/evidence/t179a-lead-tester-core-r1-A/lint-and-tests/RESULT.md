@@ -1,0 +1,5 @@
+# lint-and-tests (unit t179a, repair cycle 1) - all green
+ruff check src tests scripts: exit 0 "All checks passed!" | autotester doctor: exit 0 "doctor: clean" | autotester.__file__ and pytest rootdir inside HEAD.
+Limits (own ast script, scripts/lint-and-tests/limits.py): all files <=300 lines (tools.py 280, test_agent_tools 283, test_agent_read_only 260, guards 161); no function >50 (longest _call_texts 27); all module docstrings present.
+pytest (-o addopts=): P1 agent_tools+agent_read_only 131 passed exit0; P2 explore_safety+execute* 92 passed exit0; P3 schema+doctor+typing_guards+agent_loop 87 passed exit0; P4 cli_advice_resolves, cli_surface, product_map, ui_product_map, actuator_chokepoint, goal_done_check(s), prompt_skills, adversarial, intake_schema 182 passed exit0.
+Scope: whole-unit diff 11 files, +1466/-1; merge-base c489e201 16aaa402 = 16aaa402. Out-of-list: docs/MAP.md (generated, additive), docs/SNAPSHOT.md (generated, 1 line removed: D-080, added D-085), qa/briefs/t179-lead-tester.md (brief). Nothing deleted/renamed in src/tests.

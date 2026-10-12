@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
+from autotester.schema.intake import SourceOrigin
+from autotester.schema.schedule import ScheduleConfig
+from autotester.schema.team_enums import SourceOriginKind
 from autotester.schema.user_persona import PERSONA_ID_PATTERN, UXPolicy
 
 DEFAULT_VISION_PROVIDER = "gemini"
@@ -118,6 +122,20 @@ class Source(Artifact):
     recorded_on: str | None = Field(
         default=None, description="ISO date, e.g. the Excel 'Date' column"
     )
+    uploaded_by: str | None = Field(
+        default=None,
+        description="TI11: the signed-in member's email, set by the server from the session -- "
+                    "never from a form field. None (rows older than the field) is owned by "
+                    "nobody and so matches only @all.",
+    )
+    uploaded_at: datetime | None = Field(default=None, description="TI11: server UTC time")
+    origin: SourceOrigin | SourceOriginKind | None = Field(
+        default=None,
+        description="TI11/TF6: how it arrived. Either the bare `SourceOriginKind` (a source with "
+                    "no detail model, e.g. a recording) or exactly one detail model (upload file "
+                    "name, zip archive + member, Drive file id) whose `kind` is that same enum. "
+                    "None predates provenance. Not part of the content-derived id.",
+    )
 
     def model_post_init(self, _context: object) -> None:
         if not self.id:
@@ -125,6 +143,15 @@ class Source(Artifact):
 
             key = self.sha256 or self.url or self.text or self.path or self.label
             object.__setattr__(self, "id", content_id("src", {"k": str(self.kind), "v": key}))
+
+
+class TrackerConfig(BaseModel):
+    """Where a project's confirmed bugs go (Group 10, T-205/TF6 placeholder).
+
+    Deliberately empty: G6 adds the tracker fields here, in place. Until then `{}` is the only
+    value it accepts, and `Project.tracker` is `None` (no tracker)."""
+
+    model_config = ConfigDict(extra="forbid")
 
 
 class Project(Artifact):
@@ -175,6 +202,15 @@ class Project(Artifact):
                     "a Case's own ref overrides it. Never read by grading (PU4)",
     )
     ux_policy: UXPolicy = Field(default_factory=UXPolicy)
+    schedule: ScheduleConfig | None = Field(
+        default=None,
+        description="T-205/TF6, G5: when the scheduler runs this project; None means manual "
+                    "(the Test button only)",
+    )
+    tracker: TrackerConfig | None = Field(
+        default=None,
+        description="T-205/TF6, G6: where confirmed bugs go; None means no tracker",
+    )
 
     @field_validator("test_id_attributes")
     @classmethod

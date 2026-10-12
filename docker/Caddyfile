@@ -1,0 +1,27 @@
+# Optional HTTPS front for docker/compose.prod.yml (profile "https"). Caddy fetches and renews
+# the certificate for {$AUTOTESTER_DOMAIN} itself; ports 80 and 443 must reach this host.
+{$AUTOTESTER_DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		-Server
+	}
+
+	# Video uploads: the proxy limit must be at least AUTOTESTER_MAX_UPLOAD_BYTES (HO31).
+	request_body {
+		max_size {$AUTOTESTER_MAX_UPLOAD_BYTES}
+	}
+
+	# The live browser view is only for signed-in people. Until the app's own check lands
+	# (T-204: forward_auth to /auth/check) this path is refused outright rather than left open.
+	handle /novnc/* {
+		respond "Live view is unavailable until sign-in is enabled." 503
+	}
+
+	handle {
+		reverse_proxy autotester:8000
+	}
+}

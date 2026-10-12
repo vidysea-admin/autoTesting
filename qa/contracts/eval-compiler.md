@@ -1,7 +1,8 @@
 # Contract — eval-compiler (the knowledge graph, and the evals compiled from it)
 
-**Status:** **DRAFT** (authored by /checker 2026-09-28 under **D-054**, `Approved-by: Umesh`).
-Goes **ACTIVE** on T-166's first checker PASS.
+**Status:** **ACTIVE** (authored by /checker 2026-09-28 under **D-054**, `Approved-by: Umesh`).
+**ACTIVE since 2026-10-11:** T-166's first checker PASS is `qa/verdicts/t166-eval-compiler.md` (cycle 0,
+`Verdict: PASS`, commit c42dd8f9, EC1-EC5).
 **Feature:** T-166 — extend the portal-persona graph into the full knowledge graph
 (screen · control · flow · scenario · case · verdict · API · release) and compile evals from it.
 **Code:** does not exist yet (T-166 `pending`). The base it extends is
@@ -109,3 +110,7 @@ import error.
   stalled handoff, an N that only Umesh can set (AT-666 stays open for them).
   **Changes-authorized:** this file (D-054). No enforcement-path file touched. **Links:** AT-666;
   D-054; T-166; qa/feedback-inbox.md 2026-09-24T16:10.
+- 2026-10-11 - routine (status change only; no criterion changed) - **DRAFT -> ACTIVE.** The status line
+  set the condition "goes ACTIVE on T-166's first checker PASS". That PASS is on disk and on master:
+  `qa/verdicts/t166-eval-compiler.md` (cycle 0, commit c42dd8f9, EC1-EC5, 5 falsifications). Nothing was edited, added or weakened in any criterion; this records the
+  transition the header already promised. **Links:** T-166; qa/verdicts/.

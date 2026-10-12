@@ -7,54 +7,39 @@ UI-only representation. Planned owner: Track A5.2 in ``plan.md``.
 
 from __future__ import annotations
 
-import shutil
 from html import escape
 from pathlib import Path
-from typing import Annotated
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from autotester import providers
 from autotester.browser.secrets import SecretStore
-from autotester.core.ids import file_sha256
-from autotester.core.paths import ProjectPaths, RepoDocs, work_dir
+from autotester.core.paths import ProjectPaths, RepoDocs
+from autotester.core.upload_limit import read_max_upload_bytes
 from autotester.providers.base import ProviderError
 from autotester.schema.enums import ReviewStatus, SourceKind
 from autotester.schema.observation import VisionOptions
 from autotester.schema.project import Source
 from autotester.stages.analyze_video import DuplicateProviders, NoObservations, analyze
-from autotester.stages.ingest import (
-    NotARecording,
-    register_source,
-    require_recording_suffix,
-)
+from autotester.stages.ingest import NotARecording, register_source
 from autotester.stages.issues import derive_issues, sync_source_issues
 from autotester.stages.media_prep import SourceNotPrepared, UnreadableRecording, require_prepared
 from autotester.stages.product_map import attach_screenshots, build_screen_map
-from autotester.ui import theme
+from autotester.ui import routes_intake, theme
 from autotester.ui.helpers import (
     _load_project_or_404,
     _refuse_unsafe_submission,
     _require_safe_id,
-    _reserved_temp_path,
 )
+from autotester.ui.intake_upload import handle_upload, intake_forms, refusal_page
 
 router = APIRouter()
-
-
-def _link(href: str, text: str) -> str:
-    return f"<a class='btn' href='{escape(href)}'>{escape(text)}</a>"
+router.include_router(routes_intake.router)  # the Drive-link door shares this page
 
 
 def _refusal(slug: str, message: str, *, title: str = "Recording not found") -> HTMLResponse:
-    body = theme.card(
-        f"<p>{escape(message)}</p><p style='margin-top:14px'>"
-        f"{_link(f'/projects/{slug}/sources', 'Try another path')}</p>",
-        title=title,
-    )
-    return HTMLResponse(
-        theme.page(title, body, active_slug=slug), status_code=400)
+    return refusal_page(slug, message, title=title)
 
 
 def _source_rows(store, slug: str) -> str:
@@ -122,7 +107,7 @@ def sources_page(slug: str) -> str:
     form = f"""
       <form method="post" action="/projects/{escape(slug)}/sources">
         <div class="field"><label for="path">Recording path on this machine</label>
-          <input id="path" name="path" required placeholder="C:\\Videos\\product-flow.mp4">
+          <input id="path" name="path" required placeholder="path to the recording file">
           <span class="hint">The file stays where it is; AutoTester records its content hash.</span>
         </div>
         <div class="field"><label for="label">What this recording shows</label>
@@ -130,19 +115,8 @@ def sources_page(slug: str) -> str:
         </div>
         <button class="btn btn-primary" type="submit">Add recording</button>
       </form>"""
-    upload = f"""
-      <form method="post" enctype="multipart/form-data"
-            action="/projects/{escape(slug)}/sources/upload">
-        <div class="field"><label for="recording">Upload a recording</label>
-          <input id="recording" type="file" name="recording" required accept="video/*">
-        </div>
-        <div class="field"><label for="upload-label">What this recording shows</label>
-          <input id="upload-label" name="label" placeholder="Trainer onboarding — edge cases">
-        </div>
-        <button class="btn btn-primary" type="submit">Upload recording</button>
-      </form>"""
     body = (crumbs + theme.card(form, title="Register a recording already on this host")
-            + theme.card(upload, title="Upload a recording") + theme.card(
+            + intake_forms(slug, read_max_upload_bytes(store.paths.root)) + theme.card(
         "<table><thead><tr><th>Source</th><th>Label</th><th>Kind</th>"
         "<th>Reference</th><th></th></tr></thead>"
         f"<tbody>{rows}</tbody></table>",
@@ -167,42 +141,9 @@ def add_source(slug: str, path: str = Form(""), label: str = Form("")):
 
 
 @router.post("/projects/{slug}/sources/upload")
-def upload_source(slug: str, recording: Annotated[UploadFile, File()], label: str = Form("")):
-    """Copy an uploaded recording into its content-addressed project directory."""
-    store, project = _load_project_or_404(slug)
-    secrets = SecretStore.load(project, ProjectPaths(slug).env_file, strict=False)
-    _refuse_unsafe_submission([("label", label)], project, secrets)
-    try:
-        suffix = require_recording_suffix(recording.filename or "")
-    except NotARecording as exc:
-        return _refusal(slug, str(exc), title="Not a recording")
-    temp = _reserved_temp_path(
-        suffix,
-        directory=work_dir(store.paths.root),
-    )
-    target: Path | None = None
-    try:
-        with temp.open("wb") as handle:
-            shutil.copyfileobj(recording.file, handle)
-        digest = file_sha256(temp)
-        existing = next((source for source in store.list_sources()
-                         if source.sha256 == digest), None)
-        if existing is not None:
-            return RedirectResponse(f"/projects/{slug}/sources", status_code=303)
-        draft = Source(project=slug, kind=SourceKind.VIDEO, sha256=digest,
-                       label=label.strip() or None)
-        target = store.paths.source_dir(draft.id) / f"recording{suffix}"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        temp.replace(target)
-        store.add_source(draft.model_copy(update={"path": str(target.resolve())}))
-    except OSError:
-        if target is not None:
-            target.unlink(missing_ok=True)
-        return _refusal(slug, "The uploaded recording could not be stored.",
-                        title="Upload failed")
-    finally:
-        temp.unlink(missing_ok=True)
-    return RedirectResponse(f"/projects/{slug}/sources", status_code=303)
+async def upload_source(request: Request, slug: str):
+    """A recording or a zip of them, streamed under the admin limit (see `intake_upload`)."""
+    return await handle_upload(request, slug)
 
 
 def _save_analysis_outputs(store, source, analysis) -> None:

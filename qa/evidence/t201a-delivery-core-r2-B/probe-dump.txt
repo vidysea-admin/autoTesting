@@ -1,0 +1,12 @@
+### code=base store=base
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_base\src\autotester\__init__.py
+record files: 149 attempt files: 149 run lookups: 47 key lookups: 925 nonempty run rows: 149 nonempty key rows: 149
+### code=head store=head
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_head\src\autotester\__init__.py
+record files: 149 attempt files: 149 run lookups: 47 key lookups: 925 nonempty run rows: 149 nonempty key rows: 149
+### code=head store=base
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_head\src\autotester\__init__.py
+record files: 149 attempt files: 149 run lookups: 47 key lookups: 925 nonempty run rows: 149 nonempty key rows: 149
+### code=base store=head
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_base\src\autotester\__init__.py
+record files: 149 attempt files: 149 run lookups: 47 key lookups: 925 nonempty run rows: 149 nonempty key rows: 149

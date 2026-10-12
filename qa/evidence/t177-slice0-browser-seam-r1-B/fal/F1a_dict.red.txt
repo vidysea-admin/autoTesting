@@ -1,0 +1,15 @@
+        try:
+            with opener.open(f"http://{CDP_HOST}:{port}/json/version", timeout=2) as reply:
+                body = json.load(reply)
+        except (OSError, ValueError, http.client.HTTPException):  # non-HTTP bytes, bad JSON, no answer
+            return False
+>       url = body.get("webSocketDebuggerUrl", "")
+              ^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'get'
+
+src\autotester\browser\launch.py:75: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_browser_session_cdp.py::test_any_reply_that_is_not_this_browsers_json_object_refuses_and_tears_down[HTTP/1.0 200 OK\r\n\r\n[]]
+FAILED tests/test_browser_session_cdp.py::test_any_reply_that_is_not_this_browsers_json_object_refuses_and_tears_down[HTTP/1.0 200 OK\r\n\r\n"x"]
+FAILED tests/test_browser_session_cdp.py::test_any_reply_that_is_not_this_browsers_json_object_refuses_and_tears_down[HTTP/1.0 200 OK\r\n\r\nnull]
+========================= 3 failed, 1 passed in 8.38s =========================

@@ -1,0 +1,27 @@
+== row AL3a (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_399368/AL3a)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_399368\AL3a\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 0.79s
+-- diff
+@@ -167,11 +167,7 @@
+ 
+ def dispatch(ctx: AgentContext, name: str, raw_args: dict[str, Any]) -> ToolOutcome:
+     """Run one model-requested tool call. A refusal is returned, never raised."""
+-    try:
+-        guards.guard_model_bound(ctx.secrets, f"{name} {raw_args!r}")
+-    except ValueError:
+-        return _refusal("unknown", RefusalClass.SECRET,
+-                        "refused: the call carried a credential value; use {{SECRET:KEY}}")
++    pass
+     known = name in {n.value for n in Name}
+     label = name if known else "unknown"
+     try:
+-- red-after
+>           assert out.refusal is RefusalClass.SECRET and not out.ok
+E           AssertionError: assert (<RefusalClass.NOTHING_TO_DO: 'nothing_to_do'> is <RefusalClass.SECRET: 'secret'>)
+E            +  where <RefusalClass.NOTHING_TO_DO: 'nothing_to_do'> = ToolOutcome(tool='run_case', ok=False, refusal=<RefusalClass.NOTHING_TO_DO: 'nothing_to_do'>, summary='no such case, or it has no steps to run', artifact_ref=None).refusal
+E            +  and   <RefusalClass.SECRET: 'secret'> = RefusalClass.SECRET
+tests\test_agent_tools.py:180: AssertionError
+1 failed in 1.36s
+-- other nodes in file (context)

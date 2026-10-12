@@ -1,0 +1,21 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+                                                                                                   
+ Usage: autotester issues [OPTIONS] COMMAND [ARGS]...                                              
+                                                                                                   
+ Issues derived from a recording — the tester's sheet.                                             
+                                                                                                   
+┌─ Options ───────────────────────────────────────────────────────────────────────────────────────┐
+│ --help          Show this message and exit.                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─ Commands ──────────────────────────────────────────────────────────────────────────────────────┐
+│ derive  Turn each analysed recording into Issue rows. Idempotent on content.                    │
+│ list    Every issue derived for this project.                                                   │
+│ pin     AT-597: pin a confirmed issue as a regression case (T-184/AT-585) — the                 │
+│         CLI's entry point to `stages/issues.py::pin_issue_as_case`, alongside the               │
+│         issues page's 'Pin as regression case' action. Steps are never guessed:                 │
+│         pass exactly the reproduction steps you confirmed yourself. Runs the same               │
+│         credential, reachable-navigate and one-pin-per-issue (AT-604) guards the                │
+│         UI route does, so the CLI can never write what the UI would refuse.                     │
+│ export  Write the issues as the 13-column workbook a tester can open beside theirs.             │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+

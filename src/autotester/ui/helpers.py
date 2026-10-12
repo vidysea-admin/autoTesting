@@ -19,12 +19,12 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from fastapi import HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from starlette.middleware import Middleware
 
 from autotester.browser.secrets import host_of
 from autotester.browser.session import NavigationRefused, check_destination
-from autotester.core.paths import repo_root
+from autotester.core.paths import SLUG_PATTERN, repo_root
 from autotester.core.redact import PLACEHOLDER_RE
 from autotester.schema.enums import Action
 from autotester.schema.flowspec import Step
@@ -53,10 +53,10 @@ __all__ = [
     "origin_guard_middleware",
 ]
 
-# Same shape as schema.project.Project.slug's own field pattern -- a slug is a
+# `SLUG_PATTERN` (core/safe_names.py) is the one slug shape -- a slug is a
 # single safe path segment, never `..`, `/`, `\`, or a null byte, before it is
 # ever handed to ProjectPaths/ProjectStore as a directory name.
-_SLUG_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+_SLUG_RE = re.compile(SLUG_PATTERN)
 # run/case ids are ulid- or content_id-shaped: alnum plus `_`/`-` only.
 _HOSTNAME_RE = re.compile(r"^(?=.*\.)[a-z0-9.-]+$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
@@ -192,21 +192,53 @@ _UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 _LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
 
 
+def _listed(name: str) -> set[str]:
+    """Comma/space separated env list, lower-cased, no trailing `/`; `*` is never a wildcard."""
+    raw = os.environ.get(name, "").replace(",", " ").split()
+    return {item.rstrip("/").lower() for item in raw if item != "*"}
+
+
 def _origin_allowed(origin: str) -> bool:
     """D-066: loopback (the UI's default home) or an origin the operator listed in
     `AUTOTESTER_ALLOWED_ORIGINS` (comma/space separated; the server URL after go-live).
     Exact match only -- no wildcard. NOT "the Host the request named": a DNS-rebinding
     page has Origin == Host == attacker, so the request cannot vouch for itself."""
     origin = origin.strip().rstrip("/").lower()
-    listed = os.environ.get("AUTOTESTER_ALLOWED_ORIGINS", "").replace(",", " ").split()
-    if origin in {o.rstrip("/").lower() for o in listed if o != "*"}:
+    if origin in _listed("AUTOTESTER_ALLOWED_ORIGINS"):
         return True
     try:
         parts = urlparse(origin)
+        _ = parts.port  # AT-760: raises on `localhost:8000.evil.com`; urlparse alone ignores it
         return (parts.scheme in {"http", "https"} and parts.hostname in _LOOPBACK_HOSTS
                 and not parts.username and not parts.path and not parts.query)
     except ValueError:
         return False
+
+
+def _host_allowed(host: str) -> bool:
+    """AT-758: the Host a request names must be loopback (any port), the host of an origin in
+    `AUTOTESTER_ALLOWED_ORIGINS`, or listed EXACTLY (port included) in `AUTOTESTER_ALLOWED_HOSTS`
+    (the hosted server's name). A DNS-rebinding page reaches us under its own Host, so this
+    runs on every request: a GET that renders a saved credential is a read the Origin check
+    never sees."""
+    host = host.strip().lower()
+    try:
+        parts = urlparse("//" + host)
+        _ = parts.port
+        if (parts.username is not None or parts.path or parts.query or parts.fragment
+                or not parts.hostname):
+            return False
+        if parts.hostname in _LOOPBACK_HOSTS:
+            return True
+    except ValueError:  # includes a non-numeric port such as `localhost:8000.evil.com`
+        return False
+    origins = []
+    for origin in _listed("AUTOTESTER_ALLOWED_ORIGINS"):
+        try:
+            origins.append(urlparse(origin).netloc)
+        except ValueError:
+            continue
+    return host in _listed("AUTOTESTER_ALLOWED_HOSTS") | set(origins)
 
 
 def origin_refusal(headers: dict[str, str]) -> str | None:
@@ -232,16 +264,23 @@ def origin_refusal(headers: dict[str, str]) -> str | None:
 
 
 class _OriginGuard:
-    """ASGI middleware: refuse a cross-site state-changing request before any handler runs."""
+    """ASGI middleware: refuse a disallowed Host (any method, AT-758) or a cross-site
+    state-changing request (D-066) before any handler runs."""
 
     def __init__(self, app) -> None:
         self.app = app
 
     async def __call__(self, scope, receive, send) -> None:
-        if scope["type"] == "http" and scope["method"] in _UNSAFE_METHODS:
-            headers = {k.decode("latin-1").lower(): v.decode("latin-1")
-                       for k, v in scope["headers"]}
-            refusal = origin_refusal(headers)
+        if scope["type"] == "http":
+            pairs = [(k.decode("latin-1").lower(), v.decode("latin-1"))
+                     for k, v in scope["headers"]]
+            headers, names = dict(pairs), [name for name, _ in pairs]
+            # AT-761: a repeated Host/Origin is ambiguous (last-wins vs first-wins), so refuse it
+            if (names.count("host") != 1 or names.count("origin") > 1
+                    or not _host_allowed(headers["host"])):
+                await Response(status_code=403)(scope, receive, send)  # no detail on purpose
+                return
+            refusal = origin_refusal(headers) if scope["method"] in _UNSAFE_METHODS else None
             if refusal:
                 await JSONResponse({"detail": refusal}, status_code=403)(scope, receive, send)
                 return
@@ -249,5 +288,5 @@ class _OriginGuard:
 
 
 def origin_guard_middleware() -> list[Middleware]:
-    """The D-066 Origin/CSRF check for `FastAPI(middleware=...)`: one guard for every route."""
+    """The D-066 Origin/CSRF check plus the AT-758 Host allow-list for `FastAPI(middleware=...)`."""
     return [Middleware(_OriginGuard)]

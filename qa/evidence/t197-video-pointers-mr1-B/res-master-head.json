@@ -1,0 +1,1109 @@
+[
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m01-register-ok",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "c6128783cf73"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "register",
+     "demo",
+     "{WORLD}/files/a.mp4",
+     "--label",
+     "lab",
+     "--recorded-on",
+     "2026-08-18"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "src_895b89131bd7  lab  sha256=b80e5c9de06a\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m02-register-missing",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "register",
+     "demo",
+     "{WORLD}/files/nope.mp4"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "no such recording: <W>\\files\\nope.mp4\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m03-register-notrec",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "register",
+     "demo",
+     "{WORLD}/files/a.txt"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "that is not a recording \ufffd add a video file ending in .avi, .mkv, .mov, .mp4, .webm\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m04-register-dir",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "register",
+     "demo",
+     "{WORLD}/files/d.mp4"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "that is a folder, not a recording file\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m05-register-twice",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "8dab6c04050e"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "register",
+     "demo",
+     "{WORLD}/files/a.mp4"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "src_895b89131bd7  (no label)  sha256=b80e5c9de06a\n"
+   },
+   {
+    "args": [
+     "ingest",
+     "register",
+     "demo",
+     "{WORLD}/files/a.mp4"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "src_895b89131bd7  (no label)  sha256=b80e5c9de06a\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m06-register-noproject",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/sources.jsonl": "8dab6c04050e"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "register",
+     "demo",
+     "{WORLD}/files/a.mp4"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "src_895b89131bd7  (no label)  sha256=b80e5c9de06a\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m07-list-noproject",
+  "listing": {},
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "list",
+     "demo"
+    ],
+    "exit": 1,
+    "stderr": "",
+    "stdout": "no project 'demo' yet\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m08-list-empty",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "list",
+     "demo"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "demo has no sources yet \ufffd `autotester ingest register` adds one.\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "m09-list-with-source",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "list",
+     "demo"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "src_b5dd24de9576  video   \ufffd           rec\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z01-zip-ok-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "783d3b14b49b",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_895b89131bd7/": "dir",
+   "projects/demo/sources/src_895b89131bd7/recording.mp4": "size=2088",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/recording.mp4": "size=4837"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "z.zip: ok 2 registered\n  registered one.mp4\n  registered two.mp4\n  note: max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z02-zip-ok-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "450ae13eb3ef",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_895b89131bd7/": "dir",
+   "projects/demo/sources/src_895b89131bd7/recording.mp4": "size=2088",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/recording.mp4": "size=4837"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip",
+     "--json",
+     "--uploaded-by",
+     "dev@x.test"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"z.zip\",\n  \"status\": \"ok\",\n  \"members\": [\n    {\n      \"member\": \"one.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_b5dd24de9576\",\n      \"duplicate_of\": null\n    },\n    {\n      \"member\": \"two.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_895b89131bd7\",\n      \"duplicate_of\": null\n    }\n  ],\n  \"notes\": [\n    \"max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\"\n  ],\n  \"exit_code\": 0,\n  \"counts\": {\n    \"registered\": 2,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 0\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z03-zip-mixed-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "c12ee9b09996",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/recording.mp4": "size=4837"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "z.zip: partial 1 registered, 1 duplicate, 1 skipped, 1 failed\n  registered fine.mp4\n  skipped    notes.txt  -- not a recording (.txt); only video files are registered\n  failed     ../evil.mp4  -- refused: path traversal (..)\n  duplicate  dup.mp4  -- same bytes are already registered\n  note: max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z03b-zip-mixed-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "c12ee9b09996",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/recording.mp4": "size=4837"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip",
+     "--json"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"z.zip\",\n  \"status\": \"partial\",\n  \"members\": [\n    {\n      \"member\": \"fine.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_b5dd24de9576\",\n      \"duplicate_of\": null\n    },\n    {\n      \"member\": \"notes.txt\",\n      \"outcome\": \"skipped\",\n      \"reason\": \"not a recording (.txt); only video files are registered\",\n      \"source_id\": null,\n      \"duplicate_of\": null\n    },\n    {\n      \"member\": \"../evil.mp4\",\n      \"outcome\": \"failed\",\n      \"reason\": \"refused: path traversal (..)\",\n      \"source_id\": null,\n      \"duplicate_of\": null\n    },\n    {\n      \"member\": \"dup.mp4\",\n      \"outcome\": \"duplicate\",\n      \"reason\": \"same bytes are already registered\",\n      \"source_id\": null,\n      \"duplicate_of\": \"src_b5dd24de9576\"\n    }\n  ],\n  \"notes\": [\n    \"max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\"\n  ],\n  \"exit_code\": 2,\n  \"counts\": {\n    \"registered\": 1,\n    \"duplicate\": 1,\n    \"skipped\": 1,\n    \"failed\": 1\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z04-zip-missing",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/none.zip"
+    ],
+    "exit": 1,
+    "stderr": "",
+    "stdout": "that zip file was not found\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z05-zip-noproject",
+  "listing": {},
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip"
+    ],
+    "exit": 1,
+    "stderr": "",
+    "stdout": "no project 'demo' yet\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z06-zip-notazip",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip",
+     "--json"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"z.zip\",\n  \"status\": \"failed\",\n  \"members\": [\n    {\n      \"member\": \"(archive)\",\n      \"outcome\": \"failed\",\n      \"reason\": \"not a zip archive (or it cannot be read)\",\n      \"source_id\": null,\n      \"duplicate_of\": null\n    }\n  ],\n  \"notes\": [\n    \"max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\"\n  ],\n  \"exit_code\": 2,\n  \"counts\": {\n    \"registered\": 0,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 1\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z07-zip-twice",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "783d3b14b49b",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_895b89131bd7/": "dir",
+   "projects/demo/sources/src_895b89131bd7/recording.mp4": "size=2088",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/recording.mp4": "size=4837"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip",
+     "--json"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"z.zip\",\n  \"status\": \"ok\",\n  \"members\": [\n    {\n      \"member\": \"one.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_b5dd24de9576\",\n      \"duplicate_of\": null\n    },\n    {\n      \"member\": \"two.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_895b89131bd7\",\n      \"duplicate_of\": null\n    }\n  ],\n  \"notes\": [\n    \"max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\"\n  ],\n  \"exit_code\": 0,\n  \"counts\": {\n    \"registered\": 2,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 0\n  }\n}\n"
+   },
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip",
+     "--json"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"z.zip\",\n  \"status\": \"ok\",\n  \"members\": [\n    {\n      \"member\": \"one.mp4\",\n      \"outcome\": \"duplicate\",\n      \"reason\": \"same bytes are already registered\",\n      \"source_id\": null,\n      \"duplicate_of\": \"src_b5dd24de9576\"\n    },\n    {\n      \"member\": \"two.mp4\",\n      \"outcome\": \"duplicate\",\n      \"reason\": \"same bytes are already registered\",\n      \"source_id\": null,\n      \"duplicate_of\": \"src_895b89131bd7\"\n    }\n  ],\n  \"notes\": [\n    \"max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\"\n  ],\n  \"exit_code\": 0,\n  \"counts\": {\n    \"registered\": 0,\n    \"duplicate\": 2,\n    \"skipped\": 0,\n    \"failed\": 0\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z08-zip-empty",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip",
+     "--json"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"z.zip\",\n  \"status\": \"ok\",\n  \"members\": [],\n  \"notes\": [\n    \"max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\",\n    \"the archive has no files\"\n  ],\n  \"exit_code\": 0,\n  \"counts\": {\n    \"registered\": 0,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 0\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "z09-zip-corrupt-member",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "demo",
+     "{WORLD}/files/z.zip",
+     "--json"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"z.zip\",\n  \"status\": \"failed\",\n  \"members\": [\n    {\n      \"member\": \"a.mp4\",\n      \"outcome\": \"failed\",\n      \"reason\": \"empty file\",\n      \"source_id\": null,\n      \"duplicate_of\": null\n    }\n  ],\n  \"notes\": [\n    \"max_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\"\n  ],\n  \"exit_code\": 2,\n  \"counts\": {\n    \"registered\": 0,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 1\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d01-drive-hostile",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "http://127.0.0.1/x"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "only https Google Drive links are accepted\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d01b-drive-hostile2",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "https://drive.google.com.evil.io/file/d/FILE000001"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "only links on drive.google.com or docs.google.com are accepted\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d02-drive-file-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "33c88bc1862f",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_895b89131bd7/": "dir",
+   "projects/demo/sources/src_895b89131bd7/recording.mp4": "size=2088"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "https://drive.google.com/file/d/FILE000001/view?usp=sharing",
+     "--uploaded-by",
+     "dev@x.test",
+     "--json"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"drive:FILE000001\",\n  \"status\": \"ok\",\n  \"members\": [\n    {\n      \"member\": \"clip.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_895b89131bd7\",\n      \"duplicate_of\": null\n    }\n  ],\n  \"notes\": [],\n  \"exit_code\": 0,\n  \"counts\": {\n    \"registered\": 1,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 0\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d02b-drive-file-text",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "756ccc9be0e0",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_895b89131bd7/": "dir",
+   "projects/demo/sources/src_895b89131bd7/recording.mp4": "size=2088"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "https://drive.google.com/file/d/FILE000001/view?usp=sharing"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "drive:FILE000001: ok 1 registered\n  registered clip.mp4\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d03-drive-folder-partial",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "3e0d2ba3ffdb",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/recording.mp4": "size=4837"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "FOLDER0001"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "drive:FOLDER0001: partial 1 registered, 1 failed\n  registered g.mp4\n  failed     b.mp4  -- md5 mismatch: the received bytes differ from Drive's checksum\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d03b-drive-folder-partial-json",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "3e0d2ba3ffdb",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/recording.mp4": "size=4837"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "FOLDER0001",
+     "--json"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"drive:FOLDER0001\",\n  \"status\": \"partial\",\n  \"members\": [\n    {\n      \"member\": \"g.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_b5dd24de9576\",\n      \"duplicate_of\": null\n    },\n    {\n      \"member\": \"b.mp4\",\n      \"outcome\": \"failed\",\n      \"reason\": \"md5 mismatch: the received bytes differ from Drive's checksum\",\n      \"source_id\": null,\n      \"duplicate_of\": null\n    }\n  ],\n  \"notes\": [],\n  \"exit_code\": 2,\n  \"counts\": {\n    \"registered\": 1,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 1\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d04-drive-noproject",
+  "listing": {},
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "https://drive.google.com/file/d/FILE000001/view?usp=sharing"
+    ],
+    "exit": 1,
+    "stderr": "",
+    "stdout": "no project 'demo' yet\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "d05-drive-twice",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "756ccc9be0e0",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_895b89131bd7/": "dir",
+   "projects/demo/sources/src_895b89131bd7/recording.mp4": "size=2088"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "https://drive.google.com/file/d/FILE000001/view?usp=sharing",
+     "--json"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"drive:FILE000001\",\n  \"status\": \"ok\",\n  \"members\": [\n    {\n      \"member\": \"clip.mp4\",\n      \"outcome\": \"registered\",\n      \"reason\": null,\n      \"source_id\": \"src_895b89131bd7\",\n      \"duplicate_of\": null\n    }\n  ],\n  \"notes\": [],\n  \"exit_code\": 0,\n  \"counts\": {\n    \"registered\": 1,\n    \"duplicate\": 0,\n    \"skipped\": 0,\n    \"failed\": 0\n  }\n}\n"
+   },
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "demo",
+     "https://drive.google.com/file/d/FILE000001/view?usp=sharing",
+     "--json"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "{\n  \"archive\": \"drive:FILE000001\",\n  \"status\": \"ok\",\n  \"members\": [\n    {\n      \"member\": \"clip.mp4\",\n      \"outcome\": \"duplicate\",\n      \"reason\": \"same bytes are already registered\",\n      \"source_id\": null,\n      \"duplicate_of\": \"src_895b89131bd7\"\n    }\n  ],\n  \"notes\": [],\n  \"exit_code\": 0,\n  \"counts\": {\n    \"registered\": 0,\n    \"duplicate\": 1,\n    \"skipped\": 0,\n    \"failed\": 0\n  }\n}\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "p01-prep",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/chunks/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_00_0s.mp4": "size=4907",
+   "projects/demo/sources/src_b5dd24de9576/media.json": "a9f1c97b3b73",
+   "projects/demo/sources/src_b5dd24de9576/transcript.json": "ef4072455691"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "prep",
+     "demo",
+     "{SRC}",
+     "--no-whisper"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "src_b5dd24de9576: 130s, 1 chunk(s), 0 narration segment(s) [ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers]\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "p02-prep-unknown",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "prep",
+     "demo",
+     "src_deadbeef",
+     "--no-whisper"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "demo has no source src_deadbeef \ufffd try `autotester ingest list`.\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "p03-prep-chunk",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab",
+   "projects/demo/sources/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/chunks/": "dir",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_00_0s.mp4": "size=2357",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_01_15s.mp4": "size=2357",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_02_30s.mp4": "size=2357",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_03_45s.mp4": "size=2357",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_04_60s.mp4": "size=2357",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_05_75s.mp4": "size=2357",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_06_90s.mp4": "size=2357",
+   "projects/demo/sources/src_b5dd24de9576/chunks/chunk_07_105s.mp4": "size=2228",
+   "projects/demo/sources/src_b5dd24de9576/media.json": "763247d33afd",
+   "projects/demo/sources/src_b5dd24de9576/transcript.json": "ef4072455691"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "prep",
+     "demo",
+     "{SRC}",
+     "--no-whisper",
+     "--chunk-minutes",
+     "0.5"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "src_b5dd24de9576: 130s, 8 chunk(s), 0 narration segment(s) [ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers]\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "f01-frames-noanalysis",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "frames",
+     "demo",
+     "{SRC}"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "src_b5dd24de9576 has no analysis.json \ufffd the analyze stage (Track A4) is not built yet, so there are no frames to extract\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "f02-frames-unknown",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "frames",
+     "demo",
+     "src_deadbeef"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "demo has no source src_deadbeef \ufffd try `autotester ingest list`.\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "u01-run-mock",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "run",
+     "demo",
+     "{SRC}",
+     "--provider",
+     "mock"
+    ],
+    "exit": 1,
+    "stderr": "+------------------------------- Traceback (most recent call last) -------------------------------+\n| C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\s |\n| cratchpad\\mr1B-head-133531921\\src\\autotester\\cli_video.py:208 in run_cmd                        |\n|                                                                                                 |\n|   205     prov = providers.get(provider, **({\"model\": model} if model else {}))                 |\n|   206     dropped: list[StepRef] = []                                                           |\n|   207     try:  # AT-784: the transcript media prep persisted counts when no sidecar exists     |\n| > 208         spec = ingest_video(source, project, prov, RepoDocs(), dropped=dropped,           |\n|   209                             transcript=load_transcript(store, source),                    |\n|       options=VisionOptions())                                                                  |\n|   210     except SourceChanged as exc:                                                          |\n|   211         typer.secho(str(exc), fg=typer.colors.RED)                                        |\n|                                                                                                 |\n| C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\s |\n| cratchpad\\mr1B-head-133531921\\src\\autotester\\stages\\ingest.py:267 in ingest_video               |\n|                                                                                                 |\n|   264     verify_source_bytes(source)                                                           |\n|   265     docs = docs or RepoDocs()                                                             |\n|   266     prompt = build_ingest_prompt(source, docs, transcript)                                |\n| > 267     observation = provider.see_video(Path(source.path), prompt, VideoObservation,         |\n|       options,                                                                                  |\n|   268                                       prompt_file=SKILL_NAME, fed_id=source.id)           |\n|   269     spec = flowspec_from_observation(observation, source.id, project_slug)                |\n|   270     heard = {source.id: transcript} if transcript else {}                                 |\n|                                                                                                 |\n| C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\s |\n| cratchpad\\mr1B-head-133531921\\src\\autotester\\providers\\mock.py:53 in see_video                  |\n|                                                                                                 |\n|   50                   options: VisionOptions | None = None, *,                                 |\n|   51                   prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:    |\n|   52         self.vision_options.append(options)                                                |\n| > 53         return self._next(\"vision\", f\"{path}:{prompt}\", prompt_file=prompt_file,           |\n|      fed_id=fed_id)                                                                             |\n|   54                                                                                            |\n|   55     def act(self, prompt: str, schema: type[ModelT] | None = None, *,                      |\n|   56             prompt_file: str | None = None, fed_id: str | None = None) -> Any:             |\n|                                                                                                 |\n| C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\s |\n| cratchpad\\mr1B-head-133531921\\src\\autotester\\providers\\mock.py:44 in _next                      |\n|                                                                                                 |\n|   41         self.prompts.append((role, prompt))                                                |\n|   42         queue = self.responses.get(role) or []                                             |\n|   43         if not queue:                                                                      |\n| > 44             raise ProviderError(f\"mock provider has no queued response for role={role}\")   |\n|   45         self.record(role, input_tokens=len(prompt) // 4, output_tokens=16,                 |\n|   46                     prompt_file=prompt_file, fed_id=fed_id)                                |\n|   47         return queue.pop(0)                                                                |\n+-------------------------------------------------------------------------------------------------+\nProviderError: mock provider has no queued response for role=vision\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "u02-run-opposites",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "run",
+     "demo",
+     "{SRC}",
+     "--merge",
+     "--replace"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "--merge and --replace are opposites: merge keeps the reviewed spec, replace discards it. Pick one.\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "u03-run-unknown-src",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "run",
+     "demo",
+     "src_deadbeef",
+     "--provider",
+     "mock"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "demo has no source src_deadbeef \ufffd try `autotester ingest list`.\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "u04-run-unknown-provider",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "run",
+     "demo",
+     "{SRC}",
+     "--provider",
+     "nonesuch"
+    ],
+    "exit": 1,
+    "stderr": "+------------------------------- Traceback (most recent call last) -------------------------------+\n| C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\s |\n| cratchpad\\mr1B-head-133531921\\src\\autotester\\cli_video.py:205 in run_cmd                        |\n|                                                                                                 |\n|   202     store = ProjectStore(project)                                                         |\n|   203     source = _require_source(store, project, source_id)                                   |\n|   204                                                                                           |\n| > 205     prov = providers.get(provider, **({\"model\": model} if model else {}))                 |\n|   206     dropped: list[StepRef] = []                                                           |\n|   207     try:  # AT-784: the transcript media prep persisted counts when no sidecar exists     |\n|   208         spec = ingest_video(source, project, prov, RepoDocs(), dropped=dropped,           |\n|                                                                                                 |\n| C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\s |\n| cratchpad\\mr1B-head-133531921\\src\\autotester\\providers\\__init__.py:44 in get                    |\n|                                                                                                 |\n|    41         cls = _REGISTRY[provider_id]                                                      |\n|    42     except KeyError:                                                                      |\n|    43         known = \", \".join(sorted(_REGISTRY))                                              |\n| >  44         raise ProviderError(f\"unknown provider '{provider_id}'; known: {known}\") from     |\n|       None                                                                                      |\n|    45     return cls(**options)                                                                 |\n|    46                                                                                           |\n|    47                                                                                           |\n+-------------------------------------------------------------------------------------------------+\nProviderError: unknown provider 'nonesuch'; known: anthropic, gemini, langchain-fallback, litellm, \nmock\n",
+    "stdout": ""
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "a01-analyze-mock",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "analyze",
+     "demo",
+     "{SRC}",
+     "--models",
+     "mock"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "src_b5dd24de9576 has no media.json \ufffd run `autotester ingest prep demo src_b5dd24de9576` on the HOST first (the container has no ffmpeg)\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "a02-analyze-unknown",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "analyze",
+     "demo",
+     "src_deadbeef"
+    ],
+    "exit": 2,
+    "stderr": "",
+    "stdout": "demo has no source src_deadbeef \ufffd try `autotester ingest list`.\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "g01-map-empty",
+  "listing": {
+   "projects/demo/": "dir",
+   "projects/demo/project.json": "625b4a55f0a3",
+   "projects/demo/screenmap.json": "1c597bf84d8c",
+   "projects/demo/sources.jsonl": "e409faee98ab"
+  },
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "map",
+     "demo"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "demo: 0 screen(s), 0 journey(s)\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "g02-map-noproject",
+  "listing": {},
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "map",
+     "demo"
+    ],
+    "exit": 1,
+    "stderr": "",
+    "stdout": "no project 'demo' yet\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "h01-ingest-help",
+  "listing": {},
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "--help"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "                                                                                                   \n Usage: autotester ingest [OPTIONS] COMMAND [ARGS]...                                              \n                                                                                                   \n Learn a product's screens and flows from a screen recording.                                      \n                                                                                                   \n+- Options ---------------------------------------------------------------------------------------+\n| --help          Show this message and exit.                                                     |\n+-------------------------------------------------------------------------------------------------+\n+- Commands --------------------------------------------------------------------------------------+\n| review       Review one recording: a flow summary and a short confirm-list citing exact         |\n|              seconds.                                                                           |\n|              Pointers raise attention; they never hide the rest. Exit 0 ok, 2 pointer errors, 3 |\n|              approval                                                                           |\n|              missing, 4 source unreadable; --output json writes one JSON document on every      |\n|              exit.                                                                              |\n| register     Record a video as a Source. Idempotent on content \ufffd the same file twice            |\n|              is one source, not two.                                                            |\n| list         Every source registered for this project.                                          |\n| prep         Probe, chunk and transcribe a recording. RUN THIS ON THE HOST \ufffd the                |\n|              container has no ffmpeg and no GPU.                                                |\n| frames       Extract the stills the vision pass named. Needs an analysis on disk.               |\n| run          Watch one source and write the FlowSpec it produces.                               |\n| analyze      Run the ensemble over a prepared recording and adjudicate it.                      |\n| map          Fold every persisted video analysis into the project's product map.                |\n| zip          Register every video in a zip; exit 2 when any member failed (never 0 for          |\n|              partial).                                                                          |\n| fetch-drive  Fetch a Google Drive video, folder or zip through the server's `gws` login.        |\n+-------------------------------------------------------------------------------------------------+\n\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "h02-zip-help",
+  "listing": {},
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "zip",
+     "--help"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "                                                                                                   \n Usage: autotester ingest zip [OPTIONS] {project} {archive}                                        \n                                                                                                   \n Register every video in a zip; exit 2 when any member failed (never 0 for partial).               \n                                                                                                   \n+- Arguments -------------------------------------------------------------------------------------+\n| *    project      <str>  project slug [required]                                                |\n| *    archive      <str>  path to the .zip of recordings [required]                              |\n+-------------------------------------------------------------------------------------------------+\n+- Options ---------------------------------------------------------------------------------------+\n| --uploaded-by        <str>  email of the person handing the files over                          |\n| --json                      print the report as JSON                                            |\n| --help                      Show this message and exit.                                         |\n+-------------------------------------------------------------------------------------------------+\n\n"
+   }
+  ]
+ },
+ {
+  "at_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\mr1B-head-133531921\\src\\autotester\\__init__.py",
+  "at_file_ok": true,
+  "id": "h03-drive-help",
+  "listing": {},
+  "spy": null,
+  "steps": [
+   {
+    "args": [
+     "ingest",
+     "fetch-drive",
+     "--help"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "stdout": "                                                                                                   \n Usage: autotester ingest fetch-drive [OPTIONS] {project} {link}                                   \n                                                                                                   \n Fetch a Google Drive video, folder or zip through the server's `gws` login.                       \n                                                                                                   \n+- Arguments -------------------------------------------------------------------------------------+\n| *    project      <str>  project slug [required]                                                |\n| *    link         <str>  Drive file/folder link or id [required]                                |\n+-------------------------------------------------------------------------------------------------+\n+- Options ---------------------------------------------------------------------------------------+\n| --uploaded-by        <str>  email of the person handing the files over                          |\n| --json                      print the report as JSON                                            |\n| --help                      Show this message and exit.                                         |\n+-------------------------------------------------------------------------------------------------+\n\n"
+   }
+  ]
+ }
+]

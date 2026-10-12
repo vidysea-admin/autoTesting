@@ -1,0 +1,7 @@
+FILE C:\Users\Lenovo\AppData\Local\Temp\at-mr1b-123619858\mut-m2b\src\autotester\__init__.py
+E       AttributeError: 'NoneType' object has no attribute 'available'
+
+src\autotester\providers\__init__.py:100: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_run_launcher.py::test_the_default_judge_is_the_provider_factorys_and_an_unusable_one_is_a_400
+============================== 1 failed in 5.44s ==============================

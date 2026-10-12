@@ -1,0 +1,7 @@
+(copied from console of `probe2.py happy` and `probe2.py placeholders`, run with the b-copy tree)
+happy: all 3 entry points -> happy_cases=1 steps_verbatim=True disk_unchanged=True raw_in_prompt=False flowspec_on_disk_still_raw=True
+  expand rendered: ['## Original flow: Login <email>', '1. navigate https://app.test/cb?u=[REDACTED]:PROBE_PW', '2. fill field <phone> = <email>', '3. click Login button']
+placeholders: all 3 entry points -> declared {{SECRET:PROBE_PW}} x2 and undeclared {{SECRET:UNDECLARED_KEY}} x2 survive in every prompt
+  ".env PORT=PROBE" -> '2. fill email field = {{SECRET:[REDACTED]:PORT_PW}}'
+  ".env DEBUG=1"    -> '# expand_case_v[REDACTED]:DEBUG ...', '[REDACTED]:DEBUG. navigate https://app.test/signin' (template and step ordinals mangled)
+mask_pii ordinal-eating (t3.py): '2. fill phone = +91 98765 43210\n3. click Login' -> '2. fill phone = <phone>. click Login'

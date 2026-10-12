@@ -1,0 +1,10 @@
+== GREEN (unmutated mut1 copy) ==
+C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\dispatch-hardening\mut1\src\autotester\__init__.py
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\dispatch-hardening\mut1
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_agent_read_only.py .                                          [100%]
+
+============================== 1 passed in 1.15s ==============================

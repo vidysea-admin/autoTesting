@@ -1,0 +1,3 @@
+src/autotester/cli.py 297 297-300  []
+tests/test_ui_auth_escalation.py 300 297-300  []
+measured

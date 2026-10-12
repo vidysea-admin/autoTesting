@@ -1,0 +1,18 @@
+from __future__ import annotations
+from pathlib import Path
+from typing import Any
+import pytest
+from test_agent_tools import (Spies, _case, _ctx, _go, _grant, _nav, _project, RAW, spies, BASE)
+from autotester.agents import tools
+from autotester.schema.enums import WritePolicy
+
+
+def test_persona_happy_and_real_catalog(tmp_path: Path) -> None:
+    from autotester.schema.portal_persona import PortalPersona
+    ctx = _ctx(tmp_path, Spies())
+    p = PortalPersona(project="demo")
+    ctx.store.save_portal_persona(p)
+    out = _go(ctx, "get_persona")
+    print("PE persona:", out)
+    out = _go(ctx, "get_catalog")   # real catalog, no spy
+    print("PE catalog real:", out)

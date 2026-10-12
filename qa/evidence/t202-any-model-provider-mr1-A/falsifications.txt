@@ -1,0 +1,20 @@
+M1 cli.py expand_cases ignores --provider (LL11 CLI seam)
+  green-before rc=0 ['================ 4 passed, 37 deselected, 1 warning in 25.47s =================']
+  red-after rc=1 ["E        +  where 'demo: generation failed, no cases persisted � mock provider has no queued response for role=agent\\n' = <Result SystemExit(1)>.output", "E       AssertionError: assert ('litellm:openai/gpt-4o' in 'demo: generation failed, no cases persisted � mock provider has no queued response for role=agent\\n')", "E        +  where 'demo: generation failed, no cases persisted � mock provider has no queued response for role=agent\\n' = <Result SystemExit(1)>.output", 'FAILED tests/test_expand_cli.py::test_expand_refuses_when_the_named_provider_has_no_credentials', 'FAILED tests/test_provider_factory.py::test_ll11_the_cli_exits_non_zero_with_the_same_one_line_reason', '=========== 2 failed, 2 passed, 37 deselected, 1 warning in 15.88s ============']
+  => FALSIFIED OK
+M2 routes_learn proposal gate (t178 piece) removed
+  green-before rc=0 ['======================== 1 passed, 1 warning in 8.63s =========================']
+  red-after rc=1 ['FAILED tests/test_ui_learn.py::test_generate_stages_pending_without_implicit_happy_approval', '======================== 1 failed, 1 warning in 11.68s ========================']
+  => FALSIFIED OK
+M3 routes_learn ignores for_role (LL2)
+  green-before rc=0 ['================= 5 passed, 26 deselected, 1 warning in 4.14s =================']
+  red-after rc=1 ['FAILED tests/test_provider_factory.py::test_generate_cases_asks_the_factory_for_the_agent_of_this_project', 'FAILED tests/test_provider_factory.py::test_a_malformed_spec_on_the_learn_route_is_a_refusal_page_not_a_500', '============ 2 failed, 3 passed, 26 deselected, 1 warning in 6.96s ============']
+  => FALSIFIED OK
+M4 EXPECTED_SITE_COUNT 24 -> 23
+  green-before rc=0 ['======================== 33 passed in 95.46s (0:01:35) ========================']
+  red-after rc=1 ['FAILED tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed', '=================== 1 failed, 32 passed in 99.61s (0:01:39) ===================']
+  => FALSIFIED OK
+M5 routes_runs builds LangChainFallbackProvider directly (LL2)
+  green-before rc=0 ['================= 7 passed, 32 deselected, 1 warning in 5.62s =================']
+  red-after rc=1 ['FAILED tests/test_ui_runs.py::test_trigger_runs_exact_selected_priority_plus_pinned_once[p0-expected0]', 'FAILED tests/test_ui_runs.py::test_trigger_runs_exact_selected_priority_plus_pinned_once[p1-expected1]', 'FAILED tests/test_provider_factory.py::test_neither_route_constructs_the_langchain_provider_itself[routes_runs.py]', 'FAILED tests/test_provider_factory.py::test_ll2_a_project_judge_spec_builds_the_litellm_provider_with_that_model', 'FAILED tests/test_provider_factory.py::test_ll2_the_server_model_applies_when_the_project_is_on_defaults', '============ 5 failed, 2 passed, 32 deselected, 1 warning in 8.34s ============']
+  => FALSIFIED OK

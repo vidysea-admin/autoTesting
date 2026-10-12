@@ -1,0 +1,24 @@
+autotester at C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r1-A-copy\src\autotester\__init__.py
+exhaustive ids 4812
+small 540
+exhaustive pairs ok 583200
+casefold injective over 583200
+random ok 5896 raised(too long) 27
+adversarial skipped invalid: [('_a', 'A')]
+disk lookups ok: files 1600 pairs 400 runs 40
+'a\n' False
+'\u212a' False
+'\u0661a' False
+'a\xe9' False
+'\uff21' False
+'a b' False
+'a/b' False
+'a..b' False
+'_a' False
+'' False
+'.a' False
+'-a' False
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' False
+'\u0130' False
+'a\x00' False
+ALL OK

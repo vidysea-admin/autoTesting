@@ -1,0 +1,43 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU7-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 35 items / 24 deselected / 11 selected
+
+tests\test_ui_auth_accounts.py ...                                       [ 27%]
+tests\test_ui_auth_escalation.py F.F.F...                                [100%]
+
+================================== FAILURES ===================================
+________ test_d074_hosted_without_a_first_admin_email_promotes_nobody _________
+tests\test_ui_auth_escalation.py:151: in test_d074_hosted_without_a_first_admin_email_promotes_nobody
+    assert accounts.signup("early@team.test", PASSWORD).groups == []
+E   AssertionError: assert ['Admin/CEO'] == []
+E     
+E     Left contains one more item: 'Admin/CEO'
+E     Use -v to get more diff
+_____________ test_d074_a_non_loopback_bind_also_promotes_nobody ______________
+tests\test_ui_auth_escalation.py:167: in test_d074_a_non_loopback_bind_also_promotes_nobody
+    assert accounts.signup("early@team.test", PASSWORD).groups == []
+E   AssertionError: assert ['Admin/CEO'] == []
+E     
+E     Left contains one more item: 'Admin/CEO'
+E     Use -v to get more diff
+__ test_d074_a_secure_cookie_in_effect_counts_as_hosted_for_the_first_admin ___
+tests\test_ui_auth_escalation.py:182: in test_d074_a_secure_cookie_in_effect_counts_as_hosted_for_the_first_admin
+    assert accounts.signup("early@team.test", PASSWORD, secure_cookie=True).groups == []
+E   AssertionError: assert ['Admin/CEO'] == []
+E     
+E     Left contains one more item: 'Admin/CEO'
+E     Use -v to get more diff
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_escalation.py::test_d074_hosted_without_a_first_admin_email_promotes_nobody
+FAILED tests/test_ui_auth_escalation.py::test_d074_a_non_loopback_bind_also_promotes_nobody
+FAILED tests/test_ui_auth_escalation.py::test_d074_a_secure_cookie_in_effect_counts_as_hosted_for_the_first_admin
+============ 3 failed, 8 passed, 24 deselected, 1 warning in 6.20s ============

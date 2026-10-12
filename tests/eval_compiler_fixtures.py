@@ -16,8 +16,9 @@ from autotester.schema.portal_persona import (
     TaughtFlow,
 )
 from autotester.schema.scenario import Branch, ScenarioSpec
-from autotester.stages.expand import applicable_classes
+from autotester.stages.expand import applicable_classes, propose_cases
 from autotester.stages.review import approve
+from autotester.store.project_store import ProjectStore
 
 SLUG = "demo"
 
@@ -65,6 +66,18 @@ def persona(*flows: Flow) -> PortalPersona:
                                                     entry_screen=f.entry_screen))
                       for f in flows],
     )
+
+
+def approved_store(root, *flows: Flow) -> ProjectStore:
+    """The saved FlowSpec with every proposal human-approved (FB5): what expansion now requires."""
+    store = ProjectStore(SLUG, root)
+    saved = spec(*flows)
+    store.save_flowspec(saved)
+    rows = propose_cases(saved)
+    store.stage_case_proposals(rows)
+    for row in rows:
+        store.review_case_proposal(row.id, "umesh", approved=True)
+    return store
 
 
 def provider(*flows: Flow) -> MockProvider:

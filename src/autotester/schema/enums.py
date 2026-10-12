@@ -164,13 +164,13 @@ class WritePolicy(StrEnum):
 
 
 class ApprovalKind(StrEnum):
-    """What a `RunApproval` authorises. D-018's two gates: READ is gate 1 (scope
-    of read access); everything else is gate 2 (an outward-facing run)."""
+    """READ is gate 1, the rest gate 2 (D-018). VIDEO_REVIEW: target = provider, actions = calls."""
 
     READ = "read"
     CRAWL = "crawl"
     ADVERSARIAL = "adversarial"
     LIVE_CASE = "live_case"
+    VIDEO_REVIEW = "video_review"
 
 
 class ProviderRole(StrEnum):

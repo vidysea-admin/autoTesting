@@ -1,0 +1,68 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 51 items
+
+tests/test_ui_intake.py::test_ti9_the_page_shows_the_current_limit_and_labelled_zip_and_drive_controls PASSED [  1%]
+tests/test_ui_intake.py::test_ho30_exactly_the_limit_succeeds_and_one_byte_more_is_a_413_with_nothing_left PASSED [  3%]
+tests/test_ui_intake.py::test_ti9_changing_the_setting_changes_the_next_request PASSED [  5%]
+tests/test_ui_intake.py::test_ti9_an_endless_body_is_cut_at_the_limit_plus_one_chunk PASSED [  7%]
+tests/test_ui_intake.py::test_ho30_a_lying_content_length_changes_nothing PASSED [  9%]
+tests/test_ui_intake.py::test_ti9_a_request_with_no_content_length_still_works PASSED [ 11%]
+tests/test_ui_intake.py::test_f2_many_small_form_fields_are_refused_early_and_write_no_file_byte PASSED [ 13%]
+tests/test_ui_intake.py::test_f2_a_few_large_fields_are_refused_by_the_total_cap PASSED [ 15%]
+tests/test_ui_intake.py::test_f2_the_reader_holds_a_bounded_amount_however_many_fields_arrive PASSED [ 17%]
+tests/test_ui_intake.py::test_a_body_that_is_not_multipart_is_refused_cleanly PASSED [ 19%]
+tests/test_ui_intake.py::test_ti3_a_non_recording_non_zip_name_is_refused_before_any_byte_is_stored PASSED [ 21%]
+tests/test_ui_intake.py::test_ti3_a_zip_of_three_videos_a_pdf_and_a_text_file_shows_one_row_per_member PASSED [ 23%]
+tests/test_ui_intake.py::test_ti5_a_zip_with_a_bad_member_reads_as_partial_not_success PASSED [ 25%]
+tests/test_ui_intake.py::test_ti5_a_zip_with_an_invalid_utf8_name_is_a_failed_page_not_a_500 PASSED [ 27%]
+tests/test_ui_intake.py::test_a_member_name_is_escaped_never_executed_by_the_table PASSED [ 29%]
+tests/test_ui_intake.py::test_ti9_a_zip_bigger_than_the_limit_is_a_413_like_any_upload PASSED [ 31%]
+tests/test_ui_intake.py::test_ti10_seam_a_refused_member_is_stopped_before_a_single_body_byte_is_read PASSED [ 33%]
+tests/test_ui_intake.py::test_ti11_uploaded_by_comes_from_the_gate_and_a_form_field_is_ignored PASSED [ 35%]
+tests/test_ui_intake.py::test_ti11_with_no_sign_in_yet_nobody_is_recorded_as_the_uploader PASSED [ 37%]
+tests/test_ui_intake.py::test_d066_a_cross_origin_post_is_refused_before_the_gate_or_any_write PASSED [ 39%]
+tests/test_ui_intake.py::test_the_archive_name_in_the_page_heading_is_escaped PASSED [ 41%]
+tests/test_ui_intake.py::test_a_truncated_multipart_body_is_refused_not_stored PASSED [ 43%]
+tests/test_ui_intake.py::test_a_huge_part_header_is_refused_before_it_is_buffered PASSED [ 45%]
+tests/test_ui_intake.py::test_at758_a_hostile_host_on_the_upload_route_is_403_before_any_body_byte PASSED [ 47%]
+tests/test_ui_project_intake.py::test_one_form_exposes_every_intake_input PASSED [ 49%]
+tests/test_ui_project_intake.py::test_rich_intake_persists_refs_sources_and_secrets_only_in_env PASSED [ 50%]
+tests/test_ui_project_intake.py::test_url_only_and_legacy_onboarding_remain_valid PASSED [ 52%]
+tests/test_ui_project_intake.py::test_invalid_second_credential_leaves_no_partial_project_or_env PASSED [ 54%]
+tests/test_ui_project_intake.py::test_invalid_second_value_does_not_write_the_first_value PASSED [ 56%]
+tests/test_ui_project_intake.py::test_credential_scope_must_stay_inside_project_domains PASSED [ 58%]
+tests/test_ui_project_intake.py::test_new_secret_cannot_be_smuggled_into_non_secret_inputs PASSED [ 60%]
+tests/test_ui_project_intake.py::test_new_hostname_shaped_secret_is_not_echoed_by_url_validation PASSED [ 62%]
+tests/test_ui_project_intake.py::test_existing_root_secret_key_cannot_be_reused_or_hidden PASSED [ 64%]
+tests/test_ui_project_intake.py::test_unset_key_owned_by_another_project_cannot_be_redeclared PASSED [ 66%]
+tests/test_ui_project_intake.py::test_existing_project_cannot_be_overwritten_by_reonboarding PASSED [ 68%]
+tests/test_ui_project_intake.py::test_imbalanced_repeated_rows_fail_before_writes PASSED [ 70%]
+tests/test_ui_project_intake.py::test_env_batch_replace_failure_preserves_the_existing_file PASSED [ 72%]
+tests/test_ui_project_intake.py::test_env_batch_replaces_every_duplicate_key PASSED [ 74%]
+tests/test_ui_project_intake.py::test_repeated_statements_are_content_addressed_once PASSED [ 76%]
+tests/test_ui_intake_drive.py::test_ti7_a_pasted_link_fetches_in_the_background_and_the_job_page_shows_the_table PASSED [ 78%]
+tests/test_ui_intake_drive.py::test_ho32_a_hostile_link_is_refused_and_not_echoed_and_makes_no_job PASSED [ 80%]
+tests/test_ui_intake_drive.py::test_ho33_a_drive_failure_reaches_the_page_as_its_message_never_a_trace PASSED [ 82%]
+tests/test_ui_intake_drive.py::test_ho33_the_job_page_says_fetching_while_it_runs PASSED [ 84%]
+tests/test_ui_intake_drive.py::test_ti10_seam_the_queued_fetch_checks_again_and_a_refusal_fetches_no_bytes PASSED [ 86%]
+tests/test_ui_intake_drive.py::test_ti10_seam_a_refused_member_creates_no_job PASSED [ 88%]
+tests/test_ui_intake_drive.py::test_a_job_id_that_is_not_one_of_ours_is_a_404[x] PASSED [ 90%]
+tests/test_ui_intake_drive.py::test_a_job_id_that_is_not_one_of_ours_is_a_404[../../etc/passwd] PASSED [ 92%]
+tests/test_ui_intake_drive.py::test_a_job_id_that_is_not_one_of_ours_is_a_404[01J0000000000000000000000Z!] PASSED [ 94%]
+tests/test_ui_intake_drive.py::test_the_job_file_holds_no_token_or_raw_link PASSED [ 96%]
+tests/test_ui_intake_drive.py::test_a_form_with_too_many_fields_is_a_400_not_a_500 PASSED [ 98%]
+tests/test_ui_intake_drive.py::test_at758_a_hostile_host_on_the_drive_route_is_403_and_makes_no_job PASSED [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 51 passed, 1 warning in 14.69s ========================

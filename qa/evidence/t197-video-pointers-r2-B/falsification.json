@@ -1,0 +1,91 @@
+[
+ {
+  "row": "F2a click usage errors",
+  "anchor_file": "src/autotester/cli_video.py",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-fz\\row0\\src\\autotester\\__init__.py",
+  "green_rc": 0,
+  "green": "13 passed, 29 deselected in 2.47s",
+  "red_rc": 1,
+  "red": "8 failed, 5 passed, 29 deselected in 5.56s",
+  "failed_tests": [
+   "FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-abc]",
+   "FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-empty]",
+   "FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-hex]"
+  ]
+ },
+ {
+  "row": "F2b unexpected exception",
+  "anchor_file": "src/autotester/cli_video_review.py",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-fz\\row1\\src\\autotester\\__init__.py",
+  "green_rc": 0,
+  "green": "2 passed, 40 deselected in 10.00s",
+  "red_rc": 1,
+  "red": "2 failed, 40 deselected in 7.86s",
+  "failed_tests": [
+   "FAILED tests/test_cli_video_review_exits.py::test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path[runtime]",
+   "FAILED tests/test_cli_video_review_exits.py::test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path[oserror]"
+  ]
+ },
+ {
+  "row": "F2c Ctrl-C",
+  "anchor_file": "src/autotester/cli_video_review.py",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-fz\\row2\\src\\autotester\\__init__.py",
+  "green_rc": 0,
+  "green": "1 passed, 41 deselected in 14.57s",
+  "red_rc": 1,
+  "red": "1 failed, 41 deselected in 10.77s",
+  "failed_tests": [
+   "FAILED tests/test_cli_video_review_exits.py::test_ctrl_c_is_one_json_interrupted_document_exit_130_and_cleans_the_scratch"
+  ]
+ },
+ {
+  "row": "F2d exit_code on review doc",
+  "anchor_file": "src/autotester/cli_video_review.py",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-fz\\row3\\src\\autotester\\__init__.py",
+  "green_rc": 0,
+  "green": "5 passed, 37 deselected in 38.64s",
+  "red_rc": 1,
+  "red": "4 failed, 1 passed, 37 deselected in 41.65s",
+  "failed_tests": [
+   "FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[ok]",
+   "FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[partial]",
+   "FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[failed]"
+  ]
+ },
+ {
+  "row": "F2d exit_code on plan doc",
+  "anchor_file": "src/autotester/cli_video_review.py",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-fz\\row4\\src\\autotester\\__init__.py",
+  "green_rc": 0,
+  "green": "4 passed, 38 deselected in 17.88s",
+  "red_rc": 1,
+  "red": "1 failed, 3 passed, 38 deselected in 9.44s",
+  "failed_tests": [
+   "FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[dry-run]"
+  ]
+ },
+ {
+  "row": "F3 32769 boundary (>= variant)",
+  "anchor_file": "src/autotester/stages/video_pointers.py",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-fz\\row5\\src\\autotester\\__init__.py",
+  "green_rc": 0,
+  "green": "1 passed, 28 deselected in 0.48s",
+  "red_rc": 1,
+  "red": "1 failed, 28 deselected in 1.04s",
+  "failed_tests": [
+   "FAILED tests/test_video_pointers.py::test_the_pointer_file_limit_is_exactly_32768_bytes"
+  ]
+ },
+ {
+  "row": "F3 32769 boundary (+1 variant)",
+  "anchor_file": "src/autotester/stages/video_pointers.py",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-fz\\row6\\src\\autotester\\__init__.py",
+  "green_rc": 0,
+  "green": "1 passed, 28 deselected in 0.56s",
+  "red_rc": 1,
+  "red": "1 failed, 28 deselected in 1.22s",
+  "failed_tests": [
+   "FAILED tests/test_video_pointers.py::test_the_pointer_file_limit_is_exactly_32768_bytes"
+  ]
+ }
+]

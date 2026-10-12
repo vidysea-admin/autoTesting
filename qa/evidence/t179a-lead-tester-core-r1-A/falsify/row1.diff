@@ -1,0 +1,10 @@
+--- head/src/autotester/agents/guards.py	2026-10-12 02:38:37.000000000 +0530
++++ scripts/falsify/row1/src/autotester/agents/guards.py	2026-10-12 02:56:06.050108600 +0530
+@@ -118,6 +118,7 @@
+ 
+ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
+     """Fail closed: what is not listed as safe, or as the login's credential entry, is refused."""
++    return None
+     action = step.action
+     if action in _READS:
+         return None

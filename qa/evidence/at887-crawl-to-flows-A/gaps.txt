@@ -1,0 +1,33 @@
+== GAP 6: no project.json (store has flowspec+proposals, load_project() is None)
+noproj declared secret in value        expand        sent(12)                                                     LEAKED=['Hunter2-Zebra-4411']
+noproj declared secret in value        expand_flow   sent(12)                                                     LEAKED=['Hunter2-Zebra-4411']
+noproj declared secret in value        compile_evals sent(12)                                                     LEAKED=['Hunter2-Zebra-4411']
+noproj email in value                  expand        sent(12)                                                     LEAKED=[]
+noproj email in value                  expand_flow   sent(12)                                                     LEAKED=[]
+noproj email in value                  compile_evals sent(12)                                                     LEAKED=[]
+noproj undeclared-looking env value    expand        sent(12)                                                     LEAKED=['zzz-other-9082']
+noproj undeclared-looking env value    expand_flow   sent(12)                                                     LEAKED=['zzz-other-9082']
+noproj undeclared-looking env value    compile_evals sent(12)                                                     LEAKED=['zzz-other-9082']
+== project exists but declares NO secrets, .env has the value (shadow path)
+noDeclared, env value in value         expand        sent(12)                                                     LEAKED=[]
+noDeclared, env value in value         expand_flow   sent(12)                                                     LEAKED=[]
+noDeclared, env value in value         compile_evals sent(12)                                                     LEAKED=[]
+== project exists, .env file missing
+no .env file, secret-shaped value      expand        sent(12)                                                     LEAKED=['Hunter2-Zebra-4411']
+no .env file, secret-shaped value      expand_flow   sent(12)                                                     LEAKED=['Hunter2-Zebra-4411']
+no .env file, secret-shaped value      compile_evals sent(12)                                                     LEAKED=['Hunter2-Zebra-4411']
+== project declares key but .env lacks it (strict=False)
+declared-but-missing value             expand        sent(12)                                                     LEAKED=[]
+declared-but-missing value             expand_flow   sent(12)                                                     LEAKED=[]
+declared-but-missing value             compile_evals sent(12)                                                     LEAKED=[]
+== placeholder survives?
+placeholder in every prompt: True n= 14 | secret raw anywhere: False
+== short declared secret that is a substring of template/placeholder text
+secret value 'word'    : sent placeholder-intact=True
+secret value 'SECRET'  : sent placeholder-intact=False
+secret value 'ST_PASS' : refused:ValueError placeholder-intact=None
+secret value 'step'    : sent placeholder-intact=True
+== gap 9: compile_evals provider-spy, store-backed
+prompts: 12 untraced: [] raw secret/email in any: False
+sample value line: ['2. fill email field = <email> [REDACTED]:ST_PASS']
+compile_evals no-project: raw secret reached provider: True

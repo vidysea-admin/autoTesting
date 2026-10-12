@@ -1,0 +1,12 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\autoTesting\.worktrees\at792-stale-rc2-test
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 19 items
+
+tests\test_reconcile_schema.py ...................                       [100%]
+
+============================= 19 passed in 0.30s ==============================
+exit=0

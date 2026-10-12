@@ -260,22 +260,35 @@ citation. So the citation is checked, not trusted.
   - **No inference, no subject pass.** Doctor never chooses what to seal, never infers a subject
     and never reads a seal as evidence that any claim is true or authorized. A sealed occurrence is
     covered, not classified clean: nothing may cite sealed text as authority.
-  - **Known-disputed historical claims: open item pending Umesh's ruling; the seal does NOT resolve
-    them.** Two early claims in `docs/DECISIONS.md` cannot truthfully satisfy the What-only
-    boundary while unchanged. The gate answer B did not rule on them. (K1) The D-006 body at
+  - **Known-disputed historical claims: ruled by Umesh (D-068 item 2, option i, corrected by D-069);
+    the seal does NOT cover them.** Two early claims in `docs/DECISIONS.md` cannot truthfully satisfy the What-only
+    boundary while unchanged. The gate answer B did not rule on them; the ruling came later (below). (K1) The D-006 body at
     `docs/DECISIONS.md:80` says the UTF-8 change to `scripts/append_decision.ps1` was "authorized
     by D-000 `Changes-authorized`"; D-000's What adopts the Lab Protocol generally and does not
     name the appender or UTF-8 scope, so the claim leans on D-000's Changes-authorized field, not
     its What. (K2) The D-014 body at `docs/DECISIONS.md:209`, first `D-005` occurrence (ordinal 1;
     the second same-line occurrence is a separate, honestly quoted row), says it discharges D-005
     items with `Action` += BACK, HOVER, PRESS_KEY, SCROLL; D-005's What lists HOVER, PRESS_KEY and
-    SCROLL but not BACK, so BACK is attributed to a decision that did not name it. Until Umesh
-    rules, doctor lists K1 and K2 by path, id, ordinal and exact line text as
-    `decision-citation-known-disputed`, counted, **non-blocking** (they alone do not make doctor
-    exit nonzero); a seal can never cover them; and a qa/issues.jsonl row (feature living-ledger,
-    severity low) tracks them open until the ruling is recorded here as an amendment. Any change
-    to either line's text, or any third disputed occurrence, is blocking, and T-196 cannot receive a
-    final PASS while this item is open.
+    SCROLL but not BACK, so BACK is attributed to a decision that did not name it.
+    **Ruling (Umesh, chat 2026-10-07, option i after an independent second confirmation: "2nd
+    confirmation le loo aur sabhi update krr doo"; recorded in `qa/gates/t196-l10-coverage.md`
+    `Answered (disputed claims K1/K2)` and in D-068 item 2).** D-069 is the correcting entry. K1: the
+    authorization holds at file level (D-000 `Changes-authorized` covers `scripts/append_decision.ps1`
+    as enforcement wiring) but D-000 never names the UTF-8 fix, so D-006's specific claim is
+    imprecise. K2: BACK was first authorized by D-014 itself (Approved-by Umesh, `docs/plan.md`
+    section 4), not by D-005, whose What lists only HOVER, PRESS_KEY and SCROLL. Both changes stand as
+    authorized; the old entries D-006 and D-014 are NOT edited (append-only), so their two lines keep
+    their text. Consequently K1 and K2 are no longer an open item, and each is **dispositioned by the
+    correcting entry D-069** rather than reclassified clean. Doctor still lists them by path, id,
+    ordinal and exact line text as `decision-citation-known-disputed`, counted, **non-blocking** (they
+    alone do not make doctor exit nonzero); a seal can never cover them; nothing may cite D-006:80 or
+    D-014:209 as authority for the disputed point (cite D-069 instead). Any change to either line's
+    text, or any third disputed occurrence, is blocking. The condition "T-196 cannot receive a final
+    PASS while this item is open" is discharged by this ruling; T-196 still needs its own
+    implementation and complete-coverage evidence. The row `ISS-t196-citation-subjects-k1k2` in
+    `qa/issues.jsonl` is resolvable once this amendment is on master (the checker sets its status; the
+    maker does not). The `enums.py:26` docstring fix named in D-069 is not a criterion of this
+    contract.
 - **Verify:** `uv run pytest tests/test_citations.py` and `uv run autotester doctor` must evidence
   the following with file/line/id diagnostics: absent id gives L9 dangling (also with an empty log);
   present unrelated What gives subject mismatch; exact matching canonical claim is clean; matching
@@ -297,8 +310,14 @@ citation. So the citation is checked, not trusted.
   fixtures, not inferred from L9's clean result. Named isolated falsifiers must turn each claimed
   acceptance capability red, including swapping to an existing unrelated id, moving a quote into
   Why, removing coverage enforcement, and removing the seal hash comparison; restore the original bytes afterward. T-196 remains
-  critical: active new-feature policy .3 requires tier L and two blind final coordinator checks;
-  adopting this form is not implementation approval or either completion verdict.
+  critical and tier L when its diff changes product code inside this criterion's scope. **Check
+  count (amended 2026-10-11): one final coordinator check, not two.** A dual check (two blind
+  coordinators) needs a cited trigger line in the manifest, `dual-trigger: security|auth|tenancy|
+  prod-write <path.ext:line>` (policy .8-3, as pinned by the manifest's `Policy-Version`). T-196
+  changes a read-only doctor check over repository text and writes nothing to production, so no such
+  trigger applies by default; if the final diff does introduce one, the manifest cites it and the
+  dual check follows. Criticality and tier L alone never trigger it. Adopting this form is not
+  implementation approval or a completion verdict.
   **Links:** AT-710; AT-718; ISS-at710-1; D-060; D-062; T-196.
 
 
@@ -429,3 +448,20 @@ only, later); Google-Sheet sync.
   `qa/gates/t196-l10-coverage.md` Answered 2026-10-07T01:34:13Z, B (Umesh, chat); no D-entry yet
   records it (docs/DECISIONS.md is outside this seat's write set; the maker should append one).
   **Links:** T-196; D-060; D-062; qa/feedback-inbox.md 2026-10-07 fold-in.
+- 2026-10-11 - amend (owner-authorized, D-066 / D-068 / D-069) - **L10 sealed-record disposition brought
+  onto master** from the checker's commit 2749e38d on branch `wave/t196-citation-subjects`, text verbatim
+  (authority: D-066 item 1, gate `qa/gates/t196-l10-coverage.md` Answered B). Master carried no copy of it.
+  Two further edits in the same change. (1) **K1/K2 ruling recorded:** Umesh's option i (D-068 item 2,
+  corrected and dispositioned by D-069, gate `Answered (disputed claims K1/K2)` 2026-10-07T03:17:22Z)
+  replaces "open item pending Umesh's ruling". K1 and K2 stay listed, non-blocking, never sealable and
+  not citable as authority; the old entries are not edited; the "no final PASS while open" bar is
+  discharged. No clause weakened: a changed line or a third disputed occurrence is still blocking.
+  (2) **Check count reconciled with the current policy:** the "two blind final coordinator checks" wording
+  came from the superseded policy .3. Under the proportional-verification policy the manifest pins
+  (`Policy-Version` .9; checker SKILL "Dual check lint", rule .8-3), a dual check needs a cited
+  `dual-trigger: security|auth|tenancy|prod-write <path:line>`; criticality and tier L alone never
+  trigger one. L10 now says one final coordinator check unless that trigger is cited. This is the
+  policy's own rule applied to this contract, not a softening of any L10 acceptance criterion, but it
+  does reduce the check count, so it is listed in the 2026-10-11 contract-maintenance report for Umesh.
+  **Changes-authorized:** D-066 (L10 sealed-record text as committed in 2749e38d); D-068 item 2 and
+  D-069 (K1/K2). **Links:** T-196; D-060; D-062; D-066; D-068; D-069; ISS-t196-citation-subjects-k1k2.

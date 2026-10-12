@@ -33,11 +33,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths, RepoDocs
-from autotester.providers.base import ProviderError
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers import ProviderError, for_role, why_unavailable
 from autotester.schema.enums import ReviewStatus
 from autotester.stages import review as review_stage
-from autotester.stages.expand import expand
+from autotester.stages.expand import expand, propose_cases
 from autotester.store.project_store import ProjectStore
 from autotester.ui import theme
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
@@ -235,29 +234,30 @@ def generate_cases(slug: str):
             f"whatever the model guessed. It is currently {spec.review.status.value}.",
             _link(f"/projects/{slug}/flowspec", "Review it"))
 
-    provider = LangChainFallbackProvider()
-    if not provider.available():
-        return _refusal(
-            slug, "No model provider configured",
-            "Generating cases needs a model. No provider on this machine has "
-            "credentials, so nothing was generated.",
-            _link(f"/projects/{slug}/env", "Add a credential"))
-
-    # AT-264: every OTHER refusal in this route is a themed page (AT-244's
-    # own rule -- "a refusal an operator reaches by clicking is part of the
-    # interface"). A model call is the one step here that can fail AFTER the
-    # gate checks pass, and it genuinely does: providers/gemini.py raises
-    # ProviderError on an unparsed response or a schema mismatch, and this
-    # project's own measured recall (1/7, real model calls) is evidence the
-    # model already misbehaves on this exact path. Uncaught, that reached the
-    # operator as a raw text/plain 500 -- the one inconsistent failure mode in
-    # an otherwise fully themed route.
     try:
-        cases = expand(spec, provider, RepoDocs())
+        store.stage_case_proposals(propose_cases(spec))
+        store.preflight_case_proposals(spec)
+    except ValueError as exc:
+        return _refusal(
+            slug, "Case proposals need human review", str(exc),
+            f"<p>Review/prune with <code>autotester expand {escape(slug)} --proposals</code>; "
+            "use --approve or --prune with a proposal ID and --by your name.</p>")
+    try:
+        why = why_unavailable(provider := for_role(project, "agent"))  # LL2: the one factory
     except ProviderError as exc:
+        why = str(exc)
+    if why:
+        return _refusal(slug, "No model provider configured",
+                        f"Generating cases needs a model. {why}, so nothing was generated.",
+                        _link(f"/projects/{slug}/env", "Add a credential"))
+
+    try:  # AT-264: a failure after the gates (model, or the secret guard) is a page, not a 500
+        cases = expand(spec, provider, RepoDocs(), store=store)
+    except (ProviderError, ValueError) as exc:
         return _refusal(
             slug, "The model could not complete this",
-            f"Generating cases failed partway through: {exc}",
+            "Generating cases failed partway through: "
+            f"{exc if isinstance(exc, ProviderError) else 'a prompt was refused unsent'}",
             _link(f"/projects/{slug}/env", "Check the provider's credentials"))
     for case in cases:
         store.add_case(case)

@@ -1,0 +1,47 @@
+== E1 loopback, HOSTED unset
+ first-> / second-> /auth/waiting admins: ['first@team.test']
+ 10 trials x 2 simultaneous first signups (admins, users, statuses): [(1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303]), (1, 2, [303, 303])]
+ 6 simultaneous first signups -> admins: 1 users: 6 [303, 303, 303, 303, 303, 303]
+== E2 hosted + FIRST_ADMIN_EMAIL=owner@team.test
+ stranger first: (303, '/auth/waiting') admins: []
+ lookalikes/plus-tag/suffix variants signed up first -> admins: []
+ owner in odd case/space ' Owner@Team.TEST ': (303, '/') admins: ['owner@team.test']
+ SECOND signup same email (any case): (400, None) admins: ['owner@team.test'] owner rows: 1
+ next stranger after admin exists: (303, '/auth/waiting') admins: ['owner@team.test']
+ 6 trials x 4 simultaneous (3 same named email, 1 other): (admins, owner rows, statuses): [(['owner@team.test'], 1, [303, 303, 400, 400]), (['owner@team.test'], 1, [303, 303, 400, 400]), (['owner@team.test'], 1, [303, 303, 400, 400]), (['owner@team.test'], 1, [303, 303, 400, 400]), (['owner@team.test'], 1, [303, 303, 400, 400]), (['owner@team.test'], 1, [303, 303, 400, 400])]
+ NOTE: ownership of FIRST_ADMIN_EMAIL is not proven (no email verification): whoever signs up with that address first, with any password, is admin
+ owner deleted by 2nd admin; owner re-signs up: (303, '/auth/waiting') admins: ['second-admin@team.test']
+ delete last admin -> LastAdmin
+== E3 startup warnings (subprocess; lifespan runs check_startup)
+ hosted, var unset                  rc=0 warnings=1 named-var=True stdout='started' err_tail=
+ hosted, var '   '                  rc=0 warnings=1 named-var=True stdout='started' err_tail=
+ hosted, var ''                     rc=0 warnings=1 named-var=True stdout='started' err_tail=
+ hosted, var set                    rc=0 warnings=0 named-var=True stdout='started' err_tail=
+ loopback local, unset              rc=0 warnings=0 named-var=True stdout='started' err_tail=
+ UVICORN_HOST=0.0.0.0 unset         rc=0 warnings=1 named-var=True stdout='started' err_tail=
+ hosted w/o ALLOWED_HOSTS/ORIGINS   rc=1 warnings=1 named-var=True stdout='' err_tail=
+ hosted unset: first signup: (303, '/auth/waiting') admins: []
+ hosted unset: owner-like signup: (303, '/auth/waiting') admins: []
+ non-loopback bind (UVICORN_HOST=0.0.0.0), HOSTED unset, first signup: /auth/waiting admins: []
+== E4 CLI: autotester auth bootstrap-admin --email X --password-stdin
+ create: 0 created admin new@team.test (groups: Admin/CEO)  {'canary': False, 'hash': False, 'other_emails': []}
+ reset same email: 0 reset admin new@team.test (groups: Admin/CEO) {'canary': False, 'hash': False, 'other_emails': []}
+ promote existing non-admin (ownership of that account is overwritten, pw reset): 0 reset admin existing@team.test (groups: Admin/CEO) {'canary': False, 'hash': False, 'other_emails': ['existing@team.test']}
+Exception in thread Thread-139 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 328: character maps to <undefined>
+Traceback (most recent call last):
+  File "D:\autoTesting\qa\evidence\t204-team-login-B\session\famE_firstadmin.py", line 157, in <module>
+    p(" argv password flag:", r.returncode, r.stderr.strip().splitlines()[-1][:100] if r.stderr.strip() else "", leak(r))
+                                                                                       ^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'strip'

@@ -1,0 +1,9 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\head\src\autotester\__init__.py
+old file: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\base\src\autotester\delivery\inbox.py
+new file: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\head\src\autotester\delivery\inbox.py
+pattern ids compared=28 different=0
+sample: (?:inbox|email)__email__(?:[a-z0-9.-]|_[a-z0-9])+\.\d+\.json
+_CHANNELS/_PART equal: inbox|email (?:[a-z0-9.-]|_[a-z0-9])+
+records per store: 502
+records_for_run identical for 17 run ids, records_for_key identical for 260 keys; total records via run lookup=502
+ALL EQUAL

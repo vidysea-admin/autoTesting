@@ -1,0 +1,13 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\t201a-r2A-20753
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 97 items
+
+tests\test_delivery_smtp.py .......................................      [ 40%]
+tests\test_report_email.py .........................................     [ 82%]
+tests\test_delivery_failure.py .................                         [100%]
+
+============================= 97 passed in 5.61s ==============================
+exit=0 t=32s

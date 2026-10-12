@@ -1,0 +1,84 @@
+127.0.0.1 - - [11/Oct/2026 15:07:57] "GET /index.html?t=k1-pass HTTP/1.1" 200 -
+127.0.0.1 - - [11/Oct/2026 15:07:57] code 404, message File not found
+127.0.0.1 - - [11/Oct/2026 15:07:57] "GET /favicon.ico HTTP/1.1" 404 -
+{
+ "autotester_file": "D:\\autoTesting\\.worktrees\\check-at888\\src\\autotester\\__init__.py",
+ "scenario": "killbetween",
+ "headed": true,
+ "cases": [
+  {
+   "title": "k1-pass",
+   "video_rel": "case_bbc3eeff0c36.webm",
+   "video_size": 17213,
+   "case_tmp": "page@0988ca0330d4bc980cbf28c0e7ddea63.webm",
+   "spare_tmp": "page@3d4298e3bcc12de5d8570d777cfc5251.webm",
+   "spare_differs": true,
+   "pages_open": 1,
+   "outcome": "completed",
+   "verdict": "PASS",
+   "error": null,
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 38, 0, 540971, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_bbc3eeff0c36' result=<Result.PASS: 'PASS'> scoreboard='1/1' criteria_met=1 criteria_total=1 failures=[] grader_provider='mock' rubric_hash='rub_98d48812f919' note=None images_requested=2 images_seen=2",
+   "notes": {
+    "styleOnPage": true,
+    "secretMasked": "disc"
+   },
+   "secs": 3.6,
+   "starts_so_far": 1
+  },
+  {
+   "title": "k2-after-kill",
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\Users\\Lenovo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe --disable-fiel",
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 42, 22, 202810, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_b479d8e64362' result=<Result.INCONCLUSIVE: 'INCONCLUSIVE'> scoreboard='not judged: execution errored' criteria_met=0 criteria_total=1 failures=[] grader_provider='rule' rubric_hash='rub_98d48812f919' note='SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\ms-playwright\\\\chromium-1234\\\\chrome-",
+   "notes": null,
+   "secs": 244.1,
+   "starts_so_far": 2
+  },
+  {
+   "title": "k3-pass",
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\Users\\Lenovo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe --disable-fiel",
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 42, 22, 216829, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_7dbd97fe0058' result=<Result.INCONCLUSIVE: 'INCONCLUSIVE'> scoreboard='not judged: execution errored' criteria_met=0 criteria_total=1 failures=[] grader_provider='rule' rubric_hash='rub_98d48812f919' note='SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\ms-playwright\\\\chromium-1234\\\\chrome-",
+   "notes": null,
+   "secs": 0.0,
+   "starts_so_far": 2
+  },
+  {
+   "title": "k4-pass",
+   "outcome": "errored",
+   "verdict": "INCONCLUSIVE",
+   "error": "SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\Users\\Lenovo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe --disable-fiel",
+   "evidence": [],
+   "verdict_reason": "schema_version=1 created_at=datetime.datetime(2026, 10, 11, 9, 42, 22, 240733, tzinfo=datetime.timezone.utc) provenance=None run_id='run_1' case_id='case_4ddb12173e23' result=<Result.INCONCLUSIVE: 'INCONCLUSIVE'> scoreboard='not judged: execution errored' criteria_met=0 criteria_total=1 failures=[] grader_provider='rule' rubric_hash='rub_98d48812f919' note='SessionRestoreError: browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\ms-playwright\\\\chromium-1234\\\\chrome-",
+   "notes": null,
+   "secs": 0.0,
+   "starts_so_far": 2
+  }
+ ],
+ "tmp": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_7sa0agab",
+ "profile_dir": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at888probe_7sa0agab\\profiles\\at888p",
+ "killed": [
+  [
+   17340,
+   76648,
+   77056,
+   69636,
+   53716,
+   13120,
+   31980,
+   58284,
+   63616
+  ]
+ ],
+ "latched_err": "browser session died (TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed) and could not be restarted: TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded. Call log: - <launching> C:\\Users\\Lenovo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe --disable-fiel",
+ "browsers_before_close": 0,
+ "close": "ok",
+ "left_after_close": [
+  "powershell.exe"
+ ]
+}

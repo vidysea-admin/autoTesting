@@ -1,0 +1,33 @@
+{
+ "total": 386,
+ "by_dim": {
+  "B-host-spelling": 66,
+  "C-wildcard-spelling": 320
+ },
+ "by_verdict": {
+  "ok-started-served": 30,
+  "ok-refused": 96,
+  "UNBINDABLE-os-refuses": 177,
+  "ok-refused-by-design": 42,
+  "DISAGREE-refused-but-would-serve": 36,
+  "DISAGREE-spec-violation-started": 5
+ },
+ "by_dim_verdict": {
+  "B-host-spelling": {
+   "ok-started-served": 10,
+   "ok-refused": 16,
+   "UNBINDABLE-os-refuses": 24,
+   "ok-refused-by-design": 8,
+   "DISAGREE-refused-but-would-serve": 8
+  },
+  "C-wildcard-spelling": {
+   "ok-started-served": 20,
+   "ok-refused": 80,
+   "ok-refused-by-design": 34,
+   "UNBINDABLE-os-refuses": 153,
+   "DISAGREE-refused-but-would-serve": 28,
+   "DISAGREE-spec-violation-started": 5
+  }
+ },
+ "bind_parse_mismatch": 13
+}

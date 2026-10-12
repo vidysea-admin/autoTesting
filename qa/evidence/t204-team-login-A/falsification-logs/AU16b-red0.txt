@@ -1,0 +1,28 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU16b-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 6 items
+
+tests\test_ui_auth_surface.py ...F..                                     [100%]
+
+================================== FAILURES ===================================
+___________ test_au16_login_page_drops_unsafe_next[//evil.example] ____________
+tests\test_ui_auth_surface.py:78: in test_au16_login_page_drops_unsafe_next
+    assert "evil.example" not in page and "javascript:" not in page
+E   AssertionError: assert ('evil.example' not in '<!doctype h.../main></div>'
+E     
+E     'evil.example' is contained here:
+E     ?           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E        value='//evil.example'><div class='field'><label for='email'>Email</label><input id='email' name='email' type='email' required autocomplete='username'></div><div class='field'><label for='password'>Password</label><input id='password' name='password' type='password' required autocomplete='current-password'></div><button class='btn btn-primary' type='submit'>Sign in</button></form><p style='margin-top:14px'>No account yet? <a href='/auth/signup'>Sign up</a></p></div></main></div>
+E     ?           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^)
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[//evil.example]
+=================== 1 failed, 5 passed, 1 warning in 3.20s ====================

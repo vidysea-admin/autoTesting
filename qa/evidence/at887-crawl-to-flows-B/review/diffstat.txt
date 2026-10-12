@@ -1,0 +1,13 @@
+ docs/MAP.md                                  |   1 +
+ docs/SNAPSHOT.md                             |   6 +-
+ qa/manifests/at887-crawl-to-flows.md         |  88 ++++++++++++
+ src/autotester/cli_crawl.py                  |  16 +--
+ src/autotester/stages/expand.py              |  47 ++++--
+ src/autotester/stages/explore_flows.py       |  92 ++++++++++++
+ src/autotester/stages/explore_merge.py       |  50 ++++++-
+ src/autotester/stages/orchestrate_runners.py |   9 +-
+ src/autotester/ui/routes_crawls.py           |   5 +-
+ tests/test_expand_redaction.py               | 146 +++++++++++++++++++
+ tests/test_explore_flows.py                  | 204 +++++++++++++++++++++++++++
+ tests/test_explore_flows_doors.py            |  98 +++++++++++++
+ 12 files changed, 734 insertions(+), 28 deletions(-)

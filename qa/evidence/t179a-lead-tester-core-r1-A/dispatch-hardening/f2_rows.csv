@@ -1,0 +1,521 @@
+group,row,returned,ok,refusal,tool,problems,partial_len,partial_form,summary,secs
+handler-msg,run_case/raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.341
+handler-msg,run_case/reversed,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.059
+handler-msg,run_case/b64,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.075
+handler-msg,run_case/hex,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.066
+handler-msg,run_case/pct,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.132
+handler-msg,run_case/spaced,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.151
+handler-msg,run_case/zw,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.079
+handler-msg,run_case/split2,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.105
+handler-msg,run_case/only_first_half,ToolOutcome,False,stage_error,run_case,-,8,raw,RuntimeError: boom CANARY-p,0.107
+handler-msg,run_case/pad_cut3_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.133
+handler-msg,run_case/pad_cut6_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.309
+handler-msg,run_case/pad_cut8_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.066
+handler-msg,run_case/pad_cut10_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.265
+handler-msg,run_case/pad_cut3_reversed,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.071
+handler-msg,run_case/pad_cut6_reversed,ToolOutcome,False,stage_error,run_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.488
+handler-msg,run_case/pad_cut8_reversed,ToolOutcome,False,stage_error,run_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.121
+handler-msg,run_case/pad_cut10_reversed,ToolOutcome,False,stage_error,run_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.087
+handler-msg,run_case/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.066
+handler-msg,run_case/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.231
+handler-msg,run_case/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.169
+handler-msg,run_case/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.357
+handler-msg,run_case/pad_cut3_hex_lower,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.269
+handler-msg,run_case/pad_cut6_hex_lower,ToolOutcome,False,stage_error,run_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.116
+handler-msg,run_case/pad_cut8_hex_lower,ToolOutcome,False,stage_error,run_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.254
+handler-msg,run_case/pad_cut10_hex_lower,ToolOutcome,False,stage_error,run_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.262
+handler-exc,run_case/__str__raises,ToolOutcome,False,stage_error,run_case,-,0,,BadStr,0.097
+handler-exc,run_case/canary_in_typename,ToolOutcome,False,stage_error,run_case,-,0,,X[REDACTED]:APP_PASS: m,0.066
+handler-exc,run_case/canary_in_args_tuple,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.079
+handler-exc,run_case/ValueError_canary,ToolOutcome,False,stage_error,run_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.061
+handler-exc,run_case/MemoryError,ToolOutcome,False,stage_error,run_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.079
+handler-exc,run_case/RecursionError,ToolOutcome,False,stage_error,run_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.207
+handler-exc,run_case/UnicodeError,ToolOutcome,False,stage_error,run_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.363
+handler-exc,run_case/KeyError_canary,ToolOutcome,False,stage_error,run_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.114
+handler-exc,run_case/OSError_path,ToolOutcome,False,stage_error,run_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.069
+handler-exc,run_case/huge_msg_10MB,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.442
+handler-msg,open_session/raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.141
+handler-msg,open_session/reversed,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.177
+handler-msg,open_session/b64,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.182
+handler-msg,open_session/hex,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.128
+handler-msg,open_session/pct,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.069
+handler-msg,open_session/spaced,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.124
+handler-msg,open_session/zw,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.34
+handler-msg,open_session/split2,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.07
+handler-msg,open_session/only_first_half,ToolOutcome,False,stage_error,run_case,-,8,raw,RuntimeError: boom CANARY-p,0.131
+handler-msg,open_session/pad_cut3_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.126
+handler-msg,open_session/pad_cut6_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.061
+handler-msg,open_session/pad_cut8_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.081
+handler-msg,open_session/pad_cut10_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.211
+handler-msg,open_session/pad_cut3_reversed,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.171
+handler-msg,open_session/pad_cut6_reversed,ToolOutcome,False,stage_error,run_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.098
+handler-msg,open_session/pad_cut8_reversed,ToolOutcome,False,stage_error,run_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.155
+handler-msg,open_session/pad_cut10_reversed,ToolOutcome,False,stage_error,run_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.192
+handler-msg,open_session/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.074
+handler-msg,open_session/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.078
+handler-msg,open_session/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.198
+handler-msg,open_session/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.151
+handler-msg,open_session/pad_cut3_hex_lower,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.163
+handler-msg,open_session/pad_cut6_hex_lower,ToolOutcome,False,stage_error,run_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.152
+handler-msg,open_session/pad_cut8_hex_lower,ToolOutcome,False,stage_error,run_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.179
+handler-msg,open_session/pad_cut10_hex_lower,ToolOutcome,False,stage_error,run_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.071
+handler-exc,open_session/__str__raises,ToolOutcome,False,stage_error,run_case,-,0,,BadStr,0.149
+handler-exc,open_session/canary_in_typename,ToolOutcome,False,stage_error,run_case,-,0,,X[REDACTED]:APP_PASS: m,0.066
+handler-exc,open_session/canary_in_args_tuple,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.07
+handler-exc,open_session/ValueError_canary,ToolOutcome,False,stage_error,run_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.115
+handler-exc,open_session/MemoryError,ToolOutcome,False,stage_error,run_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.074
+handler-exc,open_session/RecursionError,ToolOutcome,False,stage_error,run_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.104
+handler-exc,open_session/UnicodeError,ToolOutcome,False,stage_error,run_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.083
+handler-exc,open_session/KeyError_canary,ToolOutcome,False,stage_error,run_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.148
+handler-exc,open_session/OSError_path,ToolOutcome,False,stage_error,run_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.149
+handler-exc,open_session/huge_msg_10MB,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.402
+handler-msg,judge/raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.585
+handler-msg,judge/reversed,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.231
+handler-msg,judge/b64,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.331
+handler-msg,judge/hex,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.233
+handler-msg,judge/pct,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.519
+handler-msg,judge/spaced,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.59
+handler-msg,judge/zw,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.339
+handler-msg,judge/split2,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.164
+handler-msg,judge/only_first_half,ToolOutcome,False,stage_error,grade_case,-,8,raw,RuntimeError: boom CANARY-p,0.302
+handler-msg,judge/pad_cut3_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.166
+handler-msg,judge/pad_cut6_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.47
+handler-msg,judge/pad_cut8_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.219
+handler-msg,judge/pad_cut10_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.151
+handler-msg,judge/pad_cut3_reversed,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.364
+handler-msg,judge/pad_cut6_reversed,ToolOutcome,False,stage_error,grade_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.182
+handler-msg,judge/pad_cut8_reversed,ToolOutcome,False,stage_error,grade_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.323
+handler-msg,judge/pad_cut10_reversed,ToolOutcome,False,stage_error,grade_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.319
+handler-msg,judge/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.294
+handler-msg,judge/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.39
+handler-msg,judge/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.567
+handler-msg,judge/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.361
+handler-msg,judge/pad_cut3_hex_lower,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.197
+handler-msg,judge/pad_cut6_hex_lower,ToolOutcome,False,stage_error,grade_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.226
+handler-msg,judge/pad_cut8_hex_lower,ToolOutcome,False,stage_error,grade_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.169
+handler-msg,judge/pad_cut10_hex_lower,ToolOutcome,False,stage_error,grade_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.14
+handler-exc,judge/__str__raises,ToolOutcome,False,stage_error,grade_case,-,0,,BadStr,0.327
+handler-exc,judge/canary_in_typename,ToolOutcome,False,stage_error,grade_case,-,0,,X[REDACTED]:APP_PASS: m,0.441
+handler-exc,judge/canary_in_args_tuple,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.467
+handler-exc,judge/ValueError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.413
+handler-exc,judge/MemoryError,ToolOutcome,False,stage_error,grade_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.179
+handler-exc,judge/RecursionError,ToolOutcome,False,stage_error,grade_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.394
+handler-exc,judge/UnicodeError,ToolOutcome,False,stage_error,grade_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.167
+handler-exc,judge/KeyError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.452
+handler-exc,judge/OSError_path,ToolOutcome,False,stage_error,grade_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.246
+handler-exc,judge/huge_msg_10MB,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.544
+handler-msg,get_case/raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.04
+handler-msg,get_case/reversed,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.126
+handler-msg,get_case/b64,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.062
+handler-msg,get_case/hex,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.26
+handler-msg,get_case/pct,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.078
+handler-msg,get_case/spaced,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.04
+handler-msg,get_case/zw,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.037
+handler-msg,get_case/split2,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.048
+handler-msg,get_case/only_first_half,ToolOutcome,False,stage_error,run_case,-,8,raw,RuntimeError: boom CANARY-p,0.058
+handler-msg,get_case/pad_cut3_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.03
+handler-msg,get_case/pad_cut6_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.041
+handler-msg,get_case/pad_cut8_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.032
+handler-msg,get_case/pad_cut10_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.038
+handler-msg,get_case/pad_cut3_reversed,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.03
+handler-msg,get_case/pad_cut6_reversed,ToolOutcome,False,stage_error,run_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.094
+handler-msg,get_case/pad_cut8_reversed,ToolOutcome,False,stage_error,run_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.081
+handler-msg,get_case/pad_cut10_reversed,ToolOutcome,False,stage_error,run_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.072
+handler-msg,get_case/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.037
+handler-msg,get_case/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.04
+handler-msg,get_case/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.029
+handler-msg,get_case/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.099
+handler-msg,get_case/pad_cut3_hex_lower,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.026
+handler-msg,get_case/pad_cut6_hex_lower,ToolOutcome,False,stage_error,run_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.038
+handler-msg,get_case/pad_cut8_hex_lower,ToolOutcome,False,stage_error,run_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.038
+handler-msg,get_case/pad_cut10_hex_lower,ToolOutcome,False,stage_error,run_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.118
+handler-exc,get_case/__str__raises,ToolOutcome,False,stage_error,run_case,-,0,,BadStr,0.074
+handler-exc,get_case/canary_in_typename,ToolOutcome,False,stage_error,run_case,-,0,,X[REDACTED]:APP_PASS: m,0.074
+handler-exc,get_case/canary_in_args_tuple,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.351
+handler-exc,get_case/ValueError_canary,ToolOutcome,False,stage_error,run_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.049
+handler-exc,get_case/MemoryError,ToolOutcome,False,stage_error,run_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.027
+handler-exc,get_case/RecursionError,ToolOutcome,False,stage_error,run_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.12
+handler-exc,get_case/UnicodeError,ToolOutcome,False,stage_error,run_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.041
+handler-exc,get_case/KeyError_canary,ToolOutcome,False,stage_error,run_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.05
+handler-exc,get_case/OSError_path,ToolOutcome,False,stage_error,run_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.084
+handler-exc,get_case/huge_msg_10MB,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.324
+handler-msg,catalog/raw,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.149
+handler-msg,catalog/reversed,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.071
+handler-msg,catalog/b64,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.031
+handler-msg,catalog/hex,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.118
+handler-msg,catalog/pct,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.087
+handler-msg,catalog/spaced,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.054
+handler-msg,catalog/zw,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.046
+handler-msg,catalog/split2,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.046
+handler-msg,catalog/only_first_half,ToolOutcome,False,stage_error,get_catalog,-,8,raw,RuntimeError: boom CANARY-p,0.054
+handler-msg,catalog/pad_cut3_raw,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.186
+handler-msg,catalog/pad_cut6_raw,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.115
+handler-msg,catalog/pad_cut8_raw,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.211
+handler-msg,catalog/pad_cut10_raw,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.092
+handler-msg,catalog/pad_cut3_reversed,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.119
+handler-msg,catalog/pad_cut6_reversed,ToolOutcome,False,stage_error,get_catalog,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.066
+handler-msg,catalog/pad_cut8_reversed,ToolOutcome,False,stage_error,get_catalog,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.029
+handler-msg,catalog/pad_cut10_reversed,ToolOutcome,False,stage_error,get_catalog,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.036
+handler-msg,catalog/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.032
+handler-msg,catalog/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,get_catalog,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.073
+handler-msg,catalog/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,get_catalog,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.039
+handler-msg,catalog/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,get_catalog,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.134
+handler-msg,catalog/pad_cut3_hex_lower,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.033
+handler-msg,catalog/pad_cut6_hex_lower,ToolOutcome,False,stage_error,get_catalog,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.06
+handler-msg,catalog/pad_cut8_hex_lower,ToolOutcome,False,stage_error,get_catalog,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.027
+handler-msg,catalog/pad_cut10_hex_lower,ToolOutcome,False,stage_error,get_catalog,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.093
+handler-exc,catalog/__str__raises,ToolOutcome,False,stage_error,get_catalog,-,0,,BadStr,0.1
+handler-exc,catalog/canary_in_typename,ToolOutcome,False,stage_error,get_catalog,-,0,,X[REDACTED]:APP_PASS: m,0.028
+handler-exc,catalog/canary_in_args_tuple,ToolOutcome,False,secret,get_catalog,-,0,,result withheld: it carried a credential,0.026
+handler-exc,catalog/ValueError_canary,ToolOutcome,False,stage_error,get_catalog,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.085
+handler-exc,catalog/MemoryError,ToolOutcome,False,stage_error,get_catalog,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.077
+handler-exc,catalog/RecursionError,ToolOutcome,False,stage_error,get_catalog,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.107
+handler-exc,catalog/UnicodeError,ToolOutcome,False,stage_error,get_catalog,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.076
+handler-exc,catalog/KeyError_canary,ToolOutcome,False,stage_error,get_catalog,-,0,,KeyError: '[REDACTED]:APP_PASS',0.084
+handler-exc,catalog/OSError_path,ToolOutcome,False,stage_error,get_catalog,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.034
+handler-exc,catalog/huge_msg_10MB,ToolOutcome,False,stage_error,get_catalog,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.357
+handler-msg,crawl/raw,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.046
+handler-msg,crawl/reversed,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.241
+handler-msg,crawl/b64,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.05
+handler-msg,crawl/hex,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.143
+handler-msg,crawl/pct,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.109
+handler-msg,crawl/spaced,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.052
+handler-msg,crawl/zw,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.109
+handler-msg,crawl/split2,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.075
+handler-msg,crawl/only_first_half,ToolOutcome,False,stage_error,crawl,-,8,raw,RuntimeError: boom CANARY-p,0.107
+handler-msg,crawl/pad_cut3_raw,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.061
+handler-msg,crawl/pad_cut6_raw,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.053
+handler-msg,crawl/pad_cut8_raw,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.139
+handler-msg,crawl/pad_cut10_raw,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.053
+handler-msg,crawl/pad_cut3_reversed,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.104
+handler-msg,crawl/pad_cut6_reversed,ToolOutcome,False,stage_error,crawl,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.143
+handler-msg,crawl/pad_cut8_reversed,ToolOutcome,False,stage_error,crawl,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.095
+handler-msg,crawl/pad_cut10_reversed,ToolOutcome,False,stage_error,crawl,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.043
+handler-msg,crawl/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.06
+handler-msg,crawl/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,crawl,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.183
+handler-msg,crawl/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,crawl,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.081
+handler-msg,crawl/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,crawl,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.05
+handler-msg,crawl/pad_cut3_hex_lower,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.103
+handler-msg,crawl/pad_cut6_hex_lower,ToolOutcome,False,stage_error,crawl,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.079
+handler-msg,crawl/pad_cut8_hex_lower,ToolOutcome,False,stage_error,crawl,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.046
+handler-msg,crawl/pad_cut10_hex_lower,ToolOutcome,False,stage_error,crawl,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.169
+handler-exc,crawl/__str__raises,ToolOutcome,False,stage_error,crawl,-,0,,BadStr,0.048
+handler-exc,crawl/canary_in_typename,ToolOutcome,False,stage_error,crawl,-,0,,X[REDACTED]:APP_PASS: m,0.049
+handler-exc,crawl/canary_in_args_tuple,ToolOutcome,False,secret,crawl,-,0,,result withheld: it carried a credential,0.099
+handler-exc,crawl/ValueError_canary,ToolOutcome,False,stage_error,crawl,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.1
+handler-exc,crawl/MemoryError,ToolOutcome,False,stage_error,crawl,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.056
+handler-exc,crawl/RecursionError,ToolOutcome,False,stage_error,crawl,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.044
+handler-exc,crawl/UnicodeError,ToolOutcome,False,stage_error,crawl,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.049
+handler-exc,crawl/KeyError_canary,ToolOutcome,False,stage_error,crawl,-,0,,KeyError: '[REDACTED]:APP_PASS',0.124
+handler-exc,crawl/OSError_path,ToolOutcome,False,stage_error,crawl,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.054
+handler-exc,crawl/huge_msg_10MB,ToolOutcome,False,stage_error,crawl,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.3
+handler-msg,persona/raw,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.031
+handler-msg,persona/reversed,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.079
+handler-msg,persona/b64,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.042
+handler-msg,persona/hex,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.03
+handler-msg,persona/pct,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.056
+handler-msg,persona/spaced,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.078
+handler-msg,persona/zw,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.028
+handler-msg,persona/split2,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.044
+handler-msg,persona/only_first_half,ToolOutcome,False,stage_error,get_persona,-,8,raw,RuntimeError: boom CANARY-p,0.031
+handler-msg,persona/pad_cut3_raw,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.031
+handler-msg,persona/pad_cut6_raw,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.038
+handler-msg,persona/pad_cut8_raw,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.093
+handler-msg,persona/pad_cut10_raw,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.132
+handler-msg,persona/pad_cut3_reversed,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.039
+handler-msg,persona/pad_cut6_reversed,ToolOutcome,False,stage_error,get_persona,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.056
+handler-msg,persona/pad_cut8_reversed,ToolOutcome,False,stage_error,get_persona,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.047
+handler-msg,persona/pad_cut10_reversed,ToolOutcome,False,stage_error,get_persona,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.07
+handler-msg,persona/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.032
+handler-msg,persona/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,get_persona,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.037
+handler-msg,persona/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,get_persona,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.052
+handler-msg,persona/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,get_persona,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.047
+handler-msg,persona/pad_cut3_hex_lower,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.06
+handler-msg,persona/pad_cut6_hex_lower,ToolOutcome,False,stage_error,get_persona,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.059
+handler-msg,persona/pad_cut8_hex_lower,ToolOutcome,False,stage_error,get_persona,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.035
+handler-msg,persona/pad_cut10_hex_lower,ToolOutcome,False,stage_error,get_persona,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.034
+handler-exc,persona/__str__raises,ToolOutcome,False,stage_error,get_persona,-,0,,BadStr,0.069
+handler-exc,persona/canary_in_typename,ToolOutcome,False,stage_error,get_persona,-,0,,X[REDACTED]:APP_PASS: m,0.036
+handler-exc,persona/canary_in_args_tuple,ToolOutcome,False,secret,get_persona,-,0,,result withheld: it carried a credential,0.05
+handler-exc,persona/ValueError_canary,ToolOutcome,False,stage_error,get_persona,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.028
+handler-exc,persona/MemoryError,ToolOutcome,False,stage_error,get_persona,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.044
+handler-exc,persona/RecursionError,ToolOutcome,False,stage_error,get_persona,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.059
+handler-exc,persona/UnicodeError,ToolOutcome,False,stage_error,get_persona,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.052
+handler-exc,persona/KeyError_canary,ToolOutcome,False,stage_error,get_persona,-,0,,KeyError: '[REDACTED]:APP_PASS',0.035
+handler-exc,persona/OSError_path,ToolOutcome,False,stage_error,get_persona,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.034
+handler-exc,persona/huge_msg_10MB,ToolOutcome,False,stage_error,get_persona,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.245
+handler-msg,save_result/raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.071
+handler-msg,save_result/reversed,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.1
+handler-msg,save_result/b64,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.066
+handler-msg,save_result/hex,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.067
+handler-msg,save_result/pct,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.067
+handler-msg,save_result/spaced,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.096
+handler-msg,save_result/zw,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.128
+handler-msg,save_result/split2,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.076
+handler-msg,save_result/only_first_half,ToolOutcome,False,stage_error,run_case,-,8,raw,RuntimeError: boom CANARY-p,0.35
+handler-msg,save_result/pad_cut3_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.321
+handler-msg,save_result/pad_cut6_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.181
+handler-msg,save_result/pad_cut8_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.238
+handler-msg,save_result/pad_cut10_raw,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.059
+handler-msg,save_result/pad_cut3_reversed,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.116
+handler-msg,save_result/pad_cut6_reversed,ToolOutcome,False,stage_error,run_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.219
+handler-msg,save_result/pad_cut8_reversed,ToolOutcome,False,stage_error,run_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.193
+handler-msg,save_result/pad_cut10_reversed,ToolOutcome,False,stage_error,run_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.297
+handler-msg,save_result/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.058
+handler-msg,save_result/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.227
+handler-msg,save_result/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.225
+handler-msg,save_result/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,run_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.094
+handler-msg,save_result/pad_cut3_hex_lower,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.203
+handler-msg,save_result/pad_cut6_hex_lower,ToolOutcome,False,stage_error,run_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.136
+handler-msg,save_result/pad_cut8_hex_lower,ToolOutcome,False,stage_error,run_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.229
+handler-msg,save_result/pad_cut10_hex_lower,ToolOutcome,False,stage_error,run_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.117
+handler-exc,save_result/__str__raises,ToolOutcome,False,stage_error,run_case,-,0,,BadStr,0.097
+handler-exc,save_result/canary_in_typename,ToolOutcome,False,stage_error,run_case,-,0,,X[REDACTED]:APP_PASS: m,0.1
+handler-exc,save_result/canary_in_args_tuple,ToolOutcome,False,secret,run_case,-,0,,result withheld: it carried a credential,0.205
+handler-exc,save_result/ValueError_canary,ToolOutcome,False,stage_error,run_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.095
+handler-exc,save_result/MemoryError,ToolOutcome,False,stage_error,run_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.18
+handler-exc,save_result/RecursionError,ToolOutcome,False,stage_error,run_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.114
+handler-exc,save_result/UnicodeError,ToolOutcome,False,stage_error,run_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.132
+handler-exc,save_result/KeyError_canary,ToolOutcome,False,stage_error,run_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.211
+handler-exc,save_result/OSError_path,ToolOutcome,False,stage_error,run_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.18
+handler-exc,save_result/huge_msg_10MB,ToolOutcome,False,stage_error,run_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.412
+handler-msg,save_verdict/raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.151
+handler-msg,save_verdict/reversed,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.142
+handler-msg,save_verdict/b64,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.107
+handler-msg,save_verdict/hex,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.199
+handler-msg,save_verdict/pct,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.182
+handler-msg,save_verdict/spaced,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.114
+handler-msg,save_verdict/zw,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.089
+handler-msg,save_verdict/split2,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.094
+handler-msg,save_verdict/only_first_half,ToolOutcome,False,stage_error,grade_case,-,8,raw,RuntimeError: boom CANARY-p,0.21
+handler-msg,save_verdict/pad_cut3_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.173
+handler-msg,save_verdict/pad_cut6_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.153
+handler-msg,save_verdict/pad_cut8_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.225
+handler-msg,save_verdict/pad_cut10_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.214
+handler-msg,save_verdict/pad_cut3_reversed,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.222
+handler-msg,save_verdict/pad_cut6_reversed,ToolOutcome,False,stage_error,grade_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.113
+handler-msg,save_verdict/pad_cut8_reversed,ToolOutcome,False,stage_error,grade_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.086
+handler-msg,save_verdict/pad_cut10_reversed,ToolOutcome,False,stage_error,grade_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.09
+handler-msg,save_verdict/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.152
+handler-msg,save_verdict/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.124
+handler-msg,save_verdict/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.103
+handler-msg,save_verdict/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.122
+handler-msg,save_verdict/pad_cut3_hex_lower,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.082
+handler-msg,save_verdict/pad_cut6_hex_lower,ToolOutcome,False,stage_error,grade_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.089
+handler-msg,save_verdict/pad_cut8_hex_lower,ToolOutcome,False,stage_error,grade_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.105
+handler-msg,save_verdict/pad_cut10_hex_lower,ToolOutcome,False,stage_error,grade_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.091
+handler-exc,save_verdict/__str__raises,ToolOutcome,False,stage_error,grade_case,-,0,,BadStr,0.083
+handler-exc,save_verdict/canary_in_typename,ToolOutcome,False,stage_error,grade_case,-,0,,X[REDACTED]:APP_PASS: m,0.097
+handler-exc,save_verdict/canary_in_args_tuple,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.101
+handler-exc,save_verdict/ValueError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.087
+handler-exc,save_verdict/MemoryError,ToolOutcome,False,stage_error,grade_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.073
+handler-exc,save_verdict/RecursionError,ToolOutcome,False,stage_error,grade_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.09
+handler-exc,save_verdict/UnicodeError,ToolOutcome,False,stage_error,grade_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.157
+handler-exc,save_verdict/KeyError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.238
+handler-exc,save_verdict/OSError_path,ToolOutcome,False,stage_error,grade_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.119
+handler-exc,save_verdict/huge_msg_10MB,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.305
+handler-msg,load_results/raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.067
+handler-msg,load_results/reversed,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.084
+handler-msg,load_results/b64,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.071
+handler-msg,load_results/hex,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.06
+handler-msg,load_results/pct,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.139
+handler-msg,load_results/spaced,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.192
+handler-msg,load_results/zw,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.074
+handler-msg,load_results/split2,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.06
+handler-msg,load_results/only_first_half,ToolOutcome,False,stage_error,grade_case,-,8,raw,RuntimeError: boom CANARY-p,0.061
+handler-msg,load_results/pad_cut3_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.064
+handler-msg,load_results/pad_cut6_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.087
+handler-msg,load_results/pad_cut8_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.083
+handler-msg,load_results/pad_cut10_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.079
+handler-msg,load_results/pad_cut3_reversed,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.069
+handler-msg,load_results/pad_cut6_reversed,ToolOutcome,False,stage_error,grade_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.104
+handler-msg,load_results/pad_cut8_reversed,ToolOutcome,False,stage_error,grade_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.065
+handler-msg,load_results/pad_cut10_reversed,ToolOutcome,False,stage_error,grade_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.078
+handler-msg,load_results/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.104
+handler-msg,load_results/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.077
+handler-msg,load_results/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.065
+handler-msg,load_results/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.064
+handler-msg,load_results/pad_cut3_hex_lower,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.069
+handler-msg,load_results/pad_cut6_hex_lower,ToolOutcome,False,stage_error,grade_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.107
+handler-msg,load_results/pad_cut8_hex_lower,ToolOutcome,False,stage_error,grade_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.074
+handler-msg,load_results/pad_cut10_hex_lower,ToolOutcome,False,stage_error,grade_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.115
+handler-exc,load_results/__str__raises,ToolOutcome,False,stage_error,grade_case,-,0,,BadStr,0.148
+handler-exc,load_results/canary_in_typename,ToolOutcome,False,stage_error,grade_case,-,0,,X[REDACTED]:APP_PASS: m,0.064
+handler-exc,load_results/canary_in_args_tuple,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.081
+handler-exc,load_results/ValueError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.09
+handler-exc,load_results/MemoryError,ToolOutcome,False,stage_error,grade_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.075
+handler-exc,load_results/RecursionError,ToolOutcome,False,stage_error,grade_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.146
+handler-exc,load_results/UnicodeError,ToolOutcome,False,stage_error,grade_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.119
+handler-exc,load_results/KeyError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.076
+handler-exc,load_results/OSError_path,ToolOutcome,False,stage_error,grade_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.06
+handler-exc,load_results/huge_msg_10MB,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.277
+handler-msg,load_rubric/raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: boom [REDACTED]:APP_PASS,0.047
+handler-msg,load_rubric/reversed,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.055
+handler-msg,load_rubric/b64,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.103
+handler-msg,load_rubric/hex,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.071
+handler-msg,load_rubric/pct,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.055
+handler-msg,load_rubric/spaced,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.067
+handler-msg,load_rubric/zw,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.048
+handler-msg,load_rubric/split2,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.043
+handler-msg,load_rubric/only_first_half,ToolOutcome,False,stage_error,grade_case,-,8,raw,RuntimeError: boom CANARY-p,0.043
+handler-msg,load_rubric/pad_cut3_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.072
+handler-msg,load_rubric/pad_cut6_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.059
+handler-msg,load_rubric/pad_cut8_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.067
+handler-msg,load_rubric/pad_cut10_raw,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.052
+handler-msg,load_rubric/pad_cut3_reversed,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.057
+handler-msg,load_rubric/pad_cut6_reversed,ToolOutcome,False,stage_error,grade_case,-,6,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.062
+handler-msg,load_rubric/pad_cut8_reversed,ToolOutcome,False,stage_error,grade_case,-,8,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.075
+handler-msg,load_rubric/pad_cut10_reversed,ToolOutcome,False,stage_error,grade_case,-,10,reversed,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.045
+handler-msg,load_rubric/pad_cut3_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.058
+handler-msg,load_rubric/pad_cut6_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,6,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.073
+handler-msg,load_rubric/pad_cut8_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,8,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.057
+handler-msg,load_rubric/pad_cut10_b64_std_off0,ToolOutcome,False,stage_error,grade_case,-,10,b64_std_off0,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.048
+handler-msg,load_rubric/pad_cut3_hex_lower,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.05
+handler-msg,load_rubric/pad_cut6_hex_lower,ToolOutcome,False,stage_error,grade_case,-,6,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.052
+handler-msg,load_rubric/pad_cut8_hex_lower,ToolOutcome,False,stage_error,grade_case,-,8,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.046
+handler-msg,load_rubric/pad_cut10_hex_lower,ToolOutcome,False,stage_error,grade_case,-,10,hex_lower,RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0.056
+handler-exc,load_rubric/__str__raises,ToolOutcome,False,stage_error,grade_case,-,0,,BadStr,0.042
+handler-exc,load_rubric/canary_in_typename,ToolOutcome,False,stage_error,grade_case,-,0,,X[REDACTED]:APP_PASS: m,0.056
+handler-exc,load_rubric/canary_in_args_tuple,ToolOutcome,False,secret,grade_case,-,0,,result withheld: it carried a credential,0.076
+handler-exc,load_rubric/ValueError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,ValueError: refusing [REDACTED]:APP_PASS,0.064
+handler-exc,load_rubric/MemoryError,ToolOutcome,False,stage_error,grade_case,-,0,,MemoryError: oom [REDACTED]:APP_PASS,0.075
+handler-exc,load_rubric/RecursionError,ToolOutcome,False,stage_error,grade_case,-,0,,RecursionError: rec [REDACTED]:APP_PASS,0.088
+handler-exc,load_rubric/UnicodeError,ToolOutcome,False,stage_error,grade_case,-,0,,UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-2: bad,0.044
+handler-exc,load_rubric/KeyError_canary,ToolOutcome,False,stage_error,grade_case,-,0,,KeyError: '[REDACTED]:APP_PASS',0.047
+handler-exc,load_rubric/OSError_path,ToolOutcome,False,stage_error,grade_case,-,0,,FileNotFoundError: [Errno 2] No such file: 'C:/x/[REDACTED]:APP_PASS.json',0.043
+handler-exc,load_rubric/huge_msg_10MB,ToolOutcome,False,stage_error,grade_case,-,0,,RuntimeError: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy,0.268
+name,None,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.028
+name,int5,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.026
+name,list,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.027
+name,bytes,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.021
+name,dict,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.039
+name,tuple,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.035
+name,Hostile,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.046
+name,HostileStr,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.063
+name,LyingStr,ToolOutcome,False,bad_arguments,ZQMARK-lying-content,tool label not known: 'ZQMARK-lying-content'; caller marker echoed,0,,invalid arguments (case_id: missing),0.033
+name,canary_plain,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.022
+name,known_prefix_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.031
+name,known_space_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.03
+name,canary_x10_160,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.037
+name,known_prefix_long,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.025
+name,long_101,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.024
+name,exact_100_unknown,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.038
+name,empty,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.038
+name,known_upper,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.039
+name,known_trailing_space,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.037
+name,known_nul,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.042
+name,unicode_homoglyph,ToolOutcome,False,unknown_tool,unknown,-,0,,no such tool,0.024
+name,canary_reversed_name,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.025
+name,canary_b64_name,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.027
+args,run_case/None,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.038
+args,get_catalog/None,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.03
+args,run_case/list_empty,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.03
+args,get_catalog/list_empty,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.025
+args,run_case/str,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.035
+args,get_catalog/str,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.042
+args,run_case/int5,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.04
+args,get_catalog/int5,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.034
+args,run_case/list_of_pairs,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.026
+args,get_catalog/list_of_pairs,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.025
+args,run_case/tuple,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.027
+args,get_catalog/tuple,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.034
+args,run_case/bytes,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.027
+args,get_catalog/bytes,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.037
+args,run_case/set,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.031
+args,get_catalog/set,ToolOutcome,False,bad_arguments,unknown,-,0,,arguments must be an object,0.028
+args,run_case/key_int,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.03
+args,get_catalog/key_int,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.037
+args,run_case/key_None,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.037
+args,get_catalog/key_None,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.032
+args,run_case/key_tuple,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.043
+args,get_catalog/key_tuple,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.028
+args,run_case/key_bytes,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.04
+args,get_catalog/key_bytes,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.037
+args,run_case/key_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.04
+args,get_catalog/key_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.031
+args,run_case/key_x_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.044
+args,get_catalog/key_x_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.029
+args,run_case/key_canary_reversed,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.027
+args,get_catalog/key_canary_reversed,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.071
+args,run_case/key_mixed,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.049
+args,get_catalog/key_mixed,ToolOutcome,False,bad_arguments,unknown,-,0,,argument names must be text,0.088
+args,run_case/val_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.039
+args,get_catalog/val_canary,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.055
+args,run_case/val_canary_b64,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.049
+args,get_catalog/val_canary_b64,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.031
+args,run_case/cycle_dict,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.03
+args,get_catalog/cycle_dict,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.042
+args,run_case/cycle_list,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.03
+args,get_catalog/cycle_list,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.041
+args,run_case/depth5,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.034
+args,get_catalog/depth5,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.034
+args,run_case/depth6,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.037
+args,get_catalog/depth6,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.079
+args,run_case/depth7,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.069
+args,get_catalog/depth7,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.032
+args,run_case/depth50,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.065
+args,get_catalog/depth50,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.036
+args,run_case/depth5000,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.045
+args,get_catalog/depth5000,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.042
+args,run_case/depth100000,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.032
+args,get_catalog/depth100000,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.03
+args,run_case/depth_dict_5000,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.024
+args,get_catalog/depth_dict_5000,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.056
+args,run_case/int_2e256,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.042
+args,get_catalog/int_2e256,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.031
+args,run_case/int_2e257,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.044
+args,get_catalog/int_2e257,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.059
+args,run_case/int_2e300,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.034
+args,get_catalog/int_2e300,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.035
+args,run_case/int_neg_big,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.032
+args,get_catalog/int_neg_big,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.044
+args,run_case/int_digits_limit,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.028
+args,get_catalog/int_digits_limit,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.037
+args,run_case/nan,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.048
+args,get_catalog/nan,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.048
+args,run_case/inf,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.055
+args,get_catalog/inf,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.049
+args,run_case/ninf,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.061
+args,get_catalog/ninf,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.039
+args,run_case/bytes_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.035
+args,get_catalog/bytes_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.032
+args,run_case/bytearray,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.032
+args,get_catalog/bytearray,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.068
+args,run_case/set_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.05
+args,get_catalog/set_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.032
+args,run_case/frozenset,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.035
+args,get_catalog/frozenset,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.046
+args,run_case/object_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.047
+args,get_catalog/object_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.042
+args,run_case/complex,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.031
+args,get_catalog/complex,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.026
+args,run_case/Decimal,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.03
+args,get_catalog/Decimal,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.043
+args,run_case/Hostile_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.033
+args,get_catalog/Hostile_val,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.027
+args,run_case/HostileStr_val,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.036
+args,get_catalog/HostileStr_val,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.03
+args,run_case/StrSubLen_val,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.028
+args,get_catalog/StrSubLen_val,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.053
+args,run_case/dict_subclass_iter_raises,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.058
+args,get_catalog/dict_subclass_iter_raises,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.039
+args,run_case/list_subclass_iter_raises,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.04
+args,get_catalog/list_subclass_iter_raises,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.03
+args,run_case/int_bad_repr,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.069
+args,get_catalog/int_bad_repr,ToolOutcome,False,stage_error,unknown,-,0,,the tool call failed,0.028
+args,run_case/int_canary_repr,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.033
+args,get_catalog/int_canary_repr,ToolOutcome,False,secret,unknown,-,0,,refused: the call carried a credential value; use {{SECRET:KEY}},0.062
+args,run_case/float_big_repr,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.037
+args,get_catalog/float_big_repr,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.028
+args,run_case/bool_val,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.028
+args,get_catalog/bool_val,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.029
+args,run_case/None_val,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.046
+args,get_catalog/None_val,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.03
+args,run_case/float_val,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.039
+args,get_catalog/float_val,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.037
+args,run_case/list_5M_ints,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.181
+args,get_catalog/list_5M_ints,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.112
+args,run_case/dict_300_keys,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.036
+args,get_catalog/dict_300_keys,ToolOutcome,False,bad_arguments,unknown,-,0,,"arguments are too big, too deep or not plain data",0.056
+args,run_case/tuple_val,ToolOutcome,False,bad_arguments,run_case,-,0,,invalid arguments (case_id: string_type),0.067
+args,get_catalog/tuple_val,ToolOutcome,False,bad_arguments,get_catalog,-,0,,invalid arguments (case_id: extra_forbidden),0.031

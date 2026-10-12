@@ -1,0 +1,8 @@
+D:\autoTesting\.worktrees\at773-judge-rule\src\autotester\__init__.py
+      1 
+      1 68 tests collected in 10.20s
+     14 tests/test_execute_assertions.py
+     13 tests/test_grade.py
+      6 tests/test_grade_assertion_rule.py
+     35 tests/test_grade_evidence.py
+      1 warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead

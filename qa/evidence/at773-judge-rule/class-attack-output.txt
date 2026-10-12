@@ -1,0 +1,69 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+OK        | kind=url unmet outcome=completed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert url: unmet (expected to contain '/zzz')"
+OK        | kind=url unmet outcome=assertion_failed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert url: unmet (expected to contain '/zzz')"
+OK        | kind=url met outcome=completed judge=PASS stays PASS | -> PASS; label="assert url: met (expected to contain '/zzz')"
+OK        | kind=visible_text unmet outcome=completed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert visible_text: unmet (expected to contain 'Hello')"
+OK        | kind=visible_text unmet outcome=assertion_failed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert visible_text: unmet (expected to contain 'Hello')"
+OK        | kind=visible_text met outcome=completed judge=PASS stays PASS | -> PASS; label="assert visible_text: met (expected to contain 'Hello')"
+OK        | kind=absent_text unmet outcome=completed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert absent_text: unmet (expected absent: 'Err')"
+OK        | kind=absent_text unmet outcome=assertion_failed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert absent_text: unmet (expected absent: 'Err')"
+OK        | kind=absent_text met outcome=completed judge=PASS stays PASS | -> PASS; label="assert absent_text: met (expected absent: 'Err')"
+OK        | kind=dom_asserts unmet outcome=completed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert dom_asserts: unmet (selector '#a' not found)"
+OK        | kind=dom_asserts unmet outcome=assertion_failed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert dom_asserts: unmet (selector '#a' not found)"
+OK        | kind=dom_asserts met outcome=completed judge=PASS stays PASS | -> PASS; label="assert dom_asserts: met (selector '#a' exists)"
+OK        | kind=network unmet outcome=completed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert network: unmet ('/api/me')"
+OK        | kind=network unmet outcome=assertion_failed judge=PASS | -> INCONCLUSIVE; grade_detects=True exec_detects=True label="assert network: unmet ('/api/me')"
+OK        | kind=network met outcome=completed judge=PASS stays PASS | -> PASS; label="assert network: met ('/api/me')"
+OK        | visible_text-unreadable judge=PASS | -> INCONCLUSIVE; exec_detects=True label="assert visible_text: unmet (page unreadable) (expected to contain 'Hello')"
+OK        | absent_text-unreadable judge=PASS | -> INCONCLUSIVE; exec_detects=True label="assert absent_text: unmet (page unreadable) (expected absent: 'Err')"
+OK        | url-unreadable judge=PASS | -> INCONCLUSIVE; exec_detects=True label="assert url: unmet (url unreadable) (expected to contain '/z')"
+OK        | 5 assertions all met, judge PASS | -> PASS
+OK        | multi-assert variant 0 (1 unmet) judge PASS | -> INCONCLUSIVE
+OK        | multi-assert variant 0 outcome=ASSERTION_FAILED judge PASS | -> INCONCLUSIVE
+OK        | multi-assert variant 1 (2 unmet) judge PASS | -> INCONCLUSIVE
+OK        | multi-assert variant 1 outcome=ASSERTION_FAILED judge PASS | -> INCONCLUSIVE
+OK        | multi-assert variant 2 (1 unmet) judge PASS | -> INCONCLUSIVE
+OK        | multi-assert variant 2 outcome=ASSERTION_FAILED judge PASS | -> INCONCLUSIVE
+OK        | multi-assert variant 3 (1 unmet) judge PASS | -> INCONCLUSIVE
+OK        | multi-assert variant 3 outcome=ASSERTION_FAILED judge PASS | -> INCONCLUSIVE
+VIOLATION | multi-assert variant 4 (0 unmet) judge PASS | -> PASS
+OK        | multi-assert variant 4 outcome=ASSERTION_FAILED judge PASS | -> INCONCLUSIVE
+OK        | matrix judge=PASS outcome=assertion_failed unmet_items=0 | -> INCONCLUSIVE
+OK        | matrix judge=PASS outcome=completed unmet_items=1 | -> INCONCLUSIVE
+OK        | matrix judge=PASS outcome=assertion_failed unmet_items=1 | -> INCONCLUSIVE
+OK        | matrix judge=FAIL outcome=assertion_failed unmet_items=0 | -> FAIL
+OK        | matrix judge=FAIL outcome=completed unmet_items=1 | -> FAIL
+OK        | matrix judge=FAIL outcome=assertion_failed unmet_items=1 | -> FAIL
+OK        | matrix judge=BLOCKED outcome=assertion_failed unmet_items=0 | -> BLOCKED  (BLOCKED passes through; literal G6 says only FAIL/INCONCLUSIVE)
+OK        | matrix judge=BLOCKED outcome=completed unmet_items=1 | -> BLOCKED  (BLOCKED passes through; literal G6 says only FAIL/INCONCLUSIVE)
+OK        | matrix judge=BLOCKED outcome=assertion_failed unmet_items=1 | -> BLOCKED  (BLOCKED passes through; literal G6 says only FAIL/INCONCLUSIVE)
+OK        | matrix judge=INCONCLUSIVE outcome=assertion_failed unmet_items=0 | -> INCONCLUSIVE
+OK        | matrix judge=INCONCLUSIVE outcome=completed unmet_items=1 | -> INCONCLUSIVE
+OK        | matrix judge=INCONCLUSIVE outcome=assertion_failed unmet_items=1 | -> INCONCLUSIVE
+OK        | clean COMPLETED judge=PASS unchanged | -> PASS
+OK        | clean COMPLETED judge=FAIL unchanged | -> FAIL
+OK        | clean COMPLETED judge=BLOCKED unchanged | -> BLOCKED
+OK        | clean COMPLETED judge=INCONCLUSIVE unchanged | -> INCONCLUSIVE
+OK        | ASSERTION_FAILED, zero unmet items, judge PASS | -> INCONCLUSIVE; note='judge answered PASS but a deterministic assertion did not hold (outcome assertion_failed):'
+OK        | ASSERTION_FAILED, empty evidence, judge PASS | -> INCONCLUSIVE
+OK        | met-item word 'unmet': "assert visible_text: met (expected to contain 'unmet')" | grade_flags=False exec_flags=True -> final INCONCLUSIVE [disagree: exec flags, grade evidence-scan does not; outcome limb still downgrades]
+OK        | met-item word 'unmet': "assert visible_text: met (expected to contain 'status: unmet')" | grade_flags=True exec_flags=True -> final INCONCLUSIVE
+OK        | met-item word 'unmet': "assert dom_asserts: met (selector '.unmet' exists)" | grade_flags=False exec_flags=True -> final INCONCLUSIVE [disagree: exec flags, grade evidence-scan does not; outcome limb still downgrades]
+OK        | met-item word 'unmet': "assert absent_text: met (expected absent: 'unmet')" | grade_flags=False exec_flags=True -> final INCONCLUSIVE [disagree: exec flags, grade evidence-scan does not; outcome limb still downgrades]
+OK        | non-dom/network kind with assert-unmet path | grade_flags=True exec_flags=False (grade superset: worse only)
+OK        | label variant 'assert url:  unmet (x)' (not producible by assertions.py) | grade_flags=False exec_flags=True
+OK        | label variant 'assert url: UNMET (x)' (not producible by assertions.py) | grade_flags=False exec_flags=False
+OK        | label variant 'assert url:unmet (x)' (not producible by assertions.py) | grade_flags=False exec_flags=True
+OK        | missing screenshot file + unmet + judge PASS | -> INCONCLUSIVE; images 0/1; note has both=True
+OK        | outcome=errored (+unmet) judge PASS | -> INCONCLUSIVE; judge_called=no
+OK        | outcome=blocked_hitl (+unmet) judge PASS | -> BLOCKED; judge_called=no
+OK        | outcome=not_run (+unmet) judge PASS | -> INCONCLUSIVE; judge_called=no
+OK        | inconsistent PASS on unmet run | -> INCONCLUSIVE
+OK        | redactor given, clean prompt, unmet, judge PASS | -> INCONCLUSIVE
+OK        | redactor given, secret in prompt, unmet, judge PASS | -> BLOCKED; judge_called=False
+OK        |   withheld verdict note leaks no secret value | 
+OK        | 3 unmet items: note names all | note='judge answered PASS but a deterministic assertion did not hold (assert url: unmet (x0); assert url: unmet (x1); assert url: unmet (x2)): a f'
+OK        | judge's own note preserved + joined | note='judge answered PASS but a deterministic assertion did not hold (assert url: unmet (x0); assert url: unmet (x1); assert url: unmet (x2)): a failed assertion can never be graded PASS (D-074(b), qa/contr'
+
+TOTAL 65 VIOLATIONS 1
+   ('multi-assert variant 4 (0 unmet) judge PASS', 'VIOLATION', '-> PASS')

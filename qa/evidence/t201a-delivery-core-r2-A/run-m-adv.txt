@@ -1,0 +1,11 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\t201a-r2A-20753
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 33 items
+
+tests\test_cli_advice_resolves.py .................................      [100%]
+
+============================= 33 passed in 25.52s =============================
+exit=0 t=53s

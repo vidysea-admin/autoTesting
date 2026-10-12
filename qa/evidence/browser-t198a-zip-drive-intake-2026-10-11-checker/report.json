@@ -1,0 +1,34 @@
+{
+  "unit": "t198a-zip-drive-intake",
+  "head": "894549ee",
+  "mode": "D",
+  "browser": "Playwright MCP (Chromium); window would not take a 390px viewport (innerWidth 1561 at dpr 0.25), narrow check done in a 390px iframe",
+  "server": {"cmd": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 8765", "pids": [10616, 59236, 75036], "listener_pid": 75036, "killed_by_pid": true, "listener_after": 0},
+  "env": {"AUTOTESTER_ROOT": "scratchpad/browser/root", "AUTOTESTER_GWS_BIN": "scratchpad/browser/no-such-gws.exe", "max_upload_bytes": 1048576},
+  "steps": [
+    {"id": "page-load", "result": "PASS", "console_errors": 0, "shots": ["01-page-load.jpg"], "notes": "limit text shown: Largest file accepted: 1 MiB; 8 controls all labelled"},
+    {"id": "keyboard", "result": "PASS", "console_errors": 0, "shots": ["02-keyboard-focus-drive.jpg"], "notes": "tab order label,file,Upload,drive link,Fetch; file chooser opens on Enter; form submitted by keyboard; focus visible"},
+    {"id": "zip1-3video-pdf-txt", "result": "PASS", "console_errors": 0, "shots": ["03-zip1-outcome.jpg"], "notes": "3 registered, 2 skipped with reasons"},
+    {"id": "zip2-env-ps1", "result": "PASS", "console_errors": 0, "shots": ["04-zip2-env-ps1.jpg"], "notes": ".env and run.ps1 skipped with reason; video registered"},
+    {"id": "zip3-traversal", "result": "PASS", "console_errors": 0, "shots": ["05-zip3-hostile.jpg"], "notes": "../evil.mp4 failed (path traversal); good3.mp4 registered; headline Partial"},
+    {"id": "zip4-corrupt", "result": "PASS", "console_errors": 0, "shots": ["06-zip4-corrupt.jpg"], "notes": "mid4.mp4 failed corrupt; 2 registered; headline Partial"},
+    {"id": "duplicate-zip", "result": "FAIL-partial", "console_errors": 0, "shots": ["09-zip1-again-duplicate.jpg"], "notes": "rows say duplicate + reason but do not name the source id duplicated (duplicate_of is in stored report, not rendered)"},
+    {"id": "duplicate-single", "result": "FAIL-partial", "console_errors": 0, "shots": ["07-single-video.jpg", "08-single-duplicate.jpg"], "notes": "second identical single upload redirects silently, no message, no row"},
+    {"id": "notzip", "result": "PASS", "console_errors": 0, "shots": ["10-notzip.jpg"], "notes": "Nothing was added; 1 failed (archive)"},
+    {"id": "hostile-archive-name", "result": "PASS", "console_errors": 0, "shots": ["11-hostile-archive-name.jpg"], "notes": "escaped, 0 injected nodes, no dialog; inner benign member failed corrupt due to my fixture transcription (not a product finding)"},
+    {"id": "oversize", "result": "PASS", "console_errors": 1, "console_note": "browser resource-load log for the HTTP 413 itself", "shots": ["12-oversize-413.jpg"], "notes": "413 page names 1 MiB; no new source row"},
+    {"id": "non-recording-single", "result": "PASS", "console_errors": 1, "console_note": "browser resource-load log for the HTTP 400 itself", "shots": ["13-nonrecording-400.jpg"], "notes": "title Upload refused, 400"},
+    {"id": "drive-valid-link", "result": "PASS-partial", "console_errors": 0, "shots": ["14-drive-job-state-a.jpg"], "notes": "typed gws-missing failure on job page, no stderr/paths; fetching state and polling not observable (job done in ~100 ms)"},
+    {"id": "drive-hostile-links", "result": "PASS", "console_errors": 6, "console_note": "6 browser logs of HTTP 400 resource loads (expected refusals)", "shots": ["15-drive-hostile-1.jpg", "15-drive-hostile-2.jpg", "15-drive-hostile-3.jpg", "15-drive-hostile-4.jpg", "15-drive-hostile-5.jpg", "15-drive-hostile-6.jpg", "15-drive-hostile-7.jpg"], "notes": "6 refused 400 with reasons, none echoed; docs.google.com link accepted"},
+    {"id": "narrow-390", "result": "FINDING", "console_errors": 0, "shots": ["16-narrow-390-iframe.jpg"], "notes": "forms fit; sources table 1211px wide (full host path in Reference column) causes sideways scroll"},
+    {"id": "sources-jsonl", "result": "PASS", "notes": "8 rows, path = generated src_<hex>/recording.<ext>, no uploaded_by, origin zip{archive_name,member_path} or upload{file_name}"}
+  ],
+  "findings": [
+    {"severity": "medium", "text": "duplicate rows do not show which source id they duplicate"},
+    {"severity": "medium", "text": "single-video duplicate upload gives no feedback at all"},
+    {"severity": "medium", "text": "sources list shows absolute host paths; table forces 1211px width at 390px"},
+    {"severity": "low", "text": "failed Drive fetch is titled 'finished'; single upload with no label shows '-' and no confirmation; 'that is not a recording' lower-case"}
+  ],
+  "not_done": ["Drive queued/fetching state and meta-refresh polling not observed; true 390px viewport not available (iframe used); '<' file name cannot exist on Windows so hostile name was set via DataTransfer"],
+  "cleanup": {"fixtures_removed": "D:/autoTesting/.playwright-mcp/t198a-fx", "browser_closed": true}
+}

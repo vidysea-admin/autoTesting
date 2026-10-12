@@ -1,0 +1,8 @@
+E       AssertionError: assert {('GET', '/au...', None), ...} == {('GET', '/au...', None), ...}
+E         
+E         Omitting 73 identical items, use -vv to show
+E         Right contains 1 more item:
+E         {('POST', '/projects/{slug}/sources/drive'): ('project', 'video.upload')}
+E         Use -v to get more diff
+FAILED tests/test_ui_auth_escalation.py::test_au14_every_policy_row_requires_exactly_its_pinned_key
+============ 1 failed, 7 passed, 35 deselected, 1 warning in 8.36s ============

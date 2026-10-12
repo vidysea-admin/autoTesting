@@ -1,0 +1,75 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/base-venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\base
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 4 items / 3 deselected / 1 selected
+
+tests\test_session_survives_failure_live.py F                            [100%]
+
+================================== FAILURES ===================================
+_____ test_headed_original_reproduction_second_case_no_longer_dies[True] ______
+
+shared_session = (<autotester.browser.session.BrowserSession object at 0x000002750BA02050>, 'http://127.0.0.1:63215', WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26256/test_headed_original_reproduct0/runs/r1'))
+
+    @pytest.mark.skipif(os.environ.get("AUTOTESTER_HEADED_TESTS") != "1",
+                        reason="opens a visible window; set AUTOTESTER_HEADED_TESTS=1")
+    @pytest.mark.parametrize("shared_session", [True], indirect=True)
+    def test_headed_original_reproduction_second_case_no_longer_dies(shared_session) -> None:
+        session, base, _ = shared_session
+        for cid in ("case-1", "case-2", "case-3"):
+>           _run_case(session, base, cid, fail=(cid == "case-1"))
+
+tests\test_session_survives_failure_live.py:113: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_session_survives_failure_live.py:65: in _run_case
+    session.begin_case_video(case_id)
+src\autotester\browser\video.py:101: in begin_case_video
+    self._page = self._context.new_page()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+..\base-venv\Lib\site-packages\playwright\sync_api\_generated.py:14531: in new_page
+    return mapping.from_impl(self._sync(self._impl_obj.new_page()))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\base-venv\Lib\site-packages\playwright\_impl\_browser_context.py:347: in new_page
+    return from_channel(await self._channel.send("newPage", None))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\base-venv\Lib\site-packages\playwright\_impl\_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <playwright._impl._connection.Connection object at 0x000002750BA025D0>
+cb = <function Channel.send.<locals>.<lambda> at 0x000002750BA1F2E0>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.TargetClosedError: BrowserContext.new_page: Target page, context or browser has been closed
+E           Browser logs:
+E           
+E           <launching> C:\Users\Lenovo\AppData\Local\ms-playwright\chromium-1234\chrome-win64\chrome.exe --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --no-sandbox --disable-dev-shm-usage --user-data-dir=C:\Users\Lenovo\AppData\Local\Temp\pytest-of-Lenovo\pytest-26256\test_headed_original_reproduct0\profiles\at888 --remote-debugging-pipe about:blank
+E           <launched> pid=72332
+
+..\base-venv\Lib\site-packages\playwright\_impl\_connection.py:632: TargetClosedError
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - - [11/Oct/2026 14:53:30] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/Oct/2026 14:53:30] code 404, message File not found
+127.0.0.1 - - [11/Oct/2026 14:53:30] "GET /favicon.ico HTTP/1.1" 404 -
+=========================== short test summary info ===========================
+FAILED tests/test_session_survives_failure_live.py::test_headed_original_reproduction_second_case_no_longer_dies[True]
+================= 1 failed, 3 deselected in 190.73s (0:03:10) =================
+EXIT 1

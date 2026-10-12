@@ -1,0 +1,78 @@
+[
+ {
+  "id": "w35-compose-default-localhost-wrong-lists",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18575",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_HOSTS": "wrong.example",
+   "AUTOTESTER_ALLOWED_ORIGINS": "http://wrong.example:18575",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://localhost"
+  },
+  "pid": 46264,
+  "expect": "raise",
+  "note": "what compose.prod.yml passes when neither AUTOTESTER_PUBLIC_ORIGIN nor AUTOTESTER_DOMAIN is set; the lists do not name the server",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18575",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": false,
+  "all_probes_served": false
+ },
+ {
+  "id": "w36-compose-default-localhost-no-lists-naming-server",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18576",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://other.example",
+   "AUTOTESTER_PUBLIC_ORIGIN": "https://localhost"
+  },
+  "pid": 20716,
+  "expect": "raise",
+  "note": "same, origin list names another host",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18576",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": false,
+  "all_probes_served": false
+ },
+ {
+  "id": "w37-loopback-public-http-localhost-explicit",
+  "cmd": "uvicorn autotester.ui.app:app --host 0.0.0.0 --port 18577",
+  "env": {
+   "AUTOTESTER_HOSTED": "1",
+   "AUTOTESTER_ALLOWED_ORIGINS": "https://other.example",
+   "AUTOTESTER_PUBLIC_ORIGIN": "http://localhost:18577"
+  },
+  "pid": 45300,
+  "expect": "raise",
+  "note": "operator sets a loopback public origin on a wildcard bind; real users arrive by LAN",
+  "startup": "started",
+  "probes": [
+   {
+    "scheme": "http",
+    "host": "192.168.1.4:18577",
+    "GET": 403,
+    "POST": 403,
+    "served": false
+   }
+  ],
+  "foreign_host_403": true,
+  "agree": false,
+  "all_probes_served": false
+ }
+]

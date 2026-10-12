@@ -1,0 +1,23 @@
+autotester at C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r1-A-copy\src\autotester\__init__.py
+F1 sends: 4 (expect 4)  distinct keys: 4
+F1 records_for_run('x'): [('x', 'y__email__z')] (expect only y__email__z)
+F1 records_for_run('x__email__y'): [('x__email__y', 'z')]
+F3 //evil.test/x refuse
+F3 ///e/x refuse
+F3 https://x.test//e refuse
+F3 https://x.test:0/r refuse
+F3 https://x.test:65536/r refuse
+F3 https://x.test:99999/r refuse
+F3 https://x.test:1/r ACCEPT
+F3 https://x.test:65535/r ACCEPT
+F3 / ACCEPT
+F3 /a//b ACCEPT
+F3 https://x.test:/r refuse
+F3 https://x.test:00080/r ACCEPT
+F3 /\evil refuse
+F3 http://x.test:6553/r?x refuse
+C12 'a@example.test\r' refuse
+C12 'a@example.test\n' refuse
+C12 '\ra@example.test' refuse
+C12 'a\nb@example.test' refuse
+C12 'a@example.test\u2028' refuse

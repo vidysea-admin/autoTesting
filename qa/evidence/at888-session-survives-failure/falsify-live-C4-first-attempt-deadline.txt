@@ -1,0 +1,2 @@
+[F7-C4-video-not-moved] autotester.__file__=C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fz\F7-C4-video-not-moved\src\autotester\__init__.py
+[F7-C4-video-not-moved] green-before: exit=1 t=284s | 

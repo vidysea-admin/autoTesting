@@ -1,0 +1,15 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\mut_m6c_debug
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 18 items / 16 deselected / 2 selected
+
+tests\test_run_launcher_approval.py ..                                   [100%]
+
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_run_launcher_approval.py::test_no_seam_value_skips_the_approval[skip_approval-marker]
+PASSED tests/test_run_launcher_approval.py::test_no_seam_value_skips_the_approval[skip_approval-true]
+====================== 2 passed, 16 deselected in 6.41s =======================
+

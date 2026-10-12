@@ -1,0 +1,16 @@
+--max-cost abc                                       exit=2 NO-DOC stdout=''
+--max-cost 1e999                                     exit=1 one-doc
+--max-cost -0.0 --dry-run                            exit=0 one-doc
+--max-cost                                           exit=2 NO-DOC stdout=''
+--max-cost 0x10                                      exit=2 NO-DOC stdout=''
+--bogus                                              exit=2 NO-DOC stdout=''
+--pointers C:\Users\Lenovo\AppData\Local\Temp\clau   exit=1 one-doc
+--redact 1:00-0:30                                   exit=1 one-doc
+--redact 200:00-201:00                               exit=1 one-doc
+--provider does-not-exist                            exit=0 one-doc
+                                                     exit=0 one-doc
+                                                     exit=0 one-doc
+                                                     exit=0 one-doc
+badslug exit 1 '{\n  "status": "usage_error",\n  "reason": "no project \'bad slug/../x\' yet",\n  "ex' SystemExit
+missing arg exit 2 ''
+                                                     exit=0 one-doc

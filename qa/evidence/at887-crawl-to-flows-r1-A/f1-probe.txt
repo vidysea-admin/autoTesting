@@ -1,0 +1,44 @@
+<string>:11: RuntimeWarning: StageContext for run 'r1' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+<string>:11: RuntimeWarning: StageContext for run 'r2' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+autotester: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at887r1a-copy\src\autotester\__init__.py
+== A fresh dangling= [] version 2 review draft None
+  flow flow_bf5b93513ffb entry node_5ecf69a26f92 exit node_3778c262ce9d steps [(1, 'navigate', 'node_5ecf69a26f92', 'https://demo.test/home'), (2, 'click', 'node_5ecf69a26f92', 'link[name="Items"]'), (3, 'click', 'node_6702538c7fa1', 'button[name="Next tab"]')]
+== A known (two nodes -> same screen) dangling= [] version 5 review draft None
+  flow flow_bf5b93513ffb entry scr_home exit scr_items steps [(1, 'navigate', 'scr_home', 'https://demo.test/home'), (2, 'click', 'scr_home', 'link[name="Items"]'), (3, 'click', 'scr_items', 'button[name="Next tab"]')]
+OK   A: no dangling when two crawl nodes alias to the same existing screen
+OK   A: flow id unchanged by the rewrite
+OK   A: steps not collapsed or duplicated (3 steps)
+OK   A: step orders and targets identical to fresh
+A: entry/exit: scr_home scr_items
+OK   A: re-merge is a no-op
+A: model_validate roundtrip ok
+== B entry==exit rediscovered dangling= [] version 5 review draft None
+  flow flow_b970cd6c7762 entry scr_home exit scr_home steps [(1, 'navigate', 'scr_home', 'https://demo.test/home')]
+OK   B: single-node flow cites existing screen as entry, exit and step
+OK   B: version bumped exactly once, DRAFT, by None
+== C mixed (home rediscovered; items new) dangling= [] version 5 review draft None
+  flow flow_bf5b93513ffb entry scr_home exit node_3778c262ce9d steps [(1, 'navigate', 'scr_home', 'https://demo.test/home'), (2, 'click', 'scr_home', 'link[name="Items"]'), (3, 'click', 'node_6702538c7fa1', 'button[name="Next tab"]')]
+OK   C: mixed no dangling
+C: same node ids on re-crawl? True flows 1 -> 1 version 5 -> 5
+OK   C: re-crawl with a new crawl id adds no duplicate flow and no bump
+OK   C: re-crawl no dangling
+OK   D: flows with no rediscovery are identical to the fresh-spec flows
+== E same pattern, different name dangling= [] version 5 review draft None
+  flow flow_bf5b93513ffb entry node_5ecf69a26f92 exit node_3778c262ce9d steps [(1, 'navigate', 'node_5ecf69a26f92', 'https://demo.test/home'), (2, 'click', 'node_5ecf69a26f92', 'link[name="Items"]'), (3, 'click', 'node_6702538c7fa1', 'button[name="Next tab"]')]
+OK   E: conflict path no dangling
+OK   F: structural-id clash no dangling
+== G proposal dangling= [] version 2 review draft None
+  flow flow_bf5b93513ffb entry node_5ecf69a26f92 exit node_3778c262ce9d steps [(1, 'navigate', 'node_5ecf69a26f92', 'https://demo.test/home'), (2, 'click', 'node_5ecf69a26f92', 'link[name="Items"]'), (3, 'click', 'node_6702538c7fa1', 'button[name="Next tab"]')]
+== G folded dangling= [] version 5 review draft None
+  flow flow_bf5b93513ffb entry node_5ecf69a26f92 exit node_3778c262ce9d steps [(1, 'navigate', 'node_5ecf69a26f92', 'https://demo.test/home'), (2, 'click', 'node_5ecf69a26f92', 'link[name="Items"]'), (3, 'click', 'node_6702538c7fa1', 'button[name="Next tab"]')]
+OK   G: orchestrated door fold has no dangling
+G: screens in folded: [('scr_home', 'Home', '/home'), ('scr_items', 'Items', '/items'), ('node_5ecf69a26f92', 'Home', '/home'), ('node_6702538c7fa1', 'Items', '/items'), ('node_3778c262ce9d', 'Items', '/items')]
+OK   G: second orchestrated run is a no-op
+merged 0 new screen(s) and 1 flow proposal(s) into flowspec v5 (review: draft)
+== CLI door dangling= [] version 5 review draft None
+  flow flow_bf5b93513ffb entry scr_home exit scr_items steps [(1, 'navigate', 'scr_home', 'https://demo.test/home'), (2, 'click', 'scr_home', 'link[name="Items"]'), (3, 'click', 'scr_items', 'button[name="Next tab"]')]
+OK   CLI door no dangling
+== UI door status 403 dangling= [] version 4 review approved umesh
+FAIL UI door no dangling
+FAIL CLI and UI doors produce identical flows
+FAILS: ['UI door no dangling', 'CLI and UI doors produce identical flows']

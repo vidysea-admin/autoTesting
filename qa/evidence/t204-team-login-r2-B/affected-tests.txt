@@ -1,0 +1,50 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\autoTesting\.worktrees\check-t204-r2-b
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 288 items
+
+tests\test_ui_auth_surface.py .....................                      [  7%]
+tests\test_ui_auth_own_origin.py ....................................... [ 20%]
+.............................                                            [ 30%]
+tests\test_ui_auth_host_and_consent.py .............                     [ 35%]
+tests\test_ui_origin_guard.py .......................................... [ 50%]
+.....................................................                    [ 68%]
+tests\test_auth_deploy_files.py ...                                      [ 69%]
+tests\test_hosting_deploy.py ...F.......                                 [ 73%]
+tests\test_ui_auth_login.py .....................                        [ 80%]
+tests\test_ui_auth_hardening.py ...................                      [ 87%]
+tests\test_ui_auth_cli_and_limits.py ......                              [ 89%]
+tests\test_cli_advice_resolves.py ...............................        [100%]
+
+================================== FAILURES ===================================
+_____________ test_env_example_documents_every_key_the_code_reads _____________
+
+    def test_env_example_documents_every_key_the_code_reads() -> None:
+        documented = set(re.findall(r"^#?\s*(AUTOTESTER_[A-Z_]+)=", (ROOT / ".env.example")
+                                   .read_text(encoding="utf-8"), re.M))
+        used = set()
+        for path in (ROOT / "src").rglob("*.py"):
+            used |= set(re.findall(r"AUTOTESTER_[A-Z_]+[A-Z]", path.read_text(encoding="utf-8")))
+>       assert used - documented == set(), f"undocumented env keys: {sorted(used - documented)}"
+E       AssertionError: undocumented env keys: ['AUTOTESTER_SCHEDULE_GRACE_MINUTES', 'AUTOTESTER_TICK_INTERVAL_S']
+E       assert {'AUTOTESTER_...K_INTERVAL_S'} == set()
+E         
+E         Extra items in the left set:
+E         'AUTOTESTER_TICK_INTERVAL_S'
+E         'AUTOTESTER_SCHEDULE_GRACE_MINUTES'
+E         Use -v to get more diff
+
+tests\test_hosting_deploy.py:67: AssertionError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\check-t204-r2-b\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+============ 1 failed, 287 passed, 1 warning in 117.71s (0:01:57) =============
+exit=1

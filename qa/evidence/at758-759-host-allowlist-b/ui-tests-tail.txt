@@ -1,0 +1,4 @@
+=========================== short test summary info ===========================
+FAILED tests/test_ui_sources.py::test_uploaded_recordings_are_gitignored - As...
+1 failed, 495 passed, 1 skipped, 1 warning in 147.07s (0:02:27)
+done

@@ -1,0 +1,40 @@
+{
+  "unit": "t204-team-login",
+  "seat": "A",
+  "criterion": "AU26 persona walk (browser sub-checker)",
+  "worktree": "D:/autoTesting/.worktrees/t204-team-login (wave/t204-team-login, aa6fec2e)",
+  "browser": "Playwright MCP (headless Chromium)",
+  "server": {"host": "127.0.0.1", "port": 8791, "pids": {"launcher": 42100, "listener": 49516}, "env": "AUTOTESTER_ROOT and AUTOTESTER_AUTH_DIR under scratchpad t204A-walk-data, no AUTOTESTER_HOSTED", "stopped": true},
+  "browser_note": "127.0.0.1:8791 origin had a stuck 25% zoom in the shared Playwright profile (innerWidth 5120); the walk moved to http://localhost:8791 (same server, Host allow-list admits it). Early 127.0.0.1 screenshots were discarded. Mobile (390px) was measured by layout metrics, not screenshots (the screenshot ignores the emulated width).",
+  "scratch_accounts": ["scratch-admin@example.test (first signup -> Admin/CEO)", "scratch-user@example.test", "scratch-lock@example.test (lock test)"],
+  "console": {
+    "javascript_errors": 0,
+    "total_error_lines": 86,
+    "breakdown": "all are 'Failed to load resource' HTTP-status lines: /favicon.ico 401 (logged out, 41) and 403 (waiting user, 12), plus the intentional 403/400/401 navigations",
+    "per_page": "1 error (favicon 401) on each logged-out page; 0 JS exceptions anywhere"
+  },
+  "items": {
+    "1_logged_out_redirect": {"result": "PASS", "detail": "/, /projects, /admin/users, /admin/groups, /projects/demo/access, /api/projects, /auth/waiting all land on /auth/login?next=<path>; login page shows no app content. After login next=https://evil.example/x and next=//evil.example both land on / (refused); next=/admin/groups honoured."},
+    "2_signup_logout": {"result": "PASS", "detail": "First signup became Admin (Users/Groups links shown). Short password: browser minlength blocks, server also says 'a password needs 10 to 128 characters' (role=alert). Duplicate says 'an account with this email already exists' (reveals existence). Logout -> login; protected page redirects; Back never shows protected content."},
+    "3_wrong_password_lock": {"result": "PASS", "detail": "Unknown email and wrong password give the identical message 'That email and password do not match an active account.' 5 failures then 429 'Too many sign-in attempts. Wait a few minutes and try again.' Correct password also refused while locked; a different account (admin) logs in fine."},
+    "4_admin_navigation": {"result": "PASS", "detail": "Users + Groups pages work; four seeded groups (Admin/CEO 19, Sub-admin 12, Developer 17, Tester 4 permissions). Custom group titled <b>x</b> shown escaped (h1 innerHTML is &lt;b&gt;x&lt;/b&gt;, no <b> element). Two ticks persisted across reload. Project access page: grant shared -> listed; revoke -> user gets 404 and empty project list. Unknown email -> 400 'no account with that email'. Note: access is per-user relations on the project (shared/assigned), not per-group grants."},
+    "5_second_account": {"result": "PASS", "detail": "Zero-permission user: every gated URL shows the 'Waiting for an administrator' page (403) with only Sign out; /admin/* 403 for a non-admin with a plain refusal page; after joining a 'Shared viewer' group + project share, home shows only the shared project; unshared project returns the same 404 as a nonexistent slug (no leak); admin pages, /onboard, /live, /settings 403."},
+    "6_credentials_gating": {"result": "PASS", "detail": "User without credentials.view: env page shows key + 'SET' only, value input empty, 'not-a-secret' absent from HTML. Admin: value in a password input with a show button. Add-credential POST by a viewer: 403."},
+    "7_a11y_basics": {"result": "PASS_WITH_FINDINGS", "detail": "All inputs labelled on login, signup, groups pages; Tab order logo > email > password > submit > link; Enter submits; focus ring visible on inputs (box-shadow) and links/buttons (auto outline); error text has role=alert. 390px: no horizontal overflow on login or signup. Findings F5, F6."},
+    "8_persona_lens": {"result": "FINDINGS", "detail": "See F4, F7, F8, F9."},
+    "9_host_guard": {"result": "PASS", "detail": "Host 127.0.0.1 and localhost 200; Host evil.example 403; POST with Origin http://evil.example 403."}
+  },
+  "findings": [
+    {"id": "F1", "severity": "low", "where": "/auth/signup", "text": "Duplicate email reveals that the account exists. Acceptable for a small internal team; flag for the checker against any contract wording on enumeration."},
+    {"id": "F2", "severity": "low", "where": "/auth/login lock", "text": "Lock is per account and also refuses the correct password, so anyone who knows an email can lock a colleague out for the cool-down; message does not say how long."},
+    {"id": "F3", "severity": "low", "where": "/favicon.ico", "text": "Logged-out and waiting users get 401/403 for the favicon: a console error on every page."},
+    {"id": "F4", "severity": "medium", "where": "project pages for a view-only user", "text": "A user with only project.view/shared sees links and forms for Add case, Project settings, Credentials save/add, Approve a crawl; pages open (200) and only the submit is refused with a bare 403 page. Writes are correctly blocked server-side (project edit, add credential, run all 403) but the nav offers actions the user cannot use."},
+    {"id": "F5", "severity": "medium", "where": "login/signup email input", "text": "type=email input is unstyled (browser-default ~170px white box) while the password input is styled and full width; looks broken at 1280px and 390px."},
+    {"id": "F6", "severity": "low", "where": "login error", "text": "Error text uses the same grey subtitle style as normal text (no red, no icon). It has role=alert and clear words, so not colour-only, but easy to miss. No viewport meta tag on the auth pages."},
+    {"id": "F7", "severity": "medium", "where": "/admin/groups", "text": "Permission checkboxes are labelled with raw keys (project.view, credentials.edit, access.approve) and all/assigned/own/shared with no plain-language explanation; hard for a non-technical admin. Credentials page also tells a viewer 'visible only to accounts with credentials.view'."},
+    {"id": "F8", "severity": "low", "where": "waiting page", "text": "Says 'Ask an administrator' but names nobody and gives no contact; 'Your access starts on your next click after they do' is cryptic. No refresh/continue link."},
+    {"id": "F9", "severity": "low", "where": "403/400 pages and admin project page", "text": "Refusals are lowercase one-liners ('you do not have permission') with only a 'Back to projects' link, no hint to ask an admin. The admin's project page has no link to /projects/<slug>/access (reachable only by typing the URL); saving access gives no confirmation message."},
+    {"id": "F10", "severity": "low", "where": "/admin/users header", "text": "Users and Groups header links render as raw default blue underlined links, inconsistent with the styled nav. No security headers (CSP, X-Frame-Options) seen on /auth/login via curl HEAD (supplementary)."}
+  ],
+  "cleanup": {"browser_closed": true, "server_stopped_pids": [49516, 42100], "port_8791_listening": false, "git_status_porcelain_worktree": "(empty)"}
+}

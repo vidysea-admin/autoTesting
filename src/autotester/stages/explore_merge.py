@@ -7,14 +7,25 @@ conservative: an existing screen is never rewritten, a disagreement becomes a
 DRAFT so the human gate is re-armed rather than bypassed.
 
 Contract: qa/contracts/explore.md X12 amendment + qa/contracts/coverage.md V1.
+
+AT-887 (D-084): `merge_screens_and_flows` also adds the crawl's discovery paths as `Flow` PROPOSALS
+(`stages/explore_flows.py`), so `expand` has the product's real screens to work from. They
+enter the same DRAFT spec and the same human gate as the screens do.
 """
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from autotester.core.urls import url_template
 from autotester.schema.enums import ReviewStatus
 from autotester.schema.flowspec import Conflict, FlowSpec, InputField, Review, Screen, SourceRef
-from autotester.schema.screen_graph import ScreenNode
+from autotester.schema.screen_graph import ScreenEdge, ScreenNode
+from autotester.stages.explore_flows import flows_from_crawl
+from autotester.stages.screen_identity import rewrite_screen_refs
+
+if TYPE_CHECKING:
+    from autotester.store.project_store import ProjectStore
 
 _FIELD_ROLES = {
     "textbox": "text", "searchbox": "text", "combobox": "select",
@@ -176,3 +187,60 @@ def merge_screens(
             note=f"{len(added)} screen(s) added by crawl {crawl_id} — needs review",
         ),
     })
+
+
+def _rediscovered_ids(spec: FlowSpec | None, nodes: list[ScreenNode]) -> dict[str, str]:
+    """Crawl node id -> the id of the existing screen it re-found. `merge_screens` skips such a
+    node (`_is_rediscovery`), so a flow that cites the node id would dangle: it must cite this."""
+    held = spec.screens if spec else []
+    known = {s.id for s in held}
+    by_pattern = {s.url_pattern: s for s in held if s.url_pattern}
+    alias: dict[str, str] = {}
+    for node in nodes:
+        incoming = screen_from(node)
+        clash = by_pattern.get(incoming.url_pattern)
+        if incoming.id not in known and clash is not None and _is_rediscovery(clash, incoming):
+            alias[node.id] = clash.id
+    return alias
+
+
+def merge_screens_and_flows(
+    spec: FlowSpec | None, nodes: list[ScreenNode], edges: list[ScreenEdge], project: str,
+    *, crawl_id: str, login_case_id: str | None = None,
+) -> FlowSpec:
+    """`merge_screens`, plus the crawl's paths as Flow proposals.
+
+    A flow whose id the spec already has is skipped, never replaced, so a reviewed or edited
+    flow survives. A node the spec already holds as a screen is cited by the spec's screen id
+    (the flow id still comes from the crawl path, so it is stable). Adding anything leaves the
+    spec DRAFT (the human gate re-armed, never approved here) and bumps the version once.
+    Idempotent: the same crawl twice adds nothing."""
+    merged = merge_screens(spec, nodes, project, crawl_id=crawl_id)
+    alias = _rediscovered_ids(spec, nodes)
+    proposed = [rewrite_screen_refs(f, alias) for f in flows_from_crawl(
+        nodes, edges, crawl_id=crawl_id, login_case_id=login_case_id)]
+    new = [f for f in proposed if merged.flow(f.id) is None]
+    if not new:
+        return merged
+    base_screens = len(spec.screens) if spec else 0
+    added = len(merged.screens) - base_screens
+    bumped = merged.version > (spec.version if spec else 1)
+    return merged.model_copy(update={
+        "flows": [*merged.flows, *new],
+        "source_ids": sorted({*merged.source_ids, crawl_id}),
+        "version": merged.version if bumped else merged.version + 1,
+        "review": Review(
+            status=ReviewStatus.DRAFT,
+            note=f"{added} screen(s), {len(new)} flow(s) added by crawl {crawl_id} — needs review",
+        ),
+    })
+
+
+def merge_stored_crawl(store: ProjectStore, spec: FlowSpec | None, project: str,
+                       crawl_id: str) -> FlowSpec:
+    """`merge_screens_and_flows` over what the store holds for `crawl_id`: the call the CLI and
+    the UI button make, so neither can skip the flows."""
+    crawl = store.load_crawl(crawl_id)
+    return merge_screens_and_flows(
+        spec, store.list_nodes(crawl_id), store.list_edges(crawl_id), project,
+        crawl_id=crawl_id, login_case_id=crawl.login_case_id if crawl else None)

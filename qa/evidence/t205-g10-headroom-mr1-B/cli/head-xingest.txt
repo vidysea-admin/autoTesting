@@ -1,0 +1,24 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+                                                                                                   
+ Usage: autotester ingest [OPTIONS] COMMAND [ARGS]...                                              
+                                                                                                   
+ Learn a product's screens and flows from a screen recording.                                      
+                                                                                                   
+┌─ Options ───────────────────────────────────────────────────────────────────────────────────────┐
+│ --help          Show this message and exit.                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─ Commands ──────────────────────────────────────────────────────────────────────────────────────┐
+│ register     Record a video as a Source. Idempotent on content — the same file twice            │
+│              is one source, not two.                                                            │
+│ list         Every source registered for this project.                                          │
+│ prep         Probe, chunk and transcribe a recording. RUN THIS ON THE HOST — the                │
+│              container has no ffmpeg and no GPU.                                                │
+│ frames       Extract the stills the vision pass named. Needs an analysis on disk.               │
+│ run          Watch one source and write the FlowSpec it produces.                               │
+│ analyze      Run the ensemble over a prepared recording and adjudicate it.                      │
+│ map          Fold every persisted video analysis into the project's product map.                │
+│ zip          Register every video in a zip; exit 2 when any member failed (never 0 for          │
+│              partial).                                                                          │
+│ fetch-drive  Fetch a Google Drive video, folder or zip through the server's `gws` login.        │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+

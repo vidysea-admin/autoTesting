@@ -1,0 +1,78 @@
+[
+ [
+  "doctor",
+  "Check the repo against the design rules that keep it readable."
+ ],
+ [
+  "providers",
+  "Show which model providers have credentials present on this machine."
+ ],
+ [
+  "map",
+  "Regenerate docs/MAP.md \u2014 directory map + schema summary, derived from code."
+ ],
+ [
+  "snapshot",
+  "Regenerate docs/SNAPSHOT.md \u2014 the digest injected at session start."
+ ],
+ [
+  "expand",
+  "Review/prune proposals, then generate only persisted human-approved cases."
+ ],
+ [
+  "login",
+  "Open a real browser for a human to log in by hand -- no password needed."
+ ],
+ [
+  "loop-status",
+  "Report gaps in `qa/.last-tick` \u2014 was the maker loop alive, and was any stop deliberate?"
+ ],
+ [
+  "explore",
+  "Bounded BFS crawl of a project, refusing anything its write_policy denies."
+ ],
+ [
+  "approve",
+  "Grant a human's approval for one kind of run against one target (D-018)."
+ ],
+ [
+  "orchestrate",
+  "Run (or resume) the pipeline for `project`: the same entry-path choice (teach->INGEST / creds->DISCOVER) and per-stage `RunState` checkpoints `stages/orchestrate.py::run_or_resume` and its tests exercise, now reachable from the command line."
+ ],
+ [
+  "release",
+  "Run (or resume) a release: every flow's validation plan, one issues log."
+ ],
+ [
+  "release-log",
+  "Print a finished release's single issues log and regression diff."
+ ],
+ [
+  "release-report",
+  "Write the damage-control report: regression, API failures, workflows, change history."
+ ],
+ [
+  "ledger",
+  "The feature ledger (docs/FEATURES.jsonl) \u2014 the only write path."
+ ],
+ [
+  "flowspec",
+  "The FlowSpec review gate \u2014 nothing expands an unreviewed spec."
+ ],
+ [
+  "report",
+  "Export a run as a portable tester report (Excel + HTML)."
+ ],
+ [
+  "ingest",
+  "Learn a product's screens and flows from a screen recording."
+ ],
+ [
+  "issues",
+  "Issues derived from a recording \u2014 the tester's sheet."
+ ],
+ [
+  "schedule",
+  "The scheduler: run the tests that are due."
+ ]
+]

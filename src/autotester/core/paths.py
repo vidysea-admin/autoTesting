@@ -9,6 +9,12 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from autotester.core.repo_docs import RepoDocs
+from autotester.core.safe_names import SLUG_PATTERN, safe_name
+
+__all__ = ["ENV_ROOT", "SLUG_PATTERN", "ProjectPaths", "RepoDocs", "repo_root", "team_path",
+           "work_dir"]
+
 ENV_ROOT = "AUTOTESTER_ROOT"
 
 
@@ -67,6 +73,11 @@ class ProjectPaths:
         return self.dir / "cases.jsonl"
 
     @property
+    def case_proposals(self) -> Path:
+        """Step-less candidates and their human review, separate from executable cases."""
+        return self.dir / "case_proposals.jsonl"
+
+    @property
     def rubrics_dir(self) -> Path:
         return self.dir / "rubrics"
 
@@ -115,6 +126,19 @@ class ProjectPaths:
     def run_dir(self, run_id: str) -> Path:
         return self.runs_dir / run_id
 
+    @property
+    def flow_plans(self) -> Path:
+        """Persisted per-flow validation plans a release run stitches together (T-167, RR6)."""
+        return self.dir / "flow_plans.jsonl"
+
+    def run_release_scope(self, run_id: str) -> Path:
+        """The release's frozen scope (T-167): written once, before the human confirm."""
+        return self.run_dir(run_id) / "scope.json"
+
+    def run_release_record(self, run_id: str) -> Path:
+        """The release's durable record + single issues log (T-167); T-168 reads this."""
+        return self.run_dir(run_id) / "release.json"
+
     def bundles_dir(self, run_id: str) -> Path:
         """Where a run's failure bundles live (T-178); each is one directory."""
         return self.run_dir(run_id) / "bundles"
@@ -157,6 +181,12 @@ class ProjectPaths:
     def source_analysis(self, source_id: str) -> Path:
         return self.source_dir(source_id) / "analysis.json"
 
+    def review_path(self, review_id: str) -> Path:
+        return self.dir / "reviews" / f"{review_id}.json"
+
+    def review_work_dir(self, review_id: str) -> Path:
+        return self.dir / "reviews" / review_id
+
     @property
     def issues(self) -> Path:
         return self.dir / "issues.jsonl"
@@ -197,15 +227,8 @@ class ProjectPaths:
 
     def ensure(self) -> None:
         """Create the directories a project needs. Safe to call repeatedly."""
-        for path in (
-            self.dir,
-            self.sources_dir,
-            self.rubrics_dir,
-            self.scripts_dir,
-            self.runs_dir,
-            self.profile_dir,
-            self.bench_dir,
-        ):
+        for path in (self.dir, self.sources_dir, self.rubrics_dir, self.scripts_dir,
+                     self.runs_dir, self.profile_dir, self.bench_dir):
             path.mkdir(parents=True, exist_ok=True)
 
 
@@ -216,85 +239,10 @@ def work_dir(root: Path | None = None) -> Path:
     return path
 
 
-class RepoDocs:
-    """Repo-level documents: the living map, the ledger, the history, the router."""
+def team_path(*parts: str, root: Path | None = None) -> Path:
+    """A path under the team data root, `<data root>/.work/team/` (T-205/TF7).
 
-    def __init__(self, root: Path | None = None, *, prompts_dir: Path | None = None,
-                 skills_dir: Path | None = None) -> None:
-        self.root = root or repo_root()
-        self._root_given = root is not None
-        self._prompts_dir_override = prompts_dir
-        self._skills_dir_override = skills_dir
-
-    @property
-    def docs_dir(self) -> Path:
-        return self.root / "docs"
-
-    @property
-    def architecture(self) -> Path:
-        return self.docs_dir / "ARCHITECTURE.md"
-
-    @property
-    def snapshot(self) -> Path:
-        return self.docs_dir / "SNAPSHOT.md"
-
-    @property
-    def map(self) -> Path:
-        """Generated directory map + schema summary (kept out of ARCHITECTURE's 150-line budget)."""
-        return self.docs_dir / "MAP.md"
-
-    @property
-    def features(self) -> Path:
-        return self.docs_dir / "FEATURES.jsonl"
-
-    @property
-    def decisions(self) -> Path:
-        return self.docs_dir / "DECISIONS.md"
-
-    @property
-    def router(self) -> Path:
-        """`CLAUDE.md` carries the "open X when Y" table."""
-        return self.root / "CLAUDE.md"
-
-    @property
-    def goal(self) -> Path:
-        return self.root / ".goal" / "goal.json"
-
-    @property
-    def prompts_dir(self) -> Path:
-        """Prompts ship WITH THE CODE, so the DATA root must not move them.
-
-        `root` falls back to `repo_root()`, which honours `AUTOTESTER_ROOT` — a
-        switch for relocating a project's DATA. That silently moved the prompt
-        lookup too, and `autotester ingest run` under a relocated root died on
-        `FileNotFoundError: <data root>/src/autotester/prompts/...` (AT-132,
-        found by a test driving the real CLI). Every prompt-reading stage was
-        one environment variable away from the same failure.
-
-        An EXPLICIT `root` still wins: substituting a stub prompt tree is a
-        legitimate thing for a test to do, and the defect was never explicit
-        injection — it was the env var leaking into a path it does not own.
-
-        AT-137: that fallback used to be the ONLY way to substitute a prompt
-        tree — an inferred side effect of passing `root`, not a named act.
-        Pass `prompts_dir=` explicitly instead when that is what's meant;
-        `root` alone still behaves exactly as before for every caller that
-        never adopts the explicit form (no behaviour change, C2)."""
-        if self._prompts_dir_override is not None:
-            return self._prompts_dir_override
-        if self._root_given:
-            return self.root / "src" / "autotester" / "prompts"
-        return Path(__file__).resolve().parents[1] / "prompts"
-
-    @property
-    def skills_dir(self) -> Path:
-        """Migrated-prompt `SKILL.md` folders (T-175/D-041) -- same shape as
-        `prompts_dir` above and for the same reason: ships WITH THE CODE, so an
-        explicit override lets a test substitute a stub tree (mirroring
-        AT-137's `prompts_dir=` fix) without a relocated `AUTOTESTER_ROOT`
-        leaking into a path it does not own."""
-        if self._skills_dir_override is not None:
-            return self._skills_dir_override
-        if self._root_given:
-            return self.root / "src" / "autotester" / "skills"
-        return Path(__file__).resolve().parents[1] / "skills"
+    Every part is checked by `core.safe_names.safe_name`, so a slug, id or encoded slot key
+    that could escape the root raises `UnsafeName` before any file is touched. `.work/` is
+    ignored by git and by `.dockerignore`, so nothing under it is ever committed or baked in."""
+    return (root or repo_root()) / ".work" / "team" / Path(*(safe_name(p) for p in parts))

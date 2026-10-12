@@ -1,0 +1,339 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- D:\autoTesting\.worktrees\t204-team-login\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\autoTesting\.worktrees\t204-team-login
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 154 items
+
+tests/test_ui_auth_login.py::test_au1_password_is_argon2id_and_never_stored PASSED [  0%]
+tests/test_ui_auth_login.py::test_au2_failures_are_identical PASSED      [  1%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[/projects/x-/projects/x] PASSED [  1%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[https://evil.example/-/] PASSED [  2%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[//evil.example-/] PASSED [  3%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[javascript:alert(1)-/] PASSED [  3%]
+tests/test_ui_auth_login.py::test_au3_cookie_flags_plain_http PASSED     [  4%]
+tests/test_ui_auth_login.py::test_au3_cookie_secure_over_https_and_hosted PASSED [  5%]
+tests/test_ui_auth_login.py::test_au3_new_session_id_every_login PASSED  [  5%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[tampered] PASSED [  6%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[truncated] PASSED [  7%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[unknown] PASSED [  7%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[expired] PASSED [  8%]
+tests/test_ui_auth_login.py::test_au3_disable_takes_effect_on_the_next_request PASSED [  9%]
+tests/test_ui_auth_login.py::test_au3_session_lookup_itself_refuses_a_disabled_account PASSED [  9%]
+tests/test_ui_auth_login.py::test_au3_lifetime_is_bounded PASSED         [ 10%]
+tests/test_ui_auth_login.py::test_au4_logout_ends_the_session PASSED     [ 11%]
+tests/test_ui_auth_login.py::test_au4_logout_is_origin_guarded PASSED    [ 11%]
+tests/test_ui_auth_login.py::test_au5_lock_after_failures_even_with_the_right_password PASSED [ 12%]
+tests/test_ui_auth_login.py::test_au5_the_window_passes PASSED           [ 12%]
+tests/test_ui_auth_login.py::test_au5_per_address_limit PASSED           [ 13%]
+tests/test_ui_auth_accounts.py::test_au6_signup_normalizes_and_validates PASSED [ 14%]
+tests/test_ui_auth_accounts.py::test_au6_duplicate_signup_leaves_the_account_alone PASSED [ 14%]
+tests/test_ui_auth_accounts.py::test_au6_zero_permission_account_reaches_only_waiting_and_logout PASSED [ 15%]
+tests/test_ui_auth_accounts.py::test_au7_first_signup_is_admin_later_ones_get_nothing PASSED [ 16%]
+tests/test_ui_auth_accounts.py::test_au7_two_simultaneous_first_signups_make_one_admin PASSED [ 16%]
+tests/test_ui_auth_accounts.py::test_au7_first_admin_email_pins_who_becomes_admin PASSED [ 17%]
+tests/test_ui_auth_accounts.py::test_au8_admin_disables_enables_renames_and_regroups PASSED [ 18%]
+tests/test_ui_auth_accounts.py::test_au8_password_reset_revokes_sessions PASSED [ 18%]
+tests/test_ui_auth_accounts.py::test_au8_delete_keeps_audit_and_unowns_projects PASSED [ 19%]
+tests/test_ui_auth_accounts.py::test_au8_non_admin_gets_403_on_every_account_route PASSED [ 20%]
+tests/test_ui_auth_accounts.py::test_au9_last_admin_cannot_be_locked_out PASSED [ 20%]
+tests/test_ui_auth_accounts.py::test_au9_a_second_admin_lifts_the_guard PASSED [ 21%]
+tests/test_ui_auth_accounts.py::test_cli_bootstrap_admin_creates_then_resets PASSED [ 22%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[owner-admin] PASSED  [ 22%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[owner-sub-admin] PASSED [ 23%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[owner-developer] PASSED [ 24%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[owner-tester] PASSED [ 24%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-admin] PASSED [ 25%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-sub-admin] PASSED [ 25%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-developer] PASSED [ 26%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-tester] PASSED [ 27%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[shared-admin] PASSED [ 27%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[shared-sub-admin] PASSED [ 28%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[shared-developer] PASSED [ 29%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[shared-tester] PASSED [ 29%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[none-admin] PASSED   [ 30%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[none-sub-admin] PASSED [ 31%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[none-developer] PASSED [ 31%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[none-tester] PASSED  [ 32%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-admin] PASSED [ 33%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-sub-admin] PASSED [ 33%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-developer] PASSED [ 34%]
+tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-tester] PASSED [ 35%]
+tests/test_ui_auth_groups.py::test_au12_no_route_compares_group_names PASSED [ 35%]
+tests/test_ui_auth_groups.py::test_au10_union_and_untick PASSED          [ 36%]
+tests/test_ui_auth_groups.py::test_au10_unknown_key_or_scope_stores_nothing[users.manage@own] PASSED [ 37%]
+tests/test_ui_auth_groups.py::test_au10_unknown_key_or_scope_stores_nothing[made.up] PASSED [ 37%]
+tests/test_ui_auth_groups.py::test_au10_unknown_key_or_scope_stores_nothing[project.view@everyone] PASSED [ 38%]
+tests/test_ui_auth_groups.py::test_au10_form_is_labelled_checkboxes PASSED [ 38%]
+tests/test_ui_auth_groups.py::test_au10_delete_in_use_group_warns_first PASSED [ 39%]
+tests/test_ui_auth_groups.py::test_au10_group_edit_route_cannot_escalate PASSED [ 40%]
+tests/test_ui_auth_groups.py::test_au11_seeded_once_edits_survive_restart PASSED [ 40%]
+tests/test_ui_auth_groups.py::test_au13_four_users_two_projects PASSED   [ 41%]
+tests/test_ui_auth_groups.py::test_au13_visible_without_the_action_is_403 PASSED [ 42%]
+tests/test_ui_auth_groups.py::test_au14_every_route_has_a_policy_row PASSED [ 42%]
+tests/test_ui_auth_groups.py::test_au14_an_undeclared_route_is_refused PASSED [ 43%]
+tests/test_ui_auth_surface.py::test_au16_only_the_public_set_answers_unsigned_in PASSED [ 44%]
+tests/test_ui_auth_surface.py::test_au16_redirect_never_points_off_site[/x?next=https://evil.example] PASSED [ 44%]
+tests/test_ui_auth_surface.py::test_au16_redirect_never_points_off_site[//evil.example/] PASSED [ 45%]
+tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[https://evil.example/] PASSED [ 46%]
+tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[//evil.example] PASSED [ 46%]
+tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[javascript:alert(1)] PASSED [ 47%]
+tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[/\\evil.example] PASSED [ 48%]
+tests/test_ui_auth_surface.py::test_au17_disabled_flag_is_refused_when_hosted PASSED [ 48%]
+tests/test_ui_auth_surface.py::test_au20_hosted_needs_an_allow_list PASSED [ 49%]
+tests/test_ui_auth_surface.py::test_au17_gate_is_on_by_default PASSED    [ 50%]
+tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/auth/login] PASSED [ 50%]
+tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/auth/signup] PASSED [ 51%]
+tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/auth/logout] PASSED [ 51%]
+tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/admin/groups] PASSED [ 52%]
+tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/onboard] PASSED [ 53%]
+tests/test_ui_auth_surface.py::test_au18_guard_runs_before_the_login_gate PASSED [ 53%]
+tests/test_ui_auth_surface.py::test_au21_values_only_for_credentials_view PASSED [ 54%]
+tests/test_ui_auth_surface.py::test_au21_write_without_view_is_not_echoed PASSED [ 55%]
+tests/test_ui_auth_surface.py::test_au21_settings_page_hides_values_and_counts_env_keys PASSED [ 55%]
+tests/test_ui_auth_surface.py::test_au22_audit_lines_hold_no_secret PASSED [ 56%]
+tests/test_ui_auth_escalation.py::test_p5_groups_manage_cannot_tick_users_manage_or_settings_into_its_own_group PASSED [ 57%]
+tests/test_ui_auth_escalation.py::test_p5_a_new_group_cannot_carry_more_than_its_creator_holds PASSED [ 57%]
+tests/test_ui_auth_escalation.py::test_p5_a_held_admin_only_key_is_still_admin_only_to_grant PASSED [ 58%]
+tests/test_ui_auth_escalation.py::test_p5_admin_still_grants_everything PASSED [ 59%]
+tests/test_ui_auth_escalation.py::test_p5_users_manage_cannot_add_itself_to_admin PASSED [ 59%]
+tests/test_ui_auth_escalation.py::test_p5_users_manage_cannot_hand_out_a_group_it_does_not_cover PASSED [ 60%]
+tests/test_ui_auth_escalation.py::test_p5_users_manage_cannot_reset_disable_or_delete_an_admin PASSED [ 61%]
+tests/test_ui_auth_escalation.py::test_p5_only_admin_edits_or_deletes_the_admin_group PASSED [ 61%]
+tests/test_ui_auth_escalation.py::test_p5_users_manage_still_manages_ordinary_accounts PASSED [ 62%]
+tests/test_ui_auth_escalation.py::test_p5_last_admin_protection_still_holds_for_an_admin PASSED [ 62%]
+tests/test_ui_auth_escalation.py::test_d074_hosted_without_a_first_admin_email_promotes_nobody PASSED [ 63%]
+tests/test_ui_auth_escalation.py::test_d074_the_cli_creates_the_first_admin_when_hosted PASSED [ 64%]
+tests/test_ui_auth_escalation.py::test_d074_a_non_loopback_bind_also_promotes_nobody PASSED [ 64%]
+tests/test_ui_auth_escalation.py::test_d074_hosted_with_the_fixed_email_promotes_only_that_address PASSED [ 65%]
+tests/test_ui_auth_escalation.py::test_d074_a_secure_cookie_in_effect_counts_as_hosted_for_the_first_admin PASSED [ 66%]
+tests/test_ui_auth_escalation.py::test_d074_the_fixed_email_is_compared_case_insensitively PASSED [ 66%]
+tests/test_ui_auth_escalation.py::test_d074_loopback_dev_keeps_first_account_admin PASSED [ 67%]
+tests/test_ui_auth_escalation.py::test_d074_startup_warns_on_a_hosted_server_with_no_first_admin_email PASSED [ 68%]
+tests/test_ui_auth_escalation.py::test_au25_nav_links_the_account_cannot_use_are_not_rendered PASSED [ 68%]
+tests/test_ui_auth_escalation.py::test_au13_the_access_page_lists_team_emails_only_to_those_who_manage_access PASSED [ 69%]
+tests/test_ui_auth_escalation.py::test_au26_every_permission_checkbox_has_a_label_and_a_name PASSED [ 70%]
+tests/test_ui_auth_escalation.py::test_au14_every_policy_row_requires_exactly_its_pinned_key PASSED [ 70%]
+tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[ANTHROPIC_API_KEY] PASSED [ 71%]
+tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[AUTOTESTER_APPROVAL_KEY] PASSED [ 72%]
+tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[AUTOTESTER_AUTH_DISABLED] PASSED [ 72%]
+tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[VICTIM_PASSWORD] PASSED [ 73%]
+tests/test_ui_auth_hardening.py::test_au21_developer_writes_a_key_in_the_projects_own_namespace PASSED [ 74%]
+tests/test_ui_auth_hardening.py::test_au21_server_wide_keys_are_403_even_inside_the_namespace[anthropic-ANTHROPIC_API_KEY] PASSED [ 74%]
+tests/test_ui_auth_hardening.py::test_au21_server_wide_keys_are_403_even_inside_the_namespace[autotester-AUTOTESTER_APPROVAL_KEY] PASSED [ 75%]
+tests/test_ui_auth_hardening.py::test_au21_secrets_route_refuses_another_projects_key PASSED [ 75%]
+tests/test_ui_auth_hardening.py::test_au21_a_key_another_project_declares_inside_my_prefix_is_refused PASSED [ 76%]
+tests/test_ui_auth_hardening.py::test_au21_admin_gets_the_same_refusal_and_uses_settings_instead PASSED [ 77%]
+tests/test_ui_auth_hardening.py::test_au3_hosted_accepts_only_the_host_prefixed_cookie PASSED [ 77%]
+tests/test_ui_auth_hardening.py::test_au3_plain_http_dev_still_uses_the_plain_cookie PASSED [ 78%]
+tests/test_ui_auth_hardening.py::test_au16_group_name_is_escaped_in_every_admin_page PASSED [ 79%]
+tests/test_ui_auth_hardening.py::test_au16_display_name_and_project_name_are_escaped PASSED [ 79%]
+tests/test_ui_auth_hardening.py::test_au25_authenticated_pages_are_no_store PASSED [ 80%]
+tests/test_ui_auth_hardening.py::test_au5_signup_is_rate_limited_per_address PASSED [ 81%]
+tests/test_ui_auth_hardening.py::test_au5_limiter_table_is_bounded_and_forgets_expired_keys PASSED [ 81%]
+tests/test_ui_auth_hardening.py::test_au2_the_dummy_hash_exists_before_any_login PASSED [ 82%]
+tests/test_ui_auth_hardening.py::test_au2_an_unknown_email_still_pays_one_verification PASSED [ 83%]
+tests/test_ui_auth_cli_and_limits.py::test_au5_checking_a_limit_never_creates_an_entry PASSED [ 83%]
+tests/test_ui_auth_cli_and_limits.py::test_au16_next_is_capped_and_falls_back_to_the_root PASSED [ 84%]
+tests/test_ui_auth_cli_and_limits.py::test_au22_bootstrap_admin_leaves_an_audit_row_without_the_password PASSED [ 85%]
+tests/test_ui_auth_cli_and_limits.py::test_au1_bootstrap_without_a_tty_or_password_stdin_is_refused_not_hung PASSED [ 85%]
+tests/test_ui_auth_cli_and_limits.py::test_au3_a_refused_expired_cookie_purges_its_session_row PASSED [ 86%]
+tests/test_ui_auth_cli_and_limits.py::test_au3_unknown_cookies_cause_no_writes PASSED [ 87%]
+tests/test_ui_auth_survivors.py::test_au3_the_stored_token_hash_is_not_a_cookie PASSED [ 87%]
+tests/test_ui_auth_survivors.py::test_au5_the_address_limit_ignores_x_forwarded_for PASSED [ 88%]
+tests/test_ui_auth_survivors.py::test_au22_audit_line_holds_the_template_not_the_query_string PASSED [ 88%]
+tests/test_ui_auth_survivors.py::test_suite_auto_login_leaves_the_real_audit_file_alone PASSED [ 89%]
+tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[evil.example] PASSED [ 90%]
+tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[localhost.evil.com] PASSED [ 90%]
+tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[127.0.0.1.evil.io] PASSED [ 91%]
+tests/test_ui_auth_host_and_consent.py::test_au19_a_signed_in_admin_still_reads_no_credential_under_a_foreign_host PASSED [ 92%]
+tests/test_ui_auth_host_and_consent.py::test_au19_a_listed_host_can_sign_in_and_reach_the_app PASSED [ 92%]
+tests/test_ui_auth_host_and_consent.py::test_au19_the_host_of_an_allowed_origin_is_enough_when_hosted PASSED [ 93%]
+tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/login] PASSED [ 94%]
+tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/signup] PASSED [ 94%]
+tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/logout] PASSED [ 95%]
+tests/test_ui_auth_host_and_consent.py::test_au18_a_repeated_origin_or_host_header_is_refused_on_login[origin] PASSED [ 96%]
+tests/test_ui_auth_host_and_consent.py::test_au18_a_repeated_origin_or_host_header_is_refused_on_login[host] PASSED [ 96%]
+tests/test_ui_auth_host_and_consent.py::test_au18_a_wildcard_in_the_allowed_origins_allows_nothing PASSED [ 97%]
+tests/test_ui_auth_host_and_consent.py::test_au15_admin_and_developer_get_the_same_missing_approval_refusal PASSED [ 98%]
+tests/test_auth_deploy_files.py::test_au23_dockerignore_excludes_the_auth_state_at_any_depth PASSED [ 98%]
+tests/test_auth_deploy_files.py::test_au22_the_container_starts_uvicorn_without_an_access_log PASSED [ 99%]
+tests/test_auth_deploy_files.py::test_au5_env_example_documents_the_auth_settings_and_holds_no_value PASSED [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=================================== PASSES ====================================
+_______________ test_au1_password_is_argon2id_and_never_stored ________________
+------------------------------ Captured log call ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/auth/signup "HTTP/1.1 303 See Other"
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/auth/login "HTTP/1.1 303 See Other"
+_______________ test_au17_disabled_flag_is_refused_when_hosted ________________
+---------------------------- Captured stderr call -----------------------------
+WARNING: AUTOTESTER_AUTH_DISABLED=1 -- login is OFF (loopback, single-user only)
+____________________ test_au20_hosted_needs_an_allow_list _____________________
+---------------------------- Captured stderr call -----------------------------
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+WARNING: AUTOTESTER_FIRST_ADMIN_EMAIL is not set on a hosted / non-loopback server: no signup will be made an admin. Create the first admin with `autotester auth bootstrap-admin --email <address> --password-stdin`, or set AUTOTESTER_FIRST_ADMIN_EMAIL in the server's .env (D-074).
+=========================== short test summary info ===========================
+PASSED tests/test_ui_auth_login.py::test_au1_password_is_argon2id_and_never_stored
+PASSED tests/test_ui_auth_login.py::test_au2_failures_are_identical
+PASSED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[/projects/x-/projects/x]
+PASSED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[https://evil.example/-/]
+PASSED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[//evil.example-/]
+PASSED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[javascript:alert(1)-/]
+PASSED tests/test_ui_auth_login.py::test_au3_cookie_flags_plain_http
+PASSED tests/test_ui_auth_login.py::test_au3_cookie_secure_over_https_and_hosted
+PASSED tests/test_ui_auth_login.py::test_au3_new_session_id_every_login
+PASSED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[tampered]
+PASSED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[truncated]
+PASSED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[unknown]
+PASSED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[expired]
+PASSED tests/test_ui_auth_login.py::test_au3_disable_takes_effect_on_the_next_request
+PASSED tests/test_ui_auth_login.py::test_au3_session_lookup_itself_refuses_a_disabled_account
+PASSED tests/test_ui_auth_login.py::test_au3_lifetime_is_bounded
+PASSED tests/test_ui_auth_login.py::test_au4_logout_ends_the_session
+PASSED tests/test_ui_auth_login.py::test_au4_logout_is_origin_guarded
+PASSED tests/test_ui_auth_login.py::test_au5_lock_after_failures_even_with_the_right_password
+PASSED tests/test_ui_auth_login.py::test_au5_the_window_passes
+PASSED tests/test_ui_auth_login.py::test_au5_per_address_limit
+PASSED tests/test_ui_auth_accounts.py::test_au6_signup_normalizes_and_validates
+PASSED tests/test_ui_auth_accounts.py::test_au6_duplicate_signup_leaves_the_account_alone
+PASSED tests/test_ui_auth_accounts.py::test_au6_zero_permission_account_reaches_only_waiting_and_logout
+PASSED tests/test_ui_auth_accounts.py::test_au7_first_signup_is_admin_later_ones_get_nothing
+PASSED tests/test_ui_auth_accounts.py::test_au7_two_simultaneous_first_signups_make_one_admin
+PASSED tests/test_ui_auth_accounts.py::test_au7_first_admin_email_pins_who_becomes_admin
+PASSED tests/test_ui_auth_accounts.py::test_au8_admin_disables_enables_renames_and_regroups
+PASSED tests/test_ui_auth_accounts.py::test_au8_password_reset_revokes_sessions
+PASSED tests/test_ui_auth_accounts.py::test_au8_delete_keeps_audit_and_unowns_projects
+PASSED tests/test_ui_auth_accounts.py::test_au8_non_admin_gets_403_on_every_account_route
+PASSED tests/test_ui_auth_accounts.py::test_au9_last_admin_cannot_be_locked_out
+PASSED tests/test_ui_auth_accounts.py::test_au9_a_second_admin_lifts_the_guard
+PASSED tests/test_ui_auth_accounts.py::test_cli_bootstrap_admin_creates_then_resets
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[owner-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[owner-sub-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[owner-developer]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[owner-tester]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-sub-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-developer]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[assigned-tester]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[shared-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[shared-sub-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[shared-developer]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[shared-tester]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[none-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[none-sub-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[none-developer]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[none-tester]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-sub-admin]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-developer]
+PASSED tests/test_ui_auth_groups.py::test_au12_scope_table[legacy-tester]
+PASSED tests/test_ui_auth_groups.py::test_au12_no_route_compares_group_names
+PASSED tests/test_ui_auth_groups.py::test_au10_union_and_untick
+PASSED tests/test_ui_auth_groups.py::test_au10_unknown_key_or_scope_stores_nothing[users.manage@own]
+PASSED tests/test_ui_auth_groups.py::test_au10_unknown_key_or_scope_stores_nothing[made.up]
+PASSED tests/test_ui_auth_groups.py::test_au10_unknown_key_or_scope_stores_nothing[project.view@everyone]
+PASSED tests/test_ui_auth_groups.py::test_au10_form_is_labelled_checkboxes
+PASSED tests/test_ui_auth_groups.py::test_au10_delete_in_use_group_warns_first
+PASSED tests/test_ui_auth_groups.py::test_au10_group_edit_route_cannot_escalate
+PASSED tests/test_ui_auth_groups.py::test_au11_seeded_once_edits_survive_restart
+PASSED tests/test_ui_auth_groups.py::test_au13_four_users_two_projects
+PASSED tests/test_ui_auth_groups.py::test_au13_visible_without_the_action_is_403
+PASSED tests/test_ui_auth_groups.py::test_au14_every_route_has_a_policy_row
+PASSED tests/test_ui_auth_groups.py::test_au14_an_undeclared_route_is_refused
+PASSED tests/test_ui_auth_surface.py::test_au16_only_the_public_set_answers_unsigned_in
+PASSED tests/test_ui_auth_surface.py::test_au16_redirect_never_points_off_site[/x?next=https://evil.example]
+PASSED tests/test_ui_auth_surface.py::test_au16_redirect_never_points_off_site[//evil.example/]
+PASSED tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[https://evil.example/]
+PASSED tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[//evil.example]
+PASSED tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[javascript:alert(1)]
+PASSED tests/test_ui_auth_surface.py::test_au16_login_page_drops_unsafe_next[/\\evil.example]
+PASSED tests/test_ui_auth_surface.py::test_au17_disabled_flag_is_refused_when_hosted
+PASSED tests/test_ui_auth_surface.py::test_au20_hosted_needs_an_allow_list
+PASSED tests/test_ui_auth_surface.py::test_au17_gate_is_on_by_default
+PASSED tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/auth/login]
+PASSED tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/auth/signup]
+PASSED tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/auth/logout]
+PASSED tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/admin/groups]
+PASSED tests/test_ui_auth_surface.py::test_au18_cross_origin_post_with_a_valid_cookie_is_403[/onboard]
+PASSED tests/test_ui_auth_surface.py::test_au18_guard_runs_before_the_login_gate
+PASSED tests/test_ui_auth_surface.py::test_au21_values_only_for_credentials_view
+PASSED tests/test_ui_auth_surface.py::test_au21_write_without_view_is_not_echoed
+PASSED tests/test_ui_auth_surface.py::test_au21_settings_page_hides_values_and_counts_env_keys
+PASSED tests/test_ui_auth_surface.py::test_au22_audit_lines_hold_no_secret
+PASSED tests/test_ui_auth_escalation.py::test_p5_groups_manage_cannot_tick_users_manage_or_settings_into_its_own_group
+PASSED tests/test_ui_auth_escalation.py::test_p5_a_new_group_cannot_carry_more_than_its_creator_holds
+PASSED tests/test_ui_auth_escalation.py::test_p5_a_held_admin_only_key_is_still_admin_only_to_grant
+PASSED tests/test_ui_auth_escalation.py::test_p5_admin_still_grants_everything
+PASSED tests/test_ui_auth_escalation.py::test_p5_users_manage_cannot_add_itself_to_admin
+PASSED tests/test_ui_auth_escalation.py::test_p5_users_manage_cannot_hand_out_a_group_it_does_not_cover
+PASSED tests/test_ui_auth_escalation.py::test_p5_users_manage_cannot_reset_disable_or_delete_an_admin
+PASSED tests/test_ui_auth_escalation.py::test_p5_only_admin_edits_or_deletes_the_admin_group
+PASSED tests/test_ui_auth_escalation.py::test_p5_users_manage_still_manages_ordinary_accounts
+PASSED tests/test_ui_auth_escalation.py::test_p5_last_admin_protection_still_holds_for_an_admin
+PASSED tests/test_ui_auth_escalation.py::test_d074_hosted_without_a_first_admin_email_promotes_nobody
+PASSED tests/test_ui_auth_escalation.py::test_d074_the_cli_creates_the_first_admin_when_hosted
+PASSED tests/test_ui_auth_escalation.py::test_d074_a_non_loopback_bind_also_promotes_nobody
+PASSED tests/test_ui_auth_escalation.py::test_d074_hosted_with_the_fixed_email_promotes_only_that_address
+PASSED tests/test_ui_auth_escalation.py::test_d074_a_secure_cookie_in_effect_counts_as_hosted_for_the_first_admin
+PASSED tests/test_ui_auth_escalation.py::test_d074_the_fixed_email_is_compared_case_insensitively
+PASSED tests/test_ui_auth_escalation.py::test_d074_loopback_dev_keeps_first_account_admin
+PASSED tests/test_ui_auth_escalation.py::test_d074_startup_warns_on_a_hosted_server_with_no_first_admin_email
+PASSED tests/test_ui_auth_escalation.py::test_au25_nav_links_the_account_cannot_use_are_not_rendered
+PASSED tests/test_ui_auth_escalation.py::test_au13_the_access_page_lists_team_emails_only_to_those_who_manage_access
+PASSED tests/test_ui_auth_escalation.py::test_au26_every_permission_checkbox_has_a_label_and_a_name
+PASSED tests/test_ui_auth_escalation.py::test_au14_every_policy_row_requires_exactly_its_pinned_key
+PASSED tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[ANTHROPIC_API_KEY]
+PASSED tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[AUTOTESTER_APPROVAL_KEY]
+PASSED tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[AUTOTESTER_AUTH_DISABLED]
+PASSED tests/test_ui_auth_hardening.py::test_au21_developer_cannot_write_a_foreign_key_through_env_add[VICTIM_PASSWORD]
+PASSED tests/test_ui_auth_hardening.py::test_au21_developer_writes_a_key_in_the_projects_own_namespace
+PASSED tests/test_ui_auth_hardening.py::test_au21_server_wide_keys_are_403_even_inside_the_namespace[anthropic-ANTHROPIC_API_KEY]
+PASSED tests/test_ui_auth_hardening.py::test_au21_server_wide_keys_are_403_even_inside_the_namespace[autotester-AUTOTESTER_APPROVAL_KEY]
+PASSED tests/test_ui_auth_hardening.py::test_au21_secrets_route_refuses_another_projects_key
+PASSED tests/test_ui_auth_hardening.py::test_au21_a_key_another_project_declares_inside_my_prefix_is_refused
+PASSED tests/test_ui_auth_hardening.py::test_au21_admin_gets_the_same_refusal_and_uses_settings_instead
+PASSED tests/test_ui_auth_hardening.py::test_au3_hosted_accepts_only_the_host_prefixed_cookie
+PASSED tests/test_ui_auth_hardening.py::test_au3_plain_http_dev_still_uses_the_plain_cookie
+PASSED tests/test_ui_auth_hardening.py::test_au16_group_name_is_escaped_in_every_admin_page
+PASSED tests/test_ui_auth_hardening.py::test_au16_display_name_and_project_name_are_escaped
+PASSED tests/test_ui_auth_hardening.py::test_au25_authenticated_pages_are_no_store
+PASSED tests/test_ui_auth_hardening.py::test_au5_signup_is_rate_limited_per_address
+PASSED tests/test_ui_auth_hardening.py::test_au5_limiter_table_is_bounded_and_forgets_expired_keys
+PASSED tests/test_ui_auth_hardening.py::test_au2_the_dummy_hash_exists_before_any_login
+PASSED tests/test_ui_auth_hardening.py::test_au2_an_unknown_email_still_pays_one_verification
+PASSED tests/test_ui_auth_cli_and_limits.py::test_au5_checking_a_limit_never_creates_an_entry
+PASSED tests/test_ui_auth_cli_and_limits.py::test_au16_next_is_capped_and_falls_back_to_the_root
+PASSED tests/test_ui_auth_cli_and_limits.py::test_au22_bootstrap_admin_leaves_an_audit_row_without_the_password
+PASSED tests/test_ui_auth_cli_and_limits.py::test_au1_bootstrap_without_a_tty_or_password_stdin_is_refused_not_hung
+PASSED tests/test_ui_auth_cli_and_limits.py::test_au3_a_refused_expired_cookie_purges_its_session_row
+PASSED tests/test_ui_auth_cli_and_limits.py::test_au3_unknown_cookies_cause_no_writes
+PASSED tests/test_ui_auth_survivors.py::test_au3_the_stored_token_hash_is_not_a_cookie
+PASSED tests/test_ui_auth_survivors.py::test_au5_the_address_limit_ignores_x_forwarded_for
+PASSED tests/test_ui_auth_survivors.py::test_au22_audit_line_holds_the_template_not_the_query_string
+PASSED tests/test_ui_auth_survivors.py::test_suite_auto_login_leaves_the_real_audit_file_alone
+PASSED tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[evil.example]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[localhost.evil.com]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au19_a_foreign_host_gets_no_login_page_and_no_session[127.0.0.1.evil.io]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au19_a_signed_in_admin_still_reads_no_credential_under_a_foreign_host
+PASSED tests/test_ui_auth_host_and_consent.py::test_au19_a_listed_host_can_sign_in_and_reach_the_app
+PASSED tests/test_ui_auth_host_and_consent.py::test_au19_the_host_of_an_allowed_origin_is_enough_when_hosted
+PASSED tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/login]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/signup]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au18_a_non_numeric_origin_port_is_refused_on_auth_routes[/auth/logout]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au18_a_repeated_origin_or_host_header_is_refused_on_login[origin]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au18_a_repeated_origin_or_host_header_is_refused_on_login[host]
+PASSED tests/test_ui_auth_host_and_consent.py::test_au18_a_wildcard_in_the_allowed_origins_allows_nothing
+PASSED tests/test_ui_auth_host_and_consent.py::test_au15_admin_and_developer_get_the_same_missing_approval_refusal
+PASSED tests/test_auth_deploy_files.py::test_au23_dockerignore_excludes_the_auth_state_at_any_depth
+PASSED tests/test_auth_deploy_files.py::test_au22_the_container_starts_uvicorn_without_an_access_log
+PASSED tests/test_auth_deploy_files.py::test_au5_env_example_documents_the_auth_settings_and_holds_no_value
+================= 154 passed, 1 warning in 311.55s (0:05:11) ==================

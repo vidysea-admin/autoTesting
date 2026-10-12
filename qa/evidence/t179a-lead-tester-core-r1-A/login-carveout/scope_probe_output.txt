@@ -1,0 +1,9 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head\src\autotester\__init__.py
+'https://app.example.test/login'                        -> RESOLVED (len 16, is canary: True)
+'https://app.example.test/search?q=x'                   -> RESOLVED (len 16, is canary: True)
+'https://app.example.test/settings/delete-account'      -> RESOLVED (len 16, is canary: True)
+'https://sub.app.example.test/x'                        -> RESOLVED (len 16, is canary: True)
+'https://evil.test/'                                    -> SecretScopeError
+'https://app.example.test@evil.test/'                   -> SecretScopeError
+'about:blank'                                           -> SecretScopeError
+''                                                      -> SecretScopeError

@@ -1,0 +1,186 @@
+{
+ "code": {
+  "DriveOrigin(extra)": "ValidationError",
+  "DriveOrigin(file_id)": "ok kind='drive' json={\"kind\":\"drive\",\"file_id\":\"F1\"}",
+  "Source(origin='drive')": "AttributeError",
+  "Source(origin=DriveOrigin)": "AttributeError",
+  "Source(origin=bad 'email')": "AttributeError",
+  "Source(origin={'kind':'drive','file_id':'x'})": "AttributeError",
+  "UploadOrigin(...)": "ok kind='upload' json={\"kind\":\"upload\",\"file_name\":\"c.mp4\"}",
+  "UploadOrigin(kind='zip')": "ValidationError",
+  "ZipOrigin(...)": "ok kind='zip' json={\"kind\":\"zip\",\"archive_name\":\"a.zip\",\"member_path\":\"x/y.mp4\"}"
+ },
+ "file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at-mr1b-123619858\\master\\src\\autotester\\__init__.py",
+ "master_lines_byte_exact_after_resave": [
+  true,
+  true,
+  true,
+  true
+ ],
+ "rows": {
+  "absent": {
+   "accepted": true,
+   "arm": "NoneType",
+   "bytes_equal_after_resave": true,
+   "id_unchanged": true,
+   "load_save_load_equal": true,
+   "origin_repr": "None",
+   "resave_origin_json": "__ABSENT__",
+   "store_list_len": 1
+  },
+  "bare ''": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "bare 'email'": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "bare UPPER 'UPLOAD'": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "bare drive": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "bare recording": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "bare upload (fb93776b)": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "bare zip": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "drive + extra key": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | extra_forbidden",
+   "store_list": "ValueError"
+  },
+  "int 5": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "list ['zip']": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | dict_type",
+   "store_list": "ValueError"
+  },
+  "master-written[0]": {
+   "accepted": true,
+   "arm": "UploadOrigin",
+   "bytes_equal_after_resave": true,
+   "id_unchanged": true,
+   "load_save_load_equal": true,
+   "origin_repr": "UploadOrigin(kind='upload', file_name='clip.mp4')",
+   "resave_origin_json": {
+    "file_name": "clip.mp4",
+    "kind": "upload"
+   },
+   "store_list_len": 1
+  },
+  "master-written[1]": {
+   "accepted": true,
+   "arm": "ZipOrigin",
+   "bytes_equal_after_resave": true,
+   "id_unchanged": true,
+   "load_save_load_equal": true,
+   "origin_repr": "ZipOrigin(kind='zip', archive_name='bundle.zip', member_path='a/one.mp4')",
+   "resave_origin_json": {
+    "archive_name": "bundle.zip",
+    "kind": "zip",
+    "member_path": "a/one.mp4"
+   },
+   "store_list_len": 1
+  },
+  "master-written[2]": {
+   "accepted": true,
+   "arm": "ZipOrigin",
+   "bytes_equal_after_resave": true,
+   "id_unchanged": true,
+   "load_save_load_equal": true,
+   "origin_repr": "ZipOrigin(kind='zip', archive_name='bundle.zip', member_path='b/two.mp4')",
+   "resave_origin_json": {
+    "archive_name": "bundle.zip",
+    "kind": "zip",
+    "member_path": "b/two.mp4"
+   },
+   "store_list_len": 1
+  },
+  "master-written[3]": {
+   "accepted": true,
+   "arm": "DriveOrigin",
+   "bytes_equal_after_resave": true,
+   "id_unchanged": true,
+   "load_save_load_equal": true,
+   "origin_repr": "DriveOrigin(kind='drive', file_id='FILE000001')",
+   "resave_origin_json": {
+    "file_id": "FILE000001",
+    "kind": "drive"
+   },
+   "store_list_len": 1
+  },
+  "no kind": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | union_tag_not_found",
+   "store_list": "ValueError"
+  },
+  "null": {
+   "accepted": true,
+   "arm": "NoneType",
+   "bytes_equal_after_resave": false,
+   "id_unchanged": true,
+   "load_save_load_equal": true,
+   "origin_repr": "None",
+   "resave_origin_json": "__ABSENT__",
+   "store_list_len": 1
+  },
+  "upload carrying drive field": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | extra_forbidden",
+   "store_list": "ValueError"
+  },
+  "{kind:DRIVE} uppercase": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | union_tag_invalid",
+   "store_list": "ValueError"
+  },
+  "{kind:['zip']}": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | union_tag_invalid",
+   "store_list": "ValueError"
+  },
+  "{kind:drive} missing file_id": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | missing",
+   "store_list": "ValueError"
+  },
+  "{kind:email} unknown": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | union_tag_invalid",
+   "store_list": "ValueError"
+  },
+  "{kind:recording}": {
+   "accepted": false,
+   "error": "ValidationError: 1 validation error for Source | union_tag_invalid",
+   "store_list": "ValueError"
+  },
+  "{kind:zip} missing detail": {
+   "accepted": false,
+   "error": "ValidationError: 2 validation errors for Source | missing",
+   "store_list": "ValueError"
+  }
+ }
+}

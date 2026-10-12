@@ -1,0 +1,18 @@
+pid 24216 root C:\Users\Lenovo\AppData\Local\Temp\claude\r3b-43931685\run1
+requests 1220 non-refusals 0 hash changed files []
+Counter({('a-html', 302): 305, ('a-json', 401): 305, ('c-evilHost', 403): 305, ('b-evilOrigin', 403): 246, ('b-evilOrigin', 302): 59})
+PUB ('GET', '/auth/login', 'a', 200, b'<!doctype html><title>Sign in \xe2\x80\x94 AutoTester</title>\n<link rel="preconnect" href')
+PUB ('GET', '/auth/login', 'b-evilOrigin', 200, b'<!doctype html><title>Sign in \xe2\x80\x94 AutoTester</title>\n<link rel="preconnect" href')
+PUB ('GET', '/auth/login', 'c-evilHost', 403, b'')
+PUB ('GET', '/auth/signup', 'a', 200, b'<!doctype html><title>Sign up \xe2\x80\x94 AutoTester</title>\n<link rel="preconnect" href')
+PUB ('GET', '/auth/signup', 'b-evilOrigin', 200, b'<!doctype html><title>Sign up \xe2\x80\x94 AutoTester</title>\n<link rel="preconnect" href')
+PUB ('GET', '/auth/signup', 'c-evilHost', 403, b'')
+PUB ('GET', '/healthz', 'a', 200, b'{"ok":true}')
+PUB ('GET', '/healthz', 'b-evilOrigin', 200, b'{"ok":true}')
+PUB ('GET', '/healthz', 'c-evilHost', 403, b'')
+PUB ('POST', '/auth/login', 'a', 401, b'<!doctype html><title>Sign in \xe2\x80\x94 AutoTester</title>\n<link rel="preconnect" href')
+PUB ('POST', '/auth/login', 'b-evilOrigin', 403, b'{"detail":"cross-site request refused: origin \'http://evil.example\' is not allow')
+PUB ('POST', '/auth/login', 'c-evilHost', 403, b'')
+PUB ('POST', '/auth/signup', 'a', 400, b'<!doctype html><title>Sign up \xe2\x80\x94 AutoTester</title>\n<link rel="preconnect" href')
+PUB ('POST', '/auth/signup', 'b-evilOrigin', 403, b'{"detail":"cross-site request refused: origin \'http://evil.example\' is not allow')
+PUB ('POST', '/auth/signup', 'c-evilHost', 403, b'')

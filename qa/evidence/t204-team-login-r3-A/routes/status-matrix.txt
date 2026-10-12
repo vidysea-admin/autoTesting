@@ -1,0 +1,82 @@
+autotester: C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-cpA-141322518\src\autotester\__init__.py
+admin signup: 303 ['Admin/CEO']
+nogroup signup: 303 []
+
+MATRIX (slug=alpha exists; anon also vs ghost)
+route | policy | anon | nogroup | pv_only | rv_only | viewer_all | tester_shared | dev_owner_alpha | sub_unassigned | admin | anon@ghost
+GET / | member:- | 401 | 403 | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 401
+GET /admin/groups | key:groups.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 200 | 401
+POST /admin/groups | key:groups.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 400 | 401
+GET /admin/groups/{group_id} | key:groups.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 422 | 401
+POST /admin/groups/{group_id} | key:groups.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 422 | 401
+POST /admin/groups/{group_id}/delete | key:groups.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 422 | 401
+GET /admin/users | key:users.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 200 | 401
+POST /admin/users/{user_id}/{action} | key:users.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 422 | 401
+GET /auth/login | public:- | 200 | skip | skip | skip | skip | skip | skip | skip | skip | 200
+POST /auth/login | public:- | 401 | skip | skip | skip | skip | skip | skip | skip | skip | 401
+POST /auth/logout | session:- | 401 | skip | skip | skip | skip | skip | skip | skip | skip | 401
+GET /auth/signup | public:- | 200 | skip | skip | skip | skip | skip | skip | skip | skip | 200
+POST /auth/signup | public:- | 400 | skip | skip | skip | skip | skip | skip | skip | skip | 400
+GET /auth/waiting | session:- | 401 | 200 | 303->/ | 303->/ | 303->/ | 303->/ | 303->/ | 303->/ | 303->/ | 401
+GET /docs | key:settings.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 200 | 401
+GET /docs/oauth2-redirect | key:settings.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 200 | 401
+GET /favicon.ico | member:- | 401 | 403 | 204 | 204 | 204 | 204 | 204 | 204 | 204 | 401
+GET /healthz | public:- | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 200
+GET /live | key:live.view | 401 | 403 | 403 | 403 | 403 | 403 | 200 | 200 | 200 | 401
+GET /onboard | key:project.create | 401 | 403 | 403 | 403 | 403 | 403 | 200 | 403 | 200 | 401
+POST /onboard | key:project.create | 401 | 403 | 403 | 403 | 403 | 403 | 400 | 403 | 400 | 401
+GET /openapi.json | key:settings.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 200 | 401
+GET /projects/{slug} | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/access | project:project.view | 401 | 403 | 403 | 404 | 403 | 403 | 200 | 404 | 200 | 401
+POST /projects/{slug}/access | project:project.view | 401 | 403 | 422 | 404 | 422 | 422 | 422 | 404 | 422 | 401
+GET /projects/{slug}/cases | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/cases | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | 400 | 401
+POST /projects/{slug}/cases/generate | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | skip | 401
+GET /projects/{slug}/cases/new | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/cases/{case_id}/delete | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 404 | 404 | 404 | 401
+POST /projects/{slug}/cases/{case_id}/rename | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 422 | 404 | 422 | 401
+GET /projects/{slug}/catalog | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/crawl-approval | project:project.run | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | skip | 401
+GET /projects/{slug}/crawls | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/crawls/{crawl_id} | project:project.view | 401 | 403 | 404 | 404 | 404 | 404 | 404 | 404 | 404 | 401
+POST /projects/{slug}/crawls/{crawl_id}/merge | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 303->/projects/alpha/crawls | 404 | 303->/projects/alpha/crawls | 401
+GET /projects/{slug}/crawls/{crawl_id}/report.xlsx | project:project.view | 401 | 403 | 500 | 404 | 500 | 500 | 500 | 404 | 500 | 401
+GET /projects/{slug}/damage-report | project:report.view | 401 | 403 | 403 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/edit | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/edit | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 422 | 404 | 422 | 401
+GET /projects/{slug}/env | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/env | project:credentials.edit | 401 | 403 | 403 | 404 | 403 | 403 | 422 | 404 | 422 | 401
+POST /projects/{slug}/env/add | project:credentials.edit | 401 | 403 | 403 | 404 | 403 | 403 | 422 | 404 | 422 | 401
+POST /projects/{slug}/env/url | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 422 | 404 | 422 | 401
+POST /projects/{slug}/explore | project:project.run | 401 | 403 | 403 | 404 | 403 | 403 | 403 | 404 | skip | 401
+GET /projects/{slug}/flow-diagram | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/flowspec | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/flowspec/approve | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | 400 | 401
+POST /projects/{slug}/flowspec/request-edit | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | 400 | 401
+GET /projects/{slug}/frames/{source_id}/{name:path} | project:video.view | 401 | 403 | 403 | 404 | 400 | 400 | 400 | 404 | 400 | 401
+GET /projects/{slug}/issues | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/issues.xlsx | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/issues/{issue_id}/pin | project:project.view | 401 | 403 | 404 | 404 | 404 | 404 | 404 | 404 | 404 | 401
+POST /projects/{slug}/issues/{issue_id}/pin | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 404 | 404 | 404 | 401
+POST /projects/{slug}/login-case | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 303->/projects/alpha/crawls | 404 | 303->/projects/alpha/crawls | 401
+GET /projects/{slug}/product-map | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/report | project:report.view | 401 | 403 | 403 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+GET /projects/{slug}/report.html | project:report.view | 401 | 403 | 403 | 404 | 404 | 404 | 404 | 404 | 404 | 401
+GET /projects/{slug}/report.xlsx | project:report.view | 401 | 403 | 403 | 404 | 404 | 404 | 404 | 404 | 404 | 401
+GET /projects/{slug}/requests | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/run | project:project.run | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | skip | 401
+GET /projects/{slug}/runs/{run_id} | project:report.view | 401 | 403 | 403 | 404 | 404 | 404 | 404 | 404 | 404 | 401
+GET /projects/{slug}/runs/{run_id}/videos/{video_path:path} | project:video.view | 401 | 403 | 403 | 404 | 404 | 404 | 404 | 404 | 404 | 401
+POST /projects/{slug}/secrets | project:credentials.edit | 401 | 403 | 403 | 404 | 403 | 403 | 422 | 404 | 422 | 401
+POST /projects/{slug}/secrets/{key}/delete | project:credentials.edit | 401 | 403 | 403 | 404 | 403 | 403 | 404 | 404 | 404 | 401
+GET /projects/{slug}/sources | project:project.view | 401 | 403 | 200 | 404 | 200 | 200 | 200 | 404 | 200 | 401
+POST /projects/{slug}/sources | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | 400 | 401
+POST /projects/{slug}/sources/drive | project:video.upload | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | skip | 401
+GET /projects/{slug}/sources/drive/{job_id} | project:project.view | 401 | 403 | 404 | 404 | 404 | 404 | 404 | 404 | 404 | 401
+POST /projects/{slug}/sources/upload | project:video.upload | 401 | 403 | 403 | 404 | 403 | 403 | 400 | 404 | 400 | 401
+POST /projects/{slug}/sources/{source_id}/analyze | project:project.edit | 401 | 403 | 403 | 404 | 403 | 403 | 404 | 404 | 404 | 401
+GET /redoc | key:settings.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 200 | 401
+GET /settings/providers | key:settings.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | 200 | 401
+POST /settings/providers | key:settings.manage | 401 | 403 | 403 | 403 | 403 | 403 | 403 | 403 | skip | 401
+
+ANOMALIES for anon/nogroup (non-public/session/member routes not 401/403/302): []

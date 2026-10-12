@@ -1,0 +1,9 @@
+17:class AgentToolName(StrEnum):
+27:class ToolEffect(StrEnum):
+35:class RefusalClass(StrEnum):
+49:class ToolSpec(BaseModel):
+52:    model_config = ConfigDict(extra="forbid")
+60:class _Args(BaseModel):
+61:    model_config = ConfigDict(extra="forbid")
+84:class ToolOutcome(BaseModel):
+88:    model_config = ConfigDict(extra="forbid")

@@ -1,0 +1,23 @@
+[05:12:55] suite lock busy, waiting: {"pid": 32036, "repo": "D:\\autoTesting", "started": 1791675564.7190397, "started_iso": "2026-10-11T05:09:24", "token": "5a875a995de39a16", "cmd": "shard_suite --repo D:/autoTesting --ref 2653bbcb --shards 4 --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/shards4 -- -o addopts="}
+[05:20:14] ref c642dcb5 = c642dcb5; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\atk\suiteA
+[05:20:17] collecting whole set (one copy)
+[05:20:56] collected 3107 tests in 243 files; balanced by stored durations (2860/3107 tests known, 12 files at mean); pinned files: none; predicted: s0=459, s1=459, s2=459, s3=459
+[05:20:56] shard 0: pid 67228, 60 units, 875 tests
+[05:20:56] shard 1: pid 47268, 60 units, 802 tests
+[05:20:56] shard 2: pid 16784, 61 units, 712 tests
+[05:20:56] shard 3: pid 39704, 62 units, 718 tests
+[05:27:52] shard 0 finished rc=1 in 416s
+[05:29:01] shard 1 finished rc=1 in 485s
+[05:29:10] shard 2 finished rc=0 in 494s
+[05:29:21] shard 3 finished rc=1 in 505s
+[05:29:22] re-running 4 failing test(s) alone in shard-0 (load-induced vs real)
+[05:29:35]   shard 0: rc=1 wall=416.3s units=60 tests=875 reported=875
+[05:29:35]   shard 1: rc=1 wall=485.4s units=60 tests=802 reported=802
+[05:29:35]   shard 2: rc=0 wall=494.4s units=61 tests=712 reported=712
+[05:29:35]   shard 3: rc=1 wall=505.4s units=62 tests=718 reported=718
+[05:29:35] counts {'passed': 3084, 'failed': 4, 'skipped': 19}; collect proof ok=True (baseline 3107, union 3107, ran 3107)
+[05:29:35]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 0, alone: passed)
+[05:29:35]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 1, alone: failed)
+[05:29:35]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 3, alone: failed)
+[05:29:35]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 3, alone: failed)
+[05:29:35] summary -> C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\atk\suiteA\summary.json (exit 1)

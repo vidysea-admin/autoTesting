@@ -1,0 +1,53 @@
+{
+ "upper_run=63,upper_user=0": {
+  "keylen": 200,
+  "deliver_once": "sent",
+  "messages": 1,
+  "record_files": 1
+ },
+ "upper_run=63,upper_user=1": {
+  "keylen": "ValueError(delivery key too long)",
+  "deliver_once": "PROPAGATED ValueError: delivery key too long",
+  "messages": 0,
+  "record_files": 0
+ },
+ "upper_run=50,upper_user=13": {
+  "keylen": 200,
+  "deliver_once": "sent",
+  "messages": 1,
+  "record_files": 1
+ },
+ "upper_run=0,upper_user=64": {
+  "keylen": "ValueError(delivery key too long)",
+  "deliver_once": "PROPAGATED ValueError: delivery key too long",
+  "messages": 0,
+  "record_files": 0
+ },
+ "upper_run=64,upper_user=64": {
+  "keylen": "ValueError(delivery key too long)",
+  "deliver_once": "PROPAGATED ValueError: delivery key too long",
+  "messages": 0,
+  "record_files": 0
+ },
+ "upper_run=32,upper_user=32": {
+  "keylen": "ValueError(delivery key too long)",
+  "deliver_once": "PROPAGATED ValueError: delivery key too long",
+  "messages": 0,
+  "record_files": 0
+ },
+ "upper_run=10,upper_user=10": {
+  "keylen": 157,
+  "deliver_once": "sent",
+  "messages": 1,
+  "record_files": 1
+ },
+ "realistic 8ef9802c5a5b../umesh": {
+  "keylen": 46
+ },
+ "realistic run-2026-10-../Umesh_Sugara": {
+  "keylen": 50
+ },
+ "realistic RRRRRRRRRRRR../UUUUUUUUUUUUUUUUUUUU": {
+  "keylen": 129
+ }
+}

@@ -1,0 +1,10 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-fal-base-4828\src\autotester\__init__.py
+........                                                                 [100%]
+============================== warnings summary ===============================
+..\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 1 warning in 24.63s
+EXIT 0

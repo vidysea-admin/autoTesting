@@ -1,0 +1,24 @@
+[06:43:59] suite lock busy, waiting: {"pid": 67976, "repo": "D:\\autoTesting", "started": 1791680191.0858977, "started_iso": "2026-10-11T06:26:31", "token": "093d974754ce9f88", "cmd": "shard_suite --repo D:/autoTesting --ref 894549ee --shards 4 --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/at198a-shards/run --lock-timeout 900 -- -o addopts="}
+[06:45:27] ref 297207ff = 297207ff; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t178r1A-shards\run
+[06:45:32] collecting whole set (one copy)
+[06:46:21] collected 3480 tests in 250 files; balanced by stored durations (3478/3480 tests known, 0 files at mean); pinned files: none; predicted: s0=887, s1=887, s2=887, s3=887
+[06:46:21] shard 0: pid 63696, 63 units, 844 tests
+[06:46:21] shard 1: pid 7608, 63 units, 840 tests
+[06:46:21] shard 2: pid 26448, 62 units, 943 tests
+[06:46:21] shard 3: pid 72300, 62 units, 853 tests
+[06:51:36] shard 3 finished rc=0 in 315s
+[06:53:57] shard 2 finished rc=0 in 456s
+[06:56:18] shard 1 finished rc=1 in 598s
+[06:56:39] shard 0 finished rc=1 in 619s
+[06:56:40] re-running 4 failing test(s) alone in shard-0 (load-induced vs real)
+[06:56:55]   shard 0: rc=1 wall=618.5s units=63 tests=844 reported=844
+[06:56:55]   shard 1: rc=1 wall=597.5s units=63 tests=840 reported=840
+[06:56:55]   shard 2: rc=0 wall=456.4s units=62 tests=943 reported=943
+[06:56:55]   shard 3: rc=0 wall=315.2s units=62 tests=853 reported=853
+[06:56:55] counts {'passed': 3457, 'failed': 4, 'skipped': 19}; collect proof ok=True (baseline 3480, union 3480, ran 3480)
+[06:56:55]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 0, alone: passed)
+[06:56:55]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 0, alone: failed)
+[06:56:55]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 0, alone: failed)
+[06:56:55]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 1, alone: failed)
+[06:56:55] summary -> C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t178r1A-shards\run\summary.json (exit 1)
+exit 1

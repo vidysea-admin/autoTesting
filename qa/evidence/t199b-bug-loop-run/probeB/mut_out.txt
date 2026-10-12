@@ -1,0 +1,37 @@
+######## tb9 test_tb9_no_write_without_a_confirmation_and_none_after_the_plan_changed
+ BASE __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_base\src\autotester\__init__.py
+
+============================== 1 passed in 0.50s ==============================
+ MUT  __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_tb9\src\autotester\__init__.py
+E   Failed: DID NOT RAISE PlanChanged
+============================== 1 failed in 1.94s ==============================
+######## tb10 test_tb10_a_cell_a_human_edited_is_not_overwritten_and_the_conflict_is_reported
+ BASE __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_base\src\autotester\__init__.py
+
+============================== 1 passed in 1.09s ==============================
+ MUT  __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_tb10\src\autotester\__init__.py
+E   AssertionError: assert 'Bug number 1 v2' == 'Priya renamed this'
+E     
+E     - Priya renamed this
+E     + Bug number 1 v2
+============================== 1 failed in 3.15s ==============================
+######## tb11 test_tb11_syncing_twice_makes_no_duplicate_rows_and_the_second_plan_is_empty
+ BASE __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_base\src\autotester\__init__.py
+
+============================== 1 passed in 0.72s ==============================
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\runmut.py", line 14, in <module>
+    w,o=run("mut_"+m,node); print(" MUT  __file__:",w); L=o.strip().splitlines()
+        ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\runmut.py", line 7, in run
+    w=subprocess.run([V,"-c","import autotester;print(autotester.__file__)"],cwd=P+tree,env=env,capture_output=True,text=True,timeout=60).stdout.strip()
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py", line 1634, in _communicate
+    raise TimeoutExpired(self.args, orig_timeout)
+subprocess.TimeoutExpired: Command '['C:/Users/Lenovo/AppData/Local/Temp/ck_t199b_1908911042/venv/Scripts/python.exe', '-c', 'import autotester;print(autotester.__file__)']' timed out after 60 seconds

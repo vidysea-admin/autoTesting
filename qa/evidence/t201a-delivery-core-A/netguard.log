@@ -1,0 +1,2 @@
+connect-loop ('127.0.0.1', 50377) test=tests/test_delivery_smtp.py::test_loopback_server_receives_one_well_formed_message_over_real_smtplib (call)
+connect-loop ('127.0.0.1', 50383) test=tests/test_delivery_smtp.py::test_silent_server_trips_the_timeout_instead_of_hanging (call)

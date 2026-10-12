@@ -1,0 +1,6 @@
+warning: `VIRTUAL_ENV=.venv` does not match the project environment path `.worktrees\t198a-zip-drive-intake\.venv` and will be ignored; use `--active` to target the active environment instead
+doctor: clean
+exit=0
+head=dba80100307f62847c14a75c08bd674ac81c7f8f
+
+--- second run, cwd = the worktree (uv run autotester doctor): doctor: clean, exit=0, head=dba80100307f62847c14a75c08bd674ac81c7f8f

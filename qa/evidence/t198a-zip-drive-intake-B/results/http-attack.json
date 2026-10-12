@@ -1,0 +1,585 @@
+{
+ "gate_refuse_upload": {
+  "status": 403,
+  "body_bytes_read": 0,
+  "rows": 0,
+  "recordings": 0,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "gate_refuse_drive": {
+  "status": 403,
+  "body_bytes_read": 0,
+  "jobs": []
+ },
+ "endless_no_cl": {
+  "status": 413,
+  "body_bytes_read": 5308607,
+  "limit": 5242880,
+  "rows": 0,
+  "recordings": 0,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "endless_lying_small_cl": {
+  "status": 413,
+  "body_bytes_read": 5308607,
+  "rows": 0,
+  "recordings": 0,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "six_mib_lying_huge_cl": {
+  "status": 303,
+  "body_bytes_read": 4718807,
+  "rows": 1,
+  "recordings": 1,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "exact_limit": {
+  "status": 303,
+  "rows": 2,
+  "recordings": 2,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "limit_plus_1": {
+  "status": 413,
+  "rows": 2,
+  "recordings": 2,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "small_valid_lying_cl5": {
+  "status": 303,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "truncated_no_closing": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "truncated_inside_head": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "oversize_part_header": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "oversize_header_dribble": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "ct_no_ct": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "ct_ct_text": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "ct_multipart_noboundary": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "ct_boundary_empty": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "ct_boundary_huge": {
+  "status": "EXC FormParserError: Boundary length 5000 exceeds maximum of 256",
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "ct_ct_urlencoded": {
+  "status": 400,
+  "rows": 3,
+  "recordings": 3,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "multipart_5000_fields": {
+  "status": 303,
+  "rows": 4,
+  "recordings": 4,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "field_after_file": {
+  "status": 303,
+  "rows": 5,
+  "recordings": 5,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "two_files": {
+  "status": 400,
+  "rows": 5,
+  "recordings": 5,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "drive_form_60_fields": {
+  "status": 400,
+  "body_has_trace": false
+ },
+ "drive_form_200k": {
+  "status": 413,
+  "bytes_read": 204805
+ },
+ "drive_form_badutf": {
+  "status": 400
+ },
+ "spoof_fields": {
+  "status": 303,
+  "stored": [
+   {
+    "id": "src_ea801dd39201",
+    "by": "dev@vidysea.test",
+    "at": "2026-10-11 00:33:44.411520+00:00",
+    "origin": {
+     "kind": "upload",
+     "file_name": "spoof.mp4"
+    },
+    "path": "ROOT\\projects\\demo\\sources\\src_ea801dd39201\\recording.mp4",
+    "label": "spoof",
+    "sha": "01cea0e8",
+    "project": "demo"
+   }
+  ]
+ },
+ "filename_variants": {
+  "results": [
+   [
+    "../../evil.mp4",
+    303,
+    ""
+   ],
+   [
+    "..\\..\\evil.mp4",
+    303,
+    ""
+   ],
+   [
+    "C:\\Windows\\x.mp4",
+    303,
+    ""
+   ],
+   [
+    "<img src=x onerror=alert(1)>.mp4",
+    303,
+    ""
+   ],
+   [
+    "\"><script>alert(1)</script>.mp4",
+    303,
+    ""
+   ],
+   [
+    "a'b.mp4",
+    303,
+    ""
+   ],
+   [
+    "x&amp;y.mp4",
+    303,
+    ""
+   ],
+   [
+    "javascript:alert(1).mp4",
+    303,
+    ""
+   ],
+   [
+    "con.mp4",
+    303,
+    ""
+   ],
+   [
+    "a\u202e4pm.mp4",
+    303,
+    ""
+   ],
+   [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    303,
+    ""
+   ]
+  ],
+  "rows": 17,
+  "recordings": 17,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "sources_page_markup": {
+  "raw_script": false,
+  "raw_img": false,
+  "len": 25853
+ },
+ "stored_labels_origins": {
+  "items": [
+   [
+    "lab5",
+    {
+     "kind": "upload",
+     "file_name": "a'b.mp4"
+    }
+   ],
+   [
+    "lab6",
+    {
+     "kind": "upload",
+     "file_name": "x&amp;y.mp4"
+    }
+   ],
+   [
+    "lab7",
+    {
+     "kind": "upload",
+     "file_name": "javascript:alert(1).mp4"
+    }
+   ],
+   [
+    "lab8",
+    {
+     "kind": "upload",
+     "file_name": "con.mp4"
+    }
+   ],
+   [
+    "lab9",
+    {
+     "kind": "upload",
+     "file_name": "a\\u202e4pm.mp4"
+    }
+   ],
+   [
+    "lab10",
+    {
+     "kind": "upload",
+     "file_name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx..."
+    }
+   ]
+  ],
+  "paths_under_root": true
+ },
+ "label_script": {
+  "status": 303,
+  "raw_in_page": false
+ },
+ "zip_name_<img src=x o": {
+  "status": 200,
+  "raw_script": false,
+  "raw_img": false,
+  "has_escaped": true
+ },
+ "zip_name_\"><script>al": {
+  "status": 200,
+  "raw_script": false,
+  "raw_img": false,
+  "has_escaped": true
+ },
+ "zip_name_a&b'c.zip": {
+  "status": 200,
+  "raw_script": false,
+  "raw_img": false,
+  "has_escaped": true
+ },
+ "zip_state": {
+  "rows": 24,
+  "recordings": 24,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "fake_zip": {
+  "status": 200,
+  "title_ok": true,
+  "rows": 24,
+  "recordings": 24,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "conc_same_bytes": {
+  "statuses": [
+   303,
+   303,
+   303,
+   303,
+   303,
+   303
+  ],
+  "new_rows": 1,
+  "rows": 25,
+  "recordings": 25,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "conc_diff_bytes_same_name": {
+  "statuses": [
+   303,
+   303,
+   303,
+   303,
+   303,
+   303
+  ],
+  "new_rows": 6,
+  "ids_unique": true,
+  "rows": 31,
+  "recordings": 31,
+  "leftovers": [
+   ".work\\server_settings.json"
+  ]
+ },
+ "rows_match_files": {
+  "bad": [],
+  "n": 31
+ },
+ "drive_links": {
+  "rows": [
+   [
+    "http://127.0.0.1/x",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "file:///etc/passwd",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com.evil.io/file/d/ABCDEF123/",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://evil.io/?u=https://drive.google.com/file/d",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://user:pw@drive.google.com/file/d/ABCDEF123/",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com@evil.io/file/d/ABCDEF123/",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com:8443/file/d/ABCDEF123/vie",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com/uc?id=ABCDEF123&export=do",
+    303,
+    "-",
+    "/projects/demo/sources/drive/01M4M62SK47SH3SXBPAF6RNYMS"
+   ],
+   [
+    "https://drive.google.com/file/d/ABC%2FDEF123/view",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com/file/d/ABCDEF;ls/view",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com/file/d/../../../etc/view",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com/open?id=a&id=b",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com/file/d/AB/view",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "ABCDEF123;calc",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "ABCDEF123 && calc",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "`calc`ABCDEF",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "$(calc)ABCDEF",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "ABC'DEF123",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "ABC\"DEF123",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "ABCDEF123\nrm",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "<script>alert(8)</script>",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://169.254.169.254/latest",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com/drive/folders/ABCDEF123/.",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com\\@evil.io/file/d/ABCDEF123",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://evil.io/redirect?to=https://drive.google.c",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "HTTPS://DRIVE.GOOGLE.COM.:443/file/d/ABCDEF123/vie",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com./file/d/ABCDEF123/view",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://xn--drive-google.com/file/d/ABCDEF123",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "https://drive.google.com/file/d/\u0410BCDEF123/view",
+    400,
+    "-",
+    ""
+   ],
+   [
+    "",
+    400,
+    "-",
+    ""
+   ]
+  ],
+  "fake_drive_calls": [
+   [
+    "metadata",
+    "ABCDEF123"
+   ]
+  ],
+  "jobs_made": [
+   "01M4M62SK47SH3SXBPAF6RNYMS.json"
+  ]
+ }
+}

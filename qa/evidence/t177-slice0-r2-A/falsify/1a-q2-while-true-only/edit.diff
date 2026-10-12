@@ -1,0 +1,7 @@
+--- a/launch.py
++++ b/launch.py
+@@ -102,3 +102,3 @@
+         size = 0
+-        while time.monotonic() < deadline:
++        while True:
+             piece = reply.read1(PROBE_MAX_BYTES + 1 - size)

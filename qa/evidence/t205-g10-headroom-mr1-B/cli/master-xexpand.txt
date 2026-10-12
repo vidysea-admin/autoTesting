@@ -1,0 +1,21 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+                                                                                                   
+ Usage: autotester expand [OPTIONS] {project}                                                      
+                                                                                                   
+ Review/prune proposals, then generate only persisted human-approved cases.                        
+                                                                                                   
+ AT-239: persisting is this caller's job (expand.md no-fire); AT-260: a provider failure           
+ discards every in-memory case, so nothing is persisted.                                           
+                                                                                                   
+┌─ Arguments ─────────────────────────────────────────────────────────────────────────────────────┐
+│ *    project      <str>  [required]                                                             │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─ Options ───────────────────────────────────────────────────────────────────────────────────────┐
+│ --provider         <str>  [default: langchain-fallback]                                         │
+│ --proposals               Stage/list step-less proposals.                                       │
+│ --approve          <str>  Approve a saved proposal ID.                                          │
+│ --prune            <str>  Prune a saved proposal ID.                                            │
+│ --by               <str>  Human reviewer; required for decisions.                               │
+│ --help                    Show this message and exit.                                           │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+

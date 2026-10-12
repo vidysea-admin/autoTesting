@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU22-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_survivors.py F                                        [100%]
+
+================================== FAILURES ===================================
+________ test_au22_audit_line_holds_the_template_not_the_query_string _________
+tests\test_ui_auth_survivors.py:54: in test_au22_audit_line_holds_the_template_not_the_query_string
+    assert "Query-Canary-77" not in audit and "/admin/users/{user_id}/{action}" in audit
+E   assert ('Query-Canary-77' not in '{"ts": "202...tus": 303}\n'
+E     
+E     'Query-Canary-77' is contained here:
+E       ame?token=Query-Canary-77", "status": 303}
+E     ?           +++++++++++++++)
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_survivors.py::test_au22_audit_line_holds_the_template_not_the_query_string
+======================== 1 failed, 1 warning in 2.58s =========================

@@ -1,0 +1,311 @@
+autotester: C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-cpA-141322518\src\autotester\__init__.py
+
+## POST drive (video.upload)  [POST /projects/alpha/sources/drive]
+   baseline: {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   plain                        {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   trailing slash               {'anon': '401', 'nogroup': '307->http://testserver/projects/alp', 'pv_only': '307->http://testserver/projects/alp', 'tester_shared': '307->http://testserver/projects/alp'}
+   double slash after 1st seg   {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   double slash prefix          {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   dot segment /./              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   dotdot via /zzz/..           {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   pct-encoded %2F after 1st    {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   pct-encoded last char        {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   double-encoded %252F         {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   uppercase first seg          {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   query ?next=/auth/login      {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   semicolon param              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   pct-23 fragment              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   trailing dot                 {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   null %00                     {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   overlong %c0%af              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   fullwidth slash %EF%BC%8F    {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   backslash                    {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   absolute-URI target          {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   public-prefix /auth/login/.. {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   public-suffix + /healthz     {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   method post                 {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   method Post                 {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   method get                  {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   method HEAD                 {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method OPTIONS              {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method PUT                  {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method PATCH                {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method DELETE               {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method TRACE                {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method FOO                  {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   header X-HTTP-Method-Override   {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Original-URL           {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Rewrite-URL            {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Forwarded-Prefix       {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Forwarded-For          {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Forwarded-Host         {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+
+## POST upload (video.upload)  [POST /projects/alpha/sources/upload]
+   baseline: {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   plain                        {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   trailing slash               {'anon': '401', 'nogroup': '307->http://testserver/projects/alp', 'pv_only': '307->http://testserver/projects/alp', 'tester_shared': '307->http://testserver/projects/alp'}
+   double slash after 1st seg   {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   double slash prefix          {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   dot segment /./              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   dotdot via /zzz/..           {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   pct-encoded %2F after 1st    {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   pct-encoded last char        {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   double-encoded %252F         {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   uppercase first seg          {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   query ?next=/auth/login      {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   semicolon param              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   pct-23 fragment              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   trailing dot                 {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   null %00                     {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   overlong %c0%af              {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   fullwidth slash %EF%BC%8F    {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   backslash                    {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   absolute-URI target          {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   public-prefix /auth/login/.. {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   public-suffix + /healthz     {'anon': '401', 'nogroup': '404', 'pv_only': '404', 'tester_shared': '404'}
+   method post                 {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   method Post                 {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   method get                  {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   method HEAD                 {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method OPTIONS              {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method PUT                  {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method PATCH                {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method DELETE               {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method TRACE                {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405'}
+   method FOO                  {'anon': '400', 'nogroup': '400', 'pv_only': '400', 'tester_shared': '400'}
+   header X-HTTP-Method-Override   {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+
+   header X-Rewrite-URL            {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Forwarded-Prefix       {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Forwarded-For          {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+   header X-Forwarded-Host         {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '403'}
+
+## GET damage-report (report.view)  [GET /projects/alpha/damage-report]
+   baseline: {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   plain                        {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   trailing slash               {'anon': '401', 'nogroup': '307->http://testserver/projects/alp', 'pv_only': '307->http://testserver/projects/alp'}
+   double slash after 1st seg   {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   double slash prefix          {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   dot segment /./              {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   dotdot via /zzz/..           {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   pct-encoded %2F after 1st    {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   pct-encoded last char        {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   double-encoded %252F         {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   uppercase first seg          {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   query ?next=/auth/login      {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   semicolon param              {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   pct-23 fragment              {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   trailing dot                 {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   null %00                     {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   overlong %c0%af              {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   fullwidth slash %EF%BC%8F    {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   backslash                    {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   absolute-URI target          {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   public-prefix /auth/login/.. {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   public-suffix + /healthz     {'anon': '401', 'nogroup': '404', 'pv_only': '404'}
+   method post                 {'anon': '400', 'nogroup': '400', 'pv_only': '400'}
+   method Post                 {'anon': '400', 'nogroup': '400', 'pv_only': '400'}
+   method get                  {'anon': '400', 'nogroup': '400', 'pv_only': '400'}
+   method HEAD                 {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   method OPTIONS              {'anon': '401', 'nogroup': '405', 'pv_only': '405'}
+   method PUT                  {'anon': '401', 'nogroup': '405', 'pv_only': '405'}
+   method PATCH                {'anon': '401', 'nogroup': '405', 'pv_only': '405'}
+   method DELETE               {'anon': '401', 'nogroup': '405', 'pv_only': '405'}
+   method TRACE                {'anon': '401', 'nogroup': '405', 'pv_only': '405'}
+   method FOO                  {'anon': '400', 'nogroup': '400', 'pv_only': '400'}
+   header X-HTTP-Method-Override   {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   header X-Original-URL           {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   header X-Rewrite-URL            {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   header X-Forwarded-Prefix       {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   header X-Forwarded-For          {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+   header X-Forwarded-Host         {'anon': '401', 'nogroup': '403', 'pv_only': '403'}
+
+## GET drive job (project.view)  [GET /projects/alpha/sources/drive/01HZZZZZZZZZZZZZZZZZZZZZZZ]
+   baseline: {'anon': '401', 'nogroup': '403'}
+   plain                        {'anon': '401', 'nogroup': '403'}
+   trailing slash               {'anon': '401', 'nogroup': '307->http://testserver/projects/alp'}
+   double slash after 1st seg   {'anon': '401', 'nogroup': '404'}
+   double slash prefix          {'anon': '401', 'nogroup': '404'}
+   dot segment /./              {'anon': '401', 'nogroup': '404'}
+   dotdot via /zzz/..           {'anon': '401', 'nogroup': '404'}
+   pct-encoded %2F after 1st    {'anon': '401', 'nogroup': '403'}
+   pct-encoded last char        {'anon': '401', 'nogroup': '403'}
+   double-encoded %252F         {'anon': '401', 'nogroup': '404'}
+   uppercase first seg          {'anon': '401', 'nogroup': '404'}
+   query ?next=/auth/login      {'anon': '401', 'nogroup': '403'}
+   semicolon param              {'anon': '401', 'nogroup': '403'}
+   pct-23 fragment              {'anon': '401', 'nogroup': '403'}
+   trailing dot                 {'anon': '401', 'nogroup': '403'}
+   null %00                     {'anon': '401', 'nogroup': '403'}
+   overlong %c0%af              {'anon': '401', 'nogroup': '404'}
+   fullwidth slash %EF%BC%8F    {'anon': '401', 'nogroup': '404'}
+   backslash                    {'anon': '401', 'nogroup': '404'}
+   absolute-URI target          {'anon': '401', 'nogroup': '403'}
+   public-prefix /auth/login/.. {'anon': '401', 'nogroup': '404'}
+   public-suffix + /healthz     {'anon': '401', 'nogroup': '404'}
+   method post                 {'anon': '400', 'nogroup': '400'}
+   method Post                 {'anon': '400', 'nogroup': '400'}
+   method get                  {'anon': '400', 'nogroup': '400'}
+   method HEAD                 {'anon': '401', 'nogroup': '403'}
+   method OPTIONS              {'anon': '401', 'nogroup': '405'}
+   method PUT                  {'anon': '401', 'nogroup': '405'}
+   method PATCH                {'anon': '401', 'nogroup': '405'}
+   method DELETE               {'anon': '401', 'nogroup': '405'}
+   method TRACE                {'anon': '401', 'nogroup': '405'}
+   method FOO                  {'anon': '400', 'nogroup': '400'}
+   header X-HTTP-Method-Override   {'anon': '401', 'nogroup': '403'}
+   header X-Original-URL           {'anon': '401', 'nogroup': '403'}
+   header X-Rewrite-URL            {'anon': '401', 'nogroup': '403'}
+   header X-Forwarded-Prefix       {'anon': '401', 'nogroup': '403'}
+   header X-Forwarded-For          {'anon': '401', 'nogroup': '403'}
+   header X-Forwarded-Host         {'anon': '401', 'nogroup': '403'}
+
+## GET admin/users (users.manage)  [GET /admin/users]
+   baseline: {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   plain                        {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   trailing slash               {'anon': '401', 'nogroup': '307->http://testserver/admin/users', 'tester_shared': '307->http://testserver/admin/users', 'dev_owner_alpha': '307->http://testserver/admin/users'}
+   double slash after 1st seg   {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   double slash prefix          {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   dot segment /./              {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   dotdot via /zzz/..           {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   pct-encoded %2F after 1st    {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   pct-encoded last char        {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   double-encoded %252F         {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   uppercase first seg          {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   query ?next=/auth/login      {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   semicolon param              {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+
+   trailing dot                 {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   null %00                     {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   overlong %c0%af              {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   fullwidth slash %EF%BC%8F    {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   backslash                    {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   absolute-URI target          {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   public-prefix /auth/login/.. {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   public-suffix + /healthz     {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   method post                 {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   method Post                 {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   method get                  {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   method HEAD                 {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   method OPTIONS              {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method PUT                  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method PATCH                {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method DELETE               {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method TRACE                {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method FOO                  {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   header X-HTTP-Method-Override   {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Original-URL           {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Rewrite-URL            {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Forwarded-Prefix       {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Forwarded-For          {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Forwarded-Host         {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+
+## POST admin/groups (groups.manage)  [POST /admin/groups]
+   baseline: {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   plain                        {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   trailing slash               {'anon': '401', 'nogroup': '307->http://testserver/admin/groups', 'tester_shared': '307->http://testserver/admin/groups', 'dev_owner_alpha': '307->http://testserver/admin/groups'}
+   double slash after 1st seg   {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   double slash prefix          {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   dot segment /./              {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   dotdot via /zzz/..           {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   pct-encoded %2F after 1st    {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   pct-encoded last char        {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   double-encoded %252F         {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   uppercase first seg          {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   query ?next=/auth/login      {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   semicolon param              {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   pct-23 fragment              {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   trailing dot                 {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   null %00                     {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   overlong %c0%af              {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   fullwidth slash %EF%BC%8F    {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   backslash                    {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   absolute-URI target          {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   public-prefix /auth/login/.. {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   public-suffix + /healthz     {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'dev_owner_alpha': '404'}
+   method post                 {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   method Post                 {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   method get                  {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   method HEAD                 {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   method OPTIONS              {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method PUT                  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method PATCH                {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method DELETE               {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method TRACE                {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'dev_owner_alpha': '405'}
+   method FOO                  {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'dev_owner_alpha': '400'}
+   header X-HTTP-Method-Override   {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Original-URL           {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Rewrite-URL            {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Forwarded-Prefix       {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Forwarded-For          {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+   header X-Forwarded-Host         {'anon': '401', 'nogroup': '403', 'tester_shared': '403', 'dev_owner_alpha': '403'}
+
+## GET beta report (dev/tester not on beta)  [GET /projects/beta/damage-report]
+   baseline: {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   plain                        {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   trailing slash               {'dev_owner_alpha': '307->http://testserver/projects/bet', 'tester_shared': '307->http://testserver/projects/bet'}
+   double slash after 1st seg   {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   double slash prefix          {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   dot segment /./              {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   dotdot via /zzz/..           {'dev_owner_alpha': '404', 'tester_shared': '404'}
+
+   pct-encoded last char        {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   double-encoded %252F         {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   uppercase first seg          {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   query ?next=/auth/login      {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   semicolon param              {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   pct-23 fragment              {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   trailing dot                 {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   null %00                     {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   overlong %c0%af              {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   fullwidth slash %EF%BC%8F    {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   backslash                    {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   absolute-URI target          {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   public-prefix /auth/login/.. {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   public-suffix + /healthz     {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   method post                 {'dev_owner_alpha': '400', 'tester_shared': '400'}
+   method Post                 {'dev_owner_alpha': '400', 'tester_shared': '400'}
+   method get                  {'dev_owner_alpha': '400', 'tester_shared': '400'}
+   method HEAD                 {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   method OPTIONS              {'dev_owner_alpha': '405', 'tester_shared': '405'}
+   method PUT                  {'dev_owner_alpha': '405', 'tester_shared': '405'}
+   method PATCH                {'dev_owner_alpha': '405', 'tester_shared': '405'}
+   method DELETE               {'dev_owner_alpha': '405', 'tester_shared': '405'}
+   method TRACE                {'dev_owner_alpha': '405', 'tester_shared': '405'}
+   method FOO                  {'dev_owner_alpha': '400', 'tester_shared': '400'}
+   header X-HTTP-Method-Override   {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   header X-Original-URL           {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   header X-Rewrite-URL            {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   header X-Forwarded-Prefix       {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   header X-Forwarded-For          {'dev_owner_alpha': '404', 'tester_shared': '404'}
+   header X-Forwarded-Host         {'dev_owner_alpha': '404', 'tester_shared': '404'}
+
+FLAGGED (2xx/422/500 where a refusal is expected): []
+
+UNKNOWN PATH / METHOD
+   GET /nope                                    {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /projects/alpha/nope                     {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /projects/nonexistent/damage-report      {'anon': '401', 'nogroup': '403', 'tester_shared': '404', 'admin': '404'}
+   GET /projects/nonexistent/sources/drive      {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   GET /static/x.js                             {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /ws                                      {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /admin                                   {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /admin/                                  {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /projects                                {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /projects/                               {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /auth                                    {'anon': '401', 'nogroup': '404', 'tester_shared': '404', 'admin': '404'}
+   GET /openapi.json/                           {'anon': '401', 'nogroup': '307->http://testserver/openapi.json', 'tester_shared': '307->http://testserver/openapi.json', 'admin': '307->http://testserver/openapi.json'}
+   GET /docs/                                   {'anon': '401', 'nogroup': '307->http://testserver/docs', 'tester_shared': '307->http://testserver/docs', 'admin': '307->http://testserver/docs'}
+   GET /live/                                   {'anon': '401', 'nogroup': '307->http://testserver/live', 'tester_shared': '307->http://testserver/live', 'admin': '307->http://testserver/live'}
+   PUT     /projects/alpha/sources/drive  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   PATCH   /projects/alpha/sources/drive  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   DELETE  /projects/alpha/sources/drive  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   OPTIONS /projects/alpha/sources/drive  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   HEAD    /projects/alpha/sources/drive  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   TRACE   /projects/alpha/sources/drive  {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   FOO     /projects/alpha/sources/drive  {'anon': '400', 'nogroup': '400', 'tester_shared': '400', 'admin': '400'}
+   GET /projects/alpha/sources/drive (POST-only) {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   HEAD on POST-only upload {'anon': '401', 'nogroup': '405', 'tester_shared': '405', 'admin': '405'}
+   HEAD /projects/alpha/damage-report {'anon': '401', 'nogroup': '403', 'pv_only': '403', 'tester_shared': '405', 'admin': '405'}
+   OPTIONS /projects/alpha/damage-report {'anon': '401', 'nogroup': '405', 'pv_only': '405', 'tester_shared': '405', 'admin': '405'}
+   websocket upgrade GET /live (anon) 403

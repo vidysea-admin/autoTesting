@@ -17,7 +17,7 @@ from pathlib import Path
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers.base import Provider
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
 from autotester.schema.enums import Outcome
@@ -34,7 +34,7 @@ from autotester.store.project_store import ProjectStore
 
 
 def _run_and_grade_resilient(
-    case: Case, session: BrowserSession, judge: LangChainFallbackProvider, run_id: str,
+    case: Case, session: BrowserSession, judge: Provider, run_id: str,
     store: ProjectStore,
 ) -> tuple[RawResult, Verdict]:
     """Never let one case take the whole run down (AT-574). `run_and_grade_
@@ -57,9 +57,26 @@ def _run_and_grade_resilient(
         return result, verdict
 
 
+def _wipe_entry_profile(profile: Path) -> None:
+    """Remove the entry profile and positively establish it is gone (RU5, C12).
+    An already-absent directory is success. A failed removal, a directory still
+    present, or an existence check that itself raises all propagate as `OSError`
+    (never `ignore_errors`, never `os.path.lexists`, which reads an error as
+    'absent'), so the caller never starts a browser on a logged-in profile."""
+    try:
+        with contextlib.suppress(FileNotFoundError):
+            shutil.rmtree(profile)
+        present = profile.exists()
+    except OSError as exc:
+        cause = f"{type(exc).__name__}: {exc}"
+        raise OSError(f"entry profile not removed: {profile} ({cause})") from exc
+    if present:
+        raise OSError(f"entry profile not removed: {profile} (still present after removal)")
+
+
 def _run_entry_case(
     case: Case, project: Project, secrets: SecretStore, run_dir: Path, slug: str,
-    judge: LangChainFallbackProvider, run_id: str, store: ProjectStore,
+    judge: Provider, run_id: str, store: ProjectStore,
     *, budget: RunBudget,
 ) -> tuple[RawResult, Verdict]:
     """A dedicated, wiped-before-every-run profile so an entry-screen case is
@@ -70,10 +87,11 @@ def _run_entry_case(
     both number screenshots from 01 and collide. `evidence_prefix = case.id`
     (AT-572's mechanism) nests this case's files under `run_dir/<case.id>/`."""
     entry_paths = ProjectPaths(f"{slug}-entry-test")
-    shutil.rmtree(entry_paths.profile_dir, ignore_errors=True)
-    session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
-    session.state.evidence_prefix = case.id
+    session: BrowserSession | None = None
     try:
+        _wipe_entry_profile(entry_paths.profile_dir)  # AT-733 / RU5: fail closed, no browser
+        session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
+        session.state.evidence_prefix = case.id
         session.budget = budget
         budget.check_start()
         session.start()
@@ -83,13 +101,14 @@ def _run_entry_case(
                            error=secrets.redactor().scrub(f"{type(exc).__name__}: {exc}"))
         return result, grade_errored_result(case, result, judge, run_id, store)
     finally:
-        with contextlib.suppress(Exception):
-            session.close()
+        if session is not None:
+            with contextlib.suppress(Exception):
+                session.close()
 
 
 def _run_cases_serially(
     cases: list[Case], entry_flags: list[bool], project: Project, secrets: SecretStore,
-    run_dir: Path, paths: ProjectPaths, slug: str, judge: LangChainFallbackProvider,
+    run_dir: Path, paths: ProjectPaths, slug: str, judge: Provider,
     run_id: str, store: ProjectStore,
     *, budget: RunBudget,
 ) -> None:
@@ -130,7 +149,7 @@ def _run_cases_serially(
 
 def _run_entry_cases(
     entry_cases: list[Case], project: Project, secrets: SecretStore, run_dir: Path,
-    slug: str, judge: LangChainFallbackProvider, run_id: str, store: ProjectStore,
+    slug: str, judge: Provider, run_id: str, store: ProjectStore,
     *, budget: RunBudget,
 ) -> None:
     """The serial entry-case leg of a parallel run: each entry case keeps its
@@ -147,7 +166,7 @@ def _run_entry_cases(
 
 def _run_cases_in_parallel(
     cases: list[Case], entry_flags: list[bool], plan: ParallelPlan, project: Project,
-    secrets: SecretStore, run_dir: Path, slug: str, judge: LangChainFallbackProvider,
+    secrets: SecretStore, run_dir: Path, slug: str, judge: Provider,
     run_id: str, store: ProjectStore, approval: RunApproval,
     *, budget: RunBudget,
 ) -> None:

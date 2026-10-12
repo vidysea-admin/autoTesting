@@ -1,0 +1,7 @@
+--- a/launch.py
++++ b/launch.py
+@@ -110,4 +110,2 @@
+             size += len(piece)
+-            if size > PROBE_MAX_BYTES:
+-                raise ValueError("reply too large")
+         raise TimeoutError("the DevTools probe passed its deadline")

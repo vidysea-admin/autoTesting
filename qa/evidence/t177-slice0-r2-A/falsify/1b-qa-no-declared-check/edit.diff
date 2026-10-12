@@ -1,0 +1,7 @@
+--- a/launch.py
++++ b/launch.py
+@@ -98,4 +98,2 @@
+             raise ValueError(f"status {reply.status}")  # a redirect included
+-        if int(reply.getheader("Content-Length") or 0) > PROBE_MAX_BYTES:
+-            raise ValueError("reply too large")
+         chunks: list[bytes] = []

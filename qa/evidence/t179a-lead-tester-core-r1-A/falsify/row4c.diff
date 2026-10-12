@@ -1,0 +1,11 @@
+--- head/src/autotester/agents/guards.py	2026-10-12 02:38:37.000000000 +0530
++++ scripts/falsify/row4c/src/autotester/agents/guards.py	2026-10-12 03:20:37.891191000 +0530
+@@ -121,7 +121,7 @@
+     action = step.action
+     if action in _READS:
+         return None
+-    if action is Action.FILL and walk.login and _declared_credential(step.value, project):
++    if action is Action.FILL and _declared_credential(step.value, project):
+         walk.credential_pending = True
+         return None
+     enter = action is Action.PRESS_KEY and step.value in (None, "Enter")

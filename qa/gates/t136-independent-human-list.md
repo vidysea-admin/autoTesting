@@ -8,3 +8,5 @@ Question: where does the human tester's bug list for Pathlynks come from? Option
 Why it is open: AutoTester's Pathlynks report is delivered first (`d081-pathlynks-report-first.md`). A list written after reading it cannot produce the recall number (AT-653, `qa/contracts/bench.md` K6-K9): recall is computed from the independent subset only, and the artifact must say `recall: unavailable (ordering not recorded)` rather than a number with absent provenance. FP rate survives either ordering.
 
 T-136 and T-169 stay pending and are not buildable until a list exists. The ERP truth sheet is not on the critical path (D-080 item 4).
+
+Answered (partial, ordering): 2026-10-12 - Umesh (chat): "phle ek level build krr dee, firr feedback deke fix krwaaungaa" - build the AutoTester column + comparison artifact first; Umesh gives his findings as feedback afterwards. Per AT-653 a list written after reading the report gives recall: unavailable (ordering not recorded); FP rate and time stay valid. D-086 item 4. Source of the human list (A tester / B Umesh before reading) still OPEN.

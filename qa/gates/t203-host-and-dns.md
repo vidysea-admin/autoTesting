@@ -11,3 +11,5 @@ Answered part: T-203 proceeds as a LOCAL deployment on the dev machine for now. 
 STILL OPEN: the real server host and the DNS name. No Answered line for this part. Owed by Umesh.
 
 Answered (local-machine part only): 2026-10-10 - host locally for now - D-081
+
+Umesh (2026-10-12): "ubuntu hoga will provide later abhi tho yhi system mai host kroo" - the real host will be an Ubuntu server, details later; keep hosting on this machine until then. Host name and DNS still OPEN.

@@ -1,0 +1,9 @@
+name: m4-double-bump
+import_path: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fz\m4-double-bump\src\autotester\__init__.py
+green_rc: 0
+green_tail: ======================= 31 passed, 3 warnings in 6.52s ========================
+green_s: 21
+red_rc: 1
+red_tail: ================== 1 failed, 30 passed, 3 warnings in 5.99s ===================
+red_s: 18
+failed: ['FAILED tests/test_explore_flows.py::test_a_merge_that_adds_screens_and_flows_bumps_the_version_exactly_once']

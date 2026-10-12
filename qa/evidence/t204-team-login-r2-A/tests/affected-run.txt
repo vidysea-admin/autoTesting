@@ -1,0 +1,78 @@
+warning: `VIRTUAL_ENV=.venv` does not match the project environment path `.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\autoTesting\.worktrees\t204-team-login
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 459 items
+
+.worktrees\t204-team-login\tests\test_ui_auth_accounts.py .............  [  2%]
+.worktrees\t204-team-login\tests\test_ui_auth_cli_and_limits.py ......   [  4%]
+.worktrees\t204-team-login\tests\test_ui_auth_envkeys.py ............... [  7%]
+........                                                                 [  9%]
+.worktrees\t204-team-login\tests\test_ui_auth_escalation.py ............ [ 11%]
+..........                                                               [ 13%]
+.worktrees\t204-team-login\tests\test_ui_auth_groups.py ................ [ 17%]
+.................                                                        [ 21%]
+.worktrees\t204-team-login\tests\test_ui_auth_hardening.py ............. [ 23%]
+......                                                                   [ 25%]
+.worktrees\t204-team-login\tests\test_ui_auth_host_and_consent.py ...... [ 26%]
+.......                                                                  [ 28%]
+.worktrees\t204-team-login\tests\test_ui_auth_login.py ................. [ 31%]
+....                                                                     [ 32%]
+.worktrees\t204-team-login\tests\test_ui_auth_own_origin.py ............ [ 35%]
+........................................................                 [ 47%]
+.worktrees\t204-team-login\tests\test_ui_auth_refusal_audit.py ....      [ 48%]
+.worktrees\t204-team-login\tests\test_ui_auth_surface.py ............... [ 51%]
+......                                                                   [ 52%]
+.worktrees\t204-team-login\tests\test_ui_auth_survivors.py ....          [ 53%]
+.worktrees\t204-team-login\tests\test_auth_deploy_files.py ...           [ 54%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py ........... [ 56%]
+....................                                                     [ 61%]
+.worktrees\t204-team-login\tests\test_hosting_deploy.py ...F.......      [ 63%]
+.worktrees\t204-team-login\tests\test_hosting_config.py ........         [ 65%]
+.worktrees\t204-team-login\tests\test_env_loading.py ......              [ 66%]
+.worktrees\t204-team-login\tests\test_ui_origin_guard.py ............... [ 69%]
+........................................................................ [ 85%]
+........                                                                 [ 87%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py ........... [ 89%]
+....                                                                     [ 90%]
+.worktrees\t204-team-login\tests\test_credential_run_approval.py ....... [ 92%]
+..................                                                       [ 96%]
+.worktrees\t204-team-login\tests\test_approval_signing.py .............. [ 99%]
+....                                                                     [100%]
+
+================================== FAILURES ===================================
+_____________ test_env_example_documents_every_key_the_code_reads _____________
+
+    def test_env_example_documents_every_key_the_code_reads() -> None:
+        documented = set(re.findall(r"^#?\s*(AUTOTESTER_[A-Z_]+)=", (ROOT / ".env.example")
+                                   .read_text(encoding="utf-8"), re.M))
+        used = set()
+        for path in (ROOT / "src").rglob("*.py"):
+            used |= set(re.findall(r"AUTOTESTER_[A-Z_]+[A-Z]", path.read_text(encoding="utf-8")))
+>       assert used - documented == set(), f"undocumented env keys: {sorted(used - documented)}"
+E       AssertionError: undocumented env keys: ['AUTOTESTER_SCHEDULE_GRACE_MINUTES', 'AUTOTESTER_TICK_INTERVAL_S']
+E       assert {'AUTOTESTER_...K_INTERVAL_S'} == set()
+E         
+E         Extra items in the left set:
+E         'AUTOTESTER_TICK_INTERVAL_S'
+E         'AUTOTESTER_SCHEDULE_GRACE_MINUTES'
+E         Use -v to get more diff
+
+.worktrees\t204-team-login\tests\test_hosting_deploy.py:67: AssertionError
+============================== warnings summary ===============================
+.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 5 durations =============================
+58.93s call     tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+44.09s call     tests/test_ui_auth_groups.py::test_au13_visible_without_the_action_is_403
+31.84s call     tests/test_ui_auth_groups.py::test_au13_four_users_two_projects
+29.61s call     tests/test_ui_auth_groups.py::test_au10_group_edit_route_cannot_escalate
+27.23s call     tests/test_ui_auth_escalation.py::test_au13_the_access_page_lists_team_emails_only_to_those_who_manage_access
+=========================== short test summary info ===========================
+FAILED .worktrees\t204-team-login\tests\test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+============ 1 failed, 458 passed, 1 warning in 1061.94s (0:17:41) ============

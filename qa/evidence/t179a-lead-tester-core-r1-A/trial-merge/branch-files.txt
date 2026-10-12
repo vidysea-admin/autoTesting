@@ -1,0 +1,11 @@
+docs/MAP.md
+docs/SNAPSHOT.md
+qa/briefs/t179-lead-tester.md
+qa/manifests/t179a-lead-tester-core.md
+src/autotester/agents/__init__.py
+src/autotester/agents/context.py
+src/autotester/agents/guards.py
+src/autotester/agents/tools.py
+src/autotester/schema/agent_layer.py
+tests/test_agent_read_only.py
+tests/test_agent_tools.py

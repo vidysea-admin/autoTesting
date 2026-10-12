@@ -1,0 +1,78 @@
+autotester at D:\autoTesting\.worktrees\check-t205-r1-b\src\autotester\__init__.py
+sentinel intact: True | extra entries beside root: []
+'ab:stream'                                  validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'nul:'                                       validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'NUL:x'                                      validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'CON .txt'                                   validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'CON'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'con.txt'                                    validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'CONIN$'                                     validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'conin$.x'                                   validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'CONOUT$'                                    validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'CONOUT$ .txt'                               validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'LPT\xb9'                                    validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'lpt\xb2.log'                                validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'COM\xb3'                                    validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'com\xb9 .x'                                 validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'COM1'                                       validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'com9.x'                                     validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'LPT1 '                                      validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'x.'                                         validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'x '                                         validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'x..'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'...'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'..'                                         validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a<b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a>b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a"b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a|b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a?b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a*b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a:b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'C:'                                         validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'c:\\x'                                      validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a/b'                                        validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a\\b'                                       validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'/abs'                                       validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'\\\\srv\\sh'                                validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'\uff41\uff42'                               validator=accept  create_marker=created      file_in_team_dir=True
+'\uff23\uff2f\uff2e'                         validator=accept  create_marker=created      file_in_team_dir=True
+'\uff2e\uff35\uff2c'                         validator=accept  create_marker=created      file_in_team_dir=True
+'con\xa0'                                    validator=accept  create_marker=created      file_in_team_dir=True
+'CON\u200b'                                  validator=accept  create_marker=created      file_in_team_dir=True
+'a\x00b'                                     validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a\tb'                                       validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a\x1fb'                                     validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a\x7fb'                                     validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'a::$DATA'                                   validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'$MFT'                                       validator=accept  create_marker=created      file_in_team_dir=True
+'AUX .tar.gz'                                validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'prn  .x'                                    validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'com0'                                       validator=accept  create_marker=created      file_in_team_dir=True
+'lpt0'                                       validator=accept  create_marker=created      file_in_team_dir=True
+'com10'                                      validator=accept  create_marker=created      file_in_team_dir=True
+'conn'                                       validator=accept  create_marker=created      file_in_team_dir=True
+'console'                                    validator=accept  create_marker=created      file_in_team_dir=True
+'a$b'                                        validator=accept  create_marker=created      file_in_team_dir=True
+'aux-1'                                      validator=accept  create_marker=created      file_in_team_dir=True
+'nul-x'                                      validator=accept  create_marker=created      file_in_team_dir=True
+'CLOCK$'                                     validator=accept  create_marker=created      file_in_team_dir=True
+'LPT\u2074'                                  validator=accept  create_marker=created      file_in_team_dir=True
+'COM\uff11'                                  validator=accept  create_marker=created      file_in_team_dir=True
+'conin'                                      validator=accept  create_marker=created      file_in_team_dir=True
+'a b'                                        validator=accept  create_marker=created      file_in_team_dir=True
+'a.b'                                        validator=accept  create_marker=created      file_in_team_dir=True
+'a..b'                                       validator=accept  create_marker=created      file_in_team_dir=True
+'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     validator=refuse  create_marker=UnsafeName   file_in_team_dir=False
+'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     validator=accept  create_marker=created      file_in_team_dir=True
+'\xe9'                                       validator=accept  create_marker=created      file_in_team_dir=True
+'\u202ecod.txt'                              validator=accept  create_marker=created      file_in_team_dir=True
+'a\u2024'                                    validator=accept  create_marker=created      file_in_team_dir=True
+'con\ufe52'                                  validator=accept  create_marker=created      file_in_team_dir=True
+'\uff41\uff1ab'                              validator=accept  create_marker=created      file_in_team_dir=True
+'a\uff0fb'                                   validator=accept  create_marker=created      file_in_team_dir=True
+'a\uff3cb'                                   validator=accept  create_marker=created      file_in_team_dir=True
+'\u2025'                                     validator=accept  create_marker=created      file_in_team_dir=True
+'\uff0e\uff0e'                               validator=accept  create_marker=created      file_in_team_dir=True
+files created under root: 31
+escaped paths: []

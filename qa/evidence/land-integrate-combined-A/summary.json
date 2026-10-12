@@ -1,0 +1,138 @@
+{
+  "repo": "D:\\autoTesting\\.worktrees\\land-integrate-combined",
+  "ref": "23e694a9",
+  "shards": 6,
+  "python": "D:\\autoTesting\\.worktrees\\land-integrate-combined\\.venv\\Scripts\\python.exe",
+  "pytest_args": [
+    "-o",
+    "addopts="
+  ],
+  "out": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\A\\shards",
+  "cpu_load_pct_at_start": 69.0,
+  "blocked_s": 54.2,
+  "lock_reclaimed": [
+    {
+      "pid": 71416,
+      "repo": "D:\\autoTesting\\.worktrees\\t167-release-regression",
+      "started": 1791663213.4923866,
+      "started_iso": "2026-10-11T01:43:33",
+      "token": "11c881fcbd6a492d",
+      "cmd": "shard_suite --repo D:/autoTesting/.worktrees/t167-release-regression --ref 667a0c64 --python D:/autoTesting/.worktrees/t167-release-regression/.venv/Scripts/python.exe --shards 1 --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/check-t167-a/suite --lock-timeout 900 -- -o addopts="
+    }
+  ],
+  "sha": "23e694a971c043afcce3ef3d6eb0bf0106ca2ee8",
+  "seconds": {
+    "extract": 8.5,
+    "collect": 50.1,
+    "rerun": 38.5,
+    "run": 1070.0,
+    "overall": 1167.6
+  },
+  "wall_s": 1167.6,
+  "balance_basis": "test count (no stored durations)",
+  "pinned_files": [],
+  "per_shard": [
+    {
+      "shard": 0,
+      "pid": 57600,
+      "rc": 0,
+      "wall_s": 875.3,
+      "units": 37,
+      "tests": 506,
+      "collected": 506,
+      "reported": 506
+    },
+    {
+      "shard": 1,
+      "pid": 74724,
+      "rc": 1,
+      "wall_s": 199.2,
+      "units": 39,
+      "tests": 506,
+      "collected": 506,
+      "reported": 506
+    },
+    {
+      "shard": 2,
+      "pid": 59520,
+      "rc": 0,
+      "wall_s": 540.2,
+      "units": 39,
+      "tests": 506,
+      "collected": 506,
+      "reported": 506
+    },
+    {
+      "shard": 3,
+      "pid": 47536,
+      "rc": 1,
+      "wall_s": 386.9,
+      "units": 39,
+      "tests": 506,
+      "collected": 506,
+      "reported": 506
+    },
+    {
+      "shard": 4,
+      "pid": 80676,
+      "rc": 0,
+      "wall_s": 588.3,
+      "units": 40,
+      "tests": 506,
+      "collected": 506,
+      "reported": 506
+    },
+    {
+      "shard": 5,
+      "pid": 77820,
+      "rc": 0,
+      "wall_s": 1068.8,
+      "units": 39,
+      "tests": 505,
+      "collected": 505,
+      "reported": 505
+    }
+  ],
+  "counts": {
+    "passed": 3013,
+    "skipped": 19,
+    "failed": 3
+  },
+  "failed": [
+    {
+      "nodeid": "tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus",
+      "outcome": "failed",
+      "shard": 1,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen",
+      "outcome": "failed",
+      "shard": 3,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log",
+      "outcome": "failed",
+      "shard": 3,
+      "isolated_rerun": "passed"
+    }
+  ],
+  "failed_still_failing_alone": [
+    "tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus",
+    "tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen"
+  ],
+  "collect_proof": {
+    "ok": true,
+    "baseline": 3035,
+    "baseline_unique": 3035,
+    "shard_union": 3035,
+    "ran": 3035,
+    "duplicates_across_shards": [],
+    "missing_from_shards": [],
+    "unexpected_in_shards": [],
+    "collected_but_not_run": []
+  },
+  "durations_file": "C:\\Users\\Lenovo\\AppData\\Local\\aios\\shard-durations\\land-integrate-combined.json",
+  "exit_code": 1
+}

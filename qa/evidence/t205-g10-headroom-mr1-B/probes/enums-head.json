@@ -1,0 +1,159 @@
+{
+ "definitions": {
+  "CredentialState": {
+   "autotester.schema.team_enums.CredentialState": 3
+  },
+  "RunVia": {
+   "autotester.schema.team_enums.RunVia": 3
+  },
+  "ScheduleMode": {
+   "autotester.schema.team_enums.ScheduleMode": 4
+  },
+  "ScheduleZone": {
+   "autotester.schema.team_enums.ScheduleZone": 2
+  },
+  "SchedulerHealth": {
+   "autotester.schema.team_enums.SchedulerHealth": 3
+  },
+  "SlotOutcome": {
+   "autotester.schema.team_enums.SlotOutcome": 4
+  },
+  "SourceOriginKind": {
+   "autotester.schema.team_enums.SourceOriginKind": 3
+  }
+ },
+ "distinct_classes_per_name": {
+  "CredentialState": 1,
+  "RunVia": 1,
+  "ScheduleMode": 1,
+  "ScheduleZone": 1,
+  "SchedulerHealth": 1,
+  "SlotOutcome": 1,
+  "SourceOriginKind": 1
+ },
+ "identity": {
+  "CredentialState": {
+   "from schedule": "autotester.schema.team_enums",
+   "is team_enums.CredentialState": true,
+   "members": [
+    "provisioned",
+    "no_secretref",
+    "secretref_without_value",
+    "target_outside_domains"
+   ]
+  },
+  "ScheduleMode": {
+   "from schedule": "autotester.schema.team_enums",
+   "is team_enums.ScheduleMode": true,
+   "members": [
+    "manual",
+    "fixed",
+    "custom"
+   ]
+  },
+  "ScheduleZone": {
+   "from schedule": "autotester.schema.team_enums",
+   "is team_enums.ScheduleZone": true,
+   "members": [
+    "UTC",
+    "IST"
+   ]
+  },
+  "SchedulerHealth": {
+   "from schedule": "autotester.schema.team_enums",
+   "is team_enums.SchedulerHealth": true,
+   "members": [
+    "not_applicable",
+    "never_ticked",
+    "healthy",
+    "stale"
+   ]
+  },
+  "SlotOutcome": {
+   "from schedule": "autotester.schema.team_enums",
+   "is team_enums.SlotOutcome": true,
+   "members": [
+    "enqueued",
+    "catch_up",
+    "missed",
+    "skipped_overlap",
+    "blocked_no_credentials",
+    "refused",
+    "failed"
+   ]
+  }
+ },
+ "paths": {
+  "CredentialState": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.schema.team_enums",
+    "autotester.stages.schedule_gate"
+   ]
+  },
+  "ScheduleMode": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.schema.team_enums",
+    "autotester.stages.scheduler"
+   ]
+  },
+  "ScheduleZone": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.schema.team_enums"
+   ]
+  },
+  "SchedulerHealth": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.schema.team_enums",
+    "autotester.stages.scheduler"
+   ]
+  },
+  "SlotOutcome": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.schema.team_enums",
+    "autotester.stages.scheduler"
+   ]
+  }
+ },
+ "schedule_public": {
+  "Any": "_AnyMeta",
+  "BaseModel": "ModelMetaclass",
+  "ConfigDict": "_TypedDictMeta",
+  "CredentialState": "EnumType",
+  "Field": "function",
+  "MAX_ONE_OFFS": "int",
+  "Mapping": "ABCMeta",
+  "ScheduleConfig": "ModelMetaclass",
+  "ScheduleInvalid": "type",
+  "ScheduleMode": "EnumType",
+  "ScheduleZone": "EnumType",
+  "SchedulerHealth": "EnumType",
+  "SlotClaim": "ModelMetaclass",
+  "SlotOutcome": "EnumType",
+  "SlotRecord": "ModelMetaclass",
+  "TIMEZONE_ENV": "str",
+  "TickReport": "ModelMetaclass",
+  "UTC": "timezone",
+  "ValidationError": "type",
+  "WeeklyRule": "ModelMetaclass",
+  "annotations": "_Feature",
+  "datetime": "type",
+  "default_timezone": "function",
+  "field_validator": "function",
+  "model_validator": "function",
+  "os": "module",
+  "re": "module",
+  "resolve_local": "function",
+  "slot_key": "function",
+  "zone": "function"
+ }
+}

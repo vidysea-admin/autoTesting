@@ -1,0 +1,24 @@
+=== tests/test_browser_cdp_probe_hostile.py
+...........                                                              [100%]
+11 passed in 13.49s
+wall_s=45
+=== tests/test_browser_session_cdp.py
+.......................                                                  [100%]
+23 passed in 26.56s
+wall_s=61
+=== tests/test_browser_settle.py
+..........                                                               [100%]
+10 passed in 1.76s
+wall_s=36
+=== tests/test_browser.py
+...............                                                          [100%]
+15 passed in 13.61s
+wall_s=46
+=== tests/test_browser_navigation_secrets.py
+....................................................................     [100%]
+68 passed in 0.90s
+wall_s=29
+=== tests/test_browser_session_cdp_live.py
+..                                                                       [100%]
+2 passed in 31.35s
+wall_s=59

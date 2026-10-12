@@ -1,0 +1,1631 @@
+AT_FILE C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mr1B-fals1-133531921\src\autotester\__init__.py
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFFFFFFFFF.......... [ 49%]
+........................................................................ [ 99%]
+.                                                                        [100%]
+================================== FAILURES ===================================
+____ test_every_exit_path_writes_exactly_one_json_document_to_stdout[ok-0] ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57C15510>, Source(schema_version=1, created_at=datet...3ED0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex0'))
+name = 'ok-0'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[dry-run-0] __
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57E87150>, Source(schema_version=1, created_at=datet...3690>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex1'))
+name = 'dry-run-0'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[unknown-source-1] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5903BCD0>, Source(schema_version=1, created_at=datet...B810>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex2'))
+name = 'unknown-source-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[unknown-project-1] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59258390>, Source(schema_version=1, created_at=datet...BD50>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex3'))
+name = 'unknown-project-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[bad-redact-1] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59258350>, Source(schema_version=1, created_at=datet...BB50>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex4'))
+name = 'bad-redact-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[missing-pointer-file-1] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5917E610>, Source(schema_version=1, created_at=datet...8F90>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex5'))
+name = 'missing-pointer-file-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[provider-unavailable-1] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59269650>, Source(schema_version=1, created_at=datet...A2D0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex6'))
+name = 'provider-unavailable-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[nan-cap-1] __
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5922DCD0>, Source(schema_version=1, created_at=datet...DA10>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex7'))
+name = 'nan-cap-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[inf-cap-1] __
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59229550>, Source(schema_version=1, created_at=datet...C510>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex8'))
+name = 'inf-cap-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[negative-cap-1] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592697D0>, Source(schema_version=1, created_at=datet...E650>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex9'))
+name = 'negative-cap-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[dry-run-bad-redact-1] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59304990>, Source(schema_version=1, created_at=datet...850>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex10'))
+name = 'dry-run-bad-redact-1'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[pointer-errors-2] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59330DD0>, Source(schema_version=1, created_at=datet...6D0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex11'))
+name = 'pointer-errors-2'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+        assert r.exit_code == code, r.output
+>       doc = _doc(r)
+              ^^^^^^^
+
+tests\test_cli_video_review_exits.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[no-approval-3] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5938DD10>, Source(schema_version=1, created_at=datet...D50>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex12'))
+name = 'no-approval-3'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_ test_every_exit_path_writes_exactly_one_json_document_to_stdout[unreadable-4] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592FBA90>, Source(schema_version=1, created_at=datet...AD0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_exit_path_writes_ex13'))
+name = 'unreadable-4'
+
+    @pytest.mark.parametrize("name", list(CASES))
+    def test_every_exit_path_writes_exactly_one_json_document_to_stdout(world, name):
+        code, call = CASES[name]
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        r = call((store, source, provider, tmp))
+>       assert r.exit_code == code, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 4
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:77: AssertionError
+_________ test_the_refusal_document_names_the_grant_and_made_no_calls _________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592F7990>, Source(schema_version=1, created_at=datet...49D0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_the_refusal_document_name0'))
+
+    def test_the_refusal_document_names_the_grant_and_made_no_calls(world):
+        _, source, provider, _ = world
+        r = review(source)
+>       assert r.exit_code == 3 and provider.calls == 0
+E       assert (2 == 3)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:94: AssertionError
+__ test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[nan] ___
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5938F210>, Source(schema_version=1, created_at=datet...EC10>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_non_finite_or_negative_0'))
+cap = 'nan'
+
+    @pytest.mark.parametrize("cap", ["nan", "inf", "-inf", "-1", "NaN"])
+    def test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap(world, cap):
+        store, source, provider, _ = world
+        grant(store)
+        r = review(source, "--max-cost", cap)
+>       assert r.exit_code == 1 and provider.calls == 0
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:103: AssertionError
+__ test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[inf] ___
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D593C4090>, Source(schema_version=1, created_at=datet...6510>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_non_finite_or_negative_1'))
+cap = 'inf'
+
+    @pytest.mark.parametrize("cap", ["nan", "inf", "-inf", "-1", "NaN"])
+    def test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap(world, cap):
+        store, source, provider, _ = world
+        grant(store)
+        r = review(source, "--max-cost", cap)
+>       assert r.exit_code == 1 and provider.calls == 0
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:103: AssertionError
+__ test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[-inf] __
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59304210>, Source(schema_version=1, created_at=datet...7950>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_non_finite_or_negative_2'))
+cap = '-inf'
+
+    @pytest.mark.parametrize("cap", ["nan", "inf", "-inf", "-1", "NaN"])
+    def test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap(world, cap):
+        store, source, provider, _ = world
+        grant(store)
+        r = review(source, "--max-cost", cap)
+>       assert r.exit_code == 1 and provider.calls == 0
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:103: AssertionError
+___ test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[-1] ___
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D593C5C90>, Source(schema_version=1, created_at=datet...7FD0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_non_finite_or_negative_3'))
+cap = '-1'
+
+    @pytest.mark.parametrize("cap", ["nan", "inf", "-inf", "-1", "NaN"])
+    def test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap(world, cap):
+        store, source, provider, _ = world
+        grant(store)
+        r = review(source, "--max-cost", cap)
+>       assert r.exit_code == 1 and provider.calls == 0
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:103: AssertionError
+__ test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[NaN] ___
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59231F90>, Source(schema_version=1, created_at=datet...3D90>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_non_finite_or_negative_4'))
+cap = 'NaN'
+
+    @pytest.mark.parametrize("cap", ["nan", "inf", "-inf", "-1", "NaN"])
+    def test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap(world, cap):
+        store, source, provider, _ = world
+        grant(store)
+        r = review(source, "--max-cost", cap)
+>       assert r.exit_code == 1 and provider.calls == 0
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:103: AssertionError
+________________________ test_a_finite_cap_still_works ________________________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5922A950>, Source(schema_version=1, created_at=datet...C42D0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_finite_cap_still_works0'))
+
+    def test_a_finite_cap_still_works(world):
+        store, source, provider, _ = world
+        grant(store)
+        assert math.isfinite(0.25)
+        r = review(source, "--max-cost", "0.25")
+>       assert r.exit_code == 0 and provider.calls >= 1
+E       assert (2 == 0)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:112: AssertionError
+____________________ test_dry_run_writes_nothing_anywhere _____________________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5917C750>, Source(schema_version=1, created_at=datet...FC90>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_dry_run_writes_nothing_an0'))
+
+    def test_dry_run_writes_nothing_anywhere(world):
+        _, source, provider, tmp = world
+        ptr = pointers(tmp, "0:10-2:00\n")
+        before = sorted(p.relative_to(tmp).as_posix() for p in tmp.rglob("*"))
+        r = review(source, "--dry-run", "--redact", "1:00-1:10", "--pointers", ptr)
+>       assert r.exit_code == 0 and provider.calls == 0
+E       assert (2 == 0)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:120: AssertionError
+_________ test_a_real_run_leaves_only_the_stored_review_and_no_media __________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5922D850>, Source(schema_version=1, created_at=datet...DA90>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_real_run_leaves_only_th0'))
+
+    def test_a_real_run_leaves_only_the_stored_review_and_no_media(world):
+        store, source, _, tmp = world
+        grant(store)
+        r = review(source, "--redact", "1:00-1:10", "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 0, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:129: AssertionError
+_________ test_a_too_long_note_is_a_pointer_error_with_the_whole_list _________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D591D3910>, Source(schema_version=1, created_at=datet...1BD0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_too_long_note_is_a_poin0'))
+
+    def test_a_too_long_note_is_a_pointer_error_with_the_whole_list(world):
+        store, source, provider, tmp = world
+        grant(store)
+        long = "x" * (MAX_POINTER_NOTE_CHARS + 1)
+        text = f"1:00 | {long}\n99:99\nfree {long}\n2:00 | fine\n"
+        r = review(source, "--pointers", pointers(tmp, text))
+        assert r.exit_code == 2 and provider.calls == 0
+>       assert [e["line_no"] for e in _doc(r)["errors"]] == [1, 2, 3]
+                                      ^^^^^^^
+
+tests\test_cli_video_review_exits.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+____ test_too_many_pointer_lines_is_a_pointer_error_naming_each_extra_line ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57D67790>, Source(schema_version=1, created_at=datet...5710>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_too_many_pointer_lines_is0'))
+
+    def test_too_many_pointer_lines_is_a_pointer_error_naming_each_extra_line(world):
+        store, source, provider, tmp = world
+        grant(store)
+        text = "".join(f"0:{n % 60:02d} | note {n}\n" for n in range(MAX_POINTER_LINES + 3))
+        r = review(source, "--pointers", pointers(tmp, text))
+        assert r.exit_code == 2 and provider.calls == 0
+>       assert [e["line_no"] for e in _doc(r)["errors"]] == [
+                                      ^^^^^^^
+            MAX_POINTER_LINES + 1, MAX_POINTER_LINES + 2, MAX_POINTER_LINES + 3]
+
+tests\test_cli_video_review_exits.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_______ test_an_oversized_pointer_file_is_refused_unread_and_never_sent _______
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592FBCD0>, Source(schema_version=1, created_at=datet...BD90>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_oversized_pointer_file0'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029D592FAF10>
+
+    def test_an_oversized_pointer_file_is_refused_unread_and_never_sent(world, monkeypatch):
+        store, source, provider, tmp = world
+        grant(store)
+        big = tmp / "big.txt"
+        big.write_bytes(b"a" * (MAX_POINTER_FILE_BYTES + 1))
+        real = Path.read_bytes
+    
+        def guarded(self):
+            assert self != big, "the oversized pointer file was read into memory"
+            return real(self)
+    
+        monkeypatch.setattr(Path, "read_bytes", guarded)
+        r = review(source, "--pointers", str(big))
+        assert r.exit_code == 2 and provider.calls == 0
+>       errors = _doc(r)["errors"]
+                 ^^^^^^^
+
+tests\test_cli_video_review_exits.py:169: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_ test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-abc] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59318090>, Source(schema_version=1, created_at=datet...9390>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_click_usage_error_is_on0'))
+name = 'cap-abc'
+
+    @pytest.mark.parametrize("name", list(USAGE_ERRORS))
+    def test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code(world, name):
+        store, source, provider, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *USAGE_ERRORS[name]))
+>       assert r.exit_code == 1, r.output                  # 2 is the pointer-errors code
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:195: AssertionError
+_ test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-empty] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5936BED0>, Source(schema_version=1, created_at=datet...BF50>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_click_usage_error_is_on1'))
+name = 'cap-empty'
+
+    @pytest.mark.parametrize("name", list(USAGE_ERRORS))
+    def test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code(world, name):
+        store, source, provider, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *USAGE_ERRORS[name]))
+>       assert r.exit_code == 1, r.output                  # 2 is the pointer-errors code
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:195: AssertionError
+_ test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-hex] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57FF0790>, Source(schema_version=1, created_at=datet...0A10>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_click_usage_error_is_on2'))
+name = 'cap-hex'
+
+    @pytest.mark.parametrize("name", list(USAGE_ERRORS))
+    def test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code(world, name):
+        store, source, provider, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *USAGE_ERRORS[name]))
+>       assert r.exit_code == 1, r.output                  # 2 is the pointer-errors code
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:195: AssertionError
+_ test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[unknown-option] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57D97910>, Source(schema_version=1, created_at=datet...6910>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_click_usage_error_is_on3'))
+name = 'unknown-option'
+
+    @pytest.mark.parametrize("name", list(USAGE_ERRORS))
+    def test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code(world, name):
+        store, source, provider, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *USAGE_ERRORS[name]))
+>       assert r.exit_code == 1, r.output                  # 2 is the pointer-errors code
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:195: AssertionError
+_ test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[output-without-value-after-json] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59392E90>, Source(schema_version=1, created_at=datet...3190>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_click_usage_error_is_on4'))
+name = 'output-without-value-after-json'
+
+    @pytest.mark.parametrize("name", list(USAGE_ERRORS))
+    def test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code(world, name):
+        store, source, provider, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *USAGE_ERRORS[name]))
+>       assert r.exit_code == 1, r.output                  # 2 is the pointer-errors code
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:195: AssertionError
+____________ test_a_missing_source_argument_is_a_json_usage_error _____________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57DF0B10>, Source(schema_version=1, created_at=datet...3410>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_missing_source_argument0'))
+
+    def test_a_missing_source_argument_is_a_json_usage_error(world):
+        r = runner.invoke(app, ["ingest", "review", "demo", "--output", "json"])
+>       assert r.exit_code == 1 and _doc(r)["status"] == "usage_error" and _doc(r)["exit_code"] == 1
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:202: AssertionError
+___________ test_the_equals_form_of_the_json_flag_is_recognised_too ___________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592E3CD0>, Source(schema_version=1, created_at=datet...3110>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_the_equals_form_of_the_js0'))
+
+    def test_the_equals_form_of_the_json_flag_is_recognised_too(world):
+        _, source, _, _ = world
+        r = runner.invoke(app, ["ingest", "review", "demo", source.id, "--output=json", "--bogus"])
+>       assert r.exit_code == 1 and _doc(r)["status"] == "usage_error"
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:208: AssertionError
+_____ test_a_usage_error_without_json_stays_text_and_still_avoids_exit_2 ______
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57E86250>, Source(schema_version=1, created_at=datet...43D0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_usage_error_without_jso0'))
+
+    def test_a_usage_error_without_json_stays_text_and_still_avoids_exit_2(world):
+        """Text mode (and `--output` with no value anywhere, so json is unknowable) stays text on
+        stderr with an empty stdout; the exit code is still 1, never the pointer-errors 2."""
+        _, source, _, _ = world
+        bare = [*_args(source, output=False), "--output"]
+        for argv in (_args(source, "--bogus", output=False), bare):
+            r = runner.invoke(app, argv)
+>           assert r.exit_code == 1 and r.stdout == "" and r.stderr.strip(), argv
+E           AssertionError: ['ingest', 'review', 'demo', 'src_73dd99fb62f6', '--bogus']
+E           assert (2 == 1)
+E            +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:218: AssertionError
+_ test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path[runtime] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D567DC090>, Source(schema_version=1, created_at=datet...FE10>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_unexpected_provider_ex0'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029D57E858D0>
+boom = <class 'RuntimeError'>
+
+    @pytest.mark.parametrize("boom", [RuntimeError, OSError], ids=["runtime", "oserror"])
+    def test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path(
+            world, monkeypatch, boom):
+        store, source, provider, tmp = world
+        grant(store)
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        video = Path(next(s for s in store.list_sources() if s.id == source.id).path)
+    
+        def explode(*_a, **_k):
+            raise boom(f"hunter2-canary-xyz at {video} and {video.name}")
+    
+        monkeypatch.setattr(provider, "judge", explode)
+        r = runner.invoke(app, _args(source))
+>       assert r.exit_code == 1, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:236: AssertionError
+_ test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path[oserror] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57DC98D0>, Source(schema_version=1, created_at=datet...4690>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_unexpected_provider_ex1'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029D57DF1750>
+boom = <class 'OSError'>
+
+    @pytest.mark.parametrize("boom", [RuntimeError, OSError], ids=["runtime", "oserror"])
+    def test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path(
+            world, monkeypatch, boom):
+        store, source, provider, tmp = world
+        grant(store)
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        store.save_project(store.load_project().model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        video = Path(next(s for s in store.list_sources() if s.id == source.id).path)
+    
+        def explode(*_a, **_k):
+            raise boom(f"hunter2-canary-xyz at {video} and {video.name}")
+    
+        monkeypatch.setattr(provider, "judge", explode)
+        r = runner.invoke(app, _args(source))
+>       assert r.exit_code == 1, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:236: AssertionError
+_ test_ctrl_c_is_one_json_interrupted_document_exit_130_and_cleans_the_scratch _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57C94A50>, Source(schema_version=1, created_at=datet...3F90>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_ctrl_c_is_one_json_interr0'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029D57D52E50>
+
+    def test_ctrl_c_is_one_json_interrupted_document_exit_130_and_cleans_the_scratch(
+            world, monkeypatch):
+        store, source, provider, tmp = world
+        grant(store)
+    
+        def interrupt(*_a, **_k):
+            raise KeyboardInterrupt
+    
+        monkeypatch.setattr(provider, "judge", interrupt)
+        r = runner.invoke(app, _args(source, "--redact", "1:00-1:10"))
+>       assert r.exit_code == 130, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 130
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review_exits.py:256: AssertionError
+_ test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[ok] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57FF0AD0>, Source(schema_version=1, created_at=datet...B610>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_success_dry_run_par0'))
+extra = []
+
+    @pytest.mark.parametrize("extra", [[], ["--dry-run"], ["--max-cost", "1e-9"], ["--max-cost", "0"]],
+                             ids=["ok", "dry-run", "partial", "failed"])
+    def test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code(
+            world, extra):
+        store, source, _, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *extra))
+>       doc = _doc(r)
+              ^^^^^^^
+
+tests\test_cli_video_review_exits.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_ test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[dry-run] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59429850>, Source(schema_version=1, created_at=datet...99D0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_success_dry_run_par1'))
+extra = ['--dry-run']
+
+    @pytest.mark.parametrize("extra", [[], ["--dry-run"], ["--max-cost", "1e-9"], ["--max-cost", "0"]],
+                             ids=["ok", "dry-run", "partial", "failed"])
+    def test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code(
+            world, extra):
+        store, source, _, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *extra))
+>       doc = _doc(r)
+              ^^^^^^^
+
+tests\test_cli_video_review_exits.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_ test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[partial] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59456850>, Source(schema_version=1, created_at=datet...6DD0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_success_dry_run_par2'))
+extra = ['--max-cost', '1e-9']
+
+    @pytest.mark.parametrize("extra", [[], ["--dry-run"], ["--max-cost", "1e-9"], ["--max-cost", "0"]],
+                             ids=["ok", "dry-run", "partial", "failed"])
+    def test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code(
+            world, extra):
+        store, source, _, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *extra))
+>       doc = _doc(r)
+              ^^^^^^^
+
+tests\test_cli_video_review_exits.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_ test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[failed] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57D725D0>, Source(schema_version=1, created_at=datet...D250>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_every_success_dry_run_par3'))
+extra = ['--max-cost', '0']
+
+    @pytest.mark.parametrize("extra", [[], ["--dry-run"], ["--max-cost", "1e-9"], ["--max-cost", "0"]],
+                             ids=["ok", "dry-run", "partial", "failed"])
+    def test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code(
+            world, extra):
+        store, source, _, _ = world
+        grant(store)
+        r = runner.invoke(app, _args(source, *extra))
+>       doc = _doc(r)
+              ^^^^^^^
+
+tests\test_cli_video_review_exits.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_ test_exit_code_is_an_envelope_key_not_a_stored_field_and_old_reviews_still_load _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57D7DD50>, Source(schema_version=1, created_at=datet...D790>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_exit_code_is_an_envelope_0'))
+
+    def test_exit_code_is_an_envelope_key_not_a_stored_field_and_old_reviews_still_load(world):
+        from autotester.schema.video_review import VideoReview
+        store, source, _, tmp = world
+        grant(store)
+>       doc = _doc(runner.invoke(app, _args(source)))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_video_review_exits.py:278: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_cli_video_review_exits.py:33: in _doc
+    return json.loads(r.stdout)
+           ^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+___ test_pointer_errors_exit_2_list_every_error_and_never_call_the_provider ___
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59360750>, Source(schema_version=1, created_at=datet...3C10>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_pointer_errors_exit_2_lis0'))
+
+    def test_pointer_errors_exit_2_list_every_error_and_never_call_the_provider(world):
+        store, source, provider, tmp = world
+        grant(store)
+        bad = "99:99\n1:00 | fine\n14:00-12:30\n-1:00\n2:00 | ok\n"
+        r = review(source, "--pointers", pointers(tmp, bad), json_out=False)
+        assert r.exit_code == 2
+        for n in (1, 3, 4):
+>           assert f"line {n}" in r.output
+E           assert 'line 1' in "Usage: root ingest [OPTIONS] COMMAND [ARGS]...\\nTry 'root ingest --help' for help.\\n\u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500...                                  \u2502\\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\\n"
+E            +  where "Usage: root ingest [OPTIONS] COMMAND [ARGS]...\\nTry 'root ingest --help' for help.\\n\u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500...                                  \u2502\\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\\n" = <Result SystemExit(2)>.output
+
+tests\test_cli_video_review.py:78: AssertionError
+______ test_pointer_errors_in_json_mode_are_one_valid_document_on_stdout ______
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592AB990>, Source(schema_version=1, created_at=datet...9D90>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_pointer_errors_in_json_mo0'))
+
+    def test_pointer_errors_in_json_mode_are_one_valid_document_on_stdout(world):
+        store, source, provider, tmp = world
+        grant(store)
+        r = review(source, "--pointers", pointers(tmp, "99:99\n14:00-12:30\n3:00:00\n"))
+        assert r.exit_code == 2
+>       doc = json.loads(r.stdout)
+              ^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_video_review.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+________ test_no_approval_exits_3_names_the_grant_and_makes_zero_calls ________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5924D3D0>, Source(schema_version=1, created_at=datet...CA10>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_no_approval_exits_3_names0'))
+
+    def test_no_approval_exits_3_names_the_grant_and_makes_zero_calls(world):
+        _, source, provider, _ = world
+        r = review(source, json_out=False)
+>       assert r.exit_code == 3, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:103: AssertionError
+___ test_an_approval_that_does_not_cover_this_review_does_not_count[over0] ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5924DF90>, Source(schema_version=1, created_at=datet...FF50>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_approval_that_does_not0'))
+over = {'project': 'other'}
+
+    @pytest.mark.parametrize("over", [
+        {"project": "other"},                      # an approval for another project
+        {"target": "gemini"},                      # an approval for another provider
+        {"run_kind": ApprovalKind.CRAWL},          # an approval of another kind
+        {"sign": False},                           # an unsigned (forged-shape) row
+        {"expires_at": "2020-01-01"},              # an expired one
+        {"max_actions": 1},                        # narrower than the plan's call count
+    ])
+    def test_an_approval_that_does_not_cover_this_review_does_not_count(world, over):
+        store, source, provider, tmp = world
+        grant(store, **over)
+        r = review(source, "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 3, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:120: AssertionError
+___ test_an_approval_that_does_not_cover_this_review_does_not_count[over1] ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592FE610>, Source(schema_version=1, created_at=datet...B610>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_approval_that_does_not1'))
+over = {'target': 'gemini'}
+
+    @pytest.mark.parametrize("over", [
+        {"project": "other"},                      # an approval for another project
+        {"target": "gemini"},                      # an approval for another provider
+        {"run_kind": ApprovalKind.CRAWL},          # an approval of another kind
+        {"sign": False},                           # an unsigned (forged-shape) row
+        {"expires_at": "2020-01-01"},              # an expired one
+        {"max_actions": 1},                        # narrower than the plan's call count
+    ])
+    def test_an_approval_that_does_not_cover_this_review_does_not_count(world, over):
+        store, source, provider, tmp = world
+        grant(store, **over)
+        r = review(source, "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 3, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:120: AssertionError
+___ test_an_approval_that_does_not_cover_this_review_does_not_count[over2] ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5921C950>, Source(schema_version=1, created_at=datet...C050>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_approval_that_does_not2'))
+over = {'run_kind': <ApprovalKind.CRAWL: 'crawl'>}
+
+    @pytest.mark.parametrize("over", [
+        {"project": "other"},                      # an approval for another project
+        {"target": "gemini"},                      # an approval for another provider
+        {"run_kind": ApprovalKind.CRAWL},          # an approval of another kind
+        {"sign": False},                           # an unsigned (forged-shape) row
+        {"expires_at": "2020-01-01"},              # an expired one
+        {"max_actions": 1},                        # narrower than the plan's call count
+    ])
+    def test_an_approval_that_does_not_cover_this_review_does_not_count(world, over):
+        store, source, provider, tmp = world
+        grant(store, **over)
+        r = review(source, "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 3, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:120: AssertionError
+___ test_an_approval_that_does_not_cover_this_review_does_not_count[over3] ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57D3E390>, Source(schema_version=1, created_at=datet...9FD0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_approval_that_does_not3'))
+over = {'sign': False}
+
+    @pytest.mark.parametrize("over", [
+        {"project": "other"},                      # an approval for another project
+        {"target": "gemini"},                      # an approval for another provider
+        {"run_kind": ApprovalKind.CRAWL},          # an approval of another kind
+        {"sign": False},                           # an unsigned (forged-shape) row
+        {"expires_at": "2020-01-01"},              # an expired one
+        {"max_actions": 1},                        # narrower than the plan's call count
+    ])
+    def test_an_approval_that_does_not_cover_this_review_does_not_count(world, over):
+        store, source, provider, tmp = world
+        grant(store, **over)
+        r = review(source, "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 3, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:120: AssertionError
+___ test_an_approval_that_does_not_cover_this_review_does_not_count[over4] ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57D16E50>, Source(schema_version=1, created_at=datet...F910>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_approval_that_does_not4'))
+over = {'expires_at': '2020-01-01'}
+
+    @pytest.mark.parametrize("over", [
+        {"project": "other"},                      # an approval for another project
+        {"target": "gemini"},                      # an approval for another provider
+        {"run_kind": ApprovalKind.CRAWL},          # an approval of another kind
+        {"sign": False},                           # an unsigned (forged-shape) row
+        {"expires_at": "2020-01-01"},              # an expired one
+        {"max_actions": 1},                        # narrower than the plan's call count
+    ])
+    def test_an_approval_that_does_not_cover_this_review_does_not_count(world, over):
+        store, source, provider, tmp = world
+        grant(store, **over)
+        r = review(source, "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 3, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:120: AssertionError
+___ test_an_approval_that_does_not_cover_this_review_does_not_count[over5] ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5917F150>, Source(schema_version=1, created_at=datet...CAD0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_an_approval_that_does_not5'))
+over = {'max_actions': 1}
+
+    @pytest.mark.parametrize("over", [
+        {"project": "other"},                      # an approval for another project
+        {"target": "gemini"},                      # an approval for another provider
+        {"run_kind": ApprovalKind.CRAWL},          # an approval of another kind
+        {"sign": False},                           # an unsigned (forged-shape) row
+        {"expires_at": "2020-01-01"},              # an expired one
+        {"max_actions": 1},                        # narrower than the plan's call count
+    ])
+    def test_an_approval_that_does_not_cover_this_review_does_not_count(world, over):
+        store, source, provider, tmp = world
+        grant(store, **over)
+        r = review(source, "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 3, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 3
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:120: AssertionError
+_ test_approved_run_is_valid_json_on_stdout_and_never_hands_over_the_original _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D593DB010>, Source(schema_version=1, created_at=datet...B350>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_approved_run_is_valid_jso0'))
+
+    def test_approved_run_is_valid_json_on_stdout_and_never_hands_over_the_original(world):
+        store, source, provider, tmp = world
+        grant(store)
+        r = review(source, "--pointers", pointers(tmp, "1:00-1:30 | save is slow\n"))
+>       assert r.exit_code == 0, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:128: AssertionError
+_____ test_dry_run_prints_the_plan_with_zero_calls_and_needs_no_approval ______
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592E1B90>, Source(schema_version=1, created_at=datet...1010>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_dry_run_prints_the_plan_w0'))
+
+    def test_dry_run_prints_the_plan_with_zero_calls_and_needs_no_approval(world):
+        _, source, provider, tmp = world
+        r = review(source, "--dry-run", "--redact", "1:00-1:10",
+                   "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 0, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:141: AssertionError
+____________ test_redaction_window_frames_never_reach_the_provider ____________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D592E2390>, Source(schema_version=1, created_at=datet...2F50>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_redaction_window_frames_n0'))
+
+    def test_redaction_window_frames_never_reach_the_provider(world):
+        store, source, provider, tmp = world
+        grant(store)
+        r = review(source, "--redact", "0:55-1:15", "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 0, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:152: AssertionError
+_________ test_spend_cap_gives_a_partial_review_naming_what_was_left __________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59351790>, Source(schema_version=1, created_at=datet...36D0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_spend_cap_gives_a_partial0'))
+
+    def test_spend_cap_gives_a_partial_review_naming_what_was_left(world):
+        store, source, provider, tmp = world
+        grant(store)
+        r = review(source, "--max-cost", "0.000001", "--pointers", pointers(tmp, "0:10-2:00\n"))
+>       assert r.exit_code == 0, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:161: AssertionError
+_________ test_text_mode_says_in_words_which_spans_were_not_reviewed __________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59237010>, Source(schema_version=1, created_at=datet...6590>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_text_mode_says_in_words_w0'))
+
+    def test_text_mode_says_in_words_which_spans_were_not_reviewed(world):
+        store, source, _, _ = world
+        grant(store)
+        r = review(source, "--redact", "0:55-1:15", json_out=False)
+>       assert r.exit_code == 0, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:170: AssertionError
+________ test_a_second_run_returns_the_stored_review_without_new_calls ________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D57D3DFD0>, Source(schema_version=1, created_at=datet...8490>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_second_run_returns_the_0'))
+
+    def test_a_second_run_returns_the_stored_review_without_new_calls(world):
+        store, source, provider, _ = world
+        grant(store)
+>       first = json.loads(review(source).stdout)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_video_review.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x0000029D51D11950>, s = '', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+..\..\..\..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\json\decoder.py:355: JSONDecodeError
+_________ test_unreadable_media_exits_4_before_any_approval_or_call[] _________
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D593E16D0>, Source(schema_version=1, created_at=datet...0710>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_unreadable_media_exits_4_0'))
+body = b''
+
+    @pytest.mark.parametrize("body", [b"", b"this is not a video"])
+    def test_unreadable_media_exits_4_before_any_approval_or_call(world, body):
+        store, _, provider, tmp = world
+        bad = tmp / "bad.mp4"
+        bad.write_bytes(body)
+        source = register_source(store, bad, label="bad")
+        r = review(source)
+>       assert r.exit_code == 4, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 4
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:190: AssertionError
+_ test_unreadable_media_exits_4_before_any_approval_or_call[this is not a video] _
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D5932F0D0>, Source(schema_version=1, created_at=datet...EED0>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_unreadable_media_exits_4_1'))
+body = b'this is not a video'
+
+    @pytest.mark.parametrize("body", [b"", b"this is not a video"])
+    def test_unreadable_media_exits_4_before_any_approval_or_call(world, body):
+        store, _, provider, tmp = world
+        bad = tmp / "bad.mp4"
+        bad.write_bytes(body)
+        source = register_source(store, bad, label="bad")
+        r = review(source)
+>       assert r.exit_code == 4, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 4
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:190: AssertionError
+_______ test_unknown_source_and_bad_redact_spec_are_usage_errors_exit_1 _______
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59369D90>, Source(schema_version=1, created_at=datet...1650>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_unknown_source_and_bad_re0'))
+
+    def test_unknown_source_and_bad_redact_spec_are_usage_errors_exit_1(world):
+        store, source, provider, _ = world
+        grant(store)
+        nosrc = runner.invoke(app, ["ingest", "review", "demo", "src_nope"])
+        bad = review(source, "--redact", "not-a-window")
+>       assert nosrc.exit_code == 1 and bad.exit_code == 1
+E       assert (2 == 1)
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:200: AssertionError
+___ test_a_planted_secret_in_a_pointer_note_stays_out_of_prompt_and_output ____
+
+world = (<autotester.store.project_store.ProjectStore object at 0x0000029D59362C90>, Source(schema_version=1, created_at=datet...5C50>, WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27425/test_a_planted_secret_in_a_poi0'))
+
+    def test_a_planted_secret_in_a_pointer_note_stays_out_of_prompt_and_output(world):
+        store, source, provider, tmp = world
+        (tmp / ".env").write_text("DEMO_PASSWORD=hunter2-canary-xyz\n", encoding="utf-8")
+        proj = store.load_project()
+        from autotester.schema.project import SecretRef
+        store.save_project(proj.model_copy(update={"secrets": [
+            SecretRef(key="DEMO_PASSWORD", domains=["demo.test"])]}))
+        grant(store)
+        r = review(source, "--pointers", pointers(tmp, "1:00 | password is hunter2-canary-xyz\n"))
+>       assert r.exit_code == 0, r.output
+E       AssertionError: Usage: root ingest [OPTIONS] COMMAND [ARGS]...
+E         Try 'root ingest --help' for help.
+E         \u250c\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
+E         \u2502 No such command 'review'.                                                   \u2502
+E         \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests\test_cli_video_review.py:213: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[ok-0]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[dry-run-0]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[unknown-source-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[unknown-project-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[bad-redact-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[missing-pointer-file-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[provider-unavailable-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[nan-cap-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[inf-cap-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[negative-cap-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[dry-run-bad-redact-1]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[pointer-errors-2]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[no-approval-3]
+FAILED tests/test_cli_video_review_exits.py::test_every_exit_path_writes_exactly_one_json_document_to_stdout[unreadable-4]
+FAILED tests/test_cli_video_review_exits.py::test_the_refusal_document_names_the_grant_and_made_no_calls
+FAILED tests/test_cli_video_review_exits.py::test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[nan]
+FAILED tests/test_cli_video_review_exits.py::test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[inf]
+FAILED tests/test_cli_video_review_exits.py::test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[-inf]
+FAILED tests/test_cli_video_review_exits.py::test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[-1]
+FAILED tests/test_cli_video_review_exits.py::test_a_non_finite_or_negative_spend_cap_is_a_usage_error_not_no_cap[NaN]
+FAILED tests/test_cli_video_review_exits.py::test_a_finite_cap_still_works - ...
+FAILED tests/test_cli_video_review_exits.py::test_dry_run_writes_nothing_anywhere
+FAILED tests/test_cli_video_review_exits.py::test_a_real_run_leaves_only_the_stored_review_and_no_media
+FAILED tests/test_cli_video_review_exits.py::test_a_too_long_note_is_a_pointer_error_with_the_whole_list
+FAILED tests/test_cli_video_review_exits.py::test_too_many_pointer_lines_is_a_pointer_error_naming_each_extra_line
+FAILED tests/test_cli_video_review_exits.py::test_an_oversized_pointer_file_is_refused_unread_and_never_sent
+FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-abc]
+FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-empty]
+FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[cap-hex]
+FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[unknown-option]
+FAILED tests/test_cli_video_review_exits.py::test_a_click_usage_error_is_one_json_document_and_not_the_pointer_error_code[output-without-value-after-json]
+FAILED tests/test_cli_video_review_exits.py::test_a_missing_source_argument_is_a_json_usage_error
+FAILED tests/test_cli_video_review_exits.py::test_the_equals_form_of_the_json_flag_is_recognised_too
+FAILED tests/test_cli_video_review_exits.py::test_a_usage_error_without_json_stays_text_and_still_avoids_exit_2
+FAILED tests/test_cli_video_review_exits.py::test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path[runtime]
+FAILED tests/test_cli_video_review_exits.py::test_an_unexpected_provider_exception_is_one_json_failure_with_no_secret_or_path[oserror]
+FAILED tests/test_cli_video_review_exits.py::test_ctrl_c_is_one_json_interrupted_document_exit_130_and_cleans_the_scratch
+FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[ok]
+FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[dry-run]
+FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[partial]
+FAILED tests/test_cli_video_review_exits.py::test_every_success_dry_run_partial_and_failed_document_carries_the_real_exit_code[failed]
+FAILED tests/test_cli_video_review_exits.py::test_exit_code_is_an_envelope_key_not_a_stored_field_and_old_reviews_still_load
+FAILED tests/test_cli_video_review.py::test_pointer_errors_exit_2_list_every_error_and_never_call_the_provider
+FAILED tests/test_cli_video_review.py::test_pointer_errors_in_json_mode_are_one_valid_document_on_stdout
+FAILED tests/test_cli_video_review.py::test_no_approval_exits_3_names_the_grant_and_makes_zero_calls
+FAILED tests/test_cli_video_review.py::test_an_approval_that_does_not_cover_this_review_does_not_count[over0]
+FAILED tests/test_cli_video_review.py::test_an_approval_that_does_not_cover_this_review_does_not_count[over1]
+FAILED tests/test_cli_video_review.py::test_an_approval_that_does_not_cover_this_review_does_not_count[over2]
+FAILED tests/test_cli_video_review.py::test_an_approval_that_does_not_cover_this_review_does_not_count[over3]
+FAILED tests/test_cli_video_review.py::test_an_approval_that_does_not_cover_this_review_does_not_count[over4]
+FAILED tests/test_cli_video_review.py::test_an_approval_that_does_not_cover_this_review_does_not_count[over5]
+FAILED tests/test_cli_video_review.py::test_approved_run_is_valid_json_on_stdout_and_never_hands_over_the_original
+FAILED tests/test_cli_video_review.py::test_dry_run_prints_the_plan_with_zero_calls_and_needs_no_approval
+FAILED tests/test_cli_video_review.py::test_redaction_window_frames_never_reach_the_provider
+FAILED tests/test_cli_video_review.py::test_spend_cap_gives_a_partial_review_naming_what_was_left
+FAILED tests/test_cli_video_review.py::test_text_mode_says_in_words_which_spans_were_not_reviewed
+FAILED tests/test_cli_video_review.py::test_a_second_run_returns_the_stored_review_without_new_calls
+FAILED tests/test_cli_video_review.py::test_unreadable_media_exits_4_before_any_approval_or_call[]
+FAILED tests/test_cli_video_review.py::test_unreadable_media_exits_4_before_any_approval_or_call[this is not a video]
+FAILED tests/test_cli_video_review.py::test_unknown_source_and_bad_redact_spec_are_usage_errors_exit_1
+FAILED tests/test_cli_video_review.py::test_a_planted_secret_in_a_pointer_note_stays_out_of_prompt_and_output
+61 failed, 84 passed in 48.97s
+exit 1

@@ -102,8 +102,10 @@ launcher), and unit **G1** (`team-foundation.md`).
   no browser factory is called.** The refusal text contains **no credential value** and passes `Redactor.scrub`. A role never skips it: an admin
   pressing Test on an uncredentialed project is refused the same way (`auth.md` AU15). The approval's own bounds (`max_actions`,
   `wall_clock_s`) cap the run and name what it left unreached; **no extra cooldown** is built (gate `plan-approved-g10.md`). AT-570 (a
-  live case needs a covering approval) is re-verified through the launcher (`team-foundation.md` TF2). **Dependency:** the credential-derived
-  `covering_approval` is the D-068 implementation; until it lands this row is `BLOCKED-CAPABILITY`, not PASS. `serves:` intent#O13, O7,
+  live case needs a covering approval) is re-verified through the launcher (`team-foundation.md` TF2). **Dependency (landed 2026-10-11):** the credential-derived
+  `covering_approval` (`stages/explore_consent.py:35`; account kinds `LIVE_CASE`, `CRAWL`, `READ` at `core/consent.py:29`; D-068, commit
+  a2c6124a, on master) is the implementation this row calls. The `BLOCKED-CAPABILITY` wording no longer applies to it; TT6 is judged
+  on the launcher's behaviour once G7 is built. `serves:` intent#O13, O7,
   spec R60, D-068, `consent.md` CN1, `auth.md` AU15, `hosting.md` HO19.
   *Evidence (LOCAL):* `tests/test_team_run_approval.py` — three fixtures (no `SecretRef`; `SecretRef` with no value; provisioned) pressed by a
   Developer and by an Admin; assert the transport and browser counters are 0 in the first two, the `runs/` listing is unchanged, and the
@@ -191,3 +193,9 @@ is already queued (the existing request and its position are shown); a `tester` 
   TT8; TT9 -> TT9. Dropped: TT10 live watch (T-203's), TT11 persona walk (kept unnumbered), TT12 portability (cross-platform asserted per
   row; the delivery store uses `team-foundation.md` TF7's portable writes). Added: the outbox adapter and the "no live send until credentials
   exist" rule (open gate item 1), the profile page, and the no-new-key rule for the inbox.
+- 2026-10-11 - routine (stale dependency removed; no criterion weakened) - **TT6 dependency note updated.** TT6 said the row is
+  `BLOCKED-CAPABILITY` until the D-068 credential-derived `covering_approval` lands. It has landed: `stages/explore_consent.py:35`
+  `covering_approval` mints or reuses a signed account-derived row when the project declares credentials (`_credential_approval`), and
+  refuses with `ApprovalRequired` naming the key and the state, never a value (`core/consent.py` `validate_account_scope`); commit
+  a2c6124a is an ancestor of master. The requirement text is unchanged; the row is now judged on the launcher (G7), not parked.
+  **Changes-authorized:** D-068 (the behaviour) and this file's own header. **Links:** D-068; TT6; TS5; R60.

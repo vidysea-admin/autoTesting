@@ -1,0 +1,9 @@
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mrb\copy-base\tests\test_probe_at790.py::test_canary_state[False] STATE approved= False status 400 provider_asked [] could_not_complete False human_review True
+PASSED
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mrb\copy-base\tests\test_probe_at790.py::test_canary_state[True] STATE approved= True status 400 provider_asked ['agent'] could_not_complete True human_review False
+PASSED
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mrb\copy-base\tests\test_probe_at790.py::test_vendor_markup_state[False] MARKUP approved= False status 400 provider_asked [] raw False escaped False any False
+PASSED
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mrb\copy-base\tests\test_probe_at790.py::test_vendor_markup_state[True] MARKUP approved= True status 400 provider_asked ['agent'] raw False escaped True any True
+PASSED
+======================== 4 passed, 1 warning in 18.97s ========================

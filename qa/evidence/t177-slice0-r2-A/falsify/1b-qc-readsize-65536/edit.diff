@@ -1,0 +1,7 @@
+--- a/launch.py
++++ b/launch.py
+@@ -103,3 +103,3 @@
+         while time.monotonic() < deadline:
+-            piece = reply.read1(PROBE_MAX_BYTES + 1 - size)
++            piece = reply.read1(65536)
+             if not piece:

@@ -7,7 +7,14 @@ from pathlib import Path
 
 import typer
 
-from autotester import cli_crawl, cli_issues, cli_loop, cli_orchestrate, cli_video, providers
+from autotester import (
+    cli_crawl,
+    cli_loop,
+    cli_orchestrate,
+    cli_release,
+    cli_subapps,
+    providers,
+)
 from autotester import doctor as doctor_module
 from autotester.core.env import load_repo_env
 from autotester.core.paths import RepoDocs
@@ -28,20 +35,13 @@ report_app = typer.Typer(help="Export a run as a portable tester report (Excel +
 app.add_typer(ledger_app, name="ledger")
 app.add_typer(flowspec_app, name="flowspec")
 app.add_typer(report_app, name="report")
-app.add_typer(cli_video.app, name="ingest")
-app.add_typer(cli_issues.app, name="issues")
+cli_subapps.register_subapps(app)  # T-205/TF5: ingest, issues and every later group
 
 
 @app.callback()
 def _bootstrap() -> None:
-    """Runs before every command.
-
-    AT-228: the web UI loaded the repo-root `.env` and the CLI did not, so
-    `autotester providers` reported `mock` while a working GEMINI_API_KEY sat on
-    disk -- and a HUMAN_GATE was filed against a blocker that did not exist. Two
-    entry points reading the same disk gave different answers to "does this
-    machine have credentials", and each was internally consistent, which is why
-    nobody noticed."""
+    """Runs before every command: load the repo-root `.env` the web UI already loads, so both
+    entry points agree on whether this machine has credentials (AT-228)."""
     load_repo_env()
 
 
@@ -141,9 +141,7 @@ def ledger_check() -> None:
 
 
 @ledger_app.command("relitigation")
-def ledger_relitigation(
-    unit_text: str, provider: str = typer.Option("mock", "--provider")
-) -> None:
+def ledger_relitigation(unit_text: str, provider: str = typer.Option("mock", "--provider")) -> None:
     """Gate check before a unit is built: is this a retired feature coming back?"""
     docs = RepoDocs()
     retired = store.retired(store.load_events(docs.features))
@@ -199,47 +197,44 @@ def flowspec_request_edit(
 def expand_cases(
     project: str,
     provider: str = typer.Option("langchain-fallback", "--provider"),
+    proposals: bool = typer.Option(False, "--proposals", help="Stage/list step-less proposals."),
+    approve: list[str] = typer.Option([], "--approve", help="Approve a saved proposal ID."),
+    prune: list[str] = typer.Option([], "--prune", help="Prune a saved proposal ID."),
+    by: str = typer.Option("", "--by", help="Human reviewer; required for decisions."),
 ) -> None:
-    """Generate this project's test cases from its APPROVED FlowSpec.
+    """Review/prune proposals, then generate only persisted human-approved cases.
 
-    AT-239: `stages/expand.py` -- the feature the ledger calls the
-    differentiator -- had no entry point at all, so across four real projects
-    49 of 52 cases were `happy` and not one had ever been generated (AT-250).
-    Persisting is deliberately done here and not inside `expand()`:
-    qa/contracts/expand.md's no-fire list makes that the caller's job."""
+    AT-239: persisting is this caller's job (expand.md no-fire); AT-260: a provider failure
+    discards every in-memory case, so nothing is persisted."""
     store_ = ProjectStore(project)
     if store_.load_project() is None:
         typer.secho(f"no project '{project}'", fg=typer.colors.RED)
         raise typer.Exit(1)
     spec = store_.load_flowspec()
     if spec is None:
-        typer.secho(f"no flowspec for '{project}' yet — ingest a recording first",
-                    fg=typer.colors.RED)
-        raise typer.Exit(1)
-    model = providers.get(provider)
-    if not model.available():
-        typer.secho(f"provider '{provider}' has no credentials on this machine — "
-                    "`autotester providers` lists the ones that do", fg=typer.colors.RED)
+        typer.secho(f"no flowspec for '{project}' yet — ingest a recording first", fg="red")
         raise typer.Exit(1)
     try:
-        cases = expand_stage.expand(spec, model)
-    except review_stage.FlowSpecNotReviewed as exc:
-        typer.secho(str(exc), fg=typer.colors.YELLOW)
+        rows = expand_stage.stage_and_review(store_, spec, approve, prune, by)
+        if proposals or approve or prune:
+            for row in rows:
+                typer.echo(f"{row.id} {row.status} {row.case_class.value}: {row.title}")
+            return
+        store_.preflight_case_proposals(spec)
+    except (ValueError, review_stage.FlowSpecNotReviewed) as exc:
+        typer.secho(f"{exc}; review with `autotester expand {project} --proposals`", fg="yellow")
         raise typer.Exit(1) from None
-    except ProviderError as exc:
-        # AT-260: expand() builds every flow's cases in memory and only
-        # returns once ALL flows succeed, so a provider failure partway
-        # through discards whatever had already been generated -- by
-        # construction, not by an extra step here. Stated plainly rather
-        # than left to a raw traceback: nothing was persisted.
-        typer.secho(f"{project}: model call failed, no cases persisted — {exc}",
-                    fg=typer.colors.RED)
+    model = cli_orchestrate.usable_provider(provider)   # LL11: refuses before any model call
+    try:
+        cases = expand_stage.expand(spec, model, store=store_)
+    except (ValueError, review_stage.FlowSpecNotReviewed, ProviderError) as exc:
+        typer.secho(f"{project}: generation failed, no cases persisted — {exc}", fg="red")
         raise typer.Exit(1) from None
     new = sum(0 if store_.has_case(case.id) else 1 for case in cases)
     for case in cases:
         store_.add_case(case)
     typer.secho(f"{project}: {len(cases)} case(s) from {len(spec.flows)} flow(s), {new} new",
-                fg=typer.colors.GREEN)
+                fg="green")
 
 
 @app.command("login")
@@ -291,6 +286,9 @@ app.command("explore")(cli_crawl.explore_cmd)
 app.command("approve")(cli_crawl.approve_cmd)
 report_app.command("crawl")(cli_crawl.report_crawl)
 app.command("orchestrate")(cli_orchestrate.orchestrate_cmd)
+app.command("release")(cli_release.release_cmd)
+app.command("release-log")(cli_release.release_log_cmd)
+app.command("release-report")(cli_release.release_report_cmd)
 
 
 def main() -> None:

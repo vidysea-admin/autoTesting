@@ -1,0 +1,6 @@
+tests\test_bug_run.py:100: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_bug_run.py::test_tb3_a_pass_that_does_not_cite_evidence_and_a_run_that_could_not_judge_close_nothing[unmet]
+FAILED tests/test_bug_run.py::test_tb3_a_pass_that_does_not_cite_evidence_and_a_run_that_could_not_judge_close_nothing[no-criteria]
+FAILED tests/test_bug_run.py::test_tb3_a_pass_that_does_not_cite_evidence_and_a_run_that_could_not_judge_close_nothing[partial-evidence]
+3 failed, 5 passed, 14 deselected in 8.09s

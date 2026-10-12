@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t204A-row-AU11-m0
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_ui_auth_groups.py F                                           [100%]
+
+================================== FAILURES ===================================
+_________________ test_au11_seeded_once_edits_survive_restart _________________
+tests\test_ui_auth_groups.py:151: in test_au11_seeded_once_edits_survive_restart
+    assert after.get("tester") == ["live.view"] and "developer" not in after
+E   AssertionError: assert (['comment.cre....view@shared'] == ['live.view']
+E     
+E     At index 0 diff: 'comment.create@shared' != 'live.view'
+E     Left contains 3 more items, first extra item: 'project.view@shared'
+E     Use -v to get more diff)
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_groups.py::test_au11_seeded_once_edits_survive_restart
+======================== 1 failed, 1 warning in 2.50s =========================

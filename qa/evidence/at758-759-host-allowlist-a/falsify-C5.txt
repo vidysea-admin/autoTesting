@@ -1,0 +1,4 @@
+304 src/autotester/ui/helpers.py
+file-too-long: src\autotester\ui\helpers.py — 304 lines > 300; split by responsibility
+
+1 violation(s)

@@ -1,0 +1,8 @@
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\head\src\autotester\__init__.py
+attempt trail: [(1, 'failed', 1.0), (2, 'failed', 6.0), (3, 'failed', 36.0), (4, 'failed', None), (4, 'failed', None), (4, 'failed', None), (4, 'failed', None)]
+C7/C8/C9/C6 ok; stored error: RuntimeError
+KeyboardInterrupt propagates (not an Exception; expected)
+8 racing workers -> sends: 1 returns: ['None', 'None', 'None', 'None', 'None', 'None', 'None', 'sent']
+prefix/case ids ok; records_for_run(r1)=5
+crash rule ok: outcome unknown: the attempt started but was never recorded,
+CRIT INPUTS OK

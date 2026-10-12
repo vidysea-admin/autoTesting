@@ -1,0 +1,8 @@
+GREEN-BEFORE rc 0 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+RED-AFTER rc 1
+  C:\Users\Lenovo\AppData\Local\Temp\mr1a-1369632204\copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_run_launcher.py::test_the_default_judge_is_the_provider_factorys_and_an_unusable_one_is_a_400
+FAILED tests/test_provider_factory.py::test_a_malformed_project_spec_is_a_400_not_a_500

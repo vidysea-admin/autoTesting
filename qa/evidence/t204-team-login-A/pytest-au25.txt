@@ -1,0 +1,71 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- D:\autoTesting\.worktrees\t204-team-login\.venv\Scripts\python.exe
+rootdir: D:\autoTesting\.worktrees\t204-team-login
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 56 items
+
+tests/test_ui.py::test_onboard_creates_a_real_project PASSED             [  1%]
+tests/test_ui.py::test_index_lists_onboarded_projects PASSED             [  3%]
+tests/test_ui.py::test_unknown_project_is_404 PASSED                     [  5%]
+tests/test_ui.py::test_project_detail_shows_review_status PASSED         [  7%]
+tests/test_ui.py::test_a_malicious_slug_is_rejected_outright PASSED      [  8%]
+tests/test_ui.py::test_path_traversal_slug_is_rejected PASSED            [ 10%]
+tests/test_ui.py::test_onboard_refuses_an_invalid_slug PASSED            [ 12%]
+tests/test_ui.py::test_report_and_run_view_reflect_real_persisted_data PASSED [ 14%]
+tests/test_ui.py::test_report_with_no_runs_says_so_instead_of_erroring PASSED [ 16%]
+tests/test_ui.py::test_live_view_renders_the_novnc_iframe PASSED         [ 17%]
+tests/test_ui.py::test_live_view_touches_no_project_state PASSED         [ 19%]
+tests/test_ui.py::test_every_page_carries_the_shared_nav PASSED          [ 21%]
+tests/test_ui_healthz.py::test_healthz_unsigned_in_gets_only_ok PASSED   [ 23%]
+tests/test_ui_healthz.py::test_healthz_reports_the_three_fields PASSED   [ 25%]
+tests/test_ui_healthz.py::test_healthz_is_fresh_when_no_source_is_newer_than_start PASSED [ 26%]
+tests/test_ui_healthz.py::test_healthz_detects_a_source_edit_after_process_start PASSED [ 28%]
+tests/test_ui_healthz.py::test_healthz_with_no_source_files_is_never_stale PASSED [ 30%]
+tests/test_ui_healthz.py::test_healthz_touches_no_project_state PASSED   [ 32%]
+tests/test_ui_error_pages.py::test_400_with_html_accept_renders_a_themed_page PASSED [ 33%]
+tests/test_ui_error_pages.py::test_400_with_json_accept_is_unchanged PASSED [ 35%]
+tests/test_ui_error_pages.py::test_400_with_no_accept_header_stays_json PASSED [ 37%]
+tests/test_ui_error_pages.py::test_404_with_html_accept_renders_a_themed_page PASSED [ 39%]
+tests/test_ui_error_pages.py::test_404_with_json_accept_is_unchanged PASSED [ 41%]
+tests/test_ui_error_pages.py::test_409_with_html_accept_renders_a_themed_page PASSED [ 42%]
+tests/test_ui_error_pages.py::test_409_with_json_accept_is_unchanged PASSED [ 44%]
+tests/test_ui_error_pages.py::test_html_error_page_escapes_the_detail PASSED [ 46%]
+tests/test_ui_error_pages.py::test_html_error_page_redacts_a_known_secret_from_the_repo_env PASSED [ 48%]
+tests/test_ui_error_pages.py::test_unmatched_route_with_html_accept_renders_a_themed_page PASSED [ 50%]
+tests/test_ui_error_pages.py::test_unmatched_route_with_json_accept_is_unchanged PASSED [ 51%]
+tests/test_ui_error_pages.py::test_approve_flowspec_unknown_slug_renders_a_themed_page PASSED [ 53%]
+tests/test_ui_env_editor.py::test_env_editor_shows_the_stored_value_to_the_operator PASSED [ 55%]
+tests/test_ui_env_editor.py::test_env_editor_writes_a_new_value_via_post PASSED [ 57%]
+tests/test_ui_env_editor.py::test_set_env_value_writes_owner_only_permissions SKIPPED [ 58%]
+tests/test_ui_env_editor.py::test_env_editor_refuses_an_undeclared_key PASSED [ 60%]
+tests/test_ui_env_editor.py::test_env_editor_refuses_a_value_with_a_newline PASSED [ 62%]
+tests/test_ui_env_editor.py::test_an_empty_save_never_wipes_a_stored_value PASSED [ 64%]
+tests/test_ui_env_editor.py::test_add_a_custom_credential_declares_and_stores_in_one_step PASSED [ 66%]
+tests/test_ui_env_editor.py::test_add_credential_refuses_a_duplicate_key PASSED [ 67%]
+tests/test_ui_env_editor.py::test_the_platform_url_is_editable_from_the_credentials_page PASSED [ 69%]
+tests/test_ui_env_editor.py::test_env_writer_normalizes_only_updated_keys PASSED [ 71%]
+tests/test_ui_env_editor.py::test_env_lock_timeout_and_replace_failure_leave_original PASSED [ 73%]
+tests/test_ui_project_intake.py::test_one_form_exposes_every_intake_input PASSED [ 75%]
+tests/test_ui_project_intake.py::test_rich_intake_persists_refs_sources_and_secrets_only_in_env PASSED [ 76%]
+tests/test_ui_project_intake.py::test_url_only_and_legacy_onboarding_remain_valid PASSED [ 78%]
+tests/test_ui_project_intake.py::test_invalid_second_credential_leaves_no_partial_project_or_env PASSED [ 80%]
+tests/test_ui_project_intake.py::test_invalid_second_value_does_not_write_the_first_value PASSED [ 82%]
+tests/test_ui_project_intake.py::test_credential_scope_must_stay_inside_project_domains PASSED [ 83%]
+tests/test_ui_project_intake.py::test_new_secret_cannot_be_smuggled_into_non_secret_inputs PASSED [ 85%]
+tests/test_ui_project_intake.py::test_new_hostname_shaped_secret_is_not_echoed_by_url_validation PASSED [ 87%]
+tests/test_ui_project_intake.py::test_existing_root_secret_key_cannot_be_reused_or_hidden PASSED [ 89%]
+tests/test_ui_project_intake.py::test_unset_key_owned_by_another_project_cannot_be_redeclared PASSED [ 91%]
+tests/test_ui_project_intake.py::test_existing_project_cannot_be_overwritten_by_reonboarding PASSED [ 92%]
+tests/test_ui_project_intake.py::test_imbalanced_repeated_rows_fail_before_writes PASSED [ 94%]
+tests/test_ui_project_intake.py::test_env_batch_replace_failure_preserves_the_existing_file PASSED [ 96%]
+tests/test_ui_project_intake.py::test_env_batch_replaces_every_duplicate_key PASSED [ 98%]
+tests/test_ui_project_intake.py::test_repeated_statements_are_content_addressed_once PASSED [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================== 55 passed, 1 skipped, 1 warning in 32.06s ==================

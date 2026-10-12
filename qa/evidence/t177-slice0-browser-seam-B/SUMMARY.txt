@@ -1,0 +1,18 @@
+t177-slice0-browser-seam, coordinator B, head 3495ee61 (code d2d463a9), base master 808cdf7f. Real browsers, local pages only.
+Trees: D:/autoTesting/.worktrees/check-t177s0-b (head), D:/autoTesting/.worktrees/check-t177s0-b-master (808cdf7f, PYTHONPATH differential, no sync).
+autotester.__file__ proven in-tree for every run (first line of each evidence file; uv --directory run for pytest/ruff/doctor: unit-and-live-tests.txt).
+Bind table (bind-table-raw.txt; the first failed attempts in it are harness faults, not product: JSON control-char, NUL byte, slug pattern):
+ mode      expose  listener            127.0.0.1  127.0.0.2  LAN 192.168.1.4  ::1    portfile  cdp_url                  after close
+ headless  off     none                -          -          -                -      absent    None                     None, no procs
+ headless  on      127.0.0.1:59923     open       refused    refused          refused present  http://127.0.0.1:59923   port closed, file gone, no procs
+ headed    off     none                -          -          -                -      absent    None                     None, no procs
+ headed    on      127.0.0.1:49470     open       refused    refused          refused present  http://127.0.0.1:49470   port closed, file gone, no procs
+ (flag present in cmdline only when exposed; in the off rows the grep-matched PIDs are the helper/renderer processes that carry no --remote-debugging flag of the browser root: BROWSER PROC row shows False False; ws path matches portfile line 2; listener owner in our tree)
+Stale file not adopted: headless + headed (scenarios-*.txt): fake port planted, session url is the browser's own port, fake_hits 0, GUID differs.
+Concurrent sessions: headless in-process (distinct ports 62399/62398, each owner in own tree, ws matches own file) and headless+headed as two simultaneous processes (SOLO lines): distinct, own listener, own file, closed at teardown.
+Wildcard / wrong-identity refusal (headless): forced past-loopback and forced wrong-identity each raise CdpEndpointError, cdp_url None, port closed, file gone, no procs. wildbind (launch arg rewritten to 0.0.0.0): this Chromium 151 still listened on 127.0.0.1 only (127.0.0.2 and LAN refused), so start succeeded legitimately.
+Regression head vs master (headless): identical late-text settle, case video finalised (67707 vs 46655 bytes, both extract frames), no secret in video bytes, tab1 mask on, tab2 style "none" on BOTH (the owed second-tab gap), leftover run/_video_scratch on BOTH.
+bad_scheme through real goto (bad-scheme-real-goto.txt): head refuses 19 hostile URLs before navigation (server_hits+0, no page change, __pwned 0) and allows the 4 legitimate http(s) URLs; master executes javascript://allowed-host/%0a... in the page (pwned=1) and navigates data://allowed-host.
+Falsifications (falsifications.txt): B5, B6, AF3, B9 each green -> red -> restored, in a copy on C: (deleted).
+Unit/live tests, in-tree: 83 passed (test_browser_session_cdp.py, test_browser_session_cdp_live.py, test_browser_navigation_secrets.py); ruff clean; autotester doctor clean.
+Not completed: see verdict CONTINUE-NEEDED list (killed-browser teardown, headed refuse/wildbind, headed regression); cause headed-close-hang-probe.txt, kill-scenario-headless.txt.

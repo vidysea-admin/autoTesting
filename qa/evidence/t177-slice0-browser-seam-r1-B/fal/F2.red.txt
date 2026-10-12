@@ -1,0 +1,15 @@
+        (PermissionError(errno.EACCES, "blocked"), True),
+    ])
+    def test_reaching_past_loopback_fails_closed_on_an_unexpected_error(
+            monkeypatch: pytest.MonkeyPatch, error: OSError, reaches: bool) -> None:
+        monkeypatch.setattr(socket, "create_connection", Mock(side_effect=error))
+>       assert launch._reaches_past_loopback(1234) is reaches
+E       assert False is True
+E        +  where False = <function _reaches_past_loopback at 0x000002DB30B56840>(1234)
+E        +    where <function _reaches_past_loopback at 0x000002DB30B56840> = launch._reaches_past_loopback
+
+tests\test_browser_session_cdp.py:253: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_browser_session_cdp.py::test_reaching_past_loopback_fails_closed_on_an_unexpected_error[error3-True]
+FAILED tests/test_browser_session_cdp.py::test_reaching_past_loopback_fails_closed_on_an_unexpected_error[error4-True]
+========================= 2 failed, 3 passed in 2.80s =========================

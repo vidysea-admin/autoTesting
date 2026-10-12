@@ -1,0 +1,7 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mr1a-1004311059\fz-f2\src\autotester\__init__.py
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 8 items
+
+tests\test_cli_intake.py ........                                        [100%]
+
+============================== 8 passed in 3.64s ==============================

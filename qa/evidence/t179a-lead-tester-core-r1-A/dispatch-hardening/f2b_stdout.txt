@@ -1,0 +1,9 @@
+max prefix chars released (STAGE_ERROR, not SECRET) per form: {'reversed': 15, 'b64_std_off0': 19, 'b64_url_off0': 19, 'hex_lower': 31, 'pct_all': 47, 'b32': 23}
+{'reversed': 16, 'b64_std_off0': 21, 'b64_url_off0': 21, 'hex_lower': 32, 'pct_all': 48, 'b32': 26}
+control: full form inside 300 chars -> refused SECRET?
+  reversed secret
+  b64_std_off0 secret
+  b64_url_off0 secret
+  hex_lower secret
+  pct_all secret
+  b32 secret

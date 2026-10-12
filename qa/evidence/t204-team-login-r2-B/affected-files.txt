@@ -1,0 +1,1 @@
+tests/test_ui_auth_surface.py tests/test_ui_auth_own_origin.py tests/test_ui_auth_host_and_consent.py tests/test_ui_origin_guard.py tests/test_auth_deploy_files.py tests/test_hosting_deploy.py tests/test_ui_auth_login.py tests/test_ui_auth_hardening.py tests/test_ui_auth_cli_and_limits.py tests/test_cli_advice_resolves.py

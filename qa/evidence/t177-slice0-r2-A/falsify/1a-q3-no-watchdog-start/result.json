@@ -1,0 +1,141 @@
+{
+ "name": "1a-q3-no-watchdog-start",
+ "point": "1a",
+ "sel": "drip or trickl or deadline",
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q3-no-watchdog-start-3up3pg0m\\t\\src\\autotester\\__init__.py",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q3-no-watchdog-start-3up3pg0m\\t",
+ "runs": {
+  "green": {
+   "rc": 0,
+   "secs": 27.2,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q3-no-watchdog-start-3up3pg0m\\t"
+   ]
+  },
+  "red": {
+   "rc": 1,
+   "secs": 34.2,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ]
+   ],
+   "summary": "1 failed, 2 passed, 8 deselected",
+   "errs": [
+    "E   AssertionError: the probe held start() for 5.1s against a 0.6s deadline",
+    "E   assert 5.078000000008615 < 2.0"
+   ],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q3-no-watchdog-start-3up3pg0m\\t"
+   ]
+  },
+  "red_fullfile": {
+   "rc": 1,
+   "secs": 48.4,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "1 failed, 10 passed",
+   "errs": [
+    "E   AssertionError: the probe held start() for 5.1s against a 0.6s deadline",
+    "E   assert 5.094000000011874 < 2.0"
+   ],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q3-no-watchdog-start-3up3pg0m\\t"
+   ]
+  },
+  "restored": {
+   "rc": 0,
+   "secs": 34.3,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q3-no-watchdog-start-3up3pg0m\\t"
+   ]
+  }
+ },
+ "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -90,3 +90,2 @@\n     watchdog.daemon = True\n-    watchdog.start()\n     conn = http.client.HTTPConnection(CDP_HOST, port)\n",
+ "restored_same": true
+}

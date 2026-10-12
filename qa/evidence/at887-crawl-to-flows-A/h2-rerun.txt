@@ -1,0 +1,26 @@
+PASS P3 nothing new: SAME object returned 
+PASS P3 nothing new: still APPROVED, version 7, bytes identical 
+PASS P3 nothing new w/ different crawl id: same object source_ids=['c1']
+PASS P2 human flow byte-identical after adding other flow 
+PASS P3 adds screen+flow: version exactly +1 (8) v=8
+PASS P3 adds: review DRAFT, by/at empty Review(status=<ReviewStatus.DRAFT: 'draft'>, by=None, at=None, note='1 screen(s), 1 flow(s) added by crawl c2 — needs review')
+   note: 1 screen(s), 1 flow(s) added by crawl c2 — needs review
+PASS input spec NOT mutated 
+PASS only-screen: version +1 (8) not +2 v=8 screens=3 flows=1
+PASS only-screen: DRAFT 1 screen(s) added by crawl c1 — needs review
+PASS only-flows: version +1 (4) v=4
+PASS only-flows: DRAFT w/ sensible note 0 screen(s), 1 flow(s) added by crawl c1 — needs review
+PASS None spec: version 2, DRAFT v=2 note=2 screen(s), 1 flow(s) added by crawl c1 — needs review
+PASS None spec + empty crawl: fresh spec v1 DRAFT 
+PASS None + only orphan: v2 and zero flows 
+PASS approved + new flows -> DRAFT, by/at cleared 
+PASS needs_edit + new flows -> DRAFT, by/at cleared 
+PASS second merge same crawl: same obj, v unchanged 
+FAIL rediscovered human screen: flow screen_ids resolve to spec.screens DANGLING steps=[('crawl path: Home > T', 1, 'node_bf4873fbda6c'), ('crawl path: Home > T', 2, 'node_bf4873fbda6c')] entry=[('crawl path: Home > T', 'node_bf4873fbda6c')] screens=['human_home', 'node_c30168f34edb']
+PASS conflicting-name path: screen_ids resolve conflicts=1 dang=[]
+PASS same path now with login case: existing flow wins, nothing changes requires_auth=False  (finding: login added later never reaches existing flow)
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at887\h2_merge.py", line 120, in <module>
+    old_path = pathlib.Path(sys.argv[1])
+                            ~~~~~~~~^^^
+IndexError: list index out of range

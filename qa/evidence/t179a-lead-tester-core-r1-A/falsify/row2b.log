@@ -1,0 +1,84 @@
+== (a) BEFORE edit (expect green)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2b\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2b
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_agent_read_only.py .                                          [100%]
+
+============================== 1 passed in 1.99s ==============================
+== (c) AFTER edit (expect red on intended assertion)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2b\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2b
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_agent_read_only.py F                                          [100%]
+
+================================== FAILURES ===================================
+______ test_a_stage_session_or_judge_failure_is_a_scrubbed_typed_refusal ______
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27403/test_a_stage_session_or_judge_0')
+spy = <test_agent_tools.Spies object at 0x000001DC3AC2B910>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DC3AC1A310>
+
+    def test_a_stage_session_or_judge_failure_is_a_scrubbed_typed_refusal(
+            tmp_path: Path, spy: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
+        ctx, _ = _run(tmp_path, spy, AW, _one(A.WAIT, "x"))
+        case = ctx.store.add_case(_case(_one(A.WAIT, "y")))
+    
+        def boom(text: str) -> Any:
+            def _raise(*_a: Any, **_k: Any) -> Any:
+                raise RuntimeError(text)
+            return _raise
+        monkeypatch.setattr(tools.execute, "run_case", boom(f"login failed for {RAW}"))
+>       out = _go(ctx, "run_case", {"case_id": case.id})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_agent_read_only.py:184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_agent_tools.py:127: in _go
+    return tools.dispatch(ctx, name, args or {})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\agents\tools.py:278: in dispatch
+    return _dispatch(ctx, name, raw_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\agents\tools.py:264: in _dispatch
+    outcome = _HANDLERS[tool](ctx, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\agents\tools.py:113: in _run_case
+    result = _scrubbed(ctx, execute.run_case(case, session))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_a = (Case(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 21, 39, 42, 539079, tzinfo=TzInfo(0)), provenance=N...oposed'>, priority='p2', pinned=False, pinned_issue_id=None), <test_agent_tools._Session object at 0x000001DC3AC394D0>)
+_k = {}
+
+    def _raise(*_a: Any, **_k: Any) -> Any:
+>       raise RuntimeError(text)
+E       RuntimeError: login failed for Hunter2-raw-value-9137
+
+tests\test_agent_read_only.py:181: RuntimeError
+=========================== short test summary info ===========================
+FAILED tests/test_agent_read_only.py::test_a_stage_session_or_judge_failure_is_a_scrubbed_typed_refusal
+============================== 1 failed in 2.67s ==============================
+== (d) RESTORED (expect green); cmp:
+identical-to-HEAD
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2b\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row2b
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_agent_read_only.py .                                          [100%]
+
+============================== 1 passed in 1.79s ==============================
+DONE

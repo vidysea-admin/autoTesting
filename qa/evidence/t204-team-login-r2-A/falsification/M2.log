@@ -1,0 +1,79 @@
+=== GREEN-BEFORE (-k test_au20_startup_agrees_with_the_request_time_guard and (repro3-hosts-only-no-origin or repro2-bare-origin-custom-port)) ===
+============================= test session starts =============================
+collected 68 items / 66 deselected / 2 selected
+
+tests\test_ui_auth_own_origin.py ..                                      [100%]
+
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro2-bare-origin-custom-port]
+PASSED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro3-hosts-only-no-origin]
+================= 2 passed, 66 deselected, 1 warning in 8.01s =================
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== DIFF ===
+--- config.py(orig)
++++ config.py(mutant)
+@@ -154,3 +154,3 @@
+     forms = _browser_hosts(name, bind_port())
+-    if any(_host_allowed(h) and _origin_allowed(f"{s}://{h}") for s, h in forms):
++    if any(_host_allowed(h) for s, h in forms):
+         return
+
+=== RED-AFTER named (-k) ===
+============================= test session starts =============================
+collected 68 items / 66 deselected / 2 selected
+
+tests\test_ui_auth_own_origin.py .F                                      [100%]
+
+================================== FAILURES ===================================
+_ test_au20_startup_agrees_with_the_request_time_guard[repro3-hosts-only-no-origin] _
+tests\test_ui_auth_own_origin.py:126: in test_au20_startup_agrees_with_the_request_time_guard
+    with pytest.raises(AuthConfigError, match="own origin"):
+E   Failed: DID NOT RAISE AuthConfigError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro3-hosts-only-no-origin]
+============ 1 failed, 1 passed, 66 deselected, 1 warning in 6.23s ============
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead
+
+=== FULL FILE after edit ===
+============================= test session starts =============================
+collected 68 items
+
+tests\test_ui_auth_own_origin.py ..F.F......F.F......................... [ 57%]
+.............................                                            [100%]
+
+================================== FAILURES ===================================
+E   Failed: DID NOT RAISE AuthConfigError
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M2\tests\test_ui_auth_own_origin.py:126: Failed: DID NOT RAISE AuthConfigError
+E   Failed: DID NOT RAISE AuthConfigError
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M2\tests\test_ui_auth_own_origin.py:126: Failed: DID NOT RAISE AuthConfigError
+E   Failed: DID NOT RAISE AuthConfigError
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M2\tests\test_ui_auth_own_origin.py:126: Failed: DID NOT RAISE AuthConfigError
+E   Failed: DID NOT RAISE AuthConfigError
+C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals\M2\tests\test_ui_auth_own_origin.py:126: Failed: DID NOT RAISE AuthConfigError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro3-hosts-only-no-origin]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro5-port80-hosts-only]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[port80-https-origin-no]
+FAILED tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[port443-http-origin-no]
+============= 4 failed, 64 passed, 1 warning in 298.16s (0:04:58) =============
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `D:\autoTesting\.worktrees\t204-team-login\.venv` and will be ignored; use `--active` to target the active environment instead

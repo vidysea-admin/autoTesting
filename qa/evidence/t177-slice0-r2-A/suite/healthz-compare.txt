@@ -1,0 +1,16 @@
+== C:/Users/Lenovo/AppData/Local/Temp/chk-t177r2a-1798127267
+.                                                                        [100%]
+============================== warnings summary ===============================
+AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Lib\site-packages\starlette\testclient.py:53
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 54.56s
+== C:/Users/Lenovo/AppData/Local/Temp/chk-t177r2a-base-11300
+.                                                                        [100%]
+============================== warnings summary ===============================
+AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Lib\site-packages\starlette\testclient.py:53
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 56.02s
