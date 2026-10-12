@@ -76,6 +76,7 @@
 | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `schema/agent_fallback.py` | Typed shapes for the browser-use fallback actuator (T-177, qa/contracts/agent-fallback.md). |
 | `schema/agent_layer.py` | The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist, |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
@@ -141,6 +142,7 @@
 | `sources/zip_names.py` | Zip member-name vetting that behaves identically under Windows and Ubuntu path rules. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/adversarial.py` | ADVERSARIAL: a bounded pass of file-defined probes at one AI endpoint. It records, never judges. |
+| `stages/agent_actuator.py` | AGENT_ACTUATOR: the guards, bounds and typed boundary around an agent that drives a page. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
 | `stages/ai_capture.py` | AI CAPTURE: exercise one AI endpoint and record what happened. It observes and never decides. |
 | `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
@@ -274,6 +276,11 @@
 <!-- generated:schema -->
 | Model | Meaning |
 |---|---|
+| `FallbackActionKind` (`schema/agent_fallback.py`) |  |
+| `FallbackAction` (`schema/agent_fallback.py`) | One action the agent chose, as the guards see it (AF3). |
+| `ActuatorResult` (`schema/agent_fallback.py`) | What a backend returns after driving the page: the actions taken, what it observed and |
+| `FallbackStatus` (`schema/agent_fallback.py`) | How an invocation ended. Deliberately no PASS: only `grade.py` writes a verdict. |
+| `FallbackOutcome` (`schema/agent_fallback.py`) | The adapter's whole answer for one invocation. `reason` names the bound, the refusal or |
 | `AgentToolName` (`schema/agent_layer.py`) | The stage tools in this slice. `report` and `capture_network` join with the rest of T-179. |
 | `ToolEffect` (`schema/agent_layer.py`) | What a tool can do to the outside world. T-180 allowlists subagents by this. |
 | `RefusalClass` (`schema/agent_layer.py`) | Why a tool call produced no action. A refusal is a result, never an exception the |
