@@ -73,6 +73,7 @@ def _run_queued(entry: QueueEntry) -> None:
     """The queue's executor: the launcher re-checks every gate (HO19), then runs the project."""
     try:
         run_launcher.launch_run(entry.project, run_id=entry.id, requested_by=entry.requested_by,
+                                via=entry.via, requested_at=entry.enqueued_at,
                                 seams=_seams(), priorities=entry.priorities)
     except LaunchRefused as exc:
         raise RunRefused(exc.reason) from exc

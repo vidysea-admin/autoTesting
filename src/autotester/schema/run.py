@@ -94,6 +94,11 @@ class Run(Artifact):
     via: RunVia | None = Field(
         default=None, description="T-205/TF2: which surface asked for it; None = the Run button"
     )
+    requested_at: datetime | None = Field(
+        default=None,
+        description="T-201b/TF2: when the request was made (the queue entry's `enqueued_at`); "
+                    "None for a run from before attribution",
+    )
     git_sha: str | None = None
     label: str | None = None
     case_ids: list[str] = Field(default_factory=list)
