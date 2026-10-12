@@ -266,13 +266,15 @@ def run(root: Path | None = None) -> list[Violation]:
     )
     from autotester.ledger.citations import check_decision_citations
     from autotester.ledger.evidence_specs import check_stale_evidence_specs
+    from autotester.ledger.issue_ids import check_issue_id_unique
 
     base = root or repo_root()
     violations: list[Violation] = []
     for check in (check_file_sizes, check_function_sizes, check_file_names,
                   check_root_clean, check_duplicate_definitions,
                   check_dependencies_declared,
-                  check_ledger, check_qa_issue_rows, check_adapter_pytest_q,
+                  check_ledger, check_qa_issue_rows, check_issue_id_unique,
+                  check_adapter_pytest_q,
                   check_goal_pytest_q, check_stale_evidence_specs,
                   check_generated_fresh,
                   check_architecture_budget, check_docs_routed, check_decision_citations):
