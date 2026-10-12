@@ -10,7 +10,8 @@ Dual check: no
 Why no dual: this diff changes no auth, tenancy or approval-check code and writes nothing to production. It only CALLS `schedule_gate.credential_gate` (merged, dual-checked in t200b) and `launch_run` (unchanged; `run_launcher.py` is not in the diff). It does make the gate's approval mint reachable from a command for the first time, so the checker may rule otherwise; the line to look at is `src/autotester/stages/schedule_wiring.py:real_gate`.
 Fix cycle: 0
 Executor: claude-sonnet-subagent (maker build subagent)
-Status: ready-for-check
+Status: checked-PASS
+Merged: 408585f0 (verdict qa/verdicts/t200-schedule-wiring.md @ f2b98ba3; post-merge verify 329 passed 1 skipped (RAM gate), ruff+doctor clean, MAP/SNAPSHOT/golden not stale)
 Full-suite trigger: none run by the builder (the checker owes it). Existing modules edited: `ui/run_queue.py`, `schema/run_queue.py`, `ui/routes_runs.py`, `stages/schedule_tick.py`, `cli_subapps.py`; their test files and every importer I found by grep ran green (list below).
 UI surface: none changed (no route, screen or card), persona walk: skip.
 
