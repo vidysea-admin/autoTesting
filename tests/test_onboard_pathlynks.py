@@ -30,9 +30,9 @@ def make_project() -> Project:
         slug="pathlynks", name="Pathlynks", base_url="https://pathlynks.vidysea.test/signin",
         allowed_domains=["vidysea.test"], write_policy=WritePolicy.READ_ONLY, headed=False,
         secrets=[
-            SecretRef(key="PATHLYNKS_USER_EMAIL", domains=["vidysea.test"],
+            SecretRef(key="PATHLYNKS_USER_EMAIL", domains=["pathlynks.vidysea.test"],
                       mask_in_screenshot=False),
-            SecretRef(key="PATHLYNKS_USER_PASSWORD", domains=["vidysea.test"]),
+            SecretRef(key="PATHLYNKS_USER_PASSWORD", domains=["pathlynks.vidysea.test"]),
         ],
     )
 

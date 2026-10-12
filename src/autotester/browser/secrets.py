@@ -85,9 +85,19 @@ def host_of(url: str) -> str:
     return (parsed.hostname or "").lower()
 
 
-def _host_matches(host: str, domain: str, include_subdomains: bool = True) -> bool:
-    domain = domain.lower().lstrip(".")
-    return host == domain or (include_subdomains and host.endswith(f".{domain}"))
+def _norm_host(value: str) -> str:
+    return value.strip().lower().lstrip(".").rstrip(".")
+
+
+def _host_matches(host: str, domain: str, include_subdomains: bool = False) -> bool:
+    """EXACT host match (AT-651, D-087): a secret scoped to `a.example.com` is filled
+    only on `a.example.com`, never on a parent, sibling, child or lookalike host.
+    Case-insensitive; one trailing dot (FQDN form) is ignored. `include_subdomains`
+    is accepted for caller compatibility but no longer widens the match -- each
+    environment is its own project with its own exact hosts.
+    """
+    host_n = _norm_host(host)
+    return bool(host_n) and host_n == _norm_host(domain)
 
 
 class SecretStore:
