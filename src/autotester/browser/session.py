@@ -81,24 +81,26 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
         self._context: Any = None
         self._page: Any = None
 
-    # -- lifecycle ------------------------------------------------------------
     def start(self) -> BrowserSession:
         from playwright.sync_api import sync_playwright
-        timeout = self._timeout()
         self.state.run_dir.mkdir(parents=True, exist_ok=True)
         video_dir = (self.state.run_dir / VIDEO_DIR_NAME / self._video_scratch_id
                      if self.record_video else None)
         self._playwright = sync_playwright().start()
-        if self.budget is not None:
-            self.budget.check_start()
+        try:
+            if self.budget is not None:
+                self.budget.check_start()
             timeout = self._timeout()
-        self._context = self._playwright.chromium.launch_persistent_context(
-            **launch_options(self.project, self.paths, record_video_dir=video_dir), **timeout
-        )
-        self._page = self._context.pages[0] if self._context.pages else self._context.new_page()
-        self._timeout()
-        if self.observer is not None:
-            self.observer.attach(self._page)
+            self._context = self._playwright.chromium.launch_persistent_context(
+                **launch_options(self.project, self.paths, record_video_dir=video_dir), **timeout
+            )
+            self._page = self._context.pages[0] if self._context.pages else self._context.new_page()
+            self._timeout()
+            if self.observer is not None:
+                self.observer.attach(self._page)
+        except BaseException:
+            self.close()
+            raise
         return self
 
     def close(self) -> None:
@@ -117,8 +119,7 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
     def _sweep_orphan_videos(self) -> None:
         """Sweep only this session's video scratch, never a sibling's (V1)."""
         scratch = self.state.run_dir / VIDEO_DIR_NAME / self._video_scratch_id
-        if scratch.is_dir():
-            shutil.rmtree(scratch, ignore_errors=True)
+        shutil.rmtree(scratch, ignore_errors=True)
 
     def __enter__(self) -> BrowserSession:
         return self.start()

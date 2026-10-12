@@ -1,7 +1,7 @@
 # Manifest — fix-baseline-failures
 
 Status: ready-for-check
-Fix cycle: 0
+Fix cycle: 1
 
 **Goal task:** none (test-isolation fixes; no product code changed)
 
@@ -25,3 +25,16 @@ Fix cycle: 0
 - `uv run ruff check src tests scripts`: all checks passed. `uv run autotester doctor`: clean
   (test_discover.py kept at 300 lines).
 - No product bug found; no secrets involved.
+
+## Fix note (cycle 1, answers r1.a FAIL)
+- Product fix: `BrowserSession.start()` (src/autotester/browser/session.py) now wraps everything after
+  `sync_playwright().start()` in try/except BaseException -> `self.close()`; raise, so a failed launch
+  stops the driver. Minimal; t177 (wave/t177-slice0-browser-seam) also edits session.py: expect a
+  small merge conflict in `start()` (also trimmed 3 lines to stay at the 300-line cap).
+- Fixtures `shape_page` and `conftest.page_factory`: start() back inside the try (runner=None first),
+  stop runner if started, then skip. Missing Chromium is a skip again, not an error.
+- Audit of tests/: other `sync_playwright()` uses are `with` blocks (safe); `BrowserSession.start()`
+  callers are covered by the product fix. No other leaks.
+- Chromium absent (empty PLAYWRIGHT_BROWSERS_PATH): test_browser+ui_intake*+ui_origin_guard* 138 passed,
+  1 skipped, 0 failed; test_browser+scroll_invariance 14 passed, 51 skipped, 0 errors.
+- Chromium present: (a) 139 passed; (b) all passed. ruff clean, doctor clean.

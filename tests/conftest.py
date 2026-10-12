@@ -167,13 +167,15 @@ def page_factory(serve_dir: Callable[[Path], str]):
     """
     playwright = pytest.importorskip("playwright.sync_api")
     base = serve_dir(BIDI_SITE)
-    runner = playwright.sync_playwright().start()
+    runner = None
     try:
+        runner = playwright.sync_playwright().start()
         browser = runner.chromium.launch(headless=True)
     except Exception as exc:  # browser binary missing on this machine
         # stop the driver: a started-but-never-stopped one leaves a running asyncio
         # loop on this thread and breaks every later TestClient/asyncio.run test.
-        runner.stop()
+        if runner is not None:
+            runner.stop()
         pytest.skip(f"chromium unavailable: {type(exc).__name__}")
     page = browser.new_page()
 
