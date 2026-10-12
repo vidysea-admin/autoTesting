@@ -7,8 +7,9 @@ for the one gap -- `execute.run_case` and the browser session have no write-poli
 stored `Step` carries no DOM facts (no `is_form_submit`) -- decides from what the step says.
 
 Under READ_ONLY that decision is fail-closed (table: the T-179a manifest): only step kinds that
-cannot change state by construction run (reads, waits, assertions, hover, scroll, back, and a
-GET navigation to an in-domain http(s) URL), plus the declared login case's credential entry.
+cannot change state by construction run (reads, waits, assertions, hover, scroll, back, a
+click whose name passes the deny-list (D-086), and a GET navigation to an in-domain
+http(s) URL), plus the declared login case's credential entry.
 `deny_reason` stays the one name deny-function. A model instruction cannot reach any of this.
 """
 
@@ -36,6 +37,11 @@ from autotester.store.project_store import ProjectStore
 _READS = frozenset({Action.WAIT, Action.ASSERT, Action.BACK, Action.HOVER, Action.SCROLL})
 _WEB = ("http", "https")
 _CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+# D-086 (HG-1): READ_ONLY may click, but a step carries no DOM facts, so a control whose own name
+# says it commits something (the crawler's `is_form_submit` is unknowable here) stays refused.
+_COMMIT_NAME = re.compile(
+    r"\b(save|place order|confirm|register|sign ?up|sign ?in|log ?in|add to cart|buy|purchase|"
+    r"update|create|apply|book|upload|import)\b", re.IGNORECASE)
 DESTINATION_REFUSED = "destination is not an http(s) URL inside the allowed domains"
 
 
@@ -147,6 +153,10 @@ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
     if (action is Action.CLICK or enter) and walk.login and walk.credential_pending:
         walk.credential_pending = False  # one submit per credential entry
         return _click_denied(step.target, project) if action is Action.CLICK else None
+    if action is Action.CLICK:  # D-086 HG-1: benign clicks run; deny-list/never-click still hold
+        return _click_denied(step.target, project) or (
+            "click on a control named like a commit can change state"
+            if _COMMIT_NAME.search(step.target) else None)
     if action is Action.FILL:
         return "fill outside the declared login's credential entry"
     return f"{action.value} can change state"
