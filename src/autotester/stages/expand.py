@@ -12,6 +12,9 @@ immediately before `provider.act` -- see `guard_expand_prompt`.
 
 from __future__ import annotations
 
+import logging
+import re
+
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import RepoDocs
 from autotester.core.redact import mask_pii
@@ -21,6 +24,8 @@ from autotester.schema.enums import KIND_BY_CLASS, Action, CaseClass
 from autotester.schema.flowspec import Flow, FlowSpec
 from autotester.stages.review import require_reviewed
 from autotester.store.project_store import ProjectStore
+
+log = logging.getLogger(__name__)
 
 SKILL_NAME = "expand-case"  # src/autotester/skills/expand-case/SKILL.md (T-175, was expand_case_v1)
 
@@ -119,6 +124,29 @@ def _store_secrets(store: ProjectStore | None) -> SecretStore | None:
     return SecretStore.load(project, store.paths.env_file, strict=False)
 
 
+def _target_name(target: str) -> str:
+    m = re.search(r'name="([^"]+)"', target)
+    return (m.group(1) if m else target).strip().lower()
+
+
+def unreachable_first_targets(spec: FlowSpec) -> list[tuple[str, str]]:
+    """AT-887: (flow id, target) for each non-crawl flow whose first click names a control no
+    crawled screen shows. Empty when the spec holds no crawl screen (nothing to compare with).
+    A warning, never a gate: the crawl may be bounded, and a name is a cue, not a locator."""
+    crawled = [s for s in spec.screens if s.id.startswith("node_")]
+    crawl_ids = {s.source_ref.source_id for s in crawled if s.source_ref}
+    cues = {c.lower() for s in crawled for c in [s.name, *s.signals]}
+    out: list[tuple[str, str]] = []
+    for flow in spec.flows:
+        first = next((s for s in flow.steps if s.action is Action.CLICK), None)
+        if not crawled or first is None or flow.source_id in crawl_ids:
+            continue
+        name = _target_name(first.target)
+        if name and not any(name in cue or cue in name for cue in cues):
+            out.append((flow.id, first.target))
+    return out
+
+
 def _happy_case(flow: Flow, project: str) -> Case:
     return Case(
         project=project, flow_id=flow.id, kind=KIND_BY_CLASS[CaseClass.HAPPY],
@@ -210,6 +238,9 @@ def expand(spec: FlowSpec, provider: Provider, docs: RepoDocs | None = None,
            secrets: SecretStore | None = None) -> list[Case]:
     """Generate only saved approved proposals; check every flow before the first model call."""
     require_reviewed(spec)
+    for flow_id, target in unreachable_first_targets(spec):
+        log.warning("flow %s starts at %r, which no crawled screen shows -- the account may "
+                    "not have it", flow_id, target)
     batch = _reviewed_batch(spec, store, proposal_ids)
     guard = secrets or _store_secrets(store)
     cases: list[Case] = []

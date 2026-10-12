@@ -137,6 +137,23 @@ def _is_rediscovery(clash: Screen | None, incoming: Screen) -> bool:
     return clash is not None and clash.name == incoming.name and not _is_structural(clash)
 
 
+def not_seen_again(spec: FlowSpec | None, nodes: list[ScreenNode], crawl_id: str) -> list[Screen]:
+    """AT-109: structural screens an EARLIER crawl found that this crawl did not reach. Not stored
+    (X13: an existing Screen is never rewritten) and not a Conflict (an SPA re-crawl would file a
+    false one per state): it is said in the review note, so a redesign reads differently from an
+    innocent re-crawl. A bounded crawl may simply not have reached a screen, hence "not seen"."""
+    seen = {n.id for n in nodes}
+    return [s for s in (spec.screens if spec else []) if _is_structural(s) and s.id not in seen
+            and s.source_ref is not None and s.source_ref.source_id != crawl_id]
+
+
+def _stale_note(stale: list[Screen]) -> str:
+    if not stale:
+        return ""
+    names = ", ".join(sorted({s.name for s in stale})[:5])
+    return f"; {len(stale)} earlier screen(s) not seen again, possibly changed or removed: {names}"
+
+
 def merge_screens(
     spec: FlowSpec | None, nodes: list[ScreenNode], project: str, *, crawl_id: str
 ) -> FlowSpec:
@@ -184,7 +201,8 @@ def merge_screens(
         "version": spec.version + 1,
         "review": Review(
             status=ReviewStatus.DRAFT,
-            note=f"{len(added)} screen(s) added by crawl {crawl_id} — needs review",
+            note=(f"{len(added)} screen(s) added by crawl {crawl_id} — needs review"
+                  + _stale_note(not_seen_again(spec, nodes, crawl_id))),
         ),
     })
 
@@ -231,7 +249,8 @@ def merge_screens_and_flows(
         "version": merged.version if bumped else merged.version + 1,
         "review": Review(
             status=ReviewStatus.DRAFT,
-            note=f"{added} screen(s), {len(new)} flow(s) added by crawl {crawl_id} — needs review",
+            note=(f"{added} screen(s), {len(new)} flow(s) added by crawl {crawl_id} — needs review"
+                  + _stale_note(not_seen_again(spec, nodes, crawl_id))),
         ),
     })
 
