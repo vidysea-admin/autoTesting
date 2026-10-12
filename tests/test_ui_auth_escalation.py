@@ -288,6 +288,21 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
     **{("POST", _P + t): ("project", "credentials.edit") for t in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
     ("POST", _P + "/access"): ("project", "project.view"),
+    # T-198b developer portal (G9): pinned independently of policy.PORTAL_POLICY.
+    ("GET", "/shared"): ("key", "video.view"), ("GET", "/v/{token}"): ("key", "video.view"),
+    ("POST", "/v/{token}/request-access"): ("key", "video.view"),
+    ("GET", _P + "/videos/{video_id}"): ("key", "video.view"),
+    ("POST", _P + "/videos/{video_id}/request-access"): ("key", "video.view"),
+    ("GET", _P + "/videos/{video_id}/media"): ("video", "video.view"),
+    ("GET", _P + "/videos/{video_id}/comments"): ("video", "video.view"),
+    **{("POST", _P + "/videos/{video_id}" + t): ("video", "video.share") for t in (
+        "/share-link", "/share-link/revoke", "/shares")},
+    **{("POST", _P + "/videos/{video_id}/comments" + t): ("video", "comment.create")
+       for t in ("", "/{comment_id}/edit", "/{comment_id}/delete")},
+    ("POST", _P + "/videos/{video_id}/comments/{comment_id}/promote"): ("project", "project.edit"),
+    ("GET", "/access-requests"): ("key", "access.approve"),
+    **{("POST", "/access-requests/{request_id}" + t): ("key", "access.approve")
+       for t in ("/approve", "/decline")},
 }
 
 

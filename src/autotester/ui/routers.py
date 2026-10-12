@@ -14,6 +14,7 @@ from __future__ import annotations
 from fastapi import APIRouter, FastAPI
 
 from autotester.ui import (
+    routes_access_requests,
     routes_admin,
     routes_auth,
     routes_cases,
@@ -34,6 +35,8 @@ from autotester.ui import (
     routes_settings,
     routes_sources,
     routes_video,
+    routes_video_comments,
+    routes_video_portal,
 )
 
 STUBS: dict[str, APIRouter] = {
@@ -65,6 +68,11 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_live.router,
     routes_catalog.router,
     routes_project_access.router,
+    # T-198b/G9: the portal. The `video_portal` and `access_requests` stubs stay registered
+    # and empty (test_routers_list pins them); these are the real routers beside them.
+    routes_video_portal.router,
+    routes_video_comments.router,
+    routes_access_requests.router,
     *STUBS.values(),
 )
 
