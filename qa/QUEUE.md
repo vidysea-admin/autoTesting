@@ -405,6 +405,55 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-12 close-out: at887, t205, t201a, t197, t199b, at774 (checker, from the PROPOSED-ISSUE lines of their PASS verdicts)
+
+Never built until a human moves one out of this section with `approved: <date>`. AT-952..AT-993 are minted now. AT-890 and AT-774 are now `fixed`; AT-887 stays open (its clause 2, the pre-run reachability warning, is unbuilt). No S1/S2 row; the security and data-write rows are listed first. AT-830 (URL-encoded email), AT-920 and AT-921 already cover three more findings of these verdicts and were not duplicated. AT-958 and AT-991 need an owner answer first. Process, wording and informational rows are ledger-only unless a human picks them.
+
+| Priority | Candidate | Ref |
+|---|---|---|
+| priority: security (medium, test gap) | T-205 TF2: no repo test proves `priorities` cannot skip the live-case approval; add the priorities x no-approval rows from the ready-made probe (t205-g10-headroom.mr1.a). | AT-956 |
+| priority: security (medium, test gap) | t201a: dropping `re.escape` in `delivery/inbox.py::records_for_run` stays green; add run ids `run.1` vs `run-1` (t201a-delivery-core.r2.b). | AT-967 |
+| priority: security (medium) | t199b P-S2: sheet-side text (`CellChange.before`, `CellConflict.sheet_has`) is shown and hashed unscrubbed in `stages/sheet_plan.py`; scrub before any live sheet slice (t199b-bug-loop-run). | AT-981 |
+| priority: security (medium) | t199b P-S4: the only barrier to a live sheet write is the client's own self-declared `live` flag (`sheet_write.py:77`); needs a structural check and a re-check after the read (t199b-bug-loop-run). | AT-983 |
+| priority: security (medium, data-write) | t199b P-S3: a crash between the sheet write and the SyncMemory update causes permanent false conflicts later (`sheet_plan.py:96-103`); live slice (t199b-bug-loop-run). | AT-982 |
+| priority: security (low) | t205: `run_cases_traced` is a public gate-free door that executes with any `RunApproval` passed in; make it private or take a Prepared object (t205-g10-headroom.mr1.b). | AT-960 |
+| priority: security (low) | t197: `ingest review` text-mode `internal_error` prints the exception message, which may carry secret-like text the redactor does not know (t197-video-pointers.mr1.b, inherited). | AT-978 |
+| priority: security (low) | t197: `internal_error` reason can carry the recording's directory or other absolute paths (repr form, upper-case); mask or print the class name only (t197-video-pointers.r2.a and .r2.b). | AT-969 |
+| medium | t199b P-T1: replaying an older run after a criterion edit stamps `case_changed` at the old run's time and retroactively refuses a later real FAIL (t199b-bug-loop-run). | AT-979 |
+| medium | t199b P-S1: events written by the merged T-199a code (`bev_<id>.json`) are invisible to this head, silently; no migration (t199b-bug-loop-run). | AT-980 |
+| medium | t199b P-S5: a real sheet that strips the formula-guard apostrophe on read-back would report every guarded value as a permanent conflict; live slice (t199b-bug-loop-run). | AT-984 |
+| low | t199b P-S6: a stray directory named like an event file makes `snapshot()`/`apply()` raise PermissionError (t199b-bug-loop-run). | AT-985 |
+| low (wording) | t199b P-S7: manifest wording 'counted once at its earliest time' is over-quantified (t199b-bug-loop-run). | AT-986 |
+| low | t199b P-S8: `bug_key` control-character rule misses U+2028/2029/0085 and C1; `TrackedBug` and `PlanRow` unconstrained (t199b-bug-loop-run). | AT-987 |
+| low | t199b P-T2: `process_run` raises ValueError on a corrupt verdict file or `run.json` (t199b-bug-loop-run). | AT-988 |
+| low | t199b P-S9: sheet formula guard misses LF, full-width and invisible leading characters; key match case-sensitive (t199b-bug-loop-run). | AT-989 |
+| low (process) | t199b L check ran 65 min against a 45 min budget on a loaded machine (t199b-bug-loop-run). | AT-990 |
+| low (owner decision) | T-205 `Source.origin` accepts a bare kind and a detail model; accept two shapes or require detail for upload/zip/drive (t205-g10-headroom.mr1.a). | AT-958 |
+| low | T-205: `_run_queued` does not forward `trigger`/`slot_key` to `launch_run`; G5 must forward them (t205-g10-headroom.mr1.b). | AT-959 |
+| low | T-205: add a test for the `CredentialState` single home (only ruff F811 guards it today) (t205-g10-headroom.mr1.a). | AT-957 |
+| low | T-205: TF2 guard test no longer scans helper functions in `run_launcher.py` (t205-g10-headroom.r1.a, r1.b). | AT-961 |
+| low | T-205: `test_no_seam_value_skips_the_approval` uses `pytest.raises(Exception)` and can pass vacuously (t205-g10-headroom.r1.a, r1.b). | AT-962 |
+| low | T-205: `safe_name` does not NFKC-normalise; revisit if a caller normalises (t205-g10-headroom.r1.a). | AT-963 |
+| low | T-205: TF1 AST scan misses string-resolved executor calls; add a string-constant check (t205-g10-headroom.r1.a, r1.b). | AT-964 |
+| low | T-205: provenance rows are unreadable by pre-T205 code (`extra=forbid`); rollback needs a data strip (t205-g10-headroom.r1.b). | AT-965 |
+| low (process) | T-205 r1.b ran 164 min: copy per mutant took 3+ min; exclude `qa/` and `.goal/` from mutant copies (t205-g10-headroom.r1.b). | AT-966 |
+| low | `tests/test_core.py::test_env_creation_is_coordinated_across_processes` is red on old base and intermittent on master under load (15 s child-ready wait) (t201a-delivery-core.r2.a, t205-g10-headroom.mr1.a). | AT-968 |
+| low | t197: `_wants_json` ignores click last-wins and `--`; a provider `SystemExit` is not turned into a document (t197-video-pointers.r2.a). | AT-970 |
+| low | t197: CTRL_BREAK or hard kill of `ingest review` gives no JSON and keeps `reviews/rv_*/` (t197-video-pointers.r2.b). | AT-971 |
+| low (docs) | t197: `ingest review` usage errors exit 1 while other commands exit 2; document in the CLI contract (t197-video-pointers.r2.b). | AT-972 |
+| low (informational) | t197: CLI-side stat boundary (`cli_video_review.py:171`) is not pinned at 32768/32769 (t197-video-pointers.r2.b). | AT-973 |
+| low (informational) | t197: `ingest review --help` with `--output json` prints help text, exit 0 (t197-video-pointers.r2.b). | AT-974 |
+| low | `core/paths.py` is 298/300 lines; the next path addition trips doctor, so split it (t197-video-pointers.mr1.a). | AT-975 |
+| low (docs) | SNAPSHOT decisions list drift (D-085) and the superseded 'paths.py exactly 300 lines' claim (t197-video-pointers.mr1.b). | AT-976 |
+| low | t197: no tracked golden pins the CLI command tree; check whether the t205 golden is already tracked on master (t197-video-pointers.mr1.b). | AT-977 |
+| low | at887: Generate route `except (ProviderError, ValueError)` labels any ValueError 'refused unsent'; raise a dedicated PromptRefused (at887-crawl-to-flows.r1.a, r1.b). | AT-952 |
+| low | at887: the orchestrated DISCOVER->MODEL door leaves a same-name node-id screen beside the human screen (AT-102 rule not applied in `merge_flowspec._new_screens`) (at887-crawl-to-flows.r1.a, r1.b). | AT-953 |
+| low (wording) | at887: manifest says the falsification copy was deleted; pre-check lines lack `t=`/`blobs=` (at887-crawl-to-flows.r1.a). | AT-954 |
+| low (process) | at887: a coordinator's scratch folder was overwritten by an unknown second extraction (at887-crawl-to-flows.r1.b). | AT-955 |
+| low (owner decision) | at774: a retired `project.login_case_id` still runs in the crawl login bootstrap; Umesh decides whether to refuse it (at774). | AT-991 |
+| low | at774: release plans (`FlowPlan.case_ids`) do not skip retired cases; harmless until an EXECUTE runner is wired (at774). | AT-992 |
+| low (test gap) | at774: no test asserts the approval bound shrinks with a retired case (at774). | AT-993 |
+
 ## Candidates (human picks) — 2026-10-12 PROPOSED-ISSUE back-fill: t178, t168, t155, t200b, at733, at773 + D-085 item 3 (checker)
 
 Never built until a human moves one out of this section with `approved: <date>`. These units were merged on a PASS but their PROPOSED-ISSUE lines were never minted; AT-928..AT-951 are minted now. t155 needed nothing (AT-925..AT-927 already minted by its checker). No S1/S2 row; the security and data-write rows are listed first. AT-934, AT-936, AT-937, AT-938, AT-941, AT-945, AT-946, AT-947 and AT-949 are ledger-only and are not candidates.

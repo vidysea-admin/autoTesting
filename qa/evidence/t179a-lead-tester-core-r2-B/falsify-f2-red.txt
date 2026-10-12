@@ -1,0 +1,4 @@
+FAILED tests/test_agent_destination_seam.py::test_a_placeholder_target_is_left_to_the_seam_at_these_policies[{{SECRET:NOPE}}/x-allow_writes]
+FAILED tests/test_agent_destination_seam.py::test_a_placeholder_target_is_left_to_the_seam_at_these_policies[{{SECRET:EVIL}}-test_account]
+FAILED tests/test_agent_destination_seam.py::test_a_placeholder_target_is_left_to_the_seam_at_these_policies[{{SECRET:EVIL}}-allow_writes]
+======================== 12 failed, 2 passed in 1.22s =========================

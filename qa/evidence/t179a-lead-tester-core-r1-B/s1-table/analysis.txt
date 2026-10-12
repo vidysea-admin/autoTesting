@@ -1,0 +1,191 @@
+rows base=21744 head=21744 head2=21744 specs=21588 step/case-rejected: base={} head={}
+wall_s (slowest shard): base=736.9 head=727.0  (shards in parallel)
+
+## TOTALS rows executed/refused  (policy, action | base exec/ref | head exec/ref)
+allow_writes  assert     | base   644/    0 | head   644/    0
+allow_writes  back       | base   644/    0 | head   644/    0
+allow_writes  click      | base   574/   70 | head   574/   70
+allow_writes  composed   | base    48/    4 | head    48/    4
+allow_writes  fill       | base   644/    0 | head   644/    0
+allow_writes  hover      | base   644/    0 | head   644/    0
+allow_writes  navigate   | base   448/    0 | head   266/  182
+allow_writes  press_key  | base   952/    0 | head   952/    0
+allow_writes  scroll     | base   644/    0 | head   644/    0
+allow_writes  select     | base   644/    0 | head   644/    0
+allow_writes  upload     | base   644/    0 | head   644/    0
+allow_writes  wait       | base   644/    0 | head   644/    0
+read_only     assert     | base   644/    0 | head   644/    0
+read_only     back       | base   644/    0 | head   644/    0
+read_only     click      | base   518/  126 | head     0/  644
+read_only     composed   | base    38/   14 | head     8/   44
+read_only     fill       | base   504/  140 | head    28/  616
+read_only     hover      | base   644/    0 | head   644/    0
+read_only     navigate   | base   448/    0 | head    84/  364
+read_only     press_key  | base   952/    0 | head     0/  952
+read_only     scroll     | base   644/    0 | head   644/    0
+read_only     select     | base   504/  140 | head     0/  644
+read_only     upload     | base   504/  140 | head     0/  644
+read_only     wait       | base   644/    0 | head   644/    0
+test_account  assert     | base   644/    0 | head   644/    0
+test_account  back       | base   644/    0 | head   644/    0
+test_account  click      | base   518/  126 | head   518/  126
+test_account  composed   | base    46/    6 | head    46/    6
+test_account  fill       | base   644/    0 | head   644/    0
+test_account  hover      | base   644/    0 | head   644/    0
+test_account  navigate   | base   448/    0 | head   266/  182
+test_account  press_key  | base   952/    0 | head   952/    0
+test_account  scroll     | base   644/    0 | head   644/    0
+test_account  select     | base   644/    0 | head   644/    0
+test_account  upload     | base   644/    0 | head   644/    0
+test_account  wait       | base   644/    0 | head   644/    0
+TOTAL read_only     | base  6688/  560 | head  3340/ 3908
+TOTAL test_account  | base  7116/  132 | head  6934/  314
+TOTAL allow_writes  | base  7174/   74 | head  6992/  256
+grand total rows: 21744 (incl. composed: 156 )
+
+## anomalies: escaped exceptions
+base escaped: 0 []
+head escaped: 0 []
+head2 escaped: 0 []
+head refusal class distribution (policy, refusal): {('read_only', None): 3340, ('read_only', 'write_policy'): 3726, ('read_only', 'destination'): 182, ('test_account', None): 6934, ('test_account', 'write_policy'): 132, ('test_account', 'destination'): 182, ('allow_writes', None): 6992, ('allow_writes', 'write_policy'): 74, ('allow_writes', 'destination'): 182}
+base refusal class distribution: {('read_only', None): 6688, ('read_only', 'write_policy'): 560, ('test_account', None): 7116, ('test_account', 'write_policy'): 132, ('allow_writes', None): 7174, ('allow_writes', 'write_policy'): 74}
+head refused with a class other than write_policy/destination: 0 []
+head executed but refusal set: 0
+head write_policy refusals at TEST_ACCOUNT/ALLOW_WRITES: 206 Counter({('test_account', 'click'): 126, ('allow_writes', 'click'): 70, ('test_account', 'composed'): 6, ('allow_writes', 'composed'): 4})
+head destination refusals on rows whose TESTED action is not navigate (fillers may navigate): 0
+rows where 'destination' refusal class but READ_ONLY-only reason: 0
+rows where write_policy refusal summary contains 'destination is not': 0
+
+## (a) READ_ONLY at HEAD
+READ_ONLY rows=7248 executed=3340; EXECUTED with mutating step outside login carve-out (oracle) = 0
+STRICT oracle (whole FILL value = declared placeholders only, >=1, no whitespace): executed READ_ONLY rows with a non-credential FILL = 7
+  STRICT-VIOLATION read_only|fill|'Search box'|'   '|last|login
+  STRICT-VIOLATION read_only|fill|'Search box'|'   '|s6-first|login
+  STRICT-VIOLATION read_only|fill|'Search box'|'   '|single|login
+  STRICT-VIOLATION read_only|fill|'Search box'|'   '|s6-mid|login
+  STRICT-VIOLATION read_only|fill|'Search box'|'   '|first|login
+  STRICT-VIOLATION read_only|fill|'Search box'|'   '|s6-last|login
+  STRICT-VIOLATION read_only|fill|'Search box'|'   '|middle|login
+(for contrast) BASE READ_ONLY executed=6688, of which oracle-violating=2980
+
+READ_ONLY executed at HEAD, deduped by (tested action, target, value, login) with counts [positions]:
+  category counts (rows):
+   assert       644  read/wait (no state change)
+   back         644  read/wait (no state change)
+   fill          28  login carve-out: fill
+   hover        644  read/wait (no state change)
+   navigate      35  nav (in-domain absolute http(s), no query unless login)
+   navigate      49  nav (in-domain absolute http(s), no query unless login) [LOGIN]
+   scroll       644  read/wait (no state change)
+   wait         644  read/wait (no state change)
+  distinct deduped keys: 476
+  deduped NAVIGATE + login-mutating (non-read tested actions) keys:
+   fill      T='Search box'                                       V='   '                            login=True  n=7
+   fill      T='Search box'                                       V='{{SECRET:APP_PASS}}'            login=True  n=7
+   fill      T='Search box'                                       V='{{SECRET:APP_USER}}'            login=True  n=7
+   fill      T='Search box'                                       V='{{SECRET:APP_USER}}{{SECRET:A   login=True  n=7
+   navigate  T='HTTPS://APP.TEST/home'                            V=None                             login=False n=7
+   navigate  T='HTTPS://APP.TEST/home'                            V=None                             login=True  n=7
+   navigate  T='http://app.test:8080/'                            V=None                             login=False n=7
+   navigate  T='http://app.test:8080/'                            V=None                             login=True  n=7
+   navigate  T='https://app.test/home'                            V='x'                              login=False n=7
+   navigate  T='https://app.test/home'                            V='x'                              login=True  n=7
+   navigate  T='https://app.test/home'                            V=None                             login=False n=7
+   navigate  T='https://app.test/home'                            V=None                             login=True  n=7
+   navigate  T='https://app.test/home?page=2'                     V=None                             login=True  n=7
+   navigate  T='https://app.test/search?q=x'                      V=None                             login=True  n=7
+   navigate  T='https://sub.app.test/home'                        V=None                             login=False n=7
+   navigate  T='https://sub.app.test/home'                        V=None                             login=True  n=7
+  deduped read/wait keys (tested action; count of keys; rows): {'wait': (92, 644), 'assert': (92, 644), 'back': (92, 644), 'hover': (92, 644), 'scroll': (92, 644)}
+
+READ_ONLY executed COMPOSED rows at HEAD:
+   LOGIN u+p+signin oracle_mut_outside= False [['fill', "'User'", "'{{SECRET:APP_USER}}'"], ['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"], ['click', "'Sign in'", 'None']]
+   LOGIN p+enter oracle_mut_outside= False [['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"], ['press_key', "'Pass'", "'Enter'"]]
+   LOGIN p+enterNone oracle_mut_outside= False [['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"], ['press_key', "'Pass'", 'None']]
+   LOGIN p+click-Save oracle_mut_outside= False [['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"], ['click', "'Save'", 'None']]
+   LOGIN p+nav-query oracle_mut_outside= False [['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"], ['navigate', "'https://app.test/home?action=buy&id=1'", 'None']]
+   LOGIN nav-query-then-p oracle_mut_outside= False [['navigate', "'https://app.test/home?a=1'", 'None'], ['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"]]
+   LOGIN p+hover+click oracle_mut_outside= False [['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"], ['hover', "'Menu'", 'None'], ['click', "'Sign in'", 'None']]
+   LOGIN p+click-canary-literal oracle_mut_outside= False [['fill', "'Pass'", "'{{SECRET:APP_PASS}}'"], ['click', "'<APP_PASS>'", 'None']]
+
+executed READ_ONLY NAVIGATE rows failing my independent nav oracle: 0 rows
+
+## (b) base-executed -> head-refused at TEST_ACCOUNT / ALLOW_WRITES
+count rows: 364
+by (policy, tested action, head refusal class): {('test_account', 'navigate', 'destination'): 182, ('allow_writes', 'navigate', 'destination'): 182}
+NON-destination differences (NARROWING FINDINGS): 0
+head-executes-but-base-refused (widening) at non-RO: 0 []
+distinct NAVIGATE target labels differing: 13
+    //evil.test/x
+    //{{SECRET:APP_USER}}/x
+    data:text/html,hi
+    file:///etc/passwd
+    ftp://app.test/
+    https://app.test.evil.test/
+    https://app.test/ho	me
+    https://app.test/home
+
+    https://app.test\@evil.test/
+    https://evil.test/
+    https://user@app.test/
+    https://{{SECRET:APP_PASS}}/
+    javascript:alert(1)
+differing rows whose tested step is not NAVIGATE: 0 []
+per-policy diff counts equal? {'test_account': 182, 'allow_writes': 182}
+
+## (c) refused multi-step rows
+head: refused multi-step rows=3844 (by nsteps {3: 1906, 6: 1896, 2: 36, 4: 6}) violating(0 sessions/0 run_case/0 files/tree unchanged)=0
+head: executed rows with sessions!=1 or run_case_calls!=1: 0
+head: refused rows total=4478, any refused with sessions/calls/files: 0
+base: refused multi-step rows=658 (by nsteps {6: 318, 3: 318, 2: 22}) violating(0 sessions/0 run_case/0 files/tree unchanged)=0
+base: executed rows with sessions!=1 or run_case_calls!=1: 0
+base: refused rows total=766, any refused with sessions/calls/files: 0
+
+## (d) BENIGN READ_ONLY rows executed at base, refused at head
+benign rows (all positions, login+plain): 483
+by tested action (rows): {'click': 112, 'fill': 70, 'navigate': 63, 'press_key': 98, 'select': 70, 'upload': 70}
+same, single-step non-login only: 35 {'click': 8, 'fill': 5, 'press_key': 7, 'select': 5, 'upload': 5, 'navigate': 5}
+single-step non-login distinct (action,target,value): 35
+    ('click', "'Dashboard'", 'None')
+    ('click', "'Home'", 'None')
+    ('click', "'Next'", 'None')
+    ('click', "'Products'", 'None')
+    ('click', "'Search box'", "'100'")
+    ('click', "'Search box'", "'Home'")
+    ('click', "'Search box'", "'hello'")
+    ('click', "'Tab'", 'None')
+    ('fill', "'Dashboard'", 'None')
+    ('fill', "'Home'", 'None')
+    ('fill', "'Next'", 'None')
+    ('fill', "'Products'", 'None')
+    ('fill', "'Tab'", 'None')
+    ('navigate', "'//app.test/x'", 'None')
+    ('navigate', "'/reports'", 'None')
+    ('navigate', "'Admin portal URL'", 'None')
+    ('navigate', "'home'", 'None')
+    ('navigate', "'https://app.test/home?page=2'", 'None')
+    ('press_key', "'Dashboard'", 'None')
+    ('press_key', "'Home'", 'None')
+    ('press_key', "'Next'", 'None')
+    ('press_key', "'Products'", 'None')
+    ('press_key', "'Search box'", "'Escape'")
+    ('press_key', "'Search box'", "'Tab'")
+    ('press_key', "'Tab'", 'None')
+    ('select', "'Dashboard'", 'None')
+    ('select', "'Home'", 'None')
+    ('select', "'Next'", 'None')
+    ('select', "'Products'", 'None')
+    ('select', "'Tab'", 'None')
+    ('upload', "'Dashboard'", 'None')
+    ('upload', "'Home'", 'None')
+    ('upload', "'Next'", 'None')
+    ('upload', "'Products'", 'None')
+    ('upload', "'Tab'", 'None')
+benign READ_ONLY rows executed at base (denominator): 1120
+benign READ_ONLY rows refused at base already: 126 {'fill': 42, 'select': 42, 'upload': 42}
+
+## determinism head vs head2
+rows differing between two identical head runs: 0 []
+
+## READ_ONLY base vs head transitions
+{(True, True): 3340, (True, False): 3348, (False, False): 560}

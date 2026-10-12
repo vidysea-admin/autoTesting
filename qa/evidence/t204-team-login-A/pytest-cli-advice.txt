@@ -5,71 +5,42 @@ configfile: pyproject.toml
 plugins: anyio-4.15.0, langsmith-0.12.1
 collecting ... collected 31 items
 
-tests/test_cli_advice_resolves.py::test_the_collector_sees_the_COMPOSED_site_not_just_the_constant PASSED [  3%]
-tests/test_cli_advice_resolves.py::test_a_constant_imported_from_another_module_still_resolves PASSED [  6%]
-tests/test_cli_advice_resolves.py::test_documentation_written_as_an_f_string_is_not_read_as_advice PASSED [  9%]
-tests/test_cli_advice_resolves.py::test_the_hole_report_actually_reports_a_hole PASSED [ 12%]
-tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve PASSED [ 16%]
-tests/test_cli_advice_resolves.py::test_every_site_is_reported_with_a_line_a_human_can_open PASSED [ 19%]
-tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed FAILED [ 22%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[auth_config.py:64:auth bootstrap-admin] PASSED [ 25%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli.py:223:providers] PASSED [ 29%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:57:ingest analyze] PASSED [ 32%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:57:ingest list] PASSED [ 35%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:82:issues derive] PASSED [ 38%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:223:issues list] PASSED [ 41%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:266:issues derive] PASSED [ 45%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_orchestrate.py:126:ingest register] PASSED [ 48%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_release.py:34:release-log] PASSED [ 51%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_release.py:36:release] PASSED [ 54%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_video.py:73:ingest register] PASSED [ 58%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_video.py:155:ingest list] PASSED [ 61%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[core_consent.py:123:approve] PASSED [ 64%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[core_consent.py:168:approve] PASSED [ 67%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[doctor.py:218:snapshot] PASSED [ 70%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[doctor.py:205:map] PASSED [ 74%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[ledger_render.py:264:snapshot] PASSED [ 77%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_analyze_video.py:192:providers] PASSED [ 80%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_ingest.py:230:ingest register] PASSED [ 83%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_media_prep.py:30:ingest prep] PASSED [ 87%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_media_prep.py:157:ingest prep] PASSED [ 90%]
-tests/test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_review.py:48:flowspec approve] PASSED [ 93%]
-tests/test_cli_advice_resolves.py::test_the_refusal_names_a_command_that_actually_stops_it PASSED [ 96%]
-tests/test_cli_advice_resolves.py::test_a_sibling_command_would_not_satisfy_that_promise PASSED [100%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_the_collector_sees_the_COMPOSED_site_not_just_the_constant PASSED [  3%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_a_constant_imported_from_another_module_still_resolves PASSED [  6%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_documentation_written_as_an_f_string_is_not_read_as_advice PASSED [  9%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_the_hole_report_actually_reports_a_hole PASSED [ 12%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve PASSED [ 16%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_site_is_reported_with_a_line_a_human_can_open PASSED [ 19%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed PASSED [ 22%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[auth_config.py:81:auth bootstrap-admin] PASSED [ 25%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli.py:223:providers] PASSED [ 29%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:57:ingest analyze] PASSED [ 32%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:57:ingest list] PASSED [ 35%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:82:issues derive] PASSED [ 38%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:223:issues list] PASSED [ 41%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_issues.py:266:issues derive] PASSED [ 45%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_orchestrate.py:126:ingest register] PASSED [ 48%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_release.py:34:release-log] PASSED [ 51%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_release.py:36:release] PASSED [ 54%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_video.py:73:ingest register] PASSED [ 58%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[cli_video.py:155:ingest list] PASSED [ 61%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[core_consent.py:123:approve] PASSED [ 64%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[core_consent.py:168:approve] PASSED [ 67%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[doctor.py:218:snapshot] PASSED [ 70%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[doctor.py:205:map] PASSED [ 74%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[ledger_render.py:264:snapshot] PASSED [ 77%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_analyze_video.py:192:providers] PASSED [ 80%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_ingest.py:230:ingest register] PASSED [ 83%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_media_prep.py:30:ingest prep] PASSED [ 87%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_media_prep.py:157:ingest prep] PASSED [ 90%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_every_command_the_code_names_is_one_the_cli_exposes[stages_review.py:48:flowspec approve] PASSED [ 93%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_the_refusal_names_a_command_that_actually_stops_it PASSED [ 96%]
+.worktrees\t204-team-login\tests\test_cli_advice_resolves.py::test_a_sibling_command_would_not_satisfy_that_promise PASSED [100%]
 
-================================== FAILURES ===================================
-__________________ test_no_advice_site_can_vanish_unnoticed ___________________
-
-    def test_no_advice_site_can_vanish_unnoticed() -> None:
-        """The guard AT-210 says was missing. A new site is a deliberate act and
-        should be added here; a site that disappears should be a decision, not a
-        silently shorter test run."""
-        found = {(str(a.where).replace(chr(92), "/"), a.command) for a in advice()}
-    
->       assert found == EXPECTED_SITES, (
-            f"advice sites changed.{chr(10)}"
-            f"gone: {sorted(EXPECTED_SITES - found)}{chr(10)}new: {sorted(found - EXPECTED_SITES)}")
-E       AssertionError: advice sites changed.
-E         gone: []
-E         new: [('auth/config.py', 'auth bootstrap-admin')]
-E       assert {('auth/confi...s list'), ...} == {('cli.py', '...gister'), ...}
-E         
-E         Extra items in the left set:
-E         ('auth/config.py', 'auth bootstrap-admin')
-E         
-E         Full diff:
-E           {
-E         +     (...
-E         
-E         ...Full output truncated (76 lines hidden), use '-vv' to show
-
-tests\test_cli_advice_resolves.py:203: AssertionError
 ============================== warnings summary ===============================
 tests/test_cli_advice_resolves.py::test_the_collector_sees_the_COMPOSED_site_not_just_the_constant
   D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
     _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ===========================
-FAILED tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed
-============= 1 failed, 30 passed, 1 warning in 80.87s (0:01:20) ==============
+======================= 31 passed, 1 warning in 17.61s ========================

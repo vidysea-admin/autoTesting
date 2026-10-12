@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import typer
 
-from autotester import cli_issues, cli_video
+from autotester import cli_issues, cli_schedule, cli_video
 from autotester.cli_auth import app as auth_app
 
 SUBAPPS: list[tuple[str, typer.Typer]] = [
     ("ingest", cli_video.app),
     ("issues", cli_issues.app),
     ("auth", auth_app),  # T-204 team login
+    ("schedule", cli_schedule.app),
 ]
 
 

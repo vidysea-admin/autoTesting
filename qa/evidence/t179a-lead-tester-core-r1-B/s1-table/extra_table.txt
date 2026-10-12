@@ -1,0 +1,34 @@
+READ_ONLY login-case | base | head | head reason
+ws-fill+PlaceOrder             login=1 base=EXEC head=EXEC 
+ws-fill+PlaceOrder             login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+tab-fill+PlaceOrder            login=1 base=EXEC head=EXEC 
+tab-fill+PlaceOrder            login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+nl-fill+PlaceOrder             login=1 base=EXEC head=EXEC 
+nl-fill+PlaceOrder             login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+empty-fill+PlaceOrder          login=1 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+empty-fill+PlaceOrder          login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+None-fill+PlaceOrder           login=1 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+None-fill+PlaceOrder           login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+padded-ph+PlaceOrder           login=1 base=EXEC head=EXEC 
+padded-ph+PlaceOrder           login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Pass': fill outside the dec
+ws-fill+Enter                  login=1 base=EXEC head=EXEC 
+ws-fill+Enter                  login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Note': fill outside the dec
+enter-alone                    login=1 base=EXEC head=ref  refused under write_policy read_only: step 1 (press_key) 'Pass': press_key can c
+enter-alone                    login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (press_key) 'Pass': press_key can c
+click-alone-PlaceOrder         login=1 base=EXEC head=ref  refused under write_policy read_only: step 1 (click) 'Place order': click can ch
+click-alone-PlaceOrder         login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (click) 'Place order': click can ch
+p+nav-away+PlaceOrder          login=1 base=EXEC head=EXEC 
+p+nav-away+PlaceOrder          login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Pass': fill outside the dec
+p+Save+PlaceOrder(1 fill)      login=1 base=EXEC head=ref  refused under write_policy read_only: step 3 (click) 'Place order': click can ch
+p+Save+PlaceOrder(1 fill)      login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Pass': fill outside the dec
+u+p+Save+PlaceOrder            login=1 base=EXEC head=ref  refused under write_policy read_only: step 4 (click) 'Place order': click can ch
+u+p+Save+PlaceOrder            login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'User': fill outside the dec
+p+Enter+PlaceOrder(1 fill)     login=1 base=EXEC head=ref  refused under write_policy read_only: step 3 (click) 'Place order': click can ch
+p+Enter+PlaceOrder(1 fill)     login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Pass': fill outside the dec
+p+click-empty-name             login=1 base=ref  head=ref  refused under write_policy read_only: step 2 (click) '': unnamed control
+p+click-empty-name             login=0 base=ref  head=ref  refused under write_policy read_only: step 1 (fill) 'Pass': fill outside the dec
+p+click-ws-name                login=1 base=EXEC head=EXEC 
+p+click-ws-name                login=0 base=EXEC head=ref  refused under write_policy read_only: step 1 (fill) 'Pass': fill outside the dec
+p+click-Pay                    login=1 base=ref  head=ref  refused under write_policy read_only: step 2 (click) 'Pay': destructive-name den
+p+click-Pay                    login=0 base=ref  head=ref  refused under write_policy read_only: step 1 (fill) 'Pass': fill outside the dec
+non-RO differences: []

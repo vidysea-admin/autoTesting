@@ -38,7 +38,7 @@ from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case, CasePriority
 from autotester.schema.catalog import TIER_BY_CLASS, Catalog
 from autotester.schema.crawl import CrawlBounds
-from autotester.schema.enums import Action, ApprovalKind, Trigger
+from autotester.schema.enums import Action, ApprovalKind, CaseStatus, Trigger
 from autotester.schema.project import Project
 from autotester.schema.run import Run, RunBounds
 from autotester.schema.run_state import StageCheckpoint, StageName
@@ -186,7 +186,8 @@ def prepare_run(slug: str, seams: RunSeams = DEFAULT_SEAMS,
     project = store.load_project()
     if project is None:
         raise LaunchRefused(404, f"no project '{slug}'")
-    cases = store.list_cases(priorities=priorities)  # FB4: selected priorities + pinned p0
+    cases = [c for c in store.list_cases(priorities=priorities)  # FB4: priorities + pinned p0
+             if c.status is not CaseStatus.RETIRED]  # AT-774: retired beats a pin
     if not cases:
         raise LaunchRefused(400, f"project '{slug}' has no cases to run")
     judge = judge_or_refuse(project, seams)
