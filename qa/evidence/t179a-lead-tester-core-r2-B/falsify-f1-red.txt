@@ -1,0 +1,4 @@
+FAILED tests/test_agent_credential_gate.py::test_a_credential_split_by_a_separator_is_withheld_and_never_stored[summary-'\\x00']
+FAILED tests/test_agent_credential_gate.py::test_a_credential_split_by_a_separator_is_withheld_and_never_stored[summary-'\\\\u0009']
+FAILED tests/test_agent_credential_gate.py::test_a_credential_split_by_a_separator_is_withheld_and_never_stored[summary-'\\\\u000a']
+============================= 40 failed in 6.91s ==============================

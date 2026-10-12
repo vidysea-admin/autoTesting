@@ -1,5 +1,5 @@
 pytest-au25 exit=0
-pytest-cli-advice exit=1
+pytest-cli-advice exit=0
 pytest-origin-guard exit=0
 pytest-permission-coverage exit=0
 pytest-credential-run-approval exit=0

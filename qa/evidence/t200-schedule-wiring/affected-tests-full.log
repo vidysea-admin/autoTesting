@@ -1,0 +1,36 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\at200chk-75048238\head
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 342 items
+
+tests\test_schedule_wiring.py ................                           [  4%]
+tests\test_cli_schedule.py ...........                                   [  7%]
+tests\test_schedule_tick.py .....................                        [ 14%]
+tests\test_schedule_marker.py ..........                                 [ 16%]
+tests\test_schedule_overlap.py ......                                    [ 18%]
+tests\test_schedule_catchup.py ......................                    [ 25%]
+tests\test_schedule_failures.py ...................                      [ 30%]
+tests\test_schedule_gate.py ............                                 [ 34%]
+tests\test_run_queue.py ....................                             [ 40%]
+tests\test_run_queue_resilience.py ....                                  [ 41%]
+tests\test_ui_runs_queue.py ..........                                   [ 44%]
+tests\test_ui_runs.py ........                                           [ 46%]
+tests\test_ui_runs_live_case_approval.py .........                       [ 49%]
+tests\test_run_launcher.py ......                                        [ 50%]
+tests\test_run_launcher_approval.py ................                     [ 55%]
+tests\test_cli_subapp_hook.py ....                                       [ 56%]
+tests\test_cli_surface.py .............................................. [ 70%]
+....                                                                     [ 71%]
+tests\test_cli_advice_resolves.py .................................      [ 80%]
+tests\test_doctor.py ........................................            [ 92%]
+tests\test_credential_run_approval.py .........................          [100%]
+
+============================== warnings summary ===============================
+..\venv-head\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\at200chk-75048238\venv-head\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 342 passed, 1 warning in 180.02s (0:03:00) ==================
