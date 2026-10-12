@@ -7,14 +7,16 @@ for the one gap -- `execute.run_case` and the browser session have no write-poli
 stored `Step` carries no DOM facts (no `is_form_submit`) -- decides from what the step says.
 
 Under READ_ONLY that decision is fail-closed (table: the T-179a manifest): only step kinds that
-cannot change state by construction run (reads, waits, assertions, hover, scroll, back, and a
-GET navigation to an in-domain http(s) URL), plus the declared login case's credential entry.
+cannot change state by construction run (reads, waits, assertions, hover, scroll, back, a
+click whose name passes the deny-list (D-086), and a GET navigation to an in-domain
+http(s) URL), plus the declared login case's credential entry.
 `deny_reason` stays the one name deny-function. A model instruction cannot reach any of this.
 """
 
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from urllib.parse import unquote, urlsplit
 
@@ -36,6 +38,11 @@ from autotester.store.project_store import ProjectStore
 _READS = frozenset({Action.WAIT, Action.ASSERT, Action.BACK, Action.HOVER, Action.SCROLL})
 _WEB = ("http", "https")
 _CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+# D-086 (HG-1): READ_ONLY may click, but a step carries no DOM facts, so a control whose own name
+# says it commits something (the crawler's `is_form_submit` is unknowable here) stays refused.
+_COMMIT_NAME = re.compile(
+    r"\b(save|place order|confirm|register|sign ?up|sign ?in|log ?in|add to cart|buy|purchase|"
+    r"update|create|apply|book|upload|import)\b", re.IGNORECASE)
 DESTINATION_REFUSED = "destination is not an http(s) URL inside the allowed domains"
 
 
@@ -81,6 +88,36 @@ def _click_denied(name: str, project: Project) -> str | None:
     """The crawler's own name deny-function, asked about a name (the one deny concept)."""
     element = ElementRef(role="button", name=name, selector=name)
     return explore_safety.deny_reason(element, explore_safety.policy_for(project))
+
+
+# Cyrillic/Greek lookalikes of Latin letters, folded after NFKC (small, cheap; not a full table).
+_CONFUSABLES = {  # code point -> Latin letter (Cyrillic a e o p c x y i s j d h, Greek o v i)
+    cp: ch for cp, ch in zip(
+        (0x430, 0x435, 0x43E, 0x440, 0x441, 0x445, 0x443, 0x456, 0x455, 0x458, 0x501, 0x4BB,
+         0x3BF, 0x3BD, 0x3B9), "aeopcxyisjdhovi", strict=True)}
+_CONFUSABLE_TABLE = str.maketrans(_CONFUSABLES)
+_UNNAMED = "unnamed control"
+
+
+def _click_names(name: str) -> tuple[str, ...]:
+    """A click target as the person sees it, in two readings: NFKC, lookalikes folded, case folded,
+    separators and whitespace collapsed (`normalise_label`), with invisible/format characters
+    dropped (`De<ZWSP>lete`) and with them read as a space (`Save<ZWSP>draft`)."""
+    text = unicodedata.normalize("NFKC", name)
+    out = []
+    for hidden in ("", " "):
+        seen = "".join(hidden if unicodedata.category(ch) == "Cf" else (" " if ch.isspace() else ch)
+                       for ch in text)
+        out.append(explore_safety.normalise_label(seen.translate(_CONFUSABLE_TABLE).casefold()))
+    return tuple(dict.fromkeys(out))
+
+
+def _click_refusal(name: str, project: Project) -> str | None:
+    """Deny-list, never-click and unnamed (blank after cleaning) checks for a click target."""
+    names = _click_names(name)
+    if not any(names):
+        return _UNNAMED
+    return next((why for n in names if (why := _click_denied(n, project))), None)
 
 
 def _check_refuses(target: str, project: Project) -> bool:
@@ -146,7 +183,11 @@ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
     enter = action is Action.PRESS_KEY and step.value in (None, "Enter")
     if (action is Action.CLICK or enter) and walk.login and walk.credential_pending:
         walk.credential_pending = False  # one submit per credential entry
-        return _click_denied(step.target, project) if action is Action.CLICK else None
+        return _click_refusal(step.target, project) if action is Action.CLICK else None
+    if action is Action.CLICK:  # D-086 HG-1: benign clicks run; deny-list/never-click still hold
+        return _click_refusal(step.target, project) or (
+            "click on a control named like a commit can change state"
+            if any(_COMMIT_NAME.search(n) for n in _click_names(step.target)) else None)
     if action is Action.FILL:
         return "fill outside the declared login's credential entry"
     return f"{action.value} can change state"
@@ -159,7 +200,7 @@ def _step_refusal(step: Step, project: Project, walk: _Walk) -> tuple[str | None
     if project.write_policy is WritePolicy.READ_ONLY:
         return _read_only_refusal(step, project, walk), RefusalClass.WRITE_POLICY
     if step.action is Action.CLICK:
-        return _click_denied(step.target, project), RefusalClass.WRITE_POLICY
+        return _click_refusal(step.target, project), RefusalClass.WRITE_POLICY
     return None, RefusalClass.WRITE_POLICY
 
 
