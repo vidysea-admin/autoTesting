@@ -112,4 +112,5 @@ mutant-cap-raise: twenty mutations at Tier L (cap 10): seven criteria served plu
 
 Metrics: start=unavailable end=unavailable wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=20 cycle=0 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-10.9
 
-**Status:** ready-for-check
+**Status:** checked-PASS
+**Merged:** c015593cea5d19fec8e7140d70d2f76466b91d75

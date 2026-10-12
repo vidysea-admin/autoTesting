@@ -145,7 +145,8 @@ def test_the_heartbeat_a_tick_writes_is_what_the_stale_card_reads(tmp_path: Path
 # --- TS6 guard: the scheduler side never reaches a browser or a pipeline module ---------------
 SCHEDULER_SIDE = ("autotester.stages.scheduler", "autotester.stages.schedule_store",
                   "autotester.stages.schedule_time", "autotester.stages.schedule_gate",
-                  "autotester.stages.schedule_tick")
+                  "autotester.stages.schedule_tick",
+                  "autotester.stages.schedule_wiring")
 # Outside core/, schema/ and store/, the scheduler side may reach exactly these modules. Anything
 # else (a runner, a pipeline stage, the browser session, a provider, the UI app, a CLI) fails.
 ALLOWED_OUTSIDE = frozenset(SCHEDULER_SIDE) | {
@@ -239,6 +240,8 @@ LEAKS = {
     "a lazy import inside a function": (
         "autotester.stages.schedule_store",
         "def f():\n    from autotester.stages import explore"),
+    "the wiring importing the run queue's executor": (
+        "autotester.stages.schedule_wiring", "from autotester.ui import routes_runs"),
     "a relative import": ("autotester.stages.schedule_time", "from . import explore"),
     "a string import": (
         "autotester.stages.schedule_tick", "import importlib\nimportlib.import_module('x')"),

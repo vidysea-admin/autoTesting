@@ -1,0 +1,1 @@
+["//evil.test/x", "//{{SECRET:APP_USER}}/x", "data:text/html,hi", "file:///etc/passwd", "ftp://app.test/", "https://app.test.evil.test/", "https://app.test/ho\tme", "https://app.test/home\n", "https://app.test\\@evil.test/", "https://evil.test/", "https://user@app.test/", "https://{{SECRET:APP_PASS}}/", "javascript:alert(1)"]

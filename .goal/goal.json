@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-11T08:57:03",
+  "updated": "2026-10-12T18:37:26",
   "progress": {
     "total": 92,
-    "done": 68,
+    "done": 76,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 24,
+    "pending": 16,
     "current": "T-136",
-    "percent": 74
+    "percent": 83
   },
   "tasks": [
     {
@@ -874,7 +874,7 @@
     {
       "id": "T-154",
       "title": "Track C4: bounded adversarial pass behind consent gate 2 (+ adversarial_proof.py)",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "critical",
       "deps": [
         "T-153",
@@ -889,12 +889,13 @@
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "high",
-      "criticality": "critical"
+      "criticality": "critical",
+      "completed": "2026-10-12T13:53:27"
     },
     {
       "id": "T-155",
       "title": "Track C5: unified AI test report grouped by tier with judge reason strings",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "low",
       "deps": [
         "T-154"
@@ -908,7 +909,8 @@
       "attempts": 0,
       "created": "2026-09-08T00:46:52",
       "user_value": "normal",
-      "criticality": "low"
+      "criticality": "low",
+      "completed": "2026-10-12T13:53:28"
     },
     {
       "id": "T-160",
@@ -1099,7 +1101,7 @@
     {
       "id": "T-167",
       "title": "Commit/release-triggered visible-browser regression with consent, history and resumable retries",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "high",
       "deps": [
         "T-166",
@@ -1114,12 +1116,13 @@
       "attempts": 0,
       "created": "2026-09-10T05:58:09",
       "user_value": "high",
-      "criticality": "critical"
+      "criticality": "critical",
+      "completed": "2026-10-12T13:53:30"
     },
     {
       "id": "T-168",
       "title": "Unified damage-control report: regression diff, API failures, workflows, screenshots and Excel",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "high",
       "deps": [
         "T-164",
@@ -1135,7 +1138,8 @@
       "attempts": 0,
       "created": "2026-09-10T05:58:09",
       "user_value": "high",
-      "criticality": "high"
+      "criticality": "high",
+      "completed": "2026-10-12T13:53:31"
     },
     {
       "id": "T-169",
@@ -1279,7 +1283,7 @@
     {
       "id": "T-178",
       "title": "Atomic failure bundle + case priority p0-p3 + human pruning of proposed cases before LLM spend (D-041)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-125"
       ],
@@ -1293,7 +1297,8 @@
       "note": "D-041; competitor D + H + G. | Progress 2026-10-07: FB1-FB3 PASS (qa/verdicts/t178-failure-bundle.md); FB4 waits on Case.priority, FB5 waits on T-125; task stays pending.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
-      "user_value": "high"
+      "user_value": "high",
+      "completed": "2026-10-12T13:53:32"
     },
     {
       "id": "T-179",
@@ -1623,7 +1628,7 @@
     {
       "id": "T-197",
       "title": "TL-1 Video INGEST with human timestamp-pointers -> flow summary + 4-5 point confirm-list (CEO video-review skill shape: time|screen|seen|suggestion|severity)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "user_value": "high",
@@ -1633,7 +1638,8 @@
         "expect_exit": 0
       },
       "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Extend stages/ingest.py + cli_video.py in place (`ingest run --pointers <file>`). Reference output: Karunn review doc 1FjABvhH… (full id in .work/google-ids-private.md); oracle .work/pathlynks-dev-videos-oracle-2026-10-07.md; sources src_e8fcdc4a15ce/src_44e2f1f6c64c/src_8540cc84081e.",
-      "criticality": "high"
+      "criticality": "high",
+      "completed": "2026-10-12T13:53:37"
     },
     {
       "id": "T-198",
@@ -1680,7 +1686,7 @@
         "expect_exit": 0
       },
       "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Frequency field in schema/project.py; trigger reuses stages/parallel_run.py; must respect RunApproval (D-018). | Merged (phase A only): t200a-schedule-core at 782bb254 via merge commit 7e0ef5b9 (checker PASS, qa/verdicts/t200a-schedule-core.md); not built yet: phase B (t200b-scheduled-test) is still in repair check (verdict qa/verdicts/t200b-scheduled-test.md), and wiring is held on T-205.",
-      "criticality": "high"
+      "criticality": "critical"
     },
     {
       "id": "T-201",
@@ -1702,7 +1708,7 @@
     {
       "id": "T-202",
       "title": "Any-model provider: LiteLLM-backed Provider (Gemini, Anthropic, OpenAI, Ollama/local, any OpenAI-compatible) behind providers.base.Provider, chosen per project/role by config (D-071)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "user_value": "high",
@@ -1712,7 +1718,8 @@
         "expect_exit": 0
       },
       "note": "D-071: Umesh -- 'kisi bhi AI ki API se chala paaye, Gemini ya Ollama ya kuch bhi'. LiteLLM is the portable-core choice in the agentic-architecture standard; LangChain stays where it already is (langchain_fallback). New dependency litellm authorized by D-071 in this unit only. | Acceptance: A project can switch its model to Gemini, Claude, an OpenAI model or a local Ollama model by config alone, with no code change; the mock-provider suite and one real-provider smoke pass through the same seam; redaction gate (assert_no_raw_secrets) still runs before every call.",
-      "criticality": "high"
+      "criticality": "high",
+      "completed": "2026-10-12T13:53:34"
     },
     {
       "id": "T-203",
@@ -1749,7 +1756,7 @@
     {
       "id": "T-205",
       "title": "G1 Group 10 headroom: one run launcher, router list out of ui/app.py, optional schedule/tracker fields on the project schema, team_store (docs/plan.md G1; R63, R65)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "medium",
       "user_value": "high",
@@ -1759,7 +1766,8 @@
         "expect_exit": 0
       },
       "note": "Group 10 plan approved by Umesh 2026-10-07 (D-074, qa/gates/plan-approved-g10.md). Files per docs/plan.md G1: E ui/app.py, core/paths.py, schema/project.py, ui/routes_runs.py; N ui/routers.py, stages/run_launcher.py, store/team_store.py, schema/team_enums.py. | Acceptance: pytest + autotester doctor pass; routers register in the same order as before; manual run and trigger_run call the one launcher; AT-570 test; project.json round-trips with and without the new fields.",
-      "criticality": "medium"
+      "criticality": "medium",
+      "completed": "2026-10-12T13:53:35"
     },
     {
       "id": "T-206",
@@ -2186,6 +2194,13 @@
       "message": "T-204 is CRITICAL — human required",
       "task_id": "T-204",
       "acked": false
+    },
+    {
+      "ts": "2026-10-11T09:14:31",
+      "level": "critical",
+      "message": "T-200 is CRITICAL — human required",
+      "task_id": "T-200",
+      "acked": false
     }
   ],
   "preferences": {
@@ -2194,9 +2209,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.6,
-    "eta_days": 15.0
+    "velocity_per_day": 1.75,
+    "eta_days": 9.1
   },
-  "last_deterministic_tick": "2026-10-11T08:57:03",
+  "last_deterministic_tick": "2026-10-12T18:37:26",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }

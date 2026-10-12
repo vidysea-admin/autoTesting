@@ -26,7 +26,8 @@ from autotester.schema.team_enums import RunVia
 from autotester.store.filestore import read_json, write_json
 from autotester.store.server_settings import effective_max_concurrent_runs
 
-__all__ = ["QueueFull", "RunQueue", "RunRefused", "get_queue", "set_runner"]
+__all__ = ["QueueFull", "RunQueue", "RunRefused", "get_queue", "persisted_entries", "set_queue",
+           "set_runner"]
 
 MAX_WAITING_PER_PROJECT = 3
 """A project may have this many presses waiting behind its running one; the next is refused
@@ -86,24 +87,28 @@ class RunQueue:
     # -- public ----------------------------------------------------------------------------
     def submit(self, project: str, *, requested_by: str | None = None,
                trigger: str = "button", run_id: str | None = None,
-               priorities: list[str] | None = None,
+               priorities: list[str] | None = None, slot_key: str | None = None,
                via: RunVia | None = None) -> QueueEntry:
         """Enqueue a press and start whatever the limits allow. Raises `QueueFull`.
-        `run_id`: the caller mints it only after every gate passed (a refused press mints none)."""
+        `run_id`: the caller mints it only after every gate passed (a refused press mints none).
+        `slot_key` (HO23): a schedule slot has at most one entry; asking again returns it."""
+        starts: list[QueueEntry] = []
         with self._lock:
-            waiting = sum(e.project == project and e.status is QueueStatus.QUEUED
-                          for e in self._entries)
-            if waiting >= self._max_waiting:
-                raise QueueFull(f"{waiting} runs of '{project}' are already waiting; "
-                                "wait for one to start")
-            entry = QueueEntry(id=run_id or f"run-{ulid()}", project=project,
-                               requested_by=requested_by, trigger=trigger,
-                               priorities=priorities, via=via)
-            self._entries.append(entry)
-            starts = self._take_startable()
-            self._persist()
+            held = next((e.id for e in self._entries if slot_key and e.slot_key == slot_key), None)
+            if held is None:
+                waiting = sum(e.project == project and e.status is QueueStatus.QUEUED
+                              for e in self._entries)
+                if waiting >= self._max_waiting:
+                    raise QueueFull(f"{waiting} runs of '{project}' are already waiting; "
+                                    "wait for one to start")
+                entry = QueueEntry(id=run_id or f"run-{ulid()}", project=project,
+                                   requested_by=requested_by, trigger=trigger,
+                                   slot_key=slot_key, priorities=priorities, via=via)
+                self._entries.append(entry)
+                held, starts = entry.id, self._take_startable()
+                self._persist()
         self._launch(starts)
-        return self._view(entry.id)
+        return self._view(held)
 
     def recover(self) -> None:
         """After a (re)start: a `running` row becomes `interrupted`; waiting rows resume."""
@@ -231,3 +236,21 @@ def get_queue() -> RunQueue:
             queue.recover()
             _QUEUE = queue
         return _QUEUE
+
+
+def set_queue(queue: RunQueue) -> None:
+    """Install the process-wide queue. The scheduler's tick process uses this to run its own
+    in-memory queue, so it never `recover()`s (and so never interrupts) the server's one."""
+    global _QUEUE
+    with _QUEUE_LOCK:
+        _QUEUE = queue
+
+
+def persisted_entries() -> list[QueueEntry]:
+    """The server's queue file, read only: another process's view, for the scheduler's overlap
+    check. Never `recover()`s, never writes; an absent or unreadable file is an empty queue."""
+    try:
+        stored = read_json(_queue_file(), RunQueueFile)
+    except (ValueError, OSError):
+        return []
+    return list(stored.entries) if stored else []

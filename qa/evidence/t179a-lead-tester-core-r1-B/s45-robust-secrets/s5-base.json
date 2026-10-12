@@ -1,0 +1,4815 @@
+{
+ "rows": [
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: saw [REDACTED]:APP_PASS end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:reversed:lit",
+    "case_5015780faaef.json|APP_PASS:reversed:json_ascii",
+    "case_5015780faaef.json|APP_PASS:reversed:json_utf8",
+    "case_5015780faaef.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:base64url:lit",
+    "case_5015780faaef.json|APP_PASS:base64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64:lit",
+    "case_5015780faaef.json|APP_PASS:base64url:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64url:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64url",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:base64url:lit",
+    "case_5015780faaef.json|APP_PASS:base64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64:lit",
+    "case_5015780faaef.json|APP_PASS:base64url:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64url:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base32",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base32:json_ascii",
+    "APP_PASS:base32:json_utf8",
+    "APP_PASS:base32:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base32:lit",
+    "case_5015780faaef.json|APP_PASS:base32:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base32:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base32:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "hex",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:hex:json_ascii",
+    "APP_PASS:hex:json_utf8",
+    "APP_PASS:hex:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:hex:lit",
+    "case_5015780faaef.json|APP_PASS:hex:json_ascii",
+    "case_5015780faaef.json|APP_PASS:hex:json_utf8",
+    "case_5015780faaef.json|APP_PASS:hex:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "percent",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:percent:json_ascii",
+    "APP_PASS:percent:json_utf8",
+    "APP_PASS:percent:lit",
+    "APP_PASS:percent_upper:json_ascii:casefold",
+    "APP_PASS:percent_upper:json_utf8:casefold",
+    "APP_PASS:percent_upper:lit",
+    "APP_PASS:percent_upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:percent:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:percent_upper:lit",
+    "case_5015780faaef.json|APP_PASS:percent:json_ascii",
+    "case_5015780faaef.json|APP_PASS:percent:json_utf8",
+    "case_5015780faaef.json|APP_PASS:percent:lit",
+    "case_5015780faaef.json|APP_PASS:percent_upper:json_ascii:casefold",
+    "case_5015780faaef.json|APP_PASS:percent_upper:json_utf8:casefold",
+    "case_5015780faaef.json|APP_PASS:percent_upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "upper",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii:casefold",
+    "APP_PASS:raw:json_utf8:casefold",
+    "APP_PASS:raw:lit",
+    "APP_PASS:raw:lit:casefold",
+    "APP_PASS:upper:json_ascii",
+    "APP_PASS:upper:json_utf8",
+    "APP_PASS:upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:lower:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:raw:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:upper:lit",
+    "case_5015780faaef.json|APP_PASS:lower:json_ascii:casefold",
+    "case_5015780faaef.json|APP_PASS:lower:json_utf8:casefold",
+    "case_5015780faaef.json|APP_PASS:lower:lit:casefold",
+    "case_5015780faaef.json|APP_PASS:raw:json_ascii:casefold",
+    "case_5015780faaef.json|APP_PASS:raw:json_utf8:casefold",
+    "case_5015780faaef.json|APP_PASS:raw:lit:casefold",
+    "case_5015780faaef.json|APP_PASS:upper:json_ascii",
+    "case_5015780faaef.json|APP_PASS:upper:json_utf8",
+    "case_5015780faaef.json|APP_PASS:upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "lower",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii",
+    "APP_PASS:lower:json_utf8",
+    "APP_PASS:lower:lit",
+    "APP_PASS:raw:json_ascii:casefold",
+    "APP_PASS:raw:json_utf8:casefold",
+    "APP_PASS:raw:lit",
+    "APP_PASS:raw:lit:casefold",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:lower:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:raw:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:upper:lit",
+    "case_5015780faaef.json|APP_PASS:lower:json_ascii",
+    "case_5015780faaef.json|APP_PASS:lower:json_utf8",
+    "case_5015780faaef.json|APP_PASS:lower:lit",
+    "case_5015780faaef.json|APP_PASS:raw:json_ascii:casefold",
+    "case_5015780faaef.json|APP_PASS:raw:json_utf8:casefold",
+    "case_5015780faaef.json|APP_PASS:raw:lit:casefold",
+    "case_5015780faaef.json|APP_PASS:upper:json_ascii:casefold",
+    "case_5015780faaef.json|APP_PASS:upper:json_utf8:casefold",
+    "case_5015780faaef.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "spaced",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:spaced:json_ascii",
+    "APP_PASS:spaced:json_utf8",
+    "APP_PASS:spaced:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:spaced:lit",
+    "case_5015780faaef.json|APP_PASS:spaced:json_ascii",
+    "case_5015780faaef.json|APP_PASS:spaced:json_utf8",
+    "case_5015780faaef.json|APP_PASS:spaced:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "dotted",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:dotted:json_ascii",
+    "APP_PASS:dotted:json_utf8",
+    "APP_PASS:dotted:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:dotted:lit",
+    "case_5015780faaef.json|APP_PASS:dotted:json_ascii",
+    "case_5015780faaef.json|APP_PASS:dotted:json_utf8",
+    "case_5015780faaef.json|APP_PASS:dotted:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:tab_split:lit",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_ascii",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [
+    "APP_PASS:tab_split:lit"
+   ],
+   "summary": "outcome errored: saw <APP_PASS, TAB-LF split> end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "newline_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:newline_split:json_ascii",
+    "APP_PASS:newline_split:json_utf8",
+    "APP_PASS:newline_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:newline_split:lit",
+    "case_5015780faaef.json|APP_PASS:newline_split:json_ascii",
+    "case_5015780faaef.json|APP_PASS:newline_split:json_utf8"
+   ],
+   "tool_output_hits": [
+    "APP_PASS:newline_split:lit"
+   ],
+   "summary": "outcome errored: saw <APP_PASS, TAB-LF split> end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "zero_width_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:zero_width_split:json_utf8",
+    "APP_PASS:zero_width_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:zero_width_split:lit",
+    "case_5015780faaef.json|APP_PASS:zero_width_split:json_utf8",
+    "case_5015780faaef.json|APP_PASS:zero_width_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "soft_hyphen_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:soft_hyphen_split:json_utf8",
+    "APP_PASS:soft_hyphen_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:soft_hyphen_split:lit",
+    "case_5015780faaef.json|APP_PASS:soft_hyphen_split:json_utf8",
+    "case_5015780faaef.json|APP_PASS:soft_hyphen_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "nested_b64_of_b64",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:nested_b64_of_b64:json_ascii",
+    "APP_PASS:nested_b64_of_b64:json_utf8",
+    "APP_PASS:nested_b64_of_b64:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:nested_b64_of_b64:lit",
+    "case_5015780faaef.json|APP_PASS:nested_b64_of_b64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:nested_b64_of_b64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:nested_b64_of_b64:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "nested_json_object",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: saw {\"password\": \"[REDACTED]:APP_PASS\"} end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "nested_b64_of_json",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:nested_b64_of_json:json_ascii",
+    "APP_PASS:nested_b64_of_json:json_utf8",
+    "APP_PASS:nested_b64_of_json:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:nested_b64_of_json:lit",
+    "case_5015780faaef.json|APP_PASS:nested_b64_of_json:json_ascii",
+    "case_5015780faaef.json|APP_PASS:nested_b64_of_json:json_utf8",
+    "case_5015780faaef.json|APP_PASS:nested_b64_of_json:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "percent_upper",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:percent:json_ascii:casefold",
+    "APP_PASS:percent:json_utf8:casefold",
+    "APP_PASS:percent:lit",
+    "APP_PASS:percent:lit:casefold",
+    "APP_PASS:percent_upper:json_ascii",
+    "APP_PASS:percent_upper:json_utf8",
+    "APP_PASS:percent_upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:percent:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:percent_upper:lit",
+    "case_5015780faaef.json|APP_PASS:percent:json_ascii:casefold",
+    "case_5015780faaef.json|APP_PASS:percent:json_utf8:casefold",
+    "case_5015780faaef.json|APP_PASS:percent:lit:casefold",
+    "case_5015780faaef.json|APP_PASS:percent_upper:json_ascii",
+    "case_5015780faaef.json|APP_PASS:percent_upper:json_utf8",
+    "case_5015780faaef.json|APP_PASS:percent_upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "unicode_escape",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:unicode_escape:json_ascii",
+    "APP_PASS:unicode_escape:json_utf8",
+    "APP_PASS:unicode_escape:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:unicode_escape:lit",
+    "case_5015780faaef.json|APP_PASS:unicode_escape:json_ascii",
+    "case_5015780faaef.json|APP_PASS:unicode_escape:json_utf8"
+   ],
+   "tool_output_hits": [
+    "APP_PASS:unicode_escape:lit"
+   ],
+   "summary": "outcome errored: saw \\u0043\\u006e\\u0072\\u0079\\u002d\\u0050\\u0041\\u0053\\u0053\\u002d\\u0037\\u0051\\u0078\\"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "html_entity",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:html_entity:json_ascii",
+    "APP_PASS:html_entity:json_utf8",
+    "APP_PASS:html_entity:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:html_entity:lit",
+    "case_5015780faaef.json|APP_PASS:html_entity:json_ascii",
+    "case_5015780faaef.json|APP_PASS:html_entity:json_utf8",
+    "case_5015780faaef.json|APP_PASS:html_entity:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "raw",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: saw [REDACTED]:APP_USER end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "reversed",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:reversed:json_ascii",
+    "APP_USER:reversed:json_utf8",
+    "APP_USER:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:reversed:lit",
+    "case_5015780faaef.json|APP_USER:reversed:json_ascii",
+    "case_5015780faaef.json|APP_USER:reversed:json_utf8",
+    "case_5015780faaef.json|APP_USER:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "base64",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:base64:json_ascii",
+    "APP_USER:base64:json_utf8",
+    "APP_USER:base64:lit",
+    "APP_USER:base64url:json_ascii",
+    "APP_USER:base64url:json_utf8",
+    "APP_USER:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_USER:base64url:lit",
+    "case_5015780faaef.json|APP_USER:base64:json_ascii",
+    "case_5015780faaef.json|APP_USER:base64:json_utf8",
+    "case_5015780faaef.json|APP_USER:base64:lit",
+    "case_5015780faaef.json|APP_USER:base64url:json_ascii",
+    "case_5015780faaef.json|APP_USER:base64url:json_utf8",
+    "case_5015780faaef.json|APP_USER:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "base64url",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:base64:json_ascii",
+    "APP_USER:base64:json_utf8",
+    "APP_USER:base64:lit",
+    "APP_USER:base64url:json_ascii",
+    "APP_USER:base64url:json_utf8",
+    "APP_USER:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_USER:base64url:lit",
+    "case_5015780faaef.json|APP_USER:base64:json_ascii",
+    "case_5015780faaef.json|APP_USER:base64:json_utf8",
+    "case_5015780faaef.json|APP_USER:base64:lit",
+    "case_5015780faaef.json|APP_USER:base64url:json_ascii",
+    "case_5015780faaef.json|APP_USER:base64url:json_utf8",
+    "case_5015780faaef.json|APP_USER:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "base32",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:base32:json_ascii",
+    "APP_USER:base32:json_utf8",
+    "APP_USER:base32:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:base32:lit",
+    "case_5015780faaef.json|APP_USER:base32:json_ascii",
+    "case_5015780faaef.json|APP_USER:base32:json_utf8",
+    "case_5015780faaef.json|APP_USER:base32:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "hex",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:hex:json_ascii",
+    "APP_USER:hex:json_utf8",
+    "APP_USER:hex:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:hex:lit",
+    "case_5015780faaef.json|APP_USER:hex:json_ascii",
+    "case_5015780faaef.json|APP_USER:hex:json_utf8",
+    "case_5015780faaef.json|APP_USER:hex:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "percent",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:percent:json_ascii",
+    "APP_USER:percent:json_utf8",
+    "APP_USER:percent:lit",
+    "APP_USER:percent_upper:json_ascii:casefold",
+    "APP_USER:percent_upper:json_utf8:casefold",
+    "APP_USER:percent_upper:lit",
+    "APP_USER:percent_upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:percent:lit",
+    "case_5015780faaef.json(decoded)|APP_USER:percent_upper:lit",
+    "case_5015780faaef.json|APP_USER:percent:json_ascii",
+    "case_5015780faaef.json|APP_USER:percent:json_utf8",
+    "case_5015780faaef.json|APP_USER:percent:lit",
+    "case_5015780faaef.json|APP_USER:percent_upper:json_ascii:casefold",
+    "case_5015780faaef.json|APP_USER:percent_upper:json_utf8:casefold",
+    "case_5015780faaef.json|APP_USER:percent_upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "upper",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:raw:json_ascii:casefold",
+    "APP_USER:raw:json_utf8:casefold",
+    "APP_USER:raw:lit",
+    "APP_USER:raw:lit:casefold",
+    "APP_USER:upper:json_ascii",
+    "APP_USER:upper:json_utf8",
+    "APP_USER:upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:raw:lit",
+    "case_5015780faaef.json(decoded)|APP_USER:upper:lit",
+    "case_5015780faaef.json|APP_USER:raw:json_ascii:casefold",
+    "case_5015780faaef.json|APP_USER:raw:json_utf8:casefold",
+    "case_5015780faaef.json|APP_USER:raw:lit:casefold",
+    "case_5015780faaef.json|APP_USER:upper:json_ascii",
+    "case_5015780faaef.json|APP_USER:upper:json_utf8",
+    "case_5015780faaef.json|APP_USER:upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "spaced",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:spaced:json_ascii",
+    "APP_USER:spaced:json_utf8",
+    "APP_USER:spaced:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:spaced:lit",
+    "case_5015780faaef.json|APP_USER:spaced:json_ascii",
+    "case_5015780faaef.json|APP_USER:spaced:json_utf8",
+    "case_5015780faaef.json|APP_USER:spaced:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "dotted",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:dotted:json_ascii",
+    "APP_USER:dotted:json_utf8",
+    "APP_USER:dotted:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:dotted:lit",
+    "case_5015780faaef.json|APP_USER:dotted:json_ascii",
+    "case_5015780faaef.json|APP_USER:dotted:json_utf8",
+    "case_5015780faaef.json|APP_USER:dotted:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "tab_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:tab_split:json_ascii",
+    "APP_USER:tab_split:json_utf8",
+    "APP_USER:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:tab_split:lit",
+    "case_5015780faaef.json|APP_USER:tab_split:json_ascii",
+    "case_5015780faaef.json|APP_USER:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [
+    "APP_USER:tab_split:lit"
+   ],
+   "summary": "outcome errored: saw cnry\t.use\tr.55\t81@f\take.\ttest end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "newline_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:newline_split:json_ascii",
+    "APP_USER:newline_split:json_utf8",
+    "APP_USER:newline_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:newline_split:lit",
+    "case_5015780faaef.json|APP_USER:newline_split:json_ascii",
+    "case_5015780faaef.json|APP_USER:newline_split:json_utf8"
+   ],
+   "tool_output_hits": [
+    "APP_USER:newline_split:lit"
+   ],
+   "summary": "outcome errored: saw cnry\n.use\nr.55\n81@f\nake.\ntest end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "zero_width_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:zero_width_split:json_utf8",
+    "APP_USER:zero_width_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:zero_width_split:lit",
+    "case_5015780faaef.json|APP_USER:zero_width_split:json_utf8",
+    "case_5015780faaef.json|APP_USER:zero_width_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "soft_hyphen_split",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:soft_hyphen_split:json_utf8",
+    "APP_USER:soft_hyphen_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:soft_hyphen_split:lit",
+    "case_5015780faaef.json|APP_USER:soft_hyphen_split:json_utf8",
+    "case_5015780faaef.json|APP_USER:soft_hyphen_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "nested_b64_of_b64",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:nested_b64_of_b64:json_ascii",
+    "APP_USER:nested_b64_of_b64:json_utf8",
+    "APP_USER:nested_b64_of_b64:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:nested_b64_of_b64:lit",
+    "case_5015780faaef.json|APP_USER:nested_b64_of_b64:json_ascii",
+    "case_5015780faaef.json|APP_USER:nested_b64_of_b64:json_utf8",
+    "case_5015780faaef.json|APP_USER:nested_b64_of_b64:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "nested_json_object",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: saw {\"password\": \"[REDACTED]:APP_USER\"} end"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "nested_b64_of_json",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:nested_b64_of_json:json_ascii",
+    "APP_USER:nested_b64_of_json:json_utf8",
+    "APP_USER:nested_b64_of_json:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:nested_b64_of_json:lit",
+    "case_5015780faaef.json|APP_USER:nested_b64_of_json:json_ascii",
+    "case_5015780faaef.json|APP_USER:nested_b64_of_json:json_utf8",
+    "case_5015780faaef.json|APP_USER:nested_b64_of_json:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "percent_upper",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:percent:json_ascii:casefold",
+    "APP_USER:percent:json_utf8:casefold",
+    "APP_USER:percent:lit",
+    "APP_USER:percent:lit:casefold",
+    "APP_USER:percent_upper:json_ascii",
+    "APP_USER:percent_upper:json_utf8",
+    "APP_USER:percent_upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:percent:lit",
+    "case_5015780faaef.json(decoded)|APP_USER:percent_upper:lit",
+    "case_5015780faaef.json|APP_USER:percent:json_ascii:casefold",
+    "case_5015780faaef.json|APP_USER:percent:json_utf8:casefold",
+    "case_5015780faaef.json|APP_USER:percent:lit:casefold",
+    "case_5015780faaef.json|APP_USER:percent_upper:json_ascii",
+    "case_5015780faaef.json|APP_USER:percent_upper:json_utf8",
+    "case_5015780faaef.json|APP_USER:percent_upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "unicode_escape",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:unicode_escape:json_ascii",
+    "APP_USER:unicode_escape:json_utf8",
+    "APP_USER:unicode_escape:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:unicode_escape:lit",
+    "case_5015780faaef.json|APP_USER:unicode_escape:json_ascii",
+    "case_5015780faaef.json|APP_USER:unicode_escape:json_utf8"
+   ],
+   "tool_output_hits": [
+    "APP_USER:unicode_escape:lit"
+   ],
+   "summary": "outcome errored: saw \\u0063\\u006e\\u0072\\u0079\\u002e\\u0075\\u0073\\u0065\\u0072\\u002e\\u0035\\u0035\\u0038\\"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_USER",
+   "spelling": "html_entity",
+   "field": "error",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_USER:html_entity:json_ascii",
+    "APP_USER:html_entity:json_utf8",
+    "APP_USER:html_entity:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_USER:html_entity:lit",
+    "case_5015780faaef.json|APP_USER:html_entity:json_ascii",
+    "case_5015780faaef.json|APP_USER:html_entity:json_utf8",
+    "case_5015780faaef.json|APP_USER:html_entity:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "hitl_prompt",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "hitl_prompt",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:reversed:lit",
+    "case_5015780faaef.json|APP_PASS:reversed:json_ascii",
+    "case_5015780faaef.json|APP_PASS:reversed:json_utf8",
+    "case_5015780faaef.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "hitl_prompt",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:base64url:lit",
+    "case_5015780faaef.json|APP_PASS:base64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64:lit",
+    "case_5015780faaef.json|APP_PASS:base64url:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64url:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "hitl_prompt",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:tab_split:lit",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_ascii",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "not_run_reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "not_run_reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:reversed:lit",
+    "case_5015780faaef.json|APP_PASS:reversed:json_ascii",
+    "case_5015780faaef.json|APP_PASS:reversed:json_utf8",
+    "case_5015780faaef.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "not_run_reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:base64url:lit",
+    "case_5015780faaef.json|APP_PASS:base64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64:lit",
+    "case_5015780faaef.json|APP_PASS:base64url:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64url:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "not_run_reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:tab_split:lit",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_ascii",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "log_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "log_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:reversed:lit",
+    "case_5015780faaef.json|APP_PASS:reversed:json_ascii",
+    "case_5015780faaef.json|APP_PASS:reversed:json_utf8",
+    "case_5015780faaef.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "log_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:base64url:lit",
+    "case_5015780faaef.json|APP_PASS:base64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64:lit",
+    "case_5015780faaef.json|APP_PASS:base64url:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64url:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "log_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:tab_split:lit",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_ascii",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "evidence.path",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "evidence.path",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:reversed:lit",
+    "case_5015780faaef.json|APP_PASS:reversed:json_ascii",
+    "case_5015780faaef.json|APP_PASS:reversed:json_utf8",
+    "case_5015780faaef.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "evidence.path",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:base64url:lit",
+    "case_5015780faaef.json|APP_PASS:base64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64:lit",
+    "case_5015780faaef.json|APP_PASS:base64url:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64url:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "evidence.path",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:tab_split:lit",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_ascii",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "evidence.label",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "evidence.label",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:reversed:lit",
+    "case_5015780faaef.json|APP_PASS:reversed:json_ascii",
+    "case_5015780faaef.json|APP_PASS:reversed:json_utf8",
+    "case_5015780faaef.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "evidence.label",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:base64:lit",
+    "case_5015780faaef.json(decoded)|APP_PASS:base64url:lit",
+    "case_5015780faaef.json|APP_PASS:base64:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64:lit",
+    "case_5015780faaef.json|APP_PASS:base64url:json_ascii",
+    "case_5015780faaef.json|APP_PASS:base64url:json_utf8",
+    "case_5015780faaef.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "evidence.label",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_5015780faaef.json(decoded)|APP_PASS:tab_split:lit",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_ascii",
+    "case_5015780faaef.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "case_id",
+   "beyond_required_list": false,
+   "escaped": "OSError",
+   "ok": null,
+   "refusal": null,
+   "stored_new_files": [],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": null
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "case_id",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "3990-atez-14xQ7-SSAP-yrnC.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "3990-atez-14xQ7-SSAP-yrnC.json(decoded)|APP_PASS:reversed:lit",
+    "3990-atez-14xQ7-SSAP-yrnC.json|APP_PASS:reversed:json_ascii",
+    "3990-atez-14xQ7-SSAP-yrnC.json|APP_PASS:reversed:json_utf8",
+    "3990-atez-14xQ7-SSAP-yrnC.json|APP_PASS:reversed:lit",
+    "filename|APP_PASS:reversed:json_ascii",
+    "filename|APP_PASS:reversed:json_utf8",
+    "filename|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "case_id",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json(decoded)|APP_PASS:base64:lit",
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json(decoded)|APP_PASS:base64url:lit",
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json|APP_PASS:base64:json_ascii",
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json|APP_PASS:base64:json_utf8",
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json|APP_PASS:base64:lit",
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json|APP_PASS:base64url:json_ascii",
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json|APP_PASS:base64url:json_utf8",
+    "Q25yeS1QQVNTLTdReDQxLXpldGEtMDk5Mw==.json|APP_PASS:base64url:lit",
+    "filename|APP_PASS:base64:json_ascii",
+    "filename|APP_PASS:base64:json_utf8",
+    "filename|APP_PASS:base64:lit",
+    "filename|APP_PASS:base64url:json_ascii",
+    "filename|APP_PASS:base64url:json_utf8",
+    "filename|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "outcome errored"
+  },
+  {
+   "section": "run_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "case_id",
+   "beyond_required_list": false,
+   "escaped": "OSError",
+   "ok": null,
+   "refusal": null,
+   "stored_new_files": [],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": null
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64url",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base32",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base32:json_ascii",
+    "APP_PASS:base32:json_utf8",
+    "APP_PASS:base32:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base32:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base32:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base32:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base32:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "hex",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:hex:json_ascii",
+    "APP_PASS:hex:json_utf8",
+    "APP_PASS:hex:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:hex:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:hex:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:hex:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:hex:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "percent",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:percent:json_ascii",
+    "APP_PASS:percent:json_utf8",
+    "APP_PASS:percent:lit",
+    "APP_PASS:percent_upper:json_ascii:casefold",
+    "APP_PASS:percent_upper:json_utf8:casefold",
+    "APP_PASS:percent_upper:lit",
+    "APP_PASS:percent_upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:percent:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:percent_upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent_upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent_upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent_upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "upper",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii:casefold",
+    "APP_PASS:raw:json_utf8:casefold",
+    "APP_PASS:raw:lit",
+    "APP_PASS:raw:lit:casefold",
+    "APP_PASS:upper:json_ascii",
+    "APP_PASS:upper:json_utf8",
+    "APP_PASS:upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "lower",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii",
+    "APP_PASS:lower:json_utf8",
+    "APP_PASS:lower:lit",
+    "APP_PASS:raw:json_ascii:casefold",
+    "APP_PASS:raw:json_utf8:casefold",
+    "APP_PASS:raw:lit",
+    "APP_PASS:raw:lit:casefold",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "spaced",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:spaced:json_ascii",
+    "APP_PASS:spaced:json_utf8",
+    "APP_PASS:spaced:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:spaced:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:spaced:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:spaced:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:spaced:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "dotted",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:dotted:json_ascii",
+    "APP_PASS:dotted:json_utf8",
+    "APP_PASS:dotted:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:dotted:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:dotted:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:dotted:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:dotted:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "newline_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:newline_split:json_ascii",
+    "APP_PASS:newline_split:json_utf8",
+    "APP_PASS:newline_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:newline_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:newline_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:newline_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "zero_width_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:zero_width_split:json_utf8",
+    "APP_PASS:zero_width_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:zero_width_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:zero_width_split:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:zero_width_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "soft_hyphen_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:soft_hyphen_split:json_utf8",
+    "APP_PASS:soft_hyphen_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:soft_hyphen_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:soft_hyphen_split:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:soft_hyphen_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "nested_b64_of_b64",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:nested_b64_of_b64:json_ascii",
+    "APP_PASS:nested_b64_of_b64:json_utf8",
+    "APP_PASS:nested_b64_of_b64:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:nested_b64_of_b64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_b64_of_b64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_b64_of_b64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_b64_of_b64:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "nested_json_object",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:nested_json_object:json_ascii",
+    "APP_PASS:nested_json_object:json_utf8",
+    "APP_PASS:nested_json_object:lit",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:nested_json_object:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_json_object:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_json_object:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "nested_b64_of_json",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:nested_b64_of_json:json_ascii",
+    "APP_PASS:nested_b64_of_json:json_utf8",
+    "APP_PASS:nested_b64_of_json:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:nested_b64_of_json:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_b64_of_json:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_b64_of_json:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:nested_b64_of_json:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "percent_upper",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:percent:json_ascii:casefold",
+    "APP_PASS:percent:json_utf8:casefold",
+    "APP_PASS:percent:lit",
+    "APP_PASS:percent:lit:casefold",
+    "APP_PASS:percent_upper:json_ascii",
+    "APP_PASS:percent_upper:json_utf8",
+    "APP_PASS:percent_upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:percent:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:percent_upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent_upper:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent_upper:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:percent_upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "unicode_escape",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:unicode_escape:json_ascii",
+    "APP_PASS:unicode_escape:json_utf8",
+    "APP_PASS:unicode_escape:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:unicode_escape:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:unicode_escape:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:unicode_escape:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "html_entity",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:html_entity:json_ascii",
+    "APP_PASS:html_entity:json_utf8",
+    "APP_PASS:html_entity:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:html_entity:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:html_entity:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:html_entity:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:html_entity:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "raw",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:raw:json_ascii",
+    "APP_USER:raw:json_utf8",
+    "APP_USER:raw:lit",
+    "APP_USER:upper:json_ascii:casefold",
+    "APP_USER:upper:json_utf8:casefold",
+    "APP_USER:upper:lit",
+    "APP_USER:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "reversed",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:reversed:json_ascii",
+    "APP_USER:reversed:json_utf8",
+    "APP_USER:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "base64",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:base64:json_ascii",
+    "APP_USER:base64:json_utf8",
+    "APP_USER:base64:lit",
+    "APP_USER:base64url:json_ascii",
+    "APP_USER:base64url:json_utf8",
+    "APP_USER:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "base64url",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:base64:json_ascii",
+    "APP_USER:base64:json_utf8",
+    "APP_USER:base64:lit",
+    "APP_USER:base64url:json_ascii",
+    "APP_USER:base64url:json_utf8",
+    "APP_USER:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "base32",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:base32:json_ascii",
+    "APP_USER:base32:json_utf8",
+    "APP_USER:base32:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:base32:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:base32:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:base32:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:base32:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "hex",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:hex:json_ascii",
+    "APP_USER:hex:json_utf8",
+    "APP_USER:hex:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:hex:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:hex:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:hex:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:hex:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "percent",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:percent:json_ascii",
+    "APP_USER:percent:json_utf8",
+    "APP_USER:percent:lit",
+    "APP_USER:percent_upper:json_ascii:casefold",
+    "APP_USER:percent_upper:json_utf8:casefold",
+    "APP_USER:percent_upper:lit",
+    "APP_USER:percent_upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:percent:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:percent_upper:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:percent:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:percent:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:percent:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:percent_upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:percent_upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:percent_upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "upper",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:raw:json_ascii:casefold",
+    "APP_USER:raw:json_utf8:casefold",
+    "APP_USER:raw:lit",
+    "APP_USER:raw:lit:casefold",
+    "APP_USER:upper:json_ascii",
+    "APP_USER:upper:json_utf8",
+    "APP_USER:upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "spaced",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:spaced:json_ascii",
+    "APP_USER:spaced:json_utf8",
+    "APP_USER:spaced:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:spaced:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:spaced:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:spaced:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:spaced:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "dotted",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:dotted:json_ascii",
+    "APP_USER:dotted:json_utf8",
+    "APP_USER:dotted:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:dotted:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:dotted:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:dotted:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:dotted:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "tab_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:tab_split:json_ascii",
+    "APP_USER:tab_split:json_utf8",
+    "APP_USER:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "newline_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:newline_split:json_ascii",
+    "APP_USER:newline_split:json_utf8",
+    "APP_USER:newline_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:newline_split:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:newline_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:newline_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "zero_width_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:zero_width_split:json_utf8",
+    "APP_USER:zero_width_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:zero_width_split:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:zero_width_split:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:zero_width_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "soft_hyphen_split",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:soft_hyphen_split:json_utf8",
+    "APP_USER:soft_hyphen_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:soft_hyphen_split:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:soft_hyphen_split:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:soft_hyphen_split:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "nested_b64_of_b64",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:nested_b64_of_b64:json_ascii",
+    "APP_USER:nested_b64_of_b64:json_utf8",
+    "APP_USER:nested_b64_of_b64:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:nested_b64_of_b64:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_b64_of_b64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_b64_of_b64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_b64_of_b64:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "nested_json_object",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:nested_json_object:json_ascii",
+    "APP_USER:nested_json_object:json_utf8",
+    "APP_USER:nested_json_object:lit",
+    "APP_USER:raw:json_ascii",
+    "APP_USER:raw:json_utf8",
+    "APP_USER:raw:lit",
+    "APP_USER:upper:json_ascii:casefold",
+    "APP_USER:upper:json_utf8:casefold",
+    "APP_USER:upper:lit",
+    "APP_USER:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:nested_json_object:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_json_object:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_json_object:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "nested_b64_of_json",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:nested_b64_of_json:json_ascii",
+    "APP_USER:nested_b64_of_json:json_utf8",
+    "APP_USER:nested_b64_of_json:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:nested_b64_of_json:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_b64_of_json:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_b64_of_json:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:nested_b64_of_json:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "percent_upper",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:percent:json_ascii:casefold",
+    "APP_USER:percent:json_utf8:casefold",
+    "APP_USER:percent:lit",
+    "APP_USER:percent:lit:casefold",
+    "APP_USER:percent_upper:json_ascii",
+    "APP_USER:percent_upper:json_utf8",
+    "APP_USER:percent_upper:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:percent:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:percent_upper:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:percent:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:percent:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:percent:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_USER:percent_upper:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:percent_upper:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:percent_upper:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "unicode_escape",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:unicode_escape:json_ascii",
+    "APP_USER:unicode_escape:json_utf8",
+    "APP_USER:unicode_escape:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:unicode_escape:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:unicode_escape:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:unicode_escape:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_USER",
+   "spelling": "html_entity",
+   "field": "note",
+   "beyond_required_list": true,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_USER:html_entity:json_ascii",
+    "APP_USER:html_entity:json_utf8",
+    "APP_USER:html_entity:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_USER:html_entity:lit",
+    "case_e15542ed579d.verdict.json|APP_USER:html_entity:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_USER:html_entity:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_USER:html_entity:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "scoreboard",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: [REDACTED]:APP_PASS"
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "scoreboard",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "scoreboard",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": false,
+   "refusal": "secret",
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "result withheld: it carried a credential"
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "scoreboard",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [
+    "APP_PASS:tab_split:lit"
+   ],
+   "summary": "FAIL: <APP_PASS, TAB-LF split>"
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "grader_provider",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "grader_provider",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "grader_provider",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "grader_provider",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "rubric_hash",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "rubric_hash",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "rubric_hash",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "rubric_hash",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "failure.reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "failure.reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "failure.reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "failure.reason",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "failure.fix_hint",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "failure.fix_hint",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "failure.fix_hint",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "failure.fix_hint",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "failure.criterion_id",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "failure.criterion_id",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "failure.criterion_id",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "failure.criterion_id",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "field": "failure.evidence_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:lower:json_ascii:casefold",
+    "APP_PASS:lower:json_utf8:casefold",
+    "APP_PASS:lower:lit",
+    "APP_PASS:lower:lit:casefold",
+    "APP_PASS:raw:json_ascii",
+    "APP_PASS:raw:json_utf8",
+    "APP_PASS:raw:lit",
+    "APP_PASS:upper:json_ascii:casefold",
+    "APP_PASS:upper:json_utf8:casefold",
+    "APP_PASS:upper:lit",
+    "APP_PASS:upper:lit:casefold"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:lower:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:upper:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:lower:lit:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:raw:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_ascii:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:json_utf8:casefold",
+    "case_e15542ed579d.verdict.json|APP_PASS:upper:lit:casefold"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "field": "failure.evidence_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:reversed:json_ascii",
+    "APP_PASS:reversed:json_utf8",
+    "APP_PASS:reversed:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:reversed:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:reversed:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "field": "failure.evidence_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:base64:json_ascii",
+    "APP_PASS:base64:json_utf8",
+    "APP_PASS:base64:lit",
+    "APP_PASS:base64url:json_ascii",
+    "APP_PASS:base64url:json_utf8",
+    "APP_PASS:base64url:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:base64url:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:json_utf8",
+    "case_e15542ed579d.verdict.json|APP_PASS:base64url:lit"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "grade_case",
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "field": "failure.evidence_ref",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [
+    "APP_PASS:tab_split:json_ascii",
+    "APP_PASS:tab_split:json_utf8",
+    "APP_PASS:tab_split:lit"
+   ],
+   "disk_hit_detail": [
+    "case_e15542ed579d.verdict.json(decoded)|APP_PASS:tab_split:lit",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_ascii",
+    "case_e15542ed579d.verdict.json|APP_PASS:tab_split:json_utf8"
+   ],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: login failed for the account"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: Cnry"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: Cnry-PASS"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: 7Qx41"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: zeta-0993"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: password reset email sent"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: user 5581"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: fake.test"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: aGVsbG8gd29ybGQgMTIzNDU="
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: abababababababababababababababababababab"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: 9f8c1d2e-5b7a-4c3d-8e2f-1a0b9c8d7e6f"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: cnry user"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: PASS"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: the quick brown fox jumps over the lazy dog"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: Password field is required"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: error 500 at /api/login"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: token expired"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: a.b.c.d.e.f.g"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  },
+  {
+   "section": "run_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "error",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_5015780faaef.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "outcome errored: https://app.test/home"
+  },
+  {
+   "section": "grade_case",
+   "secret": "decoy",
+   "spelling": "benign",
+   "field": "note",
+   "beyond_required_list": false,
+   "escaped": null,
+   "ok": true,
+   "refusal": null,
+   "stored_new_files": [
+    "case_e15542ed579d.verdict.json"
+   ],
+   "disk_hits": [],
+   "disk_hit_detail": [],
+   "tool_output_hits": [],
+   "summary": "FAIL: "
+  }
+ ],
+ "control": {
+  "hits": [
+   "a.json(decoded)|base64",
+   "a.json(decoded)|base64url",
+   "a.json(decoded)|tab_split",
+   "a.json|base64",
+   "a.json|base64url",
+   "a.json|tab_split",
+   "filename|hex"
+  ]
+ },
+ "dict_key": {
+  "RawResult": "rejected: ValidationError",
+  "Verdict": "rejected: ValidationError"
+ },
+ "guard_table": [
+  {
+   "secret": "APP_PASS",
+   "spelling": "raw",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "reversed",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "base64",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "base64url",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "base32",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "hex",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "percent",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "upper",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "lower",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "spaced",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "dotted",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "tab_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": false
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "newline_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": false
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "zero_width_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "soft_hyphen_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "nested_b64_of_b64",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "nested_json_object",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "nested_b64_of_json",
+   "beyond_required_list": true,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "percent_upper",
+   "beyond_required_list": true,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "unicode_escape",
+   "beyond_required_list": true,
+   "raw_text_caught": false,
+   "model_dump_json_caught": false
+  },
+  {
+   "secret": "APP_PASS",
+   "spelling": "html_entity",
+   "beyond_required_list": true,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "raw",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "reversed",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "base64",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "base64url",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "base32",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "hex",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "percent",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "upper",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "spaced",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "dotted",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "tab_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": false
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "newline_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": false
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "zero_width_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "soft_hyphen_split",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "nested_b64_of_b64",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "nested_json_object",
+   "beyond_required_list": false,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "nested_b64_of_json",
+   "beyond_required_list": true,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "percent_upper",
+   "beyond_required_list": true,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "unicode_escape",
+   "beyond_required_list": true,
+   "raw_text_caught": false,
+   "model_dump_json_caught": false
+  },
+  {
+   "secret": "APP_USER",
+   "spelling": "html_entity",
+   "beyond_required_list": true,
+   "raw_text_caught": true,
+   "model_dump_json_caught": true
+  }
+ ]
+}
