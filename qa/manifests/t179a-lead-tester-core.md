@@ -9,15 +9,31 @@
 **Authority:** D-042 (Deep Agents adopted, `qa/gates/d042-deep-agents.md` answered 2026-09-24), D-018 (consent), D-053 (the supplied account is the scope). No new decision is needed for this slice: it adds no dependency and edits no file D-042 does not already allow.
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (security class: the AL3 guards and the AL6 secret boundary decide what a model-driven tool may do to a live product; no dependency change, so not L for that reason)
-Fix cycle: 1
-Repair base: 638d788a
+Fix cycle: 2 of max 2
+Repair base: c489e201
 Branch: wave/t179-lead-tester, based on master 16aaa402. Master was not merged. Nothing pushed.
-Code commit under check: 67a94fb1 (cycle 0 code was 9c000f1c + 90705dc0; the manifest commit changes no product file)
-Executor: claude-sonnet-subagent (maker fix-cycle-1 build subagent)
+Code commit under check: cc7f29ed (cycle 1 code was 67a94fb1; cycle 0 code was 9c000f1c + 90705dc0; the manifest commit changes no product file)
+Executor: claude-opus-subagent (maker fix-cycle-2 build subagent)
 Dual check: required
-dual-trigger: security src/autotester/agents/guards.py:147 (`write_policy_refusal`, the write-policy decision: `execute.run_case` and `BrowserSession` have no write-policy check of their own)
-dual-trigger: security src/autotester/agents/tools.py:274 (`dispatch`, the secret gate on the raw call and the only path a model reaches an acting tool)
+dual-trigger: security src/autotester/agents/guards.py:166 (`write_policy_refusal`, the write-policy decision: `execute.run_case` and `BrowserSession` have no write-policy check of their own)
+dual-trigger: security src/autotester/agents/tools.py:293 (`dispatch`, the secret gate on the raw call and the only path a model reaches an acting tool)
 Persona walk: skip (agent layer, no human-facing screen, route or CLI output is added; docs/plan.md:66)
+
+## Fix cycle 2: what was repaired (both cycle-1 failures, root cause)
+
+**Failure 1, verdict r1.a [C1], quoted:** "A repair claim is false and ALLOW_WRITES/TEST_ACCOUNT are narrowed against the repair base. `guards._destination` (guards.py:96-99) runs `host_of` on the RAW target before secret resolution. `BrowserSession.goto` (session.py:143-146) resolves `{{SECRET:KEY}}` first and then checks the resolved host. So these steps ran at 638d788a under TEST_ACCOUNT and ALLOW_WRITES and are now refused `DESTINATION` with 0 sessions: `https://{{SECRET:HOST}}/x`, ... Also refused only at HEAD, accepted by `check_destination` (Chromium strips tab/CR/LF in URLs): in-domain https URLs with a tab, CR or LF at the start, middle or end, or NUL/DEL" (r1.b reports the same 13 targets, incl. `ftp://app.test/`, `ws://app.test/`).
+
+**Fix (root cause: the guard judged a different string than the seam, with its own rule set).** `agents/guards.py::_navigate_refusal`: above READ_ONLY the NAVIGATE decision is now exactly the seam's. New `_check_refuses` asks the browser seam's own `browser.session.check_destination`; new `_seam_refuses` leaves any target carrying a `{{SECRET:..}}` placeholder to the seam (it resolves, then checks, at act time; the guard resolves nothing earlier than the seam does). So at TEST_ACCOUNT/ALLOW_WRITES the guard refuses a NAVIGATE iff `check_destination` refuses the raw target, and never a placeholder target. READ_ONLY is unchanged and still fails closed: `_destination` keeps the control-character, non-http(s), placeholder and query refusals, and its absolute-URL host check now also goes through `check_destination` (one destination rule, not two). Gate basis: `qa/gates/write-policy-tier.md` (ALLOW_WRITES authorized on every target; do not narrow a run below the account's rights). Consequence, stated: at TEST_ACCOUNT/ALLOW_WRITES the guard-only refusal of `ftp://`/`ws://` on an in-domain host is gone, because the seam accepts them (r1.a called it "stricter and harmless", but the gate forbids narrowing). The row `ftp://app.test/x` was removed from `test_off_domain_and_non_http_navigation_is_refused_under_every_policy`, and the bare-path/description rows moved from `test_allow_writes_refuses_nothing_the_account_may_do` to `test_agent_destination_seam.py`, where the seam is the oracle.
+
+Proof (`tests/test_agent_destination_seam.py`, new): the oracle is the REAL `BrowserSession.goto` (placeholder resolution, then `check_destination`) driven on a browserless stub. `test_guard_verdict_equals_seam_verdict_without_placeholders` (33 targets x TEST_ACCOUNT/ALLOW_WRITES x two domain sets, including TAB/LF in-domain URLs, `ftp://app.test`, localhost/127.0.0.1/[::1]): the guard refuses iff the seam refuses. `test_a_placeholder_target_is_left_to_the_seam_at_these_policies`: the cycle-1 shapes (`https://{{SECRET:HOST}}/x`, `{{SECRET:LOGIN_URL}}`, `{{SECRET:HOST}}/x`) run, and an off-domain-resolving placeholder is refused by the seam at act time. `test_read_only_never_runs_what_the_seam_would_refuse` and `test_read_only_keeps_every_cycle_one_refusal_of_the_raw_target` keep B's cycle-1 AL3 PASS.
+
+**Failure 2, verdict r1.b PI-1 (AL6), quoted:** "`_withhold_if_credential` (tools.py:86) and `_release` (tools.py:158) run the gate on `model_dump_json()`, where TAB and LF become the two characters `\t`/`\n`, which the fold does not strip. A stage result or error holding the credential split by TAB or newline is saved to disk and returned to the model with `ok=True` ... Fix: gate decoded string values (walk like `_call_texts`), not the JSON text, in both places." (r1.a proposed issue P2 is the same defect, plus the `\uXXXX`-escaped form, r1.b PI-2.)
+
+**Fix (root cause: the gate read an encoding of the data, not the data).** `agents/tools.py::_carries_credential` (new, the one function both gates use) walks `model.model_dump(mode="json")` with the same capped iterative walk the call arguments already use (`_call_texts`: every key and every string leaf; 16 KiB / 256 nodes / depth 6) and runs the release gate's own detector (`guards.guard_model_bound` -> `SecretStore.guard_prompt`, whose fold strips whitespace and control separators) on each DECODED string, and again with a literal backslash-u escape turned into its character. A result past the caps is withheld, never skipped. `_withhold_if_credential` (before `save_result`/`save_verdict`) and `_release` (before the model) both call it. `_error_text` became `_stage_error`: the stage error is scrubbed, gated WHOLE, then cut to 300 chars (a cut encoded secret no longer escapes). Also `guards._declared_credential` now needs at least one placeholder, so a blank FILL cannot arm the login submit. Call arguments were already judged as real string leaves since cycle 1 (F4, `_call_texts`); unchanged.
+
+Proof (`tests/test_agent_credential_gate.py`, new): `test_a_credential_split_by_a_separator_is_withheld_and_never_stored` splits the fake, real-looking credential by TAB, LF, CR, CRLF, VT, NUL and the escaped `\u0009`/`\u000a`, placed in the stage error, the HITL prompt, an evidence label, a raised stage exception and a tool summary (40 rows): each returns `SECRET`, neither half of the secret is in the outcome, `load_results` is empty, and a byte search of the data root (`disk_hits`, itself proven by a planted control) finds nothing. Decoys that are not the secret are not refused (30 rows); a verdict note, oversized results, and transformed secrets straddling the 300-character cut are withheld.
+
+TDD: both new files were first run against the cycle-1 code (c489e201 tree in a throwaway copy, worktree venv): 77 failed, 189 passed (40 separator-split rows, 24 seam-equality rows, 4 placeholder rows, 3 blank-fill, 3 size-cap, 2 cut-off error, 1 verdict). At cc7f29ed: 392 passed across the four agent test files.
 
 ## Fix cycle 1: what was repaired, in one place
 
@@ -35,8 +51,8 @@ Result is a typed refusal from the tool's own return (`RefusalClass.WRITE_POLICY
 | NAVIGATE, absolute `http(s)` URL inside `allowed_domains`, no query, no placeholder, path+fragment not matching `deny_reason` | allowed | allowed | allowed |
 | NAVIGATE with a query string (`?id=1&confirm=1`, `?page=2`) | refused (a GET can mutate and a stored step cannot say which query is safe) | allowed | allowed |
 | NAVIGATE whose path/fragment names a deny or never-click word (`/logout`, `/account/delete`) | refused (via `deny_reason`) | allowed | allowed |
-| NAVIGATE bare path (`/reports`), a description ("Admin portal URL"), or a `{{SECRET:..}}` placeholder | refused (no destination to judge) | allowed, left to `BrowserSession.goto`, which refuses what it cannot resolve | same |
-| NAVIGATE `javascript:`, `data:`, `ftp:`, any non-http(s) scheme; off-domain or userinfo/backslash host; a control character | refused, `DESTINATION` | refused, `DESTINATION` | refused, `DESTINATION` (`BrowserSession.goto` -> `check_destination` refuses the same hosts at act time, so no legitimate run is narrowed) |
+| NAVIGATE bare path (`/reports`), a description ("Admin portal URL"), or a `{{SECRET:..}}` placeholder | refused (no destination to judge) | cycle 2: a placeholder target is never refused here (the seam resolves, then checks); otherwise exactly the seam's `check_destination` verdict | same as TEST_ACCOUNT |
+| NAVIGATE `javascript:`, `data:`, `ftp:`, any non-http(s) scheme; off-domain or userinfo/backslash host; a control character | refused, `DESTINATION` | cycle 2: refused `DESTINATION` iff `check_destination` refuses the raw target (off-domain, userinfo, backslash, `javascript:`, `data:`); an in-domain `ftp://` or TAB/LF URL the seam accepts is allowed | same as TEST_ACCOUNT |
 | CLICK, any target | refused ("click can change state"); the stored step cannot tell a link from a submit | allowed unless `deny_reason` (never-click and destructive names), unchanged from cycle 0 | allowed unless a never-click name (logout/sign-out), unchanged |
 | PRESS_KEY, any key (Enter, also the default when `value` is None; Delete; Tab) | refused | allowed (unchanged) | allowed |
 | FILL / SELECT / UPLOAD, any value including `""`, whitespace, None | refused | allowed (unchanged) | allowed |
@@ -119,17 +135,27 @@ The package location follows `docs/plan.md:66` and `qa/QUEUE.md:296` (`agents/`)
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L. No builder full suite; file-scoped runs with `-o addopts=`, no CLI `-q` stacking; `autotester.__file__` confirmed under `D:\autoTesting\.worktrees\t179-lead-tester\src` (and under the falsification copy for those runs). TDD: `tests/test_agent_read_only.py` was written first and run RED (81 failed, 50 passed) before `guards.py`/`tools.py` were edited; it went to 131 passed after.
-Pre-check[AL2]: 67a94fb1 uv run pytest tests/test_agent_tools.py -k "wraps or names_a_real or read_tools" -> 4 passed (plus F5 `test_get_persona_calls_the_wrapped_reader`, in the 131 below)
-Pre-check[AL3a]: 67a94fb1 uv run pytest tests/test_agent_tools.py -k "al3a" -> 1 passed
-Pre-check[AL3b]: 67a94fb1 uv run pytest tests/test_agent_tools.py -k "al3b or without_a_live_case" -> 2 passed
-Pre-check[AL3c]: 67a94fb1 uv run pytest tests/test_agent_read_only.py tests/test_agent_tools.py -k "read_only or off_domain or allow_writes or carve_out" -> 119 passed, 12 deselected
-Pre-check[AL6]: 67a94fb1 uv run pytest tests/test_agent_tools.py tests/test_agent_read_only.py -k "al6 or never_stored or scrubbed_typed or split_by or oversized or malformed" -> 23 passed, 108 deselected
-Pre-check: 67a94fb1 uv run pytest tests/test_agent_tools.py tests/test_agent_read_only.py -> 131 passed
-Pre-check: 67a94fb1 uv run pytest tests/test_explore_safety.py tests/test_execute.py tests/test_execute_new_actions.py tests/test_execute_assertions.py -> 92 passed (the crawler guard and execute stage, unchanged files)
-Pre-check: 67a94fb1 uv run pytest tests/test_schema.py tests/test_doctor.py tests/test_explore_typing_guards.py tests/test_agent_loop.py -> 87 passed
-Pre-check: 67a94fb1 uv run ruff check src tests scripts -> All checks passed!
-Pre-check: 67a94fb1 uv run autotester doctor -> doctor: clean
-Metrics: start=2026-10-12 end=2026-10-12 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=8 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9
+Pre-check[C1]: cc7f29ed uv run pytest tests/test_agent_destination_seam.py tests/test_agent_read_only.py -o addopts= -> 295 passed t=18 blobs=guards.py:3d59e067 test_agent_destination_seam.py:af0743f1 test_agent_read_only.py:ca93f843
+Pre-check[AL6]: cc7f29ed uv run pytest tests/test_agent_credential_gate.py -o addopts= -> 83 passed t=16 blobs=tools.py:d16464c7 test_agent_credential_gate.py:15758fbb
+Pre-check[AL6]: cc7f29ed uv run pytest tests/test_agent_tools.py tests/test_agent_read_only.py -k "al6 or never_stored or scrubbed_typed or split_by or oversized or malformed" -o addopts= -> 23 passed, 103 deselected t=14 blobs=tools.py:d16464c7 test_agent_tools.py:8be40fe8
+Pre-check[AL2]: cc7f29ed uv run pytest tests/test_agent_tools.py -k "wraps or names_a_real or read_tools" -o addopts= -> 4 passed, 10 deselected t=10 blobs=tools.py:d16464c7 test_agent_tools.py:8be40fe8
+Pre-check[AL3]: cc7f29ed uv run pytest tests/test_agent_tools.py -k "al3a or al3b or without_a_live_case" -o addopts= -> 3 passed, 11 deselected t=10 blobs=guards.py:3d59e067 test_agent_tools.py:8be40fe8
+Pre-check: cc7f29ed uv run pytest tests/test_agent_credential_gate.py tests/test_agent_destination_seam.py tests/test_agent_read_only.py tests/test_agent_tools.py -o addopts= -> 392 passed t=47
+Pre-check: cc7f29ed uv run pytest tests/test_explore_safety.py tests/test_execute.py tests/test_schema.py tests/test_doctor.py -o addopts= -> 140 passed t=15
+Pre-check: cc7f29ed uv run ruff check src tests scripts -> All checks passed!
+Pre-check: cc7f29ed uv run autotester doctor -> doctor: clean (guards.py 180 lines, tools.py 299, new tests 152 and 140)
+Metrics: start=2026-10-12 end=2026-10-12 wall_min=unavailable agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=2 resumes=1 tokens=unavailable policy=proportional-verification/2026-10-10.9
+
+The cycle-1 pre-check lines (67a94fb1) are superseded by the lines above.
+
+## Capability coverage (fix cycle 2 falsification)
+
+Throwaway copy of the cc7f29ed src/tests/scripts under `scratchpad/fals-c2` on C:, outside the worktree; worktree venv with `PYTHONPATH=<copy>/src;<copy>/scripts;<copy>/tests`; `autotester.__file__` printed from the copy; each file restored and re-run green (54 passed); the worktree was never edited.
+
+| Criterion | edit in the copy | node | before | after |
+|---|---|---|---|---|
+| C1 | `guards._seam_refuses` drops the placeholder exemption (`return _check_refuses(target, project)`, the cycle-1 judge-the-raw-host shape) | `tests/test_agent_destination_seam.py::test_a_placeholder_target_is_left_to_the_seam_at_these_policies` | 14 passed in 0.45s | 12 failed, 2 passed in 0.89s |
+| AL6 | `tools._carries_credential` gates the JSON text (`json.dumps(data)`) instead of the decoded strings (the cycle-1 shape) | `tests/test_agent_credential_gate.py::test_a_credential_split_by_a_separator_is_withheld_and_never_stored` | 40 passed in 4.91s | 20 failed, 20 passed in 5.17s |
 
 ## Falsification (throwaway copy of src, tests, scripts, docs under `scratchpad/fals-42df3e8e` on C:, outside the worktree; run with the worktree venv and `PYTHONPATH=<copy>/src`, `autotester.__file__` printed from the copy; the worktree was never edited; each file restored from the committed code and re-run green; the copy is discarded)
 
