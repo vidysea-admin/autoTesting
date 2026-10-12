@@ -8,6 +8,7 @@
     "vidysea.com"
   ],
   "write_policy": "read_only",
+  "production": true,
   "max_parallel": 1,
   "permitted_surface": [],
   "secrets": [
@@ -50,6 +51,6 @@
     "judge": "langchain-fallback"
   },
   "headed": true,
-  "description": "Vidysea's Pathlynks product (dev environment). Counsellor role logs in at dev-new.vidysea.com/login; the user/student role at pathlynks.vidysea.com/signin.",
+  "description": "Vidysea's Pathlynks product (pathlynks.vidysea.com is PRODUCTION, D-088). Counsellor role logs in at dev-new.vidysea.com/login; the user/student role at pathlynks.vidysea.com/signin.",
   "login_case_id": "case_cfa40e6b95c2"
 }

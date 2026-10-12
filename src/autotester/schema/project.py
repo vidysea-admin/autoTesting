@@ -165,6 +165,12 @@ class Project(Artifact):
         description="the browser may only be driven here; secrets scoped within",
     )
     write_policy: WritePolicy = WritePolicy.READ_ONLY
+    production: bool = Field(
+        default=False,
+        description="D-088: base_url is a PRODUCTION system. Approvals for it must be signed "
+                    "production: true, and synthetic typing/submitting stays refused. Set by "
+                    "the operator, never inferred",
+    )
     max_parallel: int = Field(
         default=1, ge=1,
         description="ceiling on concurrently-running cases (T-173/D-041); the run's actual N "

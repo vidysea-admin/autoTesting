@@ -263,3 +263,13 @@ def test_account_grant_is_new_exact_and_bounded(mode) -> None:
     assert "synthetic-account-value" not in row.model_dump_json()
     assert "UNUSED" not in row.scope
     assert historical.model_dump_json() == before
+
+
+def test_account_grant_for_a_production_project_is_signed_production() -> None:
+    project = Project(slug="demo", name="Demo", base_url="https://demo.test/app",
+        allowed_domains=["demo.test"], production=True,
+        secrets=[SecretRef(key="USER", domains=["demo.test"], include_subdomains=False)])
+    row = prepare_account_grant(project, SecretStore(project, {"USER": "x"}),
+        kind=ApprovalKind.LIVE_CASE, account_keys={"USER"}, actions=10, probes=20,
+        wall_clock_s=30.0, now=NOW.replace(tzinfo=UTC))
+    assert row.production is True

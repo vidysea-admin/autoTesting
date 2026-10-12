@@ -246,9 +246,13 @@ def set_queue(queue: RunQueue) -> None:
 
 def persisted_entries() -> list[QueueEntry]:
     """The server's queue file, read only: another process's view, for the scheduler's overlap
-    check. Never `recover()`s, never writes; an absent or unreadable file is an empty queue."""
+    check. Never `recover()`s, never writes. An ABSENT file is an empty queue; an unreadable or
+    corrupt one raises (D-088 / ISS-t200-schedule-wiring-3: fail closed), so the caller skips
+    the slot with that reason rather than treating an unknown queue as an idle one."""
     try:
         stored = read_json(_queue_file(), RunQueueFile)
-    except (ValueError, OSError):
-        return []
+    except (ValueError, OSError) as exc:
+        raise RuntimeError(
+            f"server run queue file unreadable ({type(exc).__name__}); "
+            "scheduled run not started, overlap cannot be checked") from None
     return list(stored.entries) if stored else []

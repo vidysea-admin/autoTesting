@@ -44,7 +44,7 @@ def release_preflight(project: Project, ctx: StageContext) -> None:
     rows = [a for a in ctx.store.list_approvals() if a.id == scope.approval_id]
     actions = max(scope.max_actions, plans_cost(ctx.store, scope.plans))
     require_approval(rows, project=project.slug, kind=ApprovalKind.LIVE_CASE,
-                     target=project.base_url, actions=actions,
+                     target=project.base_url, actions=actions, production=project.production,
                      wall_clock_s=max(scope.wall_clock_s, actions * WALL_CLOCK_PER_ACTION_S))
 
 

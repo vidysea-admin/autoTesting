@@ -101,11 +101,12 @@ def prepare_account_grant(
     expiry = validate_account_bounds(actions, probes, wall_clock_s, now=moment)
     candidate = RunApproval(project=project.slug, run_kind=kind,
         target=project.base_url, scope=scope, max_actions=actions, max_probes=probes,
-        wall_clock_s=wall_clock_s, production=False, granted_by=ACCOUNT_GRANTOR,
+        wall_clock_s=wall_clock_s, production=project.production, granted_by=ACCOUNT_GRANTOR,
         granted_at=moment.isoformat(), expires_at=expiry.isoformat()).sign()
     return require_approval([candidate], project=project.slug, kind=kind,
                             target=project.base_url, actions=actions, probes=probes,
-                            wall_clock_s=wall_clock_s, now=moment)
+                            wall_clock_s=wall_clock_s, production=project.production,
+                            now=moment)
 
 
 def _grant_command(

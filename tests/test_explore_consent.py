@@ -66,3 +66,36 @@ def test_typing_runs_against_a_dev_approval(tmp_path: Path) -> None:
 
     store, project = _store_with(tmp_path, production=False)
     require_consent(project, store, CrawlBounds(), policy=TYPED_POLICY)
+
+def _production_project(tmp_path: Path, row_production: bool) -> tuple[ProjectStore, object]:
+    """D-088: Pathlynks is production. The project says so; the row must say so too."""
+    store, project = _store_with(tmp_path, production=row_production)
+    return store, project.model_copy(update={"production": True})
+
+
+def test_a_dev_signed_row_does_not_cover_a_production_project(tmp_path: Path) -> None:
+    from autotester.core.consent import ApprovalRequired
+    from autotester.stages.explore_consent import require_consent
+
+    store, project = _production_project(tmp_path, row_production=False)
+    with pytest.raises(ApprovalRequired, match="does not say production"):
+        require_consent(project, store, CrawlBounds(), policy=READ_ONLY_POLICY)
+
+
+def test_a_production_row_covers_read_only_but_typing_stays_refused(tmp_path: Path) -> None:
+    from autotester.core.consent import ApprovalRequired
+    from autotester.stages.explore_consent import require_consent
+
+    store, project = _production_project(tmp_path, row_production=True)
+    require_consent(project, store, CrawlBounds(), policy=READ_ONLY_POLICY)
+    with pytest.raises(ApprovalRequired, match="synthetic typing"):
+        require_consent(project, store, CrawlBounds(), policy=TYPED_POLICY)
+
+
+def test_pathlynks_is_declared_production() -> None:
+    import json
+
+    from autotester.schema.project import Project
+
+    path = Path(__file__).resolve().parents[1] / "projects" / "pathlynks" / "project.json"
+    assert Project.model_validate(json.loads(path.read_text(encoding="utf-8"))).production is True

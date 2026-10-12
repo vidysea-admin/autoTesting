@@ -72,7 +72,8 @@ def _require(rows: list[RunApproval], project: Project, kind: ApprovalKind,
              bounds: CrawlBounds, probes: int = 0) -> RunApproval:
     return require_approval(
         rows, project=project.slug, kind=kind, target=project.base_url,
-        actions=bounds.max_actions, probes=probes, wall_clock_s=bounds.wall_clock_s)
+        actions=bounds.max_actions, probes=probes, wall_clock_s=bounds.wall_clock_s,
+        production=project.production)
 
 
 def _credential_approval(
@@ -143,7 +144,8 @@ def require_consent(project: Project, store: ProjectStore, bounds: CrawlBounds,
     always passes the run's policy, so the runtime seam holds even when a
     pre-flight caller forgets to."""
     approval = covering_approval(project, store, bounds)
-    if policy is not None and policy.synthetic_typing and approval.production:
+    production = approval.production or project.production
+    if policy is not None and policy.synthetic_typing and production:
         raise ApprovalRequired(
             f"{approval.id}: synthetic typing (X10-b) is refused against a "
             "production target — grant a dev-environment approval "
