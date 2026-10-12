@@ -163,6 +163,7 @@
 | `stages/explore_consent.py` | The crawl's consent pre-flight (D-018 gate 2) — split from `explore.py` |
 | `stages/explore_flows.py` | One job: derive reviewable `Flow` PROPOSALS from a crawl's discovery tree (AT-887, D-084). |
 | `stages/explore_incremental.py` | Incremental crawl: don't re-explore a screen the persona already knows. |
+| `stages/explore_login.py` | EXPLORE login bootstrap: run the human-authored login case, or skip it when the |
 | `stages/explore_merge.py` | Fold a crawl's screen graph into the reviewed FlowSpec (Track B5). |
 | `stages/explore_node.py` | One node's worth of exploring: try each safe candidate action, record what |
 | `stages/explore_replay.py` | Re-performing a discovering action, INCLUDING the values that were typed. |
