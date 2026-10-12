@@ -129,6 +129,13 @@ class SyncMemory(BaseModel):
     written: dict[str, dict[str, str]] = Field(default_factory=dict)
 
 
+def check_person(value: str) -> str:
+    """A named person, never the machine actor. The one rule for every confirmation."""
+    if not _PERSON_RE.fullmatch(value) or value.lower().startswith("system"):
+        raise ValueError("a confirmation names a person, not the machine")
+    return value
+
+
 class PlanConfirmation(BaseModel):
     """A named person saw the plan with this hash. Whether that person holds `project.edit` is
     T-204's check; this slice only requires a named user, never the machine actor."""
@@ -142,9 +149,7 @@ class PlanConfirmation(BaseModel):
     @field_validator("confirmed_by")
     @classmethod
     def _person(cls, value: str) -> str:
-        if not _PERSON_RE.fullmatch(value) or value.lower().startswith("system"):
-            raise ValueError("a confirmation names a person, not the machine")
-        return value
+        return check_person(value)
 
     @field_validator("confirmed_at")
     @classmethod

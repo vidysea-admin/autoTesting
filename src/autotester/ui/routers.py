@@ -28,6 +28,7 @@ from autotester.ui import (
     routes_runs,
     routes_settings,
     routes_sources,
+    routes_tracker,
     routes_video,
 )
 
@@ -57,6 +58,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_issues.router,
     routes_live.router,
     routes_catalog.router,
+    routes_tracker.router,
     *STUBS.values(),
 )
 

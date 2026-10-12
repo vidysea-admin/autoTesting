@@ -57,6 +57,16 @@ class ProjectPaths:
         return self.root / ".env"
 
     @property
+    def bugs_dir(self) -> Path:
+        """The append-only bug event log (`store/bug_store.py`)."""
+        return self.dir / "bugs"
+
+    @property
+    def tracker_file(self) -> Path:
+        """This project's sheet binding, mapping and sync state. Never shared across projects."""
+        return self.dir / "tracker.json"
+
+    @property
     def sources_dir(self) -> Path:
         return self.dir / "sources"
 

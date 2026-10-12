@@ -111,6 +111,7 @@
 | `schema/team_enums.py` | The Group 10 (team features) vocabulary file: every closed value set the team units add. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
 | `schema/tracked_bug.py` | A tracked bug and the events that move it: the data shapes of T-199a (team-bug-loop TB1-TB6). |
+| `schema/tracker_binding.py` | The shapes of a project's tracker-sheet binding (T-199c; contract TB8, TB9, TB12, TB13, TB14). |
 | `schema/unified_report.py` | The damage-control report's typed shape: one run's four evidence classes plus crawl coverage. |
 | `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
 | `schema/ux_report.py` | The advisory UX artifacts: `UXFinding`, `UXCaseOutcome`, `UXReport` (PU2). |
@@ -209,6 +210,8 @@
 | `stages/similarity_score.py` | How two bug reports are compared for `stages/score.py`'s T-136 scorer. |
 | `stages/synthetic_values.py` | The synthetic value generator (X10-b, D-029): what the crawler types. |
 | `stages/text_lines.py` | Number lines by  |
+| `stages/tracker_mapping.py` | TRACKER MAPPING: propose, confirm and age a column mapping from the sheet's header row alone. |
+| `stages/tracker_sync.py` | TRACKER SYNC: the dry-run preview, the first-write confirmation and the outage rule. |
 | `stages/unified_report.py` | The damage-control report's loaders and assembly (T-168, `damage-control-report.md` DC1-DC4). |
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
@@ -227,6 +230,7 @@
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
 | `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
 | `store/team_store.py` | The sibling store for team data: markers, records, preferences, outboxes (T-205/TF7, R65). |
+| `store/tracker_store.py` | Where a project's tracker binding lives: one file per project, never shared (TB14). |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
@@ -255,6 +259,7 @@
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
+| `ui/routes_tracker.py` | The tracker page: a project's tracked bugs, the sheet mapping preview and the sync status. |
 | `ui/routes_unified_report.py` | The damage-control report as a page (T-168): the lead's two-step route from the project page. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
@@ -465,6 +470,12 @@
 | `BugSeed` (`schema/tracked_bug.py`) | What a bug is made of when its first FAIL opens it. |
 | `BugEvent` (`schema/tracked_bug.py`) | One fact. `ref` is the idempotency token: a verdict ref (`run/case`), an issue ref |
 | `TrackedBug` (`schema/tracked_bug.py`) | One bug, as folded from its events. Never written to disk. |
+| `MappingStatus` (`schema/tracker_binding.py`) |  |
+| `ColumnMapping` (`schema/tracker_binding.py`) | Which header cell holds which field. Inert until `confirmed` (TB8). |
+| `ConflictNote` (`schema/tracker_binding.py`) | A cell a human edited: listed on the tracker page, never overwritten (TB10). |
+| `SyncState` (`schema/tracker_binding.py`) | The last sync outcome, visible to `report.view` holders (TB12). `last_error` is scrubbed. |
+| `MappingReply` (`schema/tracker_binding.py`) | The model fallback's answer: field -> a header cell it was shown, or None. |
+| `TrackerBinding` (`schema/tracker_binding.py`) |  |
 | `RegressionSection` (`schema/unified_report.py`) | RR3/RR6: the release's single issues log and its diff against the trusted baseline. |
 | `ApiFailure` (`schema/unified_report.py`) | One first-party response the product answered badly (NA1). `status` None = unreadable. |
 | `ApiSection` (`schema/unified_report.py`) |  |

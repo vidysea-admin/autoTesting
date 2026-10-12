@@ -19,6 +19,10 @@ class FakeSheet:
     def write_calls(self) -> list[tuple]:
         return [c for c in self.calls if c[0] in ("append_row", "update_cells")]
 
+    def read_header(self, sheet_id: str, tab: str) -> list[str]:
+        self.calls.append(("read_header", sheet_id, tab))
+        return list(self.header)
+
     def read(self, sheet_id: str, tab: str) -> SheetState:
         self.calls.append(("read", sheet_id, tab))
         return SheetState(header=list(self.header), rows=[list(r) for r in self.rows])
