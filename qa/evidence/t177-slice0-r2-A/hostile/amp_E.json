@@ -1,0 +1,14 @@
+{
+ "variant": "E",
+ "n": 600,
+ "results": {
+  "False(TimeoutError)": 600
+ },
+ "wall_min": 0.203,
+ "wall_med": 0.219,
+ "wall_max": 0.328,
+ "threads_end": [
+  "Thread-600"
+ ],
+ "open_socks": 0
+}

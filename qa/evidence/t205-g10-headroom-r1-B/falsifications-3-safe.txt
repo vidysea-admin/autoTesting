@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\scr\mutants.py", line 53, in <module>
+    fn(root)
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\scr\mutants.py", line 17, in <lambda>
+    M["M4_safe_no_conin"] = (lambda r: edit(r,"src/autotester/core/safe_names.py",'"conin$", "conout$", ',""), SAFE)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\scr\mutants.py", line 6, in edit
+    assert t.count(old) == count, (rel, old, t.count(old))
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('src/autotester/core/safe_names.py', '"conin$", "conout$", ', 0)

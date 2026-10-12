@@ -1,0 +1,7 @@
+autotester.__file__ D:\autoTesting\.worktrees\t177-slice0-browser-seam\src\autotester\__init__.py
+P2 start raised: simulated budget exceeded after launch
+P2 after failed start: port file exists True context still open True
+P2 leaked endpoint accepting on 127.0.0.1: True json/list targets 1
+P2 cdp_url None
+P2 after caller close(): file exists False
+P2 port accepting after close False

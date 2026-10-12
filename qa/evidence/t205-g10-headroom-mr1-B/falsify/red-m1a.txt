@@ -1,0 +1,7 @@
+FILE C:\Users\Lenovo\AppData\Local\Temp\at-mr1b-123619858\mut-m1a\src\autotester\__init__.py
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_runs.py::test_trigger_runs_exact_selected_priority_plus_pinned_once[p0-expected0]
+FAILED tests/test_ui_runs.py::test_trigger_runs_exact_selected_priority_plus_pinned_once[p1-expected1]
+======================== 2 failed, 1 warning in 4.58s =========================

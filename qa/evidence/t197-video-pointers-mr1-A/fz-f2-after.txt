@@ -1,0 +1,7 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mr1a-1004311059\fz-f2\src\autotester\__init__.py
+FAILED tests/test_cli_intake.py::test_ti5_a_file_that_is_not_a_zip_is_one_failure_and_exit_2
+FAILED tests/test_cli_intake.py::test_a_missing_archive_or_project_stops_with_exit_1
+FAILED tests/test_cli_intake.py::test_ti1_the_cli_refuses_a_hostile_member_and_writes_nothing_outside
+FAILED tests/test_cli_intake.py::test_ti7_fetch_drive_registers_through_the_fake_and_exits_0
+FAILED tests/test_cli_intake.py::test_ti7_fetch_drive_partial_folder_exits_2
+========================= 7 failed, 1 passed in 4.84s =========================

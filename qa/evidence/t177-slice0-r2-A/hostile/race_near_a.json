@@ -1,0 +1,58 @@
+{
+ "mode": "near",
+ "variant": "a",
+ "n": 200,
+ "results": {
+  "False(TimeoutError)": 198,
+  "True-full": 2
+ },
+ "wall_min": 1.984,
+ "wall_median": 2.016,
+ "wall_max": 2.407,
+ "threads_at_end": [
+  "Thread-200"
+ ],
+ "open_client_socks": 0,
+ "rows_sample": [
+  [
+   2.0,
+   "False(TimeoutError)"
+  ],
+  [
+   2.031,
+   "False(TimeoutError)"
+  ],
+  [
+   2.0,
+   "False(TimeoutError)"
+  ],
+  [
+   2.015,
+   "False(TimeoutError)"
+  ],
+  [
+   2.094,
+   "False(TimeoutError)"
+  ],
+  [
+   2.031,
+   "False(TimeoutError)"
+  ],
+  [
+   2.016,
+   "False(TimeoutError)"
+  ],
+  [
+   2.031,
+   "False(TimeoutError)"
+  ],
+  [
+   2.094,
+   "False(TimeoutError)"
+  ],
+  [
+   2.016,
+   "False(TimeoutError)"
+  ]
+ ]
+}

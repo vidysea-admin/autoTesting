@@ -1,0 +1,28 @@
+# AT-790 test body at 94c569c0 (tests/test_ui_learn.py) vs head (tests/test_ui_learn_vendor_echo.py)
+--- C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/at790.orig	2026-10-11 14:41:29.363451000 +0530
++++ C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mr1a/at790.head	2026-10-11 14:41:29.422405200 +0530
+@@ -1,16 +1,13 @@
+ def test_generate_failure_page_does_not_carry_a_vendor_echoed_key(
+-    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch
++    client: TestClient, scratch_root: Path, monkeypatch: pytest.MonkeyPatch  # noqa: F811
+ ) -> None:
+-    """AT-790 (LL8). The route prints the ProviderError on its refusal page, so a
+-    vendor error that echoes a vendor-native key must not get that far."""
+     canary = "AIza-ROUTE-CANARY-555"
+     store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
++    _approve_proposals(store)   # t178: the route stages proposals first and needs them approved
+     install(monkeypatch, [RuntimeError(f"403 at https://vendor.test/x?key={canary}")] * 60)
+     monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
+     monkeypatch.setenv("GEMINI_API_KEY", canary)
+     provider = LiteLLMProvider(model="gemini/gemini-2.5-pro")
+-    import autotester.ui.routes_learn as routes_learn_module
+-
+     monkeypatch.setattr(routes_learn_module, "for_role", lambda project, role: provider)
+ 
+     response = client.post("/projects/demo/cases/generate", follow_redirects=False)
+@@ -18,5 +15,3 @@
+     assert response.status_code == 400 and "could not complete" in response.text
+     assert canary not in response.text
+     assert store.list_cases() == []
+-
+-

@@ -1,0 +1,9 @@
+name: fz3-PII2-mask-joined
+import_path: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fz\fz3-PII2-mask-joined\src\autotester\__init__.py
+green_rc: 0
+green_tail: ============================= 23 passed in 22.03s =============================
+green_s: 37
+red_rc: 1
+red_tail: ======================== 1 failed, 22 passed in 19.25s ========================
+red_s: 30
+failed: ['FAILED tests/test_expand_redaction.py::test_a_phone_at_the_end_of_a_step_does_not_swallow_the_next_step_number']

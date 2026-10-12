@@ -1,0 +1,4 @@
+before edit: [('open', 2, 2)]
+after replaying r1: [('stale', 1, 1)] case_changed: ['bug_3a125cd293e1']
+[('fail', 1, 'r1/case_f75fa996ab3e'), ('case_changed', 1, 'case/case_f75fa996ab3e/C1/crit'), ('fail', 2, 'r2/case_f75fa996ab3e')]
+after replaying r2 too: [('stale', 1, 1)] []

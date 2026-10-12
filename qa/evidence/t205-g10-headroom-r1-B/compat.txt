@@ -1,0 +1,31 @@
+== BASE write
+autotester at C:\Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t205b/base/src\autotester\__init__.py
+ids ['src_21e38144fee2', 'src_c3372a9eb93e']
+== HEAD rewrite of base-written
+autotester at D:\autoTesting\.worktrees\check-t205-r1-b\src\autotester\__init__.py
+ids-unchanged True ['src_21e38144fee2', 'src_c3372a9eb93e']
+sources bytes identical True
+project bytes identical True
+sources line: {"schema_version":1,"created_at":"2026-10-11T04:42:16.561166Z","id":"src_21e38144fee2","project":"demo","kind":"text","text":"hello"}
+== BASE rewrite (control)
+autotester at C:\Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t205b/base/src\autotester\__init__.py
+ids-unchanged True ['src_21e38144fee2', 'src_c3372a9eb93e']
+sources bytes identical True
+project bytes identical True
+sources line: {"schema_version":1,"created_at":"2026-10-11T04:42:16.561166Z","id":"src_21e38144fee2","project":"demo","kind":"text","text":"hello"}
+== HEAD prov write
+autotester at D:\autoTesting\.worktrees\check-t205-r1-b\src\autotester\__init__.py
+id plain==prov True src_21e38144fee2
+line: {"schema_version":1,"created_at":"2026-10-11T04:43:49.400859Z","id":"src_21e38144fee2","project":"demo","kind":"text","text":"hello","uploaded_by":"u1","uploaded_at":"2026-10-11T00:00:00Z","origin":"upload"}
+count after re-add plain 1
+== BASE read of head-with-provenance
+autotester at C:\Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t205b/base/src\autotester\__init__.py
+READ-ERROR ValueError C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t205b\data-prov\projects\demo\sources.jsonl:1: 3 validation errors for Source
+uploaded_by
+  Extra inputs are not permitted [type=extra_forbidden, input_value='u1', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden
+uploaded_at
+  Extra inputs are
+== HEAD read of same
+autotester at D:\autoTesting\.worktrees\check-t205-r1-b\src\autotester\__init__.py
+loaded [Source(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 4, 43, 49, 400859, tzinfo=TzInfo(0)), provenance=None, id='src_21e38144fee2', project='demo', kind=<SourceKind.TEXT: 'text'>, path=None, text='hello', url=None, sha256=None, duration_s=None, label=None, notes=None, recorded_on=None, uploaded_by='u1', uploaded_at=datetime.datetime(2026, 10, 11, 0, 0, tzinfo=TzInfo(0)), origin=<SourceOriginKind.UPLOAD: 'upload'>)]

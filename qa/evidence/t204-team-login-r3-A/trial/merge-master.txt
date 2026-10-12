@@ -1,0 +1,2 @@
+Auto-merging docs/MAP.md
+Automatic merge went well; stopped before committing as requested

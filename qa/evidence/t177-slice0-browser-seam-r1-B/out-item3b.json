@@ -1,0 +1,1 @@
+{"idle": {"n": 100, "false(=passes as loopback-only)": 0, "max_s": 0.516, "mean_s": 0.0622}, "cpu_load_60_burners": {"n": 100, "false(=passes as loopback-only)": 0, "max_s": 0.531, "mean_s": 0.0528}}

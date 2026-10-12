@@ -1,0 +1,66 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\autoTesting\.worktrees\at773-judge-rule
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 331 items
+
+tests\test_grade_assertion_rule.py ......                                [  1%]
+tests\test_grade.py .............                                        [  5%]
+tests\test_grade_evidence.py ...................................         [ 16%]
+tests\test_execute_assertions.py ..............                          [ 20%]
+tests\test_ai_capture.py ............................................... [ 34%]
+..............................                                           [ 43%]
+tests\test_bench.py ................................                     [ 53%]
+tests\test_migrate_stamp_legacy_rubrics.py ...........                   [ 56%]
+tests\test_regression_proof.py ...........                               [ 60%]
+tests\test_regression_trigger.py ..................                      [ 65%]
+tests\test_run_case_pipeline.py ...........                              [ 68%]
+tests\test_run_case_pipeline_resilient.py ..                             [ 69%]
+tests\test_run_pathlynks_first_cases.py ......                           [ 71%]
+tests\test_ui_cases.py .........                                         [ 74%]
+tests\test_ui_credential_safety.py ...............                       [ 78%]
+tests\test_ui_runs_parallel_crash_recovery.py ...                        [ 79%]
+tests\test_ui_runs_serial_entry_order.py .....................           [ 85%]
+tests\test_ui_runs_serial_entry_screenshot_namespace.py .                [ 86%]
+tests\test_ui_runs_serial_resilience.py ........                         [ 88%]
+tests\test_user_persona.py ..........                                    [ 91%]
+tests\test_video_duration_cap.py ...                                     [ 92%]
+tests\test_video_evidence.py ..                                          [ 93%]
+tests\test_viewport_locale_enact.py ........                             [ 95%]
+tests\test_script_replay.py ...............                              [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\at773-judge-rule\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_regression_trigger.py::test_rr1_a_done_stage_is_not_redone_when_the_checkpointer_is_the_only_record
+tests/test_regression_trigger.py::test_rr1_a_raise_is_failed_and_resume_re_enters_that_stage
+  <string>:11: RuntimeWarning: StageContext for run 'r1' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py::test_rr2_a_forged_scope_cannot_skip_the_gate_through_run_or_resume
+tests/test_regression_trigger.py::test_rr2_an_approved_release_pauses_and_a_resume_without_a_human_never_proceeds
+tests/test_regression_trigger.py::test_rr2_a_declined_release_runs_nothing
+tests/test_regression_trigger.py::test_rr4_every_result_in_the_record_is_what_the_grader_returned
+tests/test_regression_trigger.py::test_rr6_one_run_one_log_names_both_failures_and_passes_the_third
+tests/test_regression_trigger.py::test_rr6_a_flow_without_a_plan_is_reported_not_run_never_omitted
+  <string>:11: RuntimeWarning: StageContext for run 'rel' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py::test_rr3_the_third_run_diffs_against_the_first_good_run_not_the_prior_one
+tests/test_regression_trigger.py::test_rr3_the_first_release_has_no_baseline_and_says_so
+tests/test_regression_trigger.py::test_rr3_a_human_flagged_release_is_never_a_baseline
+tests/test_regression_trigger.py::test_rr3_a_release_with_an_unrun_flow_is_never_a_baseline
+  <string>:11: RuntimeWarning: StageContext for run 'run1' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py::test_rr3_the_third_run_diffs_against_the_first_good_run_not_the_prior_one
+tests/test_regression_trigger.py::test_rr3_a_human_flagged_release_is_never_a_baseline
+  <string>:11: RuntimeWarning: StageContext for run 'run2' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py::test_rr3_the_third_run_diffs_against_the_first_good_run_not_the_prior_one
+  <string>:11: RuntimeWarning: StageContext for run 'run3' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================ 331 passed, 16 warnings in 2131.06s (0:35:31) ================
+EXIT=0

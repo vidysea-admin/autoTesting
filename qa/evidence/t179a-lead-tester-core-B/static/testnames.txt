@@ -1,0 +1,14 @@
+131:def test_every_tool_names_a_real_existing_function() -> None:
+141:def test_run_case_wraps_execute_run_case_once_with_the_context_session(
+152:def test_crawl_wraps_run_crawl_once_when_within_the_approval(tmp_path: Path, spies: Spies) -> None:
+159:def test_read_tools_and_grade_wrap_catalog_persona_grade(tmp_path: Path, spies: Spies) -> None:
+173:def test_al3a_raw_secret_in_arguments_is_refused_before_any_action(
+185:def test_al3b_crawl_beyond_the_approval_is_refused_before_a_browser_opens(
+195:def test_al3c_a_read_only_project_refuses_a_mutating_step_from_the_tool_itself(
+208:def test_read_only_still_allows_login_placeholder_and_the_same_step_under_test_account(
+220:def test_run_case_without_a_live_case_approval_is_refused(tmp_path: Path, spies: Spies) -> None:
+228:def test_unknown_tool_field_and_case_do_nothing(tmp_path: Path, spies: Spies) -> None:
+239:def test_al6_a_secret_in_a_stage_result_never_reaches_the_model(
+252:def test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result(
+267:def test_al6_a_real_grade_withholds_a_prompt_carrying_a_secret(tmp_path: Path) -> None:
+279:def test_guards_module_exposes_the_write_policy_check_as_a_pure_function() -> None:

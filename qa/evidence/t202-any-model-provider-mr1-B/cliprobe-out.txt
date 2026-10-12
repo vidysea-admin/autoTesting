@@ -1,0 +1,5 @@
+autotester at C:\Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/mrb/copy-base/src\autotester\__init__.py
+litellm exit 0 | no gate — no retired features (rule) | exc: None 
+litellm:ollama/llama3 exit 1 |  | exc: ProviderError unknown provider 'litellm:ollama/llama3'; known: anthropic, gemini, langchain-fallback, litellm, mock
+providers: available providers: mock
+providers with model+base: available providers: langchain-fallback, litellm, mock

@@ -1,0 +1,4 @@
+M6a_seams_field_added | BEFORE rc 0 21 passed in 66.39s (0:01:06) | AFTER rc 1 1 failed, 22 passed in 88.19s (0:01:28)
+     FAILED tests/test_run_launcher_approval.py::test_the_gate_is_not_a_parameter
+M6b_seams_field_honoured_only_for_real_RunApproval | BEFORE rc 0 8 passed, 8 deselected in 9.12s | AFTER rc 0 10 passed, 8 deselected in 4.73s
+M6c_seams_field_honoured_truthy | BEFORE rc 0 8 passed, 8 deselected in 7.87s | AFTER rc 0 10 passed, 8 deselected in 3.19s

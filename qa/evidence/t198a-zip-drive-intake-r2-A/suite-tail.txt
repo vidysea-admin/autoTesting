@@ -1,0 +1,14 @@
+[09:23:18] re-running 7 failing test(s) alone in shard-0 (load-induced vs real)
+[09:28:36]   shard 0: rc=1 wall=838.9s units=65 tests=878 reported=878
+[09:28:36]   shard 1: rc=1 wall=895.0s units=65 tests=1060 reported=1060
+[09:28:36]   shard 2: rc=1 wall=774.3s units=66 tests=946 reported=946
+[09:28:36]   shard 3: rc=1 wall=768.2s units=67 tests=884 reported=884
+[09:28:36] counts {'failed': 7, 'passed': 3742, 'skipped': 19}; collect proof ok=True (baseline 3768, union 3768, ran 3768)
+[09:28:36]   failed tests/test_crawl_inventory_live.py::test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused (shard 0, alone: passed)
+[09:28:36]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 0, alone: failed)
+[09:28:36]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 1, alone: failed)
+[09:28:36]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 2, alone: failed)
+[09:28:36]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero (shard 2, alone: passed)
+[09:28:36]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 3, alone: failed)
+[09:28:36]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 3, alone: failed)
+[09:28:36] summary -> C:\Users\Lenovo\AppData\Local\Temp\aios-shards\autoTesting-20261011-090258\summary.json (exit 1)

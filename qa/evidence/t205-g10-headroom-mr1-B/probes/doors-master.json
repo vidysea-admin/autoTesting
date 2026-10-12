@@ -1,0 +1,379 @@
+{
+ "file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at-mr1b-123619858\\master\\src\\autotester\\__init__.py",
+ "rows": {
+  "LOWER DOOR run_cases_traced / _execute_with_trace with forged unsigned approval": {
+   "executed": [
+    "p0",
+    "p1",
+    "p2",
+    "pin"
+   ],
+   "result": "returned (executes with whatever approval object it is handed)"
+  },
+  "_run_queued priorities='p1'(str) NO-APPROVAL": {
+   "executed": [],
+   "result": "ValidationError: 1 validation error for QueueEntry\npriorities\n  Input should be a valid list [type=list_typ",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities='p1'(str) approved": {
+   "executed": [],
+   "result": "ValidationError: 1 validation error for QueueEntry\npriorities\n  Input should be a valid list [type=list_typ",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=('p1',) NO-APPROVAL": {
+   "executed": [],
+   "result": "RunRefused: refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\nGr",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=('p1',) approved": {
+   "executed": [
+    "p1",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "_run_queued priorities=None NO-APPROVAL": {
+   "executed": [],
+   "result": "RunRefused: refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\nGr",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=None approved": {
+   "executed": [
+    "p0",
+    "p1",
+    "p2",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "_run_queued priorities=['p0'] NO-APPROVAL": {
+   "executed": [],
+   "result": "RunRefused: refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\nGr",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=['p0'] approved": {
+   "executed": [
+    "p0",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "_run_queued priorities=['p1'] NO-APPROVAL": {
+   "executed": [],
+   "result": "RunRefused: refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\nGr",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=['p1'] approved": {
+   "executed": [
+    "p1",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "_run_queued priorities=['p9'] NO-APPROVAL": {
+   "executed": [],
+   "result": "ValidationError: 1 validation error for QueueEntry\npriorities.0\n  Input should be 'p0', 'p1', 'p2' or 'p3' ",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=['p9'] approved": {
+   "executed": [],
+   "result": "ValidationError: 1 validation error for QueueEntry\npriorities.0\n  Input should be 'p0', 'p1', 'p2' or 'p3' ",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=[] NO-APPROVAL": {
+   "executed": [],
+   "result": "RunRefused: refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\nGr",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "_run_queued priorities=[] approved": {
+   "executed": [
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "_run_queued zero-selection approved": {
+   "executed": [],
+   "result": "RunRefused: project 'demo' has no cases to run",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities='p1'(str) NO-APPROVAL": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities='p1'(str) approved": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=('p1',) NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=('p1',) approved": {
+   "executed": [
+    "p1",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "launch_run priorities=None NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=None approved": {
+   "executed": [
+    "p0",
+    "p1",
+    "p2",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "launch_run priorities=['p0'] NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=['p0'] approved": {
+   "executed": [
+    "p0",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "launch_run priorities=['p1'] NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=['p1'] approved": {
+   "executed": [
+    "p1",
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "launch_run priorities=['p9'] NO-APPROVAL": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=['p9'] approved": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=[] NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "launch_run priorities=[] approved": {
+   "executed": [
+    "pin"
+   ],
+   "result": "returned NoneType",
+   "run_dirs": [
+    "run-"
+   ],
+   "sessions": 1,
+   "tree_changed": true
+  },
+  "prepare_run priorities='p1'(str) NO-APPROVAL": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities='p1'(str) approved": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=('p1',) NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=('p1',) approved": {
+   "executed": [],
+   "result": "returned _Prepared",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=None NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=None approved": {
+   "executed": [],
+   "result": "returned _Prepared",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=['p0'] NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=['p0'] approved": {
+   "executed": [],
+   "result": "returned _Prepared",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=['p1'] NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=['p1'] approved": {
+   "executed": [],
+   "result": "returned _Prepared",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=['p9'] NO-APPROVAL": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=['p9'] approved": {
+   "executed": [],
+   "result": "ValueError: unknown case priority",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=[] NO-APPROVAL": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 no approval exists for  [status 403]",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "prepare_run priorities=[] approved": {
+   "executed": [],
+   "result": "returned _Prepared",
+   "run_dirs": [],
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "tiny-approval(max_actions=1) priorities=None": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 the approvals that exist do not cover it:\n  - appr_fa",
+   "sessions": 0,
+   "tree_changed": false
+  },
+  "tiny-approval(max_actions=1) priorities=['p1']": {
+   "executed": [],
+   "result": "HTTPException: 403: refusing to start a live_case run against https://demo.test \u2014 the approvals that exist do not cover it:\n  - appr_fa",
+   "sessions": 0,
+   "tree_changed": false
+  }
+ }
+}

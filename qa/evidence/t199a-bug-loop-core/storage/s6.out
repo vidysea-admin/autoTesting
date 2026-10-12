@@ -1,0 +1,11 @@
+crash-resume effects: ['duplicate', 'duplicate', 'duplicate', 'applied', 'applied', 'applied'] files 6 count 6
+again: ['duplicate', 'duplicate', 'duplicate', 'duplicate', 'duplicate', 'duplicate'] files 6
+dup in list: ['applied', 'applied', 'duplicate'] files 2 count 2
+refused middle: [('applied', 'open'), ('refused', 'actor_not_allowed'), ('applied', 'refail'), ('refused', 'actor_not_allowed'), ('applied', 'refail')] files 3 count 3
+refused middle again: ['duplicate', 'refused', 'duplicate', 'refused', 'duplicate'] files 3
+refused twice: [('refused', 'actor_not_allowed'), ('refused', 'actor_not_allowed')]
+same id as refused: True
+refused then valid same id: [('refused', 'actor_not_allowed'), ('applied', 'refail')] files 4
+unjudged: [('applied', 'open'), ('unchanged', 'unchanged')] files 1
+apply with poison: raised ValueError
+e4 file written despite raise: True

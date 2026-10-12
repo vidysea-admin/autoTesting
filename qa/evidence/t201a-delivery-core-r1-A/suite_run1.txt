@@ -1,0 +1,27 @@
+[01:29:26] suite lock busy, waiting: {"pid": 46572, "repo": "D:\\autoTesting", "started": 1791748204.542038, "started_iso": "2026-10-12T01:20:04", "token": "01eb0d8245b75f57", "cmd": "shard_suite --repo D:/autoTesting --ref b3a365a1 --shards 4 -- -o addopts="}
+[01:36:55] ref 7dd225d4 = 7dd225d4; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\suite\out1
+[01:37:02] collecting whole set (one copy)
+[01:37:55] collected 3626 tests in 256 files; balanced by stored durations (3527/3626 tests known, 3 files at mean); pinned files: none; predicted: s0=699, s1=699, s2=699, s3=699
+[01:37:55] shard 0: pid 23588, 63 units, 995 tests
+[01:37:55] shard 1: pid 39952, 64 units, 812 tests
+[01:37:55] shard 2: pid 6556, 64 units, 890 tests
+[01:37:55] shard 3: pid 59496, 65 units, 929 tests
+[01:50:42] shard 3 finished rc=1 in 767s
+[01:51:34] shard 1 finished rc=1 in 819s
+[01:52:14] shard 2 finished rc=1 in 859s
+[01:53:50] shard 0 finished rc=1 in 955s
+[01:53:52] re-running 7 failing test(s) alone in shard-0 (load-induced vs real)
+[01:57:49]   shard 0: rc=1 wall=954.6s units=63 tests=995 reported=995
+[01:57:49]   shard 1: rc=1 wall=818.7s units=64 tests=812 reported=812
+[01:57:49]   shard 2: rc=1 wall=858.7s units=64 tests=890 reported=890
+[01:57:49]   shard 3: rc=1 wall=766.7s units=65 tests=929 reported=929
+[01:57:49] counts {'passed': 3599, 'failed': 7, 'skipped': 20}; collect proof ok=True (baseline 3626, union 3626, ran 3626)
+[01:57:49]   failed tests/test_core.py::test_env_creation_is_coordinated_across_processes (shard 0, alone: failed)
+[01:57:49]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 0, alone: failed)
+[01:57:49]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 1, alone: failed)
+[01:57:49]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 2, alone: failed)
+[01:57:49]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero (shard 2, alone: failed)
+[01:57:49]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 2, alone: failed)
+[01:57:49]   failed tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve (shard 3, alone: failed)
+[01:57:49] summary -> C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\suite\out1\summary.json (exit 1)
+rc=1 end 2026-10-11T20:28:29Z

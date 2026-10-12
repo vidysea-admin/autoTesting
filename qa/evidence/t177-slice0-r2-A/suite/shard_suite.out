@@ -1,0 +1,26 @@
+[02:17:56] suite lock busy, waiting: {"pid": 77464, "repo": "D:\\autoTesting", "started": 1791750509.946205, "started_iso": "2026-10-12T01:58:29", "token": "1c815b278009f007", "cmd": "shard_suite --repo D:/autoTesting --ref ecaaf7e4 --shards 4 --out C:/Users/Lenovo/AppData/Local/Temp/mr1a-1369632204/shards -- -o addopts="}
+[02:31:06] ref 1f4f0514 = 1f4f0514; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\aios-shards\autoTesting-20261012-021752
+[02:31:12] collecting whole set (one copy)
+[02:32:11] collected 3559 tests in 254 files; balanced by stored durations (3508/3559 tests known, 3 files at mean); split by test: ['tests/test_mutation_check.py']; pinned files: none; predicted: s0=1054, s1=1054, s2=1054, s3=1054
+[02:32:11] shard 0: pid 65084, 68 units, 1097 tests
+[02:32:11] shard 1: pid 43756, 69 units, 782 tests
+[02:32:11] shard 2: pid 70008, 68 units, 792 tests
+[02:32:11] shard 3: pid 40700, 69 units, 888 tests
+[02:44:42] shard 0 finished rc=1 in 751s
+[02:45:42] shard 3 finished rc=1 in 811s
+[02:49:10] shard 2 finished rc=1 in 1019s
+[02:50:24] shard 1 finished rc=1 in 1094s
+[02:50:26] re-running 6 failing test(s) alone in shard-0 (load-induced vs real)
+[02:52:34]   shard 0: rc=1 wall=751.3s units=68 tests=1097 reported=1097
+[02:52:34]   shard 1: rc=1 wall=1093.6s units=69 tests=782 reported=782
+[02:52:34]   shard 2: rc=1 wall=1018.9s units=68 tests=792 reported=792
+[02:52:34]   shard 3: rc=1 wall=811.3s units=69 tests=888 reported=888
+[02:52:34] counts {'passed': 3533, 'skipped': 20, 'failed': 6}; collect proof ok=True (baseline 3559, union 3559, ran 3559)
+[02:52:34]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 0, alone: failed)
+[02:52:34]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 0, alone: failed)
+[02:52:34]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 1, alone: failed)
+[02:52:34]   failed tests/test_core.py::test_env_creation_is_coordinated_across_processes (shard 1, alone: failed)
+[02:52:34]   failed tests/test_reconcile_schema.py::test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen (shard 2, alone: failed)
+[02:52:34]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 3, alone: failed)
+[02:52:34] summary -> C:\Users\Lenovo\AppData\Local\Temp\aios-shards\autoTesting-20261012-021752\summary.json (exit 1)
+exit=1

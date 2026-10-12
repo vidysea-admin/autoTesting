@@ -1,0 +1,25 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-copy\src\autotester\__init__.py
+merged 2 new screen(s) and 1 flow proposal(s) into flowspec v2 (review: draft)
+== CLI door: review=draft by=None flows=['Old human flow', 'crawl path: Home > Settings']
+    expand(current) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    expand(stale approved spec) -> ValueError: generation requires the exact current approved saved FlowSpec
+    expand_flow(crawl flow) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    expand_flow(old flow) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    provider.act calls: 0
+UI status 303
+== UI door: review=draft by=None flows=['Old human flow', 'crawl path: Home > Settings']
+    expand(current) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    expand(stale approved spec) -> ValueError: generation requires the exact current approved saved FlowSpec
+    expand_flow(crawl flow) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    expand_flow(old flow) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    provider.act calls: 0
+DISCOVER proposal review draft None flows 1 | saved spec still approved
+== ORCHESTRATED door (DISCOVER+MODEL): review=draft by=None flows=['Old human flow', 'crawl path: Home > Settings']
+    expand(current) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    expand(stale approved spec) -> ValueError: generation requires the exact current approved saved FlowSpec
+    expand_flow(crawl flow) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    expand_flow(old flow) -> FlowSpecNotReviewed: FlowSpec for 'demo' is draft, not approved — run `autotester flowspec approve <project> --by <name>` before ex
+    provider.act calls: 0
+after spec-only approval expand -> ValueError human approval of HAPPY proposal required; flow is pending calls 0
+propose_cases for approved: 20
+expand(partial approvals) -> ValueError human approval of HAPPY proposal required; flow is pending calls 0

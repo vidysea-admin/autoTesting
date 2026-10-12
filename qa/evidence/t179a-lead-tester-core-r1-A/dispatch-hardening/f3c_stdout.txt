@@ -1,0 +1,4 @@
+u_escape: ok= True refusal= None
+stored error field: x \u0043\u0041\u004e\u0041\u0052\u0059\u002d\u0070\u0077\u00 ... decodes to canary: True
+released summary decodes to canary: True
+3M-key dict: refusal=bad_arguments secs=0.53 peak_extra_MB=48

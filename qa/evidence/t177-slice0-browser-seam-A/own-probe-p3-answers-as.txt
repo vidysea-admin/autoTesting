@@ -1,0 +1,7 @@
+D:\autoTesting\.worktrees\t177-slice0-browser-seam\src\autotester\__init__.py
+non-HTTP garbage -> ESCAPES BadStatusLine garbage line
+
+json list [] -> ESCAPES AttributeError 'list' object has no attribute 'get'
+json string -> ESCAPES AttributeError 'str' object has no attribute 'get'
+json null -> ESCAPES AttributeError 'NoneType' object has no attribute 'get'
+json dict ok-but-no-key -> False

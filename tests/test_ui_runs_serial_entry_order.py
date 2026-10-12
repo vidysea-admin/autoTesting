@@ -62,7 +62,7 @@ def test_entry_cases_start_before_the_shared_session_starts(
         def available(self) -> bool:
             return True
 
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", _AvailableProvider)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda p, r: _AvailableProvider())
 
     import autotester.stages.run_case_pipeline as pipeline_module
 
@@ -144,7 +144,7 @@ def _patch_tier_execution(monkeypatch, events, clock=None):
     monkeypatch.setattr(BrowserSession, "close", close)
     monkeypatch.setattr(pipeline, "run_case", run)
     monkeypatch.setattr(pipeline, "grade", grade)
-    monkeypatch.setattr(routes, "LangChainFallbackProvider", Judge)
+    monkeypatch.setattr(routes, "for_role", lambda project, role: Judge())
     import autotester.ui.run_execution as execution
     monkeypatch.setattr(execution.shutil, "rmtree",
                         lambda path, **kw: events.append(("wipe", path)))

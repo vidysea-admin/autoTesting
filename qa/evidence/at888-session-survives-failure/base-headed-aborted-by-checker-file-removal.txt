@@ -1,0 +1,12 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/base-venv` and will be ignored; use `--active` to target the active environment instead
+ERROR: file or directory not found: tests/test_session_survives_failure_live.py
+
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\base
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 0 items
+
+============================ no tests ran in 0.08s ============================
+EXIT 4

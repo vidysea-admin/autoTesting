@@ -1,0 +1,13 @@
+autotester: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\copy\src\autotester\__init__.py
+A deleted case => {'26c4': ('stale', 1, 0, 1)}
+A2 untouched case stays open, deleted stale => {'B': ('open', 2), 'A': ('stale', 1)}
+B removed C1 (C2 untouched) => {'C1': ('stale', 1), 'C2': ('open', 1)}
+C edited C1 text; 2 PASS after => {'C1': ('stale', 1, 0), 'C2': ('fixed', 1, 0)}
+D reordered => {'C1': ('fixed', 1), 'C2': ('fixed', 1)}
+E title renamed, id same => {'C1': ('open', 1, 1)}
+F fixed bug, case deleted => ({'26c4': ('fixed', 1, 0, 1)}, {'26c4': ('fixed', 1, 0, 1)}, [])
+G empty case list => ({'26c4': ('open', 1, 0, 1)}, ['bug_2439ebc726c4'], [])
+H pinned: fixed, delete_case => ({'9070': ('fixed', 1, 0, 1)}, 'raised PinnedCaseError', True)
+I edit between PASS 1 and PASS 2 => ({'93e1': ('stale', 1, 0, 1)}, ['bug_3a125cd293e1: stale_bug'])
+J new FAIL on stale key => ({'93e1': ('stale', 1, 0, 1)}, ['bug_3a125cd293e1: stale_bug'])
+K replay r1 after case change => ({'93e1': ('stale', 2, 0, 2)}, {'93e1': ('stale', 2, 0, 2)}, {'93e1': ('stale', 2, 0, 2)}, [], 1)

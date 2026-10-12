@@ -1,0 +1,44 @@
+======================================================================
+ROW TB6-marker-equivalent C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6marker C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\g_TB6marker\src\autotester\__init__.py
+GREEN full three files: 123 passed in 52.44s (84.1s)
+EDIT src/autotester/store/bug_store.py:57 BEFORE 'return self.dir / f"{event_id}.json"' AFTER 'return self.dir / f"{event_id}_{__import__(\'uuid\').uuid4().hex}.json"'
+EDIT src/autotester/store/bug_store.py:100 BEFORE '        if target.exists():\n            return\n' AFTER ''
+EDIT src/autotester/store/bug_store.py:80 BEFORE 'known = {p.stem for p in self.dir.glob("bev_*.json")}' AFTER 'known = set()'
+AFTER-MUTANT full three files: 5 failed, 118 passed in 54.35s (74.5s)
+FAILED tests/test_bug_store.py::test_tb6_applying_an_event_twice_changes_nothing_and_writes_nothing
+FAILED tests/test_bug_store.py::test_tb6_processing_a_whole_run_twice_gives_identical_stores
+FAILED tests/test_bug_store.py::test_tb6_a_crash_after_bug_one_of_two_converges_on_retry
+FAILED tests/test_bug_store_concurrency.py::test_concurrent_threads_lose_no_event_and_never_corrupt_a_file
+FAILED tests/test_bug_store_concurrency.py::test_concurrent_processes_lose_no_event_and_never_corrupt_a_file
+E   assert (<Effect.DUPLICATE: 'duplicate'> is <Effect.DUPLICATE: 'duplicate'> and {'bev_4d65b9d...  }\r\n}\r\n'} == {'bev_4d65b9d...  }\r\n}\r\n'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'bev_4d65b9d7e750_c8526f5f5fca41fca3e7a2e63b650f38.json': b'{\r\n  "schema_ver'
+E                                                                b'sion": 1,\r\n  "ev'
+E                                                                b'ent_id": "bev_4d'
+E                                                                b'65b9d7e750",\r\n  '...
+E     
+E     ...Full output truncated (29 lines hidden), use '-vv' to show)
+E   assert {'bev_1ccdc86...\n}\r\n', ...} == {'bev_1ccdc86...  }\r\n}\r\n'}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Left contains 4 more items:
+E     {'bev_1ccdc86aa3f9_60c7b673be6b4044b1fe5ae4ae31aacd.json': b'{\r\n  "schema_ver'
+E                                                                b'sion": 1,\r\n  "ev'
+E                                                                b'ent_id": "bev_1c'
+E                                                                b'cdc86aa3f9",\r\n  '...
+E     
+E     ...Full output truncated (94 lines hidden), use '-vv' to show
+E   assert {'bev_4d65b9d...  }\r\n}\r\n'} == {'bev_4d65b9d...  }\r\n}\r\n'}
+E     
+E     Left contains 3 more items:
+E     {'bev_4d65b9d7e750_02b12592899b4866bbaeca151addf8ea.json': b'{\r\n  "schema_ver'
+E                                                                b'sion": 1,\r\n  "ev'
+E                                                                b'ent_id": "bev_4d'
+E                                                                b'65b9d7e750",\r\n  '
+E                                                                b'"bug_key": "bug_'...
+E     
+E     ...Full output truncated (157 lines hidden), use '-vv' to show
+E   AssertionError: assert (180 == (5 + (6 * 25)))
+E   AssertionError: assert 270 == (5 + (6 * 40))

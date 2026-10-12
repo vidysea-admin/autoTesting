@@ -1,0 +1,5 @@
+autotester.__file__ D:\autoTesting\.worktrees\check-t204-r2-b\src\autotester\__init__.py
+tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro1-bare-host-custom-port]
+tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro2-bare-origin-custom-port]
+tests/test_ui_auth_own_origin.py::test_au20_startup_agrees_with_the_request_time_guard[repro3-hosts-only-no-origin]
+affected-tests.txt: run from cwd=D:/autoTesting/.worktrees/check-t204-r2-b (cd before uv run), rootdir line 4 = D:/autoTesting/.worktrees/check-t204-r2-b, 288 items; not redone

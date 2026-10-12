@@ -33,12 +33,12 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 ## Next (open goal tasks)
 - T-136 [high] Acceptance: AutoTester's Pathlynks report scored against a parallel human tester, with recall/FP/time in the manifest
 - T-145 [high] Live bounded crawl of pathlynks.vidysea.com with the test account (ALLOW_WRITES authorized; per-run RunApproval required)
-- T-154 [high] Track C4: bounded adversarial pass behind consent gate 2 (+ adversarial_proof.py)
-- T-155 [normal] Track C5: unified AI test report grouped by tier with judge reason strings
-- T-167 [high] Commit/release-triggered visible-browser regression with consent, history and resumable retries
+- T-169 [high] Generic two-mode acceptance: rich teaching inputs and URL-plus-credentials only, no CLI
+- T-174 [high] CLI contract (--output json, documented exit codes, --dry-run) + AutoTester MCP server (run tests, get report, get catalog) (D-041)
+- T-177 [high] browser-use fallback actuator for unknown screens with typed outputs; revives agent_loop.run_with_fallback (AT-253) (D-041)
 ## Last decisions (computed status)
-- D-078 2026-10-07 decision ACTIVE
-- D-079 2026-10-08 decision ACTIVE
-- D-080 2026-10-10 decision ACTIVE
-- D-081 2026-10-10 decision ACTIVE
 - D-082 2026-10-11 decision ACTIVE
+- D-083 2026-10-11 decision ACTIVE
+- D-084 2026-10-11 decision ACTIVE
+- D-085 2026-10-12 decision ACTIVE
+- D-086 2026-10-12 decision ACTIVE

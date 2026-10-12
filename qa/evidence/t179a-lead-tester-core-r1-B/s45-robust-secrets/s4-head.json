@@ -1,0 +1,2816 @@
+{
+ "rows": [
+  {
+   "row": "name:None",
+   "args": "None",
+   "seconds": 0.003,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:True",
+   "args": "True",
+   "seconds": 0.0015,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:0",
+   "args": "0",
+   "seconds": 0.0013,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:1.5",
+   "args": "1.5",
+   "seconds": 0.0013,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:[]",
+   "args": "[]",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:{}",
+   "args": "{}",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:bytes",
+   "args": "bytes",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:tuple",
+   "args": "tuple",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:object()",
+   "args": "object()",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:empty str",
+   "args": "empty str",
+   "seconds": 0.0085,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:leading space",
+   "args": "leading space",
+   "seconds": 0.0051,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:upper",
+   "args": "upper",
+   "seconds": 0.005,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:NUL suffix",
+   "args": "NUL suffix",
+   "seconds": 0.0047,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:101 chars",
+   "args": "101 chars",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:100 chars",
+   "args": "100 chars",
+   "seconds": 0.0048,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:2MB name",
+   "args": "2MB name",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:name+canary",
+   "args": "name+canary",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "refused: the call carried a credential value; use {{SECRET:KEY}}",
+   "leaks": []
+  },
+  {
+   "row": "name:canary as name",
+   "args": "canary as name",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "refused: the call carried a credential value; use {{SECRET:KEY}}",
+   "leaks": []
+  },
+  {
+   "row": "name:str subclass run_case",
+   "args": "str subclass run_case",
+   "seconds": 0.0472,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": true,
+   "refusal": null,
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "outcome completed",
+   "leaks": []
+  },
+  {
+   "row": "name:hostile str subclass name",
+   "args": "hostile str subclass name",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "the tool call failed",
+   "leaks": []
+  },
+  {
+   "row": "name:nan",
+   "args": "nan",
+   "seconds": 0.0013,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "name:frozenset",
+   "args": "frozenset",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "unknown_tool",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "no such tool",
+   "leaks": []
+  },
+  {
+   "row": "args:None",
+   "args": "None",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:list",
+   "args": "list",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:str",
+   "args": "str",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:int",
+   "args": "int",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:bytes",
+   "args": "bytes",
+   "seconds": 0.0045,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:Mapping non-dict",
+   "args": "Mapping non-dict",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:bad repr obj",
+   "args": "bad repr obj",
+   "seconds": 0.0015,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:hostile dict subclass",
+   "args": "hostile dict subclass",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "the tool call failed",
+   "leaks": []
+  },
+  {
+   "row": "args:tuple",
+   "args": "tuple",
+   "seconds": 0.0009,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments must be an object",
+   "leaks": []
+  },
+  {
+   "row": "args:int key",
+   "args": "int key",
+   "seconds": 0.0013,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "argument names must be text",
+   "leaks": []
+  },
+  {
+   "row": "args:None key",
+   "args": "None key",
+   "seconds": 0.0017,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "argument names must be text",
+   "leaks": []
+  },
+  {
+   "row": "args:tuple key",
+   "args": "tuple key",
+   "seconds": 0.001,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "argument names must be text",
+   "leaks": []
+  },
+  {
+   "row": "args:bytes key",
+   "args": "bytes key",
+   "seconds": 0.0016,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "argument names must be text",
+   "leaks": []
+  },
+  {
+   "row": "args:hostile str value",
+   "args": "hostile str value",
+   "seconds": 0.0016,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "the tool call failed",
+   "leaks": []
+  },
+  {
+   "row": "args:bad repr value",
+   "args": "bad repr value",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "args:nan",
+   "args": "nan",
+   "seconds": 0.0056,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: string_type)",
+   "leaks": []
+  },
+  {
+   "row": "args:inf",
+   "args": "inf",
+   "seconds": 0.0052,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: string_type)",
+   "leaks": []
+  },
+  {
+   "row": "args:int 2^256 (257 bits)",
+   "args": "int 2^256 (257 bits)",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "args:int 2^255 (256 bits)",
+   "args": "int 2^255 (256 bits)",
+   "seconds": 0.0047,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: string_type)",
+   "leaks": []
+  },
+  {
+   "row": "args:int -2^300",
+   "args": "int -2^300",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "args:object value",
+   "args": "object value",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "args:set value",
+   "args": "set value",
+   "seconds": 0.0013,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "args:complex",
+   "args": "complex",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "args:canary as key",
+   "args": "canary as key",
+   "seconds": 0.0028,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "refused: the call carried a credential value; use {{SECRET:KEY}}",
+   "leaks": []
+  },
+  {
+   "row": "args:canary as value",
+   "args": "canary as value",
+   "seconds": 0.0019,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "refused: the call carried a credential value; use {{SECRET:KEY}}",
+   "leaks": []
+  },
+  {
+   "row": "args:canary base64 as value",
+   "args": "canary base64 as value",
+   "seconds": 0.0027,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "refused: the call carried a credential value; use {{SECRET:KEY}}",
+   "leaks": []
+  },
+  {
+   "row": "args:canary reversed as value",
+   "args": "canary reversed as value",
+   "seconds": 0.0024,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "refused: the call carried a credential value; use {{SECRET:KEY}}",
+   "leaks": []
+  },
+  {
+   "row": "args:self-referential dict",
+   "args": "self-referential dict",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "args:self-referential list",
+   "args": "self-referential list",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest dict depth 5",
+   "args": "5 (dict)",
+   "seconds": 0.0064,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "nest list-in-case_id depth 5",
+   "args": "5 (list)",
+   "seconds": 0.0048,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: string_type)",
+   "leaks": []
+  },
+  {
+   "row": "nest dict depth 6",
+   "args": "6 (dict)",
+   "seconds": 0.0076,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "nest list-in-case_id depth 6",
+   "args": "6 (list)",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest dict depth 7",
+   "args": "7 (dict)",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest list-in-case_id depth 7",
+   "args": "7 (list)",
+   "seconds": 0.0013,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest dict depth 8",
+   "args": "8 (dict)",
+   "seconds": 0.0026,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest list-in-case_id depth 8",
+   "args": "8 (list)",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest dict depth 100",
+   "args": "100 (dict)",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest list-in-case_id depth 100",
+   "args": "100 (list)",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest dict depth 1000",
+   "args": "1000 (dict)",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest list-in-case_id depth 1000",
+   "args": "1000 (list)",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest dict depth 100000",
+   "args": "100000 (dict)",
+   "seconds": 0.0017,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nest list-in-case_id depth 100000",
+   "args": "100000 (list)",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "2MB case_id",
+   "args": "2,000,000 chars",
+   "seconds": 0.0015,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "2MB key",
+   "args": "2,000,000 char key",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "2MB split over 100 fields",
+   "args": "100 x 20k",
+   "seconds": 0.0014,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "text cap n-1 (total chars 16383)",
+   "args": "n-1",
+   "seconds": 0.0682,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: string_too_long)",
+   "leaks": []
+  },
+  {
+   "row": "text cap n (total chars 16384)",
+   "args": "n",
+   "seconds": 0.0556,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: string_too_long)",
+   "leaks": []
+  },
+  {
+   "row": "text cap n+1 (total chars 16385)",
+   "args": "n+1",
+   "seconds": 0.0011,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nodes dict k=127 (255 nodes)",
+   "args": "k=127 (255 nodes)",
+   "seconds": 0.1582,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; k0: extra_forbidden; k1: extra_forbidden; k2: extra_forbidden; k3: extra_forbidden;",
+   "leaks": []
+  },
+  {
+   "row": "nodes dict k=128 (257 nodes)",
+   "args": "k=128 (257 nodes)",
+   "seconds": 0.0017,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nodes dict k=129",
+   "args": "k=129",
+   "seconds": 0.001,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nodes list in key a: 252 elems",
+   "args": "252",
+   "seconds": 0.152,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "nodes list in key a: 253 elems",
+   "args": "253",
+   "seconds": 0.1481,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "nodes list in key a: 254 elems",
+   "args": "254",
+   "seconds": 0.0018,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nodes list in key a: 255 elems",
+   "args": "255",
+   "seconds": 0.0017,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "nodes list in key a: 256 elems",
+   "args": "256",
+   "seconds": 0.0016,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "depth exact: 3 nested dicts + leaf",
+   "args": "3",
+   "seconds": 0.0057,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "depth exact: 4 nested dicts + leaf",
+   "args": "4",
+   "seconds": 0.0063,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "depth exact: 5 nested dicts + leaf",
+   "args": "5",
+   "seconds": 0.0069,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "depth exact: 6 nested dicts + leaf",
+   "args": "6",
+   "seconds": 0.0076,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "invalid arguments (case_id: missing; a: extra_forbidden)",
+   "leaks": []
+  },
+  {
+   "row": "depth exact: 7 nested dicts + leaf",
+   "args": "7",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "depth exact: 8 nested dicts + leaf",
+   "args": "8",
+   "seconds": 0.0012,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "list of 257 in case_id",
+   "args": "257",
+   "seconds": 0.0013,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "bad_arguments",
+   "tool_label": "unknown",
+   "label_ok": true,
+   "summary": "arguments are too big, too deep or not plain data",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: RuntimeError(canary)",
+   "args": "RuntimeError(canary)",
+   "seconds": 0.053,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "RuntimeError: boom [REDACTED]:APP_PASS",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: RuntimeError(canary)",
+   "args": "RuntimeError(canary)",
+   "seconds": 0.0201,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "RuntimeError: boom [REDACTED]:APP_PASS",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: RuntimeError(canary)",
+   "args": "RuntimeError(canary)",
+   "seconds": 0.0038,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "RuntimeError: boom [REDACTED]:APP_PASS",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: ValueError(reversed)",
+   "args": "ValueError(reversed)",
+   "seconds": 0.0606,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: ValueError(reversed)",
+   "args": "ValueError(reversed)",
+   "seconds": 0.0277,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: ValueError(reversed)",
+   "args": "ValueError(reversed)",
+   "seconds": 0.004,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: KeyError(canary)",
+   "args": "KeyError(canary)",
+   "seconds": 0.0388,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "KeyError: '[REDACTED]:APP_PASS'",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: KeyError(canary)",
+   "args": "KeyError(canary)",
+   "seconds": 0.0248,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "KeyError: '[REDACTED]:APP_PASS'",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: KeyError(canary)",
+   "args": "KeyError(canary)",
+   "seconds": 0.0039,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "KeyError: '[REDACTED]:APP_PASS'",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: base64 in message",
+   "args": "base64 in message",
+   "seconds": 0.0418,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: base64 in message",
+   "args": "base64 in message",
+   "seconds": 0.0269,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: base64 in message",
+   "args": "base64 in message",
+   "seconds": 0.0028,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: canary split by tab",
+   "args": "canary split by tab",
+   "seconds": 0.0459,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "RuntimeError: boom <APP_PASS, split once by a TAB>",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: canary split by tab",
+   "args": "canary split by tab",
+   "seconds": 0.0213,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "RuntimeError: boom <APP_PASS, split once by a TAB>",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: canary split by tab",
+   "args": "canary split by tab",
+   "seconds": 0.0044,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "RuntimeError: boom <APP_PASS, split once by a TAB>",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: hostile __str__",
+   "args": "hostile __str__",
+   "seconds": 0.0405,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "ErrStr",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: hostile __str__",
+   "args": "hostile __str__",
+   "seconds": 0.0231,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "ErrStr",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: hostile __str__",
+   "args": "hostile __str__",
+   "seconds": 0.0027,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "ErrStr",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: class name carries base64(canary)",
+   "args": "class name carries base64(canary)",
+   "seconds": 0.0394,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: class name carries base64(canary)",
+   "args": "class name carries base64(canary)",
+   "seconds": 0.03,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: class name carries base64(canary)",
+   "args": "class name carries base64(canary)",
+   "seconds": 0.0026,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: cause chain has canary",
+   "args": "cause chain has canary",
+   "seconds": 0.0974,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "ValueError: outer",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: cause chain has canary",
+   "args": "cause chain has canary",
+   "seconds": 0.0229,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "ValueError: outer",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: cause chain has canary",
+   "args": "cause chain has canary",
+   "seconds": 0.0044,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "ValueError: outer",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: args tuple has canary",
+   "args": "args tuple has canary",
+   "seconds": 0.037,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: args tuple has canary",
+   "args": "args tuple has canary",
+   "seconds": 0.02,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: args tuple has canary",
+   "args": "args tuple has canary",
+   "seconds": 0.0026,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: 300+ chars then canary (cut)",
+   "args": "300+ chars then canary (cut)",
+   "seconds": 0.0449,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: 300+ chars then canary (cut)",
+   "args": "300+ chars then canary (cut)",
+   "seconds": 0.0271,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: 300+ chars then canary (cut)",
+   "args": "300+ chars then canary (cut)",
+   "seconds": 0.0051,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: canary straddles 300 cut",
+   "args": "canary straddles 300 cut",
+   "seconds": 0.0679,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: canary straddles 300 cut",
+   "args": "canary straddles 300 cut",
+   "seconds": 0.0212,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: canary straddles 300 cut",
+   "args": "canary straddles 300 cut",
+   "seconds": 0.0049,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises: canary base64 straddles 300 cut",
+   "args": "canary base64 straddles 300 cut",
+   "seconds": 0.0515,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "crawl stage raises: canary base64 straddles 300 cut",
+   "args": "canary base64 straddles 300 cut",
+   "seconds": 0.0254,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 1,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "crawl",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "get_catalog raises: canary base64 straddles 300 cut",
+   "args": "canary base64 straddles 300 cut",
+   "seconds": 0.0046,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 1,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_catalog",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "grade control (no raise, must reach the judge spy)",
+   "args": "control",
+   "seconds": 0.0647,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 1,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": true,
+   "refusal": null,
+   "tool_label": "grade_case",
+   "label_ok": true,
+   "summary": "PASS: ",
+   "leaks": []
+  },
+  {
+   "row": "open_session raises: RuntimeError(canary)",
+   "args": "RuntimeError(canary)",
+   "seconds": 0.0392,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "RuntimeError: boom [REDACTED]:APP_PASS",
+   "leaks": []
+  },
+  {
+   "row": "get_persona reader raises: RuntimeError(canary)",
+   "args": "RuntimeError(canary)",
+   "seconds": 0.0037,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_persona",
+   "label_ok": true,
+   "summary": "RuntimeError: boom [REDACTED]:APP_PASS",
+   "leaks": []
+  },
+  {
+   "row": "grade/judge raises: RuntimeError(canary)",
+   "args": "RuntimeError(canary)",
+   "seconds": 0.0799,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 1,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "grade_case",
+   "label_ok": true,
+   "summary": "RuntimeError: boom [REDACTED]:APP_PASS",
+   "leaks": []
+  },
+  {
+   "row": "open_session raises: hostile __str__",
+   "args": "hostile __str__",
+   "seconds": 0.0355,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "ErrStr",
+   "leaks": []
+  },
+  {
+   "row": "get_persona reader raises: hostile __str__",
+   "args": "hostile __str__",
+   "seconds": 0.003,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_persona",
+   "label_ok": true,
+   "summary": "ErrStr",
+   "leaks": []
+  },
+  {
+   "row": "grade/judge raises: hostile __str__",
+   "args": "hostile __str__",
+   "seconds": 0.0582,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 1,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "grade_case",
+   "label_ok": true,
+   "summary": "ErrStr",
+   "leaks": []
+  },
+  {
+   "row": "open_session raises: base64 in message",
+   "args": "base64 in message",
+   "seconds": 0.0353,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "get_persona reader raises: base64 in message",
+   "args": "base64 in message",
+   "seconds": 0.0026,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "get_persona",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "grade/judge raises: base64 in message",
+   "args": "base64 in message",
+   "seconds": 0.0527,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 1,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "secret",
+   "tool_label": "grade_case",
+   "label_ok": true,
+   "summary": "result withheld: it carried a credential",
+   "leaks": []
+  },
+  {
+   "row": "open_session raises: canary straddles 300 cut",
+   "args": "canary straddles 300 cut",
+   "seconds": 0.0424,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "run_case",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "get_persona reader raises: canary straddles 300 cut",
+   "args": "canary straddles 300 cut",
+   "seconds": 0.0044,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "get_persona",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "grade/judge raises: canary straddles 300 cut",
+   "args": "canary straddles 300 cut",
+   "seconds": 0.0545,
+   "stage_calls": {
+    "run_case": 0,
+    "crawl": 0,
+    "grade": 1,
+    "catalog": 0,
+    "sessions": 0
+   },
+   "escaped": null,
+   "typed": true,
+   "ok": false,
+   "refusal": "stage_error",
+   "tool_label": "grade_case",
+   "label_ok": true,
+   "summary": "RuntimeError: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises BaseException KeyboardInterrupt",
+   "args": "KeyboardInterrupt",
+   "seconds": 0.0371,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": "KeyboardInterrupt",
+   "typed": false,
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises BaseException SystemExit",
+   "args": "SystemExit",
+   "seconds": 0.0412,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": "SystemExit",
+   "typed": false,
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises BaseException GeneratorExit",
+   "args": "GeneratorExit",
+   "seconds": 0.0362,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": "GeneratorExit",
+   "typed": false,
+   "leaks": []
+  }
+ ],
+ "worst": {
+  "row": "nodes dict k=127 (255 nodes)",
+  "args": "k=127 (255 nodes)",
+  "seconds": 0.1582,
+  "stage_calls": {
+   "run_case": 0,
+   "crawl": 0,
+   "grade": 0,
+   "catalog": 0,
+   "sessions": 0
+  },
+  "escaped": null,
+  "typed": true,
+  "ok": false,
+  "refusal": "bad_arguments",
+  "tool_label": "run_case",
+  "label_ok": true,
+  "summary": "invalid arguments (case_id: missing; k0: extra_forbidden; k1: extra_forbidden; k2: extra_forbidden; k3: extra_forbidden;",
+  "leaks": []
+ },
+ "exceptions": [
+  {
+   "row": "run_case stage raises BaseException KeyboardInterrupt",
+   "args": "KeyboardInterrupt",
+   "seconds": 0.0371,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": "KeyboardInterrupt",
+   "typed": false,
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises BaseException SystemExit",
+   "args": "SystemExit",
+   "seconds": 0.0412,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": "SystemExit",
+   "typed": false,
+   "leaks": []
+  },
+  {
+   "row": "run_case stage raises BaseException GeneratorExit",
+   "args": "GeneratorExit",
+   "seconds": 0.0362,
+   "stage_calls": {
+    "run_case": 1,
+    "crawl": 0,
+    "grade": 0,
+    "catalog": 0,
+    "sessions": 1
+   },
+   "escaped": "GeneratorExit",
+   "typed": false,
+   "leaks": []
+  }
+ ]
+}

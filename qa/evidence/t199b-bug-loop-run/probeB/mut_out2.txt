@@ -1,0 +1,18 @@
+######## tb11 test_tb11_syncing_twice_makes_no_duplicate_rows_and_the_second_plan_is_empty
+ BASE __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_base\src\autotester\__init__.py
+
+============================== 1 passed in 1.25s ==============================
+ MUT  __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_tb11\src\autotester\__init__.py
+E   AssertionError: assert ([PlanRow(acti...], note=None)] == []
+E     
+E     Left contains 2 more items, first extra item: PlanRow(action='append', bug_key='bug_000000000001', row_number=None, changes=[CellChange(column='Key', before='', aft...olumn='Status', before='', after='open'), CellChange(column='Assignee', before='', after='')], conflicts=[], note=None)
+E     Use -v to get more diff)
+============================== 1 failed in 2.77s ==============================
+######## tb13 test_tb13_a_planted_secret_is_in_neither_the_plan_nor_its_rendering_nor_the_sheet
+ BASE __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_base\src\autotester\__init__.py
+
+============================== 1 passed in 0.64s ==============================
+ MUT  __file__: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeB\mut_tb13\src\autotester\__init__.py
+E   assert not True
+E    +  where True = any(<generator object test_tb13_a_planted_secret_is_in_neither_the_plan_nor_its_rendering_nor_the_sheet.<locals>.<genexpr> at 0x0000018969547D30>)
+============================== 1 failed in 2.65s ==============================

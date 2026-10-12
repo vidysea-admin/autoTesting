@@ -1,0 +1,10 @@
+action='submit': Step() rejected (ValidationError)
+action='eval': Step() rejected (ValidationError)
+action='CLICK': Step() rejected (ValidationError)
+action=' click ': Step() rejected (ValidationError)
+action='click': Step() ACCEPTED
+action='Click': Step() rejected (ValidationError)
+action='press_key': Step() ACCEPTED
+action='PRESS_KEY': Step() rejected (ValidationError)
+extra field is_form_submit: Step() rejected (ValidationError)
+extra field force: Step() rejected (ValidationError)

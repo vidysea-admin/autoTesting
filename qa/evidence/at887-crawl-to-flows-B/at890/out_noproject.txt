@@ -1,0 +1,14 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\b-copy\src\autotester\__init__.py
+expand | declared-looking .env value in value | exc= None n= 12 | payload-reaches-act: True
+expand | undeclared .env value in url_query | exc= None n= 12 | payload-reaches-act: True
+expand | email in name | exc= None n= 12 | payload-reaches-act: False
+expand | phone in target | exc= None n= 12 | payload-reaches-act: False
+expand_flow | declared-looking .env value in value | exc= None n= 12 | payload-reaches-act: True
+expand_flow | undeclared .env value in url_query | exc= None n= 12 | payload-reaches-act: True
+expand_flow | email in name | exc= None n= 12 | payload-reaches-act: False
+expand_flow | phone in target | exc= None n= 12 | payload-reaches-act: False
+compile_evals | declared-looking .env value in value | exc= None n= 12 | payload-reaches-act: True
+compile_evals | undeclared .env value in url_query | exc= None n= 12 | payload-reaches-act: True
+compile_evals | email in name | exc= None n= 12 | payload-reaches-act: False
+compile_evals | phone in target | exc= None n= 12 | payload-reaches-act: False
+expand(store=None) -> ValueError saved human-reviewed case proposals are required n= 0

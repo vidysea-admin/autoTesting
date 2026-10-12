@@ -1,0 +1,9 @@
+{
+ "refused_but_accepted": [
+  "https://x.test:\u0661\u0662\u0663/r",
+  "/..//x"
+ ],
+ "accepted_but_refused": [],
+ "n_refuse": 50,
+ "n_accept": 12
+}

@@ -1,0 +1,42 @@
+== row AL6b-scrubbed-test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_401250/AL6b-scrubbed-test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_401250\AL6b-scrubbed-test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 0.78s
+-- diff
+@@ -85,6 +85,7 @@
+ 
+ def _scrubbed(ctx: AgentContext, result: RawResult) -> RawResult:
+     """Persist and return only scrubbed text (C5), whatever the stage let through."""
++    return result
+     cleaned = ctx.secrets.redactor().scrub_obj(result.model_dump(mode="json"))
+     return RawResult.model_validate(cleaned)
+ 
+-- red-after
+1 passed in 0.47s
+-- other nodes in file (context)
+== row AL6b-scrubbed-test_al6_a_secret_in_a_stage_result_never_reaches_the_model (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_402020/AL6b-scrubbed-test_al6_a_secret_in_a_stage_result_never_reaches_the_model)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_402020\AL6b-scrubbed-test_al6_a_secret_in_a_stage_result_never_reaches_the_model\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 0.72s
+-- diff
+@@ -85,6 +85,7 @@
+ 
+ def _scrubbed(ctx: AgentContext, result: RawResult) -> RawResult:
+     """Persist and return only scrubbed text (C5), whatever the stage let through."""
++    return result
+     cleaned = ctx.secrets.redactor().scrub_obj(result.model_dump(mode="json"))
+     return RawResult.model_validate(cleaned)
+ 
+-- red-after
+>       assert RAW not in stored.read_text("utf-8")
+E       assert 'Hunter2-raw-value-9137' not in '{\n  "schem...ce": []\n}\n'
+E         
+E         'Hunter2-raw-value-9137' is contained here:
+E           bad login Hunter2-raw-value-9137",
+E             "evidence": []
+E           }
+tests\test_agent_tools.py:249: AssertionError
+1 failed in 1.19s
+-- other nodes in file (context)

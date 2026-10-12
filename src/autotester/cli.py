@@ -9,11 +9,10 @@ import typer
 
 from autotester import (
     cli_crawl,
-    cli_issues,
     cli_loop,
     cli_orchestrate,
     cli_release,
-    cli_video,
+    cli_subapps,
     providers,
 )
 from autotester import doctor as doctor_module
@@ -36,8 +35,7 @@ report_app = typer.Typer(help="Export a run as a portable tester report (Excel +
 app.add_typer(ledger_app, name="ledger")
 app.add_typer(flowspec_app, name="flowspec")
 app.add_typer(report_app, name="report")
-app.add_typer(cli_video.app, name="ingest")
-app.add_typer(cli_issues.app, name="issues")
+cli_subapps.register_subapps(app)  # T-205/TF5: ingest, issues and every later group
 
 
 @app.callback()
@@ -141,9 +139,7 @@ def ledger_check() -> None:
 
 
 @ledger_app.command("relitigation")
-def ledger_relitigation(
-    unit_text: str, provider: str = typer.Option("mock", "--provider")
-) -> None:
+def ledger_relitigation(unit_text: str, provider: str = typer.Option("mock", "--provider")) -> None:
     """Gate check before a unit is built: is this a retired feature coming back?"""
     docs = RepoDocs()
     retired = store.retired(store.load_events(docs.features))
@@ -226,11 +222,7 @@ def expand_cases(
     except (ValueError, review_stage.FlowSpecNotReviewed) as exc:
         typer.secho(f"{exc}; review with `autotester expand {project} --proposals`", fg="yellow")
         raise typer.Exit(1) from None
-    model = providers.get(provider)
-    if not model.available():
-        typer.secho(f"provider '{provider}' has no credentials — run `autotester providers`",
-                    fg="red")
-        raise typer.Exit(1)
+    model = cli_orchestrate.usable_provider(provider)   # LL11: refuses before any model call
     try:
         cases = expand_stage.expand(spec, model, store=store_)
     except (ValueError, review_stage.FlowSpecNotReviewed, ProviderError) as exc:
@@ -294,6 +286,7 @@ report_app.command("crawl")(cli_crawl.report_crawl)
 app.command("orchestrate")(cli_orchestrate.orchestrate_cmd)
 app.command("release")(cli_release.release_cmd)
 app.command("release-log")(cli_release.release_log_cmd)
+app.command("release-report")(cli_release.release_report_cmd)
 
 
 def main() -> None:

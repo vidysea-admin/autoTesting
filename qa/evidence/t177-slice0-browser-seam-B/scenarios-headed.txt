@@ -1,0 +1,8 @@
+autotester from: D:\autoTesting\.worktrees\check-t177s0-b\src\autotester\__init__.py mode headed
+STALE planted fake port 53763 -> session cdp_url http://127.0.0.1:53771 adopted_fake: False fake_hits: 0 portfile now 53771 guid_differs: True
+REPLANT (adversary rewrites file continuously during/after start): session cdp_url http://127.0.0.1:51594 adopted_fake: True fake_hits 1
+Timeout (0:05:00)!
+SOLO conc-b: url=http://127.0.0.1:63540 listener_owner_in_own_tree=True ws_matches_own_portfile=True own_port_in_file=True still_open_after_6s=True
+Timeout (0:02:30)!
+SOLO conc-a: url=http://127.0.0.1:63543 listener_owner_in_own_tree=True ws_matches_own_portfile=True own_port_in_file=True still_open_after_6s=True
+Timeout (0:02:30)!

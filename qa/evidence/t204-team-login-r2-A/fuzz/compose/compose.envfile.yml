@@ -1,0 +1,78 @@
+# Production compose for the hosted AutoTester (T-203, qa/contracts/hosting.md HO2-HO8).
+# Standalone on purpose: the dev docker-compose.yml bind-mounts the whole repo, and a compose
+# overlay cannot remove a mount, so production is its own file. Run from the repo root:
+#   docker compose -f docker/compose.prod.yml up -d --build
+#   docker compose -f docker/compose.prod.yml --profile https up -d --build   # + Caddy HTTPS
+# Walk-through in docker/DEPLOY.md. No secret value lives in this file.
+services:
+  autotester:
+    build:
+      context: ..
+    init: true
+    restart: unless-stopped
+    env_file:
+      - ./dummy.env   # server settings + keys; mode 600, never in git
+    environment:
+      AUTOTESTER_ROOT: /data         # projects/, profiles/, .env and .work/ all live here
+      # The origin users open (AU20). The app binds 0.0.0.0, so it cannot know it: startup
+      # refuses to run unless this is set and admitted by AUTOTESTER_ALLOWED_HOSTS / _ORIGINS.
+      # With a domain it is https://<domain>; for the no-domain interim set it yourself.
+      AUTOTESTER_PUBLIC_ORIGIN: ${AUTOTESTER_PUBLIC_ORIGIN:-https://${AUTOTESTER_DOMAIN:-localhost}}
+      DISPLAY: ":99"
+    volumes:
+      - ${AUTOTESTER_DATA:-/srv/autotester/data}:/data
+    ports:
+      # The app is published on loopback only. Reach it through the HTTPS proxy, or set
+      # AUTOTESTER_BIND=0.0.0.0 for the temporary no-domain interim (docker/DEPLOY.md).
+      - "${AUTOTESTER_BIND:-127.0.0.1}:8000:8000"
+    expose:
+      - "6080"                       # noVNC: reachable by the proxy on the compose network only
+    shm_size: "1gb"                  # headed Chromium crashes on Docker's 64 MB default
+    mem_limit: ${AUTOTESTER_MEM_LIMIT:-6g}
+    cpus: ${AUTOTESTER_CPUS:-3.0}
+    pids_limit: 2048
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  caddy:
+    profiles: ["https"]
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      autotester:
+        condition: service_healthy
+    environment:
+      # Interpolated even when this service is off, so it needs a default or `docker compose up`
+      # fails without a domain. `localhost` makes Caddy use its own local certificate: set the
+      # real DNS name before using the https profile (docker/DEPLOY.md step 7).
+      AUTOTESTER_DOMAIN: ${AUTOTESTER_DOMAIN:-localhost}
+      AUTOTESTER_MAX_UPLOAD_BYTES: ${AUTOTESTER_MAX_UPLOAD_BYTES:-2147483648}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  caddy-data:
+  caddy-config:

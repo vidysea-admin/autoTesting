@@ -1,0 +1,3 @@
+1) mailed: ['alice.smith'] | record returned for 'alice' belongs to: alice.smith | alice has own record: False
+2) same key for two (run,user) pairs: True
+3) records_for_run('x') -> [('x__email__y', 'z')]

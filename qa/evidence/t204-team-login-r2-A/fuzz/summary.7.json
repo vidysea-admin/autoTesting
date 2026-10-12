@@ -1,0 +1,25 @@
+{
+ "total": 386,
+ "by_dim": {
+  "D-public-origin": 386
+ },
+ "by_verdict": {
+  "ok-started-served": 155,
+  "ok-refused": 99,
+  "ok-refused-by-design": 114,
+  "ODDITY-accepted-malformed-harmless": 15,
+  "DISAGREE-refused-but-would-serve": 2,
+  "DISAGREE-started-but-403": 1
+ },
+ "by_dim_verdict": {
+  "D-public-origin": {
+   "ok-started-served": 155,
+   "ok-refused": 99,
+   "ok-refused-by-design": 114,
+   "ODDITY-accepted-malformed-harmless": 15,
+   "DISAGREE-refused-but-would-serve": 2,
+   "DISAGREE-started-but-403": 1
+  }
+ },
+ "bind_parse_mismatch": 0
+}

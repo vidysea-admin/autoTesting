@@ -33,8 +33,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths, RepoDocs
-from autotester.providers.base import ProviderError
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
+from autotester.providers import ProviderError, for_role, why_unavailable
 from autotester.schema.enums import ReviewStatus
 from autotester.stages import review as review_stage
 from autotester.stages.expand import expand, propose_cases
@@ -243,21 +242,22 @@ def generate_cases(slug: str):
             slug, "Case proposals need human review", str(exc),
             f"<p>Review/prune with <code>autotester expand {escape(slug)} --proposals</code>; "
             "use --approve or --prune with a proposal ID and --by your name.</p>")
-    provider = LangChainFallbackProvider()
-    if not provider.available():
-        return _refusal(
-            slug, "No model provider configured",
-            "Generating cases needs a model. No provider on this machine has "
-            "credentials, so nothing was generated.",
-            _link(f"/projects/{slug}/env", "Add a credential"))
-
-    # AT-264: a model failure after the gates is a themed page, never a raw 500
     try:
-        cases = expand(spec, provider, RepoDocs(), store=store)
+        why = why_unavailable(provider := for_role(project, "agent"))  # LL2: the one factory
     except ProviderError as exc:
+        why = str(exc)
+    if why:
+        return _refusal(slug, "No model provider configured",
+                        f"Generating cases needs a model. {why}, so nothing was generated.",
+                        _link(f"/projects/{slug}/env", "Add a credential"))
+
+    try:  # AT-264: a failure after the gates (model, or the secret guard) is a page, not a 500
+        cases = expand(spec, provider, RepoDocs(), store=store)
+    except (ProviderError, ValueError) as exc:
         return _refusal(
             slug, "The model could not complete this",
-            f"Generating cases failed partway through: {exc}",
+            "Generating cases failed partway through: "
+            f"{exc if isinstance(exc, ProviderError) else 'a prompt was refused unsent'}",
             _link(f"/projects/{slug}/env", "Check the provider's credentials"))
     for case in cases:
         store.add_case(case)

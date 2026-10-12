@@ -2369,3 +2369,76 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-11: "go for them all")
 
 **Links:** D-057; D-014; D-072; D-081; T-155; T-168; T-178; T-202; T-204; AT-733; AT-792; AT-895; qa/gates/t168-new-modules.md; qa/gates/t204-au20-wildcard-bind.md; qa/gates/at792-round-cap.md
+
+## D-083 | 2026-10-11 | type: decision | status: ACTIVE
+
+**What:** Umesh restated and sharpened four of his 2026-10-10 answers (D-081) in chat on 2026-10-11.
+1. **Email sender.** Umesh: "D:\autoTesting\.env isme hai tho shi smtp ki detals use them". The sender settings are the six keys already in the repo-root .env: `AUTOTESTER_SMTP_HOST`, `AUTOTESTER_SMTP_PORT`, `AUTOTESTER_SMTP_USER`, `AUTOTESTER_SMTP_PASSWORD`, `AUTOTESTER_SMTP_FROM`, `AUTOTESTER_SMTP_FROM_NAME`. T-201a uses these names and declares them as SecretRef keys; no value is read into a brief, a log or a commit. This closes the "which key names" question in qa/briefs/t201a-report-delivery.md.
+2. **Drive identity.** Umesh: "use my umeshsugara@vidysea gws credentials /doc-polisher pr hai naa , isko bhi apni .env mai daal dee". The live Drive fetch runs as the gws CLI login of umeshsugara@vidysea.com. Maker's reading, to be confirmed by Umesh: the gws login itself is used in place (as D-081 item 6 says) and no OAuth token is copied into .env; if the code needs a setting, only the account name goes there.
+3. **Tracker sheet, first live write.** Umesh: "kisi bhi ek tracker mai daal den aa like abhi nhi hai mere paas". Maker's reading, to be confirmed by Umesh: the first live write of T-199 may go to one test tracker sheet that AutoTester creates for the purpose in that Drive account; the real Pathlynks Tracker sheet stays a HUMAN_GATE (D-081 item 7 is narrowed, not removed).
+4. **Hosting.** Umesh: "abhi tho local mai run krr naa issis system mai host krr , server mai baad mai daal dunga". Confirms D-081 item 4: the product is hosted on this machine now; the server host and DNS come later and gate only the hosted check of T-206.
+
+**Why:** These answers remove the open owner questions on the report-delivery unit and let the bug-loop unit prove a real write without touching the team's live tracker.
+
+**Result:** No run, no email and no sheet write has been made by this entry. Items 2 and 3 carry the maker's reading and are acted on only inside that reading.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-11)
+
+**Links:** D-081; D-072; T-198; T-199; T-201; T-203; T-206; qa/briefs/t201a-report-delivery.md; qa/gates/t199-first-live-write.md; qa/gates/t203-host-and-dns.md
+
+## D-084 | 2026-10-11 | type: decision | status: ACTIVE
+
+**What:** The Pathlynks live run of 2026-10-11 (T-145) returned 37 of 41 cases INCONCLUSIVE for reasons on AutoTester's side. The maker listed the causes (AT-887, AT-888, AT-774, AT-773) and said the fixes were Candidates that needed Umesh's approval. Umesh replied in chat: "37 INCONCLUSIVE kyun --- mujhse clear krr lee aur khatam krr and dexcison lee". Maker's reading: the fixes for the causes of those 37 are approved for build, and the design choices inside them are the maker's to make.
+1. **Approved for build (moved out of Candidates, approved: 2026-10-11):** AT-888 (one failed case must not take the shared browser session down for the rest of its batch), AT-887 (a crawl's screens become reviewable flows so case generation has the product's real screens), AT-890 (the case-expansion prompt is masked before it reaches a provider; same file as AT-887, built with it), AT-773 (the judge must not PASS a case whose own evidence shows an unmet assertion), AT-774 (a retired case is not run).
+2. **Maker's design decisions under this entry:** for the student test account, cases come from the crawled student screens; the four flows taken from the older admin/CRM video are not run against this account. AT-774 is built after T-205 merges because it edits the run-selection code T-205 is moving. AT-888 is built in parallel with T-177 slice 0 although both touch browser/session.py and browser/video.py; whichever merges second reconciles.
+3. **Not decided here:** AT-891 (whether pathlynks.vidysea.com is recorded as production in the approval) stays Umesh's answer. No rerun with typing happens before it is answered.
+
+**Why:** A run in which 90 percent of cases test nothing cannot produce the Pathlynks bug list Umesh asked for first (D-081 item 2). Every one of the causes is in AutoTester, not in Pathlynks.
+
+**Result:** Builders dispatched in their own worktrees. Each unit still needs its own checker PASS before merge. No rerun has been fired by this entry.
+
+**Changes-authorized:** qa/QUEUE.md (the five rows move from Candidates to the buildable queue with approved: 2026-10-11). No ARCHITECTURE.md prose, no enforcement path.
+
+**Approved-by:** Umesh (chat, 2026-10-11)
+
+**Links:** D-081; D-082; T-145; AT-773; AT-774; AT-887; AT-888; AT-890; AT-891; .work/pathlynks-report/SUMMARY.md
+
+## D-085 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered four maker questions in chat (AskUserQuestion, 2026-10-11/12), each with the option quoted.
+1. **T-205 new modules** (`qa/gates/t205-new-modules.md`): "Haan, merge karo". `src/autotester/cli_subapps.py` and `src/autotester/core/repo_docs.py` are confirmed; `wave/t205-g10-headroom` merges at fb93776b on its dual PASS.
+2. **T-204 fix-cycle cap** (`qa/gates/t204-fix-cycle-cap.md`): "Ek aur fix cycle". A third fix cycle is allowed, scoped to the AU20 Docker default: the compose default public origin becomes empty unless a domain is set, a loopback public origin is refused on a wildcard bind, and the two false sentences in `docker/DEPLOY.md` and `docker/compose.prod.yml` are corrected. Then two blind checkers and one full suite.
+3. **T-198a intake module** (`qa/gates/t198a-intake-upload-module.md`): "Abhi merge, follow-up baad me". `wave/t198a-zip-drive-intake` merges at dba80100; moving the five page fragments out of `ui/intake_upload.py` becomes a low follow-up issue. The option text also carried the D-072 reading, so it is confirmed: a Group 10 module that the brief or contract names by its job (not by file name) and that a checker lists counts as named under D-082 item 1. This covers the five t198a modules and t200b's `stages/schedule_gate.py` and `stages/schedule_tick.py`.
+4. **Disk space on D:** Umesh selected three removals: `D:\chk-tmp` (about 77 GB of scratch dated 2026-10-01 to 07), the clean registered worktrees under `.worktrees/` in full, and their `.venv` directories. Maker's narrowing: worktrees of units still in build or check are kept; every removal uses `git worktree remove` without force, so a tree with uncommitted or untracked files is refused and kept; no branch is deleted.
+
+**Why:** Three units on the path to the local deployment held a checker PASS or a one-defect FAIL and waited only on these answers, and a full drive had stopped merges and new checkouts.
+
+**Result:** No merge or deletion has been made by this entry; the maker dispatches them next.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** D-072; D-082; T-198; T-200; T-202; T-204; T-205; qa/gates/t205-new-modules.md; qa/gates/t204-fix-cycle-cap.md; qa/gates/t198a-intake-upload-module.md
+
+## D-086 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered six open maker questions in chat on 2026-10-12. Each answer is quoted.
+1. **t179a HG-1** (`qa/gates/t179a-hg1-readonly-click.md`): "hai allowed". Under READ_ONLY the lead tester may click, press keys, select and type. The READ_ONLY refusal of benign interaction steps in `agents/guards.py` is relaxed in a follow-up T-179 slice. It is not part of the t179a cycle-2 check.
+2. **T-203 host** (`qa/gates/t203-host-and-dns.md`): "ubuntu hoga will provide later abhi tho yhi system mai host kroo". The real host will be an Ubuntu server, with details to follow. Until then AutoTester is hosted on this machine. The host name and DNS stay OPEN.
+3. **T-177 DevTools port** (`qa/manifests/t177-slice0-browser-seam.md`, "Owner confirm at merge"): option A, "backup har jagah chalega, aapke laptop pe bhi aur Ubuntu server pe bhi". The per-run loopback Chromium remote-debugging port is approved on every host. It must keep the guards slice 0 already has: OFF by default, opened per run only via `expose_cdp=True`, `--remote-debugging-port=0`, loopback-only, `cdp_url` taken only from `DevToolsActivePort` after the identity check, and closed at teardown. This extends D-075 beyond `browser/session.py` to `browser/launch.py`, `browser/secrets.py`, `browser/video.py` and `browser/assertions.py` as slice 0 touches them. Recorded residuals: a same-user process that rewrites the port file, and an unverified bind for headed Chrome. The headed bind check runs before the port is enabled for headed Pathlynks runs. The UI wiring stays held until T-203 and T-204 land (D-075).
+4. **T-136 independent list** (`qa/gates/t136-independent-human-list.md`): "phle ek level build krr dee, firr feedback deke fix krwaaungaa". Build a first level of the comparison now: the AutoTester column, the artifact and the bench computation. Umesh gives feedback and the fixes follow after. Under AT-653 a human list written after the report has been read yields `recall: unavailable (ordering not recorded)`, and the FP rate and time remain valid. The maker states this to Umesh before the report is opened.
+5. **T-169 two modes**: "dono denee chiayee". Both onboarding modes, rich teaching inputs and URL-plus-credentials only, are delivered and compared.
+6. **T-145 Pathlynks run**: "ye maukaa milte hi run krr, like it must need to be done". The bounded live crawl and report run as soon as host RAM allows one browser slot. They use the `PATHLYNKS_USER_*` test account, ALLOW_WRITES (D-053) and the signed per-run RunApproval (D-018, `qa/gates/d081-run-approvals.md`).
+
+**Why:** These answers unblock T-145, T-177 slice 0, T-136, T-169 and the T-179 follow-up, and confirm local hosting while the Ubuntu server is pending.
+
+**Result:** No merge or run has been made by this entry. The maker dispatches the work next.
+
+**Changes-authorized:** `docs/ARCHITECTURE.md` security-model section: one line describing the per-run loopback DevTools port of T-177 slice 0 and its guards (item 3). No enforcement path.
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** D-018; D-041; D-053; D-075; D-081; T-136; T-145; T-169; T-177; T-179; T-203; qa/gates/t179a-hg1-readonly-click.md; qa/gates/t203-host-and-dns.md; qa/gates/t136-independent-human-list.md

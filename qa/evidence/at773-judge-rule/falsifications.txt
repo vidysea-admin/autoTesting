@@ -1,0 +1,44 @@
+=== G6 GREEN-BEFORE rc=0
+AUTOTESTER_FILE C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at773-r1\G6\src\autotester\__init__.py
+.                                                                        [100%]
+1 passed in 4.01s
+=== G6 RED-AFTER rc=1
+AUTOTESTER_FILE C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at773-r1\G6\src\autotester\__init__.py
+        still got a judge PASS (6 of 6 re-grades). That must no longer end PASS."""
+        judge = MockProvider(responses={"judge": [_pass()]})
+        verdict = grade(_rubric(), _result(Outcome.ASSERTION_FAILED), "run_1", judge)
+    
+        assert judge.prompts, "the judge still sees the run; the guard is applied to its answer"
+>       assert verdict.result is not Result.PASS
+E       AssertionError: assert <Result.PASS: 'PASS'> is not <Result.PASS: 'PASS'>
+E        +  where <Result.PASS: 'PASS'> = Verdict(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 6, 55, 12, 442979, tzinfo=datetime.timezone.utc),...l=1, failures=[], grader_provider='mock', rubric_hash='rub_8f441aa0fc7e', note=None, images_requested=0, images_seen=0).result
+E        +  and   <Result.PASS: 'PASS'> = Result.PASS
+
+tests\test_grade_assertion_rule.py:43: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_grade_assertion_rule.py::test_judge_pass_on_an_unmet_login_assertion_is_never_pass
+1 failed in 25.14s
+=== G6 RESTORED rc=0
+RESULT G6: green=True red=True restored=True
+=== E1 GREEN-BEFORE rc=0
+AUTOTESTER_FILE C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at773-r1\E1\src\autotester\__init__.py
+.                                                                        [100%]
+1 passed in 3.02s
+=== E1 RED-AFTER rc=1
+AUTOTESTER_FILE C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at773-r1\E1\src\autotester\__init__.py
+        judgment = Judgment(result=Result.PASS, scoreboard="2/2 met", criteria_met=2, criteria_total=2)
+        judge = MockProvider(responses={"judge": [judgment]})
+    
+        verdict = grade(rubric, result, "run_1", judge)
+    
+>       assert judge.prompts, "an ASSERTION_FAILED run never reached the judge"
+E       AssertionError: an ASSERTION_FAILED run never reached the judge
+E       assert []
+E        +  where [] = <autotester.providers.mock.MockProvider object at 0x000002D4D826C410>.prompts
+
+tests\test_grade.py:78: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_grade.py::test_assertion_failed_run_still_reaches_the_judge_but_can_never_pass
+1 failed in 26.65s
+=== E1 RESTORED rc=0
+RESULT E1: green=True red=True restored=True

@@ -1,0 +1,53 @@
+"""CHECKER PROBE (throwaway): AT-790 in the ORIGINAL state (flowspec approved, NO proposals approved)
+and in the NEW state (proposals approved), driving the real route."""
+from __future__ import annotations
+import pytest
+from litellm_fake import install
+from test_ui_learn import _approve_proposals, _project, _spec, client, scratch_root  # noqa: F401
+import autotester.ui.routes_learn as routes_learn_module
+from autotester.providers.litellm_provider import LiteLLMProvider
+from autotester.schema.enums import ReviewStatus
+
+CANARY = "AIza-ROUTE-CANARY-555"
+VENDOR = "<script>alert('v')</script> vendor-says-hello"
+
+
+def _wire(monkeypatch, err):
+    install(monkeypatch, [err] * 60)
+    monkeypatch.setenv("LITELLM_API_KEY", "k-for-test")
+    monkeypatch.setenv("GEMINI_API_KEY", CANARY)
+    provider = LiteLLMProvider(model="gemini/gemini-2.5-pro")
+    calls = []
+    def fr(project, role):
+        calls.append(role); return provider
+    monkeypatch.setattr(routes_learn_module, "for_role", fr)
+    return calls
+
+
+@pytest.mark.parametrize("approved", [False, True])
+def test_canary_state(client, scratch_root, monkeypatch, approved):  # noqa: F811
+    store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+    if approved:
+        _approve_proposals(store)
+    calls = _wire(monkeypatch, RuntimeError(f"403 at https://vendor.test/x?key={CANARY}"))
+    r = client.post("/projects/demo/cases/generate", follow_redirects=False)
+    print("STATE approved=", approved, "status", r.status_code, "provider_asked", calls,
+          "could_not_complete", "could not complete" in r.text, "human_review", "human review" in r.text)
+    assert CANARY not in r.text and "vendor.test" not in r.text
+    assert store.list_cases() == []
+    assert r.status_code == 400
+
+
+@pytest.mark.parametrize("approved", [False, True])
+def test_vendor_markup_state(client, scratch_root, monkeypatch, approved):  # noqa: F811
+    store = _project(scratch_root, spec=_spec(ReviewStatus.APPROVED))
+    if approved:
+        _approve_proposals(store)
+    calls = _wire(monkeypatch, RuntimeError(VENDOR))
+    r = client.post("/projects/demo/cases/generate", follow_redirects=False)
+    echoed_raw = "<script>alert('v')</script>" in r.text
+    echoed_escaped = "&lt;script&gt;" in r.text
+    echoed_any = "vendor-says-hello" in r.text
+    print("MARKUP approved=", approved, "status", r.status_code, "provider_asked", calls,
+          "raw", echoed_raw, "escaped", echoed_escaped, "any", echoed_any)
+    assert not echoed_raw

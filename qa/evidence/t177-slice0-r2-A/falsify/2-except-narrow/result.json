@@ -1,0 +1,71 @@
+{
+ "name": "2-except-narrow",
+ "point": "2",
+ "sel": "deep",
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-pfjurxtb\\t\\src\\autotester\\__init__.py",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-pfjurxtb\\t",
+ "runs": {
+  "green": {
+   "rc": 0,
+   "secs": 30.9,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ]
+   ],
+   "summary": "2 passed, 9 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-pfjurxtb\\t"
+   ]
+  },
+  "red": {
+   "rc": 1,
+   "secs": 31.3,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "FAILED"
+    ]
+   ],
+   "summary": "2 failed, 9 deselected",
+   "errs": [
+    "E   RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string",
+    "E   RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string"
+   ],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-pfjurxtb\\t"
+   ]
+  },
+  "restored": {
+   "rc": 0,
+   "secs": 35.8,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ]
+   ],
+   "summary": "2 passed, 9 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-pfjurxtb\\t"
+   ]
+  }
+ },
+ "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -128,3 +128,3 @@\n         return str(url).endswith(browser_path)\n-    except Exception:  # every doubt about this endpoint is a refusal\n+    except (OSError, ValueError, http.client.HTTPException):  # every doubt about this endpoint is a refusal\n         return False\n",
+ "restored_same": true
+}

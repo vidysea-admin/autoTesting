@@ -1,0 +1,87 @@
+[
+ {
+  "case": "01 header trickle",
+  "wall": 2.094,
+  "result": "CdpEndpointError: the DevTools listener on port 51837 is not this browser",
+  "ctx_closed": true,
+  "port_file_removed": true,
+  "cdp_url_after": null,
+  "endpoint_refuses": true,
+  "client_bytes": 37,
+  "connects": 2,
+  "threads": []
+ },
+ {
+  "case": "02 body trickle",
+  "wall": 2.125,
+  "result": "CdpEndpointError: the DevTools listener on port 62906 is not this browser",
+  "ctx_closed": true,
+  "port_file_removed": true,
+  "cdp_url_after": null,
+  "endpoint_refuses": true,
+  "client_bytes": 189,
+  "connects": 2,
+  "threads": []
+ },
+ {
+  "case": "04 endless no-CL fast",
+  "wall": 0.016,
+  "result": "CdpEndpointError: the DevTools listener on port 60537 is not this browser",
+  "ctx_closed": true,
+  "port_file_removed": true,
+  "cdp_url_after": null,
+  "endpoint_refuses": true,
+  "client_bytes": 65607,
+  "connects": 2,
+  "threads": []
+ },
+ {
+  "case": "09a 100 Continue forever",
+  "wall": 2.047,
+  "result": "CdpEndpointError: the DevTools listener on port 53986 is not this browser",
+  "ctx_closed": true,
+  "port_file_removed": true,
+  "cdp_url_after": null,
+  "endpoint_refuses": true,
+  "client_bytes": 10683216,
+  "connects": 2,
+  "threads": []
+ },
+ {
+  "case": "11a deep [ x30000",
+  "wall": 0.015,
+  "result": "CdpEndpointError: the DevTools listener on port 54897 is not this browser",
+  "ctx_closed": true,
+  "port_file_removed": true,
+  "cdp_url_after": null,
+  "endpoint_refuses": true,
+  "client_bytes": 30074,
+  "connects": 2,
+  "threads": []
+ },
+ {
+  "case": "11b deep {a: x30000",
+  "wall": 0.063,
+  "result": "CdpEndpointError: the DevTools listener on port 59230 is not this browser",
+  "ctx_closed": true,
+  "port_file_removed": true,
+  "cdp_url_after": null,
+  "endpoint_refuses": true,
+  "client_bytes": 65074,
+  "connects": 2,
+  "threads": []
+ },
+ {
+  "case": "control good id (expects success)",
+  "wall": 1.032,
+  "result": "STARTED(cdp_url=http://127.0.0.1:50095)",
+  "ctx_closed": false,
+  "port_file_removed": false,
+  "cdp_url_after": "http://127.0.0.1:50095",
+  "endpoint_refuses": false,
+  "client_bytes": 174,
+  "connects": 3,
+  "threads": [],
+  "after_close_port_file_removed": true
+ }
+]

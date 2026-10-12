@@ -1,0 +1,784 @@
+=== C176-compose-neither-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== C177-compose-neither-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== C178-compose-neither-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== C179-compose-neither-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== C180-compose-neither-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== C181-compose-domain-only-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== C182-compose-domain-only-both.log
+INFO:     Started server process [24552]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20281 (Press CTRL+C to quit)
+=== C183-compose-domain-only-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== C184-compose-domain-only-origins.log
+INFO:     Started server process [75916]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20283 (Press CTRL+C to quit)
+=== C185-compose-domain-only-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== C186-compose-explicit-origin-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== C187-compose-explicit-origin-both.log
+INFO:     Started server process [73400]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20286 (Press CTRL+C to quit)
+=== C188-compose-explicit-origin-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20287 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== C189-compose-explicit-origin-origins.log
+INFO:     Started server process [47300]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20288 (Press CTRL+C to quit)
+=== C190-compose-explicit-origin-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20289 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== H191-0.0.0.0-nohosted-unset-unset.log
+INFO:     Started server process [1784]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20290 (Press CTRL+C to quit)
+=== H192-0.0.0.0-nohosted-unset-both.log
+INFO:     Started server process [37468]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20291 (Press CTRL+C to quit)
+=== H193-0.0.0.0-nohosted-unset-wrong.log
+INFO:     Started server process [10904]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20292 (Press CTRL+C to quit)
+=== H194-0.0.0.0-nohosted-lan-unset.log
+INFO:     Started server process [48472]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20293 (Press CTRL+C to quit)
+=== H195-0.0.0.0-nohosted-lan-both.log
+INFO:     Started server process [80576]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20294 (Press CTRL+C to quit)
+=== H196-0.0.0.0-nohosted-lan-wrong.log
+INFO:     Started server process [26736]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20295 (Press CTRL+C to quit)
+=== M001-127.0.0.1-unset-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M002-127.0.0.1-unset-both.log
+INFO:     Started server process [49184]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20101 (Press CTRL+C to quit)
+=== M003-127.0.0.1-unset-hosts.log
+INFO:     Started server process [39276]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20102 (Press CTRL+C to quit)
+=== M004-127.0.0.1-unset-origins.log
+INFO:     Started server process [46236]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20103 (Press CTRL+C to quit)
+=== M005-127.0.0.1-unset-wrong.log
+INFO:     Started server process [62728]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20104 (Press CTRL+C to quit)
+=== M006-127.0.0.1-empty-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M007-127.0.0.1-empty-both.log
+INFO:     Started server process [63160]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20106 (Press CTRL+C to quit)
+=== M008-127.0.0.1-empty-hosts.log
+INFO:     Started server process [5720]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20107 (Press CTRL+C to quit)
+=== M009-127.0.0.1-empty-origins.log
+INFO:     Started server process [78484]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20108 (Press CTRL+C to quit)
+=== M010-127.0.0.1-empty-wrong.log
+INFO:     Started server process [67948]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20109 (Press CTRL+C to quit)
+=== M011-127.0.0.1-lo-http-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M012-127.0.0.1-lo-http-both.log
+INFO:     Started server process [9480]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20111 (Press CTRL+C to quit)
+=== M013-127.0.0.1-lo-http-hosts.log
+INFO:     Started server process [27280]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20112 (Press CTRL+C to quit)
+=== M014-127.0.0.1-lo-http-origins.log
+INFO:     Started server process [9780]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20113 (Press CTRL+C to quit)
+=== M015-127.0.0.1-lo-http-wrong.log
+INFO:     Started server process [62240]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20114 (Press CTRL+C to quit)
+=== M016-127.0.0.1-lo-https-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M017-127.0.0.1-lo-https-both.log
+INFO:     Started server process [31904]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20116 (Press CTRL+C to quit)
+=== M018-127.0.0.1-lo-https-hosts.log
+INFO:     Started server process [8496]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20117 (Press CTRL+C to quit)
+=== M019-127.0.0.1-lo-https-origins.log
+INFO:     Started server process [31672]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20118 (Press CTRL+C to quit)
+=== M020-127.0.0.1-lo-https-wrong.log
+INFO:     Started server process [52456]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20119 (Press CTRL+C to quit)
+=== M021-127.0.0.1-lo-127-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M022-127.0.0.1-lo-127-both.log
+INFO:     Started server process [28924]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20121 (Press CTRL+C to quit)
+=== M023-127.0.0.1-lo-127-hosts.log
+INFO:     Started server process [57932]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20122 (Press CTRL+C to quit)
+=== M024-127.0.0.1-lo-127-origins.log
+INFO:     Started server process [73368]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20123 (Press CTRL+C to quit)
+=== M025-127.0.0.1-lo-127-wrong.log
+INFO:     Started server process [54532]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20124 (Press CTRL+C to quit)
+=== M026-127.0.0.1-lan-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M027-127.0.0.1-lan-both.log
+INFO:     Started server process [29252]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20126 (Press CTRL+C to quit)
+=== M028-127.0.0.1-lan-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20127 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M029-127.0.0.1-lan-origins.log
+INFO:     Started server process [4848]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20128 (Press CTRL+C to quit)
+=== M030-127.0.0.1-lan-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20129 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M031-127.0.0.1-domain-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M032-127.0.0.1-domain-both.log
+INFO:     Started server process [28504]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20131 (Press CTRL+C to quit)
+=== M033-127.0.0.1-domain-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M034-127.0.0.1-domain-origins.log
+INFO:     Started server process [20652]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:20133 (Press CTRL+C to quit)
+=== M035-127.0.0.1-domain-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M036-cc1-unset-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M037-cc1-unset-both.log
+INFO:     Started server process [60852]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20136 (Press CTRL+C to quit)
+=== M038-cc1-unset-hosts.log
+INFO:     Started server process [32192]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20137 (Press CTRL+C to quit)
+=== M039-cc1-unset-origins.log
+INFO:     Started server process [32104]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20138 (Press CTRL+C to quit)
+=== M040-cc1-unset-wrong.log
+INFO:     Started server process [29000]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20139 (Press CTRL+C to quit)
+=== M041-cc1-empty-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M042-cc1-empty-both.log
+INFO:     Started server process [36096]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20141 (Press CTRL+C to quit)
+=== M043-cc1-empty-hosts.log
+INFO:     Started server process [58496]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20142 (Press CTRL+C to quit)
+=== M044-cc1-empty-origins.log
+INFO:     Started server process [24652]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20143 (Press CTRL+C to quit)
+=== M045-cc1-empty-wrong.log
+INFO:     Started server process [6492]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20144 (Press CTRL+C to quit)
+=== M046-cc1-lo-http-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M047-cc1-lo-http-both.log
+INFO:     Started server process [72372]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20146 (Press CTRL+C to quit)
+=== M048-cc1-lo-http-hosts.log
+INFO:     Started server process [28372]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20147 (Press CTRL+C to quit)
+=== M049-cc1-lo-http-origins.log
+INFO:     Started server process [1740]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20148 (Press CTRL+C to quit)
+=== M050-cc1-lo-http-wrong.log
+INFO:     Started server process [73216]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20149 (Press CTRL+C to quit)
+=== M051-cc1-lo-https-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M052-cc1-lo-https-both.log
+INFO:     Started server process [33420]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20151 (Press CTRL+C to quit)
+=== M053-cc1-lo-https-hosts.log
+INFO:     Started server process [39108]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20152 (Press CTRL+C to quit)
+=== M054-cc1-lo-https-origins.log
+INFO:     Started server process [23460]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20153 (Press CTRL+C to quit)
+=== M055-cc1-lo-https-wrong.log
+INFO:     Started server process [59344]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20154 (Press CTRL+C to quit)
+=== M056-cc1-lo-127-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M057-cc1-lo-127-both.log
+INFO:     Started server process [43880]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20156 (Press CTRL+C to quit)
+=== M058-cc1-lo-127-hosts.log
+INFO:     Started server process [62272]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20157 (Press CTRL+C to quit)
+=== M059-cc1-lo-127-origins.log
+INFO:     Started server process [50968]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20158 (Press CTRL+C to quit)
+=== M060-cc1-lo-127-wrong.log
+INFO:     Started server process [72664]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20159 (Press CTRL+C to quit)
+=== M061-cc1-lan-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M062-cc1-lan-both.log
+INFO:     Started server process [63456]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20161 (Press CTRL+C to quit)
+=== M063-cc1-lan-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20162 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M064-cc1-lan-origins.log
+INFO:     Started server process [74060]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20163 (Press CTRL+C to quit)
+=== M065-cc1-lan-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20164 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M066-cc1-domain-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M067-cc1-domain-both.log
+INFO:     Started server process [34464]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20166 (Press CTRL+C to quit)
+=== M068-cc1-domain-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M069-cc1-domain-origins.log
+INFO:     Started server process [28740]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::1]:20168 (Press CTRL+C to quit)
+=== M070-cc1-domain-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M071-192.168.1.4-unset-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M072-192.168.1.4-unset-both.log
+INFO:     Started server process [16036]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20171 (Press CTRL+C to quit)
+=== M073-192.168.1.4-unset-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20172 or https://192.168.1.4:20172 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M074-192.168.1.4-unset-origins.log
+INFO:     Started server process [70152]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20173 (Press CTRL+C to quit)
+=== M075-192.168.1.4-unset-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20174 or https://192.168.1.4:20174 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M076-192.168.1.4-empty-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M077-192.168.1.4-empty-both.log
+INFO:     Started server process [22592]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20176 (Press CTRL+C to quit)
+=== M078-192.168.1.4-empty-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20177 or https://192.168.1.4:20177 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M079-192.168.1.4-empty-origins.log
+INFO:     Started server process [19252]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20178 (Press CTRL+C to quit)
+=== M080-192.168.1.4-empty-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20179 or https://192.168.1.4:20179 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M081-192.168.1.4-lo-http-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M082-192.168.1.4-lo-http-both.log
+INFO:     Started server process [77084]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20181 (Press CTRL+C to quit)
+=== M083-192.168.1.4-lo-http-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20182 or https://192.168.1.4:20182 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M084-192.168.1.4-lo-http-origins.log
+INFO:     Started server process [55004]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20183 (Press CTRL+C to quit)
+=== M085-192.168.1.4-lo-http-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20184 or https://192.168.1.4:20184 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M086-192.168.1.4-lo-https-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M087-192.168.1.4-lo-https-both.log
+INFO:     Started server process [22740]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20186 (Press CTRL+C to quit)
+=== M088-192.168.1.4-lo-https-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20187 or https://192.168.1.4:20187 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M089-192.168.1.4-lo-https-origins.log
+INFO:     Started server process [56820]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20188 (Press CTRL+C to quit)
+=== M090-192.168.1.4-lo-https-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20189 or https://192.168.1.4:20189 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M091-192.168.1.4-lo-127-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M092-192.168.1.4-lo-127-both.log
+INFO:     Started server process [4360]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20191 (Press CTRL+C to quit)
+=== M093-192.168.1.4-lo-127-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20192 or https://192.168.1.4:20192 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M094-192.168.1.4-lo-127-origins.log
+INFO:     Started server process [72268]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20193 (Press CTRL+C to quit)
+=== M095-192.168.1.4-lo-127-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20194 or https://192.168.1.4:20194 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M096-192.168.1.4-lan-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M097-192.168.1.4-lan-both.log
+INFO:     Started server process [38828]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20196 (Press CTRL+C to quit)
+=== M098-192.168.1.4-lan-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20197 or https://192.168.1.4:20197 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M099-192.168.1.4-lan-origins.log
+INFO:     Started server process [38444]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://192.168.1.4:20198 (Press CTRL+C to quit)
+=== M100-192.168.1.4-lan-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20199 or https://192.168.1.4:20199 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M101-192.168.1.4-domain-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M102-192.168.1.4-domain-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20201 or https://192.168.1.4:20201 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M103-192.168.1.4-domain-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20202 or https://192.168.1.4:20202 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M104-192.168.1.4-domain-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20203 or https://192.168.1.4:20203 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M105-192.168.1.4-domain-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: the server's own origin http://192.168.1.4:20204 or https://192.168.1.4:20204 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself, with the port unless
+ERROR:    Application startup failed. Exiting.
+=== M106-0.0.0.0-unset-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M107-0.0.0.0-unset-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M108-0.0.0.0-unset-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M109-0.0.0.0-unset-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M110-0.0.0.0-unset-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M111-0.0.0.0-empty-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M112-0.0.0.0-empty-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M113-0.0.0.0-empty-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M114-0.0.0.0-empty-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M115-0.0.0.0-empty-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M116-0.0.0.0-lo-http-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M117-0.0.0.0-lo-http-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20216' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M118-0.0.0.0-lo-http-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20217' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M119-0.0.0.0-lo-http-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20218' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M120-0.0.0.0-lo-http-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20219' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M121-0.0.0.0-lo-https-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M122-0.0.0.0-lo-https-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M123-0.0.0.0-lo-https-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M124-0.0.0.0-lo-https-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M125-0.0.0.0-lo-https-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M126-0.0.0.0-lo-127-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M127-0.0.0.0-lo-127-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20226' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M128-0.0.0.0-lo-127-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20227' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M129-0.0.0.0-lo-127-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20228' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M130-0.0.0.0-lo-127-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20229' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M131-0.0.0.0-lan-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M132-0.0.0.0-lan-both.log
+INFO:     Started server process [49888]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20231 (Press CTRL+C to quit)
+=== M133-0.0.0.0-lan-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20232 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M134-0.0.0.0-lan-origins.log
+INFO:     Started server process [48708]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20233 (Press CTRL+C to quit)
+=== M135-0.0.0.0-lan-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20234 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M136-0.0.0.0-domain-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M137-0.0.0.0-domain-both.log
+INFO:     Started server process [28560]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20236 (Press CTRL+C to quit)
+=== M138-0.0.0.0-domain-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M139-0.0.0.0-domain-origins.log
+INFO:     Started server process [2292]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:20238 (Press CTRL+C to quit)
+=== M140-0.0.0.0-domain-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M141-cc-unset-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M142-cc-unset-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M143-cc-unset-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M144-cc-unset-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M145-cc-unset-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M146-cc-empty-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M147-cc-empty-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M148-cc-empty-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M149-cc-empty-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M150-cc-empty-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::): set it to the origin users open, for example https://qa.example.com or http://192.168.1.20:8000 (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M151-cc-lo-http-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M152-cc-lo-http-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20251' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M153-cc-lo-http-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20252' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M154-cc-lo-http-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20253' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M155-cc-lo-http-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:20254' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M156-cc-lo-https-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M157-cc-lo-https-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M158-cc-lo-https-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M159-cc-lo-https-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M160-cc-lo-https-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.168.1.2
+ERROR:    Application startup failed. Exiting.
+=== M161-cc-lo-127-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M162-cc-lo-127-both.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20261' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M163-cc-lo-127-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20262' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M164-cc-lo-127-origins.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20263' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M165-cc-lo-127-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN='http://127.0.0.1:20264' is a loopback address, which remote users cannot reach, and the server binds every address: set the origin users open, for example https://qa.example.com or http://192.16
+ERROR:    Application startup failed. Exiting.
+=== M166-cc-lan-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M167-cc-lan-both.log
+INFO:     Started server process [13432]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::]:20266 (Press CTRL+C to quit)
+=== M168-cc-lan-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20267 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M169-cc-lan-origins.log
+INFO:     Started server process [36824]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::]:20268 (Press CTRL+C to quit)
+=== M170-cc-lan-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:20269 is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M171-cc-domain-unset.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS naming the server
+ERROR:    Application startup failed. Exiting.
+=== M172-cc-domain-both.log
+INFO:     Started server process [11184]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::]:20271 (Press CTRL+C to quit)
+=== M173-cc-domain-hosts.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.
+=== M174-cc-domain-origins.log
+INFO:     Started server process [10192]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://[::]:20273 (Press CTRL+C to quit)
+=== M175-cc-domain-wrong.log
+ERROR:    Traceback (most recent call last):
+autotester.auth.config.AuthConfigError: AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Host must be in AUTOTESTER_ALLOWED_HOSTS (or be the host of an allowed origin) and the origin itself in AUTOTESTER_ALLOWED_ORIGINS (AU20)
+ERROR:    Application startup failed. Exiting.

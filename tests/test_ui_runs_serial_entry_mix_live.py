@@ -9,7 +9,7 @@ like you are using Playwright Sync API inside the asyncio loop" -- a fake
 caught AT-576 (it shipped for three weeks, 939af44 to this fix, entirely
 behind that blind spot).
 
-Only the AI provider is faked (`LangChainFallbackProvider` -> `MockProvider`,
+Only the AI provider is faked (`for_role` -> `MockProvider`,
 same seam `test_ui_runs_parallel_trace.py::test_a_real_run_writes_a_trace_
 with_at_least_one_span` already uses) -- `BrowserSession` itself is real,
 driven against a local fixture site (`tests/fixtures/regression_site`) on an
@@ -106,7 +106,7 @@ def test_a_serial_run_mixing_an_entry_case_with_ordinary_cases_does_not_500(
     judge = MockProvider(model="mock", responses={"judge": [judgment] * 10})
 
     import autotester.ui.routes_runs as routes_runs_module
-    monkeypatch.setattr(routes_runs_module, "LangChainFallbackProvider", lambda: judge)
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda project, role: judge)
 
     response = client.post("/projects/rd/run", follow_redirects=False)
 

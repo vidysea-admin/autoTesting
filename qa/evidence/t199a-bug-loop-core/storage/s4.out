@@ -1,0 +1,123 @@
+== a zero-length bev_<id>.json (new id)
+  files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']
+  events(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_sitog2k2\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_ty
+  bugs(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_sitog2k2\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_ty
+  apply(new e3): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_sitog2k2\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_ty
+  apply(existing e1): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_sitog2k2\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_ty
+  apply_all([e1,e2,e3]): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_sitog2k2\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_ty
+  history: RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_sitog2k2\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing a value at line 1 column 0 [type=json_invalid, input_value='', input_ty
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']
+== b truncated JSON (new id)
+  files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']
+  events(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4__5zptzuv\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  bugs(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4__5zptzuv\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  apply(new e3): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4__5zptzuv\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  apply(existing e1): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4__5zptzuv\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  apply_all([e1,e2,e3]): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4__5zptzuv\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  history: RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4__5zptzuv\bug_events\bev_f3387edea36a.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']
+== b2 truncated JSON of an existing event
+  files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json']
+  events(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_cmvcgvuc\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  bugs(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_cmvcgvuc\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  apply(new e3): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_cmvcgvuc\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  apply(existing e1): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_cmvcgvuc\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  apply_all([e1,e2,e3]): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_cmvcgvuc\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  history: RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_cmvcgvuc\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Invalid JSON: EOF while parsing an object at line 11 column 3 [type=json_invalid, input_value='{\n  "sc
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']
+== c valid JSON wrong schema
+  files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']
+  events(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_kiiuis2a\bug_events\bev_f3387edea36a.json: 6 validation errors for BugEvent
+hello
+  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+    For fur
+  bugs(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_kiiuis2a\bug_events\bev_f3387edea36a.json: 6 validation errors for BugEvent
+hello
+  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+    For fur
+  apply(new e3): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_kiiuis2a\bug_events\bev_f3387edea36a.json: 6 validation errors for BugEvent
+hello
+  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+    For fur
+  apply(existing e1): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_kiiuis2a\bug_events\bev_f3387edea36a.json: 6 validation errors for BugEvent
+hello
+  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+    For fur
+  apply_all([e1,e2,e3]): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_kiiuis2a\bug_events\bev_f3387edea36a.json: 6 validation errors for BugEvent
+hello
+  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+    For fur
+  history: RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_kiiuis2a\bug_events\bev_f3387edea36a.json: 6 validation errors for BugEvent
+hello
+  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+    For fur
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']
+== d renamed duplicate copy (second name)
+  files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_aaaaaaaaaaaa.json']
+  events(): OK -> 3
+  bugs(): OK -> {'bug_6425286942c1': 2}
+  apply(new e3): OK -> applied
+  apply(existing e1): OK -> duplicate
+  apply_all([e1,e2,e3]): OK -> ['duplicate', 'duplicate', 'duplicate']
+  history: OK -> 4
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_aaaaaaaaaaaa.json', 'bev_f3387edea36a.json']
+== d2 file renamed (name != content id)
+  files: ['bev_65c6e694fb1f.json', 'bev_bbbbbbbbbbbb.json']
+  events(): OK -> 2
+  bugs(): OK -> {'bug_6425286942c1': 2}
+  apply(new e3): OK -> applied
+  apply(existing e1): OK -> duplicate
+  apply_all([e1,e2,e3]): OK -> ['duplicate', 'duplicate', 'duplicate']
+  history: OK -> 4
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_bbbbbbbbbbbb.json', 'bev_f3387edea36a.json']
+== e junk names in dir
+  files: ['.tmp-abc.json', 'bev_.tmp', 'bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bevx.json', 'notes.txt']
+  events(): OK -> 2
+  bugs(): OK -> {'bug_6425286942c1': 2}
+  apply(new e3): OK -> applied
+  apply(existing e1): OK -> duplicate
+  apply_all([e1,e2,e3]): OK -> ['duplicate', 'duplicate', 'duplicate']
+  history: OK -> 3
+  after files: ['.tmp-abc.json', 'bev_.tmp', 'bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json', 'bevx.json', 'notes.txt']
+== f directory named bev_x.json
+  files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_x.json']
+  events(): RAISES PermissionError: [Errno 13] Permission denied: 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\probe_store\\s4_8c6150px\\bug_events\\bev_x.json'
+  bugs(): RAISES PermissionError: [Errno 13] Permission denied: 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\probe_store\\s4_8c6150px\\bug_events\\bev_x.json'
+  apply(new e3): RAISES PermissionError: [Errno 13] Permission denied: 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\probe_store\\s4_8c6150px\\bug_events\\bev_x.json'
+  apply(existing e1): RAISES PermissionError: [Errno 13] Permission denied: 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\probe_store\\s4_8c6150px\\bug_events\\bev_x.json'
+  apply_all([e1,e2,e3]): RAISES PermissionError: [Errno 13] Permission denied: 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\probe_store\\s4_8c6150px\\bug_events\\bev_x.json'
+  history: RAISES PermissionError: [Errno 13] Permission denied: 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\probe_store\\s4_8c6150px\\bug_events\\bev_x.json'
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json', 'bev_x.json']
+== g wrong event_id inside file
+  files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json']
+  events(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_i74wxphp\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Value error, event_id must be derived from (bug_key, ref, kind) [type=value_error, input_value={'schema
+  bugs(): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_i74wxphp\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Value error, event_id must be derived from (bug_key, ref, kind) [type=value_error, input_value={'schema
+  apply(new e3): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_i74wxphp\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Value error, event_id must be derived from (bug_key, ref, kind) [type=value_error, input_value={'schema
+  apply(existing e1): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_i74wxphp\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Value error, event_id must be derived from (bug_key, ref, kind) [type=value_error, input_value={'schema
+  apply_all([e1,e2,e3]): RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_i74wxphp\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Value error, event_id must be derived from (bug_key, ref, kind) [type=value_error, input_value={'schema
+  history: RAISES ValueError: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\probe_store\s4_i74wxphp\bug_events\bev_4d65b9d7e750.json: 1 validation error for BugEvent
+  Value error, event_id must be derived from (bug_key, ref, kind) [type=value_error, input_value={'schema
+  after files: ['bev_4d65b9d7e750.json', 'bev_65c6e694fb1f.json', 'bev_f3387edea36a.json']

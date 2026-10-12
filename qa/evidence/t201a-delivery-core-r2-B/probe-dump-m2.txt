@@ -1,0 +1,2 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_m2\src\autotester\__init__.py
+record files: 149 attempt files: 149 run lookups: 47 key lookups: 925 nonempty run rows: 169 nonempty key rows: 149

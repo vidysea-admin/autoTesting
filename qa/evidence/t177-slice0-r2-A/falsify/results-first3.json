@@ -1,0 +1,243 @@
+[
+ {
+  "name": "1a-main-both",
+  "point": "1a",
+  "sel": "drip or trickl or deadline",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-main-both-72pxpn40\\t\\src\\autotester\\__init__.py",
+  "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-main-both-72pxpn40\\t",
+  "runs": {
+   "green": {
+    "rc": 0,
+    "secs": 39.8,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+      "PASSED"
+     ]
+    ],
+    "summary": "3 passed, 8 deselected",
+    "errs": [],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-main-both-72pxpn40\\t"
+    ]
+   },
+   "red": {
+    "rc": 1,
+    "secs": 48.8,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+      "FAILED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+      "FAILED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+      "FAILED"
+     ]
+    ],
+    "summary": "3 failed, 8 deselected",
+    "errs": [
+     "E   AssertionError: the probe held start() for 5.0s against a 0.6s deadline",
+     "E   assert 5.01600000000326 < 2.0",
+     "E   AssertionError: the probe held start() for 5.1s against a 0.6s deadline",
+     "E   assert 5.078000000008615 < 2.0",
+     "E   assert (148517.89 - 148512.859) < 3.0",
+     "E    +  where 148517.89 = <built-in function monotonic>()"
+    ],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-main-both-72pxpn40\\t"
+    ]
+   },
+   "restored": {
+    "rc": 0,
+    "secs": 34.0,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+      "PASSED"
+     ]
+    ],
+    "summary": "3 passed, 8 deselected",
+    "errs": [],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-main-both-72pxpn40\\t"
+    ]
+   }
+  },
+  "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -90,3 +90,2 @@\n     watchdog.daemon = True\n-    watchdog.start()\n     conn = http.client.HTTPConnection(CDP_HOST, port)\n@@ -102,3 +101,3 @@\n         size = 0\n-        while time.monotonic() < deadline:\n+        while True:\n             piece = reply.read1(PROBE_MAX_BYTES + 1 - size)\n",
+  "restored_same": true
+ },
+ {
+  "name": "2-except-narrow",
+  "point": "2",
+  "sel": "deep",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-fbchv4vp\\t\\src\\autotester\\__init__.py",
+  "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-fbchv4vp\\t",
+  "runs": {
+   "green": {
+    "rc": 0,
+    "secs": 37.4,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+      "PASSED"
+     ]
+    ],
+    "summary": "2 passed, 9 deselected",
+    "errs": [],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-fbchv4vp\\t"
+    ]
+   },
+   "red": {
+    "rc": 1,
+    "secs": 29.5,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+      "FAILED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+      "FAILED"
+     ]
+    ],
+    "summary": "2 failed, 9 deselected",
+    "errs": [
+     "E   RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string",
+     "E   RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string"
+    ],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-fbchv4vp\\t"
+    ]
+   },
+   "restored": {
+    "rc": 0,
+    "secs": 33.6,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+      "PASSED"
+     ]
+    ],
+    "summary": "2 passed, 9 deselected",
+    "errs": [],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-2-except-narrow-fbchv4vp\\t"
+    ]
+   }
+  },
+  "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -128,3 +128,3 @@\n         return str(url).endswith(browser_path)\n-    except Exception:  # every doubt about this endpoint is a refusal\n+    except (OSError, ValueError, http.client.HTTPException):  # every doubt about this endpoint is a refusal\n         return False\n",
+  "restored_same": true
+ },
+ {
+  "name": "3-follow-redirect",
+  "point": "3",
+  "sel": "redirect",
+  "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t\\src\\autotester\\__init__.py",
+  "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t",
+  "runs": {
+   "green": {
+    "rc": 0,
+    "secs": 36.8,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+      "PASSED"
+     ]
+    ],
+    "summary": "3 passed, 8 deselected",
+    "errs": [],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t"
+    ]
+   },
+   "red": {
+    "rc": 1,
+    "secs": 35.8,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+      "FAILED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+      "FAILED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+      "PASSED"
+     ]
+    ],
+    "summary": "2 failed, 1 passed, 8 deselected",
+    "errs": [
+     "E   Failed: DID NOT RAISE CdpEndpointError",
+     "E   Failed: DID NOT RAISE CdpEndpointError"
+    ],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t"
+    ]
+   },
+   "restored": {
+    "rc": 0,
+    "secs": 36.5,
+    "ids": [
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+      "PASSED"
+     ],
+     [
+      "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+      "PASSED"
+     ]
+    ],
+    "summary": "3 passed, 8 deselected",
+    "errs": [],
+    "rootdir": [
+     "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t"
+    ]
+   }
+  },
+  "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -96,2 +96,5 @@\n         reply = conn.getresponse()\n+        if reply.status in (301, 302, 303, 307, 308):\n+            import urllib.request\n+            return urllib.request.urlopen(reply.getheader(\"Location\"), timeout=PROBE_DEADLINE_S).read()\n         if reply.status != 200:\n",
+  "restored_same": true
+ }
+]

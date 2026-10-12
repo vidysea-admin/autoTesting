@@ -1,0 +1,27 @@
+## F1 GREEN BEFORE (copy, unmodified): exit=0
+import path: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fz-F1-b3a365a1-r1b\src\autotester\__init__.py
+...                                                                      [100%]
+============================== warnings summary ===============================
+..\at887-r1b-x7q3k9-copy\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at887-r1b-x7q3k9-copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3 passed, 1 warning in 2.68s
+
+## F1 RED AFTER mutation in src/autotester/stages/explore_merge.py: exit=1
+import path: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fz-F1-b3a365a1-r1b\src\autotester\__init__.py
+tests\test_explore_flows_doors.py:130: AssertionError
+============================== warnings summary ===============================
+..\at887-r1b-x7q3k9-copy\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at887-r1b-x7q3k9-copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_explore_flows.py::test_a_rediscovered_screen_is_referenced_by_the_existing_id_and_the_flow_id_is_stable
+FAILED tests/test_explore_flows_doors.py::test_the_cli_door_points_a_rediscovered_screen_at_the_existing_one
+FAILED tests/test_explore_flows_doors.py::test_the_ui_door_points_a_rediscovered_screen_at_the_existing_one
+3 failed, 1 warning in 3.04s
+
+RESULT F1: green_before=True red_after=True (red exit 1); import error in red output: False

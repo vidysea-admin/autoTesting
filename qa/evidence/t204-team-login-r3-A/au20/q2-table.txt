@@ -1,0 +1,30 @@
+case1-neither '' i-correct(H+O) RAISED AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every addre
+case1-neither '' i2-correct(O only) RAISED AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every addre
+case1-neither '' i3-correct(H only) RAISED AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every addre
+case1-neither '' ii-wrong(H=ip only) RAISED AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every addre
+case1-neither '' ii2-wrong(H+O ip) RAISED AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every addre
+case1-neither '' iii-none RAISED AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+case2-domain 'https://qa.example.com' i-correct(H+O) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case2-domain 'https://qa.example.com' i2-correct(O only) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case2-domain 'https://qa.example.com' i3-correct(H only) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Ho
+case2-domain 'https://qa.example.com' ii-wrong(H=ip only) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Ho
+case2-domain 'https://qa.example.com' ii2-wrong(H+O ip) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://qa.example.com is not allowed: its Ho
+case2-domain 'https://qa.example.com' iii-none RAISED AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+case3a-explicit 'https://explicit.example.com' i-correct(H+O) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case3a-explicit 'https://explicit.example.com' i2-correct(O only) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case3a-explicit 'https://explicit.example.com' i3-correct(H only) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://explicit.example.com is not allowed: 
+case3a-explicit 'https://explicit.example.com' ii-wrong(H=ip only) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://explicit.example.com is not allowed: 
+case3a-explicit 'https://explicit.example.com' ii2-wrong(H+O ip) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://explicit.example.com is not allowed: 
+case3a-explicit 'https://explicit.example.com' iii-none RAISED AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+case3b-explicit+domain 'https://explicit.example.com' i-correct(H+O) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case3b-explicit+domain 'https://explicit.example.com' i2-correct(O only) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case3b-explicit+domain 'https://explicit.example.com' i3-correct(H only) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://explicit.example.com is not allowed: 
+case3b-explicit+domain 'https://explicit.example.com' ii-wrong(H=ip only) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://explicit.example.com is not allowed: 
+case3b-explicit+domain 'https://explicit.example.com' ii2-wrong(H+O ip) RAISED AUTOTESTER_PUBLIC_ORIGIN=https://explicit.example.com is not allowed: 
+case3b-explicit+domain 'https://explicit.example.com' iii-none RAISED AUTOTESTER_HOSTED=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOW
+case4-ip-interim 'http://10.0.0.5:8000' i-correct(H+O) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case4-ip-interim 'http://10.0.0.5:8000' i2-correct(O only) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case4-ip-interim 'http://10.0.0.5:8000' i3-correct(H only: 10.0.0.5:8000) RAISED origin not allowed
+case4-ip-interim 'http://10.0.0.5:8000' ii-wrong(H=10.0.0.5 only) RAISED origin not allowed
+case4-ip-interim 'http://10.0.0.5:8000' ii2-(H=10.0.0.5, O=http://10.0.0.5:8000: this list names the ip origin, i.e. correct for case4) STARTED healthz=200 login=200 postPubOrigin=401 postEvilOrigin=403 evilHost=403
+case4-ip-interim 'http://10.0.0.5:8000' iii-none RAISED AUTOTESTER_HOSTED=1 needs ALLOWED_HOSTS or ALLOWED_ORIGINS

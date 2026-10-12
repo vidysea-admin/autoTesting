@@ -1,0 +1,6 @@
+{
+ "slug": "demo",
+ "name": "Demo",
+ "base_url": "https://demo.test",
+ "allowed_domains": ["demo.test"]
+}

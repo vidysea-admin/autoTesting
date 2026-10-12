@@ -1,0 +1,2 @@
+MAP.md: byte-identical after autotester map in a second copy
+SNAPSHOT.md: unchanged by map; doctor L1 (stale-generated) clean

@@ -1,0 +1,17 @@
+Subject: AutoTester report: $project - $label
+
+Project: $project
+Run: $run_id
+Finished: $finished
+
+Result: $label
+Passed: $passed
+Failed: $failed
+Blocked: $blocked
+Inconclusive: $inconclusive
+$coverage
+
+Open the report (you will be asked to sign in):
+$link
+
+You get this message because you ticked "Email me run reports" on your profile page.

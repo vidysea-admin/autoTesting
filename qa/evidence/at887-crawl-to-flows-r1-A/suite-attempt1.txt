@@ -1,0 +1,22 @@
+[01:20:04] ref b3a365a1 = b3a365a1; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\aios-shards\autoTesting-20261012-012001
+[01:20:11] collecting whole set (one copy)
+[01:21:01] collected 3563 tests in 255 files; balanced by stored durations (3480/3563 tests known, 5 files at mean); pinned files: none; predicted: s0=906, s1=906, s2=906, s3=906
+[01:21:02] shard 0: pid 77156, 64 units, 915 tests
+[01:21:02] shard 1: pid 32036, 64 units, 1112 tests
+[01:21:02] shard 2: pid 52864, 63 units, 659 tests
+[01:21:02] shard 3: pid 48972, 64 units, 877 tests
+[01:30:52] shard 3 finished rc=1 in 590s
+[01:33:45] shard 1 finished rc=0 in 764s
+[01:33:55] shard 2 finished rc=1 in 774s
+[01:34:56] shard 0 finished rc=1 in 835s
+[01:34:58] re-running 4 failing test(s) alone in shard-0 (load-induced vs real)
+[01:36:11]   shard 0: rc=1 wall=834.7s units=64 tests=915 reported=915
+[01:36:11]   shard 1: rc=0 wall=763.8s units=64 tests=1112 reported=1112
+[01:36:11]   shard 2: rc=1 wall=773.9s units=63 tests=659 reported=659
+[01:36:11]   shard 3: rc=1 wall=590.5s units=64 tests=877 reported=877
+[01:36:11] counts {'passed': 3539, 'failed': 4, 'skipped': 20}; collect proof ok=True (baseline 3563, union 3563, ran 3563)
+[01:36:11]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 0, alone: failed)
+[01:36:11]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 2, alone: failed)
+[01:36:11]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 3, alone: failed)
+[01:36:11]   failed tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads (shard 3, alone: failed)
+[01:36:11] summary -> C:\Users\Lenovo\AppData\Local\Temp\aios-shards\autoTesting-20261012-012001\summary.json (exit 1)

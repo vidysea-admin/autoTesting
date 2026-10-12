@@ -9,9 +9,10 @@ Time zones (Umesh, 2026-10-07): a schedule supports only `UTC` and `IST` (a fixe
 offset). Neither has daylight saving, so there is no zone database, no `tzdata` dependency and
 no DST rule anywhere. Anything else is refused at save, naming the two allowed values.
 
-Vocabulary note: `ScheduleMode`, `SlotOutcome`, `SchedulerHealth` and `ScheduleZone` are Group 10
-closed vocabularies. TF8 names `schema/team_enums.py` (G1) as their home; until that file exists
-they live here beside the only model that uses them, and move there as a pure relocation.
+Vocabulary note: `ScheduleMode`, `SlotOutcome`, `SchedulerHealth`, `ScheduleZone` and
+`CredentialState` are Group 10
+closed vocabularies. Their home is `schema/team_enums.py` (T-205/TF8); they are imported here so
+`from autotester.schema.schedule import SlotOutcome` keeps working.
 
 `ScheduleConfig.parse_for_save` is the one door for user input: it refuses bad values with a
 reason that names the field, so a caller can store nothing. Weekdays are Python's: 0 = Monday.
@@ -23,48 +24,22 @@ import os
 import re
 from collections.abc import Mapping
 from datetime import UTC, datetime
-from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
 from autotester.core.localtime import resolve_local, zone
+from autotester.schema.team_enums import (  # noqa: F401  (re-exported: importers keep their path)
+    CredentialState,
+    ScheduleMode,
+    SchedulerHealth,
+    ScheduleZone,
+    SlotOutcome,
+)
 
 TIMEZONE_ENV = "AUTOTESTER_TIMEZONE"
 MAX_ONE_OFFS = 50
 _HHMM = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
-
-
-class ScheduleMode(StrEnum):
-    MANUAL = "manual"
-    FIXED = "fixed"
-    CUSTOM = "custom"
-
-
-class ScheduleZone(StrEnum):
-    """The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST."""
-
-    UTC = "UTC"
-    IST = "IST"
-
-
-class SlotOutcome(StrEnum):
-    """What a tick decided for one slot. A record carries exactly one of these."""
-
-    ENQUEUED = "enqueued"
-    CATCH_UP = "catch_up"
-    MISSED = "missed"
-    SKIPPED_OVERLAP = "skipped_overlap"
-    BLOCKED_NO_CREDENTIALS = "blocked_no_credentials"
-    REFUSED = "refused"
-    FAILED = "failed"
-
-
-class SchedulerHealth(StrEnum):
-    NOT_APPLICABLE = "not_applicable"  # a manual schedule never ticks
-    NEVER_TICKED = "never_ticked"
-    HEALTHY = "healthy"
-    STALE = "stale"
 
 
 class ScheduleInvalid(ValueError):
@@ -239,3 +214,22 @@ class SlotClaim(BaseModel):
     claimed_at: datetime
     intended: SlotOutcome = Field(description="enqueued | catch_up | missed, as decided at claim")
     superseded_by: str | None = None
+
+
+class TickReport(BaseModel):
+    """What one `autotester schedule tick` did: the JSON document of `--output json`.
+
+    `exit_code`: 0 nothing due or all handled, 2 a slot blocked / refused / failed or a project
+    errored, 3 a config was invalid. `errors` holds `<project>: <ExceptionClass>` only (a
+    message may carry a secret). `would_fire` / `would_block` are filled by `--dry-run` alone."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    tick_at: datetime
+    dry_run: bool = False
+    exit_code: int = Field(0, ge=0, le=3)
+    records: list[SlotRecord] = Field(default_factory=list)
+    would_fire: list[str] = Field(default_factory=list)
+    would_block: list[str] = Field(default_factory=list)
+    invalid: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)

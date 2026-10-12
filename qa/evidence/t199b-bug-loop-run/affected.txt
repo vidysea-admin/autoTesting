@@ -1,0 +1,20 @@
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+.........................................................s.............. [ 40%]
+........................................................................ [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+...ss................................................................... [ 93%]
+....................................                                     [100%]
+============================== warnings summary ===============================
+..\venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_issues.py:63: the real corpus is not on this host
+SKIPPED [1] tests\test_score.py:62: the real corpus is not on this host
+SKIPPED [1] tests\test_score.py:74: the real corpus is not on this host
+537 passed, 3 skipped, 1 warning in 259.04s (0:04:19)
+done

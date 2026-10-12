@@ -49,7 +49,7 @@ def held(
     grant_live_case_approval(store, target=store.load_project().base_url)
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
     monkeypatch.setattr(BrowserSession, "close", lambda self: None)
-    monkeypatch.setattr(routes_runs, "LangChainFallbackProvider", _Provider)
+    monkeypatch.setattr(routes_runs, "for_role", lambda project, role: _Provider())
     ran: list[str] = []
 
     def fake(case_, session, judge, run_id, store_):
@@ -131,7 +131,7 @@ def test_credentials_deleted_while_waiting_refuse_the_run_at_start_without_a_bro
         def available(self) -> bool:
             return False
 
-    monkeypatch.setattr(routes_runs, "LangChainFallbackProvider", _Gone)
+    monkeypatch.setattr(routes_runs, "for_role", lambda project, role: _Gone())
     jobs.pop()()
     assert ran == []                             # no browser, no case executed
     page = client.get("/projects/demo/report").text

@@ -120,7 +120,10 @@ def _source(tmp_path: Path) -> Source:
 
 def test_rc2_ingest_video_keeps_narration_on_screen_text_and_exit_screen(tmp_path: Path) -> None:
     source = _source(tmp_path)
-    spec = ingest_video(source, "p", MockProvider(responses={"vision": [observation()]}))
+    said = Transcript(source_id=source.id, segments=[  # RC3: a kept narration is a transcript quote
+        TranscriptSegment(start=0, end=3, text="First, type your email here, then continue.")])
+    spec = ingest_video(source, "p", MockProvider(responses={"vision": [observation()]}),
+                        transcript=said)
     flow, step = spec.flows[0], spec.flows[0].steps[0]
     assert step.narration == "type your email here"
     assert step.on_screen_text == "Email"

@@ -1,0 +1,13 @@
+Auto-merging docs/MAP.md
+CONFLICT (content): Merge conflict in docs/MAP.md
+Auto-merging src/autotester/auth/__init__.py
+CONFLICT (add/add): Merge conflict in src/autotester/auth/__init__.py
+Auto-merging src/autotester/auth/policy.py
+CONFLICT (add/add): Merge conflict in src/autotester/auth/policy.py
+Auto-merging src/autotester/cli.py
+CONFLICT (content): Merge conflict in src/autotester/cli.py
+Auto-merging src/autotester/ui/app.py
+CONFLICT (content): Merge conflict in src/autotester/ui/app.py
+Auto-merging src/autotester/ui/routers.py
+CONFLICT (add/add): Merge conflict in src/autotester/ui/routers.py
+Automatic merge failed; fix conflicts and then commit the result.

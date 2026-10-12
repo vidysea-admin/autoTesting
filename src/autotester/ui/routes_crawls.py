@@ -27,7 +27,7 @@ from autotester.schema.flowspec import FlowSpec
 from autotester.schema.screen_graph import ScreenNode
 from autotester.stages.coverage import diff_crawl, queue_requests, unreached_screens
 from autotester.stages.crawl_report import export_crawl_excel
-from autotester.stages.explore_merge import merge_screens
+from autotester.stages.explore_merge import merge_stored_crawl
 from autotester.stages.explore_status import displayed_reason, displayed_status, is_success
 from autotester.stages.merge_flowspec import resolve_requests
 from autotester.store.project_store import ProjectStore
@@ -276,8 +276,7 @@ def merge_crawl(slug: str, crawl_id: str) -> RedirectResponse:
     when anything changed — a crawl may propose screens, never approve them."""
     store, _project = _load_project_or_404(slug)
     _require_safe_id(crawl_id, "crawl_id")
-    nodes = store.list_nodes(crawl_id)
-    spec = merge_screens(store.load_flowspec(), nodes, slug, crawl_id=crawl_id)
+    spec = merge_stored_crawl(store, store.load_flowspec(), slug, crawl_id)
     store.save_flowspec(spec)
     # AT-289: covering a gap and leaving its ask OPEN is the V6 two-seam drift on
     # the CLOSING side — `queue_requests` is called from both entry points, so

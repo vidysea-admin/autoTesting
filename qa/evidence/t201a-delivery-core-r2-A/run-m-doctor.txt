@@ -1,0 +1,4 @@
+stale-generated: docs/SNAPSHOT.md — differs from regeneration; run `autotester snapshot`
+
+1 violation(s)
+exit=1 t=72s
