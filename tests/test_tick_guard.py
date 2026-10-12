@@ -26,7 +26,7 @@ def test_valid_tick_passes(tmp_path: Path) -> None:
     assert tick_guard.problems(_root(tmp_path, GOOD)) == []
 
 
-@pytest.mark.parametrize("text", ["", "  \n", GOOD.rstrip("\n"), GOOD + "garbage\n",
+@pytest.mark.parametrize("text", ["", "  \n", GOOD.rstrip("\n"), "garbage\n" + GOOD,
                                   "2026-09-24T22:26:20Z WAITING · no", "{\"a\": 1"])
 def test_truncated_or_partial_is_detected(tmp_path: Path, text: str) -> None:
     assert tick_guard.problems(_root(tmp_path, text))
