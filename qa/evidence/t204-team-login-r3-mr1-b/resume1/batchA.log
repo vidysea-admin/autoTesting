@@ -1,0 +1,18 @@
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 60%]
+........................................................................ [ 80%]
+....................................................................     [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_release_gate.py::test_rr2_an_under_declared_scope_on_disk_is_refused_before_anything_runs
+tests/test_release_gate.py::test_rr2_an_under_declared_wall_clock_alone_is_refused
+tests/test_release_gate.py::test_rr2_a_honestly_frozen_scope_stays_resumable
+tests/test_release_gate.py::test_rr2_preflight_runs_before_any_disk_write_and_before_graph_invoke
+  <string>:11: RuntimeWarning: StageContext for run 'rel' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+356 passed, 5 warnings in 146.02s (0:02:26)

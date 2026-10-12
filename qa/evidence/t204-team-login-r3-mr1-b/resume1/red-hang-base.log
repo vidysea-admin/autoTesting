@@ -1,0 +1,56 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_a_mutation_that_hangs_pytest_times_out_and_is_not_a_kill ________
+
+mutation_repo = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-28278/test_a_mutation_that_hangs_pyt0')
+
+    def test_a_mutation_that_hangs_pytest_times_out_and_is_not_a_kill(mutation_repo: Path) -> None:
+        """A mutation can introduce an infinite loop. It used to hang the run forever."""
+        hang = {"old": "if value > 10:",
+                "new": "while value > 0:" + chr(10) + "        pass" + chr(10) + "    if value > 10:"}
+    
+>       results, _ = _within(120, lambda: check(spec(timeout_s=20, mutation=hang), mutation_repo))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_mutation_check_judgement.py:197: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_mutation_check_judgement.py:188: in _within
+    raise box["error"]
+tests\test_mutation_check_judgement.py:178: in run
+    box["value"] = fn()
+                   ^^^^
+tests\test_mutation_check_judgement.py:197: in <lambda>
+    results, _ = _within(120, lambda: check(spec(timeout_s=20, mutation=hang), mutation_repo))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts\mutation_check.py:296: in check
+    return _check_in(work, spec, tests, mutations)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts\mutation_check.py:310: in _check_in
+    collected = collected_tests(work, tests, timeout)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cwd = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/mutation-check-aid91z3r/repo')
+tests = 'tests/test_mod.py', timeout = 20.0
+
+    def collected_tests(cwd: Path, tests: str | list[str],
+                        timeout: float = PYTEST_TIMEOUT_S) -> dict[str, set[str]]:
+        """Every collected test, as `bare name -> {full nodeid, ...}`.
+    
+        AT-320: a bare name is NOT an identifier. Both sides used to
+        `split("::")[-1]`, so a same-named test in another file or class satisfied
+        attribution and a mutation could be reported killed by a module it never
+        touched — verbatim AT-311's second failure mode, inside the fix for AT-311.
+        """
+        code, out = _run_pytest(cwd, tests, "--collect-only", timeout=timeout)
+        if code != 0:
+>           raise MutationError(
+                f"cannot collect {tests}: pytest exit {code}" + chr(10) + out[-2000:])
+E           mutation_check.MutationError: cannot collect tests/test_mod.py: pytest exit -1
+E           
+E           pytest did not finish within 20s; killed with its children
+
+scripts\mutation_check.py:186: MutationError
+=========================== short test summary info ===========================
+FAILED tests/test_mutation_check_judgement.py::test_a_mutation_that_hangs_pytest_times_out_and_is_not_a_kill
+1 failed in 40.13s

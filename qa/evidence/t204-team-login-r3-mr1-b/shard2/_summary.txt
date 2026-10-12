@@ -23,3 +23,12 @@
 0 135s tests/test_report_export_reason.py 7 passed, 1 warning in 14.16s
 0 162s tests/test_schedule_tick.py 20 passed, 1 warning in 37.95s
 0 186s tests/test_ui_auth_survivors.py 4 passed, 1 warning in 65.82s (0:01:05)
+0 144s tests/test_network_assertions.py 12 passed, 1 warning in 10.37s
+0 141s tests/test_cli_orchestrate.py 4 passed, 1 warning in 9.19s
+0 145s tests/test_bug_run.py 22 passed, 1 warning in 29.89s
+0 125s tests/test_gws_runner.py 10 passed, 1 warning in 20.38s
+0 147s tests/test_zip_intake_names.py 65 passed, 1 warning in 22.12s
+0 202s tests/test_media_real_ffmpeg.py 2 passed, 1 warning in 75.94s (0:01:15)
+0 94s tests/test_cli_release.py 4 passed, 1 warning in 6.81s
+0 88s tests/test_ui_healthz.py 6 passed, 1 warning in 6.63s
+0 94s tests/test_ui_crawl_approval.py 8 passed, 1 warning in 9.67s
