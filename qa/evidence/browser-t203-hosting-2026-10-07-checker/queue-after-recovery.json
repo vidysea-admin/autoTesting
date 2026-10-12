@@ -1,0 +1,113 @@
+{
+  "entries": [
+    {
+      "id": "run-DONE0001",
+      "project": "alpha",
+      "status": "done",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:01:00Z",
+      "started_at": "2026-10-07T09:01:05Z",
+      "finished_at": "2026-10-07T09:01:50Z",
+      "position": 0
+    },
+    {
+      "id": "run-FAILED01",
+      "project": "alpha",
+      "status": "failed",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:02:00Z",
+      "started_at": "2026-10-07T09:02:05Z",
+      "finished_at": "2026-10-07T09:02:50Z",
+      "reason": "ValueError",
+      "position": 0
+    },
+    {
+      "id": "run-REFUSED1",
+      "project": "alpha",
+      "status": "refused",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:03:00Z",
+      "started_at": "2026-10-07T09:03:05Z",
+      "finished_at": "2026-10-07T09:03:50Z",
+      "reason": "the project has no credentials set for role admin_with_a_really_long_name_that_has_no_break_points_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ and consent was not recorded for this target so the gate said no at start time",
+      "position": 0
+    },
+    {
+      "id": "run-INTERR01",
+      "project": "alpha",
+      "status": "interrupted",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:04:00Z",
+      "started_at": "2026-10-07T09:04:05Z",
+      "finished_at": "2026-10-07T09:04:50Z",
+      "reason": "the server restarted while this run was in progress; it was not re-run -- press Test again",
+      "position": 0
+    },
+    {
+      "id": "run-XSSREF01",
+      "project": "alpha",
+      "status": "refused",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:05:00Z",
+      "started_at": "2026-10-07T09:05:05Z",
+      "finished_at": "2026-10-07T09:05:50Z",
+      "reason": "<script>window.__xss=1</script> & \"q\" 'a'",
+      "position": 0
+    },
+    {
+      "id": "run-RUNNING1",
+      "project": "alpha",
+      "status": "interrupted",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:06:00Z",
+      "started_at": "2026-10-07T09:06:05Z",
+      "finished_at": "2026-10-07T13:47:38.266877Z",
+      "reason": "the server restarted while this run was in progress; it was not re-run -- press Test again",
+      "position": 0
+    },
+    {
+      "id": "run-QUEUED01",
+      "project": "alpha",
+      "status": "refused",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:07:00Z",
+      "started_at": "2026-10-07T13:47:38.266877Z",
+      "finished_at": "2026-10-07T13:47:38.267881Z",
+      "reason": "project 'alpha' has no cases to run",
+      "position": 0
+    },
+    {
+      "id": "run-QUEUED02",
+      "project": "alpha",
+      "status": "refused",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:08:00Z",
+      "started_at": "2026-10-07T13:47:38.267881Z",
+      "finished_at": "2026-10-07T13:47:38.276491Z",
+      "reason": "project 'alpha' has no cases to run",
+      "position": 0
+    },
+    {
+      "id": "run-BETARUN1",
+      "project": "beta",
+      "status": "interrupted",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:09:00Z",
+      "started_at": "2026-10-07T09:09:05Z",
+      "finished_at": "2026-10-07T13:47:38.266877Z",
+      "reason": "the server restarted while this run was in progress; it was not re-run -- press Test again",
+      "position": 0
+    },
+    {
+      "id": "run-BETAQ001",
+      "project": "beta",
+      "status": "refused",
+      "trigger": "button",
+      "enqueued_at": "2026-10-07T09:10:00Z",
+      "started_at": "2026-10-07T13:47:38.266877Z",
+      "finished_at": "2026-10-07T13:47:38.267881Z",
+      "reason": "project 'beta' has no cases to run",
+      "position": 0
+    }
+  ]
+}

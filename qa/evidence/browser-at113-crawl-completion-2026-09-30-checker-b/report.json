@@ -1,0 +1,176 @@
+{
+  "pid": 20016,
+  "port": 53993,
+  "pages": [
+    {
+      "case": "healthy",
+      "history_text": "healthy\tCOMPLETED\tfrontier empty\t0\t0\t7\t0\t\u2014\t\u2014",
+      "console_errors": []
+    },
+    {
+      "case": "healthy",
+      "console_errors": []
+    },
+    {
+      "case": "abandoned",
+      "history_text": "abandoned\tABORTED\tabandoned visits: aborted_error (/lost)\t0\t0\t7\t0\t\u2014\t\u2014",
+      "console_errors": []
+    },
+    {
+      "case": "abandoned",
+      "console_errors": []
+    },
+    {
+      "case": "bounded",
+      "history_text": "bounded\tSTOPPED_BOUND\tmax_actions\t0\t0\t7\t0\t\u2014\t\u2014",
+      "console_errors": []
+    },
+    {
+      "case": "bounded",
+      "console_errors": []
+    },
+    {
+      "case": "bounded_abandon",
+      "history_text": "bounded_abandon\tSTOPPED_BOUND\tmax_actions\t0\t0\t7\t0\t\u2014\t\u2014",
+      "console_errors": []
+    },
+    {
+      "case": "bounded_abandon",
+      "console_errors": []
+    },
+    {
+      "case": "legacy_error",
+      "history_text": "legacy_error\tABORTED\tcrawl incomplete: recorded controls were not exercised because of errors\t0\t0\t7\t0\t\u2014\t\u2014",
+      "console_errors": []
+    },
+    {
+      "case": "legacy_error",
+      "console_errors": []
+    },
+    {
+      "case": "legacy_policy",
+      "history_text": "legacy_policy\tCOMPLETED\tfrontier empty\t0\t0\t7\t0\t\u2014\t\u2014",
+      "console_errors": []
+    },
+    {
+      "case": "legacy_policy",
+      "console_errors": []
+    },
+    {
+      "case": "actual_dialog",
+      "history_text": "actual_dialog\tABORTED\tabandoned visits: aborted_dialog (/storm.html), aborted_error (/volatile.html)\t4\t0\t3\t0\t\u2014\t2026-09-30T18:26:09.940251+00:00",
+      "console_errors": []
+    },
+    {
+      "case": "actual_dialog",
+      "console_errors": []
+    }
+  ],
+  "interactions": [
+    {
+      "case": "healthy",
+      "detail_click": true,
+      "download": "D:\\autoTesting\\.work\\at113-check-b\\headed-positive-css-bound\\healthy.xlsx"
+    },
+    {
+      "case": "abandoned",
+      "detail_click": true,
+      "download": "D:\\autoTesting\\.work\\at113-check-b\\headed-positive-css-bound\\abandoned.xlsx"
+    },
+    {
+      "case": "bounded",
+      "detail_click": true,
+      "download": "D:\\autoTesting\\.work\\at113-check-b\\headed-positive-css-bound\\bounded.xlsx"
+    },
+    {
+      "case": "bounded_abandon",
+      "detail_click": true,
+      "download": "D:\\autoTesting\\.work\\at113-check-b\\headed-positive-css-bound\\bounded_abandon.xlsx"
+    },
+    {
+      "case": "legacy_error",
+      "detail_click": true,
+      "download": "D:\\autoTesting\\.work\\at113-check-b\\headed-positive-css-bound\\legacy_error.xlsx"
+    },
+    {
+      "case": "legacy_policy",
+      "detail_click": true,
+      "download": "D:\\autoTesting\\.work\\at113-check-b\\headed-positive-css-bound\\legacy_policy.xlsx"
+    },
+    {
+      "case": "actual_dialog",
+      "detail_click": true,
+      "download": "D:\\autoTesting\\.work\\at113-check-b\\headed-positive-css-bound\\actual_dialog.xlsx"
+    }
+  ],
+  "executed_source": "D:\\autoTesting\\.work\\at113-check-b\\source\\src\\autotester\\stages\\explore_status.py",
+  "source_sha256": "800e5c013a037c942175f8e1b1b35c75c52825a17931d056e6996f025ec1e615",
+  "executed_child": {
+    "pid": 42296,
+    "source": "D:\\autoTesting\\.work\\at113-check-b\\source\\src\\autotester\\stages\\explore_status.py",
+    "nonce": "45628606cece41f39ce6241988611fbf",
+    "sha256": "800e5c013a037c942175f8e1b1b35c75c52825a17931d056e6996f025ec1e615"
+  },
+  "external_resource_stubs": [
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  ],
+  "external_stubs_limitation": "ALL external resources replaced with empty CSS locally; only local product route behavior observed, external network path unverified",
+  "historical_bytes_preserved": true,
+  "closed_owned_processes": [
+    {
+      "ProcessId": 42296,
+      "ParentProcessId": 20016,
+      "Name": "python.exe",
+      "Created": "2026-09-30T18:26:31.8564060Z"
+    },
+    {
+      "ProcessId": 20016,
+      "ParentProcessId": 4848,
+      "Name": "python.exe",
+      "Created": "2026-09-30T18:26:31.8425320Z"
+    }
+  ],
+  "server_exit": 4294967295,
+  "server_port_closed": true
+}

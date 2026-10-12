@@ -1,0 +1,16 @@
+1) tick killed (os._exit 77) at the enqueue call, after claim+gate:
+  exit=77
+  claims=1 records=0 runs=0 approvals=1
+2) retry 30s later (inside redrive delay 120s):
+  exit=0 outcomes=0
+  claims=1 records=0 runs=0 approvals=1
+3) retry 130s later:
+  exit=0 "outcome":"enqueued",
+  claims=1 records=1 runs=1 approvals=1
+4) retry again 10 min later (must not run again):
+  exit=0 0 records
+  claims=1 records=1 runs=1 approvals=1
+5) scenario: crash and first retry only after 90 min (outside 60 min grace):
+  claims=1 records=0 runs=0 approvals=1
+  exit=0 "outcome":"enqueued",
+  claims=1 records=1 runs=1 approvals=1
