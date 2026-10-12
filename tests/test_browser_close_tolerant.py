@@ -6,7 +6,6 @@ from types import SimpleNamespace
 
 import pytest
 from playwright import sync_api
-
 from test_browser import session_with_fake_page
 
 
