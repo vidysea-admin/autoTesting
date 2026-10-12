@@ -1,0 +1,6 @@
+round 1: runs=1 claims=1 records=1 approvals=1 exits=0 0 0  recs_per_proc=0,1,0,
+round 2: runs=1 claims=1 records=1 approvals=1 exits=0 0 0  recs_per_proc=1,0,0,
+round 3: runs=1 claims=1 records=1 approvals=1 exits=0 0 0  recs_per_proc=1,0,0,
+round 4: runs=1 claims=1 records=1 approvals=1 exits=0 0 0  recs_per_proc=0,0,1,
+round 5: runs=1 claims=1 records=1 approvals=1 exits=0 0 0  recs_per_proc=1,0,0,
+round 6: runs=1 claims=1 records=1 approvals=1 exits=0 0 0  recs_per_proc=1,0,0,
