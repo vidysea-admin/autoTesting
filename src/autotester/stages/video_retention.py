@@ -14,10 +14,13 @@ case -- retention is a project-wide property, unlike the per-case prune.
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 from autotester.schema.enums import EvidenceKind
 from autotester.store.project_store import ProjectStore
+
+log = logging.getLogger(__name__)
 
 DEFAULT_KEEP = 20
 """The gate answer's own number (qa/gates/meeting-run-video-scope.md,
@@ -85,3 +88,13 @@ def prune_old_videos(store: ProjectStore, keep: int = DEFAULT_KEEP) -> list[str]
                 result.evidence = kept_evidence
                 store.save_result(run_id, result)
     return deleted
+
+
+def prune_old_videos_safely(store: ProjectStore, keep: int = DEFAULT_KEEP) -> list[str]:
+    """Housekeeping after a saved run must never fail it (AT-735): a prune error
+    is logged and swallowed."""
+    try:
+        return prune_old_videos(store, keep)
+    except Exception:  # best-effort: the run is already saved
+        log.exception("video retention prune failed; run is saved")
+        return []

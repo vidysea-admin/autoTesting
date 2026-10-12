@@ -54,7 +54,7 @@ from autotester.stages.parallel_run import (
     plan_parallel_run,
 )
 from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
-from autotester.stages.video_retention import prune_old_videos
+from autotester.stages.video_retention import prune_old_videos_safely
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
 
@@ -285,8 +285,8 @@ def launch_run(
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
     )
     store.save_run(run)
-    prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
-    ask_for_what_it_did_not_recognise(store, run_id)
+    ask_for_what_it_did_not_recognise(store, run_id)  # O5 first: housekeeping must not gate it
+    prune_old_videos_safely(store)  # T-191/AT-587 V5; AT-735: failure logged, run kept
     return run
 
 

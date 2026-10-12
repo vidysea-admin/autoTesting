@@ -11,7 +11,10 @@ Nothing here is itself a FastAPI route.
 from __future__ import annotations
 
 import contextlib
+import os
 import shutil
+import stat
+import time
 from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
@@ -57,6 +60,18 @@ def _run_and_grade_resilient(
         return result, verdict
 
 
+_WIPE_ATTEMPTS = 3
+_WIPE_PAUSE_S = 0.3
+
+
+def _clear_readonly(profile: Path) -> None:
+    """Drop the read-only bit on everything under `profile` (Windows refuses to delete it)."""
+    for root, dirs, files in os.walk(profile):
+        for name in (*dirs, *files):
+            with contextlib.suppress(OSError):
+                os.chmod(Path(root) / name, stat.S_IWRITE | stat.S_IREAD)
+
+
 def _wipe_entry_profile(profile: Path) -> None:
     """Remove the entry profile and positively establish it is gone (RU5, C12).
     An already-absent directory is success. A failed removal, a directory still
@@ -64,8 +79,16 @@ def _wipe_entry_profile(profile: Path) -> None:
     (never `ignore_errors`, never `os.path.lexists`, which reads an error as
     'absent'), so the caller never starts a browser on a logged-in profile."""
     try:
-        with contextlib.suppress(FileNotFoundError):
-            shutil.rmtree(profile)
+        for attempt in range(_WIPE_ATTEMPTS):  # AT-733: Windows read-only bits / lingering handles
+            try:
+                with contextlib.suppress(FileNotFoundError):
+                    shutil.rmtree(profile)
+                break
+            except OSError:
+                _clear_readonly(profile)
+                if attempt == _WIPE_ATTEMPTS - 1:
+                    raise
+                time.sleep(_WIPE_PAUSE_S)
         present = profile.exists()
     except OSError as exc:
         cause = f"{type(exc).__name__}: {exc}"

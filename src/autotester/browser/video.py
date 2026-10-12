@@ -29,11 +29,14 @@ append raised `Cannot read properties of null` on a fresh navigation), so
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from autotester.browser.evidence import MASK_CSS
 from autotester.schema.enums import EvidenceKind
 from autotester.schema.run import Evidence
+
+log = logging.getLogger(__name__)
 
 _MASK_INIT_SCRIPT = f"""(() => {{
   function install() {{
@@ -193,19 +196,30 @@ class VideoMixin:
             self._page = self._context.new_page()  # AT-888: never close the context's last page
         with _ignore_close_errors():
             page.close()
+        self.video_lost = None  # AT-734: set to a reason when a requested video was lost
         if video is None:
             return None
         try:
             temp_path = Path(video.path())
-        except Exception:
-            return None
+        except (OSError, ValueError, RuntimeError, AttributeError) as exc:
+            return self._lose_video(case_id, f"video path unavailable: {_one_line(exc)}")
         prefix = getattr(self.state, "evidence_prefix", "") or ""
         rel = f"{prefix}/{case_id}.webm" if prefix else f"{case_id}.webm"
         final_path = self.state.run_dir / rel
-        final_path.parent.mkdir(parents=True, exist_ok=True)
-        if temp_path.exists():
-            temp_path.replace(final_path)
+        try:  # AT-734: runs inside the caller's `finally`; must never discard the RawResult
+            final_path.parent.mkdir(parents=True, exist_ok=True)
+            if temp_path.exists():
+                temp_path.replace(final_path)
+        except OSError as exc:
+            return self._lose_video(case_id, f"video move failed: {_one_line(exc)}")
         return rel if final_path.exists() else None
+
+    def _lose_video(self, case_id: str, reason: str) -> None:
+        """A requested video that could not be kept: logged and recorded on
+        `self.video_lost`, so it is distinguishable from 'video off' (AT-734)."""
+        self.video_lost = self._scrubbed(reason)
+        log.warning("case %s video lost: %s", case_id, self.video_lost)
+        return None
 
 
 def _one_line(exc: BaseException) -> str:
@@ -220,5 +234,5 @@ class _ignore_close_errors:
     def __enter__(self) -> None:
         return None
 
-    def __exit__(self, *_exc: object) -> bool:
-        return True
+    def __exit__(self, exc_type: type[BaseException] | None, *_exc: object) -> bool:
+        return exc_type is not None and issubclass(exc_type, Exception)  # not Ctrl-C/SystemExit
