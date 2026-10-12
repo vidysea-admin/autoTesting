@@ -259,6 +259,7 @@
 | `ui/error_pages.py` | App-wide `HTTPException` -> HTML page, split out of `ui/app.py` to keep that |
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
+| `ui/intake_gate_auth.py` | The real intake gate: sign-in and `video.upload` on that project (team-intake.md TI10, TI11). |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
 | `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
