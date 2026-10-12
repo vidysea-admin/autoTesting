@@ -1,0 +1,14 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 92 items
+
+tests\test_explore_safety.py ........................................... [ 46%]
+........................                                                 [ 72%]
+tests\test_execute.py .........                                          [ 82%]
+tests\test_execute_new_actions.py ..                                     [ 84%]
+tests\test_execute_assertions.py ..............                          [100%]
+
+============================= 92 passed in 2.73s ==============================

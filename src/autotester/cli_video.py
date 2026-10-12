@@ -12,6 +12,7 @@ import typer
 
 from autotester import providers
 from autotester.cli_intake import register_intake_commands
+from autotester.cli_video_review import ReviewCommand, review_cmd
 from autotester.core.paths import RepoDocs
 from autotester.schema.enums import ReviewStatus
 from autotester.schema.flowspec import StepRef
@@ -31,6 +32,7 @@ from autotester.stages.reconcile import narration_drop_report
 from autotester.store.project_store import ProjectStore
 
 app = typer.Typer(help="Learn a product's screens and flows from a screen recording.")
+app.command("review", cls=ReviewCommand)(review_cmd)
 
 
 @app.command("register")

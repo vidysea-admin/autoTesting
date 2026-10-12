@@ -1,0 +1,9 @@
+name: fz1-X13c-drop-alias-rewrite
+import_path: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fz\fz1-X13c-drop-alias-rewrite\src\autotester\__init__.py
+green_rc: 0
+green_tail: ======================= 31 passed, 3 warnings in 6.43s ========================
+green_s: 22
+red_rc: 1
+red_tail: ================== 4 failed, 27 passed, 3 warnings in 6.07s ===================
+red_s: 18
+failed: ['FAILED tests/test_explore_flows_doors.py::test_the_cli_door_points_a_rediscovered_screen_at_the_existing_one', 'FAILED tests/test_explore_flows_doors.py::test_the_ui_door_points_a_rediscovered_screen_at_the_existing_one', 'FAILED tests/test_explore_flows_doors.py::test_a_rediscovery_changes_the_screen_reference_not_the_flow_id', 'FAILED tests/test_explore_flows.py::test_a_rediscovered_screen_is_referenced_by_the_existing_id_and_the_flow_id_is_stable']

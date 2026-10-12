@@ -1,0 +1,70 @@
+## copy
+bare zip                         json -> SourceOriginKind:<SourceOriginKind.ZIP: 'zip'>
+bare zip                         py   -> SourceOriginKind:<SourceOriginKind.ZIP: 'zip'>
+bare recording                   json -> SourceOriginKind:<SourceOriginKind.RECORDING: 'recording'>
+bare recording                   py   -> SourceOriginKind:<SourceOriginKind.RECORDING: 'recording'>
+bare ZIP upper                   json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+bare ZIP upper                   py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+bare empty                       json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+bare empty                       py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+bare email                       json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+bare email                       py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict zip full                    json -> ZipOrigin:ZipOrigin(kind=<SourceOriginKind.ZIP: 'zip'>, archive_name='z', member_path='m')
+dict zip full                    py   -> ZipOrigin:ZipOrigin(kind=<SourceOriginKind.ZIP: 'zip'>, archive_name='z', member_path='m')
+dict zip no detail               json -> ERR ValidationError 3 validation errors for Source | n_errors=3
+dict zip no detail               py   -> ERR ValidationError 3 validation errors for Source | n_errors=3
+dict recording                   json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict recording                   py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict upload full                 json -> UploadOrigin:UploadOrigin(kind=<SourceOriginKind.UPLOAD: 'upload'>, file_name='x')
+dict upload full                 py   -> UploadOrigin:UploadOrigin(kind=<SourceOriginKind.UPLOAD: 'upload'>, file_name='x')
+dict upload extra key            json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict upload extra key            py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict upload with drive field     json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict upload with drive field     py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict drive                       json -> DriveOrigin:DriveOrigin(kind=<SourceOriginKind.DRIVE: 'drive'>, file_id='F')
+dict drive                       py   -> DriveOrigin:DriveOrigin(kind=<SourceOriginKind.DRIVE: 'drive'>, file_id='F')
+dict email                       json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict email                       py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict no kind                     json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict no kind                     py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+list                             json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+list                             py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+int                              json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+int                              py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+null                             json -> NoneType:None
+null                             py   -> NoneType:None
+## src_1c52bf71
+bare zip                         json -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare zip                         py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare recording                   json -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare recording                   py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare ZIP upper                   json -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare ZIP upper                   py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare empty                       json -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare empty                       py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare email                       json -> ERR ValidationError 1 validation error for Source | n_errors=1
+bare email                       py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict zip full                    json -> ZipOrigin:ZipOrigin(kind='zip', archive_name='z', member_path='m')
+dict zip full                    py   -> ZipOrigin:ZipOrigin(kind='zip', archive_name='z', member_path='m')
+dict zip no detail               json -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict zip no detail               py   -> ERR ValidationError 2 validation errors for Source | n_errors=2
+dict recording                   json -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict recording                   py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict upload full                 json -> UploadOrigin:UploadOrigin(kind='upload', file_name='x')
+dict upload full                 py   -> UploadOrigin:UploadOrigin(kind='upload', file_name='x')
+dict upload extra key            json -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict upload extra key            py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict upload with drive field     json -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict upload with drive field     py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict drive                       json -> DriveOrigin:DriveOrigin(kind='drive', file_id='F')
+dict drive                       py   -> DriveOrigin:DriveOrigin(kind='drive', file_id='F')
+dict email                       json -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict email                       py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict no kind                     json -> ERR ValidationError 1 validation error for Source | n_errors=1
+dict no kind                     py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+list                             json -> ERR ValidationError 1 validation error for Source | n_errors=1
+list                             py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+int                              json -> ERR ValidationError 1 validation error for Source | n_errors=1
+int                              py   -> ERR ValidationError 1 validation error for Source | n_errors=1
+null                             json -> NoneType:None
+null                             py   -> NoneType:None

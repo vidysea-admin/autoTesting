@@ -1,0 +1,51 @@
+# Verdict - t201a-delivery-core - fix cycle 1 - coordinator A (blind dual check)
+
+Cycle checked: 1
+Policy-Version: proportional-verification/2026-10-10.9
+Bound to: D:/autoTesting. Checked tree: `git archive 7dd225d4` in a C: scratch folder with its own venv (autotester.__file__ and pytest rootdir printed inside the copy). Repair base `9b6d44c1` verified an ancestor of HEAD. Earlier verdicts, checkpoints and any `.b` / `-B` file not opened.
+
+## Plan (step 0)
+Tier L, dual-trigger `delivery/email.py:149` (unchanged by the repair; email.py not in the repair diff). Repair-checker scope: F1 (C11), F2 (C8), F3 (C10); criteria whose inputs the repair diff touches (`delivery/inbox.py`, `schema/delivery.py`: C6, C7, C9, C11, C8, C10, C2 via ReportSummary); affected tests; repair diff in full; whole-unit diff scan; one falsification per repaired item; own injectivity property test; the one owed full suite.
+
+VERDICT: FAIL
+SCOREBOARD: 12/12 acceptance criteria met on their own evidence; 1 new suite red caused by the repair (below). Invariants judged: no file over 300 lines, no function over 50, ruff clean, `autotester doctor` clean.
+TIER: L (security dual-trigger email.py:149; repair touched inbox.py and schema/delivery.py)
+
+FAILURES:
+- [suite / correctness] sev: medium - `tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve` is RED at 7dd225d4 and GREEN at the repair base 9b6d44c1 and at the merge base 6504de03 (33 passed at both; 1 failed, 32 passed at head; it also fails alone in the sharded suite). Cause read at `delivery/inbox.py:78,130` and `tests/advice_scan.py:160-195`: the repair's new `rf"(?:{_CHANNELS})__..."` interpolates an upper-case module name bound to a call, which the guard reports as an unresolved hole (`delivery/inbox.py`, 130). Fix direction: build that pattern without interpolating `_CHANNELS` in an f-string (concatenate, or bind it to a name the scanner accepts); do not touch the guard or its test. issue: P1. Evidence: `qa/evidence/t201a-delivery-core-r1-A/cli-advice-regression.md`.
+
+## Results for the repaired items (re-run by me)
+- F1 / C11 MET. `alice` and `alice.smith` both sent (own keys); run `x__email__y`+`z` and run `x`+`y__email__z` get two keys; `records_for_run('x')` returns only run x (`f_items.txt`). Affected tests: 97 passed (`affected.txt`). Injectivity: PROVED, ruling below.
+- F2 / C8 MET. Four deterministic interleavings (`interleave.txt`): no double send in any; worker 1 never raises; records stay one per attempt.
+- F3 / C10 MET. `//host`, `///host`, `https://x//host`, ports 0 / 65536 / 99999 / empty-port refused; ports 1, 65535, `/`, `/a//b`, `:00080` accepted (`f_items.txt`).
+- C12 MET (pure CR / pure LF addresses refused as prefix, suffix, embedded). C4 implicit-SSL certificate check present and green. C6 create-once pinned on its own.
+- C1-C3, C5, C7, C9: inputs not touched by the repair except via the shared files; their tests are inside the 97 green.
+- `-k` sets in the 12 Pre-check lines: each re-selected, counts identical to the manifest (2,7,14,15,1,4,3,3,4,23,18,19; `kselect.txt`) and the C8, C10, C11, C12 sets include the new tests.
+- No assertion weakened: the only removed test lines are an import line and a parametrize line that was extended (`git diff 9b6d44c1 7dd225d4 -- tests`).
+- Whole-unit diff `6504de03..7dd225d4`: 13 files, all named in the manifest (plus `.env.example`, `docs/MAP.md`, the manifest); none of the forbidden files. Repair diff read in full (inbox.py, schema/delivery.py, 3 test files).
+
+## Rulings
+1. KEY ENCODING: injective, prefix-free, decodable. Proof: `enc` emits tokens `[a-z0-9.-]` (1 char), `_`+letter (upper-case), `_0` (underscore); `_` is always the first char of a 2-char token, so decoding left to right is unique, `_0` can never be read as `_` then `0`, and `__` never occurs inside a part. A part never ends in `_`; it may start with `_` (upper-case first char), giving `email___a...`, still unique because the first `__` after the fixed channel word is the channel separator and the first `__` after a part-start (which is `_x`, never `__`) is the run/user separator. The channel is a fixed lower-case word with no `_`. Everything is lower-case, so case-insensitive file systems cannot merge two keys. Property test (`prop_inj.txt`): 583,200 exhaustive (run,user,channel) triples over ids of length 1-3 from `aA_0.-xX1`, plus 5,896 random triples from the full SAFE_ID alphabet (lengths 1-64, structure-biased), plus hand-picked adversarial pairs; every key decoded back to its triple, no collision, no `casefold` collision, and on disk 400 pairs x 2 channels x 2 attempts: `records_for_key` exact, `records_for_run` exact for 40 runs. Exact patterns `<key>\.\d+\.json` cannot match another key's file (digits contain no dot). SAFE_ID is ASCII-only: newline suffix, Kelvin sign, Arabic-Indic digit, full-width A, accented e, dotted capital I, NUL, space, slash, `..`, leading `_` `.` `-`, 65 chars all refused.
+2. LONG IDS: the `ValueError("delivery key too long")` DOES escape `deliver_once` (it is raised at its first line, outside any try): reproduced with run id and user id of 64 capitals (`interleave.txt`, `ESCAPES ValueError`). Reachable with product ids? Not with minted ones: `core/ids.py:141` makes `<prefix>_<ULID>` (about 57 encoded chars at worst), and then a 64-capital user id still fits (194 <= 200). It needs a free-form `--run-id` of roughly 35+ capitals/underscores plus a very long capital user id. Ruling: not a C8 FAIL (C8 is the transport path; an unsafe id already raised in cycle 0), low PROPOSED-ISSUE P2.
+3. CYCLE-0 RECORDS: nothing shipped. `master` has no `delivery/` tree, no `delivery_key`/`DeliveryLog` reference outside qa/docs, and the only branch containing the unit is `wave/t201a-delivery-core`. No orphaned or double-sent data.
+4. F2 TRUTHFULNESS: in all four constructed interleavings (worker 2 closes during send; after claim and before send; and each with worker 1's send raising) the single record says "outcome unknown ... may or may not have been sent; not resent", worker 1 returns that record, worker 2 never reaches the transport (its claim fails), so exactly one send. A definite failure of worker 1 that loses the race becomes a terminal "unknown" with no retry; truthful, low P3. No interleaving sends twice.
+
+## Falsification (one per repaired item, own copy each, green before / red after; `falsification.txt`)
+F1 key encoding -> identity: 2 red (injective, separator spelling). F1 exact matching -> `\..*\.json`: 2 red. F2 `except FileExistsError` -> `ZeroDivisionError`: 1 red (clock-skew test). F3 `(?!/)` removed: 3 red. F3 port check widened: 3 red. Each copy printed `autotester.__file__` inside the copy; all green first.
+
+## Full suite (owed once, run once): `shard_suite.py --repo D:/autoTesting --ref 7dd225d4 --shards 4 -- -o addopts=`
+3626 collected, collect proof ok; 3599 passed, 7 failed, 20 skipped. Lock waited 449 s. Reds:
+- NEW, attributable: `test_cli_advice_resolves ::test_the_collector_reports_what_it_could_not_resolve` (P1).
+- Same at the merge base `6504de03`: `test_env_creation_is_coordinated_across_processes` (`_queue.Empty`), `test_env_example_documents_every_key_the_code_reads` (keys `AUTOTESTER_SCHEDULE_GRACE_MINUTES`, `AUTOTESTER_TICK_INTERVAL_S`, not this unit's; the unit's own SMTP keys are documented), `test_healthz_source_root...` (harness artefact: the spawned interpreter imports the D: editable install; green at head in its own venv, red at the merge base with the shard interpreter). `baseline_reds_6504de03.txt`.
+- Listed as load-sensitive by the dispatch: `test_redact_wrap_perf`, two `test_mc_sessionstart_loop_status` (not re-proven).
+
+PROPOSED-ISSUE: {"severity":"medium","feature":"t201a-delivery-core","title":"records_for_run f-string at delivery/inbox.py:130 interpolates _CHANNELS and turns tests/test_cli_advice_resolves.py red (green at 9b6d44c1 and 6504de03)","evidence":"7dd225d4: pytest tests/test_cli_advice_resolves.py -> 1 failed (delivery/inbox.py, 130); qa/evidence/t201a-delivery-core-r1-A/cli-advice-regression.md","status":"open","found_by":"checker-unit"}
+PROPOSED-ISSUE: {"severity":"low","feature":"t201a-delivery-core","title":"deliver_once raises ValueError('delivery key too long') for ids whose encoded forms exceed 191 chars (64 capitals each); unreachable with minted run ids, reachable with a free-form --run-id","evidence":"qa/evidence/t201a-delivery-core-r1-A/interleave.txt ESCAPES line","status":"open","found_by":"checker-unit"}
+PROPOSED-ISSUE: {"severity":"low","feature":"t201a-delivery-core","title":"stale-close race: a definite worker-1 failure becomes terminal 'outcome unknown' with no retry; records_for_run docstring says oldest first but sorts by file name (channel, user), pre-existing","evidence":"interleave.txt; inbox.py:128-131","status":"open","found_by":"checker-unit"}
+
+CAPABILITY-COVERAGE: 5/5 falsification rows reproduced in my own copies (key encoding, exact matching, append race, protocol-relative URL, port range)
+LIVE-BROWSER: not-applicable (no UI path changed: delivery/*.py, schema/delivery.py, tests)
+ISSUES-WRITTEN: none (dual check; PROPOSED-ISSUE lines only)
+EXECUTOR: claude-sonnet-subagent (maker build subagent; checker: claude-sonnet-subagent)
+EXPLANATION: The three cycle-0 defects are repaired and I could not break them: the key encoding is provably injective (property test over about 589k triples), the append race never double-sends and tells the truth, and the URL holes are closed. The unit still FAILS because the repair introduced one new red in a whole-source guard (`test_cli_advice_resolves`) that the builder's affected set never ran; it is a one-line, fixable cause. New evidenced failure vs cycle 0: yes (a different failure, so the no-progress stop does not apply). The L wall budget (45 min) was passed because of the 21-minute suite; all mandatory checks completed, so no CONTINUE-NEEDED.
+Metrics: start=2026-10-11T19:38:57Z end=2026-10-11T20:52:00Z wall_min=64 agent_min=unavailable blocked_min=7 suite_runs=1 repeat_runs=0 mutations=5 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-10.9 lane=normal check_s=4383 mutants=0 defects_unit=1 defects_6c=0 slow: full suite 21 min (lock wait 7 min counted as blocked)

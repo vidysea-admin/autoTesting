@@ -1,0 +1,18 @@
+NAVIGATE: outcome=completed err=None
+    page calls: ["call.goto('https://app.example.test/reports', wait_until='domcontentloaded')", "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-navigate.png', full_page=False)"]
+WAIT(sel,50): outcome=completed err=None
+    page calls: ["call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-wait.png', full_page=False)"]
+WAIT(none): outcome=completed err=None
+    page calls: ["call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-wait.png', full_page=False)"]
+ASSERT(all fields): outcome=assertion_failed err=None
+    page calls: ["call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-assert.png', full_page=False)"]
+BACK: outcome=completed err=None
+    page calls: ["call.go_back(wait_until='domcontentloaded')", "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-back.png', full_page=False)"]
+HOVER(Delete account): outcome=completed err=None
+    page calls: ['call.locator().hover()', "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-hover.png', full_page=False)"]
+SCROLL(400): outcome=completed err=None
+    page calls: ['call.mouse.wheel(0, 400)', "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-scroll.png', full_page=False)"]
+SCROLL(abc): outcome=errored err=ValueError: invalid literal for int() with base 10: 'abc'
+    page calls: []
+HOVER+expected(url,dom): outcome=assertion_failed err=None
+    page calls: ['call.locator().hover()', "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-hover.png', full_page=False)"]

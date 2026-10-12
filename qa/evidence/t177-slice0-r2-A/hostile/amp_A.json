@@ -1,0 +1,14 @@
+{
+ "variant": "A",
+ "n": 600,
+ "results": {
+  "False(TimeoutError)": 402,
+  "True-full": 195,
+  "False(ConnectionAbortedError)": 3
+ },
+ "wall_min": 0.156,
+ "wall_med": 0.203,
+ "wall_max": 0.39,
+ "threads_end": [],
+ "open_socks": 0
+}

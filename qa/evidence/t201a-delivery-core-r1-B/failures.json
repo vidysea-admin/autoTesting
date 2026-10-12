@@ -1,0 +1,118 @@
+{
+ "refuse_rcpt": {
+  "result": [
+   "failed",
+   1,
+   "SMTPRecipientsRefused",
+   "2026-10-12 09:01:00+00:00"
+  ],
+  "secs": 0.05,
+  "address_in_files": false,
+  "messages": 0
+ },
+ "drop_mid_data": {
+  "result": [
+   "failed",
+   1,
+   "SMTPServerDisconnected",
+   "2026-10-12 09:01:00+00:00"
+  ],
+  "secs": 0.04,
+  "address_in_files": false,
+  "messages": 0
+ },
+ "timeout": {
+  "result": [
+   "failed",
+   1,
+   "SMTPServerDisconnected",
+   "2026-10-12 09:01:00+00:00"
+  ],
+  "secs": 1.04,
+  "address_in_files": false,
+  "messages": 1
+ },
+ "drop_after_data": {
+  "result": [
+   "failed",
+   1,
+   "SMTPServerDisconnected",
+   "2026-10-12 09:01:00+00:00"
+  ],
+  "secs": 0.03,
+  "address_in_files": false,
+  "messages": 1
+ },
+ "ok": {
+  "result": [
+   "sent",
+   1,
+   null,
+   "None"
+  ],
+  "secs": 0.03,
+  "address_in_files": false,
+  "messages": 1
+ },
+ "connection_refused": [
+  "failed",
+  "TimeoutError"
+ ],
+ "runtime_error_in_transport": [
+  "failed",
+  "RuntimeError"
+ ],
+ "delivered_but_reply_dropped": {
+  "calls": [
+   [
+    0,
+    "failed",
+    1,
+    "09:01"
+   ],
+   [
+    1,
+    "failed",
+    2,
+    "09:36"
+   ],
+   [
+    2,
+    "failed",
+    3,
+    "10:32"
+   ],
+   [
+    3,
+    "failed",
+    4,
+    ""
+   ],
+   [
+    4,
+    "failed",
+    4,
+    ""
+   ],
+   [
+    5,
+    "failed",
+    4,
+    ""
+   ],
+   [
+    6,
+    "failed",
+    4,
+    ""
+   ],
+   [
+    7,
+    "failed",
+    4,
+    ""
+   ]
+  ],
+  "copies_at_sink": 4
+ }
+}

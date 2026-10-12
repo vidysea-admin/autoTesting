@@ -1,0 +1,4 @@
+cli screens: [('scr_other', 'Other'), ('scr_home', 'Home'), ('scr_detail', 'Course detail'), ('node_09d6fd21051f', 'Courses'), ('node_f5b3023713cb', 'Profile')] conflicts: 0
+cli flow refs: [('scr_home', 'scr_detail'), ('scr_home', 'node_f5b3023713cb')]
+orch screens: [('scr_other', 'Other'), ('scr_home', 'Home'), ('scr_detail', 'Course detail'), ('node_731f2b58a8db', 'Home'), ('node_09d6fd21051f', 'Courses'), ('node_7045d6a47a17', 'Course detail'), ('node_f5b3023713cb', 'Profile')] conflicts: 0
+orch flow refs: [('node_731f2b58a8db', 'node_7045d6a47a17'), ('node_731f2b58a8db', 'node_f5b3023713cb')]

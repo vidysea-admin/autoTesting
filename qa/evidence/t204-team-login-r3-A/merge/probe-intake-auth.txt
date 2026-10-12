@@ -1,0 +1,42 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-probe-30984
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 13 items
+
+tests/test_probe_intake_auth.py::test_gate_is_open_gate PASSED
+tests/test_probe_intake_auth.py::test_anonymous[/projects/demo/sources/upload] ANON /projects/demo/sources/upload 401 302 /auth/login?next=/projects/demo/sources/upload
+PASSED
+tests/test_probe_intake_auth.py::test_anonymous[/projects/demo/sources/drive] ANON /projects/demo/sources/drive 401 302 /auth/login?next=/projects/demo/sources/drive
+PASSED
+tests/test_probe_intake_auth.py::test_signed_in_no_group[/projects/demo/sources/upload] NOGROUP /projects/demo/sources/upload 403 {"detail":"your account is waiting for an administrator"}
+PASSED
+tests/test_probe_intake_auth.py::test_signed_in_no_group[/projects/demo/sources/drive] NOGROUP /projects/demo/sources/drive 403 {"detail":"your account is waiting for an administrator"}
+PASSED
+tests/test_probe_intake_auth.py::test_tester_refused[/projects/demo/sources/upload] TESTER /projects/demo/sources/upload 404 {"detail":"no project 'demo'"}
+PASSED
+tests/test_probe_intake_auth.py::test_tester_refused[/projects/demo/sources/drive] TESTER /projects/demo/sources/drive 404 {"detail":"no project 'demo'"}
+PASSED
+tests/test_probe_intake_auth.py::test_developer_not_owner_refused[/projects/demo/sources/upload] DEV-NOT-OWNER /projects/demo/sources/upload 404 {"detail":"no project 'demo'"}
+PASSED
+tests/test_probe_intake_auth.py::test_developer_not_owner_refused[/projects/demo/sources/drive] DEV-NOT-OWNER /projects/demo/sources/drive 404 {"detail":"no project 'demo'"}
+PASSED
+tests/test_probe_intake_auth.py::test_developer_owner_allowed[/projects/demo/sources/upload] DEV-OWNER /projects/demo/sources/upload 303
+ROW uploaded_by = [None]
+PASSED
+tests/test_probe_intake_auth.py::test_developer_owner_allowed[/projects/demo/sources/drive] DEV-OWNER /projects/demo/sources/drive 303
+PASSED
+tests/test_probe_intake_auth.py::test_admin_allowed[/projects/demo/sources/upload] ADMIN /projects/demo/sources/upload 303
+PASSED
+tests/test_probe_intake_auth.py::test_admin_allowed[/projects/demo/sources/drive] ADMIN /projects/demo/sources/drive 303
+PASSED
+
+============================== warnings summary ===============================
+..\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================== 13 passed, 1 warning in 80.66s (0:01:20) ===================

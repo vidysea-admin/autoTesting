@@ -6,7 +6,7 @@ reads only the previous stage's artifact, runs the EXISTING stage, persists its
 own typed artifact under the run's directory, and returns the reference (OR6):
 
 - INGEST wraps `stages/ingest.py::ingest_video` (the learn entry).
-- DISCOVER wraps the bounded-BFS explore path + `merge_screens` (the explore
+- DISCOVER wraps the bounded-BFS explore path + `merge_screens_and_flows` (the explore
   entry); the crawl itself is injected as `crawl_fn` so this stays an adapter.
 - MODEL folds the entry stage's proposed FlowSpec into the reviewed one via
   `merge_flowspec` — the single seam that resets to DRAFT and refuses to discard
@@ -27,7 +27,7 @@ from autotester.schema.project import Project, Source
 from autotester.schema.run_state import StageName
 from autotester.schema.screen_graph import ScreenNode
 from autotester.stages.analyze_video import load_transcript
-from autotester.stages.explore_merge import merge_screens
+from autotester.stages.explore_merge import merge_screens_and_flows
 from autotester.stages.ingest import ingest_video
 from autotester.stages.merge_flowspec import merge_flowspec
 from autotester.stages.orchestrate import StageContext
@@ -90,7 +90,7 @@ def make_discover_runner(
 ) -> Callable[[StageContext, str | None], str]:
     """DISCOVER as a stage: run the existing bounded-BFS explore path (injected
     as `crawl_fn`, which returns its finished `Crawl` and screen graph), then
-    assemble those nodes into a DRAFT FlowSpec proposal via `merge_screens`.
+    assemble those nodes into a DRAFT FlowSpec proposal via `merge_screens_and_flows`.
 
     `crawl_fn` is injected rather than built here so this stays a thin adapter:
     the live caller closes it over a `BrowserSession`, and it never reaches into
@@ -98,7 +98,8 @@ def make_discover_runner(
 
     def _run(ctx: StageContext, prev_ref: str | None) -> str:
         crawl, nodes = crawl_fn()
-        spec = merge_screens(None, nodes, project.slug, crawl_id=crawl.id)
+        spec = merge_screens_and_flows(None, nodes, ctx.store.list_edges(crawl.id), project.slug,
+                           crawl_id=crawl.id, login_case_id=crawl.login_case_id)
         return _persist_proposal(ctx, StageName.DISCOVER, spec)
 
     return _run

@@ -1,0 +1,72 @@
+[
+ {
+  "secret": "APP_PASS",
+  "spelling": "tab_split",
+  "dispatch_ok": true,
+  "dispatch_refusal": null,
+  "gate_on_returned_summary_raises": true
+ },
+ {
+  "secret": "APP_PASS",
+  "spelling": "newline_split",
+  "dispatch_ok": true,
+  "dispatch_refusal": null,
+  "gate_on_returned_summary_raises": true
+ },
+ {
+  "secret": "APP_PASS",
+  "spelling": "single_tab",
+  "dispatch_ok": true,
+  "dispatch_refusal": null,
+  "gate_on_returned_summary_raises": true
+ },
+ {
+  "secret": "APP_PASS",
+  "spelling": "space_split_control",
+  "dispatch_ok": false,
+  "dispatch_refusal": "secret",
+  "gate_on_returned_summary_raises": false
+ },
+ {
+  "secret": "APP_PASS",
+  "spelling": "zero_width_control",
+  "dispatch_ok": false,
+  "dispatch_refusal": "secret",
+  "gate_on_returned_summary_raises": false
+ },
+ {
+  "secret": "APP_USER",
+  "spelling": "tab_split",
+  "dispatch_ok": true,
+  "dispatch_refusal": null,
+  "gate_on_returned_summary_raises": true
+ },
+ {
+  "secret": "APP_USER",
+  "spelling": "newline_split",
+  "dispatch_ok": true,
+  "dispatch_refusal": null,
+  "gate_on_returned_summary_raises": true
+ },
+ {
+  "secret": "APP_USER",
+  "spelling": "single_tab",
+  "dispatch_ok": true,
+  "dispatch_refusal": null,
+  "gate_on_returned_summary_raises": true
+ },
+ {
+  "secret": "APP_USER",
+  "spelling": "space_split_control",
+  "dispatch_ok": false,
+  "dispatch_refusal": "secret",
+  "gate_on_returned_summary_raises": false
+ },
+ {
+  "secret": "APP_USER",
+  "spelling": "zero_width_control",
+  "dispatch_ok": false,
+  "dispatch_refusal": "secret",
+  "gate_on_returned_summary_raises": false
+ }
+]

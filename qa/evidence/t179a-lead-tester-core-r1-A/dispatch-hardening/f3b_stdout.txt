@@ -1,0 +1,24 @@
+sep/shape rows: 74
+TAB mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+TAB every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+LF mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+LF every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+CR mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+CR every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+CRLF mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+CRLF every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+VT mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+VT every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+FF mid ['REAL-REFUSES/JSON-PASSES'] real True json False res True  ver True  exc stage_error
+FF every ['REAL-REFUSES/JSON-PASSES'] real True json False res True  ver True  exc stage_error
+FS mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+FS every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+US mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+US every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+NUL mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+NUL every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+BACKSPACE mid ['REAL-REFUSES/JSON-PASSES'] real True json False res True  ver True  exc stage_error
+BACKSPACE every ['REAL-REFUSES/JSON-PASSES'] real True json False res True  ver True  exc stage_error
+ESC mid ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+ESC every ['REAL-REFUSES/JSON-PASSES', 'DISK-RECOVERABLE', 'RELEASED-RECOVERABLE'] real True json False res True  ver True  exc stage_error
+clean rows: 56

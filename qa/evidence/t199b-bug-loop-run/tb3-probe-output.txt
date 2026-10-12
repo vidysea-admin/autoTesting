@@ -1,0 +1,20 @@
+autotester: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\copy\src\autotester\__init__.py
+S1 raw-only => ({}, ['case_f75fa996ab3e'], 0)
+S2 FAIL verdict => ({'bug_3a125cd293e1': ('open', 1, 0, [], [])}, 1)
+S3 unevidenced PASS partial-img => ({'bug_3a125cd293e1': ('open', 1, 0, [], [])}, ['case_f75fa996ab3e'])
+S3 unevidenced PASS met<total => ({'bug_3a125cd293e1': ('open', 1, 0, [], [])}, ['case_f75fa996ab3e'])
+S3 unevidenced PASS total=0 => ({'bug_3a125cd293e1': ('open', 1, 0, [], [])}, ['case_f75fa996ab3e'])
+S3b one proven PASS => {'bug_3a125cd293e1': ('open', 1, 1, [], [])}
+S3c two proven PASS => {'bug_3a125cd293e1': ('fixed', 1, 0, ['r6', 'r7'], ['r6/case_f75fa996ab3e', 'r7/case_f75fa996ab3e'])}
+S4 FAIL citing none => ({}, ['case_f75fa996ab3e'], 0)
+S5a FAIL missing criterion => ({}, ['case_f75fa996ab3e/C9'])
+S5b FAIL missing case => ({}, ['case_zzzzzzzzzzzz/C1'])
+S6 mixed => ({'bug_2439ebc726c4': ('open', 1, 0, [], [])}, 1, ['case_1ae8abb978ed', 'case_ca394809d615'], 4)
+S7a empty run => ('processed', {}, 0)
+S8 corrupt rubric => ({'bug_3a125cd293e1': ('open', 2, 0, [], [])}, ['bug_3a125cd293e1'], [], [])
+S9a no run dir => not_finished
+S9b verdicts but no run.json => ('not_finished', {})
+S9c corrupt verdict file => RAISED ValueError: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeM\tmps_48efq0\p\projects\demo\runs\r1\y.verdict.json: 1 vali
+S9d corrupt run.json => RAISED ValueError: C:\Users\Lenovo\AppData\Local\Temp\ck_t199b_1908911042\probeM\tmps_48efq0\p\projects\demo\runs\r1\run.json: 1 validation
+S9e wrong project => wrong_project
+S9f no finished_at uses created_at => True

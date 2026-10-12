@@ -1,0 +1,2 @@
+doctor: clean
+doctor exit 0

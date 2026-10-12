@@ -1,0 +1,8 @@
+--- a/launch.py
++++ b/launch.py
+@@ -96,2 +96,5 @@
+         reply = conn.getresponse()
++        if reply.status in (301, 302, 303, 307, 308):
++            import urllib.request
++            return urllib.request.urlopen(reply.getheader("Location"), timeout=PROBE_DEADLINE_S).read()
+         if reply.status != 200:

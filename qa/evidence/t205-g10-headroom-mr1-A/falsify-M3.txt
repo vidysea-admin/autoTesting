@@ -1,0 +1,8 @@
+GREEN-BEFORE rc 0 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+RED-AFTER rc 1
+FAILED tests/test_ui_runs.py::test_run_refuses_when_no_ai_provider_is_configured
+FAILED tests/test_provider_factory.py::test_ll2_a_project_judge_spec_builds_the_litellm_provider_with_that_model
+FAILED tests/test_provider_factory.py::test_ll2_the_server_model_applies_when_the_project_is_on_defaults
+FAILED tests/test_provider_factory.py::test_ll2_with_neither_the_run_path_is_the_langchain_fallback_as_today
+FAILED tests/test_provider_factory.py::test_trigger_run_asks_the_factory_for_the_judge_of_this_project
+FAILED tests/test_provider_factory.py::test_ll11_a_queued_run_whose_litellm_judge_lost_its_key_ends_refused_with_no_browser

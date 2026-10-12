@@ -1,0 +1,25 @@
+    def test_env_example_documents_every_key_the_code_reads() -> None:
+        documented = set(re.findall(r"^#?\s*(AUTOTESTER_[A-Z_]+)=", (ROOT / ".env.example")
+                                   .read_text(encoding="utf-8"), re.M))
+        used = set()
+        for path in (ROOT / "src").rglob("*.py"):
+            used |= set(re.findall(r"AUTOTESTER_[A-Z_]+[A-Z]", path.read_text(encoding="utf-8")))
+>       assert used - documented == set(), f"undocumented env keys: {sorted(used - documented)}"
+E       AssertionError: undocumented env keys: ['AUTOTESTER_SCHEDULE_GRACE_MINUTES', 'AUTOTESTER_TICK_INTERVAL_S']
+E       assert {'AUTOTESTER_...K_INTERVAL_S'} == set()
+E         
+E         Extra items in the left set:
+E         'AUTOTESTER_TICK_INTERVAL_S'
+E         'AUTOTESTER_SCHEDULE_GRACE_MINUTES'
+E         Use -v to get more diff
+
+tests\test_hosting_deploy.py:67: AssertionError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\at887r1a-copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+=================== 1 failed, 1 passed, 1 warning in 19.55s ===================

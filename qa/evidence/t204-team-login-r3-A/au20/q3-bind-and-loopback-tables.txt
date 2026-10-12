@@ -1,0 +1,70 @@
+autotester file: C:\Users\Lenovo\AppData\Local\Temp\chk\au20copy-32548\src\autotester\auth\config.py
+
+== Q3a bind spellings (argv --host X); public origin empty, lists name qa.example.com
+spelling | ipaddress view | AF_INET passive resolve | branch with PUBLIC unset | result
+'0.0.0.0' | ip:0.0.0.0 unspecified=True loop=False | 0.0.0.0 | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::)
+'::' | ip::: unspecified=True loop=False | ERR gaierror | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::)
+'0' | not-an-ip | ERR gaierror | {'own': True} | RAISES: the server's own origin http://0:8000 or https://0:8000 is not allowed: its Host must be in AUT
+'[::]' | ip::: unspecified=True loop=False | ERR gaierror | {'own': True} | RAISES: the server's own origin http://[::]:8000 or https://[::]:8000 is not allowed: its Host must be 
+'::0' | ip::: unspecified=True loop=False | ERR gaierror | {'own': True} | RAISES: the server's own origin http://[::0]:8000 or https://[::0]:8000 is not allowed: its Host must b
+'0.0.0.0:8000' | not-an-ip | ERR gaierror | {'own': True} | RAISES: the server's own origin http://[0.0.0.0:8000]:8000 or https://[0.0.0.0:8000]:8000 is not allowe
+'[::]:8000' | not-an-ip | ERR gaierror | {'own': True} | RAISES: the server's own origin http://[::]:8000:8000 or https://[::]:8000:8000 is not allowed: its Hos
+'::ffff:0.0.0.0' | ip:0.0.0.0 unspecified=True loop=False | ERR gaierror | {'own': True} | RAISES: the server's own origin http://[::ffff:0.0.0.0]:8000 or https://[::ffff:0.0.0.0]:8000 is not al
+'0.0.0.00' | not-an-ip | ERR gaierror | {'own': True} | RAISES: the server's own origin http://0.0.0.00:8000 or https://0.0.0.00:8000 is not allowed: its Host 
+'0000' | not-an-ip | ERR gaierror | {'own': True} | RAISES: the server's own origin http://0000:8000 or https://0000:8000 is not allowed: its Host must be 
+'' | not-an-ip | 100.67.3.87 | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::)
+'localhost' | not-an-ip | 127.0.0.1 | {'own': True, 'pub_required': False} | STARTS
+'127.0.0.1' | ip:127.0.0.1 unspecified=False loop=True | 127.0.0.1 | {'own': True, 'pub_required': False} | STARTS
+'::1' | ip:::1 unspecified=False loop=True | ERR gaierror | {'own': True, 'pub_required': False} | STARTS
+'10.0.0.5' | ip:10.0.0.5 unspecified=False loop=False | 10.0.0.5 | {'own': True} | RAISES: the server's own origin http://10.0.0.5:8000 or https://10.0.0.5:8000 is not allowed: its Host 
+'*' | not-an-ip | ERR gaierror | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::)
+
+== Q3b same spellings with PUBLIC_ORIGIN=https://localhost (the old compose default) and lists naming qa.example.com
+'0.0.0.0' | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot r
+'::' | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot r
+'0' | {'own': True} | RAISES: the server's own origin http://0:8000 or https://0:8000 is not allowed: its Host must be in AUT
+'[::]' | {'own': True} | RAISES: the server's own origin http://[::]:8000 or https://[::]:8000 is not allowed: its Host must be 
+'::0' | {'own': True} | RAISES: the server's own origin http://[::0]:8000 or https://[::0]:8000 is not allowed: its Host must b
+'0.0.0.0:8000' | {'own': True} | RAISES: the server's own origin http://[0.0.0.0:8000]:8000 or https://[0.0.0.0:8000]:8000 is not allowe
+'[::]:8000' | {'own': True} | RAISES: the server's own origin http://[::]:8000:8000 or https://[::]:8000:8000 is not allowed: its Hos
+'::ffff:0.0.0.0' | {'own': True} | RAISES: the server's own origin http://[::ffff:0.0.0.0]:8000 or https://[::ffff:0.0.0.0]:8000 is not al
+'0.0.0.00' | {'own': True} | RAISES: the server's own origin http://0.0.0.00:8000 or https://0.0.0.00:8000 is not allowed: its Host 
+'0000' | {'own': True} | RAISES: the server's own origin http://0000:8000 or https://0000:8000 is not allowed: its Host must be 
+'' | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot r
+'localhost' | {'own': True, 'pub_required': False} | STARTS
+'127.0.0.1' | {'own': True, 'pub_required': False} | STARTS
+'::1' | {'own': True, 'pub_required': False} | STARTS
+'10.0.0.5' | {'own': True} | RAISES: the server's own origin http://10.0.0.5:8000 or https://10.0.0.5:8000 is not allowed: its Host 
+
+== Q3c UVICORN_HOST env path (no --host), PUBLIC unset
+UVICORN_HOST='0.0.0.0' | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::)
+UVICORN_HOST='' | {'pub_required': True} | RAISES: AUTOTESTER_PUBLIC_ORIGIN is required when the server binds every address (--host 0.0.0.0 or ::)
+UVICORN_HOST='0' | {'own': True} | RAISES: the server's own origin http://0:8000 or https://0:8000 is not allowed: its Host must be in AUT
+UVICORN_HOST='::0' | {'own': True} | RAISES: the server's own origin http://[::0]:8000 or https://[::0]:8000 is not allowed: its Host must b
+UVICORN_HOST='127.0.0.1' | {'own': True, 'pub_required': False} | STARTS
+
+== Q3d loopback-spelled public origins on wildcard bind 0.0.0.0
+origin | lists=qa only | lists name the origin itself (H and O)
+http://localhost:8000 | RAISES: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:8000' is a loopback address, which remote users cann | RAISES: AUTOTESTER_PUBLIC_ORIGIN='http://localhost:8000' is a loopback address, which remote users cann
+https://localhost | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot r | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://localhost' is a loopback address, which remote users cannot r
+https://127.0.0.1 | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://127.0.0.1' is a loopback address, which remote users cannot r | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://127.0.0.1' is a loopback address, which remote users cannot r
+https://[::1] | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://[::1]' is a loopback address, which remote users cannot reach | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://[::1]' is a loopback address, which remote users cannot reach
+https://LOCALHOST | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://LOCALHOST' is a loopback address, which remote users cannot r | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://LOCALHOST' is a loopback address, which remote users cannot r
+https://127.1 | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://127.1 is not allowed: its Host must be in AUTOTESTER_ALLOWED_H | STARTS
+https://2130706433 | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://2130706433 is not allowed: its Host must be in AUTOTESTER_ALLO | STARTS
+https://0x7f.0.0.1 | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://0x7f.0.0.1 is not allowed: its Host must be in AUTOTESTER_ALLO | STARTS
+https://[::ffff:127.0.0.1] | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://[::ffff:127.0.0.1] is not allowed: its Host must be in AUTOTES | STARTS
+https://localhost. | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://localhost. is not allowed: its Host must be in AUTOTESTER_ALLO | STARTS
+https://127.0.0.1. | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://127.0.0.1. is not allowed: its Host must be in AUTOTESTER_ALLO | STARTS
+https://[::ffff:7f00:1] | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://[::ffff:7f00:1] is not allowed: its Host must be in AUTOTESTER | STARTS
+https://0177.0.0.1 | RAISES: AUTOTESTER_PUBLIC_ORIGIN=https://0177.0.0.1 is not allowed: its Host must be in AUTOTESTER_ALLO | STARTS
+https://localhost:443 | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://localhost:443' is a loopback address, which remote users cann | RAISES: AUTOTESTER_PUBLIC_ORIGIN='https://localhost:443' is a loopback address, which remote users cann
+
+== Q3e non-wildcard binds keep old behaviour: loopback bind admits loopback public origin
+bind=127.0.0.1 public=http://localhost:8000 | {'own': True, 'pub_required': False} | STARTS
+
+bind=127.0.0.1 public=https://localhost | {'own': True, 'pub_required': False} | STARTS
+bind=::1 public=https://[::1]:8000 | {'own': True, 'pub_required': False} | STARTS
+bind=localhost public=http://127.0.0.1:8000 | {'own': True, 'pub_required': False} | STARTS
+bind=10.0.0.5 public=https://localhost | {'own': True, 'pub_required': False} | STARTS
+bind=10.0.0.5 public=http://localhost:8000 | {'own': True, 'pub_required': False} | STARTS

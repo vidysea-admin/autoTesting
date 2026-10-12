@@ -1,0 +1,7 @@
+master at clone time: d42e94456d04409389cb854ae40693a7996dba50 ; t204 head 37a1d211 ; t205 head ecaaf7e4 ; merge-base(t204,master)=1c52bf71
+ruff: All checks passed ; doctor: clean ; uv lock --check: Resolved 125 packages (rc 0)
+37a1d211 + master: no conflicts (only docs/MAP.md auto-merged, +8 lines); master's src changes: schema/tracked_bug.py stages/bug_loop.py stages/issues.py store/bug_store.py (no ui/auth route files)
+37a1d211 + ecaaf7e4: 6 conflicts: docs/MAP.md, auth/__init__.py (add/add), auth/policy.py (add/add), cli.py, ui/app.py, ui/routers.py (add/add)
+master+t205 then t204: same 6 conflicts; master+t205 alone clean.
+Files > 300 lines: none. Functions > 50 lines: none. 297-300: cli.py (297), tests/test_ui_auth_escalation.py (300).
+trial clone: C:/Users/Lenovo/AppData/Local/Temp/chk/trial-k7q2x9

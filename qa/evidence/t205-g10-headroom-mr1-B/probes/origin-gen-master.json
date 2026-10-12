@@ -1,0 +1,38 @@
+{
+ "file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at-mr1b-123619858\\master\\src\\autotester\\__init__.py",
+ "normalised": [
+  "{\"schema_version\":1,\"created_at\":\"TS\",\"id\":\"src_df29d24a2b38\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"ROOT\\\\projects\\\\demo\\\\sources\\\\src_df29d24a2b38\\\\recording.mp4\",\"sha256\":\"bc83ad39ed072ed893c8e02739940c79775167171a41ba7b0dc923b59d74a0f5\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"TS\",\"origin\":{\"kind\":\"upload\",\"file_name\":\"clip.mp4\"}}",
+  "{\"schema_version\":1,\"created_at\":\"TS\",\"id\":\"src_11c6cb2e892f\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"ROOT\\\\projects\\\\demo\\\\sources\\\\src_11c6cb2e892f\\\\recording.mp4\",\"sha256\":\"89aa68c2cf9c15ef5c453a52e47cd1b498d277ecdb2b5a5b27bfa58c447badd0\",\"label\":\"a/one.mp4\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"TS\",\"origin\":{\"kind\":\"zip\",\"archive_name\":\"bundle.zip\",\"member_path\":\"a/one.mp4\"}}",
+  "{\"schema_version\":1,\"created_at\":\"TS\",\"id\":\"src_354606411826\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"ROOT\\\\projects\\\\demo\\\\sources\\\\src_354606411826\\\\recording.mp4\",\"sha256\":\"359b9a917111aea9b5f2629688afb942655e135a900387c4f9294af4eb28a009\",\"label\":\"b/two.mp4\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"TS\",\"origin\":{\"kind\":\"zip\",\"archive_name\":\"bundle.zip\",\"member_path\":\"b/two.mp4\"}}",
+  "{\"schema_version\":1,\"created_at\":\"TS\",\"id\":\"src_3dc6761f1cb1\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"ROOT\\\\projects\\\\demo\\\\sources\\\\src_3dc6761f1cb1\\\\recording.mp4\",\"sha256\":\"ec3cbcc4f413bf26f2d0a6d98b8724b32a667a0c700bbed34545df9ec35c5f5a\",\"label\":\"Walk.mp4\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"TS\",\"origin\":{\"kind\":\"drive\",\"file_id\":\"FILE000001\"}}"
+ ],
+ "origins": [
+  [
+   "UploadOrigin",
+   "kind='upload' file_name='clip.mp4'"
+  ],
+  [
+   "ZipOrigin",
+   "kind='zip' archive_name='bundle.zip' member_path='a/one.mp4'"
+  ],
+  [
+   "ZipOrigin",
+   "kind='zip' archive_name='bundle.zip' member_path='b/two.mp4'"
+  ],
+  [
+   "DriveOrigin",
+   "kind='drive' file_id='FILE000001'"
+  ]
+ ],
+ "raw_lines": [
+  "{\"schema_version\":1,\"created_at\":\"2026-10-11T20:13:12.636494Z\",\"id\":\"src_df29d24a2b38\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\at-mr1b-123619858\\\\pt\\\\so-2nn_h91r\\\\projects\\\\demo\\\\sources\\\\src_df29d24a2b38\\\\recording.mp4\",\"sha256\":\"bc83ad39ed072ed893c8e02739940c79775167171a41ba7b0dc923b59d74a0f5\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"2026-10-11T20:13:12.635492Z\",\"origin\":{\"kind\":\"upload\",\"file_name\":\"clip.mp4\"}}",
+  "{\"schema_version\":1,\"created_at\":\"2026-10-11T20:13:12.769450Z\",\"id\":\"src_11c6cb2e892f\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\at-mr1b-123619858\\\\pt\\\\so-2nn_h91r\\\\projects\\\\demo\\\\sources\\\\src_11c6cb2e892f\\\\recording.mp4\",\"sha256\":\"89aa68c2cf9c15ef5c453a52e47cd1b498d277ecdb2b5a5b27bfa58c447badd0\",\"label\":\"a/one.mp4\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"2026-10-11T20:13:12.769450Z\",\"origin\":{\"kind\":\"zip\",\"archive_name\":\"bundle.zip\",\"member_path\":\"a/one.mp4\"}}",
+  "{\"schema_version\":1,\"created_at\":\"2026-10-11T20:13:12.800143Z\",\"id\":\"src_354606411826\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\at-mr1b-123619858\\\\pt\\\\so-2nn_h91r\\\\projects\\\\demo\\\\sources\\\\src_354606411826\\\\recording.mp4\",\"sha256\":\"359b9a917111aea9b5f2629688afb942655e135a900387c4f9294af4eb28a009\",\"label\":\"b/two.mp4\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"2026-10-11T20:13:12.780391Z\",\"origin\":{\"kind\":\"zip\",\"archive_name\":\"bundle.zip\",\"member_path\":\"b/two.mp4\"}}",
+  "{\"schema_version\":1,\"created_at\":\"2026-10-11T20:13:12.891439Z\",\"id\":\"src_3dc6761f1cb1\",\"project\":\"demo\",\"kind\":\"video\",\"path\":\"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\at-mr1b-123619858\\\\pt\\\\so-2nn_h91r\\\\projects\\\\demo\\\\sources\\\\src_3dc6761f1cb1\\\\recording.mp4\",\"sha256\":\"ec3cbcc4f413bf26f2d0a6d98b8724b32a667a0c700bbed34545df9ec35c5f5a\",\"label\":\"Walk.mp4\",\"uploaded_by\":\"dev@vidysea.test\",\"uploaded_at\":\"2026-10-11T20:13:12.890438Z\",\"origin\":{\"kind\":\"drive\",\"file_id\":\"FILE000001\"}}"
+ ],
+ "statuses": [
+  303,
+  200,
+  200
+ ]
+}

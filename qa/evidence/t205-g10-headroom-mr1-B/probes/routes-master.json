@@ -1,0 +1,622 @@
+{
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\at-mr1b-123619858\\master\\src\\autotester\\__init__.py",
+ "rows": {
+  "ProviderError from factory": {
+   "body": "{\"detail\":\"model X needs variable PROBE_VAR\"}",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 400,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "executor raises": {
+   "body": "",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_d344e6b5dd57\",\n    \"case_3f5b5161fae6\",\n    \"case_81e3702b6fcc\",\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 27,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/rubrics/rub_case_3f5b5161fae6.json j",
+    "projects/demo/rubrics/rub_case_81e3702b6fcc.json j",
+    "projects/demo/rubrics/rub_case_a8cd13e9db85.json j",
+    "projects/demo/rubrics/rub_case_d344e6b5dd57.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.verdict.json j",
+    "projects/demo/runs/RUN/case_81e3702b6fcc.json j",
+    "projects/demo/runs/RUN/case_81e3702b6fcc.verdict.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "no approval": {
+   "body": "{\"detail\":\"refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\\nGrant one with:\\n  uv run autotester approve demo --kind live_case --target \\\"https://demo.test\\\" --scope \\\"<what this run may touch>\\\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 4 --wall-clock 32.0\"}",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 403,
+   "tree": [
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "no approval, priority=p1": {
+   "body": "{\"detail\":\"refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\\nGrant one with:\\n  uv run autotester approve demo --kind live_case --target \\\"https://demo.test\\\" --scope \\\"<what this run may touch>\\\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 2 --wall-clock 16.0\"}",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 403,
+   "tree": [
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "no cases, no priority": {
+   "body": "{\"detail\":\"project 'demo' has no cases to run\"}",
+   "executed": [],
+   "judge_calls": [],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 400,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "no cases, priority=p1": {
+   "body": "{\"detail\":\"project 'demo' has no cases to run\"}",
+   "executed": [],
+   "judge_calls": [],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 400,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "placeholder with no value": {
+   "body": "{\"detail\":\"PROBE_PW has no value yet. Enter it on the project's Credentials page (/projects/demo/env) before running.\"}",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 400,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "priority[empty str]": {
+   "body": "{\"detail\":[{\"type\":\"literal_error\",\"loc\":[\"query\",\"priority\",0],\"msg\":\"Input should be 'p0', 'p1', 'p2' or 'p3'\",\"input\":\"\",\"ctx\":{\"expected\":\"'p0', 'p1', 'p2' or 'p3'\"}}]}",
+   "executed": [],
+   "judge_calls": [],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 422,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "priority[none]": {
+   "body": "",
+   "executed": [
+    "p0",
+    "p1",
+    "p2",
+    "pin"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_d344e6b5dd57\",\n    \"case_3f5b5161fae6\",\n    \"case_81e3702b6fcc\",\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 1,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.verdict.json j",
+    "projects/demo/runs/RUN/case_81e3702b6fcc.json j",
+    "projects/demo/runs/RUN/case_81e3702b6fcc.verdict.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "priority[p0+p1]": {
+   "body": "",
+   "executed": [
+    "p0",
+    "p1",
+    "pin"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_d344e6b5dd57\",\n    \"case_3f5b5161fae6\",\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 6,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.verdict.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "priority[p0]": {
+   "body": "",
+   "executed": [
+    "p0",
+    "pin"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_d344e6b5dd57\",\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 2,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.json j",
+    "projects/demo/runs/RUN/case_d344e6b5dd57.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "priority[p1+p1dup]": {
+   "body": "",
+   "executed": [
+    "p1",
+    "pin"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_3f5b5161fae6\",\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 7,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.verdict.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "priority[p1+p9]": {
+   "body": "{\"detail\":[{\"type\":\"literal_error\",\"loc\":[\"query\",\"priority\",1],\"msg\":\"Input should be 'p0', 'p1', 'p2' or 'p3'\",\"input\":\"p9\",\"ctx\":{\"expected\":\"'p0', 'p1', 'p2' or 'p3'\"}}]}",
+   "executed": [],
+   "judge_calls": [],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 422,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "priority[p1]": {
+   "body": "",
+   "executed": [
+    "p1",
+    "pin"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_3f5b5161fae6\",\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 3,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.json j",
+    "projects/demo/runs/RUN/case_3f5b5161fae6.verdict.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "priority[p2]": {
+   "body": "",
+   "executed": [
+    "p2",
+    "pin"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_81e3702b6fcc\",\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 4,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/runs/RUN/case_81e3702b6fcc.json j",
+    "projects/demo/runs/RUN/case_81e3702b6fcc.verdict.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "priority[p3]": {
+   "body": "",
+   "executed": [
+    "pin"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": "/projects/demo/report",
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_a8cd13e9db85\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 5,
+   "status": 303,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.json j",
+    "projects/demo/runs/RUN/case_a8cd13e9db85.verdict.json j",
+    "projects/demo/runs/RUN/run.json j",
+    "projects/demo/runs/RUN/trace.jsonl j"
+   ]
+  },
+  "priority[unknown p9]": {
+   "body": "{\"detail\":[{\"type\":\"literal_error\",\"loc\":[\"query\",\"priority\",0],\"msg\":\"Input should be 'p0', 'p1', 'p2' or 'p3'\",\"input\":\"p9\",\"ctx\":{\"expected\":\"'p0', 'p1', 'p2' or 'p3'\"}}]}",
+   "executed": [],
+   "judge_calls": [],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 422,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "priority[upper P1]": {
+   "body": "{\"detail\":[{\"type\":\"literal_error\",\"loc\":[\"query\",\"priority\",0],\"msg\":\"Input should be 'p0', 'p1', 'p2' or 'p3'\",\"input\":\"P1\",\"ctx\":{\"expected\":\"'p0', 'p1', 'p2' or 'p3'\"}}]}",
+   "executed": [],
+   "judge_calls": [],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 422,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "provider unavailable (no reason)": {
+   "body": "{\"detail\":\"no AI provider is configured (no credentials on this machine) -- cannot grade a run\"}",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 400,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "provider unavailable (reason)": {
+   "body": "{\"detail\":\"no AI provider is configured (set PROBE_KEY) -- cannot grade a run\"}",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 400,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "queued: approval gone": {
+   "entries": [
+    [
+     "refused",
+     "refusing to start a live_case run against https://demo.test \u2014 no approval exists for it\nGrant one with:\n  uv run autotester approve demo --kind live_case --target \"https://demo.test\" --scope \"<what this run may touch>\" --granted-by <name> --expires <YYYY-MM-DD> --max-actions 4 --wall-clock 32.0"
+    ]
+   ],
+   "executed": [],
+   "runs": [],
+   "sessions": 0
+  },
+  "queued: cases gone": {
+   "entries": [
+    [
+     "refused",
+     "project 'demo' has no cases to run"
+    ]
+   ],
+   "executed": [],
+   "sessions": 0
+  },
+  "queued: press": {
+   "deferred": 1,
+   "executed": [],
+   "status": 303,
+   "stored_priorities": [
+    [
+     "p1"
+    ]
+   ]
+  },
+  "queued: provider gone": {
+   "entries": [
+    [
+     "refused",
+     "no AI provider is configured (gone) -- cannot grade a run"
+    ]
+   ],
+   "executed": [],
+   "runs": [],
+   "sessions": 0
+  },
+  "queued: start": {
+   "entries": [
+    [
+     "done",
+     null,
+     [
+      "p1"
+     ]
+    ]
+   ],
+   "executed": [
+    "p1",
+    "pin",
+    "late-p1"
+   ],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ],
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "run_json": [
+    "{\n  \"schema_version\": 1,\n  \"created_at\": \"TS\",\n  \"id\": \"RUN\",\n  \"project\": \"demo\",\n  \"trigger\": \"manual\",\n  \"case_ids\": [\n    \"case_3f5b5161fae6\",\n    \"case_a8cd13e9db85\",\n    \"case_8cff28c3001e\"\n  ],\n  \"usage\": [],\n  \"catalog_runnable_counts\": {\n    \"static\": 0,\n    \"behavioural\": 0,\n    \"adversarial\": 0\n  },\n  \"parallel_n\": 1,\n  \"parallel_bound_by\": \"config\",\n  \"bounds\": {\n    \"approval_id\": \"appr_d51abea4bda9\",\n    \"max_actions\": 10000,\n    \"max_probes\": 0,\n    \"wall_clock_s\": 100000.0\n  }\n}\n"
+   ],
+   "sessions": 23
+  },
+  "slug[../etc]": {
+   "body": "{\"detail\":\"Not Found\"}",
+   "judge_calls": [],
+   "status": 404
+  },
+  "slug[9lives]": {
+   "body": "{\"detail\":\"invalid project slug\"}",
+   "judge_calls": [],
+   "status": 400
+  },
+  "slug[NOPE]": {
+   "body": "{\"detail\":\"invalid project slug\"}",
+   "judge_calls": [],
+   "status": 400
+  },
+  "slug[a b]": {
+   "body": "{\"detail\":\"invalid project slug\"}",
+   "judge_calls": [],
+   "status": 400
+  },
+  "slug[demo%0A]": {
+   "body": "{\"detail\":\"invalid project slug\"}",
+   "judge_calls": [],
+   "status": 400
+  },
+  "slug[demo-]": {
+   "body": "{\"detail\":\"no project 'demo-'\"}",
+   "judge_calls": [],
+   "status": 404
+  },
+  "slug[nope]": {
+   "body": "{\"detail\":\"no project 'nope'\"}",
+   "judge_calls": [],
+   "status": 404
+  },
+  "unexpected error from factory": {
+   "body": "Internal Server Error",
+   "executed": [],
+   "judge_calls": [
+    [
+     "demo",
+     "judge"
+    ]
+   ],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 500,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  },
+  "zero-selection p2-only, priority=p0": {
+   "body": "{\"detail\":\"project 'demo' has no cases to run\"}",
+   "executed": [],
+   "judge_calls": [],
+   "location": null,
+   "run_json": [],
+   "sessions": 0,
+   "status": 400,
+   "tree": [
+    "projects/demo/approvals.jsonl j",
+    "projects/demo/cases.jsonl j",
+    "projects/demo/project.json j"
+   ]
+  }
+ }
+}

@@ -1,0 +1,7 @@
+FILE C:\Users\Lenovo\AppData\Local\Temp\at-mr1b-123619858\mut-m1b\src\autotester\__init__.py
+..\head\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\at-mr1b-123619858\head\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 2 passed, 1 warning in 4.29s =========================

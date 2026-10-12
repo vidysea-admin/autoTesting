@@ -1,0 +1,1 @@
+uv --directory C:/Users/Lenovo/AppData/Local/Temp/chk/t204r3a-63606285 run pytest -p no:xdist -o addopts= -rf $(cat test-files.txt)

@@ -1,0 +1,7 @@
+FILE C:\Users\Lenovo\AppData\Local\Temp\at-mr1b-123619858\mut-m2b\src\autotester\__init__.py
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_run_launcher.py .                                             [100%]
+
+============================== 1 passed in 1.35s ==============================

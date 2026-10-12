@@ -1,0 +1,24 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chkA-t179a-1175810622\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA-t179a-1175810622
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 14 items
+
+tests/test_agent_tools.py::test_every_tool_names_a_real_existing_function PASSED [  7%]
+tests/test_agent_tools.py::test_run_case_wraps_execute_run_case_once_with_the_context_session PASSED [ 14%]
+tests/test_agent_tools.py::test_crawl_wraps_run_crawl_once_when_within_the_approval PASSED [ 21%]
+tests/test_agent_tools.py::test_read_tools_and_grade_wrap_catalog_persona_grade PASSED [ 28%]
+tests/test_agent_tools.py::test_al3a_raw_secret_in_arguments_is_refused_before_any_action PASSED [ 35%]
+tests/test_agent_tools.py::test_al3b_crawl_beyond_the_approval_is_refused_before_a_browser_opens PASSED [ 42%]
+tests/test_agent_tools.py::test_al3c_a_read_only_project_refuses_a_mutating_step_from_the_tool_itself PASSED [ 50%]
+tests/test_agent_tools.py::test_read_only_still_allows_login_placeholder_and_the_same_step_under_test_account PASSED [ 57%]
+tests/test_agent_tools.py::test_run_case_without_a_live_case_approval_is_refused PASSED [ 64%]
+tests/test_agent_tools.py::test_unknown_tool_field_and_case_do_nothing PASSED [ 71%]
+tests/test_agent_tools.py::test_al6_a_secret_in_a_stage_result_never_reaches_the_model PASSED [ 78%]
+tests/test_agent_tools.py::test_al6_a_stage_summary_is_scrubbed_and_a_folded_secret_withholds_the_result PASSED [ 85%]
+tests/test_agent_tools.py::test_al6_a_real_grade_withholds_a_prompt_carrying_a_secret PASSED [ 92%]
+tests/test_agent_tools.py::test_guards_module_exposes_the_write_policy_check_as_a_pure_function PASSED [100%]
+
+============================= 14 passed in 4.18s ==============================

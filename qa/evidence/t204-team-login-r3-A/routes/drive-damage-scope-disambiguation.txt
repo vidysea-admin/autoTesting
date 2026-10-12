@@ -1,0 +1,28 @@
+autotester: C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-cpA-141322518\src\autotester\__init__.py
+
+DRIVE JOB PAGE (GET /projects/<slug>/sources/drive/<id>)
+   /projects/alpha/sources/drive/01HAAA..  {'anon': 302, 'admin': 200, 'dev': 200, 'dev2': 404, 'tester': 200, 'sub': 200}
+   /projects/alpha/sources/drive/01HBBB..  {'anon': 302, 'admin': 404, 'dev': 404, 'dev2': 404, 'tester': 404, 'sub': 404}
+   /projects/beta/sources/drive/01HBBB..  {'anon': 302, 'admin': 200, 'dev': 404, 'dev2': 200, 'tester': 404, 'sub': 404}
+   /projects/beta/sources/drive/01HAAA..  {'anon': 302, 'admin': 404, 'dev': 404, 'dev2': 404, 'tester': 404, 'sub': 404}
+   /projects/ghost/sources/drive/01HAAA..  {'anon': 302, 'admin': 404, 'dev': 404, 'dev2': 404, 'tester': 404, 'sub': 404}
+   tester-shared body leaks drive_id? False | mentions 'token'/'http'? False | len 16814
+   body text fragment: ['s);', 'display:', 'block;', '}', '.crawl-node-body', '{', 'min-width:', '0;', 'overflow-wrap:', 'anywhere;', '}', 'AT', 'AutoTester', 'Projects', 'tester@team.test', 'Sign', 'out', 'Projects', 'Alpha', 'Drive', 'fetch', 'Status:', 'failed', '.', 'The', 'fetch', 'stopped', 'unexpectedly.', 'Back', 'to', 'sources']
+   NOTE: handler = routes_intake.drive_job_page(slug, job_id); load_job(root, slug, job_id) -> .work/drive-jobs/<slug>/<id>.json
+
+SAME-SLUG COOKIE/STATE: dev(owner alpha) -> beta's job via beta slug: 404
+
+DAMAGE REPORT scope (GET /projects/<slug>/damage-report)
+   alpha {'anon': 302, 'admin': 200, 'dev': 200, 'dev2': 404, 'tester': 200, 'sub': 200}
+   beta {'anon': 302, 'admin': 200, 'dev': 404, 'dev2': 200, 'tester': 404, 'sub': 404}
+   ghost {'anon': 302, 'admin': 404, 'dev': 404, 'dev2': 404, 'tester': 404, 'sub': 404}
+   with ?run=../x : 400 200
+
+UPLOAD POST scope (empty body; 400/422 = reached handler, 403/404 = gate)
+  upload alpha {'anon': 401, 'admin': 400, 'dev': 400, 'dev2': 404, 'tester': 403, 'sub': 400}
+  drive  alpha {'anon': 401, 'admin': 400, 'dev': 400, 'dev2': 404, 'tester': 403, 'sub': 400}
+  upload beta {'anon': 401, 'admin': 400, 'dev': 404, 'dev2': 400, 'tester': 404, 'sub': 404}
+  drive  beta {'anon': 401, 'admin': 400, 'dev': 404, 'dev2': 400, 'tester': 404, 'sub': 404}
+
+AUTOMATIC DISAMBIGUATION: for each served route, concrete path -> every app route with a FULL match vs policy template
+   checked 494 (method,path) pairs; mismatches: 0

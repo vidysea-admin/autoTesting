@@ -1,0 +1,31 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_m3\src\autotester\__init__.py
+            sent = 0
+    
+            def send(self, to: object, message: object, *, key: str) -> None:
+                self.sent += 1
+                results.append(_send(DeliveryLog(tmp_path), bystander, NOW + STALE_AFTER))
+    
+        racer = Racing()
+        first = _send(DeliveryLog(tmp_path), racer)               # must not raise FileExistsError
+        assert racer.sent == 1 and bystander.sent == []           # worker 2 sent nothing
+        closed = results[0]
+        assert closed is not None and closed.status is DeliveryStatus.FAILED
+        assert "outcome unknown" in closed.error and "may or may not have been sent" in closed.error
+        assert first == closed                                    # worker 1 reports what is on disk
+        files = list(DeliveryLog(tmp_path).records_dir.glob("*.json"))
+>       assert len(files) == 1 and len(DeliveryLog(tmp_path).records_for_run("run-0001")) == 1
+E       AssertionError: assert (1 == 1 and 0 == 1)
+E        +  where 1 = len([WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27342/test_a_clock_skewed_worker_clo0/records/email__run-0001__user-a.01.json')])
+E        +  and   0 = len([])
+E        +    where [] = records_for_run('run-0001')
+E        +      where records_for_run = <autotester.delivery.inbox.DeliveryLog object at 0x000001A1CDBA0690>.records_for_run
+E        +        where <autotester.delivery.inbox.DeliveryLog object at 0x000001A1CDBA0690> = DeliveryLog(WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27342/test_a_clock_skewed_worker_clo0'))
+
+tests\test_delivery_failure.py:270: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_delivery_failure.py::test_a_transport_that_always_fails_leaves_a_failed_record_bounded_by_the_attempt_limit
+FAILED tests/test_delivery_failure.py::test_a_successful_send_is_recorded_once_and_replays_deliver_nothing
+FAILED tests/test_delivery_failure.py::test_run_and_user_ids_that_spell_the_separator_do_not_collide
+FAILED tests/test_delivery_failure.py::test_lookups_match_whole_file_names_and_ignore_stray_files
+FAILED tests/test_delivery_failure.py::test_a_clock_skewed_worker_closing_a_live_attempt_does_not_break_the_first_worker
+5 failed, 125 passed in 37.96s

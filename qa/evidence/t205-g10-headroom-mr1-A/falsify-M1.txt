@@ -1,0 +1,8 @@
+GREEN-BEFORE rc 0 ...........                                                              [100%]
+RED-AFTER rc 1
+FAILED tests/test_mr1a_priorities_probe.py::test_launch_run_priorities_never_skip_approval[pri3]
+FAILED tests/test_mr1a_priorities_probe.py::test_launch_run_priorities_never_skip_approval[pri4]
+FAILED tests/test_mr1a_priorities_probe.py::test_launch_run_priorities_never_skip_approval[pri5]
+FAILED tests/test_mr1a_priorities_probe.py::test_queued_recheck_with_priorities_is_gated[pri1]
+FAILED tests/test_mr1a_priorities_probe.py::test_queued_recheck_with_priorities_is_gated[pri2]
+FAILED tests/test_mr1a_priorities_probe.py::test_queued_recheck_with_priorities_is_gated[pri3]

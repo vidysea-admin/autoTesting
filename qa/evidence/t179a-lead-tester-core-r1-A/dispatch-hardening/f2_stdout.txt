@@ -1,0 +1,74 @@
+rows 520 problems 1 partials>=6 110
+PROBLEM name LyingStr tool label not known: 'ZQMARK-lying-content'; caller marker echoed invalid arguments (case_id: missing)
+PARTIAL run_case/only_first_half 8 raw | RuntimeError: boom CANARY-p
+PARTIAL run_case/pad_cut6_reversed 6 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut8_reversed 8 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut10_reversed 10 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut6_b64_std_off0 6 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut8_b64_std_off0 8 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut10_b64_std_off0 10 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut6_hex_lower 6 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut8_hex_lower 8 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL run_case/pad_cut10_hex_lower 10 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/only_first_half 8 raw | RuntimeError: boom CANARY-p
+PARTIAL open_session/pad_cut6_reversed 6 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut8_reversed 8 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut10_reversed 10 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut6_b64_std_off0 6 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut8_b64_std_off0 8 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut10_b64_std_off0 10 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut6_hex_lower 6 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut8_hex_lower 8 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL open_session/pad_cut10_hex_lower 10 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/only_first_half 8 raw | RuntimeError: boom CANARY-p
+PARTIAL judge/pad_cut6_reversed 6 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut8_reversed 8 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut10_reversed 10 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut6_b64_std_off0 6 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut8_b64_std_off0 8 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut10_b64_std_off0 10 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut6_hex_lower 6 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut8_hex_lower 8 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL judge/pad_cut10_hex_lower 10 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/only_first_half 8 raw | RuntimeError: boom CANARY-p
+PARTIAL get_case/pad_cut6_reversed 6 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut8_reversed 8 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut10_reversed 10 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut6_b64_std_off0 6 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut8_b64_std_off0 8 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut10_b64_std_off0 10 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut6_hex_lower 6 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut8_hex_lower 8 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL get_case/pad_cut10_hex_lower 10 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/only_first_half 8 raw | RuntimeError: boom CANARY-p
+PARTIAL catalog/pad_cut6_reversed 6 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut8_reversed 8 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut10_reversed 10 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut6_b64_std_off0 6 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut8_b64_std_off0 8 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut10_b64_std_off0 10 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut6_hex_lower 6 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut8_hex_lower 8 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL catalog/pad_cut10_hex_lower 10 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/only_first_half 8 raw | RuntimeError: boom CANARY-p
+PARTIAL crawl/pad_cut6_reversed 6 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut8_reversed 8 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut10_reversed 10 reversed | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut6_b64_std_off0 6 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut8_b64_std_off0 8 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut10_b64_std_off0 10 b64_std_off0 | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut6_hex_lower 6 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut8_hex_lower 8 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PARTIAL crawl/pad_cut10_hex_lower 10 hex_lower | RuntimeError: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Counter({'PROPAGATED KeyboardInterrupt': 12, 'PROPAGATED SystemExit': 11, 'PROPAGATED GeneratorExit': 11, 'PROPAGATED CancelledError': 11, 'RETURNED ToolOutcome': 11, 'PROPAGATED BaseException': 11})
+BASE {'source': 'run_case', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=run_case'}
+BASE {'source': 'open_session', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=run_case'}
+BASE {'source': 'judge', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=grade_case'}
+BASE {'source': 'get_case', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=run_case'}
+BASE {'source': 'catalog', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=get_catalog'}
+BASE {'source': 'crawl', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=crawl'}
+BASE {'source': 'persona', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=get_persona'}
+BASE {'source': 'save_result', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=run_case'}
+BASE {'source': 'save_verdict', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=grade_case'}
+BASE {'source': 'load_results', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=grade_case'}
+BASE {'source': 'load_rubric', 'exc': 'MemoryError', 'result': 'RETURNED ToolOutcome refusal=stage_error tool=grade_case'}

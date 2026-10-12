@@ -1,0 +1,138 @@
+== c2
+{"variant": "c2_nested_object", "result": "RAISED CdpEndpointError: the DevTools listener on port 56892 is not this browser", "start_total_s": 7.81, "verify_hold_s": 0.01, "client_bytes_read": 60001, "listener_conns": 1, "client_dropped_after_s": 0.0, "listener_sent": 60075, "real_browser_procs_left": [], "real_port_accepts_after": false, "portfile_after": false, "timers_alive": [], "exposure_window_s": 1.34, "launch_to_attack_start_s": 1.3, "exposure_after_attack_start_s": 0.05}
+== threads
+{
+ "wall_s": 5.9,
+ "errors": {},
+ "sessions": {
+  "3": {
+   "start_s": 5.52,
+   "url": "http://127.0.0.1:56575",
+   "port": 56575,
+   "guid": "/devtools/browser/c4e0af4d-4a2e-4bec-915b-98004efe6f43",
+   "own_ws_matches": true
+  },
+  "4": {
+   "start_s": 5.58,
+   "url": "http://127.0.0.1:56587",
+   "port": 56587,
+   "guid": "/devtools/browser/d3446327-8ba5-4112-934b-5fa2c2fd268a",
+   "own_ws_matches": true
+  },
+  "0": {
+   "start_s": 5.59,
+   "url": "http://127.0.0.1:56588",
+   "port": 56588,
+   "guid": "/devtools/browser/ebbb5778-4765-41ae-80f4-f9cd9e8d64b1",
+   "own_ws_matches": true
+  },
+  "2": {
+   "start_s": 5.83,
+   "url": "http://127.0.0.1:56589",
+   "port": 56589,
+   "guid": "/devtools/browser/3cb57ce7-3d42-4c1a-99ba-3550de391568",
+   "own_ws_matches": true
+  },
+  "1": {
+   "start_s": 5.83,
+   "url": "http://127.0.0.1:56583",
+   "port": 56583,
+   "guid": "/devtools/browser/0176ae3c-603c-461c-83da-fd7940f607fe",
+   "own_ws_matches": true
+  }
+ },
+ "distinct_ports": 5,
+ "timers_alive_after_all_started": [],
+ "cross_ok": true,
+ "probe_calls_own_port_true": true,
+ "n_probe_calls": 5,
+ "n_proc_in_tree_with_5_up": 25,
+ "close_s": 0.2,
+ "close_errors": {
+  "0": "error('cannot switch to a different thread (which happens to have exited)')",
+  "2": "error('cannot switch to a different thread (which happens to have exited)')",
+  "1": "error('cannot switch to a different thread (which happens to have exited)')",
+  "3": "error('cannot switch to a different thread (which happens to have exited)')",
+  "4": "error('cannot switch to a different thread (which happens to have exited)')"
+ },
+ "procs_left": [
+  65204,
+  32832,
+  58064,
+  23676,
+  80036,
+  65280,
+  44548,
+  56792,
+  74652,
+  1816,
+  50140,
+  27056,
+  17632,
+  74324,
+  41932,
+  24248,
+  36640,
+  57456,
+  4164,
+  68740,
+  25020,
+  23276,
+  40856,
+  55032,
+  31496
+ ],
+ "ports_accept_after": [
+  56575,
+  56587,
+  56588,
+  56589,
+  56583
+ ],
+ "portfiles_after": [],
+ "timers_alive_after_close": [],
+ "threads_left": [
+  "MainThread"
+ ]
+}
+== procs
+{"i": 0, "port": 58359, "guid": "/devtools/browser/db0f6af5-7740-48c0-9142-63067328b55d", "start_s": 7.89, "cross_ok": true, "procs_left": [], "port_accepts_after": false, "portfile_after": false, "timers": []}
+{"i": 1, "port": 58239, "guid": "/devtools/browser/c95fa73b-b01a-4eed-86b8-b3f840dc3b79", "start_s": 6.66, "cross_ok": true, "procs_left": [], "port_accepts_after": false, "portfile_after": false, "timers": []}
+{"i": 2, "port": 58450, "guid": "/devtools/browser/4bddfc41-8a66-4686-992e-cfe28d9fcd5b", "start_s": 7.25, "cross_ok": true, "procs_left": [], "port_accepts_after": false, "portfile_after": false, "timers": []}
+{"i": 3, "port": 58475, "guid": "/devtools/browser/87e16b7f-df43-409d-b764-d6ee2c6f57fd", "start_s": 7.89, "cross_ok": true, "procs_left": [], "port_accepts_after": false, "portfile_after": false, "timers": []}
+{"i": 4, "port": 58436, "guid": "/devtools/browser/83db5fae-b27e-44f2-9a47-aa82cedcb5e0", "start_s": 8.33, "cross_ok": true, "procs_left": [], "port_accepts_after": false, "portfile_after": false, "timers": []}
+== interrupts
+{
+ "i1": "KeyboardInterrupt propagated",
+ "i1_procs_left": [],
+ "i1_port_accepts_after": false,
+ "i1_portfile_after": false,
+ "i1_timers": [],
+ "i1_session_state": [
+  null,
+  null,
+  null
+ ],
+ "i2": "KeyboardInterrupt propagated",
+ "i2_interrupt_to_raise_s": 0.56,
+ "i2_procs_left": [],
+ "i2_port_accepts_after": false,
+ "i2_portfile_after": false,
+ "i2_timers": [],
+ "i2_session_state": [
+  null,
+  null,
+  null
+ ]
+}
+== raw wildcard
+{
+ "port": 65144,
+ "accepts_127.0.0.1": true,
+ "accepts_127.0.0.2": false,
+ "lan_ip": "100.67.3.87",
+ "accepts_lan_ip": false,
+ "_reaches_past_loopback": false,
+ "rpl_s": 1.0
+}
+== ALLDONE

@@ -1,0 +1,28 @@
+attempt 1 start 2026-10-11T20:13:39Z
+[01:43:41] suite lock busy, waiting: {"pid": 46492, "repo": "D:\\autoTesting", "started": 1791749215.0158615, "started_iso": "2026-10-12T01:36:55", "token": "cf776b773c4353c5", "cmd": "shard_suite --repo D:/autoTesting --ref 7dd225d4 --shards 4 --out C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/suite/out1 -- -o addopts="}
+[01:58:30] ref ecaaf7e4 = ecaaf7e4; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\mr1a-1369632204\shards
+[01:58:40] collecting whole set (one copy)
+[01:59:51] collected 4603 tests in 284 files; balanced by stored durations (4570/4603 tests known, 4 files at mean); pinned files: none; predicted: s0=843, s1=843, s2=843, s3=843
+[01:59:51] shard 0: pid 16968, 70 units, 1104 tests
+[01:59:52] shard 1: pid 64172, 71 units, 1007 tests
+[01:59:52] shard 2: pid 22280, 71 units, 1598 tests
+[01:59:53] shard 3: pid 19520, 72 units, 894 tests
+[02:16:48] shard 1 finished rc=1 in 1016s
+[02:18:06] shard 3 finished rc=0 in 1093s
+[02:18:49] shard 2 finished rc=1 in 1136s
+[02:23:37] shard 0 finished rc=1 in 1426s
+[02:23:38] re-running 6 failing test(s) alone in shard-0 (load-induced vs real)
+[02:30:17]   shard 0: rc=1 wall=1425.8s units=70 tests=1104 reported=1104
+[02:30:17]   shard 1: rc=1 wall=1015.9s units=71 tests=1007 reported=1007
+[02:30:17]   shard 2: rc=1 wall=1136.4s units=71 tests=1598 reported=1598
+[02:30:17]   shard 3: rc=0 wall=1093.5s units=72 tests=894 reported=894
+[02:30:17] counts {'passed': 4576, 'failed': 6, 'skipped': 21}; collect proof ok=True (baseline 4603, union 4603, ran 4603)
+[02:30:17]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 0, alone: failed)
+[02:30:17]   failed tests/test_crawl_inventory_live.py::test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused (shard 1, alone: passed)
+[02:30:17]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 1, alone: failed)
+[02:30:17]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero (shard 1, alone: passed)
+[02:30:17]   failed tests/test_core.py::test_env_creation_is_coordinated_across_processes (shard 1, alone: passed)
+[02:30:17]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 2, alone: failed)
+[02:30:17] summary -> C:\Users\Lenovo\AppData\Local\Temp\mr1a-1369632204\shards\summary.json (exit 1)
+attempt 1 exit 1 2026-10-11T21:01:04Z
+SUITE_DONE

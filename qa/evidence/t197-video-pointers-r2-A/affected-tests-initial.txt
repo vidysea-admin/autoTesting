@@ -1,0 +1,218 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+........................................................................ [ 19%]
+........................................................................ [ 38%]
+........................................................................ [ 57%]
+...................................FFFFFFFF............................. [ 77%]
+........................................................................ [ 96%]
+.............                                                            [100%]
+================================== FAILURES ===================================
+__ test_every_work_dir_artifact_is_gitignored_in_the_real_repo[redacted.mp4] __
+
+rel = 'redacted.mp4'
+
+    @pytest.mark.parametrize("rel", [
+        "redacted.mp4", f"frames/{frame_name(61.0)}", "verify_0_1.png", "frames/stray.jpg", "x.mov"])
+    def test_every_work_dir_artifact_is_gitignored_in_the_real_repo(rel):
+        paths = ProjectPaths("demo", REPO)
+        target = paths.review_work_dir("rv_abc123") / rel
+>       _assert_ignored(target)
+
+tests\test_video_review_cleanup.py:232: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123/redacted.mp4')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123\redacted.mp4 is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b...ed.mp4'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+_ test_every_work_dir_artifact_is_gitignored_in_the_real_repo[frames/00061000.png] _
+
+rel = 'frames/00061000.png'
+
+    @pytest.mark.parametrize("rel", [
+        "redacted.mp4", f"frames/{frame_name(61.0)}", "verify_0_1.png", "frames/stray.jpg", "x.mov"])
+    def test_every_work_dir_artifact_is_gitignored_in_the_real_repo(rel):
+        paths = ProjectPaths("demo", REPO)
+        target = paths.review_work_dir("rv_abc123") / rel
+>       _assert_ignored(target)
+
+tests\test_video_review_cleanup.py:232: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123/frames/00061000.png')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123\frames\00061000.png is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b...00.png'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+_ test_every_work_dir_artifact_is_gitignored_in_the_real_repo[verify_0_1.png] _
+
+rel = 'verify_0_1.png'
+
+    @pytest.mark.parametrize("rel", [
+        "redacted.mp4", f"frames/{frame_name(61.0)}", "verify_0_1.png", "frames/stray.jpg", "x.mov"])
+    def test_every_work_dir_artifact_is_gitignored_in_the_real_repo(rel):
+        paths = ProjectPaths("demo", REPO)
+        target = paths.review_work_dir("rv_abc123") / rel
+>       _assert_ignored(target)
+
+tests\test_video_review_cleanup.py:232: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123/verify_0_1.png')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123\verify_0_1.png is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b..._1.png'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+_ test_every_work_dir_artifact_is_gitignored_in_the_real_repo[frames/stray.jpg] _
+
+rel = 'frames/stray.jpg'
+
+    @pytest.mark.parametrize("rel", [
+        "redacted.mp4", f"frames/{frame_name(61.0)}", "verify_0_1.png", "frames/stray.jpg", "x.mov"])
+    def test_every_work_dir_artifact_is_gitignored_in_the_real_repo(rel):
+        paths = ProjectPaths("demo", REPO)
+        target = paths.review_work_dir("rv_abc123") / rel
+>       _assert_ignored(target)
+
+tests\test_video_review_cleanup.py:232: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123/frames/stray.jpg')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123\frames\stray.jpg is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b...ay.jpg'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+_____ test_every_work_dir_artifact_is_gitignored_in_the_real_repo[x.mov] ______
+
+rel = 'x.mov'
+
+    @pytest.mark.parametrize("rel", [
+        "redacted.mp4", f"frames/{frame_name(61.0)}", "verify_0_1.png", "frames/stray.jpg", "x.mov"])
+    def test_every_work_dir_artifact_is_gitignored_in_the_real_repo(rel):
+        paths = ProjectPaths("demo", REPO)
+        target = paths.review_work_dir("rv_abc123") / rel
+>       _assert_ignored(target)
+
+tests\test_video_review_cleanup.py:232: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123/x.mov')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123\x.mov is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b.../x.mov'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+_ test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[json] _
+
+ext = 'json'
+
+    @pytest.mark.parametrize("ext", ["json", "md", "html"])
+    def test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo(ext):
+        stored = ProjectPaths("demo", REPO).review_path("rv_abc123")
+>       _assert_ignored(stored.with_suffix(f".{ext}"))
+
+tests\test_video_review_cleanup.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123.json')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123.json is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b...3.json'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+_ test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[md] __
+
+ext = 'md'
+
+    @pytest.mark.parametrize("ext", ["json", "md", "html"])
+    def test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo(ext):
+        stored = ProjectPaths("demo", REPO).review_path("rv_abc123")
+>       _assert_ignored(stored.with_suffix(f".{ext}"))
+
+tests\test_video_review_cleanup.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123.md')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123.md is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b...123.md'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+_ test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[html] _
+
+ext = 'html'
+
+    @pytest.mark.parametrize("ext", ["json", "md", "html"])
+    def test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo(ext):
+        stored = ProjectPaths("demo", REPO).review_path("rv_abc123")
+>       _assert_ignored(stored.with_suffix(f".{ext}"))
+
+tests\test_video_review_cleanup.py:238: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/t197r2a/copy/projects/demo/reviews/rv_abc123.html')
+
+    def _assert_ignored(path: Path) -> None:
+        done = subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q",
+                               path.relative_to(REPO).as_posix()], capture_output=True, timeout=30)
+>       assert done.returncode == 0, f"{path.relative_to(REPO)} is not ignored by .gitignore"
+E       AssertionError: projects\demo\reviews\rv_abc123.html is not ignored by .gitignore
+E       assert 128 == 0
+E        +  where 128 = CompletedProcess(args=['git', '-C', 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b...3.html'], returncode=128, stdout=b'', stderr=b'fatal: not a git repository (or any of the parent directories): .git\n').returncode
+
+tests\test_video_review_cleanup.py:244: AssertionError
+============================== warnings summary ===============================
+tests/test_ingest_transcripts.py::test_orchestrated_ingest_keeps_a_narration_the_transcript_contains
+tests/test_ingest_transcripts.py::test_the_runner_logs_the_drop_without_the_narration_text
+  <string>:11: RuntimeWarning: StageContext for run 'run_t' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[redacted.mp4]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[frames/00061000.png]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[verify_0_1.png]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[frames/stray.jpg]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[x.mov]
+FAILED tests/test_video_review_cleanup.py::test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[json]
+FAILED tests/test_video_review_cleanup.py::test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[md]
+FAILED tests/test_video_review_cleanup.py::test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[html]
+8 failed, 365 passed, 2 warnings in 440.02s (0:07:20)

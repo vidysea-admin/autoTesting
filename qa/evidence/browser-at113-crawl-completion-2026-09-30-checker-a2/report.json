@@ -1,0 +1,2616 @@
+{
+  "status": "PASS",
+  "identity": {
+    "sha": "f9052150f4cd2af19a5ed3888173e910fa1220ed",
+    "loaded": "D:\\autoTesting\\.worktrees\\at113-crawl-completion\\src\\autotester\\stages\\explore_status.py",
+    "hash": "4bce90f7ace3863c27ebaa42cc733faf2ab343310436866b58a9fe3e483dc2e0"
+  },
+  "ui": "http://127.0.0.1:54993",
+  "fixture": "http://127.0.0.1:54991",
+  "scenarios": [
+    {
+      "slug": "healthy",
+      "crawl_id": "crawl_01M3SPT02KH34KF61NYK8P1VBZ",
+      "status": "completed",
+      "history": "crawl_01M3SPT02KH34KF61NYK8P1VBZ\tCOMPLETED\tfrontier empty\t1\t0\t0\t0\t\u2014\t2026-09-30T17:46:42.966796+00:00",
+      "summary": "COMPLETED \u00b7 stopped: FRONTIER EMPTY \u00b7 policy READ_ONLY",
+      "workbook": "D:\\autoTesting\\qa\\evidence\\browser-at113-crawl-completion-2026-09-30-checker-a2\\healthy-crawl_01M3SPT02KH34KF61NYK8P1VBZ.xlsx",
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageerrors": [],
+      "failed_requests": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    {
+      "slug": "bound",
+      "crawl_id": "crawl_01M3SPT3B0F4QKXAFAHKG99X0J",
+      "status": "stopped_bound",
+      "history": "crawl_01M3SPT3B0F4QKXAFAHKG99X0J\tSTOPPED_BOUND\tmax_actions\t2\t0\t0\t0\t\u2014\t2026-09-30T17:46:46.314861+00:00",
+      "summary": "STOPPED_BOUND \u00b7 stopped: MAX_ACTIONS \u00b7 policy READ_ONLY",
+      "workbook": "D:\\autoTesting\\qa\\evidence\\browser-at113-crawl-completion-2026-09-30-checker-a2\\bound-crawl_01M3SPT3B0F4QKXAFAHKG99X0J.xlsx",
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageerrors": [],
+      "failed_requests": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/bound/crawls/crawl_01M3SPT3B0F4QKXAFAHKG99X0J/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    {
+      "slug": "dialog",
+      "crawl_id": "crawl_01M3SPT89ZCZ0SE18NMCBM70V4",
+      "status": "aborted",
+      "history": "crawl_01M3SPT89ZCZ0SE18NMCBM70V4\tABORTED\tabandoned visits: aborted_dialog (/dialog/lost)\t3\t0\t1\t0\t\u2014\t2026-09-30T17:46:51.368812+00:00",
+      "summary": "ABORTED \u00b7 stopped: ABANDONED VISITS: ABORTED_DIALOG (/DIALOG/LOST) \u00b7 policy READ_ONLY",
+      "workbook": "D:\\autoTesting\\qa\\evidence\\browser-at113-crawl-completion-2026-09-30-checker-a2\\dialog-crawl_01M3SPT89ZCZ0SE18NMCBM70V4.xlsx",
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageerrors": [],
+      "failed_requests": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/bound/crawls/crawl_01M3SPT3B0F4QKXAFAHKG99X0J/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/dialog/crawls/crawl_01M3SPT89ZCZ0SE18NMCBM70V4/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    {
+      "slug": "legacy",
+      "crawl_id": "crawl_error",
+      "status": "aborted",
+      "history": "crawl_error\tABORTED\tcrawl incomplete: recorded controls were not exercised because of errors\t0\t0\t0\t0\t\u2014\t\u2014",
+      "summary": "ABORTED \u00b7 stopped: CRAWL INCOMPLETE: RECORDED CONTROLS WERE NOT EXERCISED BECAUSE OF ERRORS \u00b7 policy READ_ONLY",
+      "workbook": "D:\\autoTesting\\qa\\evidence\\browser-at113-crawl-completion-2026-09-30-checker-a2\\legacy-crawl_error.xlsx",
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageerrors": [],
+      "failed_requests": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/bound/crawls/crawl_01M3SPT3B0F4QKXAFAHKG99X0J/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/dialog/crawls/crawl_01M3SPT89ZCZ0SE18NMCBM70V4/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_error/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    {
+      "slug": "legacy",
+      "crawl_id": "crawl_empty",
+      "status": "completed",
+      "history": "crawl_empty\tCOMPLETED\tfrontier empty\t0\t0\t0\t0\t\u2014\t\u2014",
+      "summary": "COMPLETED \u00b7 stopped: FRONTIER EMPTY \u00b7 policy READ_ONLY",
+      "workbook": "D:\\autoTesting\\qa\\evidence\\browser-at113-crawl-completion-2026-09-30-checker-a2\\legacy-crawl_empty.xlsx",
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageerrors": [],
+      "failed_requests": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/bound/crawls/crawl_01M3SPT3B0F4QKXAFAHKG99X0J/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/dialog/crawls/crawl_01M3SPT89ZCZ0SE18NMCBM70V4/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_error/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_empty/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    {
+      "slug": "legacy",
+      "crawl_id": "crawl_issues",
+      "status": "completed",
+      "history": "crawl_issues\tCOMPLETED\tfrontier empty\t0\t0\t9\t0\t\u2014\t\u2014",
+      "summary": "COMPLETED \u00b7 stopped: FRONTIER EMPTY \u00b7 policy READ_ONLY",
+      "workbook": "D:\\autoTesting\\qa\\evidence\\browser-at113-crawl-completion-2026-09-30-checker-a2\\legacy-crawl_issues.xlsx",
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageerrors": [],
+      "failed_requests": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/bound/crawls/crawl_01M3SPT3B0F4QKXAFAHKG99X0J/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/dialog/crawls/crawl_01M3SPT89ZCZ0SE18NMCBM70V4/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_error/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_empty/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_issues/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    {
+      "slug": "legacy",
+      "crawl_id": "crawl_low",
+      "status": "completed",
+      "history": "crawl_low\tCOMPLETED\tfrontier empty\t0\t0\t0\t0\t\u2014\t\u2014",
+      "summary": "COMPLETED \u00b7 stopped: FRONTIER EMPTY \u00b7 policy READ_ONLY",
+      "workbook": "D:\\autoTesting\\qa\\evidence\\browser-at113-crawl-completion-2026-09-30-checker-a2\\legacy-crawl_low.xlsx",
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "location": {
+            "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageerrors": [],
+      "failed_requests": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/bound/crawls/crawl_01M3SPT3B0F4QKXAFAHKG99X0J/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/dialog/crawls/crawl_01M3SPT89ZCZ0SE18NMCBM70V4/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_error/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_empty/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_issues/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "failure": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_low/report.xlsx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    }
+  ],
+  "console_errors": [
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "failed_requests": [
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "http://127.0.0.1:54993/projects/healthy/crawls/crawl_01M3SPT02KH34KF61NYK8P1VBZ/report.xlsx",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "http://127.0.0.1:54993/projects/bound/crawls/crawl_01M3SPT3B0F4QKXAFAHKG99X0J/report.xlsx",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "http://127.0.0.1:54993/projects/dialog/crawls/crawl_01M3SPT89ZCZ0SE18NMCBM70V4/report.xlsx",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_error/report.xlsx",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_empty/report.xlsx",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_issues/report.xlsx",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,650;1,500&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "url": "http://127.0.0.1:54993/projects/legacy/crawls/crawl_low/report.xlsx",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "pageerrors": [],
+  "cleanup": {
+    "ui_thread_stopped": true,
+    "fixture_thread_stopped": true
+  }
+}

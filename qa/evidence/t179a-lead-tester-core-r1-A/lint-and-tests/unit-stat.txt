@@ -1,0 +1,12 @@
+ docs/MAP.md                            |  13 ++
+ docs/SNAPSHOT.md                       |   2 +-
+ qa/briefs/t179-lead-tester.md          | 170 ++++++++++++++++++++
+ qa/manifests/t179a-lead-tester-core.md | 156 ++++++++++++++++++
+ src/autotester/agents/__init__.py      |   7 +
+ src/autotester/agents/context.py       |  39 +++++
+ src/autotester/agents/guards.py        | 161 +++++++++++++++++++
+ src/autotester/agents/tools.py         | 280 ++++++++++++++++++++++++++++++++
+ src/autotester/schema/agent_layer.py   |  96 +++++++++++
+ tests/test_agent_read_only.py          | 260 ++++++++++++++++++++++++++++++
+ tests/test_agent_tools.py              | 283 +++++++++++++++++++++++++++++++++
+ 11 files changed, 1466 insertions(+), 1 deletion(-)

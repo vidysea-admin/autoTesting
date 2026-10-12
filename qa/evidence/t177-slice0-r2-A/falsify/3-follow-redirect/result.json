@@ -1,0 +1,83 @@
+{
+ "name": "3-follow-redirect",
+ "point": "3",
+ "sel": "redirect",
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t\\src\\autotester\\__init__.py",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t",
+ "runs": {
+  "green": {
+   "rc": 0,
+   "secs": 36.8,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t"
+   ]
+  },
+  "red": {
+   "rc": 1,
+   "secs": 35.8,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "FAILED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "2 failed, 1 passed, 8 deselected",
+   "errs": [
+    "E   Failed: DID NOT RAISE CdpEndpointError",
+    "E   Failed: DID NOT RAISE CdpEndpointError"
+   ],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t"
+   ]
+  },
+  "restored": {
+   "rc": 0,
+   "secs": 36.5,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-3-follow-redirect-8lp7ir81\\t"
+   ]
+  }
+ },
+ "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -96,2 +96,5 @@\n         reply = conn.getresponse()\n+        if reply.status in (301, 302, 303, 307, 308):\n+            import urllib.request\n+            return urllib.request.urlopen(reply.getheader(\"Location\"), timeout=PROBE_DEADLINE_S).read()\n         if reply.status != 200:\n",
+ "restored_same": true
+}

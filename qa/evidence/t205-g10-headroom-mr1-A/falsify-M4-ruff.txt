@@ -1,0 +1,12 @@
+E402 Module level import not at top of file
+  --> src\autotester\schema\schedule.py:43:1
+   |
+43 | from enum import StrEnum
+   | ^^^^^^^^^^^^^^^^^^^^^^^^
+help: Move module level imports to top of file
+
+F811 Redefinition of unused `CredentialState` from line 33
+  --> src\autotester\schema\schedule.py:46:7
+   |
+46 | class CredentialState(StrEnum):
+   |       ^^^^^^^^^^^^^^^ `CredentialState` redefined here

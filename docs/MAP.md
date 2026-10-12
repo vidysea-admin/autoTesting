@@ -11,6 +11,7 @@
 | `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
 | `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
 | `agents/tools.py` | The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6). |
+| `auth/policy.py` | Merge each unit's own `ROUTE_POLICY` into the one central route-policy table (TF4, AU12/AU14). |
 | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
 | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
 | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
@@ -29,7 +30,10 @@
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
 | `cli_release.py` | `autotester release` / `release-log` — the release manager's way to run the whole suite (T-167). |
+| `cli_schedule.py` | `autotester schedule tick`: the stateless pass that makes scheduled tests run (T-200, TS7). |
+| `cli_subapps.py` | The list of CLI sub-apps `autotester` registers (T-205/TF5, design rule). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
+| `cli_video_review.py` | `autotester ingest review`: a pointer-guided review of one recording (T-197, CLI half). |
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
 | `core/excel.py` | Workbook presentation helpers shared by every Excel exporter. |
@@ -41,9 +45,14 @@
 | `core/redact_encodings.py` | Exact encoded-spelling search: precompute how a declared secret would look |
 | `core/redact_fold.py` | Credential folding: normalise a string so a case, punctuation, homoglyph, |
 | `core/redact_wrap.py` | Whitespace normalisation for the exact-encoding needle search, and a |
+| `core/repo_docs.py` | Repo-level documents: the living map, the ledger, the history, the router. |
+| `core/safe_names.py` | Refuse any name that could leave its directory or break on Windows (R65, TF7). |
 | `core/trace.py` | The redacted per-run trace: `TraceWriter` appends one JSON line per stage |
 | `core/upload_limit.py` | The ONE accessor for the admin upload limit (`max_upload_bytes`), read at request time. |
 | `core/urls.py` | URL templating: the identity input a crawled screen shares with the |
+| `delivery/email.py` | The outbound mail adapters: the dry-run outbox and the SMTP sender (hosting.md HO27, HO29). |
+| `delivery/inbox.py` | Delivery records on disk and the send-once procedure around a mail transport (TT9, HO29). |
+| `delivery/message.py` | Compose the report e-mail from a stored `ReportSummary` and a template file (hosting.md HO28). |
 | `doctor.py` | Design enforcement. Runs the rules that keep this repo readable. |
 | `ledger/checks.py` | Design rules over the project's RECORDS, as opposed to its source files. |
 | `ledger/citations.py` | Does every `D-NNN` cited in a gate, contract, manifest, verdict or doc resolve to an |
@@ -55,6 +64,7 @@
 | `media/chunks.py` | Split a recording into overlapping chunks a vision model can actually read. |
 | `media/frames.py` | Pull a single still out of a recording, at a second the model named. |
 | `media/probe.py` | Ask ffmpeg what a recording actually is, and whether ffmpeg is here at all. |
+| `media/redacted.py` | The redacted derivative of a recording, and the frames cut from it (TV7). |
 | `media/transcribe.py` | Get a recording's narration — reusing a sidecar first, transcribing last. |
 | `providers/anthropic.py` | Anthropic provider: the `agent` and `judge` roles via the Messages API. |
 | `providers/base.py` | The provider seam. Every model call in the system goes through this interface. |
@@ -74,10 +84,12 @@
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
+| `schema/bug_run.py` | What reading the bug store and processing one run reports: the shapes of T-199b (TB3, TB4, TB6). |
 | `schema/case.py` | A test case — one falsifiable claim about the product, plus how to check it. |
 | `schema/catalog.py` | The test catalog: schema for `stages/catalog.py::catalog()`'s output. |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
+| `schema/delivery.py` | Report-delivery shapes: preference, recipient, summary, rendered message, record, SMTP settings. |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
 | `schema/evidence_tombstone.py` | Sidecar tag for a unit's evidence spec whose `kills` node-ids moved out from |
 | `schema/failure_bundle.py` | Failure-bundle shapes (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
@@ -99,11 +111,16 @@
 | `schema/screen_graph.py` | What one page-visit observed: its interactive elements and identity inputs. |
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
+| `schema/sheet_plan.py` | The shapes of a tracker-sheet sync PLAN (T-199b dry run; contract TB9, TB10, TB11, TB13 in part). |
+| `schema/team_enums.py` | The Group 10 (team features) vocabulary file: every closed value set the team units add. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
+| `schema/tracked_bug.py` | A tracked bug and the events that move it: the data shapes of T-199a (team-bug-loop TB1-TB6). |
 | `schema/unified_report.py` | The damage-control report's typed shape: one run's four evidence classes plus crawl coverage. |
 | `schema/user_persona.py` | A `UserPersona` and the opt-in `UXPolicy` -- WHO the advisory UX pass reads a run as. |
 | `schema/ux_report.py` | The advisory UX artifacts: `UXFinding`, `UXCaseOutcome`, `UXReport` (PU2). |
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
+| `schema/video_pointer.py` | The shape of a human's pointer file once parsed (T-197 / TV1). |
+| `schema/video_review.py` | The typed review of one recording: summary, confirm-list, what was and was not looked at (T-197). |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
 | `sources/bounded_write.py` | One bounded, hashing copy for every intake path (zip member, Drive fetch). |
@@ -131,6 +148,8 @@
 | `stages/ai_report.py` | AI REPORT: one Excel workbook of a project's stored Track C evidence, grouped by tier (T-155). |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
+| `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
+| `stages/bug_run.py` | BUG RUN: turn one finished run's verdicts into bug events, and notice cases that moved (T-199b). |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
@@ -142,6 +161,7 @@
 | `stages/expand.py` | EXPAND: FlowSpec -> Case[], covering every applicable CaseClass per flow. |
 | `stages/explore.py` | EXPLORE: a bounded, safety-gated BFS crawl of a (usually logged-in) app. |
 | `stages/explore_consent.py` | The crawl's consent pre-flight (D-018 gate 2) — split from `explore.py` |
+| `stages/explore_flows.py` | One job: derive reviewable `Flow` PROPOSALS from a crawl's discovery tree (AT-887, D-084). |
 | `stages/explore_incremental.py` | Incremental crawl: don't re-explore a screen the persona already knows. |
 | `stages/explore_merge.py` | Fold a crawl's screen graph into the reviewed FlowSpec (Track B5). |
 | `stages/explore_node.py` | One node's worth of exploring: try each safe candidate action, record what |
@@ -178,27 +198,39 @@
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
+| `stages/run_launcher.py` | The one run launcher: gates, execution and the saved `Run` (T-205, team-foundation TF1/TF2). |
 | `stages/schedule_gate.py` | The TS5 gate: a scheduled run may start only under the credential-derived approval (D-068). |
 | `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |
 | `stages/schedule_tick.py` | One stateless pass over every scheduled project, plus the heartbeat and `--dry-run` (TS7). |
 | `stages/schedule_time.py` | Slot arithmetic: which UTC instants does a schedule mean to fire at, inside a window? |
+| `stages/schedule_wiring.py` | Wires the scheduler core to the real world: the projects on disk, the run queue, the TS5 gate. |
 | `stages/scheduler.py` | The scheduler core (G5): which slots are due, who may claim them, and what a tick records. |
 | `stages/score.py` | SCORE: compare AutoTester's issues against a human tester's own sheet. |
 | `stages/screen_identity.py` | Screen identity: the rules that decide when two screens are one. |
 | `stages/script_replay.py` | SCRIPT_REPLAY: record a working live run's locators as a `Script`, then replay it for free. |
+| `stages/sheet_plan.py` | SHEET PLAN: from the open bugs and one read of the sheet, the exact cells a sync would write. |
+| `stages/sheet_write.py` | SHEET WRITE: the sheet client interface, the dry run, and the guarded write of a confirmed plan. |
 | `stages/similarity_score.py` | How two bug reports are compared for `stages/score.py`'s T-136 scorer. |
 | `stages/synthetic_values.py` | The synthetic value generator (X10-b, D-029): what the crawler types. |
 | `stages/text_lines.py` | Number lines by  |
 | `stages/unified_report.py` | The damage-control report's loaders and assembly (T-168, `damage-control-report.md` DC1-DC4). |
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
+| `stages/video_pointers.py` | Parse a reviewer's pointer file into typed lines and a whole error list (TV1). |
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
+| `stages/video_review.py` | Review one recording with human pointers: the typed, redacted, capped, idempotent run (T-197). |
+| `stages/video_review_items.py` | Turn a model reply into validated confirm-list items (TV3, TV4, TV5, TV6). |
+| `stages/video_review_plan.py` | Which seconds of a recording get looked at, and which do not (TV2, TV7 preview). |
+| `stages/video_review_prompt.py` | Build the model prompt for one batch of frames, and say what narration there is (TV5, TV6). |
+| `stages/video_review_render.py` | Render a stored review as Markdown or HTML with the identical item set (TV10, TV4, TV6). |
+| `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a/b, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory (C1/C3). |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
 | `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
+| `store/team_store.py` | The sibling store for team data: markers, records, preferences, outboxes (T-205/TF7, R65). |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
@@ -209,6 +241,7 @@
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
+| `ui/routers.py` | The one ordered list of routers the UI app serves (T-205/TF3; same shape as T-204's). |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
 | `ui/routes_catalog.py` | The test catalog page: one row per `CaseClass`, a green runnable count, and |
 | `ui/routes_crawl_approval.py` | The crawl-approval card on the credentials page (D-018 consent, gate 2). |
@@ -280,6 +313,10 @@
 | `Finding` (`schema/bench.py`) | One reported defect from a participant, matched against ground truth. |
 | `BenchCorpus` (`schema/bench.py`) | A build with known seeded defects and the material pack given to testers. |
 | `BenchTrial` (`schema/bench.py`) | One participant's attempt on one corpus. |
+| `BadEventFile` (`schema/bug_run.py`) | An event file the store could not use. It is reported by name and never deleted (P4). |
+| `BugSnapshot` (`schema/bug_run.py`) | One read of the log: the valid events (in replay order), the bugs they fold to, and the |
+| `RunOutcome` (`schema/bug_run.py`) |  |
+| `RunReport` (`schema/bug_run.py`) | What `process_run` did with one run. Counts are of events, not verdicts. |
 | `Case` (`schema/case.py`) | One generated or hand-written test case. |
 | `CaseProposal` (`schema/case.py`) | A step-less candidate, bound to an exact FlowSpec snapshot and human review. |
 | `AgentFix` (`schema/case.py`) | The agent's proposed correction for one failing step. |
@@ -305,6 +342,16 @@
 | `CrawlCoverage` (`schema/crawl.py`) | What a crawl covered, stated by the crawl itself (coverage.md V7). The books balance: |
 | `NoiseCount` (`schema/crawl.py`) | One third-party host's dropped-request tally (never an issue, X9). |
 | `Crawl` (`schema/crawl.py`) | The envelope for one bounded BFS run — `stages/explore.py`'s output. |
+| `DeliveryChannel` (`schema/delivery.py`) |  |
+| `DeliveryStatus` (`schema/delivery.py`) |  |
+| `ReportLabel` (`schema/delivery.py`) | The stored report label. Computed once elsewhere (TT7); every reader takes it as given. |
+| `NotificationPref` (`schema/delivery.py`) | Per-user opt-in (HO26). Default OFF: no mail until the user ticks the box. |
+| `Recipient` (`schema/delivery.py`) | Who a message goes to. Built from the authenticated identity, never from a request body. |
+| `RunCounts` (`schema/delivery.py`) |  |
+| `ReportSummary` (`schema/delivery.py`) | Exactly what HO28 lets a message carry: names, counts, one coverage line, a link. |
+| `RenderedMessage` (`schema/delivery.py`) |  |
+| `DeliveryRecord` (`schema/delivery.py`) | One attempt's outcome (TT9). Stores the user id, a redacted error, never the address. |
+| `SmtpConfig` (`schema/delivery.py`) | Transport settings from the environment. No password: that is read at send time (C5). |
 | `EvidenceTombstoneEntry` (`schema/evidence_tombstone.py`) | One `kills` node-id, named by file + bare function name (no parametrize |
 | `EvidenceTombstone` (`schema/evidence_tombstone.py`) | `qa/evidence/<slug>/mutations.stale.json` -- absent means untagged. |
 | `BundleFileKind` (`schema/failure_bundle.py`) |  |
@@ -369,6 +416,7 @@
 | `SecretRef` (`schema/project.py`) | A declared credential. Holds the KEY and its scope — never the value. |
 | `ProviderConfig` (`schema/project.py`) | Which provider serves each role. Roles are swappable per project. |
 | `Source` (`schema/project.py`) | An immutable input the system learned from. |
+| `TrackerConfig` (`schema/project.py`) | Where a project's confirmed bugs go (Group 10, T-205/TF6 placeholder). |
 | `Project` (`schema/project.py`) | Everything the system needs to test one product. |
 | `FlowPlan` (`schema/release.py`) | One flow's validation plan: the cases that decide whether the flow still works. |
 | `ReleaseScope` (`schema/release.py`) | What one release executes, frozen when the run is first accepted (RR2/RR6). |
@@ -392,11 +440,6 @@
 | `ScenarioSpec` (`schema/scenario.py`) | One declared scenario variant of a flow. Its own graph node and case set (EC4). |
 | `UncoveredBranch` (`schema/scenario.py`) | A scenario branch that produced no case, with the one reason why (EC5). |
 | `CompileResult` (`schema/scenario.py`) | What `stages/eval_compiler.py::compile_evals` produced. |
-| `ScheduleMode` (`schema/schedule.py`) |  |
-| `ScheduleZone` (`schema/schedule.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
-| `SlotOutcome` (`schema/schedule.py`) | What a tick decided for one slot. A record carries exactly one of these. |
-| `SchedulerHealth` (`schema/schedule.py`) |  |
-| `CredentialState` (`schema/schedule.py`) | Why the TS5 gate admits or refuses a run; the value leads the slot record's detail. |
 | `ScheduleInvalid` (`schema/schedule.py`) | A value was refused at save. `field` names it; the caller stores nothing. |
 | `WeeklyRule` (`schema/schedule.py`) |  |
 | `ScheduleConfig` (`schema/schedule.py`) |  |
@@ -413,8 +456,28 @@
 | `Journey` (`schema/screenmap.py`) | One recording's ordered path through screens. |
 | `ScreenMap` (`schema/screenmap.py`) | The product map: every learned screen plus the journeys that visited them. |
 | `ServerSettings` (`schema/server_settings.py`) | What the admin chose; absent fields keep the documented defaults. |
+| `SheetColumns` (`schema/sheet_plan.py`) | Which sheet column holds which bug field. The mapping is an input here; proposing and |
+| `SheetState` (`schema/sheet_plan.py`) | One read of the sheet's tab: the header row and the data rows under it (row 2 onward). |
+| `CellChange` (`schema/sheet_plan.py`) |  |
+| `CellConflict` (`schema/sheet_plan.py`) | A cell a human changed since we wrote it. It is reported and never overwritten (TB10). |
+| `PlanRow` (`schema/sheet_plan.py`) |  |
+| `SheetPlan` (`schema/sheet_plan.py`) | What a sync would write. `plan_hash` is derived from the content and checked on load. |
+| `SyncMemory` (`schema/sheet_plan.py`) | What we last wrote, per bug and column, so a later human edit is told from our own value. |
+| `PlanConfirmation` (`schema/sheet_plan.py`) | A named person saw the plan with this hash. Whether that person holds `project.edit` is |
+| `ScheduleMode` (`schema/team_enums.py`) |  |
+| `ScheduleZone` (`schema/team_enums.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
+| `SlotOutcome` (`schema/team_enums.py`) | What a tick decided for one slot. A record carries exactly one of these. |
+| `SchedulerHealth` (`schema/team_enums.py`) |  |
+| `CredentialState` (`schema/team_enums.py`) | Why the TS5 gate admits or refuses a run; the value leads the slot record's detail. |
+| `RunVia` (`schema/team_enums.py`) | Which surface asked for a run (`Run.via`); `None` means the original UI Run button. |
+| `SourceOriginKind` (`schema/team_enums.py`) | Where a `Source` came from (`Source.origin`); `None` means it predates provenance. |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
+| `BugStatus` (`schema/tracked_bug.py`) |  |
+| `EventKind` (`schema/tracked_bug.py`) | What happened, in the loop's vocabulary. The first seven are verdict-derived; `case_changed` |
+| `BugSeed` (`schema/tracked_bug.py`) | What a bug is made of when its first FAIL opens it. |
+| `BugEvent` (`schema/tracked_bug.py`) | One fact. `ref` is the idempotency token: a verdict ref (`run/case`), an issue ref |
+| `TrackedBug` (`schema/tracked_bug.py`) | One bug, as folded from its events. Never written to disk. |
 | `RegressionSection` (`schema/unified_report.py`) | RR3/RR6: the release's single issues log and its diff against the trusted baseline. |
 | `ApiFailure` (`schema/unified_report.py`) | One first-party response the product answered badly (NA1). `status` None = unreadable. |
 | `ApiSection` (`schema/unified_report.py`) |  |
@@ -438,6 +501,18 @@
 | `Failure` (`schema/verdict.py`) | One unmet criterion, with the evidence that shows it. |
 | `Judgment` (`schema/verdict.py`) | Raw judge output for one grading call — the stage fills in run_id, case_id, |
 | `Verdict` (`schema/verdict.py`) | The judge's output for one case in one run. |
+| `PointerLine` (`schema/video_pointer.py`) | One accepted line. `kind` is `time` (one second), `window` (a range) or `free` |
+| `PointerError` (`schema/video_pointer.py`) | One refused line. The raw text is deliberately not kept: it may carry a secret. |
+| `PointerParse` (`schema/video_pointer.py`) | Everything a pointer file said. Count identity (TV1): |
+| `RedactionWindow` (`schema/video_review.py`) | `[start_s, end_s]` of one source a human blanked out (frames) and muted (audio). |
+| `FramePlan` (`schema/video_review.py`) | Which seconds will be looked at, and which stretches the reviewer pointed at. |
+| `Spans` (`schema/video_review.py`) | `analysed` and `not_reviewed` tile `[0, duration_s]` exactly: no gap, no overlap. |
+| `ReviewPlan` (`schema/video_review.py`) | The `--dry-run` preview: what a run WOULD do. Producing it makes zero provider calls. |
+| `ReplyItem` (`schema/video_review.py`) | One item as a model returned it: every field optional, nothing trusted yet. |
+| `ReviewReply` (`schema/video_review.py`) | The shape asked of the model. A reply that does not validate is a `failed` review. |
+| `ConfirmItem` (`schema/video_review.py`) | One line of the confirm-list. `status` is a human's; a model can never set it. |
+| `RejectedItem` (`schema/video_review.py`) | An item that failed validation. Kept with its reason, never rendered, never blank. |
+| `VideoReview` (`schema/video_review.py`) | The stored review. `id` is derived from content (TV10), never from a clock. |
 <!-- /generated:schema -->
 
 ## Scripts

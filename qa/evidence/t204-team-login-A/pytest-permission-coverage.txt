@@ -5,26 +5,26 @@ configfile: pyproject.toml
 plugins: anyio-4.15.0, langsmith-0.12.1
 collecting ... collected 15 items
 
-tests/test_permission_coverage.py::test_the_denominator_is_the_permitted_surface_not_the_screens_reached PASSED [  6%]
-tests/test_permission_coverage.py::test_a_permitted_control_no_entry_point_reached_is_listed_not_dropped PASSED [ 13%]
-tests/test_permission_coverage.py::test_a_blocked_control_is_reported_blocked_and_never_counts_as_covered PASSED [ 20%]
-tests/test_permission_coverage.py::test_a_declared_destructive_control_names_the_write_policy_that_stood_in_the_way PASSED [ 26%]
-tests/test_permission_coverage.py::test_every_permitted_hole_carries_one_reason_from_the_closed_set PASSED [ 33%]
-tests/test_permission_coverage.py::test_a_fully_exercised_permitted_surface_may_read_100 PASSED [ 40%]
-tests/test_permission_coverage.py::test_a_bounded_crawl_over_a_permitted_surface_still_never_reads_100 PASSED [ 46%]
-tests/test_permission_coverage.py::test_without_a_declared_surface_the_report_says_its_denominator_is_screens_reached PASSED [ 53%]
-tests/test_permission_coverage.py::test_with_a_declared_surface_the_figure_names_the_account_role PASSED [ 60%]
-tests/test_permission_coverage.py::test_the_crawl_page_shows_the_permitted_denominator_and_every_hole PASSED [ 66%]
-tests/test_permission_coverage.py::test_the_workbook_lists_every_permitted_control_not_exercised PASSED [ 73%]
-tests/test_permission_coverage.py::test_the_crawl_reads_the_projects_declared_surface_end_to_end PASSED [ 80%]
-tests/test_permission_coverage.py::test_a_destructive_control_is_attempted_after_every_ordinary_one_on_its_screen PASSED [ 86%]
-tests/test_permission_coverage.py::test_the_crawl_really_tries_the_destructive_control_last PASSED [ 93%]
-tests/test_permission_coverage.py::test_every_destructive_press_comes_after_every_non_destructive_one_across_the_crawl PASSED [100%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_the_denominator_is_the_permitted_surface_not_the_screens_reached PASSED [  6%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_a_permitted_control_no_entry_point_reached_is_listed_not_dropped PASSED [ 13%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_a_blocked_control_is_reported_blocked_and_never_counts_as_covered PASSED [ 20%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_a_declared_destructive_control_names_the_write_policy_that_stood_in_the_way PASSED [ 26%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_every_permitted_hole_carries_one_reason_from_the_closed_set PASSED [ 33%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_a_fully_exercised_permitted_surface_may_read_100 PASSED [ 40%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_a_bounded_crawl_over_a_permitted_surface_still_never_reads_100 PASSED [ 46%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_without_a_declared_surface_the_report_says_its_denominator_is_screens_reached PASSED [ 53%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_with_a_declared_surface_the_figure_names_the_account_role PASSED [ 60%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_the_crawl_page_shows_the_permitted_denominator_and_every_hole PASSED [ 66%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_the_workbook_lists_every_permitted_control_not_exercised PASSED [ 73%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_the_crawl_reads_the_projects_declared_surface_end_to_end PASSED [ 80%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_a_destructive_control_is_attempted_after_every_ordinary_one_on_its_screen PASSED [ 86%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_the_crawl_really_tries_the_destructive_control_last PASSED [ 93%]
+.worktrees\t204-team-login\tests\test_permission_coverage.py::test_every_destructive_press_comes_after_every_non_destructive_one_across_the_crawl PASSED [100%]
 
 ============================== warnings summary ===============================
-.venv\Lib\site-packages\starlette\testclient.py:53
+.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
   D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
     _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================= 15 passed, 1 warning in 18.51s ========================
+======================= 15 passed, 1 warning in 20.30s ========================

@@ -1,0 +1,10 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\t201a-r2A-20753
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 1 item
+
+tests\test_core.py .                                                     [100%]
+
+============================== 1 passed in 9.48s ==============================

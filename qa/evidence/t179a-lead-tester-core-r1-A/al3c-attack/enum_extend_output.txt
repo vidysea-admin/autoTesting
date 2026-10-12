@@ -1,0 +1,8 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head\src\autotester\__init__.py
+Action now has ['navigate', 'click', 'fill', 'select', 'upload', 'wait', 'assert', 'back', 'hover', 'press_key', 'scroll', 'eval', 'submit', 'drag']
+read_only eval -> ('write_policy', "refused under write_policy read_only: step 1 (eval) 'Save': eval can change state")
+read_only submit -> ('write_policy', "refused under write_policy read_only: step 1 (submit) 'Save': submit can change state")
+read_only drag -> ('write_policy', "refused under write_policy read_only: step 1 (drag) 'Save': drag can change state")
+test_account eval -> None
+test_account submit -> None
+test_account drag -> None

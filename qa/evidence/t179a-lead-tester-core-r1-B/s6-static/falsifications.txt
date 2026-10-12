@@ -1,0 +1,60 @@
+### al3c green-before
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-al3c\src\autotester\__init__.py
+32 passed, 2 warnings in 2.31s
+mutation applied: al3c
+133c133
+<     return f"{action.value} can change state"
+---
+>     return None
+### al3c red-after
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-al3c\src\autotester\__init__.py
+E       AssertionError: assert (not True)
+E        +  where True = ToolOutcome(tool='run_case', ok=True, refusal=None, summary='outcome completed', artifact_ref='result:case_6dfc4eedda53').ok
+E       AssertionError: assert (not True)
+E        +  where True = ToolOutcome(tool='run_case', ok=True, refusal=None, summary='outcome completed', artifact_ref='result:case_0f9f3dca63a3').ok
+E       AssertionError: assert (not True)
+E        +  where True = ToolOutcome(tool='run_case', ok=True, refusal=None, summary='outcome completed', artifact_ref='result:case_6c34f97b480e').ok
+E       AssertionError: assert (not True)
+### al3c restored-green
+32 passed, 2 warnings in 2.60s
+### f2 green-before
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-f2\src\autotester\__init__.py
+1 passed, 2 warnings in 1.19s
+mutation applied: f2
+269,270d268
+<     except Exception as exc:  # a stage, session or judge failure: typed, scrubbed, never raw
+<         outcome = _refusal(label, RefusalClass.STAGE_ERROR, _error_text(ctx, exc))
+### f2 red-after
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-f2\src\autotester\__init__.py
+        monkeypatch.setattr(tools.execute, "run_case", boom(f"login failed for {RAW}"))
+E       AssertionError: assert 'RuntimeError' in 'the tool call failed'
+E        +  where 'the tool call failed' = ToolOutcome(tool='unknown', ok=False, refusal=<RefusalClass.STAGE_ERROR: 'stage_error'>, summary='the tool call failed', artifact_ref=None).summary
+FAILED C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-f2\tests\test_agent_read_only.py::test_a_stage_session_or_judge_failure_is_a_scrubbed_typed_refusal
+1 failed, 2 warnings in 2.07s
+### f2 restored-green
+1 passed, 2 warnings in 1.09s
+### f3 green-before
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-f3\src\autotester\__init__.py
+1 passed, 2 warnings in 1.62s
+mutation applied: f3
+87,93c87
+<     """The release gate's own detector, applied BEFORE a write: nothing it would refuse (a
+<     reversed, encoded or folded secret the exact-value scrub misses) is ever put on disk."""
+<     try:
+<         guards.guard_model_bound(ctx.secrets, model.model_dump_json())
+<     except ValueError:
+<         raise _Refused(RefusalClass.SECRET,
+<                        "result withheld: it carried a credential; nothing was stored") from None
+---
+>     return None
+### f3 red-after
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-f3\src\autotester\__init__.py
+E       AssertionError: assert (<RefusalClass.SECRET: 'secret'> is <RefusalClass.SECRET: 'secret'> and [RawResult(sc...log_ref=None)] == []
+E        +  where <RefusalClass.SECRET: 'secret'> = ToolOutcome(tool='run_case', ok=False, refusal=<RefusalClass.SECRET: 'secret'>, summary='result withheld: it carried a credential', artifact_ref=None).refusal
+E        +  and   <RefusalClass.SECRET: 'secret'> = RefusalClass.SECRET
+E         
+E         Left contains one more item: RawResult(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 22, 27, 50, 379052, tzinfo=TzInfo(0)), provenan..., duration_s=0.0, error='saw 7319-eulav-war-2retnuH', hitl_prompt=None
+E         Use -v to get more diff)
+FAILED C:\Users\Lenovo\AppData\Local\Temp\claude\chk-t179r1b-716fbf97\fals-f3\tests\test_agent_read_only.py::test_a_folded_secret_in_a_stage_result_is_never_stored
+### f3 restored-green
+1 passed, 2 warnings in 1.12s

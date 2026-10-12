@@ -1,0 +1,22 @@
+== row AL3c (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_400247/AL3c)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_400247\AL3c\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 0.86s
+-- diff
+@@ -65,6 +65,7 @@
+     """Why this case may not run under the project's `write_policy`, or None. Clicks go through
+     the crawler's own `deny_reason` (never-click and destructive names at every policy but
+     ALLOW_WRITES); under READ_ONLY a step that types a literal value is refused too."""
++    return None
+     for step in sorted(case.steps, key=lambda s: s.order):
+         why = _step_refusal(step, project)
+         if why is not None:
+-- red-after
+>           assert out.refusal is RefusalClass.WRITE_POLICY and "read_only" in out.summary
+E           AssertionError: assert (None is <RefusalClass.WRITE_POLICY: 'write_policy'>)
+E            +  where None = ToolOutcome(tool='run_case', ok=True, refusal=None, summary='outcome completed', artifact_ref='result:case_534317408c29').refusal
+E            +  and   <RefusalClass.WRITE_POLICY: 'write_policy'> = RefusalClass.WRITE_POLICY
+tests\test_agent_tools.py:204: AssertionError
+1 failed in 1.56s
+-- other nodes in file (context)

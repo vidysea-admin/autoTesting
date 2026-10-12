@@ -1,0 +1,231 @@
+{
+ "name": "q-d-status-ge-500",
+ "point": "d",
+ "sel": null,
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-q-d-status-ge-500-s7xex3jb\\t\\src\\autotester\\__init__.py",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-q-d-status-ge-500-s7xex3jb\\t",
+ "runs": {
+  "green": {
+   "rc": 0,
+   "secs": 44.4,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "11 passed",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-q-d-status-ge-500-s7xex3jb\\t"
+   ]
+  },
+  "red": {
+   "rc": 0,
+   "secs": 45.9,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "11 passed",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-q-d-status-ge-500-s7xex3jb\\t"
+   ]
+  },
+  "red_fullfile": {
+   "rc": 0,
+   "secs": 50.2,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "11 passed",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-q-d-status-ge-500-s7xex3jb\\t"
+   ]
+  },
+  "restored": {
+   "rc": 0,
+   "secs": 48.7,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "11 passed",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-q-d-status-ge-500-s7xex3jb\\t"
+   ]
+  }
+ },
+ "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -96,3 +96,3 @@\n         reply = conn.getresponse()\n-        if reply.status != 200:\n+        if reply.status >= 500:\n             raise ValueError(f\"status {reply.status}\")  # a redirect included\n",
+ "restored_same": true
+}
