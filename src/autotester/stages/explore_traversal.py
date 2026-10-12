@@ -43,7 +43,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from autotester.schema.enums import Action, EdgeOutcome, IssueKind, TraversalStrategy
+from autotester.schema.enums import (
+    Action,
+    EdgeOutcome,
+    IssueKind,
+    NodeStatus,
+    TraversalStrategy,
+)
 from autotester.schema.screen_graph import ElementRef, ScreenEdge, ScreenNode
 from autotester.stages.explore_safety import is_destructive
 
@@ -133,6 +139,12 @@ def drain_deferred(rt: ExploreRuntime) -> None:
         if not return_to(rt, node):
             explore_node.record_edge(rt, node, el, Action.BACK, EdgeOutcome.ERRORED,
                                      f"could not return to this screen: {why_lost(rt)}")
+            # AT-113: an unreachable screen is never a clean crawl -- file it and mark it.
+            explore_node.add_issue(rt, node.id, IssueKind.NAVIGATION,
+                                   "lost this screen before its destructive controls were "
+                                   f"tried: {why_lost(rt)}")
+            explore_node._mark(rt, node, NodeStatus.ABORTED_ERROR)
+            rt.deferred = [(n, e) for n, e in rt.deferred if n != node_id]
             continue
         rt.frontier.actions_used += 1
         edge = explore_node.try_action(rt, node, el)
