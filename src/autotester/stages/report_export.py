@@ -16,7 +16,7 @@ from pathlib import Path
 from openpyxl import Workbook
 
 from autotester.browser.secrets import SecretStore
-from autotester.core.excel import autosize_columns
+from autotester.core.excel import append_row, autosize_columns
 from autotester.core.redact import Redactor
 from autotester.schema.case import Case
 from autotester.schema.enums import EvidenceKind, Result
@@ -139,7 +139,7 @@ def export_excel(
         # AT-609: `Case.title` is operator free text with no upstream guarantee against a
         # pasted raw secret, so it gets the same last-stop scrub as every exported field.
         case_title = redactor.scrub(case.title) if case else result.case_id
-        ws.append([
+        append_row(ws, [
             case_title,
             case.kind.value if case else "",
             case.case_class.value if case else "",
