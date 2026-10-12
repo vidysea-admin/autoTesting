@@ -139,6 +139,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
 
 - [ ] t200-schedule - G5 / T-200: scheduled auto-test (manual, fixed or custom time) with single-flight and credential-derived approval
   status: partial. t200a-schedule-core merged 7e0ef5b9 (PASS, qa/verdicts/t200a-schedule-core.md; does not close T-200). t200b FAIL at cycle 0 (qa/verdicts/t200b-scheduled-test.md, 0d9a3b56); fix cycle 1 built on wave/t200b-scheduled-test (6d6bc318), awaiting check. Row stays open.
+  Answered 2026-10-12, see D-088 (owner Q1 private queue: option (a); owner Q2 "api" trigger label "CI").
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: critical
   files: N schema/schedule.py, stages/scheduler.py, cli_schedule.py, ui/routes_schedule.py, tests (names unknown); E schema/project.py
@@ -523,7 +524,7 @@ Never built until a human moves one out of this section with `approved: <date>`.
 
 | Priority | Candidate | Ref |
 |---|---|---|
-| priority: security (consent record) | HUMAN_GATE for Umesh: is `pathlynks.vidysea.com` production? Approval `appr_ce61e4420ac9` is signed `production: false`; the gate file and the T-145 row say production, `project.json` says dev. Inert this run (no typing), live the moment typing is enabled. | AT-891, AT-654 |
+| priority: security (consent record) | HUMAN_GATE for Umesh: is `pathlynks.vidysea.com` production? Approval `appr_ce61e4420ac9` is signed `production: false`; the gate file and the T-145 row say production, `project.json` says dev. Inert this run (no typing), live the moment typing is enabled. Answered 2026-10-12, see D-088: production, appr_ce61e4420ac9 superseded. | AT-891, AT-654 |
 | medium | AT-226 precheck races a client-side redirect on a live session; `login_failed` carries no cause. | AT-889 |
 
 ## Candidates (human picks) — 2026-10-11 sweep (Mode B sharded, window 72fafe7c..4f8f5da1, master 057b6dbb)
