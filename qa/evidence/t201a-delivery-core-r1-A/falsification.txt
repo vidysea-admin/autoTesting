@@ -1,0 +1,16 @@
+F1a key-injectivity C11: copy=IN-COPY BEFORE rc=0 [====================== 2 passed, 15 deselected in 1.12s =======================] AFTER rc=1 [====================== 2 failed, 15 deselected in 1.71s =======================]
+    red: tests/test_delivery_failure.py::test_the_delivery_key_is_injective_even_on_a_case_insensitive_file_system
+    red: tests/test_delivery_failure.py::test_run_and_user_ids_that_spell_the_separator_do_not_collide
+F1b exact-match C11: copy=IN-COPY BEFORE rc=0 [====================== 2 passed, 15 deselected in 1.27s =======================] AFTER rc=1 [====================== 2 failed, 15 deselected in 1.39s =======================]
+    red: tests/test_delivery_failure.py::test_a_dotted_prefix_user_does_not_suppress_the_shorter_one
+    red: tests/test_delivery_failure.py::test_lookups_match_whole_file_names_and_ignore_stray_files
+F2 append-race C8: copy=IN-COPY BEFORE rc=0 [====================== 1 passed, 16 deselected in 1.00s =======================] AFTER rc=1 [====================== 1 failed, 16 deselected in 1.57s =======================]
+    red: tests/test_delivery_failure.py::test_a_clock_skewed_worker_closing_a_live_attempt_does_not_break_the_first_worker
+F3a protocol-relative C10: copy=IN-COPY BEFORE rc=0 [====================== 3 passed, 38 deselected in 0.51s =======================] AFTER rc=1 [====================== 3 failed, 38 deselected in 1.11s =======================]
+    red: tests/test_report_email.py::test_summary_fields_refuse_injection_paths_tokens_and_odd_links[report_url-//evil.test/x]
+    red: tests/test_report_email.py::test_summary_fields_refuse_injection_paths_tokens_and_odd_links[report_url-///evil.test/x]
+    red: tests/test_report_email.py::test_summary_fields_refuse_injection_paths_tokens_and_odd_links[report_url-https://x.test//evil.test/x]
+F3b port-range C10: copy=IN-COPY BEFORE rc=0 [====================== 3 passed, 38 deselected in 0.68s =======================] AFTER rc=1 [====================== 3 failed, 38 deselected in 1.93s =======================]
+    red: tests/test_report_email.py::test_summary_fields_refuse_injection_paths_tokens_and_odd_links[report_url-https://x.test:99999/r]
+    red: tests/test_report_email.py::test_summary_fields_refuse_injection_paths_tokens_and_odd_links[report_url-https://x.test:0/r]
+    red: tests/test_report_email.py::test_summary_fields_refuse_injection_paths_tokens_and_odd_links[report_url-https://x.test:65536/r]

@@ -1,0 +1,91 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\t201a-r2A-20753
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 19 items
+
+tests\test_hosting_deploy.py ..........                                  [ 52%]
+tests\test_core.py F                                                     [ 57%]
+tests\test_hosting_config.py ........                                    [100%]
+
+================================== FAILURES ===================================
+______________ test_env_creation_is_coordinated_across_processes ______________
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27448/test_env_creation_is_coordinat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000239C1C059D0>
+
+    def test_env_creation_is_coordinated_across_processes(tmp_path, monkeypatch) -> None:
+        import os
+        import subprocess
+        import sys
+        from pathlib import Path
+    
+        from autotester.browser.secrets import parse_env
+        from autotester.ui.env_editor import _env_lock
+    
+        monkeypatch.delenv(APPROVAL_KEY_ENV, raising=False)
+        env_path = tmp_path / ".env"
+        clean = {k: v for k, v in os.environ.items() if k in {"SYSTEMROOT", "PATH", "TEMP", "TMP"}}
+        clean.update(PYTHONPATH=str(Path(__file__).resolve().parents[1] / "src"),
+                     PYTEST_CURRENT_TEST="scratch key contention", AUTOTESTER_ROOT=str(tmp_path))
+        children = []
+        try:
+            with _env_lock(env_path):
+                for role in ["creator", "creator", "writer"]:
+                    command = [sys.executable, "-c", _KEY_CONTENTION_SCRIPT, str(env_path), role]
+                    children.append(subprocess.Popen(command,
+                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        text=True, env=clean))
+                for child in children:
+>                   assert _bounded_child_status(child) == "ready"
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_core.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_core.py:132: in _bounded_child_status
+    return messages.get(timeout=15).strip()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <queue.Queue object at 0x00000239C1C04590>, block = True, timeout = 15
+
+    def get(self, block=True, timeout=None):
+        '''Remove and return an item from the queue.
+    
+        If optional args 'block' is true and 'timeout' is None (the default),
+        block if necessary until an item is available. If 'timeout' is
+        a non-negative number, it blocks at most 'timeout' seconds and raises
+        the Empty exception if no item was available within that time.
+        Otherwise ('block' is false), return an item if one is immediately
+        available, else raise the Empty exception ('timeout' is ignored
+        in that case).
+        '''
+        with self.not_empty:
+            if not block:
+                if not self._qsize():
+                    raise Empty
+            elif timeout is None:
+                while not self._qsize():
+                    self.not_empty.wait()
+            elif timeout < 0:
+                raise ValueError("'timeout' must be a non-negative number")
+            else:
+                endtime = time() + timeout
+                while not self._qsize():
+                    remaining = endtime - time()
+                    if remaining <= 0.0:
+>                       raise Empty
+E                       _queue.Empty
+
+C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\queue.py:179: Empty
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\t201a-r2A-20753\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_core.py::test_env_creation_is_coordinated_across_processes
+================== 1 failed, 18 passed, 1 warning in 42.25s ===================
+exit=1 t=67s

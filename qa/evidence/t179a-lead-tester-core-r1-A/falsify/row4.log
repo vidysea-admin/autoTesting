@@ -1,0 +1,38 @@
+== (a) BEFORE edit (expect green)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 117 items / 109 deselected / 8 selected
+
+tests\test_agent_read_only.py ........                                   [100%]
+
+====================== 8 passed, 109 deselected in 4.83s ======================
+== (c) AFTER edit (expect red on intended assertion)
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 117 items / 109 deselected / 8 selected
+
+tests\test_agent_read_only.py ........                                   [100%]
+
+====================== 8 passed, 109 deselected in 1.55s ======================
+== (d) RESTORED (expect green); cmp:
+identical-to-HEAD
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\scripts\falsify\row4
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 117 items / 109 deselected / 8 selected
+
+tests\test_agent_read_only.py ........                                   [100%]
+
+====================== 8 passed, 109 deselected in 1.63s ======================
+DONE

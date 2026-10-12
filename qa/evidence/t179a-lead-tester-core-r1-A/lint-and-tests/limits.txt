@@ -1,0 +1,7 @@
+src\autotester\agents\__init__.py lines 7 ok docstring True longest None over50 []
+src\autotester\agents\context.py lines 39 ok docstring True longest None over50 []
+src\autotester\agents\guards.py lines 161 ok docstring True longest (18, '_destination', 83) over50 []
+src\autotester\agents\tools.py lines 280 ok docstring True longest (27, '_call_texts', 213) over50 []
+src\autotester\schema\agent_layer.py lines 96 ok docstring True longest None over50 []
+tests\test_agent_read_only.py lines 260 ok docstring True longest (21, 'test_login_carve_out_is_narrow', 150) over50 []
+tests\test_agent_tools.py lines 283 ok docstring True longest (13, 'test_read_only_still_allows_login_placeholder_and_the_same_step_under_test_account', 208) over50 []

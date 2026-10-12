@@ -1,0 +1,5 @@
+Trial merge of d196c26e into CURRENT master 822dca2b (throwaway clone on C:, merge --no-ff --no-commit).
+Result: ONE conflict, docs/MAP.md (a GENERATED file; both sides regenerate it). Resolved the standard way: `autotester map` -> `doctor: clean`.
+No source or test conflicts. (An earlier trial against f6003e87 merged with zero conflicts.)
+After resolution on the merged tree: ruff `All checks passed!`; `autotester doctor` -> `doctor: clean` (before regenerating MAP.md: `stale-generated: docs/MAP.md`, 1 violation);
+pytest tests/test_bug_run.py tests/test_bug_run_idempotent.py tests/test_bug_store_hardening.py tests/test_bug_store.py tests/test_bug_loop.py tests/test_sheet_plan.py tests/test_cli_advice_resolves.py tests/test_doctor.py -> 271 passed.

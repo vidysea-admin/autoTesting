@@ -1,0 +1,43 @@
+autotester.__file__ C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-fal-m3-9002\src\autotester\__init__.py
+FF......                                                                 [100%]
+================================== FAILURES ===================================
+_________ test_au14_every_policy_row_requires_exactly_its_pinned_key __________
+
+    def test_au14_every_policy_row_requires_exactly_its_pinned_key() -> None:
+        """A row quietly downgraded (/onboard to member, /openapi.json to member, the credentials
+        group to project.view) must turn this red: the policy table is the whole defence on
+        routes whose handler does not re-check."""
+        actual = {row: (rule.kind, rule.key.value if rule.key else None)
+                  for row, rule in policy.ROUTE_POLICY.items()}
+>       assert actual == EXPECTED
+E       AssertionError: assert {('GET', '/au...', None), ...} == {('GET', '/au...', None), ...}
+E         
+E         Omitting 73 identical items, use -vv to show
+E         Right contains 1 more item:
+E         {('GET', '/projects/{slug}/damage-report'): ('project', 'report.view')}
+E         Use -v to get more diff
+
+tests\test_ui_auth_escalation.py:300: AssertionError
+___________________ test_au14_every_route_has_a_policy_row ____________________
+
+    def test_au14_every_route_has_a_policy_row() -> None:
+        served = app_routes()
+        assert len(served) > 60
+>       assert [pair for pair in served if pair not in policy.ROUTE_POLICY] == []
+E       AssertionError: assert [('GET', '/pr...mage-report')] == []
+E         
+E         Left contains one more item: ('GET', '/projects/{slug}/damage-report')
+E         Use -v to get more diff
+
+tests\test_ui_auth_groups.py:190: AssertionError
+============================== warnings summary ===============================
+..\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_escalation.py::test_au14_every_policy_row_requires_exactly_its_pinned_key
+FAILED tests/test_ui_auth_groups.py::test_au14_every_route_has_a_policy_row
+2 failed, 6 passed, 1 warning in 24.84s
+EXIT 1

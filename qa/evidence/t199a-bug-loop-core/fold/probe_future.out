@@ -1,0 +1,3 @@
+future FAIL after close -> reopened 2 2096
+two future PASS close -> fixed
+close,then real FAIL today, future PASSes -> fixed 2

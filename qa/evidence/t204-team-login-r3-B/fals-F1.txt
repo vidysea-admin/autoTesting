@@ -1,0 +1,16 @@
+C:\Users\Lenovo\AppData\Local\Temp\claude\r3b-43931685\copyF1\src\autotester\__init__.py
+.........FFFF........................................................... [ 80%]
+..................                                                       [100%]
+============================== warnings summary ===============================
+..\copy\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\claude\r3b-43931685\copy\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_hosting_deploy.py::test_app_service_is_told_its_public_origin_for_the_wildcard_bind
+FAILED tests/test_hosting_deploy.py::test_compose_default_public_origin_is_empty_without_a_domain
+FAILED tests/test_hosting_deploy.py::test_compose_default_fed_through_startup_raises_on_a_list_naming_nothing_useful[nothing-set]
+FAILED tests/test_hosting_deploy.py::test_compose_default_fed_through_startup_raises_on_a_list_naming_nothing_useful[interim-wrong-ip]
+4 failed, 86 passed, 1 warning in 83.92s (0:01:23)
+exit 1

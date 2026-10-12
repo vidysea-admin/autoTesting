@@ -1,0 +1,20 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Scripts\python.exe
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-1a-q3-no-watchdog-start-3up3pg0m\t
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 11 items / 8 deselected / 3 selected
+
+tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body] PASSED [ 33%]
+tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers] FAILED [ 66%]
+tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body] PASSED [100%]
+
+================================== FAILURES ===================================
+_ test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers] __
+tests\test_browser_cdp_probe_hostile.py:121: in test_a_trickling_listener_is_cut_off_at_the_overall_deadline
+    assert elapsed < 2.0, f"the probe held start() for {elapsed:.1f}s against a 0.6s deadline"
+E   AssertionError: the probe held start() for 5.1s against a 0.6s deadline
+E   assert 5.078000000008615 < 2.0
+=========================== short test summary info ===========================
+FAILED tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]
+================= 1 failed, 2 passed, 8 deselected in 11.83s ==================

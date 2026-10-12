@@ -1,0 +1,225 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-rev-15985
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 24 items
+
+tests/test_ui_intake.py::test_ti9_the_page_shows_the_current_limit_and_labelled_zip_and_drive_controls PASSED [  4%]
+tests/test_ui_intake.py::test_ho30_exactly_the_limit_succeeds_and_one_byte_more_is_a_413_with_nothing_left FAILED [  8%]
+tests/test_ui_intake.py::test_ti9_changing_the_setting_changes_the_next_request FAILED [ 12%]
+tests/test_ui_intake.py::test_ti9_an_endless_body_is_cut_at_the_limit_plus_one_chunk FAILED [ 16%]
+tests/test_ui_intake.py::test_ho30_a_lying_content_length_changes_nothing FAILED [ 20%]
+tests/test_ui_intake.py::test_ti9_a_request_with_no_content_length_still_works FAILED [ 25%]
+tests/test_ui_intake.py::test_f2_many_small_form_fields_are_refused_early_and_write_no_file_byte FAILED [ 29%]
+tests/test_ui_intake.py::test_f2_a_few_large_fields_are_refused_by_the_total_cap FAILED [ 33%]
+tests/test_ui_intake.py::test_f2_the_reader_holds_a_bounded_amount_however_many_fields_arrive PASSED [ 37%]
+tests/test_ui_intake.py::test_a_body_that_is_not_multipart_is_refused_cleanly FAILED [ 41%]
+tests/test_ui_intake.py::test_ti3_a_non_recording_non_zip_name_is_refused_before_any_byte_is_stored FAILED [ 45%]
+tests/test_ui_intake.py::test_ti3_a_zip_of_three_videos_a_pdf_and_a_text_file_shows_one_row_per_member PASSED [ 50%]
+tests/test_ui_intake.py::test_ti5_a_zip_with_a_bad_member_reads_as_partial_not_success PASSED [ 54%]
+tests/test_ui_intake.py::test_ti5_a_zip_with_an_invalid_utf8_name_is_a_failed_page_not_a_500 PASSED [ 58%]
+tests/test_ui_intake.py::test_a_member_name_is_escaped_never_executed_by_the_table PASSED [ 62%]
+tests/test_ui_intake.py::test_ti9_a_zip_bigger_than_the_limit_is_a_413_like_any_upload PASSED [ 66%]
+tests/test_ui_intake.py::test_ti10_seam_a_refused_member_is_stopped_before_a_single_body_byte_is_read FAILED [ 70%]
+tests/test_ui_intake.py::test_ti11_uploaded_by_comes_from_the_gate_and_a_form_field_is_ignored FAILED [ 75%]
+tests/test_ui_intake.py::test_ti11_with_no_sign_in_yet_nobody_is_recorded_as_the_uploader FAILED [ 79%]
+tests/test_ui_intake.py::test_d066_a_cross_origin_post_is_refused_before_the_gate_or_any_write PASSED [ 83%]
+tests/test_ui_intake.py::test_the_archive_name_in_the_page_heading_is_escaped PASSED [ 87%]
+tests/test_ui_intake.py::test_a_truncated_multipart_body_is_refused_not_stored FAILED [ 91%]
+tests/test_ui_intake.py::test_a_huge_part_header_is_refused_before_it_is_buffered FAILED [ 95%]
+tests/test_ui_intake.py::test_at758_a_hostile_host_on_the_upload_route_is_403_before_any_body_byte PASSED [100%]
+
+================================== FAILURES ===================================
+_ test_ho30_exactly_the_limit_succeeds_and_one_byte_more_is_a_413_with_nothing_left _
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179EE6A1F10>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_ho30_exactly_the_limit_su0')
+
+    def test_ho30_exactly_the_limit_succeeds_and_one_byte_more_is_a_413_with_nothing_left(
+            store, tmp_path):
+        _limit(tmp_path, 5 * MIB)
+        exact = b"E" * (5 * MIB)
+        status, _, _ = post_stream(UPLOAD, _body("exact.mp4", exact))
+>       assert status == 303
+E       assert 401 == 303
+
+..\t204r3a-63606285\tests\test_ui_intake.py:64: AssertionError
+___________ test_ti9_changing_the_setting_changes_the_next_request ____________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179EE940190>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_ti9_changing_the_setting_0')
+
+    def test_ti9_changing_the_setting_changes_the_next_request(store, tmp_path):
+        data = b"C" * (3 * MIB)
+        _limit(tmp_path, 2 * MIB)
+>       assert post_stream(UPLOAD, _body("c.mp4", data))[0] == 413
+E       assert 401 == 413
+
+..\t204r3a-63606285\tests\test_ui_intake.py:78: AssertionError
+_________ test_ti9_an_endless_body_is_cut_at_the_limit_plus_one_chunk _________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179EEB24490>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_ti9_an_endless_body_is_cu0')
+
+    def test_ti9_an_endless_body_is_cut_at_the_limit_plus_one_chunk(store, tmp_path):
+        """No end, no Content-Length: the server stops reading at the limit, not when it runs dry."""
+        _limit(tmp_path, 2 * MIB)
+        head = multipart_head("forever.mp4")
+        status, _, served = post_stream(UPLOAD, endless(head))
+>       assert status == 413
+E       assert 401 == 413
+
+..\t204r3a-63606285\tests\test_ui_intake.py:89: AssertionError
+______________ test_ho30_a_lying_content_length_changes_nothing _______________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F019FD10>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_ho30_a_lying_content_leng0')
+
+    def test_ho30_a_lying_content_length_changes_nothing(store, tmp_path):
+        _limit(tmp_path, 2 * MIB)
+        big = _body("big.mp4", b"B" * (2 * MIB + 5))
+>       assert post_stream(UPLOAD, big, content_length=10)[0] == 413  # claims tiny, sends too much
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 401 == 413
+
+..\t204r3a-63606285\tests\test_ui_intake.py:98: AssertionError
+____________ test_ti9_a_request_with_no_content_length_still_works ____________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179EEA9E7D0>
+
+    def test_ti9_a_request_with_no_content_length_still_works(store):
+>       assert post_stream(UPLOAD, _body("a.mp4", video("nolen")))[0] == 303
+E       assert 401 == 303
+
+..\t204r3a-63606285\tests\test_ui_intake.py:105: AssertionError
+___ test_f2_many_small_form_fields_are_refused_early_and_write_no_file_byte ___
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F01B09D0>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_f2_many_small_form_fields0')
+
+    def test_f2_many_small_form_fields_are_refused_early_and_write_no_file_byte(store, tmp_path):
+        """1,000 tiny fields ahead of the file: refused 400 near the cap, not read to the end."""
+        _limit(tmp_path, 2 * MIB)
+        head = multipart_head("a.mp4", extra=_fields(1000, 100))
+        status, _, served = post_stream(UPLOAD, [head, *chunked(b"V" * 4096), multipart_tail()])
+>       assert status == 400 and store.list_sources() == [] and _leftovers(tmp_path) == []
+E       assert (401 == 400)
+
+..\t204r3a-63606285\tests\test_ui_intake.py:117: AssertionError
+___________ test_f2_a_few_large_fields_are_refused_by_the_total_cap ___________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F01A9950>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_f2_a_few_large_fields_are0')
+
+    def test_f2_a_few_large_fields_are_refused_by_the_total_cap(store, tmp_path):
+        """Five fields of 15 KiB each pass the per-field cap but break the total field cap."""
+        _limit(tmp_path, 2 * MIB)
+        status, _, _ = post_stream(UPLOAD, _body("a.mp4", video("a"), extra=_fields(5, 15 * 1024)))
+>       assert status == 400 and store.list_sources() == [] and _leftovers(tmp_path) == []
+E       assert (401 == 400)
+
+..\t204r3a-63606285\tests\test_ui_intake.py:127: AssertionError
+____________ test_a_body_that_is_not_multipart_is_refused_cleanly _____________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F0193210>
+
+    def test_a_body_that_is_not_multipart_is_refused_cleanly(store):
+        status, page, _ = post_stream(UPLOAD, [b"just some bytes"], content_type="text/plain")
+>       assert status == 400 and b"Traceback" not in page and store.list_sources() == []
+E       assert (401 == 400)
+
+..\t204r3a-63606285\tests\test_ui_intake.py:151: AssertionError
+_ test_ti3_a_non_recording_non_zip_name_is_refused_before_any_byte_is_stored __
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F01BF9D0>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_ti3_a_non_recording_non_z0')
+
+    def test_ti3_a_non_recording_non_zip_name_is_refused_before_any_byte_is_stored(store, tmp_path):
+        status, page, _ = post_stream(UPLOAD, _body("run.ps1", b"Write-Host hi"))
+>       assert status == 400 and b"not a recording" in page
+E       assert (401 == 400)
+
+..\t204r3a-63606285\tests\test_ui_intake.py:156: AssertionError
+_ test_ti10_seam_a_refused_member_is_stopped_before_a_single_body_byte_is_read _
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F01B4D10>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_ti10_seam_a_refused_membe0')
+
+    def test_ti10_seam_a_refused_member_is_stopped_before_a_single_body_byte_is_read(store, tmp_path):
+        refusing = FakeGate(refuse=(403, "you need the video.upload permission on this project"))
+        previous = intake_gate.set_gate(refusing)
+        try:
+            status, page, served = post_stream(UPLOAD, endless(multipart_head("a.mp4")))
+        finally:
+            intake_gate.set_gate(previous)
+>       assert status == 403 and b"video.upload" in page
+E       assert (401 == 403)
+
+..\t204r3a-63606285\tests\test_ui_intake.py:228: AssertionError
+____ test_ti11_uploaded_by_comes_from_the_gate_and_a_form_field_is_ignored ____
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F01B6A10>
+gate = <ui_intake_support.FakeGate object at 0x00000179F01B4A10>
+
+    def test_ti11_uploaded_by_comes_from_the_gate_and_a_form_field_is_ignored(store, gate):
+        body = _body("who.mp4", video("who"), extra={"uploaded_by": "attacker@evil.test"})
+>       assert post_stream(UPLOAD, body)[0] == 303
+E       assert 401 == 303
+
+..\t204r3a-63606285\tests\test_ui_intake.py:235: AssertionError
+______ test_ti11_with_no_sign_in_yet_nobody_is_recorded_as_the_uploader _______
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F01A73D0>
+
+    def test_ti11_with_no_sign_in_yet_nobody_is_recorded_as_the_uploader(store):
+        """Until T-204 the default gate is open and says so; the row is owned by nobody."""
+>       assert post_stream(UPLOAD, _body("anon.mp4", video("anon")))[0] == 303
+E       assert 401 == 303
+
+..\t204r3a-63606285\tests\test_ui_intake.py:244: AssertionError
+____________ test_a_truncated_multipart_body_is_refused_not_stored ____________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179F018D7D0>
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-26924/test_a_truncated_multipart_bod0')
+
+    def test_a_truncated_multipart_body_is_refused_not_stored(store, tmp_path):
+        body = [multipart_head("cut.mp4"), b"V" * 5000]  # no closing boundary
+        status, _, _ = post_stream(UPLOAD, body)
+>       assert status == 400 and store.list_sources() == [] and _leftovers(tmp_path) == []
+E       assert (401 == 400)
+
+..\t204r3a-63606285\tests\test_ui_intake.py:265: AssertionError
+__________ test_a_huge_part_header_is_refused_before_it_is_buffered ___________
+
+store = <autotester.store.project_store.ProjectStore object at 0x00000179EEA6D590>
+
+    def test_a_huge_part_header_is_refused_before_it_is_buffered(store):
+        head = b"--" + BOUNDARY.encode() + b"\r\nX-Pad: " + b"a" * (40 * 1024) + b"\r\n\r\n"
+>       assert post_stream(UPLOAD, [head, b"x"])[0] == 400
+E       assert 401 == 400
+
+..\t204r3a-63606285\tests\test_ui_intake.py:270: AssertionError
+============================== warnings summary ===============================
+..\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\AppData\Local\Temp\chk\t204r3a-63606285\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_intake.py::test_ho30_exactly_the_limit_succeeds_and_one_byte_more_is_a_413_with_nothing_left
+FAILED tests/test_ui_intake.py::test_ti9_changing_the_setting_changes_the_next_request
+FAILED tests/test_ui_intake.py::test_ti9_an_endless_body_is_cut_at_the_limit_plus_one_chunk
+FAILED tests/test_ui_intake.py::test_ho30_a_lying_content_length_changes_nothing
+FAILED tests/test_ui_intake.py::test_ti9_a_request_with_no_content_length_still_works
+FAILED tests/test_ui_intake.py::test_f2_many_small_form_fields_are_refused_early_and_write_no_file_byte
+FAILED tests/test_ui_intake.py::test_f2_a_few_large_fields_are_refused_by_the_total_cap
+FAILED tests/test_ui_intake.py::test_a_body_that_is_not_multipart_is_refused_cleanly
+FAILED tests/test_ui_intake.py::test_ti3_a_non_recording_non_zip_name_is_refused_before_any_byte_is_stored
+FAILED tests/test_ui_intake.py::test_ti10_seam_a_refused_member_is_stopped_before_a_single_body_byte_is_read
+FAILED tests/test_ui_intake.py::test_ti11_uploaded_by_comes_from_the_gate_and_a_form_field_is_ignored
+FAILED tests/test_ui_intake.py::test_ti11_with_no_sign_in_yet_nobody_is_recorded_as_the_uploader
+FAILED tests/test_ui_intake.py::test_a_truncated_multipart_body_is_refused_not_stored
+FAILED tests/test_ui_intake.py::test_a_huge_part_header_is_refused_before_it_is_buffered
+================== 14 failed, 10 passed, 1 warning in 11.26s ==================

@@ -1,0 +1,115 @@
+"""Checker A secret/dispatcher probes (throwaway copy). Observations printed."""
+from __future__ import annotations
+import base64, binascii, json, urllib.parse
+from pathlib import Path
+from typing import Any
+import pytest
+from test_agent_tools import (Spies, _case, _ctx, _go, _grant, _nav, _project, RAW, spies, BASE)
+from autotester.agents import guards, tools
+from autotester.schema.agent_layer import RefusalClass, ToolOutcome, AgentToolName
+from autotester.schema.enums import Action, ApprovalKind, WritePolicy, Outcome
+from autotester.schema.flowspec import Step
+from autotester.schema.run import RawResult
+from autotester.browser.secrets import SecretStore
+
+
+def _show(tag: str, ctx: Any, spy: Spies, name: str, args: Any, rawsecret: str = RAW) -> None:
+    try:
+        out = tools.dispatch(ctx, name, args)
+    except BaseException as exc:  # noqa
+        txt = f"{type(exc).__name__}: {exc}"
+        print(f"PB {tag:38} RAISED {txt[:110]!r} secret_in_exc={rawsecret in txt} sessions={spy.sessions} calls={sum(len(v) for v in spy.calls.values())}")
+        return
+    j = out.model_dump_json()
+    print(f"PB {tag:38} refusal={out.refusal} ok={out.ok} raw_in_out={rawsecret in j} summary={out.summary[:70]!r} sessions={spy.sessions} calls={sum(len(v) for v in spy.calls.values())}")
+
+
+def test_encodings(tmp_path: Path, spies: Spies) -> None:
+    ctx = _ctx(tmp_path, spies)
+    _grant(ctx.store, ApprovalKind.LIVE_CASE)
+    b64 = base64.b64encode(RAW.encode()).decode()
+    b64u = base64.urlsafe_b64encode(RAW.encode()).decode().rstrip("=")
+    hx = binascii.hexlify(RAW.encode()).decode()
+    pct = urllib.parse.quote(RAW, safe="")
+    pct_all = "".join(f"%{b:02x}" for b in RAW.encode())
+    rev = RAW[::-1]
+    upper = RAW.upper()
+    spaced = " ".join(RAW)
+    dotted = ".".join(RAW)
+    half1, half2 = RAW[: len(RAW) // 2], RAW[len(RAW) // 2:]
+    forms = {"raw": RAW, "b64": b64, "b64url": b64u, "hex": hx, "pct": pct, "pct_all": pct_all,
+             "rev": rev, "upper": upper, "spaced": spaced, "dotted": dotted,
+             "rot13": __import__("codecs").encode(RAW, "rot13"), "b32": base64.b32encode(RAW.encode()).decode()}
+    for tag, v in forms.items():
+        _show(f"case_id={tag}", ctx, spies, "run_case", {"case_id": v})
+    _show("split across two args (extra)", ctx, spies, "run_case", {"case_id": half1, "x": half2})
+    _show("split case_id|case_id concatenated name", ctx, spies, half1 + "run_case", {"case_id": half2})
+    _show("nested dict arg", ctx, spies, "run_case", {"case_id": {"a": [RAW]}})
+    _show("dict KEY raw", ctx, spies, "run_case", {RAW: 1})
+    _show("dict KEY b64", ctx, spies, "run_case", {b64: 1})
+    _show("dict KEY rev", ctx, spies, "run_case", {"case_id": "c", rev: 1})
+    _show("tool name raw", ctx, spies, RAW, {})
+    _show("tool name b64", ctx, spies, b64, {})
+    _show("crawl bool/num fields", ctx, spies, "crawl", {"max_actions": RAW})
+    _show("crawl nested list", ctx, spies, "crawl", {"max_actions": [RAW]})
+
+
+@pytest.mark.parametrize("secret", ["pa\ss-word-91", "pa'ss\"word-92", "line1\nline2-secret", "tab\tsecret-xyz1", "unié中-secret9", "with\u0041-esc99"])
+def test_repr_escape_bypass(tmp_path: Path, spies: Spies, secret: str) -> None:
+    from autotester.providers.mock import MockProvider
+    ctx = _ctx(tmp_path, spies)
+    ctx.secrets = SecretStore(ctx.project, {"APP_PASS": secret})
+    _grant(ctx.store, ApprovalKind.LIVE_CASE)
+    _show(f"esc-secret {secret!r}"[:38], ctx, spies, "run_case", {"case_id": secret}, secret)
+    _show("  as dict key", ctx, spies, "run_case", {"case_id": "c", secret: 1}, secret)
+    _show("  in tool name", ctx, spies, secret, {}, secret)
+
+
+def test_dispatch_shapes(tmp_path: Path, spies: Spies) -> None:
+    ctx = _ctx(tmp_path, spies)
+    for tag, name, args in [
+        ("args None", "get_catalog", None), ("args list", "get_catalog", []), ("args str", "get_catalog", "x"),
+        ("name None", None, {}), ("name int", 5, {}), ("name path", "../run_case", {}), ("name dunder", "__class__", {}),
+        ("name nul", "run_case\x00", {"case_id": "a"}), ("name space-trail", "run_case ", {"case_id": "a"}),
+        ("name upper", "RUN_CASE", {"case_id": "a"}), ("missing arg", "run_case", {}), ("wrong type", "run_case", {"case_id": 5}),
+        ("crawl negative", "crawl", {"max_actions": -1}), ("crawl nan", "crawl", {"wall_clock_s": float("nan")}),
+        ("crawl inf", "crawl", {"wall_clock_s": float("inf")}), ("crawl bool-as-int", "crawl", {"max_actions": True}),
+        ("giant case_id", "run_case", {"case_id": "x" * 100000}), ("case_id 201", "run_case", {"case_id": "x" * 201}),
+        ("extra kw 'self'", "get_catalog", {"self": 1}),
+    ]:
+        _show(tag, ctx, spies, name, args)  # type: ignore[arg-type]
+
+
+def test_exception_escape(tmp_path: Path, spies: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
+    ctx = _ctx(tmp_path, spies)
+    _grant(ctx.store, ApprovalKind.LIVE_CASE)
+    _grant(ctx.store, ApprovalKind.CRAWL)
+    case = ctx.store.add_case(_case([_nav()]))
+    def boom(c: Any, s: Any) -> Any:
+        raise RuntimeError(f"driver died typing {RAW}")
+    monkeypatch.setattr(tools.execute, "run_case", boom)
+    _show("stage raises w/ secret", ctx, spies, "run_case", {"case_id": case.id})
+    def boomc(*a: Any, **k: Any) -> Any:
+        raise RuntimeError(f"crawl died {RAW}")
+    monkeypatch.setattr(tools.explore, "run_crawl", boomc)
+    _show("crawl stage raises w/ secret", ctx, spies, "crawl", {})
+    def bad_open(obs: Any) -> Any:
+        raise OSError(f"cannot launch with {RAW}")
+    ctx.open_session = bad_open
+    _show("open_session raises", ctx, spies, "run_case", {"case_id": case.id})
+
+
+def test_stored_result_encodings(tmp_path: Path, spies: Spies, monkeypatch: pytest.MonkeyPatch) -> None:
+    ctx = _ctx(tmp_path, spies)
+    _grant(ctx.store, ApprovalKind.LIVE_CASE)
+    case = ctx.store.add_case(_case([_nav()]))
+    b64 = base64.b64encode(RAW.encode()).decode()
+    for tag, leak in (("rev", RAW[::-1]), ("b64", b64), ("raw", RAW)):
+        monkeypatch.setattr(tools.execute, "run_case", lambda c, s, leak=leak: RawResult(case_id=c.id, outcome=Outcome.ERRORED, error=f"page said {leak}"))
+        out = tools.dispatch(ctx, "run_case", {"case_id": case.id})
+        stored = ctx.store.paths.run_dir("run-1").joinpath(f"{case.id}.json").read_text("utf-8")
+        print(f"SR {tag}: out.refusal={out.refusal} out_has_leak={leak in out.model_dump_json()} stored_has_leak={leak in stored}")
+    # secret in evidence path
+    from autotester.schema.run import Evidence
+    import inspect
+    print("SR Evidence fields:", list(Evidence.model_fields))

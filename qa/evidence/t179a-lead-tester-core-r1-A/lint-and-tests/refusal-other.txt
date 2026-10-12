@@ -1,0 +1,2 @@
+src/autotester/schema/agent_layer.py:35:class RefusalClass(StrEnum):
+src/autotester/schema/agent_layer.py:92:    refusal: RefusalClass | None = None

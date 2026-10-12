@@ -1,0 +1,80 @@
+autotester at C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck199a\src\autotester\__init__.py
+OK   none/fail opens 
+OK   none/pass refused no_bug
+OK   unjudged none/pass_unevidenced unchanged 
+OK   unjudged none/inconclusive unchanged 
+OK   unjudged none/blocked unchanged 
+OK   unjudged none/not_run unchanged 
+OK   unjudged none/no_verdict unchanged 
+OK   none/case_changed refused no_bug
+OK   none/assign refused no_bug
+OK   open/fail count+1 last_seen first_seen kept streak reset 
+OK   open/pass streak1->fixed(N=2), lists 
+OK   unjudged open/pass_unevidenced unchanged 
+OK   unjudged open/inconclusive unchanged 
+OK   unjudged open/blocked unchanged 
+OK   unjudged open/not_run unchanged 
+OK   unjudged open/no_verdict unchanged 
+OK   open/case_changed stale 
+OK   open/assign assign 
+OK   reopened/fail count+1 last_seen first_seen kept streak reset 
+OK   reopened/pass streak1->fixed(N=2), lists 
+OK   unjudged reopened/pass_unevidenced unchanged 
+OK   unjudged reopened/inconclusive unchanged 
+OK   unjudged reopened/blocked unchanged 
+OK   unjudged reopened/not_run unchanged 
+OK   unjudged reopened/no_verdict unchanged 
+OK   reopened/case_changed stale 
+OK   reopened/assign assign 
+OK   fixed/fail reopened count kept+1 
+OK   fixed/pass unchanged 
+OK   unjudged fixed/pass_unevidenced unchanged 
+OK   unjudged fixed/inconclusive unchanged 
+OK   unjudged fixed/blocked unchanged 
+OK   unjudged fixed/not_run unchanged 
+OK   unjudged fixed/no_verdict unchanged 
+OK   fixed/case_changed refused closed_record
+OK   fixed/assign assign 
+OK   stale/fail refused stale_bug
+OK   stale/pass refused stale_bug
+OK   unjudged stale/pass_unevidenced unchanged 
+OK   unjudged stale/inconclusive unchanged 
+OK   unjudged stale/blocked unchanged 
+OK   unjudged stale/not_run unchanged 
+OK   unjudged stale/no_verdict unchanged 
+OK   stale/case_changed refused already_stale
+OK   stale/assign assign 
+cells 45
+OK   one PASS keeps open 
+OK   two PASS fixed 
+OK   N=1 closes at N 
+OK   N=3 not closed at N-1 
+OK   N=3 closes at N 
+OK   N=5 not closed at N-1 
+OK   N=5 closes at N 
+OK   FAIL between passes: not fixed 
+OK   unjudged between passes neither breaks nor closes alone 
+OK   unevidenced/inconclusive/blocked/not_run never close 
+OK   unjudged never reopens a fixed bug 
+OK   fixed->fail reopened count 2 lists cleared 
+OK   re-closed with the new run lists 
+OK   7 events, all 5040 permutations -> 1 result fixed
+OK   9 events, 800 shuffles -> 1 result fixed
+OK   equal timestamps, 5040 perms -> 1 result fixed count=2
+OK   same instant in another tz offset, order independent 
+INFO future-dated FAIL (year ~2096) after a close -> fixed count 1
+INFO same set, future FAIL blocks close -> fixed
+OK   PASS dated before the bug opened cannot close it 
+OK   an OLD fail arriving late does not reopen a later close first_seen=2026-10-01 09:05:00+00:00
+OK   duplicate events counted once 
+OK   same PASS twice does not close 
+INFO same event_id for same (bug,ref,kind) but different at/run: True
+OK   None -> no_verdict 
+OK   PASS all met -> pass 
+OK   PASS total 0 -> unevidenced 
+OK   PASS 2/3 -> unevidenced 
+OK   PASS 3 imgs asked 1 seen -> unevidenced 
+OK   INCONCLUSIVE -> inconclusive 
+OK   BLOCKED -> blocked 
+OK   FAIL with no cited failure -> inconclusive 
+BAD 0

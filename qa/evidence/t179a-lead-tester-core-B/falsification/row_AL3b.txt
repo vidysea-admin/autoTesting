@@ -1,0 +1,23 @@
+== row AL3b (/c/Users/Lenovo/AppData/Local/Temp/chkB_fals_399875/AL3b)
+autotester.__file__= C:\Users\Lenovo\AppData\Local\Temp\chkB_fals_399875\AL3b\src\autotester\__init__.py
+-- green-before
+.                                                                        [100%]
+1 passed in 0.93s
+-- diff
+@@ -72,7 +72,6 @@
+ def _crawl(ctx: AgentContext, args: CrawlArgs) -> ToolOutcome:
+     asked = {"max_actions": args.max_actions, "wall_clock_s": args.wall_clock_s}
+     bounds = CrawlBounds(**{k: v for k, v in asked.items() if v is not None})
+-    guards.crawl_approval(ctx.store, ctx.project, bounds)
+     observer = PageObserver()
+     login = ctx.store.get_case(ctx.project.login_case_id) if ctx.project.login_case_id else None
+     with ctx.open_session(observer) as session:
+-- red-after
+>       assert _go(ctx, "crawl").refusal is RefusalClass.APPROVAL  # no approval at all
+E       AssertionError: assert None is <RefusalClass.APPROVAL: 'approval'>
+E        +  where None = ToolOutcome(tool='crawl', ok=True, refusal=None, summary='running: 0 screens, 0 actions', artifact_ref='crawl:crawl_01M4P9E5GTE7WKXDAMQGB1X8HX').refusal
+E        +    where ToolOutcome(tool='crawl', ok=True, refusal=None, summary='running: 0 screens, 0 actions', artifact_ref='crawl:crawl_01M4P9E5GTE7WKXDAMQGB1X8HX') = _go(AgentContext(project=Project(schema_version=1, created_at=datetime.datetime(2026, 10, 11, 20, 11, 1, 515248, tzinfo=da... _ctx.<locals>.open_session at 0x0000022FCC3F1E40>, docs=<autotester.core.paths.RepoDocs object at 0x0000022FCC3FE910>), 'crawl')
+E        +  and   <RefusalClass.APPROVAL: 'approval'> = RefusalClass.APPROVAL
+tests\test_agent_tools.py:188: AssertionError
+1 failed in 1.27s
+-- other nodes in file (context)

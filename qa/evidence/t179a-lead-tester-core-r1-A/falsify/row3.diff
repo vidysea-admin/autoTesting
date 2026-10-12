@@ -1,0 +1,10 @@
+--- head/src/autotester/agents/tools.py	2026-10-12 02:38:37.000000000 +0530
++++ scripts/falsify/row3/src/autotester/agents/tools.py	2026-10-12 02:56:07.103936700 +0530
+@@ -97,7 +97,6 @@
+     """Persist and return only scrubbed text (C5), whatever the stage let through."""
+     cleaned = ctx.secrets.redactor().scrub_obj(result.model_dump(mode="json"))
+     clean = RawResult.model_validate(cleaned)
+-    _withhold_if_credential(ctx, clean)
+     return clean
+ 
+ 

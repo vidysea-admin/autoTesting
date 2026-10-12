@@ -1,0 +1,60 @@
+C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head\.venv\Lib\site-packages\pydantic\main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='action', input_value='submit', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head\.venv\Lib\site-packages\pydantic\main.py:542: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='action', input_value='submit', input_type=str])
+  return self.__pydantic_serializer__.to_json(
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\chkA_t179r1_355800\head\src\autotester\__init__.py
+Action members: ['navigate', 'click', 'fill', 'select', 'upload', 'wait', 'assert', 'back', 'hover', 'press_key', 'scroll']
+[(('1-cycle0', 'PASS'), 33), (('10-args', 'DEVIATION'), 4), (('10-args', 'PASS'), 1), (('2-enum', 'PASS'), 22), (('2b-construct', 'DEVIATION'), 12), (('3-navigate', 'ALLOWED'), 29), (('3-navigate', 'OTHER'), 2), (('3-navigate', 'REFUSED'), 55), (('4-readpayload', 'PASS'), 8), (('5-multi', 'PASS'), 14), (('6-allowed', 'PASS'), 8), (('7-secret', 'ALLOWED'), 2), (('7-secret', 'DEVIATION'), 2), (('7-secret', 'PASS'), 8), (('8-login', 'ALLOWED'), 6), (('8-login', 'DEVIATION'), 1), (('8-login', 'PASS'), 14), (('9-contrast', 'ALLOWED'), 5), (('9-contrast', 'REFUSED'), 3)]
+action='submit': Step() rejected (ValidationError)
+action='eval': Step() rejected (ValidationError)
+action='CLICK': Step() rejected (ValidationError)
+action=' click ': Step() rejected (ValidationError)
+action='click': Step() ACCEPTED
+action='Click': Step() rejected (ValidationError)
+action='press_key': Step() ACCEPTED
+action='PRESS_KEY': Step() rejected (ValidationError)
+extra field is_form_submit: Step() rejected (ValidationError)
+extra field force: Step() rejected (ValidationError)
+NAVIGATE: outcome=completed err=None
+    page calls: ["call.goto('https://app.example.test/reports', wait_until='domcontentloaded')", "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-navigate.png', full_page=False)"]
+WAIT(sel,50): outcome=completed err=None
+    page calls: ["call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-wait.png', full_page=False)"]
+WAIT(none): outcome=completed err=None
+    page calls: ["call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-wait.png', full_page=False)"]
+ASSERT(all fields): outcome=assertion_failed err=None
+    page calls: ["call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-assert.png', full_page=False)"]
+BACK: outcome=completed err=None
+    page calls: ["call.go_back(wait_until='domcontentloaded')", "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-back.png', full_page=False)"]
+HOVER(Delete account): outcome=completed err=None
+    page calls: ['call.locator().hover()', "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-hover.png', full_page=False)"]
+SCROLL(400): outcome=completed err=None
+    page calls: ['call.mouse.wheel(0, 400)', "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-scroll.png', full_page=False)"]
+SCROLL(abc): outcome=errored err=ValueError: invalid literal for int() with base 10: 'abc'
+    page calls: []
+HOVER+expected(url,dom): outcome=assertion_failed err=None
+    page calls: ['call.locator().hover()', "call.add_style_tag(content='[data-autotester-secret] { -webkit-text-security: disc !important; color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }')", "call.screenshot(path='C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\al3c-dyn-djxz7cjm\\\\run\\\\01-step01-hover.png', full_page=False)"]
+DEV: 2b.'submit' | REFUSED False stage_error AttributeError: 'str' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'str' object has no attribute 'value'
+DEV: 2b.'eval' | REFUSED False stage_error AttributeError: 'str' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'str' object has no attribute 'value'
+DEV: 2b.'CLICK' | REFUSED False stage_error AttributeError: 'str' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'str' object has no attribute 'value'
+DEV: 2b.' click ' | REFUSED False stage_error AttributeError: 'str' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'str' object has no attribute 'value'
+DEV: 2b.'click' | REFUSED False stage_error AttributeError: 'str' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'str' object has no attribute 'value'
+DEV: 2b.'wait' | REFUSED True  outcome completed 1 1 True direct: guard returned None
+DEV: 2b.'navigate' | REFUSED False stage_error AttributeError: 'str' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'str' object has no attribute 'value'
+DEV: 2b.'WAIT' | REFUSED False stage_error AttributeError: 'str' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'str' object has no attribute 'value'
+DEV: 2b.'scroll' | REFUSED True  outcome completed 1 1 True direct: guard returned None
+DEV: 2b.None | REFUSED False stage_error AttributeError: 'NoneType' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'NoneType' object has no attribute 'value'
+DEV: 2b.5 | REFUSED False stage_error AttributeError: 'int' object has no attribute 'value' 0 0 False direct: guard raised AttributeError: 'int' object has no attribute 'value'
+DEV: 2b.store-roundtrip-submit | REFUSED False stage_error ValueError: C:\Users\Lenovo\AppData\Local\Temp\al3c-cav3x3kq\projects\demo\cases.jsonl:1: 1 validation error for Case
+steps.0.action
+  Input should be 'navigate 0 0 False 
+DEV: 3.65.http:[::1 (no //) | OBSERVE False stage_error ValueError: Invalid IPv6 URL 0 0 False host_of='host_of RAISED ValueError'; ALLOW_WRITES -> stage_error
+DEV: 3.67.https:[a]b | OBSERVE False stage_error ValueError: Invalid IPv6 URL 0 0 False host_of='host_of RAISED ValueError'; ALLOW_WRITES -> stage_error
+DEV: 7.click-raw-b64 | REFUSED False secret result withheld: it carried a credential 0 0 False 
+DEV: 7.click-raw-reversed | REFUSED False secret result withheld: it carried a credential 0 0 False 
+DEV: 8.nav-with-query-nonlogin | REFUSED True  outcome completed 1 1 True 
+DEV: 10.extra-write-policy | REFUSED False bad_arguments invalid arguments (write_policy: extra_forbidden) 0 0 False 
+DEV: 10.extra-project | REFUSED False bad_arguments invalid arguments (project: extra_forbidden) 0 0 False 
+DEV: 10.extra-steps | REFUSED False bad_arguments invalid arguments (steps: extra_forbidden) 0 0 False 
+DEV: 10.extra-approval | REFUSED False bad_arguments invalid arguments (approval: extra_forbidden) 0 0 False 

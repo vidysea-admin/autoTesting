@@ -1,0 +1,80 @@
+id,desc,login_mode,case_id,ok,refusal,summary,sessions,run_case_calls,data_changed,expected,result,note
+P1,"login: NAV?query, FILL user, FILL pass, CLICK Sign in",self,case_e1acd8f84c11,True,,outcome completed,1,1,True,ok,as-expected,
+P2,same with PRESS_KEY Enter,self,case_67c0d2fbdf27,True,,outcome completed,1,1,True,ok,as-expected,
+P3,same with PRESS_KEY value None,self,case_9c1badccf40d,True,,outcome completed,1,1,True,ok,as-expected,
+P4,PRESS_KEY Enter on locator 'Password',self,case_08eb2af8ab8d,True,,outcome completed,1,1,True,ok,as-expected,
+P5,credential fill with no submit at all,self,case_faa1912c2546,True,,outcome completed,1,1,True,ok,as-expected,no submit required
+A1,"identical login steps, case id != login_case_id (decoy is login)",other,case_e1acd8f84c11,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+A2,"identical login steps, login_case_id None",none,case_e1acd8f84c11,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+B1,extra CLICK 'Continue' after submit,self,case_90762841e792,False,write_policy,refused under write_policy read_only: step 5 (click) 'Continue': click can change state,0,0,False,refused,as-expected,
+B2,extra Enter after CLICK submit,self,case_3158f682c00f,False,write_policy,refused under write_policy read_only: step 5 (press_key) '': press_key can change state,0,0,False,refused,as-expected,
+B3,"second submit CLICK after Enter submit, no new fill",self,case_3a03d69bea44,False,write_policy,refused under write_policy read_only: step 5 (click) 'Sign in': click can change state,0,0,False,refused,as-expected,
+B4,"two full sequences: fill,submit,fill,submit (benign names)",self,case_bf0b93672915,True,,outcome completed,1,1,True,refused,UNEXPECTED,credential_pending reset only by a submit; a fresh credential FILL re-arms it
+B4b,"three sequences, one per credential fill",self,case_d39f35ec37e7,True,,outcome completed,1,1,True,refused,UNEXPECTED,
+B5,CLICK 'Sign in' BEFORE any credential fill,self,case_9ee22bc4e2e3,False,write_policy,refused under write_policy read_only: step 2 (click) 'Sign in': click can change state,0,0,False,refused,as-expected,
+B6,Enter BEFORE any credential fill,self,case_149ba0b88634,False,write_policy,refused under write_policy read_only: step 2 (press_key) '': press_key can change state,0,0,False,refused,as-expected,
+B7,submit CLICK 'Delete account' after credential,self,case_78f06857d0ed,False,write_policy,refused under write_policy read_only: step 4 (click) 'Delete account': destructive-name deny-list,0,0,False,refused,as-expected,
+B8,submit CLICK 'Log out' after credential,self,case_8967ab73ef8c,False,write_policy,refused under write_policy read_only: step 4 (click) 'Log out': never-click pattern (logout/sign-out),0,0,False,refused,as-expected,
+B9,PRESS_KEY Delete after credential,self,case_13eb595d38eb,False,write_policy,refused under write_policy read_only: step 4 (press_key) '': press_key can change state,0,0,False,refused,as-expected,
+B10,PRESS_KEY Tab after credential,self,case_6faa3b4523d5,False,write_policy,refused under write_policy read_only: step 4 (press_key) '': press_key can change state,0,0,False,refused,as-expected,
+B11,CLICK 'Place order' as the one submit,self,case_874fb89ca822,True,,outcome completed,1,1,True,refused,UNEXPECTED,submit CLICK only passes deny_reason; name not required to be sign-in
+B12,CLICK 'Save' as the one submit,self,case_ea9a79dac4b5,True,,outcome completed,1,1,True,refused,UNEXPECTED,
+B13,CLICK 'Transfer funds' as the one submit,self,case_c53819c4ed96,True,,outcome completed,1,1,True,refused,UNEXPECTED,
+B14,Enter on locator 'Search' after credential,self,case_76b9d67f6d5d,True,,outcome completed,1,1,True,refused,UNEXPECTED,
+B15,"credential, literal FILL 'Name' Eve, then submit",self,case_2e846c895151,False,write_policy,refused under write_policy read_only: step 4 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,refused,as-expected,
+B16,submit then WAIT/HOVER/SCROLL/BACK/ASSERT,self,case_218c490c91ec,True,,outcome completed,1,1,True,ok,as-expected,reads allowed; BACK is history navigation
+B17,SELECT after submit,self,case_f06bd25f7c96,False,write_policy,refused under write_policy read_only: step 5 (select) 'Plan': select can change state,0,0,False,refused,as-expected,
+B18,UPLOAD after submit,self,case_2076d6446c16,False,write_policy,refused under write_policy read_only: step 5 (upload) 'CV': upload can change state,0,0,False,refused,as-expected,
+B19,"credential, HOVER Delete account, CLICK Sign in",self,case_e05446f0cd04,True,,outcome completed,1,1,True,ok,as-expected,
+B20,"credential, WAIT, Enter, CLICK (read keeps pending, 2nd submit)",self,case_01761bb33987,False,write_policy,refused under write_policy read_only: step 6 (click) 'Sign in': click can change state,0,0,False,refused,as-expected,
+C1,FILL value 'x{{SECRET:APP_PASS}}',self,case_dd1351686db5,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,
+C2,FILL value '{{SECRET:APP_PASS}}x',self,case_4bd7df7374b1,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,
+C3,FILL value '{{SECRET:APP_PASS}}{{SECRET:APP_PASS}}',self,case_506786dc13cf,True,,outcome completed,1,1,True,ok,as-expected,pure placeholders concatenated
+C3b,FILL value '{{SECRET:APP_USER}}{{SECRET:APP_PASS}}',self,case_57c1728cf5ac,True,,outcome completed,1,1,True,ok,as-expected,user+pass concatenated
+C4,FILL value ' {{SECRET:APP_PASS}} ',self,case_4ce55b4cb40c,True,,outcome completed,1,1,True,ok,as-expected,whitespace residue allowed; typed with the secret
+C4b,FILL value '{{SECRET:APP_PASS}}\n',self,case_9b68bef707d0,True,,outcome completed,1,1,True,ok,as-expected,newline residue allowed
+C4c,FILL value '{{SECRET:APP_PASS}}\xa0',self,case_802f5c49bd70,True,,outcome completed,1,1,True,ok,as-expected,NBSP residue allowed
+C4d,FILL value '{{SECRET:APP_PASS}}\u200b',self,case_5b41460987e9,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,zero-width space not stripped
+C5,FILL value '',self,case_2e8ef7533f48,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,
+C6,FILL value None,self,case_1f701caaa251,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,
+C7,FILL value '{{SECRET:OTHER}}',self,case_2becc2a2cd4d,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,undeclared key
+C7b,FILL value '{{SECRET:APP_PASS}}{{SECRET:OTHER}}',self,case_85800da89617,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,declared + undeclared
+C8,FILL value '{{SECRET:app_pass}}',self,case_8fbb5c0ad991,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,lower-case key
+C9,FILL value '{{SECRET:APP_PASS}',self,case_31249903341f,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,malformed
+C9b,FILL value '{{ SECRET:APP_PASS }}',self,case_96627f8a1f49,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,malformed
+C10,FILL value '{{SECRET:{{SECRET:APP_PASS}}}}',self,case_4db3735b32dd,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,nested
+C10b,FILL value '{{SECRET:APP_{{SECRET:APP_PASS}}}}',self,case_c7c4ef839034,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,nested splice
+C11,FILL value '{{SECRET:APP_PASS}}',self,case_e1acd8f84c11,True,,outcome completed,1,1,True,ok,as-expected,control
+C12,FILL value '｛｛SECRET:APP_PASS｝｝',self,case_a05ffcd02486,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,fullwidth braces
+C12b,FILL value '{{SECRET:APP_PAЅS}}',self,case_823731bdd830,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,cyrillic lookalike in key
+C12c,FILL value '{{SECRET:APP＿PASS}}',self,case_dcd3b64adece,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,fullwidth underscore
+C13,FILL value '{{SECRET:APP_PASS}}\x00',self,case_7bfbe44dfce1,False,write_policy,refused under write_policy read_only: step 3 (fill) 'Password': fill outside the declared login's credential entry,0,0,False,refused,as-expected,NUL residue
+C14,declared credential typed into non-credential field 'Search',self,case_a0e833bcbf7a,True,,outcome completed,1,1,True,refused,UNEXPECTED,guard never inspects step.target for FILL
+C15,declared credential typed into non-credential field 'Comment',self,case_2d8afc159378,True,,outcome completed,1,1,True,refused,UNEXPECTED,guard never inspects step.target for FILL
+C16,declared credential typed into non-credential field 'Amount',self,case_e5934b4c0744,True,,outcome completed,1,1,True,refused,UNEXPECTED,guard never inspects step.target for FILL
+C17,declared credential typed into non-credential field 'Delete confirmation',self,case_ed5ec520b614,True,,outcome completed,1,1,True,refused,UNEXPECTED,guard never inspects step.target for FILL
+C18,"after login: NAV /feed, FILL 'Comment' <APP_PASS>, CLICK 'Post comment'",self,case_2d4d8933ea77,True,,outcome completed,1,1,True,refused,UNEXPECTED,re-armed credential_pending lets a second state-changing click through
+D1,login + CLICK 'Save',self,case_68d0f2ef0dfc,False,write_policy,refused under write_policy read_only: step 5 (click) 'Save': click can change state,0,0,False,refused,as-expected,
+D2,login + FILL 'Name' Eve,self,case_19c723147caa,False,write_policy,refused under write_policy read_only: step 5 (fill) 'Name': fill outside the declared login's credential entry,0,0,False,refused,as-expected,
+D3,login + NAV /x?id=1 (2nd navigate with query),self,case_3561df4f5c49,True,,outcome completed,1,1,True,refused,UNEXPECTED,query allowed for EVERY navigate in the login case
+D4,login + NAV /account/delete?id=1&confirm=1,self,case_315fee0f66b3,False,write_policy,refused under write_policy read_only: step 5 (navigate) 'https://app.example.test/account/delete?id=1&confirm=1': destructive-name deny-list,0,0,False,refused,as-expected,
+D5,login + NAV /logout?x=1,self,case_6d3be1ec3ca5,False,write_policy,refused under write_policy read_only: step 5 (navigate) 'https://app.example.test/logout?x=1': never-click pattern (logout/sign-out),0,0,False,refused,as-expected,
+D5b,login + NAV /account?action=delete&confirm=1 (deny word only in query),self,case_ebe81156664b,True,,outcome completed,1,1,True,refused,UNEXPECTED,"deny_reason sees path+fragment only, never the query"
+D5c,login + NAV /transfer?to=eve&amount=100,self,case_4eb83269816b,True,,outcome completed,1,1,True,refused,UNEXPECTED,
+D5d,login + NAV /login#delete (fragment deny word),self,case_a6c67cdab046,False,write_policy,refused under write_policy read_only: step 5 (navigate) 'https://app.example.test/login#delete': destructive-name deny-list,0,0,False,refused,as-expected,
+D6,login + NAV https://evil.test/login?x=1,self,case_1de09c068c8d,False,destination,refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,refused,as-expected,
+D6b,login + NAV https://evil.test\@app.example.test/?x=1,self,case_6338a5d54820,False,destination,refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,refused,as-expected,
+D6c,login + NAV https://app.example.test@evil.test/?x=1,self,case_91654bb2006a,False,destination,refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,refused,as-expected,
+D7,login + NAV javascript:alert(1),self,case_6aea713129c6,False,destination,refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,refused,as-expected,
+D7b,login NAV with placeholder in query,self,case_77c11b6838c3,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?pw={{SECRET:APP_PASS}}': navigate needs an absolute http(s) URL without placeholders,0,0,False,refused,as-expected,
+D8,login + NAV //evil.test/x?y=1,self,case_4b3a5138c844,False,destination,refused: step 5 (navigate): destination is not an http(s) URL inside the allowed domains,0,0,False,refused,as-expected,
+D9,login + NAV bare path /x?y=1,self,case_b739e3c8b3a9,False,write_policy,refused under write_policy read_only: step 5 (navigate) '/x?y=1': navigate needs an absolute http(s) URL without placeholders,0,0,False,refused,as-expected,
+D10,login + NAV http://app.example.test/x (http scheme),self,case_02fc1abbd6b4,True,,outcome completed,1,1,True,ok,as-expected,http inside domain allowed
+E1,"login_case_id None, case id literally 'login'",none,login,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+E2,login_case_id = nonexistent id,missing,case_e1acd8f84c11,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+E3,"login_case_id 'Login', case id 'login'",Login,login,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+E4,"login_case_id 'login', case id 'Login'",login,Login,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+E5,"login_case_id 'login ', case id 'login'",login ,login,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+E6,"login_case_id 'login', case id 'login '",login,login ,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,
+E7,login_case_id 'login' == case id 'login' (control),login,login,True,,outcome completed,1,1,True,ok,as-expected,
+E8,"login_case_id '' (empty), generated case id",,case_e1acd8f84c11,False,write_policy,refused under write_policy read_only: step 1 (navigate) 'https://app.example.test/login?next=%2Fhome': navigate with a query string can change state,0,0,False,refused,as-expected,

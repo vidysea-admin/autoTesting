@@ -1,0 +1,20 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\head
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 97 items / 93 deselected / 4 selected
+
+tests\test_delivery_smtp.py ..                                           [ 50%]
+tests\test_report_email.py .                                             [ 75%]
+tests\test_delivery_failure.py .                                         [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\_pytest\pathlib.py:95
+  C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\t201a-r2A-1847030747\head\.venv\Lib\site-packages\_pytest\pathlib.py:95: PytestWarning: (rm_rf) error removing \\?\C:\Users\Lenovo\AppData\Local\Temp\pytest-of-Lenovo\garbage-ba76d7ad-9b80-45c0-b41b-fb832ee781fe
+  <class 'OSError'>: [WinError 145] The directory is not empty: '\\\\?\\C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pytest-of-Lenovo\\garbage-ba76d7ad-9b80-45c0-b41b-fb832ee781fe'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 4 passed, 93 deselected, 1 warning in 8.11s =================
+exit=0

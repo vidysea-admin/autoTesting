@@ -1,0 +1,60 @@
+row,refusal,summary,scans,scanned_chars,handler_ran,secs,expect
+chars_total_16383,bad_arguments,invalid arguments (k: extra_forbidden),4,16513,0,0.0507,<=16384 reaches validation; >16384 too big
+chars_total_16384,bad_arguments,invalid arguments (k: extra_forbidden),4,16514,0,0.0513,<=16384 reaches validation; >16384 too big
+chars_total_16385,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,<=16384 reaches validation; >16384 too big
+chars_total_16386,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,<=16384 reaches validation; >16384 too big
+chars_total_16384_inkey,bad_arguments,invalid arguments (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,4,32885,0,0.0991,"same, key variant"
+chars_total_16385_inkey,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,"same, key variant"
+chars_total_16384_split_many_leaves,bad_arguments,invalid arguments (a: extra_forbidden),20,16514,0,0.0599,"same, many leaves"
+chars_total_16385_split_many_leaves,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,"same, many leaves"
+flat_dict_keys_120,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,242,3261,0,0.0703,node cap
+flat_dict_keys_121,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,244,3289,0,0.0801,node cap
+flat_dict_keys_122,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,246,3317,0,0.0851,node cap
+flat_dict_keys_123,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,248,3345,0,0.1044,node cap
+flat_dict_keys_124,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,250,3373,0,0.0777,node cap
+flat_dict_keys_125,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,252,3401,0,0.0732,node cap
+flat_dict_keys_126,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,254,3429,0,0.0735,node cap
+flat_dict_keys_127,bad_arguments,invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra,256,3457,0,0.0806,node cap
+flat_dict_keys_128,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0004,node cap
+flat_dict_keys_129,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+flat_dict_keys_130,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+flat_dict_keys_131,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+flat_dict_keys_132,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+flat_dict_keys_133,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+flat_dict_keys_134,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,node cap
+flat_dict_keys_135,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+list_items_248,bad_arguments,invalid arguments (a: extra_forbidden),251,390,0,0.0588,node cap
+list_items_249,bad_arguments,invalid arguments (a: extra_forbidden),252,391,0,0.0618,node cap
+list_items_250,bad_arguments,invalid arguments (a: extra_forbidden),253,392,0,0.0639,node cap
+list_items_251,bad_arguments,invalid arguments (a: extra_forbidden),254,393,0,0.0722,node cap
+list_items_252,bad_arguments,invalid arguments (a: extra_forbidden),255,394,0,0.0633,node cap
+list_items_253,bad_arguments,invalid arguments (a: extra_forbidden),256,395,0,0.0728,node cap
+list_items_254,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0004,node cap
+list_items_255,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0003,node cap
+list_items_256,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0003,node cap
+list_items_257,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+list_items_258,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+list_items_259,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,node cap
+depth_leaf_at_3,bad_arguments,invalid arguments (a: extra_forbidden),4,143,0,0.0017,leaf depth cap 6
+depth_leaf_at_4,bad_arguments,invalid arguments (a: extra_forbidden),4,143,0,0.0034,leaf depth cap 6
+depth_leaf_at_5,bad_arguments,invalid arguments (a: extra_forbidden),4,143,0,0.0023,leaf depth cap 6
+depth_leaf_at_6,bad_arguments,invalid arguments (a: extra_forbidden),4,143,0,0.0021,leaf depth cap 6
+depth_leaf_at_7,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,leaf depth cap 6
+depth_leaf_at_8,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,leaf depth cap 6
+depth_leaf_at_9,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,leaf depth cap 6
+depth_dict_leaf_at_3,bad_arguments,invalid arguments (a: extra_forbidden),6,145,0,0.0028,leaf depth cap 6 (dict)
+depth_dict_leaf_at_4,bad_arguments,invalid arguments (a: extra_forbidden),7,146,0,0.0023,leaf depth cap 6 (dict)
+depth_dict_leaf_at_5,bad_arguments,invalid arguments (a: extra_forbidden),8,147,0,0.0023,leaf depth cap 6 (dict)
+depth_dict_leaf_at_6,bad_arguments,invalid arguments (a: extra_forbidden),9,148,0,0.0026,leaf depth cap 6 (dict)
+depth_dict_leaf_at_7,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,leaf depth cap 6 (dict)
+depth_dict_leaf_at_8,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,leaf depth cap 6 (dict)
+depth_dict_leaf_at_9,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,leaf depth cap 6 (dict)
+empty_nested_containers_deep7,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,empty list at depth 7
+empty_nested_containers_deep6,bad_arguments,invalid arguments (a: extra_forbidden),3,142,0,0.0013,empty list at depth 6
+string_2MB_value,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,"refused, not scanned"
+string_2MB_key,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,"refused, not scanned"
+string_2MB_name,unknown_tool,no such tool,0,0,0,0.0,"refused, not scanned"
+string_100k_value,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0,refused
+string_2MB_with_canary_at_end,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,refused too big (canary never looked at)
+list_of_2000_strings_of_1000,bad_arguments,"arguments are too big, too deep or not plain data",0,0,0,0.0001,refused
+scan_time_at_cap_16384,bad_arguments,invalid arguments (k: extra_forbidden),4,16514,0,0.0481,scan cost reference

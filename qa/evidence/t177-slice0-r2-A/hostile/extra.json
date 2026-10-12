@@ -1,0 +1,29 @@
+[
+ {
+  "case": "97 headers x 65000B then VALID good body",
+  "ret": true,
+  "wall": 0.219,
+  "client_bytes": 6306037,
+  "listener_sent": 6306037,
+  "py_peak_alloc_MB": 56.9,
+  "threads": []
+ },
+ {
+  "case": "98 headers x 65000B then VALID good body (101st header total -> too many?)",
+  "ret": false,
+  "wall": 0.094,
+  "client_bytes": 6371046,
+  "listener_sent": 6371046,
+  "py_peak_alloc_MB": 19.1,
+  "threads": []
+ },
+ {
+  "case": "100-Continue each with 90x64KB headers, forever",
+  "ret": false,
+  "wall": 2.016,
+  "client_bytes": 237703187,
+  "listener_sent": 237817875,
+  "py_peak_alloc_MB": 11.6,
+  "threads": []
+ }
+]

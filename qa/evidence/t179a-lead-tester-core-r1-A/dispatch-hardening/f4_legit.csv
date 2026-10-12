@@ -1,0 +1,10 @@
+tool,args,ok,refusal,summary
+run_case,200-char case_id,True,,outcome completed
+grade_case,200-char case_id,True,,PASS: 
+run_case,200-char case_id,True,,outcome completed
+grade_case,200-char case_id,True,,PASS: 
+crawl,"{'max_actions': 40, 'wall_clock_s': 600.0, 'incremental': Tr",True,,"running: 0 screens, 0 actions"
+crawl,{'max_actions': 16069380442589902755419620923411626025222029,False,approval,refusing to start a crawl run against https://app.test — the approvals
+crawl,"{'max_actions': 1000000000, 'wall_clock_s': 31536000.5, 'inc",False,approval,refusing to start a crawl run against https://app.test — the approvals
+get_persona,{},False,nothing_to_do,no portal persona yet; a crawl builds one
+get_catalog,{},True,,0 of 0 case classes runnable

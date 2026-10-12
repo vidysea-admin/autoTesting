@@ -1,0 +1,9 @@
+name: fz2-X6-narrow-except
+import_path: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fz\fz2-X6-narrow-except\src\autotester\__init__.py
+green_rc: 0
+green_tail: ======================== 1 passed, 1 warning in 3.22s =========================
+green_s: 18
+red_rc: 1
+red_tail: ======================== 1 failed, 1 warning in 4.32s =========================
+red_s: 19
+failed: ['FAILED tests/test_ui_learn_guard.py::test_a_guard_refusal_is_a_themed_400_with_nothing_written_sent_or_echoed']

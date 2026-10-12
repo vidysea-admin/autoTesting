@@ -1,0 +1,10 @@
+== none []
+      AUTOTESTER_PUBLIC_ORIGIN: ""
+== domain [AUTOTESTER_DOMAIN=qa.example.com]
+      AUTOTESTER_PUBLIC_ORIGIN: https://qa.example.com
+== origin [AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:8000]
+      AUTOTESTER_PUBLIC_ORIGIN: http://192.168.1.4:8000
+== both [AUTOTESTER_DOMAIN=qa.example.com AUTOTESTER_PUBLIC_ORIGIN=http://192.168.1.4:8000]
+      AUTOTESTER_PUBLIC_ORIGIN: http://192.168.1.4:8000
+== domain_empty [AUTOTESTER_DOMAIN=]
+      AUTOTESTER_PUBLIC_ORIGIN: ""

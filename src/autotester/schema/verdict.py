@@ -21,6 +21,14 @@ class Criterion(BaseModel):
     text: str
     evidence_required: bool = True
 
+    @property
+    def fingerprint(self) -> str:
+        """What the criterion says. A bug opened on it remembers this, so an edited criterion is
+        detected (T-199b, TB4) and a bug is never closed against a different bar."""
+        from autotester.core.ids import content_id
+
+        return content_id("crit", self.model_dump(mode="json"))
+
 
 class Rubric(Artifact):
     """The grading contract for a case. More specific than the case itself.

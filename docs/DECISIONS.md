@@ -2422,3 +2422,23 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-12)
 
 **Links:** D-072; D-082; T-198; T-200; T-202; T-204; T-205; qa/gates/t205-new-modules.md; qa/gates/t204-fix-cycle-cap.md; qa/gates/t198a-intake-upload-module.md
+
+## D-086 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered six open maker questions in chat on 2026-10-12. Each answer is quoted.
+1. **t179a HG-1** (`qa/gates/t179a-hg1-readonly-click.md`): "hai allowed". Under READ_ONLY the lead tester may click, press keys, select and type. The READ_ONLY refusal of benign interaction steps in `agents/guards.py` is relaxed in a follow-up T-179 slice. It is not part of the t179a cycle-2 check.
+2. **T-203 host** (`qa/gates/t203-host-and-dns.md`): "ubuntu hoga will provide later abhi tho yhi system mai host kroo". The real host will be an Ubuntu server, with details to follow. Until then AutoTester is hosted on this machine. The host name and DNS stay OPEN.
+3. **T-177 DevTools port** (`qa/manifests/t177-slice0-browser-seam.md`, "Owner confirm at merge"): option A, "backup har jagah chalega, aapke laptop pe bhi aur Ubuntu server pe bhi". The per-run loopback Chromium remote-debugging port is approved on every host. It must keep the guards slice 0 already has: OFF by default, opened per run only via `expose_cdp=True`, `--remote-debugging-port=0`, loopback-only, `cdp_url` taken only from `DevToolsActivePort` after the identity check, and closed at teardown. This extends D-075 beyond `browser/session.py` to `browser/launch.py`, `browser/secrets.py`, `browser/video.py` and `browser/assertions.py` as slice 0 touches them. Recorded residuals: a same-user process that rewrites the port file, and an unverified bind for headed Chrome. The headed bind check runs before the port is enabled for headed Pathlynks runs. The UI wiring stays held until T-203 and T-204 land (D-075).
+4. **T-136 independent list** (`qa/gates/t136-independent-human-list.md`): "phle ek level build krr dee, firr feedback deke fix krwaaungaa". Build a first level of the comparison now: the AutoTester column, the artifact and the bench computation. Umesh gives feedback and the fixes follow after. Under AT-653 a human list written after the report has been read yields `recall: unavailable (ordering not recorded)`, and the FP rate and time remain valid. The maker states this to Umesh before the report is opened.
+5. **T-169 two modes**: "dono denee chiayee". Both onboarding modes, rich teaching inputs and URL-plus-credentials only, are delivered and compared.
+6. **T-145 Pathlynks run**: "ye maukaa milte hi run krr, like it must need to be done". The bounded live crawl and report run as soon as host RAM allows one browser slot. They use the `PATHLYNKS_USER_*` test account, ALLOW_WRITES (D-053) and the signed per-run RunApproval (D-018, `qa/gates/d081-run-approvals.md`).
+
+**Why:** These answers unblock T-145, T-177 slice 0, T-136, T-169 and the T-179 follow-up, and confirm local hosting while the Ubuntu server is pending.
+
+**Result:** No merge or run has been made by this entry. The maker dispatches the work next.
+
+**Changes-authorized:** `docs/ARCHITECTURE.md` security-model section: one line describing the per-run loopback DevTools port of T-177 slice 0 and its guards (item 3). No enforcement path.
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** D-018; D-041; D-053; D-075; D-081; T-136; T-145; T-169; T-177; T-179; T-203; qa/gates/t179a-hg1-readonly-click.md; qa/gates/t203-host-and-dns.md; qa/gates/t136-independent-human-list.md

@@ -1,0 +1,21 @@
+AP crawl unsigned                         ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case unsigned                      ok=False refusal=approval sessions=0
+AP crawl signed-then-widened              ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case signed-then-widened           ok=False refusal=approval sessions=0
+AP crawl expired                          ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case expired                       ok=False refusal=approval sessions=0
+AP crawl other-project                    ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case other-project                 ok=False refusal=approval sessions=0
+AP crawl other-target                     ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case other-target                  ok=False refusal=approval sessions=0
+AP crawl wrong-kind READ                  ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case wrong-kind READ               ok=False refusal=approval sessions=0
+AP crawl wrong-kind LIVE_CASE for crawl   ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case wrong-kind LIVE_CASE for crawl ok=True refusal=None sessions=1
+AP crawl good                             ok=True refusal=None sessions=1 run_crawl_calls=1
+AP run_case good                          ok=False refusal=approval sessions=0
+AP crawl good-but-narrow-wall             ok=False refusal=approval sessions=0 run_crawl_calls=0
+AP run_case good-but-narrow-wall          ok=False refusal=approval sessions=0
+AP run_case 2 steps vs approved 1: ok=False refusal=approval sessions=0
+
+1 passed in 1.62s

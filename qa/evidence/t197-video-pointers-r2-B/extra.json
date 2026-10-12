@@ -1,0 +1,57 @@
+{
+ "redact": {
+  "exit": 0,
+  "provider_calls": 1,
+  "stills": 8,
+  "times_first_last": [
+   0.0,
+   120.0
+  ],
+  "stills_inside_window": [],
+  "stills_dirs": [
+   "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-cases\\x-redact-ok\\projects\\demo\\reviews\\rv_a4d420d3cfa9\\frames"
+  ],
+  "orig_in_dirs": false,
+  "left_after": [
+   "reviews/rv_a4d420d3cfa9.json"
+  ],
+  "stdout_docs": 1,
+  "still_yavg_min_max": [
+   null,
+   null
+  ],
+  "live_redacted_t65_yavg": {
+   "sig-ctrlBREAK-json": null,
+   "sig-ctrlBREAK-text": null,
+   "sig-ctrlC-json": null,
+   "sig-ctrlC-text": null
+  }
+ },
+ "old_store": {
+  "base_autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-base\\src\\autotester\\__init__.py",
+  "base_exit": 0,
+  "base_doc_has_exit_code": false,
+  "stored_files": [
+   "rv_cc908f4e6c15.json"
+  ],
+  "stored_has_exit_code": [
+   false
+  ],
+  "head_exit": 0,
+  "head_docs": 1,
+  "head_status": "ok",
+  "head_exit_code_key": 0,
+  "same_id": true,
+  "head_provider_calls_on_replay": 0,
+  "head_text_exit": 0
+ },
+ "head_store": {
+  "exit": 0,
+  "files": [
+   "rv_cc908f4e6c15.json"
+  ],
+  "has_exit_code": [
+   false
+  ]
+ }
+}

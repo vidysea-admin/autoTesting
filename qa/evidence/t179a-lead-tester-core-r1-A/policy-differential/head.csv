@@ -1,0 +1,358 @@
+project,policy,row,ok,refusal,sessions,run_case_calls,act_time,host_of,summary
+demo,test_account,CLICK:Save,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Save changes,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Place order,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Confirm,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Apply now,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Register,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Sign up,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Add to cart,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Sign in,True,,1,1,,,outcome completed
+demo,test_account,CLICK:हटाएं,True,,1,1,,,outcome completed
+demo,test_account,CLICK:खाता हटाएं,True,,1,1,,,outcome completed
+demo,test_account,CLICK:Delete account,False,write_policy,0,0,,,refused under write_policy test_account: step 1 (click) 'Delete account': destructive-name deny-list
+demo,test_account,CLICK:Log out,False,write_policy,0,0,,,refused under write_policy test_account: step 1 (click) 'Log out': never-click pattern (logout/sign-out)
+demo,test_account,CLICK:Sign out,False,write_policy,0,0,,,refused under write_policy test_account: step 1 (click) 'Sign out': never-click pattern (logout/sign-out)
+demo,test_account,CLICK:Remove,False,write_policy,0,0,,,refused under write_policy test_account: step 1 (click) 'Remove': destructive-name deny-list
+demo,test_account,CLICK:Cancel subscription,False,write_policy,0,0,,,refused under write_policy test_account: step 1 (click) 'Cancel subscription': destructive-name deny-list
+demo,test_account,PRESS_KEY:Enter,True,,1,1,,,outcome completed
+demo,test_account,PRESS_KEY:None,True,,1,1,,,outcome completed
+demo,test_account,PRESS_KEY:Delete,True,,1,1,,,outcome completed
+demo,test_account,PRESS_KEY:Tab,True,,1,1,,,outcome completed
+demo,test_account,FILL:'',True,,1,1,,,outcome completed
+demo,test_account,FILL:'   ',True,,1,1,,,outcome completed
+demo,test_account,FILL:None,True,,1,1,,,outcome completed
+demo,test_account,FILL:'x',True,,1,1,,,outcome completed
+demo,test_account,FILL:'{{SECRET:APP_PASS}}',True,,1,1,,,outcome completed
+demo,test_account,SELECT:pro,True,,1,1,,,outcome completed
+demo,test_account,UPLOAD:cv,True,,1,1,,,outcome completed
+demo,test_account,WAIT,True,,1,1,,,outcome completed
+demo,test_account,ASSERT,True,,1,1,,,outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test/account/delete?id=1&confirm=1',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test/logout',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test/reports',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test/reports?page=2',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'/reports',True,,1,1,REFUSE NavigationRefused,'',outcome completed
+demo,test_account,NAVIGATE:'/home',True,,1,1,REFUSE NavigationRefused,'',outcome completed
+demo,test_account,NAVIGATE:'Admin portal URL',True,,1,1,REFUSE NavigationRefused,'admin portal url',outcome completed
+demo,test_account,NAVIGATE:'{{SECRET:APP_PASS}}',True,,1,1,REFUSE SecretScopeError,'{{secret',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test/{{SECRET:APP_PASS}}',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://api.app.example.test/x',True,,1,1,ACCEPT host=api.app.example.test,'api.app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://other.example.test/x',True,,1,1,ACCEPT host=other.example.test,'other.example.test',outcome completed
+demo,test_account,NAVIGATE:'http://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test:8443/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://APP.EXAMPLE.TEST/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'HTTPS://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test./x',False,destination,0,0,REFUSE NavigationRefused,'app.example.test.',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test:443/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://user:pw@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test\\x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://evil.test\\@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:' https://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test/x ',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'\thttps://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'//app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'//evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://bücher.example.test/x',True,,1,1,ACCEPT host=bücher.example.test,'bücher.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://xn--bcher-kva.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'xn--bcher-kva.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://аpp.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'аpp.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'javascript:alert(1)',False,destination,0,0,REFUSE NavigationRefused,'javascript',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'javascript://app.example.test/%0aalert(1)',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,"NAVIGATE:'data:text/html,<b>x</b>'",False,destination,0,0,REFUSE NavigationRefused,'data',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'file:///etc/passwd',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'file://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'about:blank',False,destination,0,0,REFUSE NavigationRefused,'about',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'ftp://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'ws://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://evil.test/app.example.test',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test.evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'app.example.test.evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://evilapp.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'evilapp.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test/x\ny',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.exa\tmple.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test/x\x00',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test/x\x7f',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://[invalid/x',False,destination,0,0,REFUSE ValueError,EXC ValueError,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test:99999/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test:abc/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test@evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://app.example.test?x=1',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'https://app.example.test#frag',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'app.example.test',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,NAVIGATE:'evil.test/x',True,,1,1,REFUSE NavigationRefused,'evil.test',outcome completed
+demo,test_account,NAVIGATE:'localhost:3000/',False,destination,0,0,REFUSE NavigationRefused,'localhost',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'mailto:a@app.example.test',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'{{SECRET:BASE}}/x',True,,1,1,ACCEPT host=app.example.test,'{{secret',outcome completed
+demo,test_account,NAVIGATE:'https://{{SECRET:HOST}}/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'{{SECRET:LOGINURL}}',True,,1,1,ACCEPT host=app.example.test,'{{secret',outcome completed
+demo,test_account,NAVIGATE:'{{SECRET:BASE}}',True,,1,1,ACCEPT host=app.example.test,'{{secret',outcome completed
+demo,test_account,NAVIGATE:'https://{{SECRET:HOST}}',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'//{{SECRET:HOST}}/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://{{SECRET:HOST}}:8443/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,NAVIGATE:'https://user:{{SECRET:APP_PASS}}@app.example.test/x',False,destination,0,0,REFUSE SecretScopeError,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,test_account,MULTI:form,True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,test_account,MULTI:form-barepath,True,,1,1,REFUSE NavigationRefused,'',outcome completed
+demo,allow_writes,CLICK:Save,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Save changes,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Place order,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Confirm,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Apply now,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Register,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Sign up,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Add to cart,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Sign in,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:हटाएं,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:खाता हटाएं,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Delete account,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Log out,False,write_policy,0,0,,,refused under write_policy allow_writes: step 1 (click) 'Log out': never-click pattern (logout/sign-out)
+demo,allow_writes,CLICK:Sign out,False,write_policy,0,0,,,refused under write_policy allow_writes: step 1 (click) 'Sign out': never-click pattern (logout/sign-out)
+demo,allow_writes,CLICK:Remove,True,,1,1,,,outcome completed
+demo,allow_writes,CLICK:Cancel subscription,True,,1,1,,,outcome completed
+demo,allow_writes,PRESS_KEY:Enter,True,,1,1,,,outcome completed
+demo,allow_writes,PRESS_KEY:None,True,,1,1,,,outcome completed
+demo,allow_writes,PRESS_KEY:Delete,True,,1,1,,,outcome completed
+demo,allow_writes,PRESS_KEY:Tab,True,,1,1,,,outcome completed
+demo,allow_writes,FILL:'',True,,1,1,,,outcome completed
+demo,allow_writes,FILL:'   ',True,,1,1,,,outcome completed
+demo,allow_writes,FILL:None,True,,1,1,,,outcome completed
+demo,allow_writes,FILL:'x',True,,1,1,,,outcome completed
+demo,allow_writes,FILL:'{{SECRET:APP_PASS}}',True,,1,1,,,outcome completed
+demo,allow_writes,SELECT:pro,True,,1,1,,,outcome completed
+demo,allow_writes,UPLOAD:cv,True,,1,1,,,outcome completed
+demo,allow_writes,WAIT,True,,1,1,,,outcome completed
+demo,allow_writes,ASSERT,True,,1,1,,,outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test/account/delete?id=1&confirm=1',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test/logout',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test/reports',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test/reports?page=2',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'/reports',True,,1,1,REFUSE NavigationRefused,'',outcome completed
+demo,allow_writes,NAVIGATE:'/home',True,,1,1,REFUSE NavigationRefused,'',outcome completed
+demo,allow_writes,NAVIGATE:'Admin portal URL',True,,1,1,REFUSE NavigationRefused,'admin portal url',outcome completed
+demo,allow_writes,NAVIGATE:'{{SECRET:APP_PASS}}',True,,1,1,REFUSE SecretScopeError,'{{secret',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test/{{SECRET:APP_PASS}}',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://api.app.example.test/x',True,,1,1,ACCEPT host=api.app.example.test,'api.app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://other.example.test/x',True,,1,1,ACCEPT host=other.example.test,'other.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'http://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test:8443/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://APP.EXAMPLE.TEST/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'HTTPS://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test./x',False,destination,0,0,REFUSE NavigationRefused,'app.example.test.',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test:443/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://user:pw@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test\\x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://evil.test\\@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:' https://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test/x ',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'\thttps://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'//app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'//evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://bücher.example.test/x',True,,1,1,ACCEPT host=bücher.example.test,'bücher.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://xn--bcher-kva.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'xn--bcher-kva.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://аpp.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'аpp.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'javascript:alert(1)',False,destination,0,0,REFUSE NavigationRefused,'javascript',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'javascript://app.example.test/%0aalert(1)',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,"NAVIGATE:'data:text/html,<b>x</b>'",False,destination,0,0,REFUSE NavigationRefused,'data',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'file:///etc/passwd',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'file://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'about:blank',False,destination,0,0,REFUSE NavigationRefused,'about',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'ftp://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'ws://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://evil.test/app.example.test',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test.evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'app.example.test.evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://evilapp.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'evilapp.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test/x\ny',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.exa\tmple.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test/x\x00',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test/x\x7f',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://[invalid/x',False,destination,0,0,REFUSE ValueError,EXC ValueError,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test:99999/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test:abc/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test@evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://app.example.test?x=1',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'https://app.example.test#frag',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'app.example.test',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,NAVIGATE:'evil.test/x',True,,1,1,REFUSE NavigationRefused,'evil.test',outcome completed
+demo,allow_writes,NAVIGATE:'localhost:3000/',False,destination,0,0,REFUSE NavigationRefused,'localhost',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'mailto:a@app.example.test',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'{{SECRET:BASE}}/x',True,,1,1,ACCEPT host=app.example.test,'{{secret',outcome completed
+demo,allow_writes,NAVIGATE:'https://{{SECRET:HOST}}/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'{{SECRET:LOGINURL}}',True,,1,1,ACCEPT host=app.example.test,'{{secret',outcome completed
+demo,allow_writes,NAVIGATE:'{{SECRET:BASE}}',True,,1,1,ACCEPT host=app.example.test,'{{secret',outcome completed
+demo,allow_writes,NAVIGATE:'https://{{SECRET:HOST}}',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'//{{SECRET:HOST}}/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://{{SECRET:HOST}}:8443/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,NAVIGATE:'https://user:{{SECRET:APP_PASS}}@app.example.test/x',False,destination,0,0,REFUSE SecretScopeError,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,allow_writes,MULTI:form,True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,allow_writes,MULTI:form-barepath,True,,1,1,REFUSE NavigationRefused,'',outcome completed
+demo,read_only,CLICK:Save,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Save': click can change state
+demo,read_only,CLICK:Save changes,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Save changes': click can change state
+demo,read_only,CLICK:Place order,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Place order': click can change state
+demo,read_only,CLICK:Confirm,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Confirm': click can change state
+demo,read_only,CLICK:Apply now,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Apply now': click can change state
+demo,read_only,CLICK:Register,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Register': click can change state
+demo,read_only,CLICK:Sign up,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Sign up': click can change state
+demo,read_only,CLICK:Add to cart,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Add to cart': click can change state
+demo,read_only,CLICK:Sign in,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Sign in': click can change state
+demo,read_only,CLICK:हटाएं,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'हटाएं': click can change state
+demo,read_only,CLICK:खाता हटाएं,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'खाता हटाएं': click can change state
+demo,read_only,CLICK:Delete account,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Delete account': click can change state
+demo,read_only,CLICK:Log out,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Log out': click can change state
+demo,read_only,CLICK:Sign out,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Sign out': click can change state
+demo,read_only,CLICK:Remove,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Remove': click can change state
+demo,read_only,CLICK:Cancel subscription,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (click) 'Cancel subscription': click can change state
+demo,read_only,PRESS_KEY:Enter,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (press_key) 'body': press_key can change state
+demo,read_only,PRESS_KEY:None,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (press_key) 'body': press_key can change state
+demo,read_only,PRESS_KEY:Delete,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (press_key) 'body': press_key can change state
+demo,read_only,PRESS_KEY:Tab,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (press_key) 'body': press_key can change state
+demo,read_only,FILL:'',False,write_policy,0,0,,,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry
+demo,read_only,FILL:'   ',False,write_policy,0,0,,,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry
+demo,read_only,FILL:None,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry
+demo,read_only,FILL:'x',False,write_policy,0,0,,,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry
+demo,read_only,FILL:'{{SECRET:APP_PASS}}',False,write_policy,0,0,,,refused under write_policy read_only: step 1 (fill) 'Name': fill outside the declared login's credential entry
+demo,read_only,SELECT:pro,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (select) 'Plan': select can change state
+demo,read_only,UPLOAD:cv,False,write_policy,0,0,,,refused under write_policy read_only: step 1 (upload) 'Resume': upload can change state
+demo,read_only,WAIT,True,,1,1,,,outcome completed
+demo,read_only,ASSERT,True,,1,1,,,outcome completed
+demo,read_only,NAVIGATE:'https://app.example.test/account/delete?id=1&confirm=1',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '[REDACTED]:BASE/account/delete?id=1&confirm=1': navigate with a query string can change state
+demo,read_only,NAVIGATE:'https://app.example.test/logout',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '[REDACTED]:BASE/logout': never-click pattern (logout/sign-out)
+demo,read_only,NAVIGATE:'https://app.example.test/reports',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://app.example.test/reports?page=2',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '[REDACTED]:BASE/reports?page=2': navigate with a query string can change state
+demo,read_only,NAVIGATE:'/reports',False,write_policy,0,0,REFUSE NavigationRefused,'',refused under write_policy read_only: step 1 (navigate) '/reports': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'/home',False,write_policy,0,0,REFUSE NavigationRefused,'',refused under write_policy read_only: step 1 (navigate) '/home': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'Admin portal URL',False,write_policy,0,0,REFUSE NavigationRefused,'admin portal url',refused under write_policy read_only: step 1 (navigate) 'Admin portal URL': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'{{SECRET:APP_PASS}}',False,write_policy,0,0,REFUSE SecretScopeError,'{{secret',refused under write_policy read_only: step 1 (navigate) '{{SECRET:APP_PASS}}': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'https://app.example.test/{{SECRET:APP_PASS}}',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '[REDACTED]:BASE/{{SECRET:APP_PASS}}': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'https://api.app.example.test/x',True,,1,1,ACCEPT host=api.app.example.test,'api.app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://other.example.test/x',True,,1,1,ACCEPT host=other.example.test,'other.example.test',outcome completed
+demo,read_only,NAVIGATE:'http://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://app.example.test:8443/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://APP.EXAMPLE.TEST/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'HTTPS://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://app.example.test./x',False,destination,0,0,REFUSE NavigationRefused,'app.example.test.',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test:443/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://user:pw@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test\\x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://evil.test\\@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:' https://app.example.test/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://app.example.test/x ',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'\thttps://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'//app.example.test/x',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '//[REDACTED]:HOST/x': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'//evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://bücher.example.test/x',True,,1,1,ACCEPT host=bücher.example.test,'bücher.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://xn--bcher-kva.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'xn--bcher-kva.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://аpp.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'аpp.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'javascript:alert(1)',False,destination,0,0,REFUSE NavigationRefused,'javascript',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'javascript://app.example.test/%0aalert(1)',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,"NAVIGATE:'data:text/html,<b>x</b>'",False,destination,0,0,REFUSE NavigationRefused,'data',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'file:///etc/passwd',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'file://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'about:blank',False,destination,0,0,REFUSE NavigationRefused,'about',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'ftp://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'ws://app.example.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://evil.test/app.example.test',False,destination,0,0,REFUSE NavigationRefused,'evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test.evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'app.example.test.evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://evilapp.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'evilapp.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test/x\ny',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.exa\tmple.test/x',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test/x\x00',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test/x\x7f',False,destination,0,0,ACCEPT host=app.example.test,'app.example.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://[invalid/x',False,destination,0,0,REFUSE ValueError,EXC ValueError,refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test:99999/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://app.example.test:abc/x',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'https://app.example.test@evil.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://@app.example.test/x',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://app.example.test?x=1',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '[REDACTED]:BASE?x=1': navigate with a query string can change state
+demo,read_only,NAVIGATE:'https://app.example.test#frag',True,,1,1,ACCEPT host=app.example.test,'app.example.test',outcome completed
+demo,read_only,NAVIGATE:'app.example.test/x',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '[REDACTED]:HOST/x': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'app.example.test',False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 1 (navigate) '[REDACTED]:HOST': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'evil.test/x',False,write_policy,0,0,REFUSE NavigationRefused,'evil.test',refused under write_policy read_only: step 1 (navigate) 'evil.test/x': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'localhost:3000/',False,destination,0,0,REFUSE NavigationRefused,'localhost',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'mailto:a@app.example.test',False,destination,0,0,REFUSE NavigationRefused,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'{{SECRET:BASE}}/x',False,write_policy,0,0,ACCEPT host=app.example.test,'{{secret',refused under write_policy read_only: step 1 (navigate) '{{SECRET:BASE}}/x': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'https://{{SECRET:HOST}}/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'{{SECRET:LOGINURL}}',False,write_policy,0,0,ACCEPT host=app.example.test,'{{secret',refused under write_policy read_only: step 1 (navigate) '{{SECRET:LOGINURL}}': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'{{SECRET:BASE}}',False,write_policy,0,0,ACCEPT host=app.example.test,'{{secret',refused under write_policy read_only: step 1 (navigate) '{{SECRET:BASE}}': navigate needs an absolute http(s) URL without placeholders
+demo,read_only,NAVIGATE:'https://{{SECRET:HOST}}',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'//{{SECRET:HOST}}/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://{{SECRET:HOST}}:8443/x',False,destination,0,0,ACCEPT host=app.example.test,'{{secret',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,NAVIGATE:'https://user:{{SECRET:APP_PASS}}@app.example.test/x',False,destination,0,0,REFUSE SecretScopeError,'',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+demo,read_only,MULTI:form,False,write_policy,0,0,ACCEPT host=app.example.test,'app.example.test',refused under write_policy read_only: step 2 (fill) 'Name': fill outside the declared login's credential entry
+demo,read_only,MULTI:form-barepath,False,write_policy,0,0,REFUSE NavigationRefused,'',refused under write_policy read_only: step 1 (navigate) '/form': navigate needs an absolute http(s) URL without placeholders
+lhost,test_account,NAVIGATE:'http://localhost:3000/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,test_account,NAVIGATE:'http://localhost:3000/app/x?y=1',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,test_account,NAVIGATE:'https://localhost:3000/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,test_account,NAVIGATE:'http://localhost/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,test_account,NAVIGATE:'http://LOCALHOST:3000/x',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,test_account,NAVIGATE:'http://127.0.0.1:3000/',False,destination,0,0,REFUSE NavigationRefused,'127.0.0.1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+lhost,test_account,NAVIGATE:'/app',True,,1,1,REFUSE NavigationRefused,'',outcome completed
+lhost,test_account,NAVIGATE:'http://localhost.evil.test/',False,destination,0,0,REFUSE NavigationRefused,'localhost.evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+lhost,test_account,NAVIGATE:'http://sub.localhost:3000/x',True,,1,1,ACCEPT host=sub.localhost,'sub.localhost',outcome completed
+lhost,test_account,MULTI:form,True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,allow_writes,NAVIGATE:'http://localhost:3000/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,allow_writes,NAVIGATE:'http://localhost:3000/app/x?y=1',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,allow_writes,NAVIGATE:'https://localhost:3000/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,allow_writes,NAVIGATE:'http://localhost/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,allow_writes,NAVIGATE:'http://LOCALHOST:3000/x',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,allow_writes,NAVIGATE:'http://127.0.0.1:3000/',False,destination,0,0,REFUSE NavigationRefused,'127.0.0.1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+lhost,allow_writes,NAVIGATE:'/app',True,,1,1,REFUSE NavigationRefused,'',outcome completed
+lhost,allow_writes,NAVIGATE:'http://localhost.evil.test/',False,destination,0,0,REFUSE NavigationRefused,'localhost.evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+lhost,allow_writes,NAVIGATE:'http://sub.localhost:3000/x',True,,1,1,ACCEPT host=sub.localhost,'sub.localhost',outcome completed
+lhost,allow_writes,MULTI:form,True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,read_only,NAVIGATE:'http://localhost:3000/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,read_only,NAVIGATE:'http://localhost:3000/app/x?y=1',False,write_policy,0,0,ACCEPT host=localhost,'localhost',refused under write_policy read_only: step 1 (navigate) 'http://localhost:3000/app/x?y=1': navigate with a query string can change state
+lhost,read_only,NAVIGATE:'https://localhost:3000/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,read_only,NAVIGATE:'http://localhost/',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,read_only,NAVIGATE:'http://LOCALHOST:3000/x',True,,1,1,ACCEPT host=localhost,'localhost',outcome completed
+lhost,read_only,NAVIGATE:'http://127.0.0.1:3000/',False,destination,0,0,REFUSE NavigationRefused,'127.0.0.1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+lhost,read_only,NAVIGATE:'/app',False,write_policy,0,0,REFUSE NavigationRefused,'',refused under write_policy read_only: step 1 (navigate) '/app': navigate needs an absolute http(s) URL without placeholders
+lhost,read_only,NAVIGATE:'http://localhost.evil.test/',False,destination,0,0,REFUSE NavigationRefused,'localhost.evil.test',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+lhost,read_only,NAVIGATE:'http://sub.localhost:3000/x',True,,1,1,ACCEPT host=sub.localhost,'sub.localhost',outcome completed
+lhost,read_only,MULTI:form,False,write_policy,0,0,ACCEPT host=localhost,'localhost',refused under write_policy read_only: step 2 (fill) 'Name': fill outside the declared login's credential entry
+ip4,test_account,NAVIGATE:'http://127.0.0.1:8080/',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,test_account,NAVIGATE:'http://127.0.0.1/x?y=1',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,test_account,NAVIGATE:'https://127.0.0.1:8443/x',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,test_account,NAVIGATE:'http://localhost:8080/',False,destination,0,0,REFUSE NavigationRefused,'localhost',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip4,test_account,NAVIGATE:'http://127.0.0.2/',False,destination,0,0,REFUSE NavigationRefused,'127.0.0.2',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip4,test_account,MULTI:form,True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,allow_writes,NAVIGATE:'http://127.0.0.1:8080/',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,allow_writes,NAVIGATE:'http://127.0.0.1/x?y=1',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,allow_writes,NAVIGATE:'https://127.0.0.1:8443/x',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,allow_writes,NAVIGATE:'http://localhost:8080/',False,destination,0,0,REFUSE NavigationRefused,'localhost',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip4,allow_writes,NAVIGATE:'http://127.0.0.2/',False,destination,0,0,REFUSE NavigationRefused,'127.0.0.2',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip4,allow_writes,MULTI:form,True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,read_only,NAVIGATE:'http://127.0.0.1:8080/',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,read_only,NAVIGATE:'http://127.0.0.1/x?y=1',False,write_policy,0,0,ACCEPT host=127.0.0.1,'127.0.0.1',refused under write_policy read_only: step 1 (navigate) 'http://127.0.0.1/x?y=1': navigate with a query string can change state
+ip4,read_only,NAVIGATE:'https://127.0.0.1:8443/x',True,,1,1,ACCEPT host=127.0.0.1,'127.0.0.1',outcome completed
+ip4,read_only,NAVIGATE:'http://localhost:8080/',False,destination,0,0,REFUSE NavigationRefused,'localhost',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip4,read_only,NAVIGATE:'http://127.0.0.2/',False,destination,0,0,REFUSE NavigationRefused,'127.0.0.2',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip4,read_only,MULTI:form,False,write_policy,0,0,ACCEPT host=127.0.0.1,'127.0.0.1',refused under write_policy read_only: step 2 (fill) 'Name': fill outside the declared login's credential entry
+ip6,test_account,NAVIGATE:'http://[::1]:8080/',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,test_account,NAVIGATE:'http://[::1]/x?y=1',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,test_account,NAVIGATE:'https://[::1]:8443/x',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,test_account,NAVIGATE:'http://[::2]:8080/',False,destination,0,0,REFUSE NavigationRefused,'::2',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6,test_account,MULTI:form,True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,allow_writes,NAVIGATE:'http://[::1]:8080/',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,allow_writes,NAVIGATE:'http://[::1]/x?y=1',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,allow_writes,NAVIGATE:'https://[::1]:8443/x',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,allow_writes,NAVIGATE:'http://[::2]:8080/',False,destination,0,0,REFUSE NavigationRefused,'::2',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6,allow_writes,MULTI:form,True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,read_only,NAVIGATE:'http://[::1]:8080/',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,read_only,NAVIGATE:'http://[::1]/x?y=1',False,write_policy,0,0,ACCEPT host=::1,'::1',refused under write_policy read_only: step 1 (navigate) 'http://[::1]/x?y=1': navigate with a query string can change state
+ip6,read_only,NAVIGATE:'https://[::1]:8443/x',True,,1,1,ACCEPT host=::1,'::1',outcome completed
+ip6,read_only,NAVIGATE:'http://[::2]:8080/',False,destination,0,0,REFUSE NavigationRefused,'::2',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6,read_only,MULTI:form,False,write_policy,0,0,ACCEPT host=::1,'::1',refused under write_policy read_only: step 2 (fill) 'Name': fill outside the declared login's credential entry
+ip6b,test_account,NAVIGATE:'http://[::1]:8080/',False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,test_account,NAVIGATE:'http://[::1]/x?y=1',False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,test_account,MULTI:form,False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,allow_writes,NAVIGATE:'http://[::1]:8080/',False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,allow_writes,NAVIGATE:'http://[::1]/x?y=1',False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,allow_writes,MULTI:form,False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,read_only,NAVIGATE:'http://[::1]:8080/',False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,read_only,NAVIGATE:'http://[::1]/x?y=1',False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains
+ip6b,read_only,MULTI:form,False,destination,0,0,REFUSE NavigationRefused,'::1',refused: step 1 (navigate): destination is not an http(s) URL inside the allowed domains

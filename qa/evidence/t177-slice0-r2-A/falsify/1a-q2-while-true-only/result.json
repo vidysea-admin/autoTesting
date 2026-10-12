@@ -1,0 +1,135 @@
+{
+ "name": "1a-q2-while-true-only",
+ "point": "1a",
+ "sel": "drip or trickl or deadline",
+ "autotester_file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q2-while-true-only-6s_bf7a3\\t\\src\\autotester\\__init__.py",
+ "copy": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q2-while-true-only-6s_bf7a3\\t",
+ "runs": {
+  "green": {
+   "rc": 0,
+   "secs": 28.2,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q2-while-true-only-6s_bf7a3\\t"
+   ]
+  },
+  "red": {
+   "rc": 0,
+   "secs": 30.6,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q2-while-true-only-6s_bf7a3\\t"
+   ]
+  },
+  "red_fullfile": {
+   "rc": 0,
+   "secs": 46.6,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect]",
+     "PASSED"
+    ]
+   ],
+   "summary": "11 passed",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q2-while-true-only-6s_bf7a3\\t"
+   ]
+  },
+  "restored": {
+   "rc": 0,
+   "secs": 37.9,
+   "ids": [
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers]",
+     "PASSED"
+    ],
+    [
+     "tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body]",
+     "PASSED"
+    ]
+   ],
+   "summary": "3 passed, 8 deselected",
+   "errs": [],
+   "rootdir": [
+    "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\fals-1a-q2-while-true-only-6s_bf7a3\\t"
+   ]
+  }
+ },
+ "diff": "--- a/launch.py\n+++ b/launch.py\n@@ -102,3 +102,3 @@\n         size = 0\n-        while time.monotonic() < deadline:\n+        while True:\n             piece = reply.read1(PROBE_MAX_BYTES + 1 - size)\n",
+ "restored_same": true
+}

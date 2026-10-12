@@ -1,0 +1,142 @@
+{
+ "definitions": {
+  "CredentialState": {
+   "autotester.schema.schedule.CredentialState": 2
+  },
+  "ScheduleMode": {
+   "autotester.schema.schedule.ScheduleMode": 3
+  },
+  "ScheduleZone": {
+   "autotester.schema.schedule.ScheduleZone": 1
+  },
+  "SchedulerHealth": {
+   "autotester.schema.schedule.SchedulerHealth": 2
+  },
+  "SlotOutcome": {
+   "autotester.schema.schedule.SlotOutcome": 3
+  }
+ },
+ "distinct_classes_per_name": {
+  "CredentialState": 1,
+  "ScheduleMode": 1,
+  "ScheduleZone": 1,
+  "SchedulerHealth": 1,
+  "SlotOutcome": 1
+ },
+ "identity": {
+  "CredentialState": {
+   "from schedule": "autotester.schema.schedule",
+   "members": [
+    "provisioned",
+    "no_secretref",
+    "secretref_without_value",
+    "target_outside_domains"
+   ]
+  },
+  "ScheduleMode": {
+   "from schedule": "autotester.schema.schedule",
+   "members": [
+    "manual",
+    "fixed",
+    "custom"
+   ]
+  },
+  "ScheduleZone": {
+   "from schedule": "autotester.schema.schedule",
+   "members": [
+    "UTC",
+    "IST"
+   ]
+  },
+  "SchedulerHealth": {
+   "from schedule": "autotester.schema.schedule",
+   "members": [
+    "not_applicable",
+    "never_ticked",
+    "healthy",
+    "stale"
+   ]
+  },
+  "SlotOutcome": {
+   "from schedule": "autotester.schema.schedule",
+   "members": [
+    "enqueued",
+    "catch_up",
+    "missed",
+    "skipped_overlap",
+    "blocked_no_credentials",
+    "refused",
+    "failed"
+   ]
+  }
+ },
+ "paths": {
+  "CredentialState": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.stages.schedule_gate"
+   ]
+  },
+  "ScheduleMode": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.stages.scheduler"
+   ]
+  },
+  "ScheduleZone": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule"
+   ]
+  },
+  "SchedulerHealth": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.stages.scheduler"
+   ]
+  },
+  "SlotOutcome": {
+   "one_object": true,
+   "paths": [
+    "autotester.schema.schedule",
+    "autotester.stages.scheduler"
+   ]
+  }
+ },
+ "schedule_public": {
+  "Any": "_AnyMeta",
+  "BaseModel": "ModelMetaclass",
+  "ConfigDict": "_TypedDictMeta",
+  "CredentialState": "EnumType",
+  "Field": "function",
+  "MAX_ONE_OFFS": "int",
+  "Mapping": "ABCMeta",
+  "ScheduleConfig": "ModelMetaclass",
+  "ScheduleInvalid": "type",
+  "ScheduleMode": "EnumType",
+  "ScheduleZone": "EnumType",
+  "SchedulerHealth": "EnumType",
+  "SlotClaim": "ModelMetaclass",
+  "SlotOutcome": "EnumType",
+  "SlotRecord": "ModelMetaclass",
+  "StrEnum": "EnumType",
+  "TIMEZONE_ENV": "str",
+  "TickReport": "ModelMetaclass",
+  "UTC": "timezone",
+  "ValidationError": "type",
+  "WeeklyRule": "ModelMetaclass",
+  "annotations": "_Feature",
+  "datetime": "type",
+  "default_timezone": "function",
+  "field_validator": "function",
+  "model_validator": "function",
+  "os": "module",
+  "re": "module",
+  "resolve_local": "function",
+  "slot_key": "function",
+  "zone": "function"
+ }
+}

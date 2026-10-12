@@ -1,0 +1,27 @@
+tables [('meta',), ('users',), ('groups',), ('group_permissions',), ('memberships',), ('sessions',), ('project_grants',)]
+DRIVE sub-admin qa-proj 303 
+DRIVE developer qa-proj 403 
+DRIVE developer dev-proj 303 
+env add 303 b''
+ENV admin 200 value-visible= True key-visible= True
+ENV sub-admin 200 value-visible= False key-visible= True
+ENV developer 200 value-visible= False key-visible= True
+ENV tester 200 value-visible= False key-visible= True
+--- T4
+login ok 303 ['at_session=Pv4VE4vr9Jpj_sY3o8CXLXuiySwKUM06yU96c5gOyug; HttpOnly; Max-Age=43200; Path=/; SameSite=lax'] None
+wrong pw 401 unknown 401 bodies identical: True 16785 set-cookie: None None
+pre-logout GET / 200
+logout 303 ['__Host-at_session=""; expires=Sun, 11 Oct 2026 20:33:05 GMT; HttpOnly; Max-Age=0; Path=/; SameSite=lax; Secure', 'at_session=""; expires=Sun, 11 Oct 2026 20:33:05 GMT; HttpOnly; Max-Age=0; Path=/; SameSite=lax']
+replay / 302 None
+replay /projects/qa-proj 302 None
+replay /admin/users 302 None
+replay POST drive 401
+sessions rows now 9
+LOGIN origin= evil 403 set-cookie: False loc: None body: b'{"detail":"cross-site request refused: origin \'http://evil.example\' is not allowed (D-066)' rows 9
+LOGIN origin= null 403 set-cookie: False loc: None body: b'{"detail":"cross-site request refused: origin \'null\' is not allowed (D-066)"}' rows 9
+LOGIN origin= none 303 set-cookie: True loc: None body: b'' rows 10
+LOGIN origin= match 303 set-cookie: True loc: None body: b'' rows 11
+double-Origin 403 None
+bad-port Origin 403 False
+sessions rows end 11 tokens stored plaintext? [64, 1, 32, 32]
+cols [('CREATE TABLE sessions (\n    token_hash TEXT PRIMARY KEY,\n    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n    created_at TEXT NOT NULL, expires_at TEXT NOT NULL)',)]

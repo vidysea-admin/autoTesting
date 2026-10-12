@@ -1,0 +1,9 @@
+Run in C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/at887-r1b-x7q3k9-copy
+(git archive b3a365a1; every src/tests/scripts/pyproject/uv.lock file hash-compared to the git tree: 581 files, 0 mismatches, before the probes and again after them)
+autotester.__file__ = <that copy>\src\autotester\__init__.py   (uv run --frozen python -I)
+uv run --frozen ruff check src tests scripts      -> All checks passed!
+uv run --frozen autotester doctor                 -> doctor: clean
+wc -l routes_learn.py 300 | cli_crawl.py 300 | explore_merge.py 246 | explore_flows.py 92 | expand.py 219 ; git show b3a365a1:src/autotester/ui/routes_learn.py | wc -l -> 300
+pytest -p no:xdist -o addopts= tests/test_explore_flows.py tests/test_explore_flows_doors.py tests/test_expand_redaction.py tests/test_ui_learn_guard.py -> 55 passed in 25.51s (no full suite)
+whole-unit diff 3748cb83..b3a365a1 names: src/ (cli_crawl, expand, explore_flows, explore_merge, orchestrate_runners, routes_crawls, routes_learn), tests/ (4 files), docs/MAP.md, docs/SNAPSHOT.md, the manifest. Nothing outside the manifest's list.
+repair diff 6d70c0ec..b3a365a1 tests: 189 insertions, 3 deletions; the 3 deleted lines are import lines (no assertion removed or weakened).

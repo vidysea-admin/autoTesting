@@ -170,7 +170,7 @@ def test_trigger_runs_exact_selected_priority_plus_pinned_once(
         seen.extend(c.id for c in cases)
         return SimpleNamespace(n=1, bound_by="config")
 
-    monkeypatch.setattr("autotester.ui.routes_runs._execute_with_trace", execute)
+    monkeypatch.setattr("autotester.stages.run_launcher.run_cases_traced", execute)
     monkeypatch.setattr("autotester.ui.routes_runs.for_role",
                         lambda project, role: SimpleNamespace(available=lambda: True))
     response = client.post(f"/projects/demo/run?priority={priority}", follow_redirects=False)

@@ -22,23 +22,10 @@ from autotester.store.project_store import ProjectStore
 from autotester.ui import (
     error_pages,
     project_view,
-    routes_cases,
-    routes_catalog,
-    routes_crawl_approval,
-    routes_crawl_login,
-    routes_crawls,
-    routes_credentials,
-    routes_flow_diagram,
-    routes_issues,
-    routes_learn,
-    routes_live,
-    routes_product_map,
+    routers,
     routes_project_edit,
-    routes_report,
     routes_runs,
-    routes_settings,
     routes_sources,
-    routes_video,
     theme,
 )
 from autotester.ui.env_editor import InvalidEnvValue, set_env_values, validate_env_values
@@ -71,23 +58,7 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(title="AutoTester", lifespan=_lifespan, middleware=origin_guard_middleware())
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
-app.include_router(routes_cases.router)
-app.include_router(routes_project_edit.router)
-app.include_router(routes_runs.router)
-app.include_router(routes_report.router)
-app.include_router(routes_video.router)
-app.include_router(routes_flow_diagram.router)
-app.include_router(routes_crawls.router)
-app.include_router(routes_crawl_login.router)
-app.include_router(routes_credentials.router)
-app.include_router(routes_crawl_approval.router)
-app.include_router(routes_settings.router)
-app.include_router(routes_learn.router)
-app.include_router(routes_sources.router)
-app.include_router(routes_product_map.router)
-app.include_router(routes_issues.router)
-app.include_router(routes_live.router)
-app.include_router(routes_catalog.router)
+routers.include_all(app)  # T-205/TF3: the one router list lives in ui/routers.py
 
 
 @app.get("/favicon.ico", status_code=204)

@@ -1,0 +1,1 @@
+[02:31:47] suite lock busy, waiting: {"pid": 70940, "repo": "D:\\autoTesting", "started": 1791752466.0613003, "started_iso": "2026-10-12T02:31:06", "token": "03a5ecb0509e5f41", "cmd": "shard_suite --repo D:/autoTesting --ref 1f4f0514 --shards 4 -- -o addopts="}

@@ -1,0 +1,10 @@
+121,126c121,122
+<     persona = ctx.store.load_portal_persona()
+<     if persona is None:
+<         raise _Refused(RefusalClass.NOTHING_TO_DO, "no portal persona yet; a crawl builds one")
+<     return ToolOutcome(tool="get_persona", ok=True, artifact_ref=f"persona:{persona.project}",
+<                        summary=f"{len(persona.screens)} screens, "
+<                                f"{len(persona.taught_flows)} flows, {len(persona.gotchas)} gotchas")
+---
+>     return ToolOutcome(tool="get_persona", ok=True, artifact_ref=f"persona:{ctx.project.slug}",
+>                        summary="0 screens, 0 flows, 0 gotchas")

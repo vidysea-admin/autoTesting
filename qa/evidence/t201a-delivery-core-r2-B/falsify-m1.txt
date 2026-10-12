@@ -1,0 +1,21 @@
+autotester.__file__ = C:\Users\Lenovo\AppData\Local\Temp\t201a_r2b_657a14737238_m1\src\autotester\__init__.py
+....F................................................................... [ 55%]
+..........................................................               [100%]
+================================== FAILURES ===================================
+____________ test_the_collector_reports_what_it_could_not_resolve _____________
+
+    def test_the_collector_reports_what_it_could_not_resolve() -> None:
+        """A hole that returns an empty list looks exactly like a clean scan, which
+        is how AT-176 and AT-192 each survived a guard written to catch them. If
+        this ever fails, the answer is to resolve the name — not to widen the
+        filter until the report is empty again."""
+>       assert unresolved_in_source(SRC) == []
+E       AssertionError: assert [(WindowsPath...ox.py'), 131)] == []
+E         
+E         Left contains one more item: (WindowsPath('delivery/inbox.py'), 131)
+E         Use -v to get more diff
+
+tests\test_cli_advice_resolves.py:151: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve
+1 failed, 129 passed in 41.24s

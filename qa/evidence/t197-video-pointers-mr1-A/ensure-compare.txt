@@ -1,0 +1,8 @@
+line counts: {'reconcile': 298, 'plain': 305}
+AST of the iterated tuple identical: True
+whole-module AST identical: True
+reconcile mkdir order: ['projects\\demo', 'projects', 'projects\\demo', 'projects\\demo\\sources', 'projects\\demo\\rubrics', 'projects\\demo\\scripts', 'projects\\demo\\runs', 'profiles\\demo', 'profiles', 'profiles\\demo', 'projects\\demo\\bench']
+plain mkdir order: ['projects\\demo', 'projects', 'projects\\demo', 'projects\\demo\\sources', 'projects\\demo\\rubrics', 'projects\\demo\\scripts', 'projects\\demo\\runs', 'profiles\\demo', 'profiles', 'profiles\\demo', 'projects\\demo\\bench']
+mkdir call order identical: True
+resulting tree identical: True
+git merge-file (305 lines) AST == reconcile paths.py AST: True

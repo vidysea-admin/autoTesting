@@ -1,0 +1,132 @@
+{
+ "provider_calls": 9,
+ "leaks_in_prompts": [
+  [
+   "Hunter2-Zebra-4411",
+   0
+  ],
+  [
+   "Other-Projects-Key-9082",
+   0
+  ],
+  [
+   "ada.lovelace",
+   0
+  ],
+  [
+   "98765",
+   0
+  ],
+  [
+   "7946",
+   0
+  ],
+  [
+   "555-2671",
+   0
+  ],
+  [
+   "9876543210",
+   0
+  ],
+  [
+   "SHVudGVyMi1aZWJyYS00NDEx",
+   0
+  ]
+ ],
+ "step_lines_p0": [
+  "1. navigate https://demo.test/home?email=<email>",
+  "2. click text=Helpline <phone>",
+  "3. click text=Mail <email>",
+  "4. click text=Fax <phone>",
+  "5. click text=Office <phone>",
+  "6. click text=Mobile <phone>",
+  "7. click text=Call <phone>",
+  "8. click text=Token [REDACTED]:ST_PASS",
+  "9. click text=Other [REDACTED]:OTHER_KEY",
+  "10. click role=link[name=\"Finish\"] >> nth=0"
+ ],
+ "exact_lines_match": true,
+ "all_prompts_same_lines": true,
+ "flow_name_line": [
+  "## Original flow: crawl path: Home > Help > Mail > Fax > Office > Mobile > Paren > Token > Other > Last"
+ ],
+ "encoded": {
+  "base64": {
+   "status": 400,
+   "provider_calls": 0,
+   "cases_before": 0,
+   "cases_after": 0,
+   "echoed": [],
+   "html": "text/html; charset=u",
+   "body": "<!doctype html><title>The model could not complete this \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=F",
+   "themed": true
+  },
+  "hex": {
+   "status": 400,
+   "provider_calls": 0,
+   "cases_before": 0,
+   "cases_after": 0,
+   "echoed": [],
+   "html": "text/html; charset=u",
+   "body": "<!doctype html><title>The model could not complete this \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=F",
+   "themed": true
+  },
+  "percent-single": {
+   "status": 400,
+   "provider_calls": 0,
+   "cases_before": 0,
+   "cases_after": 0,
+   "echoed": [],
+   "html": "text/html; charset=u",
+   "body": "<!doctype html><title>The model could not complete this \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=F",
+   "themed": true
+  },
+  "percent-double": {
+   "status": 400,
+   "provider_calls": 0,
+   "cases_before": 0,
+   "cases_after": 0,
+   "echoed": [],
+   "html": "text/html; charset=u",
+   "body": "<!doctype html><title>The model could not complete this \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=F",
+   "themed": true
+  },
+  "reversed": {
+   "status": 400,
+   "provider_calls": 0,
+   "cases_before": 0,
+   "cases_after": 0,
+   "echoed": [],
+   "html": "text/html; charset=u",
+   "body": "<!doctype html><title>The model could not complete this \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=F",
+   "themed": true
+  },
+  "upper-spaced": {
+   "status": 400,
+   "provider_calls": 0,
+   "cases_before": 0,
+   "cases_after": 0,
+   "echoed": [],
+   "html": "text/html; charset=u",
+   "body": "<!doctype html><title>The model could not complete this \u2014 AutoTester</title>\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=F",
+   "themed": true
+  }
+ },
+ "unrelated": {
+  "ValueError raised by provider AFTER the prompt was sent": {
+   "status": 400,
+   "provider_calls": 1,
+   "user_sentence": "Generating cases failed partway through: a prompt was refused unsent"
+  },
+  "pydantic ValidationError (a ValueError) on the model's reply": {
+   "status": 400,
+   "provider_calls": 1,
+   "user_sentence": "Generating cases failed partway through: a prompt was refused unsent"
+  }
+ },
+ "provider_error": {
+  "status": 400,
+  "sentence": "Generating cases failed partway through: quota exhausted"
+ }
+}

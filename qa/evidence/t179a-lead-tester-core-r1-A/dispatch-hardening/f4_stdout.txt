@@ -1,0 +1,71 @@
+rows 1333 assert_no_raw_secrets-refuses-but-dispatch-lets-through 0 handler ran in 0
+dispatch refuses SECRET though assert_no_raw_secrets(text) does not: 0
+Counter()
+{'row': 'chars_total_16383', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k: extra_forbidden)', 'scans': 4, 'scanned_chars': 16513, 'handler_ran': 0, 'secs': 0.0507, 'expect': '<=16384 reaches validation; >16384 too big'}
+{'row': 'chars_total_16384', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k: extra_forbidden)', 'scans': 4, 'scanned_chars': 16514, 'handler_ran': 0, 'secs': 0.0513, 'expect': '<=16384 reaches validation; >16384 too big'}
+{'row': 'chars_total_16385', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': '<=16384 reaches validation; >16384 too big'}
+{'row': 'chars_total_16386', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': '<=16384 reaches validation; >16384 too big'}
+{'row': 'chars_total_16384_inkey', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'scans': 4, 'scanned_chars': 32885, 'handler_ran': 0, 'secs': 0.0991, 'expect': 'same, key variant'}
+{'row': 'chars_total_16385_inkey', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'same, key variant'}
+{'row': 'chars_total_16384_split_many_leaves', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 20, 'scanned_chars': 16514, 'handler_ran': 0, 'secs': 0.0599, 'expect': 'same, many leaves'}
+{'row': 'chars_total_16385_split_many_leaves', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'same, many leaves'}
+{'row': 'flat_dict_keys_120', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 242, 'scanned_chars': 3261, 'handler_ran': 0, 'secs': 0.0703, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_121', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 244, 'scanned_chars': 3289, 'handler_ran': 0, 'secs': 0.0801, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_122', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 246, 'scanned_chars': 3317, 'handler_ran': 0, 'secs': 0.0851, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_123', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 248, 'scanned_chars': 3345, 'handler_ran': 0, 'secs': 0.1044, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_124', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 250, 'scanned_chars': 3373, 'handler_ran': 0, 'secs': 0.0777, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_125', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 252, 'scanned_chars': 3401, 'handler_ran': 0, 'secs': 0.0732, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_126', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 254, 'scanned_chars': 3429, 'handler_ran': 0, 'secs': 0.0735, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_127', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k0: extra_forbidden; k1: extra_forbidden; k2: extra', 'scans': 256, 'scanned_chars': 3457, 'handler_ran': 0, 'secs': 0.0806, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_128', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0004, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_129', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_130', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_131', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_132', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_133', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_134', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'node cap'}
+{'row': 'flat_dict_keys_135', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'list_items_248', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 251, 'scanned_chars': 390, 'handler_ran': 0, 'secs': 0.0588, 'expect': 'node cap'}
+{'row': 'list_items_249', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 252, 'scanned_chars': 391, 'handler_ran': 0, 'secs': 0.0618, 'expect': 'node cap'}
+{'row': 'list_items_250', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 253, 'scanned_chars': 392, 'handler_ran': 0, 'secs': 0.0639, 'expect': 'node cap'}
+{'row': 'list_items_251', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 254, 'scanned_chars': 393, 'handler_ran': 0, 'secs': 0.0722, 'expect': 'node cap'}
+{'row': 'list_items_252', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 255, 'scanned_chars': 394, 'handler_ran': 0, 'secs': 0.0633, 'expect': 'node cap'}
+{'row': 'list_items_253', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 256, 'scanned_chars': 395, 'handler_ran': 0, 'secs': 0.0728, 'expect': 'node cap'}
+{'row': 'list_items_254', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0004, 'expect': 'node cap'}
+{'row': 'list_items_255', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0003, 'expect': 'node cap'}
+{'row': 'list_items_256', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0003, 'expect': 'node cap'}
+{'row': 'list_items_257', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'list_items_258', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'list_items_259', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'node cap'}
+{'row': 'depth_leaf_at_3', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 4, 'scanned_chars': 143, 'handler_ran': 0, 'secs': 0.0017, 'expect': 'leaf depth cap 6'}
+{'row': 'depth_leaf_at_4', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 4, 'scanned_chars': 143, 'handler_ran': 0, 'secs': 0.0034, 'expect': 'leaf depth cap 6'}
+{'row': 'depth_leaf_at_5', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 4, 'scanned_chars': 143, 'handler_ran': 0, 'secs': 0.0023, 'expect': 'leaf depth cap 6'}
+{'row': 'depth_leaf_at_6', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 4, 'scanned_chars': 143, 'handler_ran': 0, 'secs': 0.0021, 'expect': 'leaf depth cap 6'}
+{'row': 'depth_leaf_at_7', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'leaf depth cap 6'}
+{'row': 'depth_leaf_at_8', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'leaf depth cap 6'}
+{'row': 'depth_leaf_at_9', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'leaf depth cap 6'}
+{'row': 'depth_dict_leaf_at_3', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 6, 'scanned_chars': 145, 'handler_ran': 0, 'secs': 0.0028, 'expect': 'leaf depth cap 6 (dict)'}
+{'row': 'depth_dict_leaf_at_4', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 7, 'scanned_chars': 146, 'handler_ran': 0, 'secs': 0.0023, 'expect': 'leaf depth cap 6 (dict)'}
+{'row': 'depth_dict_leaf_at_5', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 8, 'scanned_chars': 147, 'handler_ran': 0, 'secs': 0.0023, 'expect': 'leaf depth cap 6 (dict)'}
+{'row': 'depth_dict_leaf_at_6', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 9, 'scanned_chars': 148, 'handler_ran': 0, 'secs': 0.0026, 'expect': 'leaf depth cap 6 (dict)'}
+{'row': 'depth_dict_leaf_at_7', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'leaf depth cap 6 (dict)'}
+{'row': 'depth_dict_leaf_at_8', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'leaf depth cap 6 (dict)'}
+{'row': 'depth_dict_leaf_at_9', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'leaf depth cap 6 (dict)'}
+{'row': 'empty_nested_containers_deep7', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'empty list at depth 7'}
+{'row': 'empty_nested_containers_deep6', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (a: extra_forbidden)', 'scans': 3, 'scanned_chars': 142, 'handler_ran': 0, 'secs': 0.0013, 'expect': 'empty list at depth 6'}
+{'row': 'string_2MB_value', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'refused, not scanned'}
+{'row': 'string_2MB_key', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'refused, not scanned'}
+{'row': 'string_2MB_name', 'refusal': 'unknown_tool', 'summary': 'no such tool', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'refused, not scanned'}
+{'row': 'string_100k_value', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0, 'expect': 'refused'}
+{'row': 'string_2MB_with_canary_at_end', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'refused too big (canary never looked at)'}
+{'row': 'list_of_2000_strings_of_1000', 'refusal': 'bad_arguments', 'summary': 'arguments are too big, too deep or not plain data', 'scans': 0, 'scanned_chars': 0, 'handler_ran': 0, 'secs': 0.0001, 'expect': 'refused'}
+{'row': 'scan_time_at_cap_16384', 'refusal': 'bad_arguments', 'summary': 'invalid arguments (k: extra_forbidden)', 'scans': 4, 'scanned_chars': 16514, 'handler_ran': 0, 'secs': 0.0481, 'expect': 'scan cost reference'}
+LEGIT ('run_case', '200-char case_id', True, None, 'outcome completed')
+LEGIT ('grade_case', '200-char case_id', True, None, 'PASS: ')
+LEGIT ('run_case', '200-char case_id', True, None, 'outcome completed')
+LEGIT ('grade_case', '200-char case_id', True, None, 'PASS: ')
+LEGIT ('crawl', "{'max_actions': 40, 'wall_clock_s': 600.0, 'incremental': Tr", True, None, 'running: 0 screens, 0 actions')
+LEGIT ('crawl', "{'max_actions': 16069380442589902755419620923411626025222029", False, 'approval', 'refusing to start a crawl run against https://app.test — the approvals')
+LEGIT ('crawl', "{'max_actions': 1000000000, 'wall_clock_s': 31536000.5, 'inc", False, 'approval', 'refusing to start a crawl run against https://app.test — the approvals')
+LEGIT ('get_persona', '{}', False, 'nothing_to_do', 'no portal persona yet; a crawl builds one')
+LEGIT ('get_catalog', '{}', True, None, '0 of 0 case classes runnable')

@@ -1,0 +1,20 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Lenovo\AppData\Local\Temp\chk-t177r2a-1798127267\.venv\Scripts\python.exe
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\fals-q-d-status-ge-500-s7xex3jb\t
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 11 items
+
+tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_body] PASSED [  9%]
+tests/test_browser_cdp_probe_hostile.py::test_a_trickling_listener_is_cut_off_at_the_overall_deadline[drip_headers] PASSED [ 18%]
+tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_declared] PASSED [ 27%]
+tests/test_browser_cdp_probe_hostile.py::test_a_correct_answer_padded_past_the_byte_cap_is_refused[padded_undeclared] PASSED [ 36%]
+tests/test_browser_cdp_probe_hostile.py::test_a_huge_reply_is_not_buffered PASSED [ 45%]
+tests/test_browser_cdp_probe_hostile.py::test_a_deeply_nested_reply_is_not_this_browser_not_a_recursion_error PASSED [ 54%]
+tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[loopback_port] PASSED [ 63%]
+tests/test_browser_cdp_probe_hostile.py::test_a_redirect_is_never_followed[other_host] PASSED [ 72%]
+tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[deep] PASSED [ 81%]
+tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[drip_body] PASSED [ 90%]
+tests/test_browser_cdp_probe_hostile.py::test_a_hostile_reply_closes_the_exposed_browser[redirect] PASSED [100%]
+
+============================= 11 passed in 11.54s =============================

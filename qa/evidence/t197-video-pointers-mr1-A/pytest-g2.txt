@@ -1,0 +1,17 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\mr1a-1004311059\head
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 101 items
+
+tests\test_video_review.py .............................                 [ 28%]
+tests\test_video_review_gates.py .........................               [ 53%]
+tests\test_video_review_redaction.py .........                           [ 62%]
+tests\test_video_review_guards.py ........                               [ 70%]
+tests\test_video_review_cleanup.py ...................                   [ 89%]
+tests\test_approve_cli.py ...........                                    [100%]
+
+======================= 101 passed in 572.77s (0:09:32) =======================
+g2 exit 0

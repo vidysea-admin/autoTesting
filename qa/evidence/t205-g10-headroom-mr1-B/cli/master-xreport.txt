@@ -1,0 +1,15 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+                                                                                                   
+ Usage: autotester report [OPTIONS] COMMAND [ARGS]...                                              
+                                                                                                   
+ Export a run as a portable tester report (Excel + HTML).                                          
+                                                                                                   
+┌─ Options ───────────────────────────────────────────────────────────────────────────────────────┐
+│ --help          Show this message and exit.                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─ Commands ──────────────────────────────────────────────────────────────────────────────────────┐
+│ excel  One row per case: outcome, verdict, criteria met, duration.                              │
+│ html   Screen-by-screen report with embedded screenshots, one file, portable.                   │
+│ crawl  Summary, screens, edges, refusals, issues and third-party noise.                         │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+

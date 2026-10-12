@@ -1,0 +1,40 @@
+[
+ {
+  "case": "x-partial-multibatch",
+  "args": "demo src_a94a8334f929 --output json --max-cost 1e-9 --pointers C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-cases\\ptr_window.txt",
+  "mode": "ok",
+  "exit": 0,
+  "stdout_docs": 1,
+  "trailing_garbage": "",
+  "status": "partial",
+  "doc_exit_code": 0,
+  "exit_matches": true,
+  "stderr_first": "reviewing src_a94a8334f929 with fake (cap $1e-09)",
+  "traceback": false,
+  "leak_in_output": [],
+  "provider_calls": 1,
+  "left": [
+   "reviews/rv_354df1b04a35.json"
+  ],
+  "note": ""
+ },
+ {
+  "case": "x-ok-multibatch",
+  "args": "demo src_a94a8334f929 --output json --pointers C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\r2b-cases\\ptr_window.txt",
+  "mode": "ok",
+  "exit": 0,
+  "stdout_docs": 1,
+  "trailing_garbage": "",
+  "status": "ok",
+  "doc_exit_code": 0,
+  "exit_matches": true,
+  "stderr_first": "reviewing src_a94a8334f929 with fake (cap $0.5)",
+  "traceback": false,
+  "leak_in_output": [],
+  "provider_calls": 2,
+  "left": [
+   "reviews/rv_354df1b04a35.json"
+  ],
+  "note": ""
+ }
+]

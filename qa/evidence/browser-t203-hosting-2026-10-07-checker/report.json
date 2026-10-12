@@ -1,0 +1,23 @@
+{
+  "unit": "T-203 hosting", "mode": "D browser check (sub-checker, findings only)", "date": "2026-10-07",
+  "worktree": "D:/autoTesting/.worktrees/t203-hosting (wave/t203-hosting)",
+  "browser": "Playwright MCP (shared browser; another session was using port 8766 in tabs 0/1; own tab used)",
+  "servers": {"app": "127.0.0.1:8767 AUTOTESTER_ROOT=scratchpad/bc-root, PID 34716 (killed with /T)",
+              "static_render": "127.0.0.1:8768 python http.server, PID 16428 (killed)"},
+  "ports_free_after": true,
+  "screens": [
+    {"url": "http://127.0.0.1:8767/", "status": 200, "console_errors": 0, "note": "home loads, sidebar lists 3 fixture projects"},
+    {"url": "http://127.0.0.1:8767/projects/alpha/report", "status": 200, "console_errors": 0,
+     "rows_seen": ["refused x2 (no cases to run, from seeded queued)", "interrupted (recovered running)", "refused (script-text reason, escaped)", "interrupted (seeded)", "refused (long reason)", "failed (ValueError)", "done (link)"],
+     "summary": "Server: 0 of 2 run slots busy, 0 waiting. One run per project at a time.",
+     "defects": ["D1 unbreakable long token in reason overflows card/page: desktop scrollWidth 1391 > 1280; 390px scrollWidth 1121, table 1066px in 334px card"]},
+    {"url": "http://127.0.0.1:8767/projects/beta/report", "status": 200, "console_errors": 0, "rows": 2},
+    {"url": "http://127.0.0.1:8767/projects/quiet/report", "status": 200, "console_errors": 0, "note": "no queue entries: panel renders nothing (by design), only the no-runs empty state"},
+    {"url": "http://127.0.0.1:8767/projects/alpha/runs/run-DONE0001", "status": 404, "console_errors": 1, "note": "expected: seeded done row has no run envelope; browser logs the 404 resource error"},
+    {"url": "http://127.0.0.1:8768/index.html (static render of queue_panel with queued/running)", "status": 200, "console_errors": 1, "note": "favicon 404 from http.server, not the product; meta refresh=5 present; mojibake is http.server lacking charset header, not the product"}
+  ],
+  "http_4xx_5xx_on_app_server": ["404 /projects/alpha/runs/run-DONE0001 (fixture artifact)"],
+  "not_done": ["could not observe real server showing queued/running: recover() starts queued rows at first get_queue() and the runner refuses at once (project has no cases), so they became refused; queued/running seen only via in-process render of queue_panel",
+               "first-render meta-refresh page never loaded in browser against live server (first navigations timed out because the shared browser tab was being driven by another session on port 8766)",
+               "empty-root second server not run: a project with no queue entries is covered by project 'quiet'"]
+}
