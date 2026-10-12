@@ -1,0 +1,10 @@
+FAILED tests/test_team_store.py::test_team_data_root_is_ignored_by_git_and_docker
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[redacted.mp4]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[frames/00061000.png]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[verify_0_1.png]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[frames/stray.jpg]
+FAILED tests/test_video_review_cleanup.py::test_every_work_dir_artifact_is_gitignored_in_the_real_repo[x.mov]
+FAILED tests/test_video_review_cleanup.py::test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[json]
+FAILED tests/test_video_review_cleanup.py::test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[md]
+FAILED tests/test_video_review_cleanup.py::test_the_stored_review_and_its_exports_are_gitignored_in_the_real_repo[html]
+============ 9 failed, 888 passed, 1 warning in 307.77s (0:05:07) =============
