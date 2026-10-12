@@ -5,7 +5,7 @@
 **Branch / base:** `wave/t201b-test-button`.
 Tier: L (auth, outward-facing run)
 Dual check: required (TT1, TT5, TT6)
-Fix cycle: 0
+Fix cycle: 1
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): 4566ae12
 Status: ready-for-check
@@ -32,3 +32,10 @@ Status: ready-for-check
 - Headed-browser persona walk of the button and status page (browser slot taken).
 - Real-queue integration is T-203's (BLOCKED-CAPABILITY before it lands, per TT5).
 - No SMTP involved; no secret value read.
+
+## Fix cycle 1
+
+- TT1/AU14: pinned `GET /projects/{slug}/test/{run_id}` (report.view) and `POST /projects/{slug}/test` (project.run) in `EXPECTED` of `tests/test_ui_auth_escalation.py`, no net lines (file stays at 300). `test_au14_every_policy_row_requires_exactly_its_pinned_key` passes.
+- Merged origin/master (conflicts in cli_subapps, routes_runs, run_queue, golden, hook test: kept both `auth` and `schedule`, and both `slot_key` and `via`); regenerated MAP/SNAPSHOT. Trimmed one comment line in `run_launcher.py` to stay under the 300-line doctor limit.
+- TT3 not done, deliberate: `requested_by` stores the email only. Storing the user id needs a new id field on `QueueEntry` and `Run` plus launcher plumbing (schema change), not small. Report header "Started by <email>" unchanged. Left for the checker/orchestrator to decide.
+- Per-file results: auth escalation + six `test_team_run_*` files 54 passed; `test_cli_subapp_hook` 4 passed; ruff clean; doctor clean.

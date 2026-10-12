@@ -280,8 +280,7 @@ def launch_run(
         parallel_n=plan.n, parallel_bound_by=plan.bound_by,
         catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
                                  for tier in tiers_to_run(cat)},
-        # CN10: what it ran under, reported not capped -- a 19-year wall clock is
-        # visible to whoever reads run.json instead of silently honoured.
+        # CN10: what it ran under, reported not capped -- a 19-year wall clock is visible.
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
     )
