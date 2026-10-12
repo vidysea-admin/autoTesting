@@ -1,7 +1,7 @@
 # Manifest — fix-baseline-failures
 
 Status: ready-for-check
-Fix cycle: 1
+Fix cycle: 2
 
 **Goal task:** none (test-isolation fixes; no product code changed)
 
@@ -38,3 +38,12 @@ Fix cycle: 1
 - Chromium absent (empty PLAYWRIGHT_BROWSERS_PATH): test_browser+ui_intake*+ui_origin_guard* 138 passed,
   1 skipped, 0 failed; test_browser+scroll_invariance 14 passed, 51 skipped, 0 errors.
 - Chromium present: (a) 139 passed; (b) all passed. ruff clean, doctor clean.
+
+## Fix note (cycle 2, answers r2.a FAIL)
+- Product fix (browser/session.py, 300 lines): start() except path suppresses any cleanup error then bare `raise`
+  of the original; close() runs context.close and driver.stop each guarded (tolerates a driver without stop),
+  nulls fields first, idempotent. Test fake unchanged.
+- New tests/test_browser_close_tolerant.py: cleanup failure keeps original error; stop() raising tolerated;
+  close() idempotent.
+- test_browser_settle 10 passed. Repro (a) 139 passed / absent 138 passed 1 skipped; (b) 51 passed 14 xfailed /
+  absent 14 passed 51 skipped. ruff and doctor clean.

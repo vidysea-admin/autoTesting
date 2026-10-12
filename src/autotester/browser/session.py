@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import shutil
 import uuid
 from dataclasses import dataclass, field
@@ -99,22 +100,21 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
             if self.observer is not None:
                 self.observer.attach(self._page)
         except BaseException:
-            self.close()
+            with contextlib.suppress(Exception):  # cleanup never replaces the original error
+                self.close()
             raise
         return self
 
     def close(self) -> None:
         """Close only this session's context and driver (B9). Never a process kill."""
-        try:
-            if self._context is not None:
-                self._context.close()
-        finally:
-            self._context = self._page = None
-            if self._playwright is not None:
-                self._playwright.stop()
-                self._playwright = None
-            if self.record_video:
-                self._sweep_orphan_videos()
+        context, driver = self._context, self._playwright
+        self._context = self._page = self._playwright = None
+        for step in (getattr(context, "close", None), getattr(driver, "stop", None)):
+            if callable(step):  # each teardown step guarded: one failure skips none
+                with contextlib.suppress(Exception):
+                    step()
+        if self.record_video:
+            self._sweep_orphan_videos()
 
     def _sweep_orphan_videos(self) -> None:
         """Sweep only this session's video scratch, never a sibling's (V1)."""
