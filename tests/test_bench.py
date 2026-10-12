@@ -296,3 +296,27 @@ def test_scorecard_calls_bench_trial_score_for_every_trial() -> None:
     card = bench.scorecard(corpus, [ai, human])
     assert card["autotester-real-run"] == ai.score(corpus)
     assert card["human-oracle-baseline"] == human.score(corpus)
+
+
+def test_untimed_timed_and_mixed_trials_score_time_axis_independently() -> None:
+    """AT-655: untimed is unavailable (never 0 s); timed is verbatim; recall still computes."""
+    corpus = _live_corpus()
+    untimed = _trial(corpus).score(corpus)
+    timed = _trial(corpus, duration_s=42.5).score(corpus)
+    assert untimed["duration_s"] is None
+    assert untimed["duration_s_unavailable_reason"] == "timing not recorded"
+    assert timed["duration_s"] == 42.5
+    assert timed["duration_s_unavailable_reason"] is None
+    # Time availability must not leak into the other axes.
+    for key in ("detection_rate", "severity_weighted_recall", "false_positive_rate"):
+        assert untimed[key] == timed[key]
+
+
+def test_stored_trial_without_duration_key_loads_as_untimed() -> None:
+    """A legacy file with no duration_s key is untimed; an explicit 0.0 stays a measurement."""
+    corpus = _live_corpus()
+    raw = json.loads(_trial(corpus).model_dump_json())
+    raw.pop("duration_s", None)
+    legacy = type(_trial(corpus)).model_validate(raw)
+    assert legacy.duration_s is None
+    assert legacy.score(corpus)["duration_s"] is None
