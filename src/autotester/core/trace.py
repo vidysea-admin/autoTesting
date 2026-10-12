@@ -13,7 +13,7 @@ from pathlib import Path
 from autotester.core.pricing import estimate_cost
 from autotester.core.redact import Redactor
 from autotester.schema.run_state import StageCheckpoint
-from autotester.schema.trace import LLMSpan, StageSpan
+from autotester.schema.trace import LLMSpan, StageSpan, ToolSpan
 
 
 class TraceWriter:
@@ -61,6 +61,24 @@ class TraceWriter:
         )
         self._append(span.model_dump_json())
 
+    def record_tool(self, *, seq: int, op: str, name: str, ok: bool = True,
+                    refusal: str | None = None, parent_seq: int | None = None,
+                    duration_s: float = 0.0) -> None:
+        """AL5: one span per lead planning step, tool call and delegation -- on this same
+        writer and file, never a second trace (RT5)."""
+        span = ToolSpan(trace_id=self.trace_id, seq=seq, op=op, name=name, ok=ok,  # type: ignore[arg-type]
+                        refusal=refusal, parent_seq=parent_seq, duration_s=duration_s)
+        self._append(span.model_dump_json())
+
+
+def read_tool_spans(path: Path) -> list[ToolSpan]:
+    """The agent-layer lines of `trace.jsonl`, in order; no trace yet returns an empty list."""
+    if not path.exists():
+        return []
+    rows = (json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip())
+    return [ToolSpan.model_validate(r) for r in rows if r.get("kind") == "tool"]
+
 
 def read_spans(path: Path) -> list[StageSpan | LLMSpan]:
     """RT7: parse `trace.jsonl` back into spans for the run-view panel -- a
@@ -73,6 +91,8 @@ def read_spans(path: Path) -> list[StageSpan | LLMSpan]:
         if not line.strip():
             continue
         raw = json.loads(line)
+        if raw.get("kind") == "tool":  # agent-layer spans: `read_tool_spans`
+            continue
         if raw.get("kind") == "llm_call":
             spans.append(LLMSpan.model_validate(raw))
         else:
