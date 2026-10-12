@@ -88,6 +88,17 @@ def _rubric(cap: AiCapture, case_id: str, reference: str | None, budget: float |
                   no_fire=_NO_FIRE)
 
 
+def _one_line(text: str) -> str:
+    """AT-892: text from the target is data and must stay on its own evidence row.
+    `grade._render_evidence` joins rows with newlines, so a raw line break in a
+    response would start a line that looks like a row the capturer recorded.
+    Every non-printable character (all line breaks included) becomes a literal
+    escape and the backslash is doubled, so the escape is unambiguous."""
+    return "".join(
+        "\\\\" if ch == "\\" else ch if ch.isprintable() else ch.encode("unicode_escape").decode()
+        for ch in text)
+
+
 def _evidence(cap: AiCapture) -> list[Evidence]:
     rows = [Evidence(kind=EvidenceKind.NETWORK, label="capture",
                      path=f"capture: exchanges={len(cap.exchanges)} "
@@ -101,7 +112,7 @@ def _evidence(cap: AiCapture) -> list[Evidence]:
         facts.append(("exchange", f"status={ex.status} error={ex.error} "
                       f"latency_s={ex.latency_s} is_json={ex.is_json} "
                       f"missing_keys={ex.missing_keys}"))
-        rows += [Evidence(kind=EvidenceKind.NETWORK, path=f"{label}[{i}]: {text}",
+        rows += [Evidence(kind=EvidenceKind.NETWORK, path=f"{label}[{i}]: {_one_line(text)}",
                           step_order=i, label=label) for label, text in facts]
     return rows
 
