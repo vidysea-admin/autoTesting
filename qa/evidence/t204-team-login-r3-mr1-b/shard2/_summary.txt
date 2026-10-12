@@ -1,0 +1,25 @@
+124 489s tests/test_video_masking_live.py ..
+124 487s tests/test_mutation_check.py ...
+124 491s tests/test_explore_completeness.py .................
+1 193s tests/test_video_parallel_sweep.py 1 failed, 1 warning in 99.38s (0:01:39)
+0 206s tests/test_explore_traversal.py 9 passed, 1 warning in 159.15s (0:02:39)
+0 197s tests/test_explore.py 19 passed, 1 warning in 102.94s (0:01:42)
+0 216s tests/test_citations.py 11 passed, 1 warning in 121.40s (0:02:01)
+124 486s tests/test_video_review_cleanup.py .....
+0 190s tests/test_browser_unreadable.py 16 passed, 1 warning in 39.63s
+0 173s tests/test_run_launcher.py 6 passed, 1 warning in 56.23s
+0 296s tests/test_ui_auth_own_origin.py 75 passed, 1 warning in 165.82s (0:02:45)
+0 215s tests/test_doctor.py 40 passed, 1 warning in 97.80s (0:01:37)
+1 153s tests/test_flake_probe_real_process.py 1 failed, 1 passed, 1 warning in 33.38s
+0 243s tests/test_unified_report_secrets.py 7 passed, 1 warning in 141.83s (0:02:21)
+0 139s tests/test_run_trace.py 10 passed, 7 warnings in 14.35s
+1 221s tests/test_hosting_config.py 1 failed, 7 passed, 1 warning in 82.90s (0:01:22)
+0 156s tests/test_ui_runs_serial_resilience.py 8 passed, 1 warning in 21.25s
+0 191s tests/test_ui_auth_host_and_consent.py 13 passed, 1 warning in 74.61s (0:01:14)
+0 275s tests/test_ui_auth_escalation.py 22 passed, 1 warning in 146.65s (0:02:26)
+1 187s tests/test_ui_auth_login.py .................
+1 95s tests/test_cli_harness_safety.py 
+1 94s tests/test_hard_timeout.py ...FF
+0 135s tests/test_report_export_reason.py 7 passed, 1 warning in 14.16s
+0 162s tests/test_schedule_tick.py 20 passed, 1 warning in 37.95s
+0 186s tests/test_ui_auth_survivors.py 4 passed, 1 warning in 65.82s (0:01:05)

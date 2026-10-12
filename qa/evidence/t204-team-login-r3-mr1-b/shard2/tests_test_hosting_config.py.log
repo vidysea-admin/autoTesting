@@ -1,0 +1,71 @@
+.F......                                                                 [100%]
+================================== FAILURES ===================================
+_ test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere _
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-28206/test_healthz_source_root_is_th0')
+
+    def test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere(
+        tmp_path: Path,
+    ) -> None:
+        """AT-867/HO3: `_SRC_ROOT` is fixed at import, so a monkeypatched env in this process cannot
+        prove it. A fresh interpreter started like the container (AUTOTESTER_ROOT=/data, no src there)
+        must still watch the installed package; a `repo_root()/src/autotester` revert reports the
+        data folder and goes red."""
+        code = "from autotester.ui import routes_live as r; print(r._SRC_ROOT)"
+        env = {**os.environ, "AUTOTESTER_ROOT": str(tmp_path)}
+>       out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                             env=env, cwd=tmp_path, timeout=60, check=True).stdout.strip()
+
+tests\test_hosting_config.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: 1 args: ['D:\\autoTesting\\.worktrees\\t204-team-login\\...>
+input = None, endtime = 20408.453, orig_timeout = 60
+
+    def _communicate(self, input, endtime, orig_timeout):
+        # Start reader threads feeding into a list hanging off of this
+        # object, unless they've already been started.
+        if self.stdout and not hasattr(self, "_stdout_buff"):
+            self._stdout_buff = []
+            self.stdout_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stdout, self._stdout_buff))
+            self.stdout_thread.daemon = True
+            self.stdout_thread.start()
+        if self.stderr and not hasattr(self, "_stderr_buff"):
+            self._stderr_buff = []
+            self.stderr_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stderr, self._stderr_buff))
+            self.stderr_thread.daemon = True
+            self.stderr_thread.start()
+    
+        if self.stdin:
+            self._stdin_write(input)
+    
+        # Wait for the reader threads, or time out.  If we time out, the
+        # threads remain reading and the fds left open in case the user
+        # calls communicate again.
+        if self.stdout is not None:
+            self.stdout_thread.join(self._remaining_time(endtime))
+            if self.stdout_thread.is_alive():
+>               raise TimeoutExpired(self.args, orig_timeout)
+E               subprocess.TimeoutExpired: Command '['D:\\autoTesting\\.worktrees\\t204-team-login\\.venv\\Scripts\\python.exe', '-c', 'from autotester.ui import routes_live as r; print(r._SRC_ROOT)']' timed out after 60 seconds
+
+C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py:1630: TimeoutExpired
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere
+1 failed, 7 passed, 1 warning in 82.90s (0:01:22)
