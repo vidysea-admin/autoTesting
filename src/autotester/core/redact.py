@@ -57,6 +57,10 @@ _PHONE_RES = (  # intl (+CC ..), Indian mobile (grouped), 10 digits, US, Indian 
     re.compile(r"(?<![\w+])\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?!\w)"),
     re.compile(r"(?<![\w+])\(?0\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{4}(?!\w)"),
 )
+# AT-830: percent-encoded forms (a urlencode-built query string): `%40` is "@", `%2B` is "+".
+_ENC_EMAIL_RE = re.compile(r"[\w.%+-]+%40[\w-]+(?:\.[\w-]+)*\.[^\W\d_]{2,}", re.I)
+_ENC_PHONE_RE = re.compile(r"(?<![\w+])%2B\d{1,3}(?:(?:%20|%28|%29|[\s().-])*\d){7,14}(?!\w)",
+                           re.I)
 _DEV = r"ऀ-ॿ"  # Devanagari block: its vowel signs are not \w, so \b misreads them
 _ORG = (r"user|file|course|program(?:me)?|university|college|school|institution|institute|company|"
         r"organi[sz]ation|project|team|city|state|country|branch|subject|degree|board|module|"
@@ -176,6 +180,8 @@ def mask_pii(text: str) -> str:
     Free text is never searched for names (too guessy); a person name is only masked where a
     field label says so -- see `mask_name_value`. Pure and idempotent, so output stays
     deterministic (RC11). A bare 10-digit run is treated as a phone number."""
+    text = _ENC_EMAIL_RE.sub("<email>", text)
+    text = _ENC_PHONE_RE.sub("<phone>", text)
     text = _mask_emails(text)
     for pattern in _PHONE_RES:
         text = pattern.sub("<phone>", text)

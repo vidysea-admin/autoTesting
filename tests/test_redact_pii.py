@@ -124,6 +124,19 @@ def test_non_person_labels_are_not_masked(label: str) -> None:
     assert mask_name_value(label, "Data Science") == "Data Science"
 
 
+@pytest.mark.parametrize("raw", [
+    "https://x.com/p?email=jane.doe%40gmail.com&phone=%2B919876543210",
+    "jane%40gmail.com", "a%2Bb%40x.org", "q=%2B91%2098765%2043210", "e=JANE%40GMAIL.COM"])
+def test_at830_percent_encoded_email_and_phone_are_masked(raw: str) -> None:
+    out = mask_pii(raw)
+    assert "gmail" not in out.lower() and "x.org" not in out and "98765" not in out
+    assert "<email>" in out or "<phone>" in out
+
+
+def test_at830_percent_sign_text_is_left_alone() -> None:
+    assert mask_pii("50%25 off, page=%2Bx") == "50%25 off, page=%2Bx"
+
+
 _ADVERSARIAL = {
     "alnum_run": "a" * 200_000, "digit_run": "1" * 200_000, "dotted": "a." * 100_000,
     "dashed": "a-" * 100_000, "many_at": "a@" * 50_000,

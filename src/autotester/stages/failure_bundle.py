@@ -148,7 +148,10 @@ def _write_parts(w: _Writer, redactor: Redactor, case: Case, result: RawResult,
         suffix = src.path.suffix or ".png"
         w.add(f"screenshots/{src.step_order}-{n}{suffix}", BundleFileKind.SCREENSHOT,
               copy_from=src.path, step_order=src.step_order)
-    lines = [_clean_text(redactor, sp.model_dump_json()) for sp in spans]
+    # AT-928: scrub the span OBJECT before JSON-encoding, so a secret holding a newline/tab/quote
+    # is matched raw and not hunted for in its escaped (`\n`) spelling.
+    lines = [_clean_text(redactor, json.dumps(redactor.scrub_obj(sp.model_dump(mode="json")),
+                                              ensure_ascii=False)) for sp in spans]
     w.add("trace.jsonl", BundleFileKind.TRACE, text="".join(f"{ln}\n" for ln in lines))
 
 
