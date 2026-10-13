@@ -3,7 +3,7 @@
 **Unit:** T-169 generic two-mode acceptance harness (teaching sources -> INGEST; URL + credentials only -> DISCOVER), no CLI.
 **Contract:** none exists for T-169; proposed GA1-GA4 appended to `qa/feedback-inbox.md` (2026-10-13, maker t169). Also `qa/contracts/bench.md` K3/K9/K10/K11, `orchestrator.md` OR1.
 **Goal task:** T-169 (deps T-136, T-145, T-168). done_check: `uv run pytest tests/test_generic_acceptance.py`
-**Status:** ready-for-check
+**Status:** checked-PASS (LOCAL; GA5 gap -> proposal-review-ui; REAL-TARGET GR1-GR4 pending)
 **Fix cycle:** 1
 **Branch:** wave/t169-generic-acceptance
 

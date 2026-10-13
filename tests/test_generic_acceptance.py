@@ -133,6 +133,15 @@ def _vision(base: str) -> MockProvider:
     return MockProvider(responses={"vision": [obs]})
 
 
+def _review(store_: ProjectStore) -> None:
+    """Stand-in for the missing proposal-review UI route (see contract GA5)."""
+    from autotester.stages.expand import propose_cases
+    rows = propose_cases(store_.load_flowspec())  # type: ignore[arg-type]
+    store_.stage_case_proposals(rows)
+    for row in rows:
+        store_.review_case_proposal(row.id, by="fixture-human", approved=True)
+
+
 def _drive(mode: str, client: TestClient, root: Path, base: str, tmp_path: Path,
            monkeypatch: pytest.MonkeyPatch) -> tuple[ModeResult, ProjectStore, ModeSpec]:
     spec = _spec(mode, base, tmp_path)
@@ -158,16 +167,9 @@ def _drive(mode: str, client: TestClient, root: Path, base: str, tmp_path: Path,
 
     monkeypatch.setattr("autotester.ui.run_execution.run_and_grade_case_resilient", grade)
 
-    def review(store_: ProjectStore) -> None:
-        from autotester.stages.expand import propose_cases
-        rows = propose_cases(store_.load_flowspec())
-        store_.stage_case_proposals(rows)
-        for row in rows:
-            store_.review_case_proposal(row.id, by="fixture-human", approved=True)
-
     seams = ModeSeams(
         ingest_provider=_vision(base), crawl_fn=_crawl_fixture(base, store),
-        review_proposals=review,
+        review_proposals=_review,
         before_run=lambda s: grant_live_case_approval(
             s, project=spec.slug, target=s.load_project().base_url))  # type: ignore[union-attr]
     return run_mode(client, store, spec, seams), store, spec
@@ -216,3 +218,43 @@ def test_entry_path_follows_the_supplied_material(
         _drive(mode, client, tmp_path / mode, product_url, tmp_path / mode, monkeypatch)
         store = ProjectStore("fixture-shop", tmp_path / mode)
         assert choose_mode(store.list_sources())[0] == EXPECTED_MODE[mode]
+
+
+def test_parked_proposals_never_break_load_results(scratch_root: Path) -> None:
+    """GA4: `<stage>.flowspec.json` in a run dir is an aux file, not a RawResult; real result
+    rows still load, and an unreadable non-aux JSON still fails loudly (not silently skipped)."""
+    store = ProjectStore("fixture-shop", scratch_root)
+    run_dir = store.paths.run_dir("r1")
+    run_dir.mkdir(parents=True)
+    for name in ("ingest.flowspec.json", "discover.flowspec.json"):
+        (run_dir / name).write_text('{"flows": [], "not": "a RawResult"}', encoding="utf-8")
+    store.save_result("r1", RawResult(case_id="c1", outcome=Outcome.COMPLETED))
+    assert [r.case_id for r in store.load_results("r1")] == ["c1"]
+    (run_dir / "stray.json").write_text('{"not": "a RawResult"}', encoding="utf-8")
+    with pytest.raises(Exception):  # noqa: B017 - any loud failure, never a silent skip
+        store.load_results("r1")
+
+
+def test_harness_reuses_an_onboarded_project_by_slug(
+    client: TestClient, scratch_root: Path, product_url: str, tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """GA3: `onboard=False` never re-posts `/onboard`; the stored project is driven."""
+    first, store, spec = _drive(
+        "url_only", client, scratch_root, product_url, tmp_path, monkeypatch)
+    posted: list[str] = []
+    real_post = client.post
+
+    def spy(url: str, *a: object, **k: object) -> object:
+        posted.append(url)
+        return real_post(url, *a, **k)
+
+    monkeypatch.setattr(client, "post", spy)
+    spec.onboard = False
+    seams = ModeSeams(crawl_fn=_crawl_fixture(product_url, store), review_proposals=_review,
+                      before_run=lambda s: grant_live_case_approval(
+                          s, project=spec.slug, target=s.load_project().base_url))  # type: ignore[union-attr]
+    second = run_mode(client, store, spec, seams)
+    assert "/onboard" not in posted and second.run_id != first.run_id
+    # the stubbed grader reports no finding on a second pass: FP rate honestly "unavailable"
+    assert second.comparison.project == spec.slug
