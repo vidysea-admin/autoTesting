@@ -8,3 +8,5 @@ Question: may T-199 write to the real Pathlynks Tracker sheet? Options: (A) now;
 Umesh (2026-10-10): "vo in future hogaa abhi nhi".
 
 What is authorized now (D-081 item 7): T-199 builds and proves a DRY RUN only, on a fake `SheetClient`. The mapping preview may be shown. Zero live writes. The first live write needs a new answer here, with a named user confirming the preview and the column mapping agreed by Umesh or Mamta.
+
+Answered 2026-10-13, see D-089 (test-sheet part only): the bug loop may write to a separate TEST tracker sheet AutoTester creates in Umesh's Drive, via the gws CLI login. The real Pathlynks Tracker stays gated and this gate stays OPEN for it.

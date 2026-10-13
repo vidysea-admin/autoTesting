@@ -2477,3 +2477,21 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-12)
 
 **Links:** D-081; D-086; T-145; T-200; T-203; AT-651; AT-654; AT-891; qa/verdicts/t200-schedule-wiring.md
+
+## D-089 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh answered four open items in the Claude Code session on 2026-10-13.
+1. **T-179 AL1 / D-042, deepagents version:** "Upgrade version". The D-042/AL1 floor `deepagents>=1.7` names a version that does not exist; the newest real release is 0.7.24. Pin `deepagents>=0.7.24,<0.8` (compatible with 0.7.x). AL1's floor is amended accordingly, and the checker amends the brief text. D-042's design (deepagents as the planner, no hand-rolled planner) stays.
+2. **T177-HARD-PROVIDER-DEADLINE:** option C. Run the fallback provider in an isolated, killable process, so AF4 guarantees a hard return within `wall_clock_s` even when the provider hangs. This needs a new module, and this entry authorises that module.
+3. **T-136 independent human bug list:** build T-136 now WITHOUT the human list. AutoTester produces its own analysis and report. Recall vs a human stays "unavailable" until Umesh provides a list later; false-positive rate and time are still measured. The system must work and report when no human list exists, as a supported mode and not an error.
+4. **T-199 tracker writes:** option A. The bug loop may write to a separate TEST tracker sheet that AutoTester creates in Umesh's Drive (D-083 item 3 reading confirmed). The real Pathlynks Tracker stays gated (still "abhi nhi"). The Drive access uses the gws CLI login on this machine.
+
+**Why:** These answers unblock T-179, T-177, T-136 and T-169, and the test-sheet half of T-199, which were waiting on owner choices.
+
+**Result:** No code change has been made by this entry. The maker dispatches the unblocked units next.
+
+**Changes-authorized:** the new isolated-provider-process module for T-177 (item 2); the `deepagents>=0.7.24,<0.8` pin in pyproject.toml (item 1). No ARCHITECTURE.md prose, no enforcement path.
+
+**Approved-by:** Umesh (chat, 2026-10-13)
+
+**Links:** D-042; D-081; D-083; T-136; T-169; T-177; T-179; T-199; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md

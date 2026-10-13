@@ -123,7 +123,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   lanes: code, browser
   after: t199a-bug-loop
   owner: none beyond new files
-  note: PASS is proven on a fake sheet; task T-199 is not closed by this row until the live-write gate is answered or the checker amends the done_check
+  note: PASS is proven on a fake sheet; task T-199 is not closed by this row until the live-write gate is answered or the checker amends the done_check; test-sheet writes answered 2026-10-13, see D-089 (real Tracker still gated)
 
 - [ ] t201a-report-delivery - G4 / T-201: report delivery on the website inbox and by email behind a per-user checkbox
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
@@ -297,7 +297,7 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   files: N src/autotester/agents/ package (module names unknown); pyproject.toml and uv.lock (deepagents; gate d042 answered 2026-09-24)
   schema: unknown
   surface: agent layer; guards live in the tools, not the model
-  consumes: qa/contracts/agent-layer.md; qa/gates/d042-deep-agents.md (answered)
+  consumes: qa/contracts/agent-layer.md; qa/gates/d042-deep-agents.md (answered); deepagents pin amended 2026-10-13, see D-089 (>=0.7.24,<0.8)
   lanes: code
   after: none (T-170, T-172, T-175 done)
   owner: agents/: this row, then t180, then t181; pyproject.toml and uv.lock: serialize with t202
@@ -380,8 +380,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
 
 Not buildable (open human gates; kept out of the buildable list):
 
-- [!] t136-bench-scoring - NOT BUILDABLE: T-136 (recall, FP rate, time on Pathlynks) is held on the OPEN gate qa/gates/t136-independent-human-list.md. It needs a human bug list written by a tester who has not seen AutoTester's report, or by Umesh before he opens it (D-081 item 2; AT-653; bench.md K6-K9). A list written after the report yields FP rate but not recall.
-- [!] t169-two-mode-acceptance - NOT BUILDABLE: T-169 depends on T-136 (same open gate), T-145 and T-168. Held on qa/gates/t136-independent-human-list.md.
+- [!] t136-bench-scoring - NOT BUILDABLE: T-136 (recall, FP rate, time on Pathlynks) is held on the OPEN gate qa/gates/t136-independent-human-list.md. It needs a human bug list written by a tester who has not seen AutoTester's report, or by Umesh before he opens it (D-081 item 2; AT-653; bench.md K6-K9). A list written after the report yields FP rate but not recall. Answered 2026-10-13, see D-089: build without the human list (recall unavailable, FP rate and time measured).
+- [!] t169-two-mode-acceptance - NOT BUILDABLE: T-169 depends on T-136 (same open gate), T-145 and T-168. Held on qa/gates/t136-independent-human-list.md. Answered 2026-10-13, see D-089: build without the human list (recall unavailable, FP rate and time measured).
 
 ---
 
