@@ -1742,7 +1742,7 @@
     {
       "id": "T-204",
       "title": "Team login for the hosted UI: every page and API route requires an authenticated Vidysea team member before go-live; role-based authorization stays a later unit (D-066, D-070)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "user_value": "high",
@@ -1751,7 +1751,7 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-204-team-login.md",
         "expect_exit": 0
       },
-      "note": "D-066 noted real auth is required once the UI leaves localhost; D-070 makes it a go-live blocker. Mechanism ANSWERED by D-072 (2026-10-07): email and password with open sign-up, admin moderation and groups with checkbox permissions (qa/contracts/auth.md); no longer a HUMAN_GATE. | Acceptance: An unauthenticated request to any UI page or state-changing route is refused; a signed-in team member gets through; credentials/sessions never appear in logs.",
+      "note": "D-066 noted real auth is required once the UI leaves localhost; D-070 makes it a go-live blocker. Mechanism ANSWERED by D-072 (2026-10-07): email and password with open sign-up, admin moderation and groups with checkbox permissions (qa/contracts/auth.md); no longer a HUMAN_GATE. | Acceptance: An unauthenticated request to any UI page or state-changing route is refused; a signed-in team member gets through; credentials/sessions never appear in logs. | Closed 2026-10-13: AU24 deferred to Ubuntu (D-091), AU26 PASS r2; qa/verdicts/t-204-team-login.md.",
       "criticality": "critical"
     },
     {
