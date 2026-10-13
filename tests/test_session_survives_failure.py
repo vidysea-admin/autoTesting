@@ -43,6 +43,10 @@ class FakeContext:
     def __init__(self) -> None:
         self.pages: list[FakePage] = []
         self.dead = False
+        self.scripts: list[str] = []
+
+    def add_init_script(self, script: str) -> None:
+        self.scripts.append(script)
 
     def new_page(self) -> FakePage:
         if self.dead:

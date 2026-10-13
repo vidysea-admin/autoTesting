@@ -1,0 +1,63 @@
+[
+ [
+  "S1_anon_post",
+  [
+   302,
+   "/auth/login?next=/projects/livefix/test"
+  ]
+ ],
+ [
+  "login_url",
+  "http://127.0.0.1:59025/"
+ ],
+ [
+  "S1_cross_origin_with_session",
+  403
+ ],
+ [
+  "button_visible",
+  1
+ ],
+ [
+  "press_to_status_s",
+  0.36
+ ],
+ [
+  "status_url",
+  "http://127.0.0.1:59025/projects/livefix/test/run-01M4T4V2QN7VJVNRPSK7DNTGQX"
+ ],
+ [
+  "press_body",
+  "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@live.test\nSign out\nPROJECTS\nLive Fixture\n+ New project\n\u2190 Back\nPROJECTS / LIVEFIX / TEST\nTest run run-01M4T4V2QN7VJVNRPSK7DNTGQX\n\nRequested by dev@live.test (user #2) at 2026-10-13 08:07 UTC\n\nStatus\n\nRUNNING The run is in pro"
+ ],
+ [
+  "S5_second_press",
+  [
+   303,
+   "/projects/livefix/test/run-01M4T4V2QN7VJVNRPSK7DNTGQX"
+  ]
+ ],
+ [
+  "status_sequence",
+  [
+   "The run is in progress",
+   "Open the report"
+  ]
+ ],
+ [
+  "status_body",
+  "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@live.test\nSign out\nPROJECTS\nLive Fixture\n+ New project\n\u2190 Back\nPROJECTS / LIVEFIX / TEST\nTest run run-01M4T4V2QN7VJVNRPSK7DNTGQX\n\nRequested by dev@live.test (user #2) at 2026-10-13 08:07 UTC\n\nStatus\n\nDONE The run finished.\n\nOpen the report\n\nAll runs of this project"
+ ],
+ [
+  "report_url",
+  "http://127.0.0.1:59025/projects/livefix/runs/run-01M4T4V2QN7VJVNRPSK7DNTGQX"
+ ],
+ [
+  "report_body",
+  "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@live.test\nSign out\nPROJECTS\nLive Fixture\n+ New project\n\u2190 Back\nPROJECTS / LIVEFIX / REPORT / RUN\nRun run-01M4T4V2QN7VJVNRPSK7DNTGQX\n\nStarted by dev@live.test (user #2) with the Test button at 2026-10-13 08:07 UTC\n\n1\n? INCONCLUSIVE\n\nCatalog runnable-class counts \u2014 static: 0, behavioural: 0, adversarial: 0\n\nTrace\nSTAGE\tSTATUS\tDURATION\nexecute\tdone\t40.58s\nHomepage loads\ncompleted\n? INCONCLUSIVE\njudged by rule\n\nnot judged: the grader failed after execution completed\n\nstep01-navigate\n\n\ud83c\udfa5 video (case_fdb47be8cacd/case_fdb47be8cacd.webm)"
+ ],
+ [
+  "queue_file",
+  "{\n  \"entries\": [\n    {\n      \"id\": \"run-01M4T4V2QN7VJVNRPSK7DNTGQX\",\n      \"project\": \"livefix\",\n      \"status\": \"done\",\n      \"trigger\": \"button\",\n      \"requested_by\": \"dev@live.test\",\n      \"requested_by_id\": 2,\n      \"enqueued_at\": \"2026-10-13T08:07:39.509915Z\",\n      \"started_at\": \"2026-10-13T08:07:39.515547Z\",\n      \"finished_at\": \"2026-10-13T08:08:20.326386Z\",\n      \"via\": \"team_button\",\n      \"position\": 0\n    }\n  ]\n}\n"
+ ]
+]
