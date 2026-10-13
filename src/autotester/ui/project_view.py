@@ -11,7 +11,7 @@ from html import escape
 
 from autotester.stages.report_export import valid_runs_newest_first
 from autotester.store.project_store import ProjectStore
-from autotester.ui import theme
+from autotester.ui import team_run_view, theme
 from autotester.ui.routes_report import _run_counts
 
 
@@ -78,6 +78,7 @@ def _actions_card(safe_slug: str, run_button: str, case_count: int) -> str:
         "<p class='subtitle' style='margin-bottom:1rem'>Manage this project.</p>"
         "<div class='card-actions'>"
         f"{run_button}"
+        f"{team_run_view.button_html(safe_slug)}"
         f"<a class='btn' href='/projects/{safe_slug}/flowspec'>🎬 FlowSpec</a>"
         f"<a class='btn' href='/projects/{safe_slug}/sources'>📼 Sources</a>"
         f"<a class='btn' href='/projects/{safe_slug}/product-map'>🗺 Product map</a>"

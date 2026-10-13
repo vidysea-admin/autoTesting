@@ -107,7 +107,8 @@ async def _refusal(request: Request, rule: RouteRule | None, params: dict[str, s
     if not authorize(who, PermissionKey.PROJECT_VIEW, resource):
         return await _error(request, 404, f"no project '{slug}'")  # same as a missing one
     if not authorize(who, rule.key, resource):
-        return await _error(request, 403, "you do not have permission for this action")
+        return await _error(request, 403, "you do not have permission for this action "
+                                          f"({rule.key.value})")   # names the key (TT1)
     return None
 
 

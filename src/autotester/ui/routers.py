@@ -33,6 +33,7 @@ from autotester.ui import (
     routes_runs,
     routes_settings,
     routes_sources,
+    routes_team_run,
     routes_video,
 )
 
@@ -65,6 +66,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_live.router,
     routes_catalog.router,
     routes_project_access.router,
+    routes_team_run.router,   # T-201b; its `STUBS['team_run']` stays registered, empty
     *STUBS.values(),
 )
 
