@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-181 [high] Agent guardrails + measured gain vs pipeline (bugs found, FP, tokens, time) on a fixture; per-run token/cost budget (D-042)
 - T-199 [high] TL-3 Bug loop: auto-file failures into PathLynks Tracker sheet, update on re-test, close on pass (stable bug key dedupe)
 ## Last decisions (computed status)
-- D-089 2026-10-13 decision ACTIVE
 - D-090 2026-10-13 decision ACTIVE
 - D-091 2026-10-13 decision ACTIVE
 - D-092 2026-10-13 decision ACTIVE
 - D-093 2026-10-13 decision ACTIVE
+- D-094 2026-10-13 decision ACTIVE
