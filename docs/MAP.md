@@ -170,6 +170,7 @@
 | `stages/ai_report.py` | AI REPORT: one Excel workbook of a project's stored Track C evidence, grouped by tier (T-155). |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
+| `stages/bench_from_run.py` | Turn a real project's executed+graded run into the T-136 bench files. Contract: bench.md K10. |
 | `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
 | `stages/bug_run.py` | BUG RUN: turn one finished run's verdicts into bug events, and notice cases that moved (T-199b). |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
@@ -571,6 +572,7 @@
 |---|---|
 | `scripts/adversarial_proof.py` | Credential-free, network-free proof that the adversarial pass refuses to exceed its scope. |
 | `scripts/append_decision.ps1` | append_decision.ps1 -- the ONLY legitimate write path to docs/DECISIONS.md |
+| `scripts/bench_from_run.py` | T-136b: convert a real executed+graded run into the acceptance bench files. |
 | `scripts/bench_trial.py` | T-120: the north star made measurable — first real human-vs-AI trial scorecard. |
 | `scripts/check_acceptance_comparison.py` | T-136 done_check: is the Pathlynks acceptance comparison complete? (bench.md K9) |
 | `scripts/check_crawl_approval.py` | T-145's done_check (D-018): a live crawl counts as done only if it actually |
