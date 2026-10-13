@@ -61,6 +61,13 @@ AUTOTESTER_ALLOWED_ORIGINS=https://<your-domain>
 AUTOTESTER_MAX_CONCURRENT_RUNS=2
 ```
 
+The container binds every address, so the app cannot know the address users type. Compose gives
+it `AUTOTESTER_PUBLIC_ORIGIN` (`https://<AUTOTESTER_DOMAIN>` when that is set, or the value you set
+in the shell or the compose `.env`). Startup refuses to run unless that origin is admitted by the two
+lists above (its host in `AUTOTESTER_ALLOWED_HOSTS` or an origin entry, and the origin itself, with
+the port unless it is the default, in `AUTOTESTER_ALLOWED_ORIGINS`), so a wrong value shows up in
+`docker compose logs autotester`, not as a 403 on every page.
+
 Set `AUTOTESTER_ALLOWED_ORIGINS` once the server is reachable by name: the Origin guard (D-066)
 refuses a state-changing request from any other origin. `AUTOTESTER_ALLOWED_HOSTS` belongs to
 the Host allow-list (AT-758): any request, GET included, whose Host header is not loopback, the
@@ -78,11 +85,23 @@ Copy existing `projects/<slug>/` and `profiles/<slug>/` folders from your dev ma
 
 ### 5. Create the first account BEFORE exposing the port
 
-Sign-in arrives with T-204. When it is in your release, set `AUTOTESTER_FIRST_ADMIN_EMAIL` and
-`AUTOTESTER_HOSTED=1` in `server.env`, start the stack bound to loopback (step 6, default), and
-create the administrator over an SSH tunnel (`ssh -L 8000:localhost:8000 <server>`, then open
-`http://localhost:8000`). Only then open it to the network. Until accounts exist in your
-release, keep the stack on loopback and use the SSH tunnel for everything.
+Sign-in is on by default (T-204). On a server set `AUTOTESTER_HOSTED=1` and
+`AUTOTESTER_FIRST_ADMIN_EMAIL=<your address>` in `server.env`. Only the signup with that exact
+address (case-insensitive) becomes the administrator, and only while no administrator exists;
+every other signup gets no access until an administrator ticks a group for it. With the address
+unset **nobody** is promoted and startup prints a warning: create the administrator from the
+host instead, with
+
+```bash
+docker compose -f docker/compose.prod.yml exec autotester uv run autotester auth bootstrap-admin --email <address> --password-stdin
+```
+
+(the password is read from standard input and never printed). Start the stack bound to loopback
+(step 6, default), sign up over an SSH tunnel (`ssh -L 8000:localhost:8000 <server>`, then open
+`http://localhost:8000`) and only then open it to the network. Accounts live in
+`<data>/.auth/auth.sqlite3` (backed up with the data folder, never in the image or in git).
+Sign-in attempts are rate limited: 5 failures per account or 20 per client address in 10 minutes
+answer 429 until the window passes.
 
 ### 6. Start
 
@@ -109,8 +128,11 @@ release; the live view is reachable only from inside the compose network until t
 
 Over plain http to an IP, set in `server.env`: `AUTOTESTER_ALLOWED_HOSTS=<server-ip>`,
 `AUTOTESTER_ALLOWED_ORIGINS=http://<server-ip>:8000`, `AUTOTESTER_COOKIE_SECURE=0`, and start
-with `AUTOTESTER_BIND=0.0.0.0`. Docker publishes ports around UFW, so a `ufw` rule does not
-restrict port 8000: limit it in your cloud provider's firewall to your office address, or bind
+with `AUTOTESTER_BIND=0.0.0.0`. In the shell (or the compose `.env`) that runs `docker compose`,
+also set `AUTOTESTER_PUBLIC_ORIGIN=http://<server-ip>:8000`: without it (and without
+`AUTOTESTER_DOMAIN`) compose passes an empty value and the app refuses to start, naming the key; a
+loopback value such as `http://localhost:8000` is refused as well. Docker publishes ports
+around UFW, so a `ufw` rule does not restrict port 8000: limit it in your cloud provider's firewall to your office address, or bind
 `AUTOTESTER_BIND` to one interface address. Passwords cross the network unencrypted in this
 mode: use it for a short trial only, and move to step 7. `docker compose -f docker/compose.prod.yml
 config` works without `AUTOTESTER_DOMAIN`; only the `https` profile needs it.

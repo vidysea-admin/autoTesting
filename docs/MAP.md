@@ -11,7 +11,18 @@
 | `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
 | `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
 | `agents/tools.py` | The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6). |
-| `auth/policy.py` | Merge each unit's own `ROUTE_POLICY` into the one central route-policy table (TF4, AU12/AU14). |
+| `auth/access.py` | The one authorization function (AU12) and the project relation data it reads. |
+| `auth/accounts.py` | Accounts: open signup, first-account admin, password check, admin account actions. |
+| `auth/audit.py` | The audit trail (AU22): one JSON line per state-changing request in |
+| `auth/config.py` | Auth startup configuration (AU3 cookie Secure rule, AU17 gate switch, AU20 hosted |
+| `auth/context.py` | The current request's principal, set by the auth middleware for the request's |
+| `auth/db.py` | The auth store's SQLite file: connection, tables, one-time seeding, last-admin guard. |
+| `auth/defaults.py` | The four seeded groups and their default ticks (auth.md "Default groups", AU11). |
+| `auth/groups.py` | IAM-style groups: create, rename, tick permissions, set members, delete (AU10). |
+| `auth/passwords.py` | Password hashing: argon2id via argon2-cffi, behind one hash/verify pair (AU1). |
+| `auth/policy.py` | The central route policy (AU14, AU16, TF4): the rule table, its matcher, the unit merge. |
+| `auth/ratelimit.py` | Login rate limit (AU5): 5 failures per account or 20 per client address inside a |
+| `auth/sessions.py` | Server-side sessions (AU3): a 256-bit random id in the cookie, only its SHA-256 in the |
 | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
 | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
 | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
@@ -24,6 +35,7 @@
 | `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |
 | `browser/video.py` | Per-case video recording for `BrowserSession` (T-191/AT-587). |
 | `cli.py` | Command line. Every action the UI offers is available here first. |
+| `cli_auth.py` | `autotester auth` -- break-glass account administration from the server shell (T-204). |
 | `cli_crawl.py` | Crawl commands — `autotester explore` and `autotester report crawl`. |
 | `cli_intake.py` | `autotester ingest zip` and `ingest fetch-drive`: hand over recordings without the browser. |
 | `cli_issues.py` | `autotester issues` — turn an analysis into the sheet a human tester reads. |
@@ -83,6 +95,7 @@
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
+| `schema/auth.py` | Team login shapes (T-204, D-072; contract qa/contracts/auth.md): the closed permission |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
 | `schema/bug_run.py` | What reading the bug store and processing one run reports: the shapes of T-199b (TB3, TB4, TB6). |
@@ -232,7 +245,10 @@
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
 | `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
 | `store/team_store.py` | The sibling store for team data: markers, records, preferences, outboxes (T-205/TF7, R65). |
+| `ui/admin_view.py` | Markup for the admin pages: accounts, groups and the permission checkboxes (AU8, AU10). |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
+| `ui/auth_middleware.py` | The login gate (T-204, auth.md AU6/AU13/AU14/AU16/AU22): one ASGI middleware that |
+| `ui/auth_view.py` | Markup for the sign-in, sign-up and "waiting for an admin" pages (T-204). |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
 | `ui/credential_guard.py` | Credential-guard helpers: refuse a real secret typed into any UI text field. |
@@ -242,7 +258,9 @@
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
-| `ui/routers.py` | The one ordered list of routers the UI app serves (T-205/TF3; same shape as T-204's). |
+| `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
+| `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |
+| `ui/routes_auth.py` | Sign in, sign up, sign out and the waiting page (T-204, auth.md AU2-AU7). |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
 | `ui/routes_catalog.py` | The test catalog page: one row per `CaseClass`, a green runnable count, and |
 | `ui/routes_crawl_approval.py` | The crawl-approval card on the credentials page (D-018 consent, gate 2). |
@@ -255,16 +273,19 @@
 | `ui/routes_learn.py` | The learning loop on screen — review the FlowSpec, generate cases, see the asks. |
 | `ui/routes_live.py` | Presentation-only noVNC page for watching the container's real browser, plus |
 | `ui/routes_product_map.py` | Product-map cards, recorded journeys, and guarded learned-frame serving. |
+| `ui/routes_project_access.py` | Who can reach one project: owner, assignees (project.assign) and shared-with |
 | `ui/routes_project_edit.py` | Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md. |
 | `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
+| `ui/routes_team_run.py` | The team Test button (T-201b, qa/contracts/team-test-button.md TT1-TT6): a teammate with |
 | `ui/routes_unified_report.py` | The damage-control report as a page (T-168): the lead's two-step route from the project page. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
 | `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
 | `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
+| `ui/team_run_view.py` | Markup for the team Test button (T-201b): the button, the request status page, the "started |
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 | `ui/upload_stream.py` | Read one multipart upload from the wire into a staged file, stopping at the admin limit. |
@@ -308,6 +329,14 @@
 | `JourneyStop` (`schema/analysis.py`) | One stop in a recording's end-to-end journey — reuses `ObservedScreen`'s |
 | `VideoAnalysis` (`schema/analysis.py`) | One source's adjudicated understanding — screens, flows, the ordered |
 | `RunApproval` (`schema/approval.py`) | One human's authorisation for one kind of run against one target. |
+| `PermissionKey` (`schema/auth.py`) | The closed catalogue (auth.md "Permission catalogue"). |
+| `Scope` (`schema/auth.py`) |  |
+| `User` (`schema/auth.py`) | One account. The password hash never leaves the auth store's own modules. |
+| `Group` (`schema/auth.py`) | An IAM-style group: a name, its ticked permissions, and its members' ids. |
+| `ProjectRelation` (`schema/auth.py`) |  |
+| `ResourceRef` (`schema/auth.py`) | What `authorize` judges a scoped key against (auth.md Vocabulary). |
+| `Principal` (`schema/auth.py`) | Who makes the current request, resolved from a live server-side session. |
+| `RouteRule` (`schema/auth.py`) | One row of the central route policy table (AU14). |
 | `Provenance` (`schema/base.py`) | Who or what produced this artifact, and from what. |
 | `Artifact` (`schema/base.py`) | Common envelope: versioned, timestamped, attributable. |
 | `SeededBug` (`schema/bench.py`) | A deliberately introduced defect with known ground truth. |

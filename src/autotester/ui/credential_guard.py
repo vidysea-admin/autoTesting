@@ -11,13 +11,67 @@ keeps working unchanged.
 
 from __future__ import annotations
 
+import os
 from urllib.parse import unquote_plus
 
 from fastapi import HTTPException
 
 from autotester.browser.secrets import SecretStore
+from autotester.core.env import (
+    PROVIDER_KEYS,
+    SERVER_PREFIX,
+    is_server_key,
+    key_namespace,
+)
+from autotester.core.paths import repo_root
 from autotester.core.redact import BIDI_OVERRIDES, PLACEHOLDER_RE
 from autotester.schema.project import Project
+from autotester.store.project_store import ProjectStore
+
+
+def refuse_server_key(key: str) -> None:
+    """Provider keys and `AUTOTESTER_*` are server-wide (Settings, `settings.manage`)."""
+    if is_server_key(key.strip()):
+        raise HTTPException(403, "server-wide keys are managed under Settings "
+                                 "(settings.manage), not in a project")
+
+
+def refuse_reserved_slug(slug: str) -> None:
+    """AU21: a new project's key prefix must not cover a key the server reads or a variable
+    this process already holds (a shell export, or a `.env` key loaded at start) -- else its
+    namespace would swallow it, because `load_repo_env` never exports a project namespace.
+    Existing projects are unaffected; the `.env` file itself is not consulted, since an
+    operator fills `PATHLYNKS_*` there before onboarding `pathlynks`."""
+    ns = key_namespace(slug)
+    if (any(k.startswith(ns) for k in (*PROVIDER_KEYS, *os.environ))
+            or ns.startswith(SERVER_PREFIX) or SERVER_PREFIX.startswith(ns)):
+        raise HTTPException(400, f"the key prefix {ns} of that slug is used by a setting on "
+                                 "this server; choose a different slug")
+
+
+def refuse_foreign_key(project: Project, key: str) -> None:
+    """T-204 AU21, the ONE gate every project route declaring a credential passes through
+    (/env/add, /secrets, onboarding rows): a key must sit in the project's own namespace,
+    must not be a server-wide key (provider keys, `AUTOTESTER_*`: Settings, `settings.manage`),
+    must not already be declared by another project, and must not fall in the longer
+    namespace of another project (`alpha` cannot claim `ALPHA_BETA_*`). Without it a
+    `credentials.edit` holder could write the shared `.env` (provider keys, the approval key,
+    a neighbour's password) or aim another project's secret at their own site. What a
+    project writes is never exported to the process either (`core.env.load_repo_env`)."""
+    name = key.strip()
+    refuse_server_key(name)
+    ns = key_namespace(project.slug)
+    if not name.startswith(ns):
+        raise HTTPException(400, f"a credential key for this project must start with {ns}")
+    projects_dir = repo_root() / "projects"
+    slugs = (sorted(p.name for p in projects_dir.iterdir() if (p / "project.json").exists())
+             if projects_dir.exists() else [])
+    for slug in (s for s in slugs if s != project.slug):
+        other = ProjectStore(slug).load_project()
+        if len(key_namespace(slug)) > len(ns) and name.startswith(key_namespace(slug)):
+            raise HTTPException(400, "that key is in another project's namespace")
+        if other is not None and other.secret(name) is not None:
+            raise HTTPException(400, "that key belongs to another project")
 
 
 def _credential_variants(text: str) -> list[str]:
@@ -160,3 +214,4 @@ def _refuse_unsafe_submission(
             f"{', '.join(sorted({label for label, t in fresh if t}))}. Declare it in Project "
             "settings and use {{SECRET:KEY}} in a step's Value box instead."
         ))
+

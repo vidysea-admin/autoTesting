@@ -186,15 +186,15 @@ def test_add_a_custom_credential_declares_and_stores_in_one_step(
 
     _seed_demo_project(scratch_root)
     response = client.post("/projects/demo/env/add", data={
-        "key": "ERP_TENANT_ID", "value": "tenant-42",
+        "key": "DEMO_ERP_TENANT_ID", "value": "tenant-42",
         "domains": "demo.test", "description": "the tenant id",
     })
 
     assert response.status_code in (200, 303)
     project = ProjectStore("demo", scratch_root).load_project()
-    assert project.secret("ERP_TENANT_ID") is not None  # declared
+    assert project.secret("DEMO_ERP_TENANT_ID") is not None  # declared
     written = (scratch_root / ".env").read_text(encoding="utf-8")
-    assert parse_env(written)["ERP_TENANT_ID"] == "tenant-42"  # and stored
+    assert parse_env(written)["DEMO_ERP_TENANT_ID"] == "tenant-42"  # and stored
 
 
 def test_add_credential_refuses_a_duplicate_key(
@@ -205,12 +205,12 @@ def test_add_credential_refuses_a_duplicate_key(
 
     project = ProjectModel(
         slug="demo", name="Demo", base_url="https://demo.test", allowed_domains=["demo.test"],
-        secrets=[SecretRef(key="ERP_TENANT_ID", domains=["demo.test"])],
+        secrets=[SecretRef(key="DEMO_ERP_TENANT_ID", domains=["demo.test"])],
     )
     ProjectStore("demo", scratch_root).save_project(project)
 
     response = client.post("/projects/demo/env/add", data={
-        "key": "ERP_TENANT_ID", "value": "x", "domains": "demo.test",
+        "key": "DEMO_ERP_TENANT_ID", "value": "x", "domains": "demo.test",
     })
 
     assert response.status_code == 400

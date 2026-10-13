@@ -13,11 +13,14 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
+from autotester.auth.access import set_owner, visible_slugs
+from autotester.auth.config import check_startup
+from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.env import load_repo_env
 from autotester.core.paths import ProjectPaths
+from autotester.schema.auth import PermissionKey
 from autotester.schema.project import Project, Source
-from autotester.stages.report_export import valid_runs_newest_first
 from autotester.store.project_store import ProjectStore
 from autotester.ui import (
     error_pages,
@@ -28,6 +31,8 @@ from autotester.ui import (
     routes_sources,
     theme,
 )
+from autotester.ui.auth_middleware import auth_middleware
+from autotester.ui.credential_guard import refuse_reserved_slug
 from autotester.ui.env_editor import InvalidEnvValue, set_env_values, validate_env_values
 from autotester.ui.helpers import (
     _load_project_or_404,
@@ -38,7 +43,6 @@ from autotester.ui.helpers import (
     _require_slug,
     origin_guard_middleware,
 )
-from autotester.ui.routes_report import _run_counts
 
 __all__ = ["_require_slug", "app"]
 
@@ -49,16 +53,19 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     scripts/run_pathlynks_first_cases.py) -- a plain `uvicorn`/docker process never
     sources .env on its own, so global provider keys (ANTHROPIC_API_KEY etc.) would
     otherwise be invisible to LangChainFallbackProvider() even though the file is
-    present on disk. A startup hook, not a module-level call, so TestClient(app) (which never
-    runs lifespan unless used as a context manager) never leaks real .env values into tests."""
+    present on disk. A startup hook, not a module-level call, so TestClient(app) (which never runs
+    lifespan unless used as a context manager) never leaks real .env values into tests."""
     load_repo_env()          # AT-228: the one loader the CLI also uses
+    check_startup()          # T-204 AU17/AU20: refuse an unsafe auth configuration
     routes_runs.get_queue()  # T-203/HO18: recover the persisted run queue at boot
     yield
 
 
-app = FastAPI(title="AutoTester", lifespan=_lifespan, middleware=origin_guard_middleware())
+# D-066 Origin guard first, then the T-204 login gate (auth.md AU18)
+app = FastAPI(title="AutoTester", lifespan=_lifespan,
+              middleware=[*origin_guard_middleware(), *auth_middleware()])
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
-routers.include_all(app)  # T-205/TF3: the one router list lives in ui/routers.py
+routers.include_all(app)  # T-204/T-205 (TF3): the one router list lives in ui/routers.py
 
 
 @app.get("/favicon.ico", status_code=204)
@@ -66,84 +73,27 @@ def favicon() -> Response:
     return Response(status_code=204)
 
 
-def _latest_run_status(slug: str) -> tuple[str | None, dict[str, int]]:
-    """The latest run id (or None if the project has never run) and its verdict
-    counts — same lookup `routes_report.py`'s report page already does per
-    project, reused here rather than a second way to compute "how did the
-    last run go" (ui.md U2/U4: real persisted state, never recomputed)."""
-    store = ProjectStore(slug)
-    runs = valid_runs_newest_first(store)
-    if not runs:
-        return None, {}
-    return runs[0].id, _run_counts(store, runs[0].id)
-
-
-def _project_card(slug: str) -> str:
-    store = ProjectStore(slug)
-    project = store.load_project()
-    name = escape(project.name) if project else escape(slug)
-    case_count = len(store.list_cases())
-    safe_slug = escape(slug)
-    run_id, counts = _latest_run_status(slug)
-    if run_id is None:
-        status = "<span class='meta'>never run</span>"
-    else:
-        status = "".join(theme.badge(escape(k), count=v) for k, v in counts.items())
-    return (
-        f"<a class='project-card' href='/projects/{safe_slug}'>"
-        f"<span class='name'>{name}</span>"
-        f"<span class='meta'>{case_count} case{'s' if case_count != 1 else ''}</span>"
-        f"<span class='card-status'>{status}</span></a>"
-    )
-
-
-def _portfolio_stats(slugs: list[str]) -> str:
-    """Aggregate health across every onboarded project — the piece a
-    non-technical user needs before clicking into any one project (feedback
-    2026-09-06: the home page showed names and case counts only, nothing
-    saying what's actually passing or failing)."""
-    total_cases = 0
-    never_run = 0
-    failing = 0
-    healthy = 0
-    for slug in slugs:
-        total_cases += len(ProjectStore(slug).list_cases())
-        _run_id, counts = _latest_run_status(slug)
-        if _run_id is None:
-            never_run += 1
-        elif counts.get("FAIL", 0) > 0 or counts.get("BLOCKED", 0) > 0:
-            failing += 1
-        else:
-            healthy += 1
-    tiles = [
-        theme.stat(str(len(slugs)), "projects"),
-        theme.stat(str(total_cases), "cases"),
-        theme.stat(str(healthy), "latest run clean"),
-    ]
-    if failing:
-        tiles.append(theme.stat(str(failing), "latest run failing"))
-    if never_run:
-        tiles.append(theme.stat(str(never_run), "never run"))
-    return f"<div class='stat-row'>{''.join(tiles)}</div>"
-
-
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
-    slugs = _project_slugs()
+    who = current_principal()
+    slugs = _project_slugs() if who is None else visible_slugs(who, _project_slugs())
+    new = ("<a class='btn btn-primary' href='/onboard'>+ New project</a>"
+           if theme.may(PermissionKey.PROJECT_CREATE) else "")
     header = (
         "<div class='page-header'><div><h1>Projects</h1>"
         "<p class='subtitle'>Onboard a product once, then let AutoTester keep watching it.</p>"
-        "</div><a class='btn btn-primary' href='/onboard'>+ New project</a></div>"
+        f"</div>{new}</div>"
     )
     if not slugs:
         body = header + theme.empty_state(
-            "🧪", "No projects yet — onboard your first one to get started.",
-            "<a class='btn btn-primary' href='/onboard'>+ New project</a>",
+            "🧪", "No projects yet" + (" — onboard your first one to get started."
+                                      if new else " — ask an admin to share one with you."),
+            new,
         )
     else:
-        cards = "".join(_project_card(s) for s in slugs)
+        cards = "".join(project_view.project_card(s) for s in slugs)
         body = (
-            header + _portfolio_stats(slugs)
+            header + project_view.portfolio_stats(slugs)
             + f"<div class='project-grid'>{cards}</div>"
         )
     return theme.page("Projects", body)
@@ -204,6 +154,7 @@ async def onboard_submit(request: Request) -> RedirectResponse:
     _require_project_name(name)
     if ProjectStore(slug).load_project() is not None:
         raise HTTPException(400, "a project with this slug already exists")
+    refuse_reserved_slug(slug)  # AU21: its key prefix may not cover a setting the server has
     domains = [d.strip() for d in allowed_domains.split(",") if d.strip()]
     draft = Project(slug=slug, name=name, base_url=base_url, allowed_domains=domains)
     refs, values = routes_project_edit.parse_secret_rows(
@@ -233,6 +184,9 @@ async def onboard_submit(request: Request) -> RedirectResponse:
     for source in sources:
         store.add_source(source)
     set_env_values(env_path, values)
+    who = current_principal()
+    if who is not None and who.user_id:  # AU8 vocabulary: the creator owns the project
+        set_owner(slug, who.user_id)
     return RedirectResponse(f"/projects/{slug}", status_code=303)
 
 

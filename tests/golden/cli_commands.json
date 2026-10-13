@@ -72,6 +72,10 @@
   "Issues derived from a recording \u2014 the tester's sheet."
  ],
  [
+  "auth",
+  "Team login accounts (T-204)."
+ ],
+ [
   "schedule",
   "The scheduler: run the tests that are due."
  ]

@@ -10,3 +10,11 @@ Evidence identities (all on aa6fec2e, Windows, worktree venv):
 - attack scripts + raw json: qa/evidence/t204-team-login-B/{unauth,session,verify,diff,own}/
 - ruff clean, doctor clean, uv lock --check Resolved 89 packages
 Not run by seat B: full suite, browser (seat A), AU24, AU26.
+
+# Cycle 3, merge-reconcile 1 (mr1), seat B - BLOCKED-PROCESS (suite lock held by pid 2844)
+head=17c1422d code=997c842b base=2344c045 repair-base=37a1d211 policy=proportional-verification/2026-10-10.9
+Evidence identities (git archive of 997c842b, Windows, fresh uv sync --frozen venv, -p no:xdist -o addopts=):
+- route walk qa/evidence/t204-team-login-r3-mr1-b/route_walk.py -> 74 pairs, 0 unrouted, 0 anon-open, 0 zero-access-open
+- 14 auth+policy_merge+routers_list files 131 passed; 13 auth/UI/CLI/hosting files 260 passed; 16 master-side files 425 passed; 21 files 888 passed + 9 failed (archive has no .git; 69 passed after git init)
+- falsification AU14 AU16 AU18 AU25 red on named assertions (qa/evidence/t204-team-login-r3-mr1-b/falsify-f*.red.txt); ruff, doctor, uv lock --check clean
+Remaining: ONE full suite on 997c842b via shard_suite (lock). Nothing else owed.

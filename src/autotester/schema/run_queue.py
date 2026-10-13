@@ -14,6 +14,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.schema.case import CasePriority
+from autotester.schema.team_enums import RunVia
 
 
 class QueueStatus(StrEnum):
@@ -45,6 +46,8 @@ class QueueEntry(BaseModel):
     started_at: datetime | None = None
     finished_at: datetime | None = None
     reason: str | None = None
+    via: RunVia | None = Field(
+        None, description="T-201b: which surface asked (`team_button`); None = the Run button")
     position: int = Field(0, description="1-based place among the queued; derived, never stored")
 
 

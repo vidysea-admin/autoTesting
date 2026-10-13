@@ -14,6 +14,11 @@ services:
       - /etc/autotester/server.env   # server settings + keys; mode 600, never in git
     environment:
       AUTOTESTER_ROOT: /data         # projects/, profiles/, .env and .work/ all live here
+      # The origin users open (AU20). The app binds 0.0.0.0, so it cannot know it. With a domain
+      # it is https://<domain>; for the no-domain interim set it yourself. With neither it stays
+      # EMPTY on purpose, and the app then refuses to start ("required on a wildcard bind"); a
+      # loopback value is refused too. Startup also refuses a value the allow-lists do not admit.
+      AUTOTESTER_PUBLIC_ORIGIN: ${AUTOTESTER_PUBLIC_ORIGIN:-${AUTOTESTER_DOMAIN:+https://${AUTOTESTER_DOMAIN}}}
       DISPLAY: ":99"
     volumes:
       - ${AUTOTESTER_DATA:-/srv/autotester/data}:/data

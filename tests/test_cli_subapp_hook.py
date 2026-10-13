@@ -29,7 +29,7 @@ def test_help_lists_exactly_the_commands_it_listed_before() -> None:
 
 def test_registered_groups_come_from_the_list() -> None:
     names = {name for name, _ in cli_subapps.SUBAPPS}
-    assert names == {"ingest", "issues", "schedule"}
+    assert names == {"ingest", "issues", "auth", "schedule"}  # auth: T-204
     assert names <= {row[0] for row in command_listing(cli.app)}
 
 
