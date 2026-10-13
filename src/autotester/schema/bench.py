@@ -13,6 +13,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from autotester.schema.base import Artifact
 from autotester.schema.enums import Participant, Severity
 
+# Which ground-truth provenance forms the recall denominator for each corpus mode. The
+# AI-assisted known-bugs list is its own population: never "human_independent" (bench.md K12).
+DENOMINATOR_PROVENANCE = {
+    "fixture": "fixture_seeded",
+    "human_confirmed": "human_independent",
+    "known_bugs_ai_assisted": "ai_video_review",
+}
+
 
 class SeededBug(BaseModel):
     """A deliberately introduced defect with known ground truth."""
@@ -25,7 +33,7 @@ class SeededBug(BaseModel):
     location: str = Field(description="route/screen where it manifests")
     detect_hint: str = Field(description="what a correct finding must state")
     provenance: Literal[
-        "fixture_seeded", "human_independent", "human_prompted", "unknown"
+        "fixture_seeded", "human_independent", "human_prompted", "ai_video_review", "unknown"
     ] = "unknown"
 
 
@@ -49,7 +57,7 @@ class BenchCorpus(Artifact):
     build_ref: str
     seeded_bugs: list[SeededBug] = Field(default_factory=list)
     material_refs: list[str] = Field(default_factory=list, description="videos/docs handed over")
-    mode: Literal["fixture", "human_confirmed", "unknown"] = "unknown"
+    mode: Literal["fixture", "human_confirmed", "known_bugs_ai_assisted", "unknown"] = "unknown"
 
     @model_validator(mode="after")
     def validate_truth(self) -> BenchCorpus:
@@ -59,6 +67,7 @@ class BenchCorpus(Artifact):
         allowed = {
             "fixture": {"fixture_seeded", "unknown"},
             "human_confirmed": {"human_independent", "human_prompted", "unknown"},
+            "known_bugs_ai_assisted": {"ai_video_review"},
             "unknown": {"unknown"},
         }
         if any(bug.provenance not in allowed[self.mode] for bug in self.seeded_bugs):
@@ -104,7 +113,7 @@ class BenchTrial(Artifact):
             return {}, "corpus mode not recorded"
         if any(bug.provenance == "unknown" for bug in corpus.seeded_bugs):
             return {}, "ground-truth provenance not recorded"
-        provenance = "fixture_seeded" if corpus.mode == "fixture" else "human_independent"
+        provenance = DENOMINATOR_PROVENANCE[corpus.mode]
         truth = {bug.id: bug for bug in corpus.seeded_bugs if bug.provenance == provenance}
         if not truth:
             return truth, "no eligible ground truth"
@@ -149,7 +158,6 @@ class BenchTrial(Artifact):
             "kind": self.kind,
             "ordering": self.ordering,
             "denominator_mode": corpus.mode,
-            "denominator_population": "fixture_seeded" if corpus.mode == "fixture" else
-                "human_independent" if corpus.mode == "human_confirmed" else "unknown",
+            "denominator_population": DENOMINATOR_PROVENANCE.get(corpus.mode, "unknown"),
             "denominator_unavailable_reason": unavailable,
         }

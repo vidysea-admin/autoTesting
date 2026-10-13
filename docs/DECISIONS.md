@@ -2554,3 +2554,19 @@ the dependency or by a fresh licence decision.
 **Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
 
 **Links:** D-090; D-091; D-092; T-199; T-201; T-203; qa/contracts/hosting.md; qa/contracts/team-test-button.md
+
+## D-094 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided in chat on 2026-10-13: Karunn's PathLynks "Release Review, 8 Oct" findings (compiled by watching recorded videos with Claude's help; NOT an independent hands-on tester) are used for T-136 as a KNOWN-BUGS oracle, and AutoTester's recall is scored against them.
+1. A new corpus mode `known_bugs_ai_assisted` (ground-truth provenance `ai_video_review`) is distinct from `human_confirmed` and `human_live`. Only real bug rows (High, Medium) count; praise and summary rows are excluded.
+2. Recall computed against it is always labelled "AI-assisted video review, not independent" and is never presented as independent-human recall. FP adjudication still requires human confirmation (an unmatched finding is not proven false).
+3. The source is internal Vidysea feedback and is NOT committed to the public repo: the corpus lives under `.work/` (gitignored) and is read by `check_acceptance_comparison.py --corpus`. Only code, schema, synthetic-fixture tests and this text are tracked.
+4. The independent hands-on tester list (qa/gates/t136-independent-human-list.md) stays the ideal for the T-136 gate and can come later; this entry does not close it.
+
+**Why:** A usable recall number now, with honest provenance, beats waiting for a tester list; the label prevents the AI-assisted list being mistaken for the independent comparison the north star needs.
+
+**Result:** schema/bench.py (mode, provenance), stages/known_bugs.py, scripts/known_bugs_corpus.py, acceptance comparison `recall_basis`, bench.md K11, gate file partial answer.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** T-136; D-089; D-090; qa/gates/t136-independent-human-list.md; qa/contracts/bench.md
