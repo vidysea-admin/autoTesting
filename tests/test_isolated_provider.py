@@ -56,7 +56,8 @@ def test_a_hung_provider_returns_inside_the_deadline_and_the_child_is_dead() -> 
     started = time.monotonic()
     with pytest.raises(ProviderDeadline, match="deadline 8s reached"):
         iso.act("hi")
-    assert time.monotonic() - started < 8.0 + 60.0  # the bound plus generous kill grace under load; still well under the 120 s hang
+    # the bound plus generous kill grace under load; still well under the 120 s hang
+    assert time.monotonic() - started < 8.0 + 60.0
     assert not iso.last_process.is_alive()
 
 

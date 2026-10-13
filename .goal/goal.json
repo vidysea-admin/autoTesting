@@ -1264,7 +1264,7 @@
     {
       "id": "T-177",
       "title": "browser-use fallback actuator for unknown screens with typed outputs; revives agent_loop.run_with_fallback (AT-253) (D-041)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-176"
       ],
@@ -1275,7 +1275,7 @@
         "cmd": "uv run pytest tests/test_agent_fallback.py",
         "expect_exit": 0
       },
-      "note": "D-041; adds browser-use (MIT) to pyproject only in this unit. | D-042: becomes a runner-subagent tool.",
+      "note": "D-041; adds browser-use (MIT) to pyproject only in this unit. | D-042: becomes a runner-subagent tool. | Closed 2026-10-13: AF1-AF6 PASS (qa/verdicts/t177-actuator.r2.md); production wiring and headed-Chrome bind held per D-075; qa/verdicts/t-177-actuator.md.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
       "user_value": "high"
