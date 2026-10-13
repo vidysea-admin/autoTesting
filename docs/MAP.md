@@ -223,6 +223,7 @@
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
 | `stages/run_launcher.py` | The one run launcher: gates, execution and the saved `Run` (T-205, team-foundation TF1/TF2). |
+| `stages/run_record.py` | T-136c: persist a finished run with its measured wall clock and name it for bench tooling. |
 | `stages/schedule_gate.py` | The TS5 gate: a scheduled run may start only under the credential-derived approval (D-068). |
 | `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |
 | `stages/schedule_tick.py` | One stateless pass over every scheduled project, plus the heartbeat and `--dry-run` (TS7). |
