@@ -5897,3 +5897,9 @@ Maker never edits contracts; checker to fold or amend. K1-K10 do not cover conve
 - **K11d** Duration is measured only: the run's `finished_at - started_at`, else the sum of stored per-case durations, else None (K8 unavailable, check script fails). Never defaulted.
 
 **Status:** folded (2026-10-13, /checker) -> `qa/contracts/bench.md` K11a-d (tightened: refusal writes nothing; partial per-case durations never summed).
+
+## 2026-10-13 · /checker (contract maintenance) · T-174 cli-mcp.md tighten + activate
+
+Maker manifest asked: does `Catalog` satisfy CM4 "tool outputs use the CM2 schema"; is `schedule tick` keeping its own exit codes acceptable.
+
+**Status:** folded (2026-10-13) -> `qa/contracts/cli-mcp.md` CM1 (scope: tick/doctor keep own codes), CM3 (dry run mints/checks no approval), CM4 (`Catalog` accepted; typed `extra="forbid"` models), Status ACTIVE.

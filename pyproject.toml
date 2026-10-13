@@ -35,6 +35,7 @@ dependencies = [
     "uvicorn[standard]>=0.30.0",
     "argon2-cffi==25.1.0",  # T-204 password hashing, authorized by D-072 "new modules / auth"
     "litellm==1.104.0",  # T-202 (D-071): providers/litellm_provider.py; exact pin, SDK only
+    "mcp>=2.3,<3",  # T-174 (D-071): mcp_server.py, local stdio MCP adapter
 ]
 
 [project.scripts]
