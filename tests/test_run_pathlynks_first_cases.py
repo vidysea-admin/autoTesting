@@ -72,3 +72,10 @@ def test_best_case_always_runs_last() -> None:
     ordered = sorted(cases, key=lambda c: 0 if c.kind != "best" else 1)
     assert ordered[-1].kind == "best"
     assert {c.kind for c in ordered[:-1]} == {"worst", "edge"}
+
+
+def test_script_main_records_wall_clock_and_prints_run_id() -> None:
+    src = (Path(__file__).resolve().parents[1] / "scripts"
+           / "run_pathlynks_first_cases.py").read_text(encoding="utf-8")
+    assert "record_run(" in src and "run_id_lines(" in src
+    assert "Run(id=" not in src  # no un-timestamped Run construction left

@@ -210,6 +210,7 @@
 | `stages/explore_traversal.py` | Which screen the crawl visits next — the frontier's ORDER, and nothing else. |
 | `stages/explore_typing.py` | The X10-b typing pre-pass (D-029): what the crawler types, and where it |
 | `stages/failure_bundle.py` | Assemble and load one atomic failure bundle (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
+| `stages/generic_acceptance.py` | GENERIC ACCEPTANCE: one harness that drives a product through BOTH entry modes (T-169). |
 | `stages/grade.py` | GRADE: an independent, stateless judge reads a Rubric + a RawResult's evidence. |
 | `stages/ingest.py` | INGEST: turn a video Source into a FlowSpec, provenance-tracked to the second. |
 | `stages/issues.py` | ISSUES: turn an adjudicated analysis into rows a human tester can read. |
@@ -236,6 +237,7 @@
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
 | `stages/run_launcher.py` | The one run launcher: gates, execution and the saved `Run` (T-205, team-foundation TF1/TF2). |
+| `stages/run_record.py` | T-136c: persist a finished run with its measured wall clock and name it for bench tooling. |
 | `stages/run_service.py` | Run / report / catalog as plain functions for the CLI and the MCP server (T-174, CM1-CM4). |
 | `stages/schedule_gate.py` | The TS5 gate: a scheduled run may start only under the credential-derived approval (D-068). |
 | `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |

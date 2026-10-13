@@ -5943,3 +5943,13 @@ T-198 persona walk: anonymous `/favicon.ico` returns 401 (policy.py MEMBER; app.
 3. **FP rate when nothing is reported.** The scorer returns None; treated as 0.0 in the rule.
 
 **Status:** folded 2026-10-13 by /checker t181-guardrails (cycle 1) -> `qa/contracts/agent-layer.md` "T-181 rulings": (1) offline test satisfies done_check, live run + keep/drop still required to close T-181; (2) WinRule named as the one AL13 rule; (3) None FP rate = 0.0, stated in report.
+
+## 2026-10-13 · maker (t169-generic-acceptance) · proposed criteria for a generic-acceptance contract (none exists; not yet in contract)
+
+No contract names T-169; `bench.md` and `docs/spec.md` R31 only cite it. Maker never edits contracts; checker to fold or amend. Narrowest reading built:
+
+- **GA1** Both entry modes run end to end on the local fixture product through the app's own routes (`/onboard`, flowspec approve, `cases/generate`, `run`) and the orchestrator, with no CLI: teaching sources (video + doc) choose INGEST; URL + test credentials only choose DISCOVER; the other entry stage never appears in the run's ledger.
+- **GA2** Each mode ends in the existing `bench_from_run` + `acceptance_comparison` output (no second scorer); with no human list, recall reads "unavailable" and `completeness_problems` is empty (D-089/D-090).
+- **GA3** The harness is slug-driven (`ModeSpec.onboard=False` reuses an onboarded project) so the same check runs on Pathlynks once T-145 yields data; the real-target run is NOT part of this unit.
+- **GA4** An orchestrated run's parked proposals (`runs/<id>/{ingest,discover}.flowspec.json`) never break `load_results` (found by GA1: a later UI run crashed in `prune_old_videos`).
+- **Gap found:** case-proposal review has no UI route (`/cases/generate` refuses until proposals are reviewed), so GA1 approves them through a harness seam (`ModeSeams.review_proposals`), not the UI. Needs a UI review route before "no CLI" is fully true for Mode 1/2.
