@@ -1,4 +1,4 @@
-"""AT-996: a judge PASS whose own note describes a failure is never a PASS (fail closed, C12).
+"""AT-997: a judge PASS whose own note describes a failure is never a PASS (fail closed, C12).
 
 Uses the judge output recorded live in T-181 (qa/evidence/t181-live, reasons only, no keys): the
 default rubric graded a seeded broken login PASS on both paths while the notes described the bug.

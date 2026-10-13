@@ -1,10 +1,10 @@
 # Manifest - t181-oracle-fix
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
-**Unit:** T-181 follow-up: oracle defect AT-996 and gain-verdict fixes.
+**Unit:** T-181 follow-up: oracle defect AT-997 and gain-verdict fixes.
 **Contract:** qa/contracts/core-invariants.md C12 (fail closed); qa/contracts/grade.md; qa/contracts/agent-layer.md AL12/AL13.
-**Issues addressed:** AT-996
+**Issues addressed:** AT-997
 
 ## What was built
 1. `stages/grade_note_guard.py` (new, one job): a judge PASS whose own note carries an un-negated defect word is downgraded to INCONCLUSIVE. Wired into `stages/grade.py::grade` after the assertion guard. Conservative toward INCONCLUSIVE (a correct PASS that mentions an expected error is also held).

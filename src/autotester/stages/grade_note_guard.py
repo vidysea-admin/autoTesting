@@ -1,6 +1,6 @@
 """The notes-vs-verdict cross-check: a judge PASS whose own note describes a defect is not a PASS.
 
-One job (AT-996, found live in T-181: the default rubric returned PASS on a seeded broken login
+One job (AT-997, found live in T-181: the default rubric returned PASS on a seeded broken login
 while both judges' notes said "reproduced the expected bug ... invalid credentials error"). The
 judge's `result` is one enum field; its `note` is the reasoning. When they disagree the stage
 cannot know which is right, so it fails closed (core-invariants C12): the PASS is held as

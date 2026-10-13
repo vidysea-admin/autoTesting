@@ -218,7 +218,7 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
                          note=f"self-consistency check failed: {problem}", **counts)
     shortfall = _shortfall(**counts)
     final, note = _assertion_guard(result, judgment.result, judgment.scoreboard, judgment.note)
-    final, note = note_guard(final, note)  # AT-996: a PASS whose note describes a defect
+    final, note = note_guard(final, note)  # AT-997: a PASS whose note describes a defect
     return _verdict(run_id, result, rubric, verdict_result=final,
                      provider_id=judge.id,
                      scoreboard=_joined(shortfall, judgment.scoreboard) or "",
