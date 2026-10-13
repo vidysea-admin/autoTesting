@@ -66,6 +66,10 @@ def providers_check() -> None:
     """Show which model providers have credentials present on this machine."""
     ready = providers.available_ids()
     typer.echo("available providers: " + (", ".join(ready) if ready else "none"))
+    chain = providers.ModelChainProvider()
+    ok = {t._model for t in chain.ready_tiers()}
+    typer.echo("model order (agent/judge): " + " -> ".join(
+        f"{m} [{'ready' if m in ok else 'no credentials'}]" for m in chain.order()))
 
 
 @app.command("map")
@@ -197,7 +201,7 @@ def flowspec_request_edit(
 @app.command("expand")
 def expand_cases(
     project: str,
-    provider: str = typer.Option("langchain-fallback", "--provider"),
+    provider: str = typer.Option(providers.DEFAULT_SPEC, "--provider"),
     proposals: bool = typer.Option(False, "--proposals", help="Stage/list step-less proposals."),
     approve: list[str] = typer.Option([], "--approve", help="Approve a saved proposal ID."),
     prune: list[str] = typer.Option([], "--prune", help="Prune a saved proposal ID."),

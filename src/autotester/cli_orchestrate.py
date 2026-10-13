@@ -143,7 +143,8 @@ def _learn_runners(
         raise NoEntrySource(
             f"{project}: learn mode needs a teaching Source (video/doc/text/audio/email/drive) "
             "to run INGEST, and none is registered — `autotester ingest register` one first")
-    model = providers.get(provider_id)
+    provider_name, options = providers.parse_spec(provider_id)
+    model = providers.get(provider_name, **options)
     return {
         StageName.INGEST: make_ingest_runner(source, project, model, RepoDocs()),
         StageName.MODEL: make_model_runner(source_id=source.id),
@@ -233,7 +234,8 @@ def orchestrate_cmd(
         None, "--run-id",
         help="resume this run (pass the id a previous invocation printed); "
              "default mints a fresh one; an id with no state on disk starts fresh too"),
-    provider: str = typer.Option("gemini", "--provider", help="ingest provider (learn path only)"),
+    provider: str = typer.Option(providers.DEFAULT_SPEC, "--provider",
+                                 help="ingest provider (learn path only)"),
     max_screens: int = typer.Option(30, "--max-screens", help="explore path only"),
     max_actions: int = typer.Option(200, "--max-actions", help="explore path only"),
     wall_clock: float = typer.Option(600.0, "--wall-clock", help="seconds; explore path only"),

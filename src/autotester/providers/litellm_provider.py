@@ -28,6 +28,7 @@ from pydantic import BaseModel, ValidationError
 from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS
 from autotester.core.paths import repo_root
 from autotester.core.redact import assert_no_raw_secrets
+from autotester.providers import ollama_cloud
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.images import image_url_parts
 from autotester.providers.litellm_schema import (
@@ -41,7 +42,7 @@ ModelT = TypeVar("ModelT", bound=BaseModel)
 MODEL_ENV = "AUTOTESTER_MODEL"
 _TIMEOUT_S = 120
 _PROVIDER_KEY_ENV = ("GEMINI_API_KEY", "GOOGLE_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY",
-                     "LITELLM_API_KEY")
+                     "LITELLM_API_KEY", ollama_cloud.KEY_ENV)
 """Vendor-key variables read from the PROCESS environment too: an exported key never
 passes through `.env`, so the `.env` scan alone would not know it (LL5)."""
 _CONFIG_KEYS = frozenset({MODEL_ENV, "LITELLM_API_BASE", "OLLAMA_BASE_URL", "OLLAMA_MODEL"})
@@ -111,9 +112,9 @@ class LiteLLMProvider(Provider):
     # -- availability ------------------------------------------------------
     def _endpoint(self) -> dict[str, str]:
         """`api_base`/`api_key` kwargs from the environment, only the ones set."""
+        if ollama_cloud.is_ollama(self._model):
+            return ollama_cloud.endpoint()
         base = os.environ.get("LITELLM_API_BASE")
-        if self._model.startswith(("ollama/", "ollama_chat/")):
-            base = os.environ.get("OLLAMA_BASE_URL") or base
         key = os.environ.get("LITELLM_API_KEY")
         return {**({"api_base": base} if base else {}), **({"api_key": key} if key else {})}
 
@@ -188,12 +189,16 @@ class LiteLLMProvider(Provider):
         exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]
         return [*_env_secret_values(), *exported, *self._extra_secrets]
 
-    def _guard(self, messages: list[dict[str, Any]]) -> None:
+    def guard_text(self, text: str) -> None:
+        """The redaction gate for one prompt text; raises `ProviderError`, never echoing a value."""
         try:
-            assert_no_raw_secrets("\n".join(_texts(messages)), self._secret_values())
+            assert_no_raw_secrets(text, self._secret_values())
         except ValueError:
             raise ProviderError(
                 f"{self.label}: prompt withheld, a credential value reached it") from None
+
+    def _guard(self, messages: list[dict[str, Any]]) -> None:
+        self.guard_text("\n".join(_texts(messages)))
 
     def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:
         """A vendor failure, with the exception text kept only when it provably

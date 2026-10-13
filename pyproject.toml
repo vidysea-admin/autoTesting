@@ -39,6 +39,7 @@ dependencies = [
     "mcp>=2.3,<3",  # T-174 (D-071): mcp_server.py, local stdio MCP adapter
     "deepagents>=0.7.24,<0.8",
     "langchain>=1.4.5",
+    "langchain-ollama>=1.0",
 ]
 
 [project.scripts]

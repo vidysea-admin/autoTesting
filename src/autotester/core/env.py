@@ -43,7 +43,7 @@ ENV_FILE = ".env"
 # The global provider keys (US1) -- server-wide, `settings.manage` only, never a project's.
 PROVIDER_KEYS = (
     "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY",
-    "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OPENAI_API_KEY",
+    "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OLLAMA_API_KEY", "OPENAI_API_KEY",
 )
 SERVER_PREFIX = "AUTOTESTER_"
 
