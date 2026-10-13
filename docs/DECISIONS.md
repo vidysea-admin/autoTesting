@@ -2539,3 +2539,18 @@ the dependency or by a fresh licence decision.
 **Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
 
 **Links:** D-088; D-090; D-091; T-198; T-199; T-200; T-206; qa/contracts/team-intake.md; qa/contracts/team-schedule.md; qa/contracts/team-loop-acceptance.md; qa/contracts/team-bug-loop.md
+
+## D-093 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided in chat on 2026-10-13: "no - on the server later we'll run with Docker so it'll be crash-proof; build the remaining ones quickly."
+1. **T-203 HO39 (start at boot via a Windows Scheduled Task) and HO40 (restart on failure) are DEFERRED TO PRODUCTION.** The Ubuntu Docker deployment provides the restart and crash-proofing; no Windows Scheduled Task is installed on this machine. T-203 may close on this machine once its remaining non-deferred HO criteria pass. This narrows D-090 item 3 (which had asked for the Scheduled Task).
+2. **T-201 email (TT8, TT9) and hosting HO26-HO29 are DEFERRED TO PRODUCTION**, the same principle as the email deferral in D-092 item 1. The website inbox and report scoping (TT7, HO25) stay required.
+3. **T-199's goal `done_check` scope** is aligned to D-090: the internal tracker (TB7) plus CSV/xlsx export (TB15), not the dry run against a fake sheet client and not a live write.
+
+**Why:** The production host will run in Docker on Ubuntu, which restarts the app itself; a Windows Scheduled Task here would be throwaway work, and mail needs credentials and a relay that exist only on the server.
+
+**Result:** No code change in this entry. Contracts folded by the checker: hosting.md (HO39, HO40, HO26-HO29 marked DEFERRED TO PRODUCTION), team-test-button.md (TT8, TT9 email deferred; TT7 stays), `.goal/goal.json` T-199 note and scope. Criteria otherwise unchanged; no safety rule weakened (default-off email, no recipient from a request and no real SMTP in tests remain in force for when email is built).
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** D-090; D-091; D-092; T-199; T-201; T-203; qa/contracts/hosting.md; qa/contracts/team-test-button.md

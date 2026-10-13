@@ -5925,3 +5925,11 @@ Maker manifest asked: does `Catalog` satisfy CM4 "tool outputs use the CM2 schem
 5. **Fold the six D-090/D-091 deferral proposals** from section 3 of `qa/evidence/t206-runbook.md` (branch `wave/t206-runbook`) into `team-loop-acceptance.md`.
 
 **Status:** folded (2026-10-13, /checker) -> `team-schedule.md` TS5/TS7 (email half deferred), `team-loop-acceptance.md` TA1/TA3/TA6/TA8/TA9/TA11-TA15/TA17, Held, No-fire, Open 2-5 (six proposals folded), `team-bug-loop.md` TB15 (header names), `team-intake.md` (R65 Linux run, live Drive walk deferred). `team-test-button.md` TT8/TT9 and `hosting.md` HO26-HO29 left unchanged (flag for a later decision). Not folded: T-199 goal `done_check` amendment (goal owner's).
+
+## From Umesh via orchestrator (2026-10-13, D-093), for /checker
+
+1. HO39/HO40 (Scheduled Task boot start, restart) DEFERRED TO PRODUCTION (Docker on Ubuntu); T-203 may close locally on the other rows.
+2. TT8/TT9 and HO26-HO29 (email) DEFERRED TO PRODUCTION.
+3. T-199 `done_check` scope aligned to D-090 (TB7 + TB15).
+
+**Status:** folded (2026-10-13, /checker) -> `hosting.md` HO26-HO29, HO39, HO40; `team-test-button.md` TT8, TT9; `.goal/goal.json` T-199 note.

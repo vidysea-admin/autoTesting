@@ -130,7 +130,7 @@ launcher), and unit **G1** (`team-foundation.md`).
   defined once and the inbox, page and message modules import it. *Mutation:* list all runs without `authorize` -> the scope table fails;
   recompute the label in the message module -> the one-definition test fails.
 
-- **TT8 — Email goes only to a user who ticked "Email me run reports", and the recipient is never request-supplied (R58, CRITICAL).**
+- **TT8 — DEFERRED TO PRODUCTION (D-093 item 2; the row text applies when email is built). Email goes only to a user who ticked "Email me run reports", and the recipient is never request-supplied (R58, CRITICAL).**
   G4 builds the **profile page** (`GET/POST /profile`, session required, Origin-guarded): a per-user checkbox **"Email me run reports"**,
   stored per user, **default off** (`schema/delivery.py` `NotificationPref`, extra="forbid"; `hosting.md` HO26). A report is mailed
   **only** to the user who pressed the button (`requested_by`) or the schedule owner (`team-schedule.md`), **and only if** that user's box is
@@ -149,7 +149,7 @@ launcher), and unit **G1** (`team-foundation.md`).
   spec R58, D-072#8, `hosting.md` HO26-HO28, `auth.md` AU12. *Mutation:* read the recipient from the form -> the forged-recipient test
   fails; default the box to on -> the default-off assertion fails; message module recomputes the label -> TT7's one-definition test fails.
 
-- **TT9 — Delivery failure is recorded, visible and harmless; no message carries a secret or a link that works without sign-in (R59).**
+- **TT9 — DEFERRED TO PRODUCTION (D-093 item 2). Delivery failure is recorded, visible and harmless; no message carries a secret or a link that works without sign-in (R59).**
   Every send attempt writes a `DeliveryRecord` (`schema/delivery.py`, extra="forbid": run id, channel `inbox | email`, recipient user id,
   `status` in `sent | outboxed | failed`, a **redacted** error, attempt count, next retry time). A failed email (refused, timed out,
   unreachable, a fake transport that raises) is **shown on the run page**, retried a **bounded** number of times with backoff (`hosting.md`
@@ -199,3 +199,4 @@ is already queued (the existing request and its position are shown); a `tester` 
   refuses with `ApprovalRequired` naming the key and the state, never a value (`core/consent.py` `validate_account_scope`); commit
   a2c6124a is an ancestor of master. The requirement text is unchanged; the row is now judged on the launcher (G7), not parked.
   **Changes-authorized:** D-068 (the behaviour) and this file's own header. **Links:** D-068; TT6; TS5; R60.
+- 2026-10-13 - owner-authorized (D-093 item 2, Umesh chat; /checker) - **TT8 and TT9 (email) are DEFERRED TO PRODUCTION**, with HO26-HO29 and as D-092 item 1. TT7 (website inbox, scoped, label computed once) and TT1-TT6 are unchanged and required. A DeliveryRecord with channel `inbox` is still written; `email`/outbox records apply only once email is built. **Links:** D-093; D-092; T-201.

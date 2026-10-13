@@ -32,9 +32,9 @@ Until the Ubuntu server exists, T-203 is built and hosted on this Windows machin
 the T-203 PASS. The Ubuntu section below (Docker rows, HO10, HO11, HO13, HO34-HO36) is **deferred to Ubuntu** and does not gate the
 local PASS; the Ubuntu Docker files stay untouched.
 
-- **HO39 — Starts at boot.** A launcher script plus a Windows Scheduled Task (trigger: at system startup, runs without an interactive
+- **HO39 — Starts at boot.** **DEFERRED TO PRODUCTION (D-093 item 1; Docker on Ubuntu provides it, no Scheduled Task is installed here, not blocking T-203).** A launcher script plus a Windows Scheduled Task (trigger: at system startup, runs without an interactive
   logon) start the app; `schtasks /Query` shows the task and a scripted check confirms the trigger. *LOCAL.* `serves:` D-090.
-- **HO40 — Restarts on failure.** The task is configured to restart on failure (restart interval and count recorded); killing the app
+- **HO40 — Restarts on failure.** **DEFERRED TO PRODUCTION (D-093 item 1; the Docker restart policy provides it, not blocking T-203).** The task is configured to restart on failure (restart interval and count recorded); killing the app
   process is followed by a successful health check within a documented bound. *LOCAL.* `serves:` D-090.
 - **HO41 — Behind the T-204 login.** Every route except the health endpoint and the login page requires an authenticated session
   (`auth.md`); the launcher never sets `AUTOTESTER_AUTH_DISABLED`; an unauthenticated request to a project route gets 401/302.
@@ -184,20 +184,20 @@ host-independent and still bind T-203 locally).
 - **HO25 — The report is on the website, scoped.** A finished run's report opens in the UI for users holding `report.view` on that
   project (`auth.md` AU13), and for nobody else (404 for a project they cannot view). This is the existing report route; the criterion is
   that auth scoping applies to it and to its Excel/HTML exports. `serves:` D-072#8. *LOCAL.*
-- **HO26 — Email is a per-user checkbox.** The user profile page has an "Email me run reports" checkbox, stored per user, **default off**
+- **HO26 — Email is a per-user checkbox.** **DEFERRED TO PRODUCTION (D-093 item 2; email is built and judged at production).** The user profile page has an "Email me run reports" checkbox, stored per user, **default off**
   (checker choice; opt-in avoids unsolicited mail and data egress). The recipient of a run's report is the user who requested it
   (button) or the schedule's owner, only if their box is on **and** they still hold `report.view` on that project at send time. No other
   user receives it. Turning the box off stops the next mail. `serves:` D-072#8. *LOCAL.*
-- **HO27 — SMTP is configured from the environment, and its absence is graceful.** `AUTOTESTER_SMTP_*` (HO9) configure the transport; the
+- **HO27 — SMTP is configured from the environment, and its absence is graceful.** **DEFERRED TO PRODUCTION (D-093 item 2).** `AUTOTESTER_SMTP_*` (HO9) configure the transport; the
   password lives only in the environment or `/data/.env`, is never displayed, logged or audited (it follows `auth.md` AU21 as a
   credential). With no SMTP configured the checkbox shows "email is not configured on this server", runs still finish, and nothing
   raises. TLS (STARTTLS or SSL) is used when `_TLS` is set and certificate verification is on by default. `serves:` D-072#8.
   *LOCAL* (fake SMTP server in-process) + *SERVER-GATED* (real relay).
-- **HO28 — The mail carries a link and counts, not product data.** The body holds the project name, run id and time, pass/fail/
+- **HO28 — The mail carries a link and counts, not product data.** **DEFERRED TO PRODUCTION (D-093 item 2).** The body holds the project name, run id and time, pass/fail/
   inconclusive counts, the coverage line, and a link to the report on the website (sign-in required). It carries **no attachment, no
   screenshot, no video, no credential value, no page content**; the text passes `Redactor.scrub`. A canary secret and a canary page
   string planted in the run do not appear in the sent message. `serves:` D-072#8, O7, the Vidysea data-boundary rule. *LOCAL.*
-- **HO29 — A mail failure never fails or delays a run.** A refused, timed-out or unreachable SMTP server is recorded on the run page
+- **HO29 — A mail failure never fails or delays a run.** **DEFERRED TO PRODUCTION (D-093 item 2).** A refused, timed-out or unreachable SMTP server is recorded on the run page
   with a redacted reason, retried a bounded number of times with backoff, and never changes the run's status or blocks the next queue
   entry. No test calls a real SMTP host. `serves:` D-072#8, D-070. *LOCAL.*
 
@@ -283,3 +283,4 @@ host-independent and still bind T-203 locally).
   data root, health check, 127.0.0.1 bind with one LAN setting, Windows section in DEPLOY.md, no regression). · why: production host will
   be Ubuntu with host and DNS later; Umesh asked to host on this Windows machine meanwhile. HO1-HO9, HO12, HO14 stay Docker/BUILD-HOST
   rows that bind only when Docker is available.
+- 2026-10-13 · owner-authorized (D-093, Umesh chat; /checker) · **HO39, HO40** marked DEFERRED TO PRODUCTION (Docker on Ubuntu provides boot start and restart; no Windows Scheduled Task here); T-203 may close locally on the other rows. **HO26-HO29** (email) marked DEFERRED TO PRODUCTION, as D-092 item 1. Row text kept for when they bind. HO25 (website report scoping) unchanged. · why: Umesh, 2026-10-13: production runs in Docker, build the remaining ones quickly.
