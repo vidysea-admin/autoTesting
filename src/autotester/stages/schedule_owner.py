@@ -14,7 +14,7 @@ from collections.abc import Callable
 
 from autotester.auth import db
 from autotester.auth.access import authorize, resource_for
-from autotester.auth.config import auth_disabled
+from autotester.auth.loopback import auth_disabled
 from autotester.schema.auth import PermissionKey, Principal
 from autotester.stages.scheduler import Slot
 from autotester.store.project_store import ProjectStore

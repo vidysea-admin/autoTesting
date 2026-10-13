@@ -151,7 +151,10 @@ SCHEDULER_SIDE = ("autotester.stages.scheduler", "autotester.stages.schedule_sto
 # else (a runner, a pipeline stage, the browser session, a provider, the UI app, a CLI) fails.
 ALLOWED_OUTSIDE = frozenset(SCHEDULER_SIDE) | {
     "autotester.stages", "autotester.stages.explore_consent", "autotester.browser",
-    "autotester.browser.secrets", "autotester.ui", "autotester.ui.env_editor"}
+    "autotester.browser.secrets", "autotester.ui", "autotester.ui.env_editor",
+    # HO24 owner guard: the account store and the pure loopback switch, nothing browser-side
+    "autotester.stages.schedule_owner", "autotester.auth", "autotester.auth.access",
+    "autotester.auth.db", "autotester.auth.defaults", "autotester.auth.loopback"}
 PLAIN_PACKAGES = ("core", "schema", "store")
 BANNED_NAMES = {"BrowserSession", "run_and_grade_case", "run_and_grade_case_resilient",
                 "_execute_with_trace"}

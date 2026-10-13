@@ -44,6 +44,7 @@ class Manual:
 def root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
     monkeypatch.delenv("AUTOTESTER_SCHEDULE_GRACE_MINUTES", raising=False)
+    monkeypatch.setenv("AUTOTESTER_AUTH_DISABLED", "1")  # AU17 loopback single-user: no owner
     monkeypatch.setattr(cli_schedule, "_now", lambda: DUE)
     manual = Manual()
     queue = RunQueue(limit=lambda: 2, spawn=manual, runner=lambda e: None)

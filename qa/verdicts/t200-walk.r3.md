@@ -26,3 +26,15 @@ then waits for those runs before exiting (not on `--dry-run`, which opens no que
 - No full browser walk re-run (CPU shared); the process-exit failure is covered by the child-interpreter test.
 
 ## Overall: PASS for the shutdown defect and the S11 ruling.
+
+## Addendum: the three pre-existing failures (found, fixed)
+Same three failures on current local master c377504e, so not caused by this branch. Cause: the HO24 owner guard
+(`stages/schedule_owner.py`, t200c cycles 2-3) fails closed with auth ON.
+- `test_cli_schedule.py` x2: the fixture project has no owner, so the tick recorded `refused` (owner_refused) instead of
+  `blocked_no_credentials`. The `root` fixture now sets `AUTOTESTER_AUTH_DISABLED=1` (AU17 loopback single-user mode). Test setup only.
+- `test_schedule_tick.py` TS6 closure: a real regression. `schedule_owner` -> `auth.config` -> (lazy) `ui.helpers` -> `browser.session`.
+  Fix: `hosted`, `_option`, `bind_host`, `bind_port`, `auth_disabled` moved verbatim to the pure `auth/loopback.py`, re-exported
+  from `auth.config`; `schedule_owner` imports from `loopback`. Behaviour identical (honoured only on loopback, never when hosted, AU17).
+  `ALLOWED_OUTSIDE` extended by exactly the HO24 modules (stages.schedule_owner, auth, auth.access, auth.db, auth.defaults,
+  auth.loopback); nothing browser-side. New `tests/test_auth_loopback.py` proves auth_disabled is ignored when hosted or off loopback.
+- doctor: `docs/MAP.md` regenerated for the new module; ruff clean.
