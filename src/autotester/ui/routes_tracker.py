@@ -92,8 +92,10 @@ def _filter_form(slug: str, status: str, severity: str) -> str:
                   for v in values]
         return "".join(pairs)
     return (f"<form method='get' action='/projects/{escape(slug)}/tracker'>"
-            f"Status <select name='status'>{options([s.value for s in BugStatus], status)}"
-            f"</select> Severity <select name='severity'>"
+            "<label for='f-status'>Status</label> <select id='f-status' name='status'>"
+            f"{options([s.value for s in BugStatus], status)}"
+            f"</select> <label for='f-severity'>Severity</label> "
+            "<select id='f-severity' name='severity'>"
             f"{options([s.value for s in Severity], severity)}</select> "
             "<button class='btn' type='submit'>Filter</button></form>")
 

@@ -117,3 +117,20 @@ def test_tracker_routes_are_guarded_in_the_central_policy() -> None:
 def test_unknown_project_never_leaks_for_a_signed_in_user(world) -> None:
     users, _key, _root = world
     assert users["dev"].get("/projects/ghost/tracker", headers=JSON).status_code == 404
+
+
+def test_project_page_links_the_tracker_only_for_report_view_holders(world) -> None:
+    users, _key, _root = world
+    _relate("shared")  # tester and dev hold report.view on demo; sub has no relation
+    link = "href='/projects/demo/tracker'"
+    assert link in users["tester"].get("/projects/demo").text
+    assert link in users["admin"].get("/projects/demo").text
+    assert link not in users["sub"].get("/projects/demo").text
+
+
+def test_tracker_filter_selects_have_accessible_names(world) -> None:
+    from test_ui_onboard_a11y import unlabelled_controls
+    users, _key, _root = world
+    page = users["admin"].get(LIST).text
+    assert page.count("<select") == 2
+    assert unlabelled_controls(page) == []
