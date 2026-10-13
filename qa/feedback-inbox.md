@@ -5897,3 +5897,6 @@ Maker never edits contracts; checker to fold or amend. K1-K10 do not cover conve
 - **K11d** Duration is measured only: the run's `finished_at - started_at`, else the sum of stored per-case durations, else None (K8 unavailable, check script fails). Never defaulted.
 
 **Status:** folded (2026-10-13, /checker) -> `qa/contracts/bench.md` K11a-d (tightened: refusal writes nothing; partial per-case durations never summed).
+
+## 2026-10-13 · maker · onboard-a11y · AU16 question (favicon)
+T-198 persona walk: anonymous `/favicon.ico` returns 401 (policy.py MEMBER; app.py serves 204), logging a console error on sign-in pages. AU16's closed public set is only `/auth/login`, `/auth/signup`, `/healthz`, so the public set was NOT widened. Instead auth pages carry an inline `<link rel='icon' href='data:,'>`. Question for the checker/Umesh: is a 204 `/favicon.ico` an acceptable AU16 addition, or does the inline icon stand? (Also: signed-in pages still request `/favicon.ico` and get the 204.)
