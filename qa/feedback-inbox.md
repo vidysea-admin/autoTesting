@@ -5880,3 +5880,9 @@ VERDICT: Approve (PLAN ONLY; implementation constrained to the above existing ta
 Contract amendments requested: `team-bug-loop.md` TB7 required for T-199, new export criterion (CSV + xlsx, Tracker column layout, reuse `schema/sheet_plan.py` mapping, no live SheetClient, LiveWriteRefused stays), HG-TB1 "deferred to export (D-090)", TB8/TB9/TB13 export-time; `hosting.md` split Local Windows host (now) / Ubuntu host (later), HO10/HO11/HO13/HO34-HO36 deferred, new local criteria; `bench.md` recall unavailable until human list, FP rate and time must pass.
 
 **Status:** folded (2026-10-13, /checker contract maintenance) → `qa/contracts/team-bug-loop.md` TB7, TB15 (new), HG-TB1, TB8/TB9/TB13 export-time; `qa/contracts/hosting.md` "Local Windows host (now, D-090)" HO39-HO46 (new), HO10/HO11/HO13/HO34-HO36 deferred to Ubuntu; `qa/contracts/bench.md` K10 (new). Gates updated: t136, t199, t203.
+
+## 2026-10-13 · Umesh (chat) · T-204 AU24 Linux run → D-091
+
+Skip Docker on this Windows machine. The T-204 Linux/Docker proof run (AU24, `qa/evidence/t204-linux-run.md`) is deferred to the production Ubuntu server, same as D-090 did for T-203's Ubuntu-only criteria. T-204 may close on this machine once its other criteria pass.
+
+**Status:** folded (2026-10-13, /checker contract maintenance) → `qa/contracts/auth.md` AU24 marked "DEFERRED TO UBUNTU (D-091)", not blocking T-204.
