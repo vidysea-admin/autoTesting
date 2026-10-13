@@ -11,7 +11,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from autotester.schema.tracked_bug import BugEvent, TrackedBug
+from autotester.schema.tracked_bug import DEFAULT_CLOSE_PASSES, BugEvent, TrackedBug
 
 
 class BadEventFile(BaseModel):
@@ -64,3 +64,12 @@ class RunReport(BaseModel):
     unverifiable: list[str] = Field(
         default_factory=list, description="bug keys whose rubric could not be loaded to compare")
     bad_files: list[BadEventFile] = Field(default_factory=list)
+
+
+class BugLoopConfig(BaseModel):
+    """The per-project stored configuration of the bug loop: N, the consecutive evidenced PASS
+    verdicts that close a bug (TB2, G8). One file per project; absent means the default."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    close_passes: int = Field(default=DEFAULT_CLOSE_PASSES, ge=1, le=100)
