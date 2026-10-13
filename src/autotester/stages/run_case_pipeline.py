@@ -12,6 +12,7 @@ with no hand-written Python required.
 
 from __future__ import annotations
 
+from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
 
 from autotester.browser.session import BrowserSession
@@ -162,6 +163,14 @@ def fallback_executor(
     return execute
 
 
+def _judging(session: BrowserSession) -> AbstractContextManager[object]:
+    """The run budget's judge-time scope for `session` (a no-op when it has no budget):
+    model grading is not browser time on the target, so it is accounted separately."""
+    budget = getattr(session, "budget", None)
+    judging = getattr(budget, "judging", None)
+    return judging() if callable(judging) else nullcontext()
+
+
 def _judgeable(result: RawResult) -> bool:
     """Whether `grade()` would send this result to the judge (it settles the rest by rule)."""
     return result.outcome in (Outcome.COMPLETED, Outcome.ASSERTION_FAILED)
@@ -207,8 +216,9 @@ def run_and_grade_case(
     if scripted.mode == "replay" and not judge_replays and _judgeable(result):
         verdict = _unjudged_replay(result, run_id)
     else:
-        verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
-                        secrets=session.secrets)
+        with _judging(session):
+            verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
+                            secrets=session.secrets)
     _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
     return result, verdict
 
@@ -253,8 +263,9 @@ def run_and_grade_case_resilient(
         video_rel = session.end_case_video()
     try:
         rubric = _rubric_for(case, store)
-        verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
-                        secrets=session.secrets)
+        with _judging(session):
+            verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
+                            secrets=session.secrets)
     except Exception as exc:  # the grader failed; execution did not (C7: still not a guess)
         verdict = Verdict(
             run_id=run_id, case_id=result.case_id, result=Result.INCONCLUSIVE,
