@@ -3,9 +3,9 @@
 **Unit:** A refused video comment keeps the user on the video page (T-198 G9 walk, defect D2).
 **Contract:** `qa/contracts/team-intake.md` TP2 (refused with 4xx, nothing stored; text rendered escaped)
 **Date:** 2026-10-13
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1 of max 3
-**Issues addressed:** see qa/issues.jsonl (last row, D2)
+**Issues addressed:** see qa/issues.jsonl (AT-996, D2; renumbered from AT-994 by the checker)
 
 ## Change
 - `routes_video_comments.comment_create`: on `CommentError`, a browser (Accept text/html) gets the video page
