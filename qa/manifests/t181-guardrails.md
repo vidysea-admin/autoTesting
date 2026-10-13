@@ -1,6 +1,6 @@
 # Manifest - t181-guardrails (T-181: agent guardrails + measured gain vs pipeline, AL11-AL13)
 
-## Status: ready-for-check
+## Status: checked-PASS (unit scope; T-181 stays open: live run + keep/drop)
 Fix cycle: 1
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: M (builds on the checked T-179 layer; no new dependency, no guard change)

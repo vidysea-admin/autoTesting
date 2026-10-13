@@ -165,6 +165,8 @@ instruction the model is asked to obey.
   the comparison went; a report that only shows favourable outcomes and drops an unfavourable metric
   fails this criterion.)
 
+**T-181 rulings (2026-10-13, /checker t181-guardrails cycle 1).** (1) `tests/test_agent_gain.py` on caller-supplied fake runners satisfies the goal `done_check` and the guardrail/harness mechanics; AL12's *live* run (real `run_and_grade_case` vs the real agent, seeded product, visible browser) and the AL13 keep/drop declaration remain open and gate T-181 closing. (2) `schema/agent_guardrails.py::WinRule` is the one win rule for AL13 (provisional default, awaiting Umesh: agent bugs >= pipeline AND agent FP rate <= pipeline, tie = gain; budget default 200k tokens / $2.00); `comparison.compare(rule=None)` keeps T-179's stricter rule only for T-179's injected-verdict tests. (3) An FP rate of None from the scorer (nothing reported) is treated as 0.0, and the report must say so.
+
 ## Explicit no-fire list (do not raise these as findings)
 
 - **Hosted agent runtime.** Managed Deep Agents (LangSmith-hosted) or Claude Managed Agents —
