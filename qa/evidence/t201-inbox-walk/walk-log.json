@@ -1,0 +1,16 @@
+{
+ "anon_inbox": [
+  302,
+  "/auth/login?next=/inbox"
+ ],
+ "status_url": "http://127.0.0.1:59025/projects/livefix/test/run-01M4TSV4GP6SSKQ602HX7PXT18",
+ "inbox_while_active": "AT\nAutoTester\nProjects\n+ New project\nMy reports\nVideos\nAccess requests\n\u25cf Live view\ndev@live.test\nSign out\nPROJECTS\nLive Fixture\n+ New project\n\u2190 Back\nPROJECTS / MY REPORTS\nMy reports\nPROJECT\tRUN\tTIME\tSTARTED BY\tSTATUS\tREPORT LABEL\tREPORT\nlivefix\trun-01M4TSV4GP6SSKQ602HX7PXT18\t2026-10-13 14:14 UTC\tdev@live.test\trunning\tin progress\tOpen report",
+ "dev_inbox_done": "AT\nAutoTester\nProjects\n+ New project\nMy reports\nVideos\nAccess requests\n\u25cf Live view\ndev@live.test\nSign out\nPROJECTS\nLive Fixture\n+ New project\n\u2190 Back\nPROJECTS / MY REPORTS\nMy reports\nPROJECT\tRUN\tTIME\tSTARTED BY\tSTATUS\tREPORT LABEL\tREPORT\nlivefix\trun-01M4TSV4GP6SSKQ602HX7PXT18\t2026-10-13 14:14 UTC\tdev@live.test\tdone\tINCONCLUSIVE\tOpen report",
+ "dev_links": [
+  "/projects/livefix/runs/run-01M4TSV4GP6SSKQ602HX7PXT18"
+ ],
+ "tester_inbox": "AT\nAutoTester\nProjects\nMy reports\nVideos\ntester@live.test\nSign out\nPROJECTS\n\nNo projects yet.\n\n\u2190 Back\nPROJECTS / MY REPORTS\nMy reports\n\ud83d\udcec\n\nNo reports yet. Press Test on a project to get one.",
+ "tester_direct_/projects/livefix/runs/run-01M4TSV4GP6SSKQ602HX7PXT18": 404,
+ "tester_missing": 404,
+ "admin_inbox": "AT\nAutoTester\nProjects\n+ New project\nMy reports\nVideos\nAccess requests\n\u25cf Live view\n\u2699 Settings\nUsers\nGroups\nadmin@live.test\nSign out\nPROJECTS\nLive Fixture\n+ New project\n\u2190 Back\nPROJECTS / MY REPORTS\nMy reports\nPROJECT\tRUN\tTIME\tSTARTED BY\tSTATUS\tREPORT LABEL\tREPORT\nlivefix\trun-01M4TSV4GP6SSKQ602HX7PXT18\t2026-10-13 14:14 UTC\tdev@live.test\tdone\tINCONCLUSIVE\tOpen report"
+}
