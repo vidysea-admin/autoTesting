@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from autotester.schema.acceptance import AcceptanceComparison
+from autotester.schema.bench import BenchCorpus
 from autotester.stages.acceptance_comparison import (
     MissingInput,
     build_comparison,
@@ -31,7 +32,8 @@ from autotester.store.project_store import ProjectStore
 def render(cmp: AcceptanceComparison) -> str:
     """Side-by-side text; every figure comes from the artifact."""
     lines = [f"acceptance comparison {cmp.project} (corpus {cmp.corpus_id}, "
-             f"mode {cmp.corpus_mode}, human list {cmp.human_list})"]
+             f"mode {cmp.corpus_mode}, human list {cmp.human_list})",
+             f"  recall basis: {cmp.recall_basis}"]
     for col in (cmp.autotester, cmp.human):
         if not col.present:
             lines.append(f"  {col.participant}: unavailable ({col.absent_reason})")
@@ -57,10 +59,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("project")
     parser.add_argument("--root", type=Path, default=None)
+    parser.add_argument("--corpus", type=Path, default=None,
+                        help="corpus JSON outside the repo tree (e.g. the gitignored known-bugs "
+                             "corpus from scripts/known_bugs_corpus.py); default: the stored one")
     args = parser.parse_args(argv)
     store = ProjectStore(args.project, args.root)
     try:
-        cmp = build_comparison(store, args.project)
+        corpus = BenchCorpus.model_validate_json(
+            args.corpus.read_text(encoding="utf-8")) if args.corpus else None
+        cmp = build_comparison(store, args.project, corpus)
     except MissingInput as exc:
         print(f"cannot build the acceptance comparison for {args.project!r}: "
               f"missing {exc}.\nNo numbers are invented. Produce a real run, then build the "

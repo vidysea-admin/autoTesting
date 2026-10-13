@@ -14,3 +14,5 @@ Answered (partial, ordering): 2026-10-12 - Umesh (chat): "phle ek level build kr
 Answered 2026-10-13, see D-089: build T-136 now WITHOUT the human list; AutoTester produces its own analysis and report. Recall vs a human stays unavailable until Umesh provides a list later; FP rate and time are still measured. No-list is a supported mode, not an error.
 
 Answered 2026-10-13 (chat), see D-090: the human list comes later; T-136 is built now without it. Recall vs a human stays `unavailable until the human list arrives`; FP rate and time must still pass (bench.md K10). Source of the list (A tester / B Umesh) stays OPEN for the later recall number only; it no longer blocks T-136 or T-169's build.
+
+Answered (partial) 2026-10-13 (chat), see D-094: Karunn's PathLynks "Release Review, 8 Oct" findings (AI-assisted video review, NOT an independent hands-on tester) are used as a known-bugs oracle for T-136 recall, labelled "AI-assisted video review, not independent". This does NOT close the gate: the independent hands-on tester list remains the ideal and can come later; FP adjudication still needs human confirmation.

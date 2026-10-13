@@ -27,8 +27,10 @@ def _row(entry: QueueEntry) -> str:
     run = (f" <a href='/projects/{escape(entry.project)}/runs/{escape(entry.id)}'>"
            f"<code>{escape(entry.id)}</code></a>" if entry.status is QueueStatus.DONE else "")
     why = f" <span class='meta'>{escape(entry.reason)}</span>" if entry.reason else ""
+    who = escape(entry.requested_by) if entry.requested_by else "unknown"
     return (f"<tr><td>{theme.pill(escape(_label(entry)), _TONE[entry.status])}</td>"
-            f"<td>{when.strftime('%H:%M:%S UTC')}{run}{why}</td></tr>")
+            f"<td>{when.strftime('%H:%M:%S UTC')}{run}{why}</td>"
+            f"<td>{who} <span class='meta'>({escape(entry.trigger)})</span></td></tr>")
 
 
 def queue_panel(slug: str, queue: RunQueue | None = None) -> str:
@@ -44,5 +46,6 @@ def queue_panel(slug: str, queue: RunQueue | None = None) -> str:
                f"slots busy, {waiting} waiting. One run per project at a time.</p>")
     refresh = ("<meta http-equiv='refresh' content='5'>"
                if any(e.status in ACTIVE for e in mine) else "")
-    table = "<table><tr><th>Status</th><th>Time</th></tr>" + "".join(map(_row, mine)) + "</table>"
+    head = "<tr><th>Status</th><th>Time</th><th>Requested by</th></tr>"
+    table = "<table>" + head + "".join(map(_row, mine)) + "</table>"
     return refresh + theme.card(summary + table, title="Run queue")

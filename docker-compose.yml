@@ -6,7 +6,8 @@ services:
     ports:
       - "8010:8000"  # FastAPI UI -- 8000 is a common default port other local projects also bind
                       # to; found this in the wild when a different container already held it.
-      - "6080:6080"  # noVNC live view
+      - "6080:6080"  # noVNC live view (input)
+      - "6081:6081"  # noVNC view-only (x11vnc -viewonly)
     volumes:
       - .:/app  # same repo the host runs -- .env/projects/profiles/docs persist here, not lost
                 # on container recreation, exactly like restarting the app on the host today.

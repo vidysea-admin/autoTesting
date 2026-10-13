@@ -28,6 +28,6 @@ COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENV DISPLAY=:99
-EXPOSE 8000 6080
+EXPOSE 8000 6080 6081
 
 ENTRYPOINT ["/entrypoint.sh"]

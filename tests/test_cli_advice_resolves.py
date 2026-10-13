@@ -159,6 +159,7 @@ def test_every_site_is_reported_with_a_line_a_human_can_open() -> None:
 EXPECTED_SITES = {
     ("auth/config.py", "auth bootstrap-admin"),
     ("cli.py", "expand"),
+    ("providers/agent_model.py", "providers"),   # ollama-primary: the no-provider refusal
     ("cli_orchestrate.py", "providers"),   # T-202: expand's refusal moved here from cli.py
     ("cli_orchestrate.py", "ingest register"),
     ("cli_issues.py", "ingest analyze"),
@@ -201,9 +202,10 @@ T-202 provider move) took it to 24; T-197 adds one site, `cli_video_review.py`
 ("ingest list", the review command's hint to list sources), so the merged
 count is 24 + 1 = 25. T-204 adds one more, `auth/config.py` ("auth bootstrap-admin",
 the startup refusal that names the break-glass command), so the count after merging
-T-204 is 25 + 1 = 26. The set above names every site from all sides."""
+T-204 is 25 + 1 = 26; ollama-primary adds the agent_model refusal: 27.
+The set above names every site from all sides."""
 
-EXPECTED_SITE_COUNT = 26
+EXPECTED_SITE_COUNT = 27
 
 
 def test_no_advice_site_can_vanish_unnoticed() -> None:

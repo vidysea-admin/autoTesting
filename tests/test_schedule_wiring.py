@@ -18,6 +18,7 @@ from run_approval_fixture import grant_live_case_approval
 from schedule_fakes import daily, loopback_single_user, utc  # noqa: F401
 
 from autotester.browser.session import BrowserSession
+from autotester.schema.auth import Principal, all_permissions
 from autotester.schema.case import Case
 from autotester.schema.enums import Action, CaseClass, CaseKind, Outcome, Result, Trigger
 from autotester.schema.flowspec import Step
@@ -195,14 +196,13 @@ def test_manual_and_unscheduled_projects_are_not_listed_and_a_broken_one_is_name
     assert [i.project for i in items] == ["daily"] and invalid == ["broken"]
     assert items[0].since.tzinfo is not None
 
-
-# --- the queue's executor hands the origin to the one launcher ------------------------------
 @pytest.fixture
 def world(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     import autotester.ui.routes_runs as routes_runs
     import autotester.ui.run_execution as run_execution
-
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    monkeypatch.setattr(routes_runs, "principal_for_email", lambda email: Principal(
+        user_id=1, email=email, permissions=frozenset(all_permissions())))
     store = ProjectStore("demo", tmp_path)
     store.save_project(Project(slug="demo", name="Demo", base_url="https://demo.test",
                                allowed_domains=["demo.test"]))

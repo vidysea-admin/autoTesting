@@ -45,8 +45,9 @@ def parse_at_s(raw: object, duration_s: float | None) -> float:
 
 def clean_text(raw: object) -> str:
     text = str(raw or "").strip()
-    if not MIN_COMMENT_CHARS <= len(text) <= MAX_COMMENT_CHARS:
-        raise CommentError(f"a comment is {MIN_COMMENT_CHARS} to {MAX_COMMENT_CHARS} characters")
+    lo, hi = MIN_COMMENT_CHARS, MAX_COMMENT_CHARS
+    if not lo <= len(text) <= hi:
+        raise CommentError(f"a comment is {lo} to {hi} characters")
     return text
 
 

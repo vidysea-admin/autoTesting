@@ -79,6 +79,8 @@ class AcceptanceComparison(Artifact):
     project: str
     corpus_id: str
     corpus_mode: str
+    # Provenance of the recall denominator, always printed beside recall (bench.md K12).
+    recall_basis: str = "unknown"
     human_list: Literal["present", "absent"]
     # True when no human list exists: every finding then counts as a false positive.
     fp_rate_unadjudicated: bool

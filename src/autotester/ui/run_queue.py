@@ -131,6 +131,13 @@ class RunQueue:
             self._deliver(entry)
         self._launch(starts)
 
+    def nudge(self) -> None:
+        """Start whatever the limits allow now (the admin raised the cap; nothing else changed)."""
+        with self._lock:
+            starts = self._take_startable()
+            self._persist()
+        self._launch(starts)
+
     def snapshot(self, project: str | None = None) -> list[QueueEntry]:
         """Running, then queued in order (with `position`), then recent finished, newest first."""
         with self._lock:
