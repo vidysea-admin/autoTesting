@@ -1,0 +1,3 @@
+Bug ID,Title,Severity,Screen,Status,Assigned To,First Seen,Last Seen,Count,Evidence
+bug_61c6c623d96e,Profile photo upload: criterion C1,S3,,open,,2026-10-13 12:11 UTC,2026-10-13 12:11 UTC,1,/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V
+bug_73f76af1d3e3,Checkout works: criterion C1,S1,,open,priya,2026-10-13 12:11 UTC,2026-10-13 12:11 UTC,1,/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V
