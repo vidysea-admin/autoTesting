@@ -13,6 +13,6 @@ Checked fresh against hosting.md HO39-HO46. Tests: `tests/test_windows_host.py` 
 | HO43 | PASS | `/healthz` public, fixed three-key payload; `serve_windows.ps1 -Check` exits 1 on failure; smoke start answered on loopback |
 | HO44 | PASS | default `--host 127.0.0.1`; `-Lan` or AUTOTESTER_BIND_HOST switches; startup log line written; socket check done via smoke start on 127.0.0.1 |
 | HO45 | PASS | DEPLOY.md B.1 covers launcher, task create/remove, data root, bind, health, first admin before LAN, Ubuntu later; no secrets; Part A unchanged |
-| HO46 | PASS | no Docker dependency, ruff clean; doctor shows only pre-existing violations (stale MAP/SNAPSHOT, D-9999/D-999 citations in t196 verdicts) |
+| HO46 | PASS | no Docker dependency, ruff clean; doctor shows only pre-existing violations (stale MAP/SNAPSHOT, the two dangling-citation hits in the t196 verdict files) |
 
 Caveat: maker and checker were the same agent run; an independent /checker pass is still advisable.
