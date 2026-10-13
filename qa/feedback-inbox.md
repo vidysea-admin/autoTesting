@@ -5892,3 +5892,8 @@ Contract amendments requested: `team-bug-loop.md` TB7 required for T-199, new ex
 7. **AL7 on the framework path.** Only judgement subagents (explorer, test-designer, grader, reporter) are registered; `runner`, and the framework's default `general-purpose` subagent, are refused by the rails middleware (no delegation made, counted as a refusal).
 
 **Status:** folded 2026-10-13 by /checker t179d-agent-layer (cycle 1 PASS) -> qa/contracts/agent-layer.md. Items 1-7 above: (1) AL1 amended to `>=0.7.24,<0.8` per D-089; (2) explicit TodoListMiddleware accepted; (3) `skills=["/"]` read-only exposing all packaged skills ruled NOT an AL4 violation; (4) `capture_network(case_id)` written into AL2; (5) per-call spans accepted under AL5; (6) AL11 and the AL12/AL13 comparison mechanism judged in T-179 on injected verdicts, live comparison and keep/drop belong to T-181; (7) AL7 refusal of non-judgement delegation accepted.
+
+## T-181 maker questions (2026-10-13, t181-guardrails)
+1. **AL12 "live comparison".** The contract says real `run_and_grade_case` vs the real agent on a seeded product in a visible browser, but `tests/test_agent_gain.py` is also the deterministic `done_check`. Built: harness with caller-supplied runners, fakes in the test; the live run is held. Please confirm the offline test satisfies the done_check and the live run is a separate gated step.
+2. **Win-rule default vs T-179.** Umesh's stated default (>= bugs at <= FP rate, tie = gain) differs from `compare()`'s T-179 rule (tie = no gain). Kept both: `rule=None` is the T-179 rule; the harness passes `WinRule`. Should AL13's wording name `WinRule` as the one rule?
+3. **FP rate when nothing is reported.** The scorer returns None; treated as 0.0 in the rule.

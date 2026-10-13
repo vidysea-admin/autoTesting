@@ -17,6 +17,8 @@ class PathMeasure(BaseModel):
     label: str
     bugs_found: int
     false_positives: int
+    false_positive_rate: float = 0.0
+    """FP / reported findings, from the one scorer; 0.0 when nothing was reported."""
     tokens: int | None
     wall_s: float | None
 

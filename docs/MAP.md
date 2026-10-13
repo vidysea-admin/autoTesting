@@ -12,6 +12,7 @@
 | `agents/comparison.py` | Agent-vs-pipeline on one seeded corpus (T-179, AL12/AL13). |
 | `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
 | `agents/evidence_tools.py` | The read-only evidence tools (T-180, AL8): `read_result`, `read_rubric`, `read_verdict`. |
+| `agents/gain.py` | The measured-gain harness (T-181, AL12/AL13): one corpus, two paths, one report. |
 | `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
 | `agents/lead.py` | The lead tester's loop (T-179c, AL4/AL5/AL7): a model returns one step per turn, the loop runs |
 | `agents/lead_agent.py` | The lead tester built on Deep Agents (T-179, AL1/AL4/AL5/AL6/AL7/AL11). |
@@ -101,6 +102,7 @@
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
 | `schema/acceptance.py` | The T-136 acceptance-comparison artifact: AutoTester vs a human tester, as data. |
 | `schema/agent_comparison.py` | The agent-vs-pipeline comparison report (T-179 AL12/AL13): the four north-star axes for each |
+| `schema/agent_guardrails.py` | The declared limits of an agent run and the rule that says whether it beat the pipeline |
 | `schema/agent_layer.py` | The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist, |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
@@ -315,6 +317,8 @@
 | `AcceptanceComparison` (`schema/acceptance.py`) | The comparison a reader who was not there can judge (bench.md K9). |
 | `PathMeasure` (`schema/agent_comparison.py`) | What one path produced on the SAME corpus. All four numbers are measured, not estimated; |
 | `Comparison` (`schema/agent_comparison.py`) |  |
+| `WinRule` (`schema/agent_guardrails.py`) | When the agent counts as a gain over the pipeline. Default (awaiting Umesh): the agent |
+| `AgentGuardrails` (`schema/agent_guardrails.py`) | Per-run ceilings: the token/cost budget (D-042) and the step cap. Domains and the write |
 | `AgentToolName` (`schema/agent_layer.py`) | The stage tools of the lead tester. |
 | `ToolEffect` (`schema/agent_layer.py`) | What a tool can do to the outside world. T-180 allowlists subagents by this. |
 | `RefusalClass` (`schema/agent_layer.py`) | Why a tool call produced no action. A refusal is a result, never an exception the |
