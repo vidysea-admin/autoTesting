@@ -3,7 +3,7 @@
 **Unit:** T-199 internal bug tracker page + Tracker-layout export (D-090). No write to the real Google sheet.
 **Branch / base:** worktree-agent-a4690a7f2a7bbd31b, merged master bdb351af.
 Fix cycle: 2
-Status: ready-for-check
+Status: checked-PASS
 
 ## What changed
 | Path | One job |

@@ -20,4 +20,4 @@ Evidence: `uv run pytest tests/test_tracker_page.py tests/test_routers_list.py t
 
 **Overall: FAIL for TB7 only** (the permission-bound parts need T-204 session and user model). TB15 file export passes on all criteria that can be tested without a session. Manifest stays at ready-for-check; not flipped to checked-PASS.
 
-Pre-existing doctor violations, not from this unit: stale SNAPSHOT.md, D-9999/D-999 citations in t196 verdicts.
+Pre-existing doctor violations, not from this unit: stale SNAPSHOT.md, non-existent decision-id citations in t196 verdicts.
