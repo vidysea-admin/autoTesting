@@ -5889,3 +5889,5 @@ Maker never edits contracts; checker to fold or amend. K1-K10 do not cover conve
 - **K11b** A run with no verdict for any of its `case_ids`, or a missing run, is refused (exit 2) and writes nothing.
 - **K11c** Corpus: a stored `<slug>-acceptance` corpus (a human list) is used untouched; absent, an empty `mode=unknown` corpus is saved, so recall is unavailable and every AutoTester finding is unadjudicated (K10).
 - **K11d** Duration is measured only: the run's `finished_at - started_at`, else the sum of stored per-case durations, else None (K8 unavailable, check script fails). Never defaulted.
+
+**Status:** folded (2026-10-13, /checker) -> `qa/contracts/bench.md` K11a-d (tightened: refusal writes nothing; partial per-case durations never summed).
