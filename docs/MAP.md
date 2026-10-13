@@ -418,6 +418,7 @@
 | `BugSnapshot` (`schema/bug_run.py`) | One read of the log: the valid events (in replay order), the bugs they fold to, and the |
 | `RunOutcome` (`schema/bug_run.py`) |  |
 | `RunReport` (`schema/bug_run.py`) | What `process_run` did with one run. Counts are of events, not verdicts. |
+| `BugLoopConfig` (`schema/bug_run.py`) | The per-project stored configuration of the bug loop: N, the consecutive evidenced PASS |
 | `Case` (`schema/case.py`) | One generated or hand-written test case. |
 | `CaseProposal` (`schema/case.py`) | A step-less candidate, bound to an exact FlowSpec snapshot and human review. |
 | `AgentFix` (`schema/case.py`) | The agent's proposed correction for one failing step. |

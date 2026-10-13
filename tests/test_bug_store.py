@@ -263,3 +263,32 @@ def test_tb5_the_adapter_is_the_only_key_derivation_from_an_issue() -> None:
     assert makers == ["schema/tracked_bug.py"]
     issues_py = (src / "stages" / "issues.py").read_text(encoding="utf-8")
     assert "def issue_to_bug_event" in issues_py and len(issues_py.splitlines()) <= 300
+
+
+def test_n_is_stored_per_project_and_survives_a_new_process(tmp_path: Path) -> None:
+    a, b = tmp_path / "a", tmp_path / "b"
+    assert BugStore(a).close_passes == 2  # default when nothing is stored
+    BugStore(a).set_close_passes(3)
+    assert BugStore(a).close_passes == 3  # a fresh object reads the project's value
+    assert BugStore(b).close_passes == 2  # another project is untouched
+    assert BugStore(a, close_passes=1).close_passes == 1  # explicit override, not written
+    assert BugStore(a).close_passes == 3
+
+
+def test_stored_n_governs_closing_and_open_history_is_never_dropped(tmp_path: Path) -> None:
+    store = BugStore(tmp_path / "p")
+    store.set_close_passes(3)
+    store.apply_all([event(K.FAIL, 1), event(K.PASS, 2), event(K.PASS, 3)])
+    reopened = BugStore(tmp_path / "p")
+    assert reopened.get(KEY).status is S.OPEN  # 2 passes < stored N=3
+    assert len(reopened.history(KEY)) == 3  # nothing pruned: events are never deleted
+    reopened.apply(event(K.PASS, 4))
+    assert BugStore(tmp_path / "p").get(KEY).status is S.FIXED
+
+
+@pytest.mark.parametrize("bad", [0, -1])
+def test_n_below_one_is_refused(tmp_path: Path, bad: int) -> None:
+    with pytest.raises(ValueError):
+        BugStore(tmp_path, close_passes=bad)
+    with pytest.raises(ValueError):
+        BugStore(tmp_path).set_close_passes(bad)

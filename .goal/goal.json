@@ -1660,7 +1660,7 @@
     {
       "id": "T-199",
       "title": "TL-3 Bug loop: auto-file failures into PathLynks Tracker sheet, update on re-test, close on pass (stable bug key dedupe)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-197"
       ],

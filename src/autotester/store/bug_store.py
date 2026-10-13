@@ -29,7 +29,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from autotester.schema.base import utc_now
-from autotester.schema.bug_run import BadEventFile, BugSnapshot
+from autotester.schema.bug_run import BadEventFile, BugLoopConfig, BugSnapshot
 from autotester.schema.tracked_bug import DEFAULT_CLOSE_PASSES, BugEvent, TrackedBug
 from autotester.stages.bug_loop import (
     Applied,
@@ -44,6 +44,7 @@ from autotester.stages.bug_loop import (
 from autotester.store.filestore import read_json, write_json
 
 EVENTS_DIR = "bug_events"
+CONFIG_FILE = "bug_loop_config.json"
 
 
 def file_name(event: BugEvent) -> str:
@@ -66,13 +67,27 @@ def _read(path: Path) -> BugEvent | None:
 
 
 class BugStore:
-    def __init__(self, root: Path, *, close_passes: int = DEFAULT_CLOSE_PASSES,
+    def __init__(self, root: Path, *, close_passes: int | None = None,
                  clock: Callable[[], datetime] = utc_now) -> None:
-        if close_passes < 1:
+        """N comes from the project's stored config (`bug_loop_config.json` beside the events), so
+        it is the project's value across processes (TB2). An explicit `close_passes` overrides it
+        for this object only and is never written."""
+        self.root = Path(root)
+        self.dir = self.root / EVENTS_DIR
+        stored = read_json(self.root / CONFIG_FILE, BugLoopConfig)
+        n = close_passes if close_passes is not None else (
+            stored.close_passes if stored else DEFAULT_CLOSE_PASSES)
+        if n < 1:
             raise ValueError("close_passes must be at least 1")
-        self.dir = Path(root) / EVENTS_DIR
-        self.close_passes = close_passes
+        self.close_passes = n
         self.clock = clock
+
+    def set_close_passes(self, n: int) -> None:
+        """Store N for this project. Events are never rewritten, so bugs are re-folded under the
+        new N on the next read; an already-reported `fixed` can move, which is why this is an
+        explicit call and not a side effect of constructing a store."""
+        write_json(self.root / CONFIG_FILE, BugLoopConfig(close_passes=n))
+        self.close_passes = n
 
     def snapshot(self) -> BugSnapshot:
         """Read every event file once: the valid events, their fold, and the files that were not
