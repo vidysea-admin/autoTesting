@@ -9,6 +9,9 @@ from __future__ import annotations
 
 from html import escape
 
+from autotester.auth.access import authorize, resource_for
+from autotester.auth.context import current_principal
+from autotester.schema.auth import PermissionKey
 from autotester.stages.report_export import valid_runs_newest_first
 from autotester.store.project_store import ProjectStore
 from autotester.ui import team_run_view, theme
@@ -80,6 +83,16 @@ def intake_form() -> str:
             "<button class='btn btn-primary' type='submit'>Create project</button></form>")
 
 
+def _tracker_link(safe_slug: str) -> str:
+    """The bug-tracker link, only for a principal holding report.view on this project
+    (the same rule the route enforces centrally); no principal means the gate is off."""
+    who = current_principal()
+    if who is not None and not authorize(who, PermissionKey.REPORT_VIEW,
+                                         resource_for(safe_slug)):
+        return ""
+    return f"<a class='btn' href='/projects/{safe_slug}/tracker'>🐞 Bug tracker</a>"
+
+
 def _actions_card(safe_slug: str, run_button: str, case_count: int) -> str:
     """The project's action row, plus — when it has no cases yet — a prompt
     saying what to do next. AT-057: a project with zero cases can run nothing,
@@ -94,6 +107,7 @@ def _actions_card(safe_slug: str, run_button: str, case_count: int) -> str:
         f"<a class='btn' href='/projects/{safe_slug}/sources'>📼 Sources</a>"
         f"<a class='btn' href='/projects/{safe_slug}/product-map'>🗺 Product map</a>"
         f"<a class='btn' href='/projects/{safe_slug}/issues'>⚠ Issues</a>"
+        f"{_tracker_link(safe_slug)}"
         f"<a class='btn' href='/projects/{safe_slug}/cases'>🧪 Cases</a>"
         f"<a class='btn' href='/projects/{safe_slug}/cases/new'>+ Add case</a>"
         f"<a class='btn' href='/projects/{safe_slug}/env'>🔑 Credentials</a>"

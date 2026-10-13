@@ -1,0 +1,75 @@
+{
+ "S1_project_page_has_tracker_link": false,
+ "S2_empty_tracker": ".test\nSign out\nPROJECTS\nDemo\n+ New project\n\u2190 Back\nPROJECTS / DEMO / TRACKER\nBug tracker\n\n0 of 0 bug(s) \u00b7 Download CSV Download Excel\n\nStatus \nany\nopen\nfixed\nreopened\nstale\n Severity \nany\nS1\nS2\nS3\n Filter\nDemo bugs\nBUG\tSTATUS\tSEVERITY\tSCREEN\tASSIGNEE\tFIRST SEEN\tLAST SEEN\tCOUNT\tEVIDENCE\nNo bugs match.",
+ "S3_run1_ids": [
+  "run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S3_rows": [
+  "Profile photo upload: criterion C1 OPEN S3 2026-10-13 12:11 2026-10-13 12:11 1 run-01M4TJSW7GY19ZTCCX1YHCQS2V",
+  "Checkout works: criterion C1 OPEN S1 2026-10-13 12:11 2026-10-13 12:11 1 run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S3_evidence_hrefs": [
+  "/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V",
+  "/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S4_status_open_rows": 2,
+ "S4_open_S1_rows": [
+  "Checkout works: criterion C1 OPEN S1 2026-10-13 12:11 2026-10-13 12:11 1 run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S4_fixed_rows": "y \nany\nS1\nS2\nS3\n Filter\nDemo bugs\nBUG\tSTATUS\tSEVERITY\tSCREEN\tASSIGNEE\tFIRST SEEN\tLAST SEEN\tCOUNT\tEVIDENCE\nNo bugs match.",
+ "S4_S3_rows": [
+  "Profile photo upload: criterion C1 OPEN S3 2026-10-13 12:11 2026-10-13 12:11 1 run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S5_detail_text": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\n\u2190 Back\nPROJECTS / DEMO / TRACKER / BUG\nBug\n\nCheckout works: criterion C1\n\nStatus OPEN \u00b7 severity S1 \u00b7 screen - \u00b7 assignee - \u00b7 seen 1x \u00b7 evidence run-01M4TJSW7GY19ZTCCX1YHCQS2V\n\nHistory\nAssignee  Save\nWHEN\tEVENT\tACTOR\tRUN\tASSIGNEE\n2026-10-13 12:11:40\tfail\tsystem:bug-loop\trun-01M4TJSW7GY19ZTCCX1YHCQS2V\t",
+ "S5_evidence_links": [
+  "/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S5_evidence_status": 200,
+ "S5_assignee_inputs": [
+  "<button class=\"btn btn-sm\" type=\"submit\">Sign out</button>",
+  "<input id=\"assignee\" name=\"assignee\" list=\"members\" maxlength=\"120\" value=\"\" style=\"\">",
+  "<button class=\"btn\" type=\"submit\">Save</button>"
+ ],
+ "S6_url": "http://127.0.0.1:63505/projects/demo/tracker/bug_73f76af1d3e3",
+ "S6_text": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\n\u2190 Back\nPROJECTS / DEMO / TRACKER / BUG\nBug\n\nCheckout works: criterion C1\n\nStatus OPEN \u00b7 severity S1 \u00b7 screen - \u00b7 assignee priya \u00b7 seen 1x \u00b7 evidence run-01M4TJSW7GY19ZTCCX1YHCQS2V\n\nHistory\nAssignee  Save\nWHEN\tEVENT\tACTOR\tRUN\tASSIGNEE\n2026-10-13 12:11:40\tfail\tsystem:bug-loop\trun-01M4TJSW7GY19ZTCCX1YHCQS2V\t\n2026-10-13 12:11:47\tassign\tuser:dev@team.test\t\tpriya",
+ "S7_tester_list_status": 200,
+ "S7_tester_list_text": " bugs\nBUG\tSTATUS\tSEVERITY\tSCREEN\tASSIGNEE\tFIRST SEEN\tLAST SEEN\tCOUNT\tEVIDENCE\nProfile photo upload: criterion C1\tOPEN\tS3\t\t\t2026-10-13 12:11\t2026-10-13 12:11\t1\trun-01M4TJSW7GY19ZTCCX1YHCQS2V\nCheckout works: criterion C1\tOPEN\tS1\t\tpriya\t2026-10-13 12:11\t2026-10-13 12:11\t1\trun-01M4TJSW7GY19ZTCCX1YHCQS2V",
+ "S7_tester_detail_status": 200,
+ "S7_tester_edit_inputs": 0,
+ "S7_tester_post_status": 403,
+ "S7_assignee_unchanged": true,
+ "S8_csv_name": "demo-tracker.csv",
+ "S8_xlsx_name": "demo-tracker.xlsx",
+ "S8_csv": "Bug ID,Title,Severity,Screen,Status,Assigned To,First Seen,Last Seen,Count,Evidence\nbug_61c6c623d96e,Profile photo upload: criterion C1,S3,,open,,2026-10-13 12:11 UTC,2026-10-13 12:11 UTC,1,/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V\nbug_73f76af1d3e3,Checkout works: criterion C1,S1,,open,priya,2026-10-13 12:11 UTC,2026-10-13 12:11 UTC,1,/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V\n",
+ "S8_xlsx_files": [
+  "[Content_Types].xml",
+  "_rels/.rels",
+  "docProps/app.xml",
+  "docProps/core.xml",
+  "xl/_rels/workbook.xml.rels",
+  "xl/styles.xml",
+  "xl/theme/theme1.xml",
+  "xl/workbook.xml",
+  "xl/worksheets/sheet1.xml"
+ ],
+ "S8_xlsx_strings": [],
+ "S8_xlsx_sheet": "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetPr><outlinePr summaryBelow=\"1\" summaryRight=\"1\" /><pageSetUpPr /></sheetPr><dimension ref=\"A1:J3\" /><sheetViews><sheetView workbookViewId=\"0\"><selection activeCell=\"A1\" sqref=\"A1\" /></sheetView></sheetViews><sheetFormatPr baseColWidth=\"8\" defaultRowHeight=\"15\" /><sheetData><row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>Bug ID</t></is></c><c r=\"B1\" t=\"inlineStr\"><is><t>Title</t></is></c><c r=\"C1\" t=\"inlineStr\"><is><t>Severity</t></is></c><c r=\"D1\" t=\"inlineStr\"><is><t>Screen</t></is></c><c r=\"E1\" t=\"inlineStr\"><is><t>Status</t></is></c><c r=\"F1\" t=\"inlineStr\"><is><t>Assigned To</t></is></c><c r=\"G1\" t=\"inlineStr\"><is><t>First Seen</t></is></c><c r=\"H1\" t=\"inlineStr\"><is><t>Last Seen</t></is></c><c r=\"I1\" t=\"inlineStr\"><is><t>Count</t></is></c><c r=\"J1\" t=\"inlineStr\"><is><t>Evidence</t></is></c></row><row r=\"2\"><c r=\"A2\" t=\"inlineStr\"><is><t>bug_61c6c623d96e</t></is></c><c r=\"B2\" t=\"inlineStr\"><is><t>Profile photo upload: criterion C1</t></is></c><c r=\"C2\" t=\"inlineStr\"><is><t>S3</t></is></c><c r=\"D2\" t=\"inlineStr\" /><c r=\"E2\" t=\"inlineStr\"><is><t>open</t></is></c><c r=\"F2\" t=\"inlineStr\" /><c r=\"G2\" t=\"inlineStr\"><is><t>2026-10-13 12:11 UTC</t></is></c><c r=\"H2\" t=\"inlineStr\"><is><t>2026-10-13 12:11 UTC</t></is></c><c r=\"I2\" t=\"inlineStr\"><is><t>1</t></is></c><c r=\"J2\" t=\"inlineStr\"><is><t>/projects/demo/runs/run-01M4TJSW7GY19ZTCCX1YHCQS2V</t></is></c></row><row r=\"3\"><c r=\"A3\" t=\"inlineStr\"><is><t>bug_73f76af1d3e3</t></is></c><c r=\"B3\" t=\"inlineStr\"><is><t>Checkout works: criterion C1</t></is></c><c r=\"C3\" t=\"inlineStr\"><is><t>S1</t></is></c><c r=\"D3\" t=\"inlineStr\" /><c r=\"E3\" t=\"inlineStr\"><is><t>open</t></is></c><c r=\"F3\" t=\"inlineStr\"><is><t>priya</t></is></c><c r=\"G3\" t=\"inlineStr\"><is><t>2",
+ "S8_tester_csv_status": 200,
+ "S8_anon_csv_status": 401,
+ "S8_anon_evidence_status": 401,
+ "S9_rows": [
+  "Profile photo upload: criterion C1 OPEN S3 2026-10-13 12:11 2026-10-13 12:11 2 run-01M4TJTC6TDN6TN5PF0Z856F3C",
+  "Checkout works: criterion C1 OPEN S1 priya 2026-10-13 12:11 2026-10-13 12:11 1 run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S10_rows": [
+  "Profile photo upload: criterion C1 OPEN S3 2026-10-13 12:11 2026-10-13 12:12 3 run-01M4TJTJ785S9D5YHGAFYGTDT5",
+  "Checkout works: criterion C1 FIXED S1 priya 2026-10-13 12:11 2026-10-13 12:11 1 run-01M4TJSW7GY19ZTCCX1YHCQS2V"
+ ],
+ "S10_detail_text": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\n\u2190 Back\nPROJECTS / DEMO / TRACKER / BUG\nBug\n\nCheckout works: criterion C1\n\nStatus FIXED \u00b7 severity S1 \u00b7 screen - \u00b7 assignee priya \u00b7 seen 1x \u00b7 evidence run-01M4TJSW7GY19ZTCCX1YHCQS2V\n\nHistory\nAssignee  Save\nWHEN\tEVENT\tACTOR\tRUN\tASSIGNEE\n2026-10-13 12:11:40\tfail\tsystem:bug-loop\trun-01M4TJSW7GY19ZTCCX1YHCQS2V\t\n2026-10-13 12:11:47\tassign\tuser:dev@team.test\t\tpriya\n2026-10-13 12:11:56\tpass\tsystem:bug-loop\trun-01M4TJTC6TDN6TN5PF0Z856F3C\t\n2026-10-13 12:12:02\tpass\tsystem:bug-loop\trun-01M4TJTJ785S9D5YHGAFYGTDT5\t",
+ "S10_run_count": 3,
+ "labels_unlabelled": [
+  "<select name=\"status\"><option value=\"\">any</option><option value=\"open\">open</option><option value=\"fixed\">fixed</option",
+  "<select name=\"severity\"><option value=\"\">any</option><option value=\"S1\">S1</option><option value=\"S2\">S2</option><option"
+ ],
+ "console": []
+}

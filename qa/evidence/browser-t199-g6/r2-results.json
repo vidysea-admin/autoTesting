@@ -1,0 +1,8 @@
+{
+ "link_visible": true,
+ "url_after_click": "http://127.0.0.1:60727/projects/demo/tracker",
+ "h1": "Bug tracker",
+ "status_label": "SELECT",
+ "severity_label": "SELECT",
+ "console_errors": []
+}
