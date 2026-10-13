@@ -72,6 +72,7 @@
 | `providers/gemini_files.py` | Upload a video to the Files API and wait until the service can actually read it. |
 | `providers/gemini_schema.py` | Turn a Pydantic model into a schema Gemini's `response_schema` will accept. |
 | `providers/images.py` | One job: turn a prompt plus screenshot files into OpenAI-style message content. |
+| `providers/isolated.py` | ISOLATED_PROVIDER: run a `Provider` call in a killable child process (D-089 item 2, T-177 AF4). |
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
 | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |

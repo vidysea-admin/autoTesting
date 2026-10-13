@@ -2477,3 +2477,48 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-12)
 
 **Links:** D-081; D-086; T-145; T-200; T-203; AT-651; AT-654; AT-891; qa/verdicts/t200-schedule-wiring.md
+
+## D-089 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh answered four open items in the Claude Code session on 2026-10-13.
+1. **T-179 AL1 / D-042, deepagents version:** "Upgrade version". The D-042/AL1 floor `deepagents>=1.7` names a version that does not exist; the newest real release is 0.7.24. Pin `deepagents>=0.7.24,<0.8` (compatible with 0.7.x). AL1's floor is amended accordingly, and the checker amends the brief text. D-042's design (deepagents as the planner, no hand-rolled planner) stays.
+2. **T177-HARD-PROVIDER-DEADLINE:** option C. Run the fallback provider in an isolated, killable process, so AF4 guarantees a hard return within `wall_clock_s` even when the provider hangs. This needs a new module, and this entry authorises that module.
+3. **T-136 independent human bug list:** build T-136 now WITHOUT the human list. AutoTester produces its own analysis and report. Recall vs a human stays "unavailable" until Umesh provides a list later; false-positive rate and time are still measured. The system must work and report when no human list exists, as a supported mode and not an error.
+4. **T-199 tracker writes:** option A. The bug loop may write to a separate TEST tracker sheet that AutoTester creates in Umesh's Drive (D-083 item 3 reading confirmed). The real Pathlynks Tracker stays gated (still "abhi nhi"). The Drive access uses the gws CLI login on this machine.
+
+**Why:** These answers unblock T-179, T-177, T-136 and T-169, and the test-sheet half of T-199, which were waiting on owner choices.
+
+**Result:** No code change has been made by this entry. The maker dispatches the unblocked units next.
+
+**Changes-authorized:** the new isolated-provider-process module for T-177 (item 2); the `deepagents>=0.7.24,<0.8` pin in pyproject.toml (item 1). No ARCHITECTURE.md prose, no enforcement path.
+
+**Approved-by:** Umesh (chat, 2026-10-13)
+
+**Links:** D-042; D-081; D-083; T-136; T-169; T-177; T-179; T-199; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md
+
+## D-090 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided three items in chat on 2026-10-13.
+1. **T-136:** the independent human tester bug list will come later. Build T-136 now without it, consistent with D-089 item 3: recall vs a human is reported "unavailable" until a list arrives; false-positive rate and time are still measured and must pass (bench.md K6-K9, new K10).
+2. **T-199:** do NOT write to the real PathLynks Tracker sheet. Build an internal tracker inside AutoTester (a tracker page over `store/bug_store.py` BugStore) and export it later to the sheet as CSV/xlsx in the Tracker sheet's column layout. The real-sheet write becomes a deferred export and is not a T-199 blocker. This supersedes the test-sheet-in-Drive route of D-089 item 4 for T-199's build scope; the real Tracker stays gated.
+3. **T-203:** the production host will be Ubuntu, with host and DNS provided later. For now build and host on THIS Windows machine (no Docker here): a launcher script plus a Windows Scheduled Task (start at boot, restart on failure), bound to 127.0.0.1 behind the T-204 login by default, LAN exposure a single setting. The Ubuntu Docker files are left untouched.
+
+**Why:** The human list, the real sheet and the Ubuntu host are all owner-side inputs that are not available yet. Splitting each into a part buildable now and a deferred part removes them as blockers without weakening any safety rule (no live sheet write, no unauthenticated exposure).
+
+**Result:** No code change in this entry. Contracts folded by the checker: team-bug-loop.md (TB7 required, TB15 export, HG-TB1 reworded, TB8/TB9/TB13 export-time), hosting.md (local Windows host section, HO39-HO46, Ubuntu rows deferred), bench.md (K10). Gate files t136, t199 and t203 updated.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** D-081; D-089; T-136; T-199; T-203; T-204; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md; qa/gates/t203-host-and-dns.md
+
+## D-091 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided in chat on 2026-10-13 to skip Docker on this Windows machine. The T-204 Linux/Docker proof run (criterion AU24 in qa/contracts/auth.md, evidence qa/evidence/t204-linux-run.md) is deferred to the production Ubuntu server, the same way D-090 deferred T-203's Ubuntu-only criteria. T-204 may close on this machine once its other criteria pass; AU24 does not block it.
+
+**Why:** Docker is not available here and the Ubuntu host is an owner-side input still to come (D-090 item 3). The Windows side of AU24 (pathlib, no POSIX-only top-level import, portable concurrency) is already checked locally, so deferring only the Linux run removes a blocker without weakening any auth rule.
+
+**Result:** No code change in this entry. The checker folded the amendment into qa/contracts/auth.md: AU24 is marked DEFERRED TO UBUNTU (D-091), not blocking T-204. The Linux run stays owed on the production Ubuntu server.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** T-204; D-090; qa/contracts/auth.md
