@@ -1,0 +1,5 @@
+{
+"tests/test_adjudicate_determinism.py": 5,
+"tests/test_agent_loop.py": 4,
+"tests/test_ai_capture.py": 41
+}

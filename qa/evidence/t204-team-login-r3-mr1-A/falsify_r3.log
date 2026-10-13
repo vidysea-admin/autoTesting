@@ -1,0 +1,45 @@
+SRC C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\fz3\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\fz3
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 2 items
+
+tests\test_cli_subapp_hook.py FF                                         [100%]
+
+================================== FAILURES ===================================
+__________________ test_registered_groups_come_from_the_list __________________
+
+    def test_registered_groups_come_from_the_list() -> None:
+        names = {name for name, _ in cli_subapps.SUBAPPS}
+>       assert names == {"ingest", "issues", "auth"}  # auth: T-204
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert {'ingest', 'issues'} == {'auth', 'ingest', 'issues'}
+E         
+E         Extra items in the right set:
+E         'auth'
+E         Use -v to get more diff
+
+tests\test_cli_subapp_hook.py:32: AssertionError
+____________ test_help_lists_exactly_the_commands_it_listed_before ____________
+
+    def test_help_lists_exactly_the_commands_it_listed_before() -> None:
+>       assert command_listing(cli.app) == json.loads(GOLDEN.read_text(encoding="utf-8"))
+E       AssertionError: assert [['doctor', '...eeded.'], ...] == [['doctor', '...eeded.'], ...]
+E         
+E         Right contains one more item: ['auth', 'Team login accounts (T-204).']
+E         Use -v to get more diff
+
+tests\test_cli_subapp_hook.py:27: AssertionError
+============================== warnings summary ===============================
+tests/test_cli_subapp_hook.py::test_registered_groups_come_from_the_list
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_cli_subapp_hook.py::test_registered_groups_come_from_the_list
+FAILED tests/test_cli_subapp_hook.py::test_help_lists_exactly_the_commands_it_listed_before
+======================== 2 failed, 1 warning in 2.68s =========================
+EXIT 1

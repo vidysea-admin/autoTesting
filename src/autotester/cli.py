@@ -35,7 +35,7 @@ report_app = typer.Typer(help="Export a run as a portable tester report (Excel +
 app.add_typer(ledger_app, name="ledger")
 app.add_typer(flowspec_app, name="flowspec")
 app.add_typer(report_app, name="report")
-cli_subapps.register_subapps(app)  # T-205/TF5: ingest, issues and every later group
+cli_subapps.register_subapps(app)  # T-205/TF5: ingest, issues, auth and every later group
 
 
 @app.callback()

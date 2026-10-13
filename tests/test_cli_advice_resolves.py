@@ -157,6 +157,7 @@ def test_every_site_is_reported_with_a_line_a_human_can_open() -> None:
 
 
 EXPECTED_SITES = {
+    ("auth/config.py", "auth bootstrap-admin"),
     ("cli.py", "expand"),
     ("cli_orchestrate.py", "providers"),   # T-202: expand's refusal moved here from cli.py
     ("cli_orchestrate.py", "ingest register"),
@@ -198,9 +199,11 @@ asserted separately. AT-110 added a second `core/consent.py` "approve" site
 Count history: 21 at the T-197 base; master's changes (T-198a intake commands,
 T-202 provider move) took it to 24; T-197 adds one site, `cli_video_review.py`
 ("ingest list", the review command's hint to list sources), so the merged
-count is 24 + 1 = 25. The set above names every site from both sides."""
+count is 24 + 1 = 25. T-204 adds one more, `auth/config.py` ("auth bootstrap-admin",
+the startup refusal that names the break-glass command), so the count after merging
+T-204 is 25 + 1 = 26. The set above names every site from all sides."""
 
-EXPECTED_SITE_COUNT = 25
+EXPECTED_SITE_COUNT = 26
 
 
 def test_no_advice_site_can_vanish_unnoticed() -> None:

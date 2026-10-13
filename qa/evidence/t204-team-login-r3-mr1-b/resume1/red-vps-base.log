@@ -1,0 +1,98 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video ______
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-28282/test_two_sessions_sharing_a_ru0')
+serve_dir = <function serve_dir.<locals>._serve at 0x0000024D49D19440>
+
+    def test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video(
+        tmp_path: Path, serve_dir: Callable[[Path], str],
+    ) -> None:
+        """Mirrors `default_session_factory`: two real `BrowserSession`s, same
+        `run_dir`, different profile dirs (own `ProjectPaths`) -- exactly how
+        parallel siblings are constructed. Thread B finishes recording first (its
+        page is closed, so Playwright has flushed the `.webm` to disk) but is
+        held, by an `Event`, in the window before its rename to safety. Thread A
+        finishes its own case cleanly, then closes its session -- the moment the
+        unfixed sweep can destroy B's file. B is then released to attempt its
+        rename and the test asserts its file survived."""
+        _skip_if_no_chromium()
+        base = serve_dir(SITE)
+        project = _project(f"{base}/login.html")
+        secrets = SecretStore.load(project, tmp_path / ".env", strict=False)
+        run_dir = tmp_path / "shared_run"
+    
+        b_unrenamed = threading.Event()  # B: recording flushed to disk, rename not yet done
+        a_closed = threading.Event()     # A: end_case_video() + close() (the sweep) both ran
+        errors: list[BaseException] = []
+        results: dict[str, object] = {}
+    
+        def _run_a() -> None:
+            session = BrowserSession(project, secrets, run_dir,
+                                     ProjectPaths("video-parallel-demo-a", tmp_path),
+                                     record_video=True)
+            try:
+                session.start()
+                session.begin_case_video("case_a")
+                session.page.goto(f"{base}/login.html")
+                rel = session.end_case_video()
+                if rel != "case_a.webm":
+                    raise AssertionError(f"A's own video path unexpected: {rel!r}")
+                if not b_unrenamed.wait(timeout=_WAIT_S):
+                    raise AssertionError("B never reached the unrenamed window")
+                session.close()  # the sweep this unit is fixing
+            except BaseException as exc:  # surfaced on the main thread below
+                errors.append(exc)
+            finally:
+                a_closed.set()
+    
+        def _run_b() -> None:
+            session = BrowserSession(project, secrets, run_dir,
+                                     ProjectPaths("video-parallel-demo-b", tmp_path),
+                                     record_video=True)
+            try:
+                session.start()
+                session.begin_case_video("case_b")
+                session.page.goto(f"{base}/login.html")
+                # Replicate end_case_video()'s first step by hand, stopping
+                # BEFORE the rename -- the exact non-atomic window a faster
+                # sibling's close() can land in.
+                page, case_id = session._page, session._video_case_id
+                video = page.video
+                session._page = None
+                page.close()
+                temp_path = Path(video.path())
+                if not temp_path.exists():
+                    raise AssertionError("B's finished recording did not exist before signalling A")
+                results["temp_path"] = temp_path
+                results["case_id"] = case_id
+                b_unrenamed.set()
+                if not a_closed.wait(timeout=_WAIT_S):
+                    raise AssertionError("A never finished closing")
+                final_path = run_dir / f"{case_id}.webm"
+                if temp_path.exists():
+                    temp_path.replace(final_path)
+                results["final_path"] = final_path
+            except BaseException as exc:  # surfaced on the main thread below
+                errors.append(exc)
+            finally:
+                session.close()
+    
+        t_a = threading.Thread(target=_run_a, name="session-a")
+        t_b = threading.Thread(target=_run_b, name="session-b")
+        t_b.start()
+        t_a.start()
+        t_a.join(timeout=_WAIT_S + 5)
+        t_b.join(timeout=_WAIT_S + 5)
+    
+>       assert not errors, f"thread(s) raised: {errors!r}"
+E       AssertionError: thread(s) raised: [AssertionError('A never finished closing')]
+E       assert not [AssertionError('A never finished closing')]
+
+tests\test_video_parallel_sweep.py:140: AssertionError
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - - [12/Oct/2026 16:39:01] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:39:01] "GET /login.html HTTP/1.1" 200 -
+=========================== short test summary info ===========================
+FAILED tests/test_video_parallel_sweep.py::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video
+1 failed in 148.45s (0:02:28)

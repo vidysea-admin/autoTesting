@@ -1,0 +1,260 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused _____
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-28267/test_a_logged_in_crawl_maps_ev0')
+serve_dir = <function serve_dir.<locals>._serve at 0x000002873A384720>
+
+    def test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused(
+        tmp_path: Path, serve_dir: Callable[[Path], str],
+    ) -> None:
+        """One crawl, two halves (a real crawl costs seconds): every click-reachable route is
+        entered, and the form-gated one is not entered and is named by coverage as a refusal."""
+        crawl, nodes, edges = _crawl_inventory(tmp_path, serve_dir(SITE), FULL)
+        expected = {rid for rid, r in ROUTES.items() if r["expect"] == "reached"}
+        missed = expected - _reached_ids(nodes)
+    
+>       assert crawl.status is CrawlStatus.COMPLETED, crawl.stop_reason
+E       AssertionError: wall_clock_s
+E       assert <CrawlStatus.STOPPED_BOUND: 'stopped_bound'> is <CrawlStatus.COMPLETED: 'completed'>
+E        +  where <CrawlStatus.STOPPED_BOUND: 'stopped_bound'> = Crawl(schema_version=1, created_at=datetime.datetime(2026, 10, 12, 10, 57, 0, 86592, tzinfo=datetime.timezone.utc), pr...s_reached=None, spec_screens_total=None, spec_error=None, error=None), heartbeat_at='2026-10-12T11:00:55.824088+00:00').status
+E        +  and   <CrawlStatus.COMPLETED: 'completed'> = CrawlStatus.COMPLETED
+
+tests\test_crawl_inventory_live.py:134: AssertionError
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - - [12/Oct/2026 16:27:00] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:01] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:11] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:12] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:15] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:15] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:17] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:17] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:18] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:18] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:20] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:20] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:21] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:21] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:22] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:22] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:24] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:24] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:27] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:27] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:28] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:28] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:29] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:29] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:32] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:35] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:35] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:37] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:39] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:39] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:41] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:41] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:42] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:42] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:43] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:43] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:44] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:44] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:46] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:46] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:48] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:48] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:50] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:50] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:51] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:51] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:52] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:53] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:55] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:56] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:57] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:57] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:27:58] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:01] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:01] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:02] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:02] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:04] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:04] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:05] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:05] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:06] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:06] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:08] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:08] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:09] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:09] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:10] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:10] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:11] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:11] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:13] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:13] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:18] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:21] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:21] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:22] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:22] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:24] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:24] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:26] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:26] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:27] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:28] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:29] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:29] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:30] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:31] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:32] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:32] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:34] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:34] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:35] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:35] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:37] "GET /app/settings/security.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:37] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:38] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:38] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:39] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:42] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:42] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:43] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:44] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:45] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:45] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:46] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:46] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:48] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:48] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:49] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:49] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:50] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:50] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:52] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:52] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:53] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:53] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:55] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:55] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:56] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:59] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:28:59] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:03] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:04] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:05] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:08] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:08] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:11] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:11] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:12] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:12] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:15] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:15] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:19] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:19] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:20] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:20] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:22] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:22] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:26] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:26] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:27] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:27] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:30] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:30] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:34] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:34] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:36] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:36] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:38] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:38] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:43] "GET /app/shortcuts.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:43] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:44] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:44] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:47] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:47] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:51] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:53] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:53] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:55] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:55] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:56] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:56] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:58] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:58] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:59] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:29:59] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:00] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:00] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:02] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:02] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:03] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:03] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:04] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:04] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:05] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:05] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:07] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:07] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:08] "GET /app/project-archived.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:08] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:10] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:10] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:11] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:11] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:13] "GET /app/projects.html?page=2 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:13] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:14] "GET /login.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:17] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:17] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:18] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:18] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:19] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:19] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:20] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:20] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:22] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:22] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:23] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:23] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:25] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:25] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:26] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:26] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:27] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:28] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:29] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:29] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:30] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:30] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:37] "GET /app/home.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:37] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:38] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:38] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:39] "GET /app/projects.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:39] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:40] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:40] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:42] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:42] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:43] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:43] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:45] "GET /app/settings.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:45] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:47] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:47] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:50] "GET /app/search.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:50] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:52] "GET /app/reports.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:30:52] "GET /app/guard.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:31:01] "GET /app/settings/security.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Oct/2026 16:31:01] "GET /app/guard.js HTTP/1.1" 200 -
+=========================== short test summary info ===========================
+FAILED tests/test_crawl_inventory_live.py::test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused
+1 failed in 319.39s (0:05:19)

@@ -1,0 +1,8 @@
+....                                                                     [100%]
+============================== warnings summary ===============================
+tests/test_cli_orchestrate.py::test_fresh_learn_run_checkpoints_ingest_and_model_through_the_cli
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+4 passed, 1 warning in 9.19s

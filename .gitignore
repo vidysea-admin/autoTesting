@@ -3,6 +3,9 @@
 **/.env.*
 !**/.env.example
 
+# Team-login store (T-204): accounts, password hashes, sessions -- user data, never committed
+.auth/
+
 # Persistent browser profiles hold live logged-in sessions
 profiles/
 

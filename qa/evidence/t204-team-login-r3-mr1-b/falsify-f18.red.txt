@@ -1,0 +1,6 @@
+E       AssertionError: assert 200 == 401
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = get('/', headers={'accept': 'application/json'})
+E        +      where get = <starlette.testclient.TestClient object at 0x000002868DBB8A50>.get
+E        +        where <starlette.testclient.TestClient object at 0x000002868DBB8A50> = client()
+FAILED tests/test_ui_auth_surface.py::test_au17_gate_is_on_by_default - Asser...
