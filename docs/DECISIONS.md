@@ -2495,3 +2495,18 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-13)
 
 **Links:** D-042; D-081; D-083; T-136; T-169; T-177; T-179; T-199; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md
+
+## D-090 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided three items in chat on 2026-10-13.
+1. **T-136:** the independent human tester bug list will come later. Build T-136 now without it, consistent with D-089 item 3: recall vs a human is reported "unavailable" until a list arrives; false-positive rate and time are still measured and must pass (bench.md K6-K9, new K10).
+2. **T-199:** do NOT write to the real PathLynks Tracker sheet. Build an internal tracker inside AutoTester (a tracker page over `store/bug_store.py` BugStore) and export it later to the sheet as CSV/xlsx in the Tracker sheet's column layout. The real-sheet write becomes a deferred export and is not a T-199 blocker. This supersedes the test-sheet-in-Drive route of D-089 item 4 for T-199's build scope; the real Tracker stays gated.
+3. **T-203:** the production host will be Ubuntu, with host and DNS provided later. For now build and host on THIS Windows machine (no Docker here): a launcher script plus a Windows Scheduled Task (start at boot, restart on failure), bound to 127.0.0.1 behind the T-204 login by default, LAN exposure a single setting. The Ubuntu Docker files are left untouched.
+
+**Why:** The human list, the real sheet and the Ubuntu host are all owner-side inputs that are not available yet. Splitting each into a part buildable now and a deferred part removes them as blockers without weakening any safety rule (no live sheet write, no unauthenticated exposure).
+
+**Result:** No code change in this entry. Contracts folded by the checker: team-bug-loop.md (TB7 required, TB15 export, HG-TB1 reworded, TB8/TB9/TB13 export-time), hosting.md (local Windows host section, HO39-HO46, Ubuntu rows deferred), bench.md (K10). Gate files t136, t199 and t203 updated.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** D-081; D-089; T-136; T-199; T-203; T-204; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md; qa/gates/t203-host-and-dns.md

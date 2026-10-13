@@ -5868,3 +5868,13 @@ Open question for checker-owned reconciliation, not a user product question: LL1
 Whole-task closure still requires LL16's two individually approved vendor-family calls and typed evidence at qa/evidence/t202-smoke.md. Local integration identities, plan approval, supporting source review and fake probe success do not close T-202 or prove hosting/live readiness.
 
 VERDICT: Approve (PLAN ONLY; implementation constrained to the above existing targets and frozen-input prerequisites).
+
+## 2026-10-13 · Umesh (chat) · T-136 / T-199 / T-203 answers → D-090
+
+1. T-136: independent human tester bug list will come later; build T-136 now without it (D-089 item 3). Recall "unavailable until human list arrives"; FP rate and time still measured and must pass.
+2. T-199: do NOT write to the real PathLynks Tracker sheet. Build an internal tracker inside AutoTester (tracker page over `store/bug_store.py` BugStore); export later to the sheet (CSV/xlsx in the Tracker sheet's column layout). Real-sheet write is a deferred export, not a T-199 blocker.
+3. T-203: production host will be Ubuntu, host+DNS later. For now build and host on this Windows machine (no Docker): launcher script + Windows Scheduled Task (start at boot, restart on failure), bound to 127.0.0.1 behind T-204 login by default, LAN exposure a single setting; Ubuntu Docker files untouched.
+
+Contract amendments requested: `team-bug-loop.md` TB7 required for T-199, new export criterion (CSV + xlsx, Tracker column layout, reuse `schema/sheet_plan.py` mapping, no live SheetClient, LiveWriteRefused stays), HG-TB1 "deferred to export (D-090)", TB8/TB9/TB13 export-time; `hosting.md` split Local Windows host (now) / Ubuntu host (later), HO10/HO11/HO13/HO34-HO36 deferred, new local criteria; `bench.md` recall unavailable until human list, FP rate and time must pass.
+
+**Status:** folded (2026-10-13, /checker contract maintenance) → `qa/contracts/team-bug-loop.md` TB7, TB15 (new), HG-TB1, TB8/TB9/TB13 export-time; `qa/contracts/hosting.md` "Local Windows host (now, D-090)" HO39-HO46 (new), HO10/HO11/HO13/HO34-HO36 deferred to Ubuntu; `qa/contracts/bench.md` K10 (new). Gates updated: t136, t199, t203.
