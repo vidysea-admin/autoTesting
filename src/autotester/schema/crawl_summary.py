@@ -26,7 +26,7 @@ class CrawlSummary(Artifact):
     bounds: CrawlBounds
     started_at: str | None = None
     finished_at: str | None = None
-    stop_reason: str | None = Field(default=None, description="scrubbed, capped at 200 chars")
+    stop_reason: str | None = Field(default=None, description="code, then short URL-free detail")
     screens: int = 0
     edges: int = 0
     actions: int = 0

@@ -2,7 +2,8 @@
 exists, whether a model-requested action may start.
 
 Nothing here is a prompt. Each function either returns/raises from an EXISTING guard
-(`core.consent.require_approval`, `explore_safety.deny_reason`, `SecretStore.guard_prompt`) or,
+(`core.consent.require_project_approval`, `explore_safety.deny_reason`,
+`SecretStore.guard_prompt`) or,
 for the one gap -- `execute.run_case` and the browser session have no write-policy check, and a
 stored `Step` carries no DOM facts (no `is_form_submit`) -- decides from what the step says.
 
@@ -22,7 +23,7 @@ from urllib.parse import unquote, urlsplit
 
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import NavigationRefused, check_destination
-from autotester.core.consent import require_approval
+from autotester.core.consent import require_project_approval
 from autotester.core.redact import PLACEHOLDER_RE
 from autotester.schema.agent_layer import RefusalClass
 from autotester.schema.approval import RunApproval
@@ -62,15 +63,15 @@ def guard_model_bound(secrets: SecretStore, text: str) -> str:
 def crawl_approval(store: ProjectStore, project: Project, bounds: CrawlBounds) -> RunApproval:
     """The signed, unexpired human approval covering exactly these bounds, or `ApprovalRequired`.
     Reads existing rows only: an agent can never mint one (D-018)."""
-    return require_approval(
-        store.list_approvals(), project=project.slug, kind=ApprovalKind.CRAWL,
+    return require_project_approval(
+        store.list_approvals(), project=project, kind=ApprovalKind.CRAWL,
         target=project.base_url, actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s)
 
 
 def live_case_approval(store: ProjectStore, project: Project, case: Case) -> RunApproval:
     """The approval for running this case against the live target, or `ApprovalRequired`."""
-    return require_approval(
-        store.list_approvals(), project=project.slug, kind=ApprovalKind.LIVE_CASE,
+    return require_project_approval(
+        store.list_approvals(), project=project, kind=ApprovalKind.LIVE_CASE,
         target=project.base_url, actions=len(case.steps))
 
 

@@ -22,6 +22,7 @@ from autotester.core.consent import (
     is_account_derived,
     prepare_account_grant,
     require_approval,
+    require_project_approval,
     validate_account_bounds,
     validate_account_scope,
 )
@@ -57,7 +58,9 @@ def covering_approval(project: Project, store: ProjectStore, bounds: CrawlBounds
     rows = store.list_approvals()
     human = [row for row in rows if not is_account_derived(row)]  # AT-759: see below
     if project.production:  # D-088: a production target is covered by human-granted rows only
-        return _production_approval(project, human, rows, bounds, kind)
+        return require_project_approval(
+            rows, project=project, kind=kind, target=project.base_url,
+            actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s)
     if kind not in ACCOUNT_KINDS or not project.secrets:
         return _require(human, project, kind, bounds)
     try:
@@ -68,26 +71,6 @@ def covering_approval(project: Project, store: ProjectStore, bounds: CrawlBounds
         except ApprovalRequired as human_refusal:
             raise ApprovalRequired(
                 f"{human_refusal}\n(credential-derived approval unavailable: {why})") from None
-
-
-def _production_approval(project: Project, human: list[RunApproval], rows: list[RunApproval],
-                         bounds: CrawlBounds, kind: ApprovalKind) -> RunApproval:
-    """D-088: `project.production` demands a signed, human-granted `production: true` row for
-    this exact target and run kind. An account-derived row (D-068) or a `production: false`
-    row is never accepted, and is never minted either; the refusal names why."""
-    try:
-        return require_approval(
-            human, project=project.slug, kind=kind, target=project.base_url,
-            actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s, production=True)
-    except ApprovalRequired as why:
-        skipped = [row.id for row in rows if row.project == project.slug
-                   and row.run_kind is kind and row.target == project.base_url
-                   and (is_account_derived(row) or not row.production)]
-        note = (f"\n(production gate, D-088: {project.slug} is declared production; "
-                f"account-derived or production:false rows are refused: {', '.join(skipped)})"
-                if skipped else "\n(production gate, D-088: only a human-granted "
-                "production:true row for this target and run kind is accepted)")
-        raise ApprovalRequired(f"{why}{note}") from None
 
 
 def _require(rows: list[RunApproval], project: Project, kind: ApprovalKind,

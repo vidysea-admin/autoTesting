@@ -8,7 +8,9 @@ gitignored, so a clean checkout has only this) names a recorded approval id that
 approvals.jsonl, intact, matches project/kind/target, covered the recorded bounds when
 the crawl started, and -- for a project declared `production` (D-088) -- is a
 human-granted `production: true` row. The signature is verified when
-AUTOTESTER_APPROVAL_KEY is available; without it (a clean checkout) the check says so.
+AUTOTESTER_APPROVAL_KEY is available; without it (a clean checkout) a non-production project
+passes with "signature NOT verified", but a production project FAILS (a content hash is
+forgeable by anyone who can edit approvals.jsonl).
 
     uv run python scripts/check_crawl_approval.py <project-slug>
 """
@@ -63,6 +65,10 @@ def main() -> int:
             return _fail(f"crawl {latest.crawl_id}: production project but approval "
                          f"{row.id} is account-derived ({row.granted_by})")
     verify = bool(os.environ.get(APPROVAL_KEY_ENV))
+    if (project.production or latest.project_production) and not verify:
+        return _fail(f"crawl {latest.crawl_id}: production project and {APPROVAL_KEY_ENV} is not "
+                     f"set here, so approval {row.id}'s signature cannot be verified; a content "
+                     "hash is forgeable. Run this where the approval key is available")
     try:
         if verify:
             require_approval(

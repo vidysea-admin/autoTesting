@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from autotester.core.consent import ApprovalRequired, require_approval
+from autotester.core.consent import ApprovalRequired, require_project_approval
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
 from autotester.schema.release import FlowPlan
@@ -43,9 +43,10 @@ def release_preflight(project: Project, ctx: StageContext) -> None:
         raise ApprovalRequired("release scope belongs to another project or run")
     rows = [a for a in ctx.store.list_approvals() if a.id == scope.approval_id]
     actions = max(scope.max_actions, plans_cost(ctx.store, scope.plans))
-    require_approval(rows, project=project.slug, kind=ApprovalKind.LIVE_CASE,
-                     target=project.base_url, actions=actions,
-                     wall_clock_s=max(scope.wall_clock_s, actions * WALL_CLOCK_PER_ACTION_S))
+    require_project_approval(  # D-088: a production project accepts a human production row only
+        rows, project=project, kind=ApprovalKind.LIVE_CASE, target=project.base_url,
+        actions=actions,
+        wall_clock_s=max(scope.wall_clock_s, actions * WALL_CLOCK_PER_ACTION_S))
 
 
 def check_lineage(project: Project, ctx: StageContext, state: RunState) -> None:
