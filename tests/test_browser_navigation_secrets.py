@@ -170,6 +170,37 @@ def test_saved_pathlynks_config_isolates_each_role_host(slug, role, host, other)
                 store.resolve(template, f"https://{refused}")
 
 
+# T-177 slice 0 (F6): the destination check reads the SAME parse `host_of` uses, so a
+# non-http(s) scheme on an allowed host (and the whitespace/tab tricks a browser strips) is refused.
+@pytest.mark.parametrize("url", [
+    "javascript://app.pathlynks.test/%0aalert(1)", "JavaScript://app.pathlynks.test/x",
+    " javascript://app.pathlynks.test/x", "java\tscript://app.pathlynks.test/x",
+    "data://app.pathlynks.test/x", "file://app.pathlynks.test/x", "ftp://app.pathlynks.test/x",
+    "wss://app.pathlynks.test/x", "blob://app.pathlynks.test/x",
+])
+def test_bad_scheme_refuses_a_non_http_scheme_on_an_allowed_host(url: str) -> None:
+    from autotester.browser.secrets import bad_scheme
+    from autotester.browser.session import check_destination
+    assert bad_scheme(url) is not None
+    with pytest.raises(NavigationRefused, match="only http and https") as err:
+        check_destination(Project(slug="p", name="P", base_url="https://app.pathlynks.test",
+                                  allowed_domains=["pathlynks.test"]), url)
+    assert "alert" not in str(err.value) and "/x" not in str(err.value)  # AT-341: no URL echoed
+
+
+@pytest.mark.parametrize("url", [
+    "https://app.pathlynks.test/x", "HTTP://app.pathlynks.test/x", "app.pathlynks.test/x",
+    "app.pathlynks.test:8080/x", "//app.pathlynks.test/x", "https://app.pathlynks.test",
+])
+def test_bad_scheme_lets_http_https_and_schemeless_urls_through(url: str) -> None:
+    from autotester.browser.secrets import bad_scheme
+    from autotester.browser.session import check_destination
+    assert bad_scheme(url) is None
+    project = Project(slug="p", name="P", base_url="https://app.pathlynks.test",
+                      allowed_domains=["pathlynks.test"])
+    assert check_destination(project, url) == "app.pathlynks.test"
+
+
 # -- AT-651 / D-087: exact-host secret scope ---------------------------------
 from autotester.browser import secrets as _secrets  # noqa: E402
 

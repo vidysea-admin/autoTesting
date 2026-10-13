@@ -29,6 +29,7 @@ append raised `Cannot read properties of null` on a fresh navigation), so
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 
 from autotester.browser.evidence import MASK_CSS
@@ -96,6 +97,12 @@ class VideoMixin:
     `begin_case_video` restarts the session once, as a recorded event, if the browser is gone
     anyway (a case closed its own last page, a crash)."""
 
+    def _sweep_orphan_videos(self) -> None:
+        """Sweep only this session's video scratch, never a sibling's (V1)."""
+        scratch = self.state.run_dir / VIDEO_DIR_NAME / self._video_scratch_id
+        if scratch.is_dir():
+            shutil.rmtree(scratch, ignore_errors=True)
+
     def begin_case_video(self, case_id: str) -> None:
         """Swap to a fresh page for `case_id`. A no-op when this session was
         not started with `record_video=True` (`self.record_video` is False):
@@ -117,11 +124,19 @@ class VideoMixin:
         self._page = self._open_case_page()
         self._timeout()
         self._page.add_init_script(_MASK_INIT_SCRIPT)
+        self._mask_context()
         self._timeout()
         self._video_case_id = case_id
         if old_page is not None:
             with _ignore_close_errors():
                 old_page.close()
+
+    def _mask_context(self) -> None:
+        """Mask every page this context opens from now on, a tab the agent opens mid-case
+        included (run-video V3/V4). Once per context object: a restart makes a new one."""
+        if getattr(self, "_masked_context", None) is not self._context:
+            self._context.add_init_script(_MASK_INIT_SCRIPT)
+            self._masked_context = self._context
 
     def take_session_events(self) -> list[Evidence]:
         """Session restarts since the last call, for the pipeline to attach to the case's

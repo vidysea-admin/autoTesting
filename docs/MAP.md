@@ -99,12 +99,14 @@
 | `providers/gemini_files.py` | Upload a video to the Files API and wait until the service can actually read it. |
 | `providers/gemini_schema.py` | Turn a Pydantic model into a schema Gemini's `response_schema` will accept. |
 | `providers/images.py` | One job: turn a prompt plus screenshot files into OpenAI-style message content. |
+| `providers/isolated.py` | ISOLATED_PROVIDER: run a `Provider` call in a killable child process (D-089 item 2, T-177 AF4). |
 | `providers/langchain_fallback.py` | LangChain-backed provider with automatic fallback across configured vendors. |
 | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
 | `schema/acceptance.py` | The T-136 acceptance-comparison artifact: AutoTester vs a human tester, as data. |
 | `schema/agent_comparison.py` | The agent-vs-pipeline comparison report (T-179 AL12/AL13): the four north-star axes for each |
+| `schema/agent_fallback.py` | Typed shapes for the browser-use fallback actuator (T-177, qa/contracts/agent-fallback.md). |
 | `schema/agent_guardrails.py` | The declared limits of an agent run and the rule that says whether it beat the pipeline |
 | `schema/agent_layer.py` | The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist, |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
@@ -177,6 +179,7 @@
 | `stages/acceptance_comparison.py` | Build and check the T-136 acceptance comparison from stored bench artifacts. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/adversarial.py` | ADVERSARIAL: a bounded pass of file-defined probes at one AI endpoint. It records, never judges. |
+| `stages/agent_actuator.py` | AGENT_ACTUATOR: the guards, bounds and typed boundary around an agent that drives a page. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
 | `stages/ai_capture.py` | AI CAPTURE: exercise one AI endpoint and record what happened. It observes and never decides. |
 | `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
@@ -185,6 +188,7 @@
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/bench_from_run.py` | Turn a real project's executed+graded run into the T-136 bench files. Contract: bench.md K10. |
+| `stages/browser_use_backend.py` | BROWSER_USE_BACKEND: browser-use (MIT) as the `ActuatorBackend` for unknown screens (T-177). |
 | `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
 | `stages/bug_run.py` | BUG RUN: turn one finished run's verdicts into bug events, and notice cases that moved (T-199b). |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
@@ -338,6 +342,11 @@
 | `AcceptanceComparison` (`schema/acceptance.py`) | The comparison a reader who was not there can judge (bench.md K9). |
 | `PathMeasure` (`schema/agent_comparison.py`) | What one path produced on the SAME corpus. All four numbers are measured, not estimated; |
 | `Comparison` (`schema/agent_comparison.py`) |  |
+| `FallbackActionKind` (`schema/agent_fallback.py`) |  |
+| `FallbackAction` (`schema/agent_fallback.py`) | One action the agent chose, as the guards see it (AF3). |
+| `ActuatorResult` (`schema/agent_fallback.py`) | What a backend returns after driving the page: the actions taken, what it observed and |
+| `FallbackStatus` (`schema/agent_fallback.py`) | How an invocation ended. Deliberately no PASS: only `grade.py` writes a verdict. |
+| `FallbackOutcome` (`schema/agent_fallback.py`) | The adapter's whole answer for one invocation. `reason` names the bound, the refusal or |
 | `WinRule` (`schema/agent_guardrails.py`) | When the agent counts as a gain over the pipeline. Default (awaiting Umesh): the agent |
 | `AgentGuardrails` (`schema/agent_guardrails.py`) | Per-run ceilings: the token/cost budget (D-042) and the step cap. Domains and the write |
 | `AgentToolName` (`schema/agent_layer.py`) | The stage tools of the lead tester. |

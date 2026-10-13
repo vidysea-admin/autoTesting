@@ -106,7 +106,7 @@ Browser is **headed by default** (`Project.headed`), driven against a persistent
    `SecretRef`'s `domains`; parser-ambiguous destinations fail closed. `core/redact.assert_no_raw_secrets`
    is the hard gate before any call; undeclared `.env` values are masked too, never usable.
 3. Screenshots mask secret inputs; every log and artifact passes `Redactor.scrub`.
-4. `write_policy` defaults to `read_only`; writing to a target app is an explicit, per-run decision.
+4. `write_policy` defaults to `read_only`; writing to a target app is an explicit, per-run decision. A loopback DevTools port is OFF by default; a run opts in with `expose_cdp=True`, which launches Chromium with `--remote-debugging-port=0` (loopback only, Chromium picks the port) and takes `BrowserSession.cdp_url` only from the profile's `DevToolsActivePort` after an identity check (the listener must answer `/json/version` with that file's own browser path and must not accept beyond loopback); the port is closed at teardown (`browser/launch.py`, D-086 item 3, extending D-075). Residuals: a same-user process that rewrites the port file, and the bind of headed Chrome is unverified.
 
 ## Storage
 
