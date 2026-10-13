@@ -1,20 +1,17 @@
 """The one run launcher: gates, execution and the saved `Run` (T-205, team-foundation TF1/TF2).
 
-One job: given a project, a trigger, an optional requester and an optional slot key, load the
-project and its cases, apply the pre-run gates, execute every case through the resilient
-pipeline and save the `Run`. The UI Run button, the queue worker, the Test button and the
-scheduler's tick all reach a run through `launch_run`, and nothing else in `src/` builds a
-`Run` for them or calls `run_cases_traced`.
+One job: given a project, a trigger, an optional requester and slot key, load the project and
+its cases, apply the pre-run gates, execute every case through the resilient pipeline and save
+the `Run`. The UI Run button, the queue worker, the Test button and the scheduler's tick all
+reach a run through `launch_run`; only `save_tracked_run` here builds a `Run`.
 
-The gates are part of the launcher, not of any caller (so none can skip them, and there is no
-parameter that does): 400 for no cases / no provider / a credential with no value, then the
-D-018 live-case approval (403, AT-570; D-068 derives it from the project's own credentials)
-before a run id, a directory or a browser exists.
+The gates are part of the launcher, not of any caller (none can skip them): 400 for no cases /
+no provider / a credential with no value, then the D-018 live-case approval (403, AT-570; D-068
+derives it from the project's own credentials) before a run id, a directory or a browser exists.
 
-It does not queue (`ui/run_queue.py`), schedule (`stages/scheduler.py`) or authenticate, and it
-imports no web framework: a queue worker or the CLI tick can call it. Refusals are
+It does not queue, schedule or authenticate, and imports no web framework. Refusals are
 `LaunchRefused` carrying the HTTP status the route shows. `RunSeams` lets a caller supply the
-judge factory, the width planner and the shared-RAM ledger (the queue); defaults are the real ones.
+judge factory, width planner and shared-RAM ledger; defaults are the real ones.
 """
 
 from __future__ import annotations
@@ -24,7 +21,7 @@ from collections.abc import Callable
 from contextlib import AbstractContextManager
 from datetime import datetime
 from pathlib import Path
-from typing import NamedTuple, Protocol
+from typing import Any, NamedTuple, Protocol
 
 from autotester.browser.secrets import SecretStore
 from autotester.browser.video import VIDEO_OVERHEAD_MB
@@ -256,15 +253,22 @@ def run_cases_traced(
     return plan
 
 
+def save_tracked_run(store: ProjectStore, **fields: Any) -> Run:
+    """The one place a `Run` is built, saved and bug-tracked (T-199d); `record_run` uses it too."""
+    run = Run(**fields)
+    store.save_run(run)
+    record_run_bugs(store, run.id)
+    return run
+
+
 def launch_run(
     slug: str, *, run_id: str | None = None, trigger: Trigger = Trigger.MANUAL,
     requested_by: str | None = None, slot_key: str | None = None, via: RunVia | None = None,
     seams: RunSeams = DEFAULT_SEAMS, priorities: list[CasePriority] | None = None,
     requested_at: datetime | None = None, requested_by_id: int | None = None) -> Run:
-    """Run the project (every case, or `priorities` plus pinned p0) as `run_id`; builds the `Run`.
+    """Run the project (every case, or `priorities` plus pinned p0) as `run_id`.
 
-    The gates run here, so every caller is gated and none can pass a flag to skip them. Raises
-    `LaunchRefused` before any run directory or browser exists."""
+    Gates run here, none skippable; raises `LaunchRefused` before any directory or browser."""
     store, project, cases, judge, paths, secrets, approval, entry_flags, cat = prepare_run(
         slug, seams, priorities)
     run_id = run_id or f"run-{ulid()}"
@@ -272,28 +276,24 @@ def launch_run(
         store, run_id, secrets, project, cases, entry_flags, paths.run_dir(run_id), paths, slug,
         judge, approval, cat, seams,
     )
-    run = Run(
-        id=run_id, project=slug, case_ids=[c.id for c in cases], trigger=trigger,
+    run = save_tracked_run(
+        store, id=run_id, project=slug, case_ids=[c.id for c in cases], trigger=trigger,
         requested_by=requested_by, requested_by_id=requested_by_id, slot_key=slot_key,
-        via=via, requested_at=requested_at,
-        parallel_n=plan.n, parallel_bound_by=plan.bound_by,
+        via=via, requested_at=requested_at, parallel_n=plan.n, parallel_bound_by=plan.bound_by,
         catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
                                  for tier in tiers_to_run(cat)},
         # CN10: what it ran under, reported not capped -- a 19-year wall clock is visible.
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
     )
-    store.save_run(run)
-    record_run_bugs(store, run_id)  # T-199d: one door to tracked bugs; logs, never raises
     prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
     ask_for_what_it_did_not_recognise(store, run_id)
     return run
 
 
 def ask_for_what_it_did_not_recognise(store: ProjectStore, run_id: str) -> None:
-    """Turn this run's coverage gaps into video requests (AT-240: the north star's "ask the
-    human for a video when it meets an unknown screen" had never happened). Deliberately after
-    `save_run`: a request is about a run that HAPPENED, and failing to ask must never lose it."""
+    """Turn this run's coverage gaps into video requests (AT-240). Deliberately after the save:
+    a request is about a run that HAPPENED, and failing to ask must never lose it."""
     spec = store.load_flowspec()
     if spec is None:
         return                      # nothing learned yet -> nothing is "unknown" (V2)
