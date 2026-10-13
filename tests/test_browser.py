@@ -31,7 +31,7 @@ def make_project(headed: bool = True) -> Project:
     return Project(
         slug="pathlynks", name="Pathlynks", base_url="https://app.pathlynks.test",
         allowed_domains=["pathlynks.test"], headed=headed,
-        secrets=[SecretRef(key="PATHLYNKS_PASSWORD", domains=["pathlynks.test"])],
+        secrets=[SecretRef(key="PATHLYNKS_PASSWORD", domains=["app.pathlynks.test"])],
     )
 
 

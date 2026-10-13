@@ -35,7 +35,7 @@ def _session_with_secret_url(
     project = Project(
         slug="pathlynks", name="Pathlynks", base_url="https://app.pathlynks.test",
         allowed_domains=project_domains or ["pathlynks.test"],
-        secrets=[SecretRef(key=key, domains=ref_domains or ["pathlynks.test"])],
+        secrets=[SecretRef(key=key, domains=ref_domains or ["app.pathlynks.test"])],
     )
     env = tmp_path / ".env"
     env.write_text(f"{key}={value}\n", encoding="utf-8")
@@ -115,9 +115,7 @@ def test_secret_host_mode_binds_both_resolution_paths(flag, navigation, host) ->
     value = f"https://{host}/login?token=synthetic-only-token"
     store = SecretStore(project, {ref.key: value})
     template = "{{SECRET:SCOPED_URL}}"
-    allowed = host == "auth.pathlynks.test" or (
-        flag is not False and host == "child.auth.pathlynks.test"
-    )
+    allowed = host == "auth.pathlynks.test"  # AT-651/D-087: exact host only, flag is inert
     if allowed:
         resolved = (store.resolve_for_navigation(template) if navigation
                     else store.resolve(template, f"https://{host}"))
@@ -158,3 +156,52 @@ def test_saved_pathlynks_config_isolates_each_role_host(key, host) -> None:
     for refused in (other, "vidysea.com", f"child.{host}", f"not{host}"):
         with pytest.raises(SecretScopeError):
             store.resolve(template, f"https://{refused}")
+
+
+# -- AT-651 / D-087: exact-host secret scope ---------------------------------
+from autotester.browser import secrets as _secrets  # noqa: E402
+
+PROD = "pathlynks.vidysea.com"
+
+
+def _prod_store() -> SecretStore:
+    ref = SecretRef(key="PROD_PW", domains=[PROD])
+    project = Project(slug="pathlynks", name="Pathlynks", base_url=f"https://{PROD}",
+                      allowed_domains=["vidysea.com"], secrets=[ref])
+    return SecretStore(project, {"PROD_PW": "synthetic-not-real"})
+
+
+@pytest.mark.parametrize("host", [
+    "dev-new.vidysea.com", f"{PROD}.evil.com", "other.vidysea.com", "vidysea.com",
+    f"x.{PROD}", f"not{PROD}",
+])
+@pytest.mark.parametrize("navigation", [False, True])
+def test_prod_secret_refused_on_any_other_host(host, navigation) -> None:
+    store = _prod_store()
+    with pytest.raises(SecretScopeError):
+        store.resolve("{{SECRET:PROD_PW}}", f"https://{host}/login")
+
+
+@pytest.mark.parametrize("host", [PROD, PROD.upper(), f"{PROD}.", f"{PROD.title()}."])
+def test_prod_secret_allowed_on_exact_host_with_normalisation(host) -> None:
+    store = _prod_store()
+    assert store.resolve("{{SECRET:PROD_PW}}", f"https://{host}/signin") == "synthetic-not-real"
+
+
+def test_bare_parent_scope_no_longer_matches_children() -> None:
+    assert not _secrets._host_matches("dev-new.vidysea.com", "vidysea.com")
+    assert not _secrets._host_matches("dev-new.vidysea.com", "vidysea.com", True)
+    assert _secrets._host_matches("vidysea.com", "VIDYSEA.com.")
+
+
+def test_suffix_match_mutation_is_caught(monkeypatch) -> None:
+    def suffix(host, domain, include_subdomains=True):
+        domain = domain.lower().lstrip(".")
+        return host == domain or host.endswith(f".{domain}")
+    monkeypatch.setattr(_secrets, "_host_matches", suffix)
+    store = _prod_store()
+    # under the old suffix rule a child of the scope WOULD resolve; the real code must not
+    assert store.resolve("{{SECRET:PROD_PW}}", f"https://x.{PROD}") == "synthetic-not-real"
+    monkeypatch.undo()
+    with pytest.raises(SecretScopeError):
+        store.resolve("{{SECRET:PROD_PW}}", f"https://x.{PROD}")
