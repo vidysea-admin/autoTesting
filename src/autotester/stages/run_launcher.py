@@ -44,6 +44,7 @@ from autotester.schema.project import Project
 from autotester.schema.run import Run, RunBounds
 from autotester.schema.run_state import StageCheckpoint, StageName
 from autotester.schema.team_enums import RunVia
+from autotester.stages.bug_wiring import record_run_bugs
 from autotester.stages.catalog import catalog, tiers_to_run
 from autotester.stages.coverage import diff_coverage, queue_requests
 from autotester.stages.explore_consent import covering_approval
@@ -59,13 +60,11 @@ from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
 
-__all__ = ["DEFAULT_SEAMS", "LaunchRefused", "Prepared", "RunSeams", "launch_run",
-           "prepare_run"]
+__all__ = ["DEFAULT_SEAMS", "LaunchRefused", "Prepared", "RunSeams", "launch_run", "prepare_run"]
 
 
 class LaunchRefused(Exception):
-    """A gate said no. `status` is the HTTP code a route shows (400, 403, 404); `reason` is
-    the human sentence."""
+    """A gate said no. `status` is the HTTP code a route shows; `reason` the human sentence."""
 
     def __init__(self, status: int, reason: str) -> None:
         super().__init__(reason)
@@ -285,6 +284,7 @@ def launch_run(
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
     )
     store.save_run(run)
+    record_run_bugs(store, run_id)  # T-199d: one door to tracked bugs; logs, never raises
     prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
     ask_for_what_it_did_not_recognise(store, run_id)
     return run

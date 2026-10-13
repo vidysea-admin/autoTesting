@@ -25,6 +25,7 @@ from autotester.schema.auth import PermissionKey
 from autotester.schema.enums import Severity
 from autotester.schema.tracked_bug import BugEvent, BugStatus, EventKind, TrackedBug
 from autotester.stages.report_export import _load_redactor
+from autotester.stages.sheet_sync import load_status
 from autotester.stages.tracker_export import evidence_path, to_csv, to_xlsx
 from autotester.store.bug_store import BugStore
 from autotester.ui import theme
@@ -53,11 +54,6 @@ def _may_edit(slug: str) -> bool:
     return who is not None and authorize(who, PermissionKey.PROJECT_EDIT, resource_for(slug))
 
 
-def _may_edit(slug: str) -> bool:
-    who = current_principal()
-    return who is not None and authorize(who, PermissionKey.PROJECT_EDIT, resource_for(slug))
-
-
 def _evidence_cell(bug: TrackedBug) -> str:
     link = evidence_path(bug)
     return f"<a href='{escape(link)}'>{escape(bug.evidence_run_id or '')}</a>" if link else ""
@@ -74,6 +70,19 @@ def _row(bug: TrackedBug, scrub) -> str:
         _evidence_cell(bug),
     ]
     return "<tr>" + "".join(f"<td>{c}</td>" for c in cells) + "</tr>"
+
+
+def _sync_note(slug: str, scrub) -> str:
+    """TB12: the last sheet-sync outcome; the bug list below is authoritative either way."""
+    status = load_status(slug)
+    if status is None:
+        return ""
+    if status.sync_status == "ok":
+        return f"<p>Sheet sync: ok at {status.at:%Y-%m-%d %H:%M} UTC</p>"
+    retry = f"{status.retry_at:%Y-%m-%d %H:%M} UTC" if status.retry_at else "unscheduled"
+    return (f"<p>Sheet sync: {theme.pill('error', tone='danger')} "
+            f"{escape(scrub(status.last_error or ''))} - next retry {retry}. "
+            "The bugs below are unaffected.</p>")
 
 
 def _filter_form(slug: str, status: str, severity: str) -> str:
@@ -112,7 +121,7 @@ def tracker_page(slug: str, status: str = "", severity: str = "") -> str:
         + f"<p class='subtitle'>{len(shown)} of {len(every)} bug(s) · "
           f"<a class='btn' href='{base}/export.csv'>Download CSV</a> "
           f"<a class='btn' href='{base}/export.xlsx'>Download Excel</a></p>"
-        + _filter_form(slug, status, severity)
+        + _sync_note(slug, scrub) + _filter_form(slug, status, severity)
         + theme.card(f"<div style='overflow:auto'><table><thead><tr>{head}</tr></thead>"
                      f"<tbody>{rows}</tbody></table></div>", title=f"{name} bugs")
     )
