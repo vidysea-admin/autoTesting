@@ -31,7 +31,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}")},
     **{("GET", _P + t): ("project", "report.view") for t in (
-        "/runs/{run_id}", "/test/{run_id}", "/report", "/report.xlsx", "/report.html",
+        "/runs/{run_id}", "/tracker", "/tracker/export.csv", "/tracker/export.xlsx",
+        "/tracker/{bug_key}", "/test/{run_id}", "/report", "/report.xlsx", "/report.html",
         "/damage-report")},
     ("GET", _P + "/runs/{run_id}/videos/{video_path:path}"): ("project", "video.view"),
     ("GET", _P + "/frames/{source_id}/{name:path}"): ("project", "video.view"),
@@ -39,7 +40,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "/cases", "/cases/{case_id}/rename", "/cases/{case_id}/delete", "/edit", "/login-case",
         "/flowspec/approve", "/flowspec/request-edit", "/cases/generate",
         "/crawls/{crawl_id}/merge", "/issues/{issue_id}/pin", "/sources",
-        "/sources/{source_id}/analyze", "/env/url")},
+        "/sources/{source_id}/analyze", "/env/url", "/tracker/{bug_key}/assignee")},
     **{("POST", _P + t): ("project", "video.upload") for t in ("/sources/upload","/sources/drive")},
     **{("POST", _P + t): ("project", "project.run") for t in ("/run", "/test", "/explore",
                                                                 "/crawl-approval")},

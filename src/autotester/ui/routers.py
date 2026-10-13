@@ -35,6 +35,7 @@ from autotester.ui import (
     routes_settings,
     routes_sources,
     routes_team_run,
+    routes_tracker,
     routes_video,
     routes_video_comments,
     routes_video_portal,
@@ -42,7 +43,7 @@ from autotester.ui import (
 
 STUBS: dict[str, APIRouter] = {
     name: APIRouter() for name in (
-        "schedule", "team_run", "inbox", "profile", "tracker", "video_review", "video_portal",
+        "schedule", "team_run", "inbox", "profile", "video_review", "video_portal",
         "access_requests",
     )
 }
@@ -68,6 +69,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_issues.router,
     routes_live.router,
     routes_catalog.router,
+    routes_tracker.router,
     routes_project_access.router,
     routes_team_run.router,   # T-201b; its `STUBS['team_run']` stays registered, empty
     # T-198b/G9: the portal. The `video_portal` and `access_requests` stubs stay registered
