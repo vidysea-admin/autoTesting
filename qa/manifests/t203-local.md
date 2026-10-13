@@ -1,7 +1,7 @@
 # Manifest — t203-local
 
 **Unit:** T-203 local Windows host (D-090). **Contract:** `qa/contracts/hosting.md` HO39-HO46.
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Files:** scripts/serve_windows.ps1, scripts/install_windows_task.ps1, tests/test_windows_host.py, docker/DEPLOY.md (Part B.1 appended; Part A untouched).
 **Reused:** `/healthz` in ui/routes_live.py (no new endpoint).

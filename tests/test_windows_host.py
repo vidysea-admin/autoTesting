@@ -13,6 +13,7 @@ import urllib.request
 from pathlib import Path
 
 import pytest
+from auth_harness import gate_on
 from fastapi.testclient import TestClient
 
 from autotester.ui.app import app
@@ -86,15 +87,18 @@ def test_task_installer_whatif_registers_nothing() -> None:  # HO39, HO40
     assert "New-ScheduledTaskTrigger -AtStartup" in text
 
 
-def test_healthz_is_public_and_leaks_nothing() -> None:  # HO43
+def test_healthz_is_public_and_leaks_nothing(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:  # HO43
+    gate_on(tmp_path, monkeypatch)  # T-204 gate ON: the unsigned-in caller gets only {"ok": true}
     res = TestClient(app).get("/healthz")
     assert res.status_code == 200
-    assert set(res.json()) == {"started_at", "newest_source_mtime", "serving_stale_code"}
+    assert res.json() == {"ok": True}
     assert "project" not in json.dumps(res.json()).lower()
 
 
-@pytest.mark.skip(reason="pending T-204: no login middleware exists yet (HO41 401/302 check)")
-def test_unauthenticated_project_route_is_refused() -> None:  # HO41
+def test_unauthenticated_project_route_is_refused(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:  # HO41
+    gate_on(tmp_path, monkeypatch)
     res = TestClient(app).get("/", follow_redirects=False)
     assert res.status_code in (401, 302)
 
@@ -117,7 +121,7 @@ def test_smoke_start_serves_healthz_on_loopback(tmp_path: Path) -> None:  # HO43
             except OSError:
                 time.sleep(0.5)
         assert body is not None, "healthz never answered"
-        assert "started_at" in json.loads(body)
+        assert json.loads(body) == {"ok": True}  # unsigned-in caller under the T-204 gate (AU16)
     finally:
         proc.kill()
         proc.wait(timeout=10)
