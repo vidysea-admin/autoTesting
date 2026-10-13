@@ -85,14 +85,19 @@ def _comment_li(c: VideoComment, base: str, *, can_edit: bool, can_delete: bool,
             f"<span class='comment-text'>{esc(c.text)}</span>{edited}{promoted} {acts}</li>")
 
 
-def _comment_form(base: str) -> str:
+def _comment_form(base: str, refused: tuple[str, str, str] | None = None) -> str:
+    """`refused` = (message, typed time, typed text) after a refused post (AT-D2): the reason is
+    shown inline and what the person typed is put back, escaped like every other value."""
+    note, at_s, text = ("", "0", "") if refused is None else (
+        f"<p class='error' role='alert'>{esc(refused[0])}</p>", refused[1], refused[2])
     return (
-        f"<form method='post' action='{base}/comments'>"
+        note + f"<form method='post' action='{base}/comments'>"
         "<div class='field'><label for='at_s'>Time in seconds</label>"
-        "<input id='at_s' name='at_s' type='text' inputmode='decimal' value='0' required> "
+        f"<input id='at_s' name='at_s' type='text' inputmode='decimal' value='{esc(at_s)}' "
+        "required> "
         "<button class='btn btn-sm' type='button' data-now='1'>Use current time</button></div>"
         "<div class='field'><label for='text'>Comment</label>"
-        "<textarea id='text' name='text' required maxlength='2000'></textarea></div>"
+        f"<textarea id='text' name='text' required maxlength='2000'>{esc(text)}</textarea></div>"
         "<button class='btn btn-primary' type='submit'>Add comment</button></form>")
 
 
@@ -114,7 +119,8 @@ def _share_panel(base: str, link_since: str | None, people: list[str]) -> str:
 
 def player_page(slug: str, source: Source, comments: list[VideoComment], *, viewer: str,
                 moderator: bool, can_comment: bool, can_promote: bool,
-                share: tuple[str | None, list[str]] | None) -> str:
+                share: tuple[str | None, list[str]] | None,
+                refused: tuple[str, str, str] | None = None) -> str:
     base = f"/projects/{esc(slug)}/videos/{esc(source.id)}"
     items = "".join(_comment_li(
         c, base, can_edit=can_comment and c.author == viewer,
@@ -125,7 +131,7 @@ def player_page(slug: str, source: Source, comments: list[VideoComment], *, view
     body = (theme.breadcrumb(("Videos", "/shared"), (esc(source.label or source.id), None))
             + f"<h1>{esc(source.label or 'Video')}</h1>" + theme.card(player)
             + theme.card(f"<ul class='comments'>{items}</ul>"
-                         + (_comment_form(base) if can_comment else ""), title="Comments"))
+                         + (_comment_form(base, refused) if can_comment else ""), title="Comments"))
     if share is not None:
         body += theme.card(_share_panel(base, share[0], share[1]), title="Share")
     return theme.page(esc(source.label or "Video"), body + SEEK_SCRIPT)

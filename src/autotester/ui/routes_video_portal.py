@@ -17,6 +17,7 @@ from autotester.auth import accounts, audit
 from autotester.auth.access import authorize, resource_for
 from autotester.auth.context import current_principal
 from autotester.schema.auth import PermissionKey, Principal, ResourceRef
+from autotester.schema.project import Source
 from autotester.stages import video_access as access
 from autotester.stages import video_comments as comments
 from autotester.stages.video_requests import latest_request, requests_by
@@ -69,13 +70,20 @@ def video_page(slug: str, video_id: str) -> Response:
         known = latest_request(slug, video_id, who.email) if res is not None else None
         return HTMLResponse(view.request_access_page(
             _page_path(slug, video_id) + "/request-access", known), status_code=404)
+    return HTMLResponse(render_player(who, slug, video_id, res, source))
+
+
+def render_player(who: Principal, slug: str, video_id: str, res: ResourceRef, source: Source,
+                  refused: tuple[str, str, str] | None = None) -> str:
+    """The player page for a viewer who has access; `refused` re-renders it after a refused
+    comment with the reason and the typed values (see `video_portal_view._comment_form`)."""
     project = resource_for(slug)
-    return HTMLResponse(view.player_page(
+    return view.player_page(
         slug, source, comments.list_comments(slug, video_id), viewer=who.email.lower(),
         moderator=authorize(who, K.COMMENT_CREATE, ResourceRef(project_slug=slug)),
         can_comment=authorize(who, K.COMMENT_CREATE, res),
         can_promote=authorize(who, K.PROJECT_EDIT, project),
-        share=_share_panel_data(who, slug, res, video_id)))
+        share=_share_panel_data(who, slug, res, video_id), refused=refused)
 
 
 @router.get("/projects/{slug}/videos/{video_id}/media")
