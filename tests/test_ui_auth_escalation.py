@@ -273,8 +273,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "/product-map", "/flow-diagram", "/schedule", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}")},
-    **{("GET", _P + t): ("project", "report.view") for t in (
-        "/runs/{run_id}", "/report", "/report.xlsx", "/report.html", "/damage-report")},
+    **{("GET", _P + t): ("project", "report.view") for t in ("/damage-report",
+        "/runs/{run_id}", "/test/{run_id}", "/report", "/report.xlsx", "/report.html")},
     ("GET", _P + "/runs/{run_id}/videos/{video_path:path}"): ("project", "video.view"),
     ("GET", _P + "/frames/{source_id}/{name:path}"): ("project", "video.view"),
     **{("POST", _P + t): ("project", "project.edit") for t in (
@@ -283,7 +283,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "/crawls/{crawl_id}/merge", "/issues/{issue_id}/pin", "/sources",
         "/sources/{source_id}/analyze", "/env/url")},
     **{("POST", _P + t): ("project", "video.upload") for t in ("/sources/upload","/sources/drive")},
-    **{("POST", _P + t): ("project", "project.run") for t in ("/run", "/explore",
+    **{("POST", _P + t): ("project", "project.run") for t in ("/run", "/explore", "/test",
                                                                 "/crawl-approval")},
     **{("POST", _P + t): ("project", "credentials.edit") for t in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},

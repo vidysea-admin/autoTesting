@@ -14,6 +14,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.schema.case import CasePriority
+from autotester.schema.team_enums import RunVia
 
 
 class QueueStatus(StrEnum):
@@ -36,6 +37,8 @@ class QueueEntry(BaseModel):
     status: QueueStatus = QueueStatus.QUEUED
     trigger: Literal["button", "schedule", "api"] = "button"
     requested_by: str | None = Field(None, description="who pressed it; None before login exists")
+    requested_by_id: int | None = Field(
+        None, description="T-201b/TT3: the presser's user id from the session; None if not a user")
     slot_key: str | None = Field(
         None, description="T-200: the schedule slot that asked for this run; the queue's "
                           "idempotency key (one entry per slot), None for a button press")
@@ -45,6 +48,8 @@ class QueueEntry(BaseModel):
     started_at: datetime | None = None
     finished_at: datetime | None = None
     reason: str | None = None
+    via: RunVia | None = Field(
+        None, description="T-201b: which surface asked (`team_button`); None = the Run button")
     position: int = Field(0, description="1-based place among the queued; derived, never stored")
 
 

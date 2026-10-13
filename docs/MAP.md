@@ -170,6 +170,7 @@
 | `stages/ai_report.py` | AI REPORT: one Excel workbook of a project's stored Track C evidence, grouped by tier (T-155). |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
+| `stages/bench_from_run.py` | Turn a real project's executed+graded run into the T-136 bench files. Contract: bench.md K10. |
 | `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
 | `stages/bug_run.py` | BUG RUN: turn one finished run's verdicts into bug events, and notice cases that moved (T-199b). |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
@@ -288,12 +289,14 @@
 | `ui/routes_schedule.py` | The schedule routes (TS1): view the card, save, pause, resume and delete one project's schedule. |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
+| `ui/routes_team_run.py` | The team Test button (T-201b, qa/contracts/team-test-button.md TT1-TT6): a teammate with |
 | `ui/routes_unified_report.py` | The damage-control report as a page (T-168): the lead's two-step route from the project page. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
 | `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
 | `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
 | `ui/schedule_view.py` | The project schedule card (TS1): what the schedule is, when it fires next, what it did last. |
+| `ui/team_run_view.py` | Markup for the team Test button (T-201b): the button, the request status page, the "started |
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 | `ui/upload_stream.py` | Read one multipart upload from the wire into a staged file, stopping at the admin limit. |
@@ -571,6 +574,7 @@
 |---|---|
 | `scripts/adversarial_proof.py` | Credential-free, network-free proof that the adversarial pass refuses to exceed its scope. |
 | `scripts/append_decision.ps1` | append_decision.ps1 -- the ONLY legitimate write path to docs/DECISIONS.md |
+| `scripts/bench_from_run.py` | T-136b: convert a real executed+graded run into the acceptance bench files. |
 | `scripts/bench_trial.py` | T-120: the north star made measurable — first real human-vs-AI trial scorecard. |
 | `scripts/check_acceptance_comparison.py` | T-136 done_check: is the Pathlynks acceptance comparison complete? (bench.md K9) |
 | `scripts/check_crawl_approval.py` | T-145's done_check (D-018): a live crawl counts as done only if it actually |
@@ -578,6 +582,7 @@
 | `scripts/check_no_secrets.py` | Scan files for any real value currently loaded in .env. Prints OK/LEAK only. |
 | `scripts/explore_proof.py` | Credential-free end-to-end proof of the explorer (Track B3). |
 | `scripts/flake_probe.py` | Measure a flaky test's real failure rate — and say how little N green runs prove. |
+| `scripts/install_windows_task.ps1` | (no description) |
 | `scripts/migrate_stamp_legacy_rubrics.py` | Stamp `Provenance` on legacy default rubrics, in stored project data. |
 | `scripts/migrate_url_patterns.py` | Repair `url_pattern` values mangled by AT-287/AT-294, in stored project data. |
 | `scripts/mutation_check.py` | Prove a unit's new tests are not vacuous, by killing them on purpose. |
@@ -586,4 +591,5 @@
 | `scripts/renumber_duplicate_issue_ids.py` | Give fresh ids to the LATER row of every duplicated id in qa/issues.jsonl. |
 | `scripts/run_pathlynks_first_cases.py` | T-050: 3 hand-written Pathlynks login cases (best/worst/edge), run headed and |
 | `scripts/score_video_issues.py` | Score AutoTester's issues against a human tester's sheet — T-136's acceptance. |
+| `scripts/serve_windows.ps1` | (no description) |
 <!-- /generated:scripts -->

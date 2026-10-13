@@ -21,7 +21,7 @@ from autotester.stages.report_export import (
     valid_runs_newest_first,
 )
 from autotester.store.project_store import ProjectStore
-from autotester.ui import run_queue_view, theme
+from autotester.ui import run_queue_view, team_run_view, theme
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id, _reserved_temp_path
 from autotester.ui.routes_unified_report import router as unified_report_router
 
@@ -200,6 +200,7 @@ def run_view(slug: str, run_id: str) -> Response:
             ("Report", f"/projects/{safe_slug}/report"), ("Run", None),
         )
         + f"<h1>Run <code>{safe_run_id}</code></h1>"
+        + team_run_view.started_by(run)
         + _counts_stats(counts, run.catalog_runnable_counts if run else None)
         + _trace_card(store, run_id)
         + (sections or theme.empty_state("📭", "No case results in this run yet."))

@@ -1,7 +1,7 @@
 # Manifest - t136-acceptance-comparison
 
 **Unit:** T-136 `done_check` script and its logic, built in no-human-list mode (D-089 item 3).
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Contract:** `qa/contracts/bench.md` K3, K5-K9. Recall is judged "unavailable allowed" per D-089 item 3.
 **Goal task:** T-136 stays `pending`: no Pathlynks bench data exists locally.
