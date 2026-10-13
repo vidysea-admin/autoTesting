@@ -112,9 +112,9 @@ def completeness_problems(cmp: AcceptanceComparison) -> list[str]:
     problems: list[str] = []
     ai = cmp.autotester
     if ai.kind != "autotester":
-        problems.append(f"autotester column kind is {ai.kind!r}")
+        problems.append(f"AutoTester column kind is {ai.kind!r}")
     if ai.ordering == "unknown":
-        problems.append("autotester ordering not recorded (K7)")
+        problems.append("AutoTester ordering not recorded (K7)")
     for name, measure in (("false_positive_rate", ai.false_positive_rate),
                           ("duration_s", ai.duration_s)):
         if measure.value is None:
