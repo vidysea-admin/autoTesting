@@ -1,7 +1,7 @@
 # t145-prod-project
 
-**Status:** ready-for-check
-**Fix cycle:** 1
+**Status:** checked-PASS
+**Fix cycle:** 2
 **Branch:** wave/t145-prod-project
 **Serves:** T-145 prerequisite; D-087 item 1 (each environment its own project); D-088 item 3 (pathlynks.vidysea.com is production, project.json corrected by a builder unit)
 
@@ -23,3 +23,7 @@ Only host in `projects/pathlynks/{cases,knowledge,approvals}` is `https://pathly
 uv run autotester approve pathlynks --kind crawl --target https://pathlynks.vidysea.com/signin --scope "Bounded READ_ONLY BFS map crawl of Pathlynks PRODUCTION, user-role test account via declared login case; no form submits, nothing typed except login case, logout never clicked, deny-list on" --granted-by Umesh --expires <YYYY-MM-DD> --max-actions 150 --max-probes 1 --wall-clock 600 --production
 ```
 (bounds 20 screens / 150 actions / 600 s per live-crawl-target.md answer; set `--expires` to run day + 1.)
+
+## Fix cycle 2
+- Merged master (AT-651 exact-host matching) into the branch, no conflicts.
+- `tests/test_browser_navigation_secrets.py::test_saved_pathlynks_config_isolates_each_role_host` rewritten for the stricter isolation: `pathlynks` has only USER refs, exact host `pathlynks.vidysea.com`, `allowed_domains == [host]`; `pathlynks-prepod` has only COUNSELLOR refs, exact host `dev-new.vidysea.com`. Each secret resolves only on its own host; refused on the other env host, bare `vidysea.com`, a child, a prefix-lookalike and `host.evil.com`.
