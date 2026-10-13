@@ -49,12 +49,15 @@ def _bootstrap() -> None:
 def doctor() -> None:
     """Check the repo against the design rules that keep it readable."""
     violations = doctor_module.run()
-    if not violations:
+    hard = doctor_module.blocking(violations)
+    for violation in hard:
+        typer.secho(str(violation), fg=typer.colors.RED)
+    for line in doctor_module.warning_summary(violations):
+        typer.secho(line, fg=typer.colors.YELLOW)
+    if not hard:
         typer.secho("doctor: clean", fg=typer.colors.GREEN)
         raise typer.Exit(0)
-    for violation in violations:
-        typer.secho(str(violation), fg=typer.colors.RED)
-    typer.secho(f"\n{len(violations)} violation(s)", fg=typer.colors.RED, bold=True)
+    typer.secho(f"\n{len(hard)} violation(s)", fg=typer.colors.RED, bold=True)
     raise typer.Exit(1)
 
 
