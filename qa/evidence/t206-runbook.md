@@ -7,11 +7,11 @@ Status tags per step: READY (can run now) / BLOCKED(x) (waits on a task or an Um
 ## 0. Facts the steps rely on (state at master 30bb5b03)
 
 - Merged: T-197 (video review), T-198 a/b/c (intake, portal, gate), T-199 a/b (bug-loop core and run), T-200 a/b/wiring, T-201 a/b (delivery core, Test button), T-204 (login), T-205 (launcher). `scripts/serve_windows.ps1` exists (T-203 local).
-- NOT in master: a tracker page (`ui/routes_tracker.py`) and the CSV/xlsx export (TB7, TB15); the T-199 task is still `pending`. No `tests/acceptance/` directory and no `rig.py` yet, so the TA pytest files do not exist. `projects/pathlynks` exists.
+- NOT in master: a tracker page (`ui/routes_tracker.py`) and the CSV/xlsx export (TB7, TB15); the T-199 task is still `pending`. `tests/acceptance/` and `rig.py` now exist (added on this branch). `projects/pathlynks` exists.
 - Roles needed (Umesh answer, none recorded yet): test accounts for `admin`, `subadmin`, `dev`, `tester` (plus `pending`). Create them through the app's own sign-up and admin group screens (the first sign-up is admin, AU7). No password goes in any evidence file.
 - Email: sender credentials are ANSWERED (gate `email-sender-credentials.md`, D-081 item 5; AUTOTESTER_SMTP_* in repo `.env`). Open for Umesh: is one real send required, and to which inbox (contract Open 2). Default: no; outbox plus loopback fake SMTP is the PASS evidence.
 - Evidence naming: `qa/evidence/t206-<criterion>-*`, persona files `qa/evidence/persona-t206-<type>/persona-walk.md`, browser reports `qa/evidence/browser-t206-<type>-checker/report.json`. Every evidence file is scanned with `uv run python scripts/check_no_secrets.py qa/evidence/t206-*`.
-- Common prerequisite P: the maker builds `tests/acceptance/rig.py` and `test_ta*.py` (the contract's own Verify commands). Until then every LOCAL pytest step is BLOCKED(rig not built).
+- Common prerequisite P: the maker builds `tests/acceptance/rig.py` and `test_ta*.py` (the contract's own Verify commands). Until then every LOCAL pytest step is READY (rig built; passes locally, see section 4).
 - CPU: no browser or full test suite while a hei-sweep A/B measurement window is active.
 
 ## 1. Local server for the live steps (TA3, TA15)
@@ -25,41 +25,41 @@ Never set `AUTOTESTER_AUTH_DISABLED`. Kill only the PID started; record it.
 ## 2. Criteria
 
 ### TA1 - rig is honest (CRITICAL egress half)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta01_rig_honest.py` -> `qa/evidence/t206-ta01-pytest.txt`. Pass: green; closed seam set listed; egress guard fires on a non-loopback connect.
-2. BLOCKED(rig not built) Sabotage in a scratch copy only: patch a stage function in one scenario, then drop the guard; both must go red. Capture both outputs.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta01_rig_honest.py` -> `qa/evidence/t206-ta01-pytest.txt`. Pass: green; closed seam set listed; egress guard fires on a non-loopback connect.
+2. READY (rig built; passes locally, see section 4) Sabotage in a scratch copy only: patch a stage function in one scenario, then drop the guard; both must go red. Capture both outputs.
 
 ### TA2 - nothing happens before access (CRITICAL)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta02_nothing_before_access.py`. Pass: data-root hash byte-identical after the whole-surface sweep as anonymous, `pending`, and forged Origin; seam logs empty.
-2. BLOCKED(rig not built) Sabotage: public POST route in a copy; flip the sweep to a signed-in `dev` (must go red on "changed").
-3. BLOCKED(test accounts) Live confirmation: admin places dev/subadmin/tester in groups; each next click reaches the default page; project `other` returns 404 for them. Evidence: screenshots under `browser-t206-*`.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta02_nothing_before_access.py`. Pass: data-root hash byte-identical after the whole-surface sweep as anonymous, `pending`, and forged Origin; seam logs empty.
+2. READY (rig built; passes locally, see section 4) Sabotage: public POST route in a copy; flip the sweep to a signed-in `dev` (must go red on "changed").
+3. READY (live; the checker creates the accounts on the local server through sign-up and the admin group screen) Live confirmation: admin places dev/subadmin/tester in groups; each next click reaches the default page; project `other` returns 404 for them. Evidence: screenshots under `browser-t206-*`.
 
 ### TA3 - real server process
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta03_real_server.py`. Pass: sign-up, sign-in, project, dev Test press, report opens; foreign Host refused; foreign Origin POST refused.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta03_real_server.py`. Pass: sign-up, sign-in, project, dev Test press, report opens; foreign Host refused; foreign Origin POST refused.
 2. READY Start the server per section 1; probe `Invoke-WebRequest http://127.0.0.1:<port>/auth/login` (200) and a POST with `Origin: http://evil.example` (refused). Evidence `t206-ta03-server/probe.txt`.
 
 ### TA4 - intake becomes knowledge (O9)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta04_intake_to_knowledge.py`. Pass: zip (2 videos, 1 doc, 1 hostile member) accounts for every member; 2 sources from the zip plus 1 from Drive each with uploader/time/origin; same bytes register nothing; FlowSpec holds DRAFT flows with `source_id`; a flow only in the video shows as "Another possibility"; `tester` and `pending` are refused.
-2. BLOCKED(test accounts: dev, tester) Live: sign in as `dev`, open the project, Add videos, upload a small zip of redacted derivative clips only, read the outcome table. Evidence: screenshot plus `autotester video list` output in `t206-ta04-live/`.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta04_intake_to_knowledge.py`. Pass: zip (2 videos, 1 doc, 1 hostile member) accounts for every member; 2 sources from the zip plus 1 from Drive each with uploader/time/origin; same bytes register nothing; FlowSpec holds DRAFT flows with `source_id`; a flow only in the video shows as "Another possibility"; `tester` and `pending` are refused.
+2. READY (live; accounts as above) Live: sign in as `dev`, open the project, Add videos, upload a small zip of redacted derivative clips only, read the outcome table. Evidence: screenshot plus `autotester video list` output in `t206-ta04-live/`.
 3. READY The Drive door is exercised with the fake `DriveClient` only (Drive identity gate answered: gws CLI login). No live Drive call by the checker.
 
 ### TA5 - pointer review of an intake source (O8)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta05_review_of_intake.py`. Pass: summary plus 0-5 items each citing a second; `not_reviewed` spans named; provider log has derivatives only; zero calls when approval is missing.
-2. BLOCKED(test accounts: admin) Live UI with the fake provider on the stub product (never a real model on a real video): admin opens the source, enters three pointer lines, runs the review, reads the result. Evidence `t206-ta05-live/` (screenshot, review JSON).
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta05_review_of_intake.py`. Pass: summary plus 0-5 items each citing a second; `not_reviewed` spans named; provider log has derivatives only; zero calls when approval is missing.
+2. BLOCKED(no review route or screen on master: the review runs from `autotester ingest review` only) Live UI with the fake provider on the stub product (never a real model on a real video): admin opens the source, enters three pointer lines, runs the review, reads the result. Evidence `t206-ta05-live/` (screenshot, review JSON).
 
 ### TA6 - Test button to queue/launcher to report, once (O12, O13)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta06_button_to_report.py`. Pass (a)-(e): one request attributed to dev; second press returns the existing one; launcher log `trigger=button`; exactly one outbox message, to dev; a raising transport leaves the verdict unchanged; missing credential pair refuses with no run directory.
-2. BLOCKED(test accounts: dev) Live on the stub product with the defect ON: dev ticks "Email me run reports", presses Test (`POST /projects/{slug}/test`), opens `GET /projects/{slug}/test/{run_id}`; admin (not ticked) sees the report in the inbox but gets no mail. Evidence `t206-ta06-live/` (screenshots, outbox listing with names only).
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta06_button_to_report.py`. Pass (a)-(e): one request attributed to dev; second press returns the existing one; launcher log `trigger=button`; exactly one outbox message, to dev; a raising transport leaves the verdict unchanged; missing credential pair refuses with no run directory.
+2. BLOCKED(no "Email me run reports" control, no delivery call from a finished run, no inbox on master) Live on the stub product with the defect ON: dev ticks "Email me run reports", presses Test (`POST /projects/{slug}/test`), opens `GET /projects/{slug}/test/{run_id}`; admin (not ticked) sees the report in the inbox but gets no mail. Evidence `t206-ta06-live/` (screenshots, outbox listing with names only).
 3. READY Mail path: the test environment points `AUTOTESTER_SMTP_HOST` at 127.0.0.1 (loopback fake SMTP or outbox adapter), never the SES values.
 4. BLOCKED(Umesh answer: is a real send required, and which inbox) Optional one real SES message. Default not required (contract Open 2). Never sent by a test or the checker.
 
 ### TA7 - failure becomes one bug, closes on evidence (O10)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta07_failure_to_bug.py`. Pass: one `TrackedBug` with a stable key; second press raises count not a second bug; fixed only after two consecutive passes; INCONCLUSIVE closes nothing; reopen keeps the key; button and schedule failures share a key; reprocessing a run changes nothing; TB7 scoping holds.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta07_failure_to_bug.py`. Pass: one `TrackedBug` with a stable key; second press raises count not a second bug; fixed only after two consecutive passes; INCONCLUSIVE closes nothing; reopen keeps the key; button and schedule failures share a key; reprocessing a run changes nothing; TB7 scoping holds.
 2. BLOCKED(T-199 TB7 tracker page not built) Live: dev, subadmin, admin open the tracker page; tester sees a bug only if its report is shared; `other` shows nothing. Evidence screenshots.
 3. READY Store-level check after the TA6 run: read `store/bug_store.py` BugStore and save key, count, last_seen, status only to `t206-ta07-bugs.txt`.
 
 ### TA8 - schedule fires once through the same launcher (O12)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta08_schedule_to_report.py` with the injected clock. Pass: nothing before the slot; one enqueue at the slot (`trigger=schedule`, requested_by = owner); a second tick and a second scheduler instance enqueue nothing; `blocked_no_credentials` shows zero transport requests; a busy project gives `skipped_overlap`; `tester` cannot save.
-2. BLOCKED(test accounts: subadmin) Live: subadmin saves a daily schedule on the stub project; the schedule card shows the next three fire times in project timezone; trigger one tick with the tick command documented in `qa/manifests/t200-schedule-wiring.md` (read it at run time); confirm one run and one inbox report. Evidence `t206-ta08-live/`.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta08_schedule_to_report.py` with the injected clock. Pass: nothing before the slot; one enqueue at the slot (`trigger=schedule`, requested_by = owner); a second tick and a second scheduler instance enqueue nothing; `blocked_no_credentials` shows zero transport requests; a busy project gives `skipped_overlap`; `tester` cannot save.
+2. BLOCKED(no schedule save route or schedule card on master) Live: subadmin saves a daily schedule on the stub project; the schedule card shows the next three fire times in project timezone; trigger one tick with the tick command documented in `qa/manifests/t200-schedule-wiring.md` (read it at run time); confirm one run and one inbox report. Evidence `t206-ta08-live/`.
 
 ### TA9 - tracker (the contract text is the OLD sheet dry run, see proposal 3)
 Under D-090 the checks that realise O11 now are TB7 (page) and TB15 (export):
@@ -70,31 +70,31 @@ Under D-090 the checks that realise O11 now are TB7 (page) and TB15 (export):
 5. DEFERRED(D-090 item 2) Sheet bind, mapping confirm, SheetClient write log (original TA9 body), real-sheet export.
 
 ### TA10 - share, request access, approve, comment (O14, O15)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta10_share_to_comment.py`.
-2. BLOCKED(test accounts: dev, tester, admin) Live: dev creates a share link (`POST /projects/{slug}/videos/{id}/share-link`); tester opens it, sees request-access naming who is asked, never the bytes; dev approves; tester watches and comments at second 42; admin promotes the comment to a pointer; rerun the review and confirm the pointer is included. Evidence `t206-ta10-live/`.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta10_share_to_comment.py`.
+2. READY (live; accounts as above) Live: dev creates a share link (`POST /projects/{slug}/videos/{id}/share-link`); tester opens it, sees request-access naming who is asked, never the bytes; dev approves; tester watches and comments at second 42; admin promotes the comment to a pointer; rerun the review and confirm the pointer is included. Evidence `t206-ta10-live/`.
 
 ### TA11 - restart keeps the world, repeats nothing
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta11_restart_exactly_once.py`. Pass: canonical dump equal after rebuilding app and stores; re-tick, re-process, re-deliver add nothing.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta11_restart_exactly_once.py`. Pass: canonical dump equal after rebuilding app and stores; re-tick, re-process, re-deliver add nothing.
 2. READY Live: stop and restart the section 1 server on the same data root; list users, projects, runs, bugs, inbox (counts and ids only) before and after. Evidence `t206-ta11-restart.txt`.
 
 ### TA12 - no secret or product data leaks (CRITICAL)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta12_no_leak.py`.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta12_no_leak.py`.
 2. READY Run last: `uv run python scripts/check_no_secrets.py qa/evidence/t206-*`. Pass: OK; no student datum or credential in the pack.
 
 ### TA13 - zero egress, exact spend (CRITICAL)
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta13_zero_egress.py`. Pass: no non-loopback connect; provider call counts as expected; mail via outbox or loopback SMTP; Drive client fake.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta13_zero_egress.py`. Pass: no non-loopback connect; provider call counts as expected; mail via outbox or loopback SMTP; Drive client fake.
 2. READY During the live walks, record the server process's outbound connections (`Get-NetTCPConnection -OwningProcess <pid>`). Pass: loopback only. Evidence `t206-ta13-netstat.txt`.
 
 ### TA14 - each user type completes the goal; dead ends explain themselves
-1. BLOCKED(rig not built) `uv run pytest tests/acceptance/test_ta14_journeys_and_dead_ends.py`.
-2. BLOCKED(test accounts; T-199 tracker for the stale-mapping row) Live spot checks: 413 over-limit names the limit, non-video member named, no credentials names the Credentials page, double press shows the existing request, no-access page, waiting page, last-admin removal refused. Evidence screenshots.
+1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta14_journeys_and_dead_ends.py`.
+2. READY for the dead ends that exist (the stale-mapping row is removed by D-090, proposal 3) Live spot checks: 413 over-limit names the limit, non-video member named, no credentials names the Credentials page, double press shows the existing request, no-access page, waiting page, last-admin removal refused. Evidence screenshots.
 
 ### TA15 - persona walks in a live browser (Mode D)
 Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no browser tool connects, never curl.
-1. BLOCKED(test accounts: dev) dev: add videos <= 3 steps; Test <= 3 steps; finds "Email me run reports" unaided. Files `persona-t206-dev/persona-walk.md`, `browser-t206-dev-checker/report.json`. Pass: no `high` finding, zero unexplained console errors, labelled keyboard-operable controls, masked secret inputs.
-2. BLOCKED(test accounts: admin) admin: review with pointers <= 4 steps; approve access <= 2; names the unreviewed spans unprompted. Files for `persona-t206-admin`.
-3. BLOCKED(test accounts: tester) tester: reaches the shared video <= 3 steps from the mail link, comments at a second, sees nothing else. Files for `persona-t206-tester`.
-4. BLOCKED(test accounts: subadmin; T-199 tracker) subadmin: schedule <= 3 steps with the next three fire times shown. The "bind a sheet in <= 5 steps" part is DEFERRED(D-090 item 2), see proposal 4.
+1. BLOCKED("Email me run reports" control not built) dev: add videos <= 3 steps; Test <= 3 steps; finds "Email me run reports" unaided. Files `persona-t206-dev/persona-walk.md`, `browser-t206-dev-checker/report.json`. Pass: no `high` finding, zero unexplained console errors, labelled keyboard-operable controls, masked secret inputs.
+2. BLOCKED(no review UI on master) admin: review with pointers <= 4 steps; approve access <= 2; names the unreviewed spans unprompted. Files for `persona-t206-admin`.
+3. READY (live; accounts as above) tester: reaches the shared video <= 3 steps from the mail link, comments at a second, sees nothing else. Files for `persona-t206-tester`.
+4. BLOCKED(schedule UI and T-199 tracker not built) subadmin: schedule <= 3 steps with the next three fire times shown. The "bind a sheet in <= 5 steps" part is DEFERRED(D-090 item 2), see proposal 4.
 5. DEFERRED(D-091; hosting HO34) Repeat the walks against the Ubuntu server URL.
 
 ### TA16 - redacted-video review vs the oracle (O8; LIVE-ARTIFACT)
@@ -110,8 +110,8 @@ Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no bro
 
 ### Invariants
 - TAI1 READY `git diff --stat 30bb5b03..HEAD -- src/` is empty at close.
-- TAI2 BLOCKED(rig not built) `grep -rnE "xfail|skip\(|skipif|importorskip" tests/acceptance` finds nothing.
-- TAI3 BLOCKED(rig not built) `uv run pytest tests/acceptance` twice, once in reverse order.
+- TAI2 BLOCKED(ruling needed: TAI2 forbids xfail, but the 13 xfail(strict) tests each name a missing-piece blocker, as the brief for this unit required; see manifest) `grep -rnE "xfail|skip\(|skipif|importorskip" tests/acceptance` finds nothing.
+- TAI3 READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance` twice, once in reverse order.
 - TAI4 READY `uv run autotester doctor` and `uv run ruff check src tests scripts`.
 - TAI5 READY pathlib/no POSIX-only check by grep of `tests/acceptance` once it exists; the Ubuntu leg is DEFERRED(D-091).
 - TAI6 READY Re-check that the cited unit ids still exist at close.
@@ -128,3 +128,17 @@ Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no bro
 4. TA15 subadmin walk. "bind a sheet in <= 5 steps with the exact first write shown before confirm" is deferred (D-090). Proposed: "find the tracker and export it in <= 3 steps".
 5. Held and Open items. "Hosted check on Ubuntu" is DEFERRED (D-090 item 3, D-091) and should be its own goal row (Open 3 default). Open 5 (test sheet in Drive) is moot under D-090 item 2. Open 3 second half: T-199's `done_check` should be amended to the export scope, since the dry-run and first-live-write scope is superseded. Open 1 (AT-891) and Open 2 (real email) stay open.
 6. TAI5. "Ubuntu leg is the hosted check" should say DEFERRED(D-091), not part of the local PASS.
+
+
+## 4. Status after the rig was built (2026-10-13)
+
+Step counts (numbered steps and TAI rows above): READY 36, BLOCKED 19, DEFERRED 4. Before the rig: READY 15, BLOCKED 40, DEFERRED 4.
+
+`uv run pytest tests/acceptance`: 55 passed, 13 xfailed (strict), run forward and in reverse file order. Each xfail names its blocker in its `reason`:
+- no delivery call from a finished run, no "Email me run reports" control, no inbox route (TA6 c, d, TT7);
+- T-199 tracker page and CSV/xlsx export not built (TA7 TB7, TA9);
+- no schedule save route and no schedule card (TA8, TA14);
+- no review route or screen, the review runs from the CLI (TA5);
+- turning an intake source into DRAFT flows needs a model-backed video analysis (TA4 TV9, RC10);
+- a Test press inside the separate server process would start a real browser (TA3, `run=False`).
+Not rig-testable at all: TA16 (artifact missing) and TA17 (AT-891).
