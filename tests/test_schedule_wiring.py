@@ -196,7 +196,6 @@ def test_manual_and_unscheduled_projects_are_not_listed_and_a_broken_one_is_name
     assert [i.project for i in items] == ["daily"] and invalid == ["broken"]
     assert items[0].since.tzinfo is not None
 
-
 @pytest.fixture
 def world(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     import autotester.ui.routes_runs as routes_runs
