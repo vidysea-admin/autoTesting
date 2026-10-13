@@ -158,7 +158,7 @@ A seam failure is filed against the unit that owns the failing side; it is never
 
 - **TA12 — No secret and no product data leaves where it must not (CRITICAL).** After TA2-TA11, the secret canary is absent from: every file
   under the data root, the outbox (if present), the export files, the provider request log, the captured application log, stdout and
-  stderr, every page body the rig fetched, and `qa/evidence/t206-*`. The page canary is absent from the outbox (if present) and the export files (it may appear
+  stderr, every page body the rig fetched (except the credentials pages when fetched by an account holding `credentials.view`, which AU21 and D-034 show by design; those pages are never screenshotted or copied into `qa/evidence/t206-*`, and the same page fetched by every other role must not contain it), and `qa/evidence/t206-*`. The page canary is absent from the outbox (if present) and the export files (it may appear
   in the provider log only where TV7's redaction and approval allow the page text to go). `uv run python scripts/check_no_secrets.py` over
   `qa/evidence/t206-*` and the manifest reports OK. No student data and no credential value is in the evidence pack. `serves:` intent#O7,
   `core-invariants.md` C5, spec R16, R36, `team-test-button.md` TT9, `team-bug-loop.md` TB13. *Class LOCAL. Verify:*
@@ -232,7 +232,7 @@ A seam failure is filed against the unit that owns the failing side; it is never
   `qa/evidence/t206-*`, `qa/evidence/persona-t206-*`, `qa/evidence/browser-t206-*-checker/` and `qa/manifests/t206-g10-acceptance.md`. A gap
   that needs product code is filed on the owning unit's contract (maker: `CORE-REQUEST` or inbox) and T-206 stays unmet. *Sabotage:* touch one
   `src/` file, the diff-stat check goes red.
-- **TAI2 — Nothing is softened and nothing is skipped.** `grep -rnE "xfail|skip\(|skipif|importorskip" tests/acceptance` finds nothing; no
+- **TAI2 — Nothing is softened and nothing is skipped.** `grep -rnE "skip\(|skipif|importorskip" tests/acceptance` finds nothing, and `xfail` is allowed ONLY as `xfail(strict=True)` whose reason names a task id that is still `pending` in `.goal/goal.json` (or a D-number that defers the row); a bare reason, `run=False` with no task, or a blocker that has landed is a FAIL (a landed blocker turns the row into XPASS, which strict makes red, and the marker must come off the same day). T-206 cannot reach `checked-PASS` while any xfail remains (checker, 2026-10-13, ruling on the t206-rig questions); no
   assertion is weakened to make a seam pass (the checker reads the diff since the last check, C7). A red seam is an issue on the owning unit.
   *Sabotage:* add a `skipif` to one test, the grep goes red.
 - **TAI3 — Deterministic.** `uv run pytest tests/acceptance` passes twice in a row on fresh temporary roots, once with the test files in reverse
