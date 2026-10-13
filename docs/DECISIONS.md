@@ -2442,3 +2442,38 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-12)
 
 **Links:** D-018; D-041; D-053; D-075; D-081; T-136; T-145; T-169; T-177; T-179; T-203; qa/gates/t179a-hg1-readonly-click.md; qa/gates/t203-host-and-dns.md; qa/gates/t136-independent-human-list.md
+
+## D-087 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered three maker questions in the Claude Code session on 2026-10-12 by picking options.
+1. **AT-651 (environment model; a production secret leaking to prepod):** option A. Each environment is a separate project (for example pathlynks-prod and pathlynks-prepod), each with its own secrets and approvals. Secret host scoping changes from suffix match to EXACT host match, so a production secret is never filled on another host. An `environments` schema concept is NOT adopted now.
+2. **AT-644 (`qa/.last-tick` truncation guard):** Umesh confirms his 2026-09-27 approval of a guard against truncating or partial writes of `qa/.last-tick`. This entry is the record of that approval.
+3. **T-196 (citation subject check):** merge in ADVISORY mode. Coverage and declaration findings (about 2313 coverage and 372 declaration) are reported as warnings and do not turn doctor red. Wrong-subject and dangling citations remain blocking if the unit already treats them so. Seal and review rows are added gradually. A later decision may promote the check to blocking.
+
+**Why:** AT-651 decides how secrets are kept apart across environments. AT-644 needed its approval on record. T-196 would otherwise turn doctor red on thousands of existing citations.
+
+**Result:** No code change has been made by this entry. The maker dispatches AT-651, AT-644 and the T-196 merge next.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** AT-644; AT-651; T-196
+
+## D-088 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered T-200, AT-891/AT-654 and T-145 timing questions in the Claude Code session on 2026-10-12.
+1. **T-200 owner question 1 (private queue for the tick):** option (a). Scheduled runs keep their own separate worker for the local deployment, as built and checker-PASSed in `qa/verdicts/t200-schedule-wiring.md`. Umesh accepts that a scheduled run is outside the server run cap and can overlap a manual Test. Revisit when T-203 hosting lands. This answers the ISS-3 owner choice (a/b/c) as (a). The checker's separate finding that an unreadable queue file "fails open" is still a defect and is not waived by this answer.
+2. **T-200 owner question 2:** the "api" trigger maps to the label "CI". Confirmed.
+3. **AT-891 / AT-654:** `pathlynks.vidysea.com` IS PRODUCTION. Approval rows for it must be signed `production: true`. The existing `appr_ce61e4420ac9`, signed `production: false`, is superseded and must not be used for runs. Typing and submitting on it stays refused under the production rules. `projects/pathlynks/project.json`, which says dev, is corrected to production by a builder unit, not by this entry.
+4. **T-145 timing:** run the READ_ONLY crawl only AFTER the AT-651 exact-host secrets fix (`wave/at651-exact-host-secrets`) is merged. Under D-081 item 3's standing approval, the maker mints the per-run row, with production true, at that time.
+
+**Why:** These answers close the T-200 owner questions, settle the consent record for the Pathlynks host, and order T-145 behind the secret-scoping fix so a production secret cannot leak to another host.
+
+**Result:** No code change or run has been made by this entry. The maker dispatches the project.json correction and the T-145 run (after the AT-651 merge) next.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** D-081; D-086; T-145; T-200; T-203; AT-651; AT-654; AT-891; qa/verdicts/t200-schedule-wiring.md
