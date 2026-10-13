@@ -31,6 +31,9 @@ class Context:
     def __init__(self, dev: FakeDevTools) -> None:
         self.dev, self.dead, self.pages = dev, False, [Page()]
 
+    def add_init_script(self, _script: str) -> None:
+        pass
+
     def new_page(self) -> Page:
         if self.dead:
             raise RuntimeError("BrowserContext.new_page: Failed to open a new tab")

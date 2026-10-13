@@ -124,11 +124,19 @@ class VideoMixin:
         self._page = self._open_case_page()
         self._timeout()
         self._page.add_init_script(_MASK_INIT_SCRIPT)
+        self._mask_context()
         self._timeout()
         self._video_case_id = case_id
         if old_page is not None:
             with _ignore_close_errors():
                 old_page.close()
+
+    def _mask_context(self) -> None:
+        """Mask every page this context opens from now on, a tab the agent opens mid-case
+        included (run-video V3/V4). Once per context object: a restart makes a new one."""
+        if getattr(self, "_masked_context", None) is not self._context:
+            self._context.add_init_script(_MASK_INIT_SCRIPT)
+            self._masked_context = self._context
 
     def take_session_events(self) -> list[Evidence]:
         """Session restarts since the last call, for the pipeline to attach to the case's

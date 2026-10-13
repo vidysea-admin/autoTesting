@@ -280,20 +280,21 @@ class MaskSpyPage:
 class MaskSpyContext:
     def __init__(self) -> None:
         self.pages: list[MaskSpyPage] = []
+        self.init_scripts: list[str] = []
+
+    def add_init_script(self, script: str) -> None:
+        self.init_scripts.append(script)
 
     def new_page(self) -> MaskSpyPage:
         self.pages.append(MaskSpyPage())
         return self.pages[-1]
 
 
-def test_owed_gap_a_second_tab_opened_during_a_recorded_case_has_no_mask(tmp_path: Path) -> None:
-    """RECORDS A KNOWN GAP, owed by the next slice (the one that adds the agent): video.py puts the
-    secret-mask init script on the ONE page `begin_case_video` creates, not on the context, so a
-    tab the agent opens mid-case is recorded unmasked. This passes today because that is the
-    behaviour; the slice that masks at context level must flip it (D-082 item 1, slice 0 review)."""
+def test_a_second_tab_opened_during_a_recorded_case_is_masked(tmp_path: Path) -> None:
+    """Slice 0 gap closed: the mask is also on the CONTEXT, so a tab opened mid-case has it."""
     s = session(tmp_path, record_video=True)
     s._context = MaskSpyContext()
     s.begin_case_video("case-1")
-    case_page, second_tab = s._page, s._context.new_page()
-    assert len(case_page.init_scripts) == 1  # the case page is masked
-    assert second_tab.init_scripts == []  # GAP: a second tab is not
+    assert len(s._page.init_scripts) == 1 and len(s._context.init_scripts) == 1
+    s.begin_case_video("case-2")
+    assert len(s._context.init_scripts) == 1  # once per context

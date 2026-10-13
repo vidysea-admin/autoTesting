@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import time
 from collections.abc import Callable, Iterator
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
@@ -100,9 +101,12 @@ class ProviderChatModel:
         answer = await asyncio.to_thread(self._provider.act, prompt, schema=output_format)
         if output_format is None:
             completion: Any = answer if isinstance(answer, str) else str(answer)
+        elif isinstance(answer, output_format):
+            completion = answer
+        elif isinstance(answer, str):  # an isolated provider hands back the raw JSON text
+            completion = output_format.model_validate_json(answer)
         else:
-            completion = (answer if isinstance(answer, output_format)
-                          else output_format.model_validate(answer))
+            completion = output_format.model_validate(answer)
         return ChatInvokeCompletion(completion=completion, usage=None)
 
 
@@ -228,6 +232,9 @@ class BrowserUseBackend:
 
     async def _drive(self, task: str, vet: Vet, max_steps: int, timeout_s: float) -> dict:
         _load()
+        bind = getattr(self.provider, "bind_deadline", None)
+        if bind is not None:  # an IsolatedProvider call may not outlive this invocation (AF4)
+            bind(time.monotonic() + timeout_s)
         from browser_use import Agent
         from browser_use import BrowserSession as BuSession
 
