@@ -137,25 +137,37 @@ def test_secret_host_mode_requires_a_real_boolean(invalid) -> None:
                   include_subdomains=invalid)
 
 
-@pytest.mark.parametrize("key,host", [
-    ("PATHLYNKS_USER_EMAIL", "pathlynks.vidysea.com"),
-    ("PATHLYNKS_USER_PASSWORD", "pathlynks.vidysea.com"),
-    ("PATHLYNKS_COUNSELLOR_EMAIL", "dev-new.vidysea.com"),
-    ("PATHLYNKS_COUNSELLOR_PASSWORD", "dev-new.vidysea.com"),
+PROD_HOST = "pathlynks.vidysea.com"
+PREPOD_HOST = "dev-new.vidysea.com"
+
+
+def _saved(slug: str) -> Project:
+    config = Path(__file__).resolve().parents[1] / f"projects/{slug}/project.json"
+    return Project.model_validate_json(config.read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("slug,role,host,other", [
+    ("pathlynks", "USER", PROD_HOST, PREPOD_HOST),
+    ("pathlynks-prepod", "COUNSELLOR", PREPOD_HOST, PROD_HOST),
 ])
-def test_saved_pathlynks_config_isolates_each_role_host(key, host) -> None:
-    config = Path(__file__).resolve().parents[1] / "projects/pathlynks/project.json"
-    project = Project.model_validate_json(config.read_text(encoding="utf-8"))
-    ref = project.secret(key)
-    assert ref is not None and ref.domains == [host] and ref.include_subdomains is False
-    assert project.allowed_domains == ["vidysea.com"]
-    store = SecretStore(project, {key: "synthetic-role-value"})
-    template = "{{SECRET:" + key + "}}"
-    assert store.resolve(template, f"https://{host}/signin") == "synthetic-role-value"
-    other = "dev-new.vidysea.com" if host == "pathlynks.vidysea.com" else "pathlynks.vidysea.com"
-    for refused in (other, "vidysea.com", f"child.{host}", f"not{host}"):
-        with pytest.raises(SecretScopeError):
-            store.resolve(template, f"https://{refused}")
+def test_saved_pathlynks_config_isolates_each_role_host(slug, role, host, other) -> None:
+    project = _saved(slug)
+    keys = {f"PATHLYNKS_{role}_EMAIL", f"PATHLYNKS_{role}_PASSWORD"}
+    # Only this project's own role refs exist; the other role's refs are absent.
+    assert {r.key for r in project.secrets} == keys
+    assert not any(("COUNSELLOR" if role == "USER" else "USER") in r.key
+                   for r in project.secrets)
+    assert project.allowed_domains == [host]
+    for key in keys:
+        ref = project.secret(key)
+        assert ref is not None and ref.domains == [host] and ref.include_subdomains is False
+        store = SecretStore(project, {key: "synthetic-role-value"})
+        template = "{{SECRET:" + key + "}}"
+        assert store.resolve(template, f"https://{host}/signin") == "synthetic-role-value"
+        for refused in (other, "vidysea.com", f"child.{host}", f"not{host}",
+                        f"{host}.evil.com"):
+            with pytest.raises(SecretScopeError):
+                store.resolve(template, f"https://{refused}")
 
 
 # -- AT-651 / D-087: exact-host secret scope ---------------------------------
