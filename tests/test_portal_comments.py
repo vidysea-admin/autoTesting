@@ -169,3 +169,26 @@ def test_tp6_a_comment_that_cannot_parse_as_typed_is_kept_as_text_never_dropped(
         at_s: float, text: str) -> None:
     line = comments.pointer_line(at_s, text, 120.0)
     assert line.strip() and not parse_pointers(line, 120.0).errors
+
+
+def test_refused_comment_rerenders_the_page_keeping_text_and_showing_why(world: World) -> None:
+    """D2 (T-198 G9 walk): a refusal is still 400 and stores nothing, but a browser lands back
+    on the video page with the message inline and its typed text, escaped."""
+    typed = "<script>alert(1)</script> \"><img onerror=x> keep me"
+    resp = world.users["dev"].post(world.page() + "/comments", headers=HTML,
+                                   data={"at_s": "99999", "text": typed})
+    assert resp.status_code == 400
+    assert "role='alert'" in resp.text and "<video" in resp.text
+    assert ("&lt;script&gt;alert(1)&lt;/script&gt; &quot;&gt;&lt;img onerror=x&gt; keep me"
+            in resp.text)
+    assert "<script>alert(1)" not in resp.text and "<img onerror" not in resp.text
+    assert "value='99999'" in resp.text
+    assert "Back to projects" not in resp.text
+    assert _listed(world) == []
+
+
+def test_refused_empty_text_comment_also_shows_the_reason(world: World) -> None:
+    resp = world.users["dev"].post(world.page() + "/comments", headers=HTML,
+                                   data={"at_s": "5", "text": "   "})
+    assert resp.status_code == 400 and "role='alert'" in resp.text
+    assert _listed(world) == []
