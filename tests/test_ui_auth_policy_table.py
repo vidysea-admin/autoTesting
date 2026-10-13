@@ -27,7 +27,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         ("POST", "/admin/groups/{group_id}"), ("POST", "/admin/groups/{group_id}/delete"))},
     **{("GET", _P + t): ("project", "project.view") for t in (
         "", "/cases/new", "/cases", "/edit", "/flowspec", "/requests", "/sources",
-        "/product-map", "/flow-diagram", "/crawls", "/crawls/{crawl_id}",
+        "/product-map", "/flow-diagram", "/schedule", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}",
         "/proposals")},
@@ -48,6 +48,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
                                                                 "/crawl-approval")},
     **{("POST", _P + t): ("project", "credentials.edit") for t in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
+    **{("POST", _P + t): ("project", "schedule.manage") for t in (
+        "/schedule", "/schedule/pause", "/schedule/resume", "/schedule/delete")},
     ("POST", _P + "/access"): ("project", "project.view"),
     # T-198b developer portal (G9): pinned independently of policy.PORTAL_POLICY.
     ("GET", "/shared"): ("key", "video.view"), ("GET", "/v/{token}"): ("key", "video.view"),
@@ -74,3 +76,20 @@ def test_au14_every_policy_row_requires_exactly_its_pinned_key() -> None:
     actual = {row: (rule.kind, rule.key.value if rule.key else None)
               for row, rule in policy.ROUTE_POLICY.items()}
     assert actual == EXPECTED
+
+
+def test_au14_a_key_route_403_names_the_missing_key_and_nothing_else(
+        tmp_path, monkeypatch) -> None:
+    """The shared gate names the permission key from the policy row (TS1), for key routes too."""
+    from auth_harness import ADMIN, account, gate_on, login
+
+    from autotester.auth import accounts, groups
+
+    gate_on(tmp_path, monkeypatch)
+    account(ADMIN)
+    ops = groups.create_group("Viewers", ["project.view@all"])
+    uid = account("viewer@team.test")
+    accounts.set_user_groups(uid, [ops.id])
+    resp = login("viewer@team.test").get("/live", headers={"accept": "application/json"})
+    assert resp.status_code == 403
+    assert "live.view" in resp.text and "viewer@team.test" not in resp.text

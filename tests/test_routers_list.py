@@ -48,7 +48,7 @@ def test_existing_routes_keep_their_order() -> None:
 
 def test_stubs_are_registered_and_add_zero_routes() -> None:
     assert set(routers.STUBS) == {
-        "schedule", "team_run", "inbox", "profile", "video_review", "video_portal",
+        "team_run", "inbox", "profile", "video_review", "video_portal",
         "access_requests"}
     for name, stub in routers.STUBS.items():
         assert stub in routers.ROUTERS, name

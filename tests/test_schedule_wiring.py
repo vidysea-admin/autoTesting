@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 from run_approval_fixture import grant_live_case_approval
-from schedule_fakes import daily, utc
+from schedule_fakes import daily, loopback_single_user, utc  # noqa: F401
 
 from autotester.browser.session import BrowserSession
 from autotester.schema.case import Case
@@ -38,6 +38,7 @@ from autotester.stages.schedule_wiring import (
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_queue import RunQueue
 
+pytestmark = pytest.mark.usefixtures("loopback_single_user")
 DUE = utc(2026, 10, 8, 9, 0, 10)
 SAVED = utc(2026, 10, 7, 12)
 ALLOW = lambda _project: (lambda _slot: None)  # noqa: E731  (the TS5 gate is tested in test_schedule_gate)

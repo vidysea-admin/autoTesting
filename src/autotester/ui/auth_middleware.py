@@ -114,7 +114,8 @@ async def _refusal(request: Request, rule: RouteRule | None, params: dict[str, s
     assert rule.key is not None
     if rule.kind == "key":
         ok = authorize(who, rule.key)
-        return None if ok else await _error(request, 403, "you do not have permission")
+        return None if ok else await _error(request, 403, "you do not have permission "
+                                                          f"({rule.key.value})")  # key name only
     if rule.kind == "video":
         return await _video_refusal(request, rule.key, params, who)
     slug = params.get("slug", "")

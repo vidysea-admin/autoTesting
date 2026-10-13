@@ -1,6 +1,6 @@
 """T-204 fix cycle 1, part 2: no privilege escalation through users.manage / groups.manage
 (P5, Umesh's safe default), the fixed first admin (D-074 (d)), nav and access-page
-visibility, checkbox names. (The AU14 policy table is in test_ui_auth_policy_table.py.)
+visibility, checkbox names. The policy-row table lives in test_ui_auth_policy_table.py.
 """
 
 from __future__ import annotations

@@ -246,6 +246,7 @@
 | `stages/run_record.py` | T-136c: persist a finished run with its measured wall clock and name it for bench tooling. |
 | `stages/run_service.py` | Run / report / catalog as plain functions for the CLI and the MCP server (T-174, CM1-CM4). |
 | `stages/schedule_gate.py` | The TS5 gate: a scheduled run may start only under the credential-derived approval (D-068). |
+| `stages/schedule_owner.py` | HO24: a schedule has no more rights than its owner, checked at fire time. |
 | `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |
 | `stages/schedule_tick.py` | One stateless pass over every scheduled project, plus the heartbeat and `--dry-run` (TS7). |
 | `stages/schedule_time.py` | Slot arithmetic: which UTC instants does a schedule mean to fire at, inside a window? |
@@ -318,6 +319,7 @@
 | `ui/routes_proposals.py` | Review a project's proposed test cases from the UI: list, approve, prune, single or bulk. |
 | `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
+| `ui/routes_schedule.py` | The schedule routes (TS1): view the card, save, pause, resume and delete one project's schedule. |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
 | `ui/routes_team_run.py` | The team Test button (T-201b, qa/contracts/team-test-button.md TT1-TT6): a teammate with |
@@ -329,6 +331,7 @@
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
 | `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
 | `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
+| `ui/schedule_view.py` | The project schedule card (TS1): what the schedule is, when it fires next, what it did last. |
 | `ui/team_run_view.py` | Markup for the team Test button (T-201b): the button, the request status page, the "started |
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |

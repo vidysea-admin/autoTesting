@@ -25,6 +25,7 @@ from autotester.core.paths import ProjectPaths, repo_root, team_path
 from autotester.schema.run_queue import ACTIVE, QueueEntry
 from autotester.schema.schedule import ScheduleMode, TickReport
 from autotester.stages.schedule_gate import credential_gate, refusal_for
+from autotester.stages.schedule_owner import owner_guard
 from autotester.stages.schedule_store import project_records_path, read_heartbeat
 from autotester.stages.schedule_tick import ScheduledProject, run_tick
 from autotester.stages.scheduler import DEFAULT_GRACE_MINUTES, QueueSnapshot, Slot, TickDeps
@@ -161,7 +162,8 @@ def tick_all(
                                               slot_key=slot.key).id,
             queue=lambda: _snapshots(queue, persisted),
             gate=(gate_for or (lambda s: real_gate(s, root)))(slug),
-            scrub=_scrubber(slug, root))
+            scrub=_scrubber(slug, root),
+            owner_guard=owner_guard(slug, owners[slug], ProjectStore(slug, root)))
 
     return run_tick(items, now, deps_for=deps_for, heartbeat_path=None if only else paths.heartbeat,
                     dry_run=dry_run, invalid=invalid, grace_minutes=grace_minutes,

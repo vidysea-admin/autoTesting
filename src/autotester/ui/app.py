@@ -29,6 +29,7 @@ from autotester.ui import (
     routes_project_edit,
     routes_runs,
     routes_sources,
+    schedule_view,
     theme,
 )
 from autotester.ui.auth_middleware import auth_middleware
@@ -43,6 +44,7 @@ from autotester.ui.helpers import (
     _require_slug,
     origin_guard_middleware,
 )
+from autotester.ui.routes_schedule import can_manage
 
 __all__ = ["_require_slug", "app"]
 
@@ -215,6 +217,7 @@ def project_detail(slug: str) -> str:
     )
     actions = project_view._actions_card(safe_slug, run_button, case_count)
     actions += f"<p><a class='btn' href='/projects/{safe_slug}/catalog'>Test catalog</a></p>"
+    actions += schedule_view.schedule_card(slug, project, store, manage=can_manage(slug))
     body = (
         theme.breadcrumb(("Projects", "/"), (name, None))
         + f"<h1>{name}</h1>"
