@@ -6,7 +6,7 @@ catch the shortcut. A PASS requires cited evidence.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.schema.base import Artifact
 from autotester.schema.enums import Result
@@ -82,6 +82,25 @@ class Judgment(BaseModel):
     criteria_total: int = 0
     failures: list[Failure] = Field(default_factory=list)
     note: str | None = None
+    defect_observed: bool | None = Field(
+        default=None,
+        description="Did the evidence show a product defect? Authoritative over `note`; None = "
+                    "the judge omitted it (grade() then falls back to the note guard).")
+    defect_summary: str | None = Field(
+        default=None, description="One sentence naming the defect when defect_observed is true")
+
+    @field_validator("defect_observed", mode="before")
+    @classmethod
+    def _coerce_defect_observed(cls, value: object) -> object:
+        """Accept bool-like strings/ints from a model; anything else fails validation."""
+        if value is None or isinstance(value, bool):
+            return value
+        text = str(value).strip().lower()
+        if text in {"true", "yes", "1"}:
+            return True
+        if text in {"false", "no", "0"}:
+            return False
+        raise ValueError(f"defect_observed must be a boolean, got {value!r}")
 
 
 class Verdict(Artifact):

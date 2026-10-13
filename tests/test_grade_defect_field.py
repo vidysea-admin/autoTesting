@@ -1,0 +1,92 @@
+"""The judge's structured `defect_observed` decides a PASS; the clause-scoped note guard backs it.
+
+Misfire phrases are the real PathLynks run's (T-169): 7 of 8 judge PASSes were held by the old
+3-word negation lookback although the judge said there was no defect.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+from pydantic import ValidationError
+
+from autotester.providers.mock import MockProvider
+from autotester.schema.enums import EvidenceKind, Outcome, Result
+from autotester.schema.run import Evidence, RawResult
+from autotester.schema.verdict import Criterion, Judgment, Rubric
+from autotester.stages.grade import grade
+from autotester.stages.grade_note_guard import failure_terms
+
+RECORDED = json.loads((Path(__file__).parent / "fixtures" / "t181_recorded_judge_output.json")
+                      .read_text(encoding="utf-8"))
+
+MISFIRES = [
+    "The page is not evidence of a product defect.",
+    "This is not evidence of a product defect or missing element.",
+    "No error, rejection, wrong result, or missing element is evidenced.",
+    "The flow ended as intended rather than a product failure.",
+    "No error or rejection is evidenced after submission.",
+    "No evidence of a failure after submission.",
+]
+# negated by the guard's clause rule; the "errors appeared" sentence is the accepted held case
+GUARD_CLEAN = MISFIRES
+
+
+def _grade(judgment: Judgment):
+    rubric = Rubric(id="rub_t", criteria=[Criterion(id="c1", text="x")])
+    raw = RawResult(case_id="case_t", outcome=Outcome.COMPLETED, evidence=[
+        Evidence(kind=EvidenceKind.DOM, path="url http://127.0.0.1/x.html", step_order=1)])
+    return grade(rubric, raw, "run_1", MockProvider(responses={"judge": [judgment]}))
+
+
+def _j(note: str | None, **kw) -> Judgment:
+    return Judgment(result=Result.PASS, scoreboard="Criteria 1/1 met.", criteria_met=1,
+                    criteria_total=1, note=note, **kw)
+
+
+@pytest.mark.parametrize("note", [
+    *MISFIRES,
+    "Required-field validation errors appeared on the empty form. No defect observed."])
+def test_defect_observed_false_keeps_a_misfire_note_pass(note: str) -> None:
+    assert _grade(_j(note, defect_observed=False)).result is Result.PASS
+
+
+@pytest.mark.parametrize("note", GUARD_CLEAN)
+def test_clause_scoped_guard_no_longer_misfires(note: str) -> None:
+    assert failure_terms(note) == [], note
+    assert _grade(_j(note)).result is Result.PASS  # field absent: the backstop alone
+
+
+def test_defect_observed_true_with_pass_is_inconclusive() -> None:
+    verdict = _grade(_j("Looks fine.", defect_observed=True, defect_summary="login rejected"))
+    assert verdict.result is Result.INCONCLUSIVE
+    assert "login rejected" in (verdict.note or "")
+
+
+def test_non_boolean_field_fails_closed_at_parse() -> None:
+    with pytest.raises(ValidationError):
+        _j("ok", defect_observed="maybe")
+    assert _j("ok", defect_observed="false").defect_observed is False
+    assert _j("ok", defect_observed="Yes").defect_observed is True
+
+
+def test_field_false_does_not_override_inconclusive() -> None:
+    verdict = _grade(Judgment(result=Result.INCONCLUSIVE, scoreboard="x", criteria_met=0,
+                              criteria_total=1, defect_observed=False, note="thin evidence"))
+    assert verdict.result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("row", [r for r in RECORDED if r["case"] == "login"],
+                         ids=lambda r: r["path"])
+def test_recorded_broken_login_still_caught_without_the_field(row: dict) -> None:
+    assert _grade(_j(row["note"])).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", [
+    "the page did not load and the form is broken", "Login was not possible; access was blocked.",
+    "No errors elsewhere, but the login failed.", "login did not succeed",
+])
+def test_negator_does_not_leak_across_a_defect(note: str) -> None:
+    assert failure_terms(note), note
