@@ -16,8 +16,10 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
     ("POST", "/auth/logout"): ("session", None), ("GET", "/auth/waiting"): ("session", None),
     ("GET", "/favicon.ico"): ("member", None), ("GET", "/"): ("member", None),
     ("GET", "/onboard"): ("key", "project.create"), ("POST", "/onboard"): ("key", "project.create"),
-    ("GET", "/live"): ("key", "live.view"),
     ("GET", "/inbox"): ("key", "report.view"),
+    ("GET", "/live"): ("key", "live.view"), ("GET", "/auth/check"): ("key", "live.view"),
+    ("GET", "/settings/server"): ("key", "settings.manage"),
+    ("POST", "/settings/server"): ("key", "settings.manage"),
     **{("GET", p): ("key", "settings.manage") for p in (
         "/settings/providers", "/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc")},
     ("POST", "/settings/providers"): ("key", "settings.manage"),

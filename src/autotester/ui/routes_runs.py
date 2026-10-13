@@ -15,9 +15,13 @@ from typing import Annotated, Any
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import RedirectResponse
 
+from autotester.auth.access import authorize, resource_for
+from autotester.auth.config import auth_disabled
+from autotester.auth.context import current_principal
 from autotester.core.ids import ulid
 from autotester.providers import for_role
 from autotester.providers.base import Provider
+from autotester.schema.auth import PermissionKey
 from autotester.schema.case import CasePriority
 from autotester.schema.enums import Trigger
 from autotester.schema.project import Project
@@ -26,6 +30,7 @@ from autotester.stages import run_launcher
 from autotester.stages.parallel_run import _free_ram_mb, plan_parallel_run
 from autotester.stages.run_launcher import LaunchRefused, RunSeams
 from autotester.stages.run_launcher import is_entry_case as _is_entry_case
+from autotester.ui.intake_gate_auth import principal_for_email
 from autotester.ui.run_queue import (
     QueueFull,
     RunQueue,
@@ -73,7 +78,10 @@ def trigger_run(slug: str, priority: Annotated[list[CasePriority] | None, Query(
     except LaunchRefused as exc:
         raise HTTPException(exc.status, exc.reason) from exc
     try:
-        get_queue().submit(slug, run_id=f"run-{ulid()}", priorities=priority)  # id: post-gates
+        who = current_principal()   # HO21: every entry records who asked (None: login is off)
+        get_queue().submit(slug, run_id=f"run-{ulid()}", priorities=priority,  # id: post-gates
+                           requested_by=who.email if who and who.authenticated else None,
+                           requested_by_id=who.user_id if who and who.authenticated else None)
     except QueueFull as exc:
         raise HTTPException(429, str(exc)) from exc
     return RedirectResponse(f"/projects/{slug}/report", status_code=303)
@@ -82,9 +90,26 @@ def trigger_run(slug: str, priority: Annotated[list[CasePriority] | None, Query(
 _TRIGGER = {"button": Trigger.MANUAL, "schedule": Trigger.SCHEDULE, "api": Trigger.CI}
 
 
+def _recheck_run_right(entry: QueueEntry) -> None:
+    """HO19/HO24: the person on the entry must still be an enabled account holding `project.run`
+    on this project when the run starts, judged by the same `authorize` the gate uses. Refused
+    here means no browser is launched. Login off (`auth_disabled`) or no recorded person: the
+    gate had nobody to check."""
+    if entry.requested_by is None or auth_disabled():
+        return
+    who = principal_for_email(entry.requested_by)
+    if who is None:
+        raise RunRefused(f"{entry.requested_by} is no longer an active account; "
+                         "nothing was started")
+    if not authorize(who, PermissionKey.PROJECT_RUN, resource_for(entry.project)):
+        raise RunRefused(f"{entry.requested_by} no longer has project.run on "
+                         f"'{entry.project}'; nothing was started")
+
+
 def _run_queued(entry: QueueEntry) -> None:
     """The queue's executor: the launcher re-checks every gate (HO19), then runs the project.
     The entry's origin (trigger, owner, schedule slot) is stamped on the saved `Run` (TS6)."""
+    _recheck_run_right(entry)
     try:
         run_launcher.launch_run(entry.project, run_id=entry.id, trigger=_TRIGGER[entry.trigger],
                                 requested_by=entry.requested_by,

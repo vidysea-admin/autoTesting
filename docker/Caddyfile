@@ -15,10 +15,34 @@
 		max_size {$AUTOTESTER_MAX_UPLOAD_BYTES}
 	}
 
-	# The live browser view is only for signed-in people. Until the app's own check lands
-	# (T-204: forward_auth to /auth/check) this path is refused outright rather than left open.
+	# The live browser view is gated per endpoint, by the app, from the session (HO12). The proxy
+	# keeps no list of its own: it asks GET /auth/check, which answers 401/302 without a session,
+	# 403 without live.view, and (need=control) 403 without live.control. Two upstreams exist:
+	#   /novnc-view/* -> websockify 6081 -> x11vnc -viewonly (input dropped by the VNC server)
+	#   /novnc/*      -> websockify 6080 -> x11vnc with input, only for live.control holders
+	# A viewer who hand-builds a client against /novnc/ is refused here (403); one who uses
+	# /novnc-view/ can watch but the upstream ignores every key and click. Anything else under
+	# the VNC names is denied; the websocket upgrade carries the session cookie, so it is checked.
+	handle /novnc-view/* {
+		forward_auth autotester:8000 {
+			uri /auth/check?need=view
+		}
+		uri strip_prefix /novnc-view
+		reverse_proxy autotester:6081
+	}
+
 	handle /novnc/* {
-		respond "Live view is unavailable until sign-in is enabled." 503
+		forward_auth autotester:8000 {
+			uri /auth/check?need=control
+		}
+		uri strip_prefix /novnc
+		reverse_proxy autotester:6080
+	}
+
+	# Bare or look-alike VNC paths (/novnc, /novnc-view, /websockify, /vnc.html): never the app.
+	@vnc_other path /novnc /novnc-view /websockify* /vnc.html /vnc_lite.html
+	handle @vnc_other {
+		respond "Forbidden" 403
 	}
 
 	handle {

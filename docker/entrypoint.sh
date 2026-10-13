@@ -15,12 +15,16 @@ rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
 Xvfb :99 -screen 0 "${AUTOTESTER_SCREEN:-1600x1000x24}" &
 sleep 1
 
-# -localhost: the raw VNC port (5900) is reachable only from inside the container; the only
-# way in is websockify below, which a reverse proxy can gate.
-x11vnc -display :99 -forever -shared -nopw -localhost -quiet &
+# Two VNC servers on the same display (HO12): 5900 takes input, 5901 is -viewonly so the VNC
+# server itself drops every key and click. -localhost: neither raw port leaves the container;
+# the only way in is the two websockify listeners below, which the reverse proxy gates
+# separately (/novnc/ needs live.control, /novnc-view/ needs live.view).
+x11vnc -display :99 -forever -shared -nopw -localhost -quiet -rfbport 5900 &
+x11vnc -display :99 -forever -shared -nopw -localhost -quiet -rfbport 5901 -viewonly &
 sleep 1
 
 websockify --web=/usr/share/novnc 6080 localhost:5900 &
+websockify --web=/usr/share/novnc 6081 localhost:5901 &
 
 # --no-access-log: the access log would print the full request line for every request;
 # the audit trail (auth/audit.py) is the record, and it never carries a query string (AU22).
