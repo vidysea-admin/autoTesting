@@ -28,6 +28,7 @@ from typing import TYPE_CHECKING
 from autotester.schema.enums import NodeStatus
 from autotester.schema.portal_persona import PersonaScreen, PortalPersona
 from autotester.schema.screen_graph import ScreenNode
+from autotester.stages import explore_summary
 
 if TYPE_CHECKING:  # `explore_runtime` imports PersonaIndex from here -- type-only both ways
     from autotester.stages.explore_runtime import ExploreRuntime
@@ -131,7 +132,7 @@ def skip_unchanged(rt: ExploreRuntime, node: ScreenNode) -> bool:
         return False
     skipped = node.model_copy(update={"status": NodeStatus.SKIPPED_UNCHANGED})
     rt.nodes[node.id] = skipped
-    rt.store.update_node(skipped)
+    rt.store.update_node(explore_summary.scrubbed(rt, skipped))
     rt.skipped_unchanged += 1
     return True
 

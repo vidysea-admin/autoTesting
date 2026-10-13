@@ -126,6 +126,7 @@
 | `schema/cli_output.py` | The machine-readable result of a run (T-174, CM2/CM4). |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
+| `schema/crawl_summary.py` | CrawlSummary: the small, redacted, TRACKED record of one finished crawl. |
 | `schema/delivery.py` | Report-delivery shapes: preference, recipient, summary, rendered message, record, SMTP settings. |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
 | `schema/evidence_tombstone.py` | Sidecar tag for a unit's evidence spec whose `kills` node-ids moved out from |
@@ -216,6 +217,7 @@
 | `stages/explore_runtime.py` | The live state of one crawl in flight — session, store, clock, counters. |
 | `stages/explore_safety.py` | The explorer's inner safety guard (Track B4, D-016). |
 | `stages/explore_status.py` | How a finished crawl is judged, and how a stored one is shown (X16, X18). |
+| `stages/explore_summary.py` | Crawl persistence hygiene: redact what is written, and write the tracked summary. |
 | `stages/explore_traversal.py` | Which screen the crawl visits next — the frontier's ORDER, and nothing else. |
 | `stages/explore_typing.py` | The X10-b typing pre-pass (D-029): what the crawler types, and where it |
 | `stages/failure_bundle.py` | Assemble and load one atomic failure bundle (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
@@ -445,6 +447,7 @@
 | `CrawlCoverage` (`schema/crawl.py`) | What a crawl covered, stated by the crawl itself (coverage.md V7). The books balance: |
 | `NoiseCount` (`schema/crawl.py`) | One third-party host's dropped-request tally (never an issue, X9). |
 | `Crawl` (`schema/crawl.py`) | The envelope for one bounded BFS run — `stages/explore.py`'s output. |
+| `CrawlSummary` (`schema/crawl_summary.py`) |  |
 | `DeliveryChannel` (`schema/delivery.py`) |  |
 | `DeliveryStatus` (`schema/delivery.py`) |  |
 | `ReportLabel` (`schema/delivery.py`) | The stored report label. Computed once elsewhere (TT7); every reader takes it as given. |

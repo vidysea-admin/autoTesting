@@ -29,6 +29,7 @@ from autotester.stages import (
     explore_incremental,
     explore_node,
     explore_status,
+    explore_summary,
     explore_traversal,
     network_capture,
 )
@@ -141,7 +142,7 @@ def _seed(rt: ExploreRuntime) -> ScreenNode | None:
     node = node_from(observation, rt.crawl.id, rt.project.slug, depth=0)
     node = node.model_copy(update={"screenshot_ref": explore_node.capture(rt, node)})
     rt.nodes[node.id] = node
-    rt.store.add_node(node)
+    rt.store.add_node(explore_summary.scrubbed(rt, node))
     rt.frontier.queue.append(node.id)
     rt.frontier.screens_found += 1
     return node
@@ -231,6 +232,7 @@ def _finish(rt: ExploreRuntime, status: CrawlStatus) -> Crawl:
     rt.crawl = crawl
     rt.store.save_crawl(crawl)
     rt.store.save_frontier(crawl.id, rt.frontier)
+    explore_summary.write(rt, crawl)
     return crawl
 
 
@@ -258,8 +260,9 @@ def run_crawl(
     policy = policy or SafetyPolicy(write_policy=project.write_policy)
     # D-018 gate 2 + X10-b condition 3 (AT-535), decided in `explore_consent`
     # (line-cap split) — before anything is created or opened.
-    explore_consent.require_consent(project, store, bounds, policy=policy)
+    approval = explore_consent.require_consent(project, store, bounds, policy=policy)
     envelope = {
+        "approval_id": approval.id, "approval_production": approval.production,  # who gated
         "project": project.slug,
         "bounds": bounds,
         "policy": policy,
