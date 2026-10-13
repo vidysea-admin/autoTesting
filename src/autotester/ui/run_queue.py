@@ -20,9 +20,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from autotester.core.ids import ulid
-from autotester.core.paths import repo_root
+from autotester.core.paths import repo_root, team_path
+from autotester.delivery.inbox import DeliveryLog
 from autotester.schema.run_queue import ACTIVE, QueueEntry, QueueStatus, RunQueueFile
 from autotester.schema.team_enums import RunVia
+from autotester.stages.report_delivery import record_inbox_delivery
 from autotester.store.filestore import read_json, write_json
 from autotester.store.server_settings import effective_max_concurrent_runs
 
@@ -76,9 +78,11 @@ class RunQueue:
     def __init__(self, limit: Callable[[], int] = effective_max_concurrent_runs,
                  spawn: Spawn = _thread_spawn, runner: Runner = _registered_runner,
                  path: Callable[[], Path] | None = None,
+                 delivery: Callable[[], Path] | None = None,
                  max_waiting: int = MAX_WAITING_PER_PROJECT) -> None:
         self._limit, self._spawn, self._runner = limit, spawn, runner
         self._path, self._max_waiting = path, max_waiting
+        self._delivery = delivery
         self._lock = threading.Lock()
         self._plan_lock = threading.Lock()
         self._entries: list[QueueEntry] = []
@@ -123,6 +127,8 @@ class RunQueue:
                                     "it was not re-run -- press Test again")
             starts = self._take_startable()
             self._persist()
+        for entry in self._entries:
+            self._deliver(entry)
         self._launch(starts)
 
     def snapshot(self, project: str | None = None) -> list[QueueEntry]:
@@ -198,7 +204,18 @@ class RunQueue:
                 self._entries.remove(old)
             starts = self._take_startable()
             self._persist()
+        self._deliver(entry)
         self._launch(starts)
+
+    def _deliver(self, entry: QueueEntry) -> None:
+        """Write the entry's `inbox` DeliveryRecord (idempotent). Never raises: a full disk must
+        not stop scheduling."""
+        if self._delivery is None or entry.status in ACTIVE:
+            return
+        try:
+            record_inbox_delivery(entry, DeliveryLog(self._delivery()))
+        except Exception:
+            log.exception("inbox delivery record for %s could not be written", entry.id)
 
     def _load(self) -> list[QueueEntry]:
         if self._path is None:
@@ -233,7 +250,7 @@ def get_queue() -> RunQueue:
     global _QUEUE
     with _QUEUE_LOCK:
         if _QUEUE is None:
-            queue = RunQueue(path=_queue_file)
+            queue = RunQueue(path=_queue_file, delivery=lambda: team_path("delivery"))
             queue.recover()
             _QUEUE = queue
         return _QUEUE

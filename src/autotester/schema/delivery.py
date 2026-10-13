@@ -18,6 +18,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from autotester.schema.base import Artifact
+from autotester.schema.run_queue import QueueStatus
 
 SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
 SAFE_KEY = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,199}")
@@ -164,6 +165,25 @@ class DeliveryRecord(Artifact):
     next_retry_at: datetime | None = None
 
     check_ids = field_validator("run_id", "recipient_user_id")(safe_id)
+
+
+class InboxEntry(BaseModel):
+    """One row of the website inbox (TT7): a request the viewer may read the report of.
+    Built from the queue entry and the run's verdicts on every read; nothing is stored."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project: str
+    run_id: str
+    status: QueueStatus
+    at: datetime
+    started_by: str | None = Field(None, description="who pressed Test; None for a schedule")
+    scheduled: bool = False
+    label: ReportLabel | None = Field(None, description="None while queued or running")
+    position: int = Field(0, ge=0, description="1-based place in the line while queued")
+    link: str
+
+    check_run_id = field_validator("run_id")(safe_id)
 
 
 class SmtpConfig(BaseModel):

@@ -24,6 +24,7 @@ from autotester.ui import (
     routes_crawls,
     routes_credentials,
     routes_flow_diagram,
+    routes_inbox,
     routes_issues,
     routes_learn,
     routes_live,
@@ -75,6 +76,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_proposals.router,
     routes_project_access.router,
     routes_schedule.router,
+    routes_inbox.router,      # T-201c; its `STUBS['inbox']` stays registered, empty
     routes_team_run.router,   # T-201b; its `STUBS['team_run']` stays registered, empty
     # T-198b/G9: the portal. The `video_portal` and `access_requests` stubs stay registered
     # and empty (test_routers_list pins them); these are the real routers beside them.
