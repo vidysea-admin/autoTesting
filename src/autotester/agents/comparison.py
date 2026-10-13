@@ -48,7 +48,11 @@ def compare(corpus: BenchCorpus, case_bug_map: dict[str, str], pipeline: list[Ve
     passes the configured `WinRule` (`agents/gain.py`)."""
     base = measure("pipeline", corpus, pipeline, case_bug_map, pipeline_tokens, pipeline_wall_s)
     lead = measure("agent", corpus, agent, case_bug_map, agent_run.tokens_used, agent_wall_s)
-    in_budget = agent_run.stopped != "budget_exceeded"
+    # a budget OR step-cap halt is no gain, stated (AL13; the `agents/gain.py` docstring)
+    in_budget = agent_run.stopped not in ("budget_exceeded", "step_cap")
+    # nothing found and nothing falsely reported by either path: the corpus did not discriminate
+    no_evidence = (base.bugs_found == lead.bugs_found == 0
+                   and base.false_positives == lead.false_positives == 0)
     better = lead.bugs_found > base.bugs_found or lead.false_positives < base.false_positives
     worse = lead.bugs_found < base.bugs_found or lead.false_positives > base.false_positives
     if rule is None:
@@ -58,18 +62,26 @@ def compare(corpus: BenchCorpus, case_bug_map: dict[str, str], pipeline: list[Ve
               and lead.false_positive_rate - base.false_positive_rate <= rule.max_fp_rate_delta)
         worse = not ok
         gain = in_budget and ok and (better or not rule.require_strict_gain)
-    if gain:
-        why = "more bugs found or fewer false positives, within budget"
+    gain = gain and not no_evidence
+    halt = "" if in_budget else f", and the agent run halted early ({agent_run.stopped})"
+    if no_evidence:
+        why = f"no evidence: neither path found a bug or raised a false positive{halt}"
+    elif gain:
+        why = ("more bugs found or fewer false positives, within budget" if better
+               else "a tie on bugs and false positives, which the win rule counts as gain")
+    elif agent_run.stopped == "step_cap":
+        why = "the agent run halted at its step cap before finishing"
     elif not in_budget:
         why = "the agent run breached its budget"
     elif worse:
         why = "the agent did worse than the win rule allows on bugs found or false positives"
     else:
         why = "the agent found no more bugs and no fewer false positives"
-    line = f"{'GAIN' if gain else 'NO GAIN'} ({why}) | {_fmt(base)} | {_fmt(lead)}"
+    label, verdict = (("NO EVIDENCE", "no_evidence") if no_evidence
+                      else ("GAIN", "gain") if gain else ("NO GAIN", "no_gain"))
+    line = f"{label} ({why}) | {_fmt(base)} | {_fmt(lead)}"
     return Comparison(corpus_id=corpus.id, pipeline=base, agent=lead,
-                      agent_stopped=agent_run.stopped, verdict="gain" if gain else "no_gain",
-                      verdict_line=line)
+                      agent_stopped=agent_run.stopped, verdict=verdict, verdict_line=line)
 
 
 def write_report(comparison: Comparison, out: Path) -> Path:

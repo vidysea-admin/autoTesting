@@ -39,7 +39,10 @@ def _rubric_for_claim(claim: str, case_id: str, rubric_id: str) -> Rubric:
     return Rubric(
         id=rubric_id, case_id=case_id,
         criteria=[Criterion(id="c1", text=(
-            f"The evidence is consistent with: {claim}. If you cite this as a failure, "
+            f"The product behaved correctly for this case, whose stated purpose is: {claim}. "
+            "Evidence of a defect (an error or rejection where success was expected, a wrong "
+            "result, a missing element) means this criterion is NOT met, even when the "
+            "purpose above is to catch that defect. If you cite this as a failure, "
             "use criterion id 'c1' exactly — do not invent a different id."
         ))],
         no_fire=["exact wording of any error message shown by the product"],

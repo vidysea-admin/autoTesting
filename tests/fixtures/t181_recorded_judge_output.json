@@ -1,0 +1,38 @@
+[
+ {
+  "path": "pipeline",
+  "case": "login",
+  "result": "PASS",
+  "scoreboard": "Criteria 1/1 met.",
+  "criteria_met": 1,
+  "criteria_total": 1,
+  "note": "The evidence confirms unlabelled input fields and missing test IDs consistent with the seeded issue."
+ },
+ {
+  "path": "pipeline",
+  "case": "home",
+  "result": "PASS",
+  "scoreboard": "Criteria 1/1 met.",
+  "criteria_met": 1,
+  "criteria_total": 1,
+  "note": null
+ },
+ {
+  "path": "agent",
+  "case": "login",
+  "result": "PASS",
+  "scoreboard": "Criteria 1/1 met.",
+  "criteria_met": 1,
+  "criteria_total": 1,
+  "note": "The login attempt reproduced the expected bug resulting in an invalid credentials error."
+ },
+ {
+  "path": "agent",
+  "case": "home",
+  "result": "PASS",
+  "scoreboard": "Criteria 1/1 met.",
+  "criteria_met": 1,
+  "criteria_total": 1,
+  "note": "The navigation completed successfully and the homepage loaded as expected."
+ }
+]
