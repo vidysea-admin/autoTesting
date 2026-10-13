@@ -1207,7 +1207,7 @@
     {
       "id": "T-174",
       "title": "CLI contract (--output json, documented exit codes, --dry-run) + AutoTester MCP server (run tests, get report, get catalog) (D-041)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-125"
       ],
@@ -1218,7 +1218,7 @@
         "cmd": "uv run pytest tests/test_cli_mcp.py",
         "expect_exit": 0
       },
-      "note": "D-041; competitor F + Umesh MCP ask. | D-071: Umesh approved the mcp SDK dependency ('mcp: haan'); CLI stays a first-class surface alongside MCP.",
+      "note": "D-041; competitor F + Umesh MCP ask. | D-071: Umesh approved the mcp SDK dependency ('mcp: haan'); CLI stays a first-class surface alongside MCP. | Closed 2026-10-13: independent PASS cycle 1 (qa/verdicts/t174-cli-mcp.md), merged; done_check green.",
       "attempts": 0,
       "created": "2026-09-24T17:37:32",
       "user_value": "high"
@@ -1303,7 +1303,7 @@
     {
       "id": "T-179",
       "title": "Deep Agents lead tester + stage tools (crawl, run_case, get_persona, get_catalog, capture_network, grade_case, report) with deterministic guards inside each tool (D-042)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-170",
         "T-172",
@@ -1316,7 +1316,7 @@
         "cmd": "uv run pytest tests/test_agent_layer.py",
         "expect_exit": 0
       },
-      "note": "D-042: Deep Agents lead tester (create_deep_agent) wraps existing deterministic stages as tools; safety/credential/write-policy guards stay inside the tools, not the model.",
+      "note": "D-042: Deep Agents lead tester (create_deep_agent) wraps existing deterministic stages as tools; safety/credential/write-policy guards stay inside the tools, not the model. | Closed 2026-10-13: independent PASS cycle 1 (qa/verdicts/t179d-agent-layer.md), merged; done_check green.",
       "attempts": 0,
       "created": "2026-09-24T22:20:00",
       "user_value": "high"
@@ -1324,7 +1324,7 @@
     {
       "id": "T-180",
       "title": "Subagents: explorer, test-designer, runner, independent grader (no action tools, C7), reporter (D-042)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-179"
       ],
@@ -1335,7 +1335,7 @@
         "cmd": "uv run pytest tests/test_agent_subagents.py",
         "expect_exit": 0
       },
-      "note": "D-042: the grader subagent holds no action tools and runs in its own context, so C7 (executor never grades itself) still holds. | EXTEND (AT-589, meeting 2026-09-26): explicit judge vendor + warning when it matches the agent's vendor.",
+      "note": "D-042: the grader subagent holds no action tools and runs in its own context, so C7 (executor never grades itself) still holds. | EXTEND (AT-589, meeting 2026-09-26): explicit judge vendor + warning when it matches the agent's vendor. | Closed 2026-10-13 together with T-179 (Umesh decision); verdicts qa/verdicts/t180-subagents.r2.a.md/.r2.b.md; done_check re-run green. AT-589 (judge-vendor warning) stays an OPEN issue.",
       "attempts": 0,
       "created": "2026-09-24T22:20:00",
       "user_value": "high"
