@@ -3,7 +3,7 @@
 **Contract:** qa/contracts/failure-bundle.md (FB5 — human pruning of proposed cases before any
 provider spend); qa/contracts/auth.md (AU14 central policy table)
 **Goal task:** none assigned (gap reported by the T-169 maker: no UI route to review proposals)
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 
 ## Why this unit
