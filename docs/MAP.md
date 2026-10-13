@@ -93,6 +93,7 @@
 | `media/probe.py` | Ask ffmpeg what a recording actually is, and whether ffmpeg is here at all. |
 | `media/redacted.py` | The redacted derivative of a recording, and the frames cut from it (TV7). |
 | `media/transcribe.py` | Get a recording's narration — reusing a sidecar first, transcribing last. |
+| `providers/agent_model.py` | The production chat-model constructor for the agent layer (T-181, AL12). |
 | `providers/anthropic.py` | Anthropic provider: the `agent` and `judge` roles via the Messages API. |
 | `providers/base.py` | The provider seam. Every model call in the system goes through this interface. |
 | `providers/gemini.py` | Gemini provider: the `vision` role (video understanding), plus `agent`/`judge` |
@@ -218,6 +219,7 @@
 | `stages/failure_bundle.py` | Assemble and load one atomic failure bundle (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
 | `stages/generic_acceptance.py` | GENERIC ACCEPTANCE: one harness that drives a product through BOTH entry modes (T-169). |
 | `stages/grade.py` | GRADE: an independent, stateless judge reads a Rubric + a RawResult's evidence. |
+| `stages/grade_note_guard.py` | The notes-vs-verdict cross-check: a judge PASS whose own note describes a defect is not a PASS. |
 | `stages/ingest.py` | INGEST: turn a video Source into a FlowSpec, provenance-tracked to the second. |
 | `stages/issues.py` | ISSUES: turn an adjudicated analysis into rows a human tester can read. |
 | `stages/knowledge_graph.py` | KNOWLEDGE GRAPH: build the typed graph from the persona + FlowSpec, and resolve a |
@@ -639,6 +641,7 @@
 | Script | One job |
 |---|---|
 | `scripts/adversarial_proof.py` | Credential-free, network-free proof that the adversarial pass refuses to exceed its scope. |
+| `scripts/agent_live_comparison.py` | T-181 AL12: the LIVE agent-vs-pipeline comparison on the seeded local fixture product. |
 | `scripts/append_decision.ps1` | append_decision.ps1 -- the ONLY legitimate write path to docs/DECISIONS.md |
 | `scripts/bench_from_run.py` | T-136b: convert a real executed+graded run into the acceptance bench files. |
 | `scripts/bench_trial.py` | T-120: the north star made measurable — first real human-vs-AI trial scorecard. |

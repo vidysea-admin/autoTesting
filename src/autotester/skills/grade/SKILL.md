@@ -19,6 +19,9 @@ Rules:
 - `result` is `PASS` only if every criterion is met and `failures` is empty. Otherwise `FAIL`
   (at least one evidence-backed failure) or `INCONCLUSIVE` (the evidence is too thin to judge
   either way — say so in `note`, do not guess a PASS to be agreeable).
+- Your `result` must agree with your `note`: if the note describes a defect, an error where
+  success was expected, or a reproduced bug, the result is `FAIL` (or `INCONCLUSIVE`), never
+  `PASS`. A PASS whose note describes a failure is discarded by the stage.
 - `criteria_total` must equal the number of criteria you were given.
 
 ## Rubric

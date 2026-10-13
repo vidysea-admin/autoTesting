@@ -152,3 +152,27 @@ def test_harness_states_no_gain_when_the_agent_breaches_its_budget(
     cmp = _harness(ctx, tmp_path, ["c1", "c2"], 25)
     assert cmp.verdict == "no_gain" and cmp.agent_stopped == "budget_exceeded"
     assert cmp.verdict_line.startswith("NO GAIN") and "tokens" in cmp.verdict_line
+
+
+# -- T-181 r2: step-cap is no gain; a 0-vs-0 tie is "no evidence", never GAIN ------------------
+def test_a_step_cap_halt_is_no_gain_whatever_the_rule() -> None:
+    cmp = _measure(["c1"], ["c1", "c2"], WinRule(), stopped="step_cap")
+    assert cmp.verdict == "no_gain" and cmp.agent_stopped == "step_cap"
+    assert cmp.verdict_line.startswith("NO GAIN") and "step cap" in cmp.verdict_line
+
+
+def test_a_zero_vs_zero_tie_reports_no_evidence_not_gain() -> None:
+    for rule in (WinRule(), None, WinRule(require_strict_gain=True)):
+        cmp = _measure([], [], rule)
+        assert cmp.verdict == "no_evidence" and cmp.verdict_line.startswith("NO EVIDENCE")
+        assert "GAIN" not in cmp.verdict_line.split("|")[0].replace("NO EVIDENCE", "")
+
+
+def test_a_zero_tie_that_also_step_capped_still_reads_no_evidence_and_names_the_halt() -> None:
+    cmp = _measure([], [], WinRule(), stopped="step_cap")
+    assert cmp.verdict == "no_evidence" and "step_cap" in cmp.verdict_line
+
+
+def test_a_nonzero_tie_keeps_the_win_rule_and_states_it_is_a_tie() -> None:
+    cmp = _measure(["c1"], ["c1"], WinRule())
+    assert cmp.verdict == "gain" and "tie" in cmp.verdict_line

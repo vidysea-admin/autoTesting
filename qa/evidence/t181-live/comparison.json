@@ -1,0 +1,22 @@
+{
+  "corpus_id": "corpus_regression_demo_login",
+  "pipeline": {
+    "label": "pipeline",
+    "bugs_found": 0,
+    "false_positives": 0,
+    "false_positive_rate": 0.0,
+    "tokens": 8725,
+    "wall_s": 175.63521070001298
+  },
+  "agent": {
+    "label": "agent",
+    "bugs_found": 0,
+    "false_positives": 0,
+    "false_positive_rate": 0.0,
+    "tokens": 135679,
+    "wall_s": 124.39728230000765
+  },
+  "agent_stopped": "step_cap",
+  "verdict": "gain",
+  "verdict_line": "GAIN (more bugs found or fewer false positives, within budget) | pipeline: 0 bugs, 0 false positives, 8725 tokens, 175.6s | agent: 0 bugs, 0 false positives, 135679 tokens, 124.4s"
+}

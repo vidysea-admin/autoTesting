@@ -20,6 +20,7 @@ from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Failure, Judgment, Rubric, Verdict
+from autotester.stages.grade_note_guard import note_guard
 
 SKILL_NAME = "grade"  # src/autotester/skills/grade/SKILL.md (T-175, was grade_v1.md)
 
@@ -217,6 +218,7 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
                          note=f"self-consistency check failed: {problem}", **counts)
     shortfall = _shortfall(**counts)
     final, note = _assertion_guard(result, judgment.result, judgment.scoreboard, judgment.note)
+    final, note = note_guard(final, note)  # AT-997: a PASS whose note describes a defect
     return _verdict(run_id, result, rubric, verdict_result=final,
                      provider_id=judge.id,
                      scoreboard=_joined(shortfall, judgment.scoreboard) or "",

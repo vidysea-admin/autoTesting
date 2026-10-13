@@ -30,5 +30,5 @@ class Comparison(BaseModel):
     pipeline: PathMeasure
     agent: PathMeasure
     agent_stopped: str
-    verdict: Literal["gain", "no_gain"]
+    verdict: Literal["gain", "no_gain", "no_evidence"]
     verdict_line: str
