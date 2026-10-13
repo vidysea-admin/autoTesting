@@ -12,7 +12,9 @@ Tiers whose credentials are absent are skipped, so an unused tier costs nothing.
 
 from __future__ import annotations
 
+import logging
 import os
+import threading
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -25,6 +27,8 @@ from autotester.schema.run import ProviderUsage
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
+log = logging.getLogger(__name__)
+CHAIN_ID = "model-chain"
 ORDER_ENV = "AUTOTESTER_MODEL_ORDER"
 DEFAULT_ORDER = (ollama_cloud.GLM, ollama_cloud.DEEPSEEK, "gemini/gemini-3.6-flash")
 
@@ -39,13 +43,24 @@ def configured_order(model: str | None = None) -> list[str]:
 class ModelChainProvider(Provider):
     """`act`/`judge` try each available tier in order until one answers."""
 
-    id = "model-chain"
-
     def __init__(self, **options: Any) -> None:
         super().__init__(**options)
+        self._call = threading.local()
         order = configured_order(options.get("model"))
         secrets = options.get("secrets") or []
         self._tiers = [LiteLLMProvider(model=m, secrets=secrets) for m in order]
+
+    @property
+    def id(self) -> str:  # type: ignore[override]
+        """The tier that served THIS thread's latest call, else `model-chain`. Reset at
+        the start of every call, so a failed call never leaves a stale serving id; per
+        thread, so a judge shared by parallel graders cannot read another's tier."""
+        return self.served or CHAIN_ID
+
+    @property
+    def served(self) -> str | None:
+        """Label (`id:model`) of the tier that answered the latest call, None if it failed."""
+        return getattr(self._call, "served", None)
 
     def order(self) -> list[str]:
         return [t._model for t in self._tiers]
@@ -74,6 +89,7 @@ class ModelChainProvider(Provider):
              prompt_file: str | None, fed_id: str | None, **extra: Any) -> Any:
         if schema is None:
             raise ProviderError(f"{self.id} requires a schema for structured output")
+        self._call.served = None  # reset: a failed call must not report the previous tier
         tiers = self.ready_tiers()
         if not tiers:
             raise ProviderError(self.unavailable_reason() or "no usable tier")
@@ -86,8 +102,11 @@ class ModelChainProvider(Provider):
                                                fed_id=fed_id, **extra)
             except ProviderError as exc:
                 errors.append(str(exc))
+                log.warning("model-chain: tier %s failed (%s); falling through",
+                            tier.label, type(exc).__name__)
                 continue
-            self.id = tier.label
+            self._call.served = tier.label
+            log.info("model-chain: tier %s served the %s call", tier.label, method)
             self._sync_usage()
             return result
         raise ProviderError("model-chain: every tier failed: " + " | ".join(errors))

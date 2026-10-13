@@ -1,7 +1,7 @@
 # Manifest — ollama-primary
 
-**Status:** ready-for-check
-**Fix cycle:** 1
+**Status:** checked-PASS
+**Fix cycle:** 2
 **Unit:** Primary models are Ollama-served GLM 5.3 Flash then DeepSeek 4.1 Flash (OLLAMA_API_KEY, repo-root .env); Gemini is fallback only. Decision: Umesh, 2026-10-13.
 **Branch:** wave/ollama-primary
 

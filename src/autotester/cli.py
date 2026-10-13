@@ -201,7 +201,7 @@ def flowspec_request_edit(
 @app.command("expand")
 def expand_cases(
     project: str,
-    provider: str = typer.Option("langchain-fallback", "--provider"),
+    provider: str = typer.Option(providers.DEFAULT_SPEC, "--provider"),
     proposals: bool = typer.Option(False, "--proposals", help="Stage/list step-less proposals."),
     approve: list[str] = typer.Option([], "--approve", help="Approve a saved proposal ID."),
     prune: list[str] = typer.Option([], "--prune", help="Prune a saved proposal ID."),

@@ -105,3 +105,52 @@ def test_secret_in_prompt_is_refused_once_and_never_sent(monkeypatch: pytest.Mon
         ModelChainProvider().judge(f"token {OLLAMA_KEY}", Answer)
     assert fake.calls == []
     assert OLLAMA_KEY not in str(err.value)
+
+
+def test_fall_through_is_logged_without_prompt_or_key(
+        monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture) -> None:
+    install(monkeypatch, [RuntimeError(f"boom {OLLAMA_KEY}"), _r("ds")])
+    monkeypatch.setenv("OLLAMA_API_KEY", OLLAMA_KEY)
+    chain = ModelChainProvider()
+    with caplog.at_level("INFO", logger="autotester.providers.model_chain"):
+        assert chain.judge("secret-ish prompt body", Answer).verdict == "ds"
+    text = caplog.text
+    assert "ollama_chat/glm-5.3-flash" in text and "ProviderError" in text
+    assert "falling through" in text and "deepseek-v4.1-flash" in text
+    assert OLLAMA_KEY not in text and "secret-ish prompt body" not in text
+    assert chain.served == "litellm:ollama_chat/deepseek-v4.1-flash" == chain.id
+
+
+def test_failed_call_leaves_no_stale_serving_id(monkeypatch: pytest.MonkeyPatch) -> None:
+    install(monkeypatch, [_r("ok"), RuntimeError("a"), RuntimeError("b"), RuntimeError("c")])
+    chain = ModelChainProvider()
+    chain.judge("one", Answer)
+    assert chain.served == "litellm:ollama_chat/glm-5.3-flash"
+    with pytest.raises(ProviderError):
+        chain.judge("two", Answer)
+    assert chain.served is None
+    assert chain.id == "model-chain"
+
+
+def test_ollama_base_url_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = install(monkeypatch, [_r("ok")])
+    monkeypatch.setenv("OLLAMA_API_KEY", OLLAMA_KEY)
+    monkeypatch.setenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    ModelChainProvider().judge("p", Answer)
+    assert fake.calls[0]["api_base"] == "http://localhost:11434"
+    assert fake.calls[0]["api_key"] == OLLAMA_KEY
+
+
+def test_cli_provider_defaults_resolve_through_the_chain() -> None:
+    from typer.main import get_command
+
+    from autotester.cli import app
+    from autotester.cli_orchestrate import orchestrate_cmd
+
+    assert providers.DEFAULT_SPEC == "model-chain"
+    expand = get_command(app).commands["expand"]  # type: ignore[attr-defined]
+    default = {p.name: p.default for p in expand.params}["provider"]
+    assert default == providers.DEFAULT_SPEC
+    import inspect
+    assert inspect.signature(orchestrate_cmd).parameters["provider"].default.default \
+        == providers.DEFAULT_SPEC

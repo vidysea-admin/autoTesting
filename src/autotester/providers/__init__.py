@@ -30,6 +30,8 @@ _REGISTRY: dict[str, type[Provider]] = {
 
 _CREDENTIAL_IN_SPEC = re.compile(r"://|@|\s")
 _DEFAULTS = ProviderConfig()
+DEFAULT_SPEC = _DEFAULTS.agent
+"""The shipped default `--provider` for every CLI caller: the model chain (not a vendor)."""
 
 
 def register(provider_id: str, cls: type[Provider]) -> None:
@@ -117,5 +119,5 @@ def available_ids() -> list[str]:
     return sorted(ready)
 
 
-__all__ = ["ModelChainProvider", "Provider", "ProviderError", "Unsupported",
+__all__ = ["DEFAULT_SPEC", "ModelChainProvider", "Provider", "ProviderError", "Unsupported",
            "available_ids", "for_role", "get", "parse_spec", "register", "why_unavailable"]
