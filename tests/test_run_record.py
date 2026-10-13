@@ -38,3 +38,24 @@ def test_run_id_lines_print_explicit_run_id() -> None:
     lines = run_id_lines("run-ABC", Path("x") / "run-ABC")
     assert lines[1] == "run_id: run-ABC"
     assert lines[0].startswith("run: ")
+
+
+def test_record_run_feeds_the_bug_loop_like_launch_run(tmp_path: Path) -> None:
+    """A script-driven run (run_pathlynks_first_cases -> record_run) reaches the tracker too."""
+    from autotester.schema.case import Case
+    from autotester.schema.enums import Action, CaseClass, CaseKind, Result
+    from autotester.schema.flowspec import Step
+    from autotester.schema.verdict import Failure, Verdict
+    from autotester.store.bug_store import BugStore
+
+    store = ProjectStore("pathlynks", tmp_path)
+    case = Case(project="pathlynks", flow_id="f", kind=CaseKind.BEST, case_class=CaseClass.HAPPY,
+                title="Login works", steps=[Step(order=0, action=Action.CLICK, target="#go")])
+    store.add_case(case)
+    store.save_verdict("run-B", Verdict(
+        run_id="run-B", case_id=case.id, result=Result.FAIL, criteria_met=0, criteria_total=1,
+        grader_provider="mock", failures=[Failure(criterion_id="C1", reason="no redirect")]))
+    t0 = now_utc()
+    record_run(store, "run-B", "pathlynks", [case.id], t0, t0 + timedelta(seconds=1))
+    (bug,) = BugStore(store.paths.dir).bugs().values()
+    assert bug.evidence_run_id == "run-B" and bug.count == 1

@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from autotester.schema.run import Run
+from autotester.stages.run_launcher import save_tracked_run
 from autotester.store.project_store import ProjectStore
 
 
@@ -26,13 +27,11 @@ def record_run(
     started_at: datetime,
     finished_at: datetime,
 ) -> Run:
-    """Save the Run with measured timestamps; refuse a clock that ran backwards."""
+    """Save the Run via the launcher's save + bug loop; refuse a clock that ran backwards."""
     if finished_at < started_at:
         raise ValueError("finished_at is before started_at -- not a measured wall clock")
-    run = Run(id=run_id, project=project, case_ids=case_ids,
-              started_at=started_at, finished_at=finished_at)
-    store.save_run(run)
-    return run
+    return save_tracked_run(store, id=run_id, project=project, case_ids=case_ids,
+                            started_at=started_at, finished_at=finished_at)
 
 
 def run_id_lines(run_id: str, run_dir: object) -> list[str]:
