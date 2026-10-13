@@ -1354,7 +1354,7 @@
         "cmd": "uv run pytest tests/test_agent_gain.py",
         "expect_exit": 0
       },
-      "note": "D-042: the agent layer stays only if it shows a measured gain over the plain pipeline on this fixture.",
+      "note": "D-042: the agent layer stays only if it shows a measured gain over the plain pipeline on this fixture. | 2026-10-13: wave/t181-guardrails merged (unit-scope checked-PASS, e8118070); T-181 stays open: live comparison and keep/drop pending.",
       "attempts": 0,
       "created": "2026-09-24T22:20:00",
       "user_value": "high"
@@ -1645,7 +1645,7 @@
     {
       "id": "T-198",
       "title": "TL-2 Developer video intake: zip upload expanded safely to one source per video + `ingest fetch-drive <fileId>` over sources/drive.py (gws auth)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "user_value": "high",

@@ -90,4 +90,4 @@ Evidence directory: not yet created (`qa/evidence/browser-t198b-developer-portal
 - The T-204 stubs for the portal routes stay beside the real routers (nothing deleted). T-205's `merge_route_policies` is not wired.
 - Linux/CI note: the tests use a cheap argon2 hasher via monkeypatch and `TestClient`; nothing is Windows-specific except path separators handled by `pathlib`.
 
-## Status: ready-for-check
+## Status: checked-PASS
