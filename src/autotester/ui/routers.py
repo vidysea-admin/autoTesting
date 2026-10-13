@@ -43,6 +43,7 @@ from autotester.ui import (
     routes_video,
     routes_video_comments,
     routes_video_portal,
+    routes_video_review,
 )
 
 STUBS: dict[str, APIRouter] = {
@@ -84,6 +85,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     # and empty (test_routers_list pins them); these are the real routers beside them.
     routes_video_portal.router,
     routes_video_comments.router,
+    routes_video_review.router,   # TA5 Run review; `STUBS['video_review']` stays registered, empty
     routes_access_requests.router,
     *STUBS.values(),
 )

@@ -66,6 +66,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
     **{("POST", _P + "/videos/{video_id}/comments" + t): ("video", "comment.create")
        for t in ("", "/{comment_id}/edit", "/{comment_id}/delete")},
     ("POST", _P + "/videos/{video_id}/comments/{comment_id}/promote"): ("project", "project.edit"),
+    ("POST", _P + "/videos/{video_id}/review"): ("video", "video.upload"),
     ("GET", "/access-requests"): ("key", "access.approve"),
     **{("POST", "/access-requests/{request_id}" + t): ("key", "access.approve")
        for t in ("/approve", "/decline")},

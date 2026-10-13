@@ -55,6 +55,7 @@ PORTAL_POLICY: dict[tuple[str, str], RouteRule] = {
     **{("POST", _V + tail): _video(K.COMMENT_CREATE) for tail in (
         "/comments", "/comments/{comment_id}/edit", "/comments/{comment_id}/delete")},
     ("POST", _V + "/comments/{comment_id}/promote"): _project(K.PROJECT_EDIT),
+    ("POST", _V + "/review"): _video(K.VIDEO_UPLOAD),   # TV7: Run review needs video.upload
     ("GET", "/access-requests"): _key(K.ACCESS_APPROVE),
     **{("POST", "/access-requests/{request_id}/" + tail): _key(K.ACCESS_APPROVE)
        for tail in ("approve", "decline")},
