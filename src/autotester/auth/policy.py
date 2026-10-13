@@ -33,6 +33,7 @@ _P = "/projects/{slug}"
 _VIEW, _EDIT, _RUN = _project(K.PROJECT_VIEW), _project(K.PROJECT_EDIT), _project(K.PROJECT_RUN)
 _REPORT, _VIDEO = _project(K.REPORT_VIEW), _project(K.VIDEO_VIEW)
 _CRED = _project(K.CREDENTIALS_EDIT)
+_SCHEDULE = _project(K.SCHEDULE_MANAGE)
 _SETTINGS, _USERS, _GROUPS = (_key(K.SETTINGS_MANAGE), _key(K.USERS_MANAGE),
                               _key(K.GROUPS_MANAGE))
 
@@ -58,7 +59,7 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     # one project: unviewable -> 404, viewable without the key -> 403 (AU13)
     **{("GET", _P + tail): _VIEW for tail in (
         "", "/cases/new", "/cases", "/edit", "/flowspec", "/requests", "/sources",
-        "/product-map", "/flow-diagram", "/crawls", "/crawls/{crawl_id}",
+        "/product-map", "/flow-diagram", "/schedule", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}")},
     **{("GET", _P + tail): _REPORT for tail in (
@@ -75,6 +76,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     **{("POST", _P + tail): _RUN for tail in ("/run", "/explore", "/crawl-approval")},
     **{("POST", _P + tail): _CRED for tail in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
+    **{("POST", _P + tail): _SCHEDULE for tail in (   # T-200 TS1: only schedule.manage
+        "/schedule", "/schedule/pause", "/schedule/resume", "/schedule/delete")},
     # the handler checks project.assign or video.share for the relation asked (AU12)
     ("POST", _P + "/access"): _VIEW,
 }

@@ -270,7 +270,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         ("POST", "/admin/groups/{group_id}"), ("POST", "/admin/groups/{group_id}/delete"))},
     **{("GET", _P + t): ("project", "project.view") for t in (
         "", "/cases/new", "/cases", "/edit", "/flowspec", "/requests", "/sources",
-        "/product-map", "/flow-diagram", "/crawls", "/crawls/{crawl_id}",
+        "/product-map", "/flow-diagram", "/schedule", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}")},
     **{("GET", _P + t): ("project", "report.view") for t in (
@@ -287,6 +287,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
                                                                 "/crawl-approval")},
     **{("POST", _P + t): ("project", "credentials.edit") for t in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
+    **{("POST", _P + t): ("project", "schedule.manage") for t in (
+        "/schedule", "/schedule/pause", "/schedule/resume", "/schedule/delete")},
     ("POST", _P + "/access"): ("project", "project.view"),
 }
 

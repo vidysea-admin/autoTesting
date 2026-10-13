@@ -31,6 +31,7 @@ from autotester.ui import (
     routes_project_edit,
     routes_report,
     routes_runs,
+    routes_schedule,
     routes_settings,
     routes_sources,
     routes_video,
@@ -38,7 +39,7 @@ from autotester.ui import (
 
 STUBS: dict[str, APIRouter] = {
     name: APIRouter() for name in (
-        "schedule", "team_run", "inbox", "profile", "tracker", "video_review", "video_portal",
+        "team_run", "inbox", "profile", "tracker", "video_review", "video_portal",
         "access_requests",
     )
 }
@@ -65,6 +66,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_live.router,
     routes_catalog.router,
     routes_project_access.router,
+    routes_schedule.router,
     *STUBS.values(),
 )
 
