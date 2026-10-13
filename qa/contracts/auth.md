@@ -185,7 +185,7 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   freshness probe requires `settings.manage`). Any other path, any method, answers an unauthenticated request with 302 to
   `/auth/login?next=<same-site relative path>` for a browser (`Accept: text/html`) or 401 JSON otherwise; the body never echoes the
   input. A `next` that is an absolute URL, `//host`, or `javascript:` is dropped. No file under the data root changes on any refused
-  request. `serves:` D-072#3. *Re-derive:* enumerate `app.routes` unauthenticated, diff the data root before/after.
+  request. Clarification (2026-10-13): `/favicon.ico` is not in the set and is not added to it; signed-out pages carry an inline `data:` icon so they never request it. `serves:` D-072#3. *Re-derive:* enumerate `app.routes` unauthenticated, diff the data root before/after.
 - **AU17 — The gate cannot be switched off by accident.** Auth is on by default. `AUTOTESTER_AUTH_DISABLED=1` (for legacy tests and a
   single-user laptop) is refused at startup when `AUTOTESTER_HOSTED=1` or when the bind address is not loopback, and prints a one-line
   warning when honoured. `AUTOTESTER_HOSTED=1` with a missing required setting (`AUTOTESTER_ALLOWED_HOSTS` or `AUTOTESTER_ALLOWED_ORIGINS`

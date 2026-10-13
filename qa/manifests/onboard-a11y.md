@@ -3,7 +3,7 @@
 **Contract:** qa/contracts/auth.md (AU26 labelled controls; AU16 closed public set)
 **Goal task:** none (T-204 / T-198 walk findings)
 **Date:** 2026-10-13
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Issues addressed:** AT-994 (/onboard unlabelled controls), AT-995 (/favicon.ico 401 on sign-in pages)
 
