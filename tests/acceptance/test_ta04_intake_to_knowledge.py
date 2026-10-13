@@ -64,9 +64,11 @@ def test_tester_and_pending_cannot_upload(world: World, who: str) -> None:
     assert world.snapshot() == before
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: turning an intake source into DRAFT flows "
-                   "(TV9) and an 'Another possibility' report item (RC10) needs the model-backed "
-                   "video analysis (ffmpeg plus a Provider); no offline route exists on master")
+@pytest.mark.xfail(strict=True, reason=(
+    "blocked on T-169 (model-backed video analysis): turning an intake source into "
+    "DRAFT flows (TV9) and an 'Another possibility' report item (RC10) needs the "
+    "model-backed video analysis (ffmpeg plus a Provider); no offline route exists on "
+    "master"))
 def test_tv9_the_flowspec_holds_draft_flows_with_source_id_and_no_approval_step(
         world: World) -> None:
     upload(world, "dev", "clips.zip", make_zip())

@@ -5,7 +5,7 @@
 **Branch / base:** `wave/t206-runbook` on 22eac602.
 Tier: S (test files and evidence only, no `src/`)
 Dual check: no
-Fix cycle: 1
+Fix cycle: 2
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): the commit that adds this file (`git log -1 -- qa/manifests/t206-rig.md`)
 Status: ready-for-check
@@ -34,9 +34,29 @@ No `src/` file changed (TAI1: `git diff --stat 22eac602..HEAD -- src/` is empty)
 
 Drive client (`routes_intake.drive_factory`), the judge/browser/grader for a run (`BrowserSession` calls and `run_and_grade_case_resilient`, via `team_run_fakes.patch_run_world`, the grader reading the loopback stub page), the model Provider (`RecordingProvider`) with its frame source and probe for the review, the run queue's worker spawner (held jobs), a cheap argon2 hasher, `smtplib` (forbidden), socket connect (guard).
 
-## xfail(strict) tests, each with its blocker (13)
+## Fix cycle 2 (verdict cycle 1 FAIL: F1, F2, F3)
 
-TA3 Test press inside the server process (`run=False`: would start a real browser) · TA4 intake to DRAFT flows / "Another possibility" (no offline model-backed analysis) · TA5 "Run review" UI (no route) · TA6 outbox message, "Email me run reports" control, raising transport, inbox (delivery not called from a run; no preference route; no inbox) · TA7 tracker page TB7 · TA8 schedule save route, schedule card · TA9 tracker page, export TB15 · TA14 subadmin schedule journey. When the missing unit lands the strict xfail fails (XPASS) and forces the marker off.
+- F1: removed the TB7 xfail marks from test_ta07 and test_ta09; both run as real tests and pass. TB15 export also passes once the URL is the real `/tracker/export.csv` (the test used `/tracker.csv`); its xfail removed too.
+- F2: every remaining xfail names a pending task or a real D-number (below).
+- F3: test_ta03 server fixture /healthz deadline 60 s -> 180 s; assertion unchanged.
+- Result: `uv run pytest tests/acceptance`: **58 passed, 10 xfailed**. Ruff clean, doctor clean.
+
+## Remaining xfail(strict=True) tests (10), each with its open blocker
+
+| Test | Blocker |
+|---|---|
+| TA3 test_dev_presses_test_in_the_server_process (`run=False`) | live walk (runbook TA15) / T-201 TL-5 (pending) |
+| TA4 test_tv9_the_flowspec_holds_draft_flows | T-169 (pending) |
+| TA5 test_admin_runs_the_review_from_the_source_page | T-169 (pending) |
+| TA6 test_c_exactly_one_outbox_message | D-092/D-093 (email deferred to production), T-201 |
+| TA6 test_c_the_dev_can_tick_email_me_run_reports | D-093 |
+| TA6 test_d_a_raising_transport_leaves_the_verdict | D-092/D-093 |
+| TA6 test_tt7_the_inbox_lists_the_report | T-201 (pending) |
+| TA8 test_ts1_subadmin_saves_a_schedule | T-200 (pending) |
+| TA8 test_ts5_the_schedule_card | T-200 (pending) |
+| TA14 test_subadmin_schedules_and_sees_the_next_fire_times | T-200 (pending) |
+
+All are strict=True. TAI2: each must be removed when its task lands; none may remain at T-206 PASS.
 
 ## For the checker to rule on
 

@@ -118,9 +118,9 @@ def test_removing_the_last_admin_is_refused_with_a_reason(world: World) -> None:
     assert world.users["admin"].get("/admin/users", headers=HTML).status_code == 200
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: no schedule save route or schedule card on "
-                   "master (T-200 UI HELD), so the subadmin journey and the stale-scheduler dead "
-                   "end cannot be driven")
+@pytest.mark.xfail(strict=True, reason=(
+    "blocked on T-200: no schedule save route or schedule card on master (T-200 UI "
+    "HELD), so the subadmin journey and the stale-scheduler dead end cannot be driven"))
 def test_subadmin_schedules_and_sees_the_next_fire_times(world: World) -> None:
     resp = world.users["subadmin"].post(f"/projects/{SLUG}/schedule", data={
         "mode": "fixed", "fixed_at": "09:00", "timezone": "UTC"})

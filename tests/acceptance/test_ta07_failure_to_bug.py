@@ -5,7 +5,6 @@ do). The tracker page row (TB7) is xfail(strict) until T-199 adds the page."""
 
 from __future__ import annotations
 
-import pytest
 from rig import SLUG, World, press
 
 from autotester.schema.tracked_bug import BugStatus
@@ -66,8 +65,6 @@ def test_a_run_in_one_project_does_not_touch_another_projects_bugs(world: World)
     assert world.bugs("other").bugs() == {}
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: T-199 TB7 tracker page "
-                   "(ui/routes_tracker.py) is not on master; T-199 is still pending")
 def test_tb7_dev_subadmin_admin_see_the_tracker_tester_only_shared_other_nothing(
         world: World) -> None:
     _run(world, "defect")

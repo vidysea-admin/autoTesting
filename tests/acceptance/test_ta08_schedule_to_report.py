@@ -69,9 +69,10 @@ def test_a_busy_project_is_skipped_overlap(world: World) -> None:
     assert world.counters.graded == 0
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: no schedule save route (`schedule.manage`, "
-                   "T-200 routes) on master, so a tester's refusal and a subadmin's save cannot "
-                   "be driven through the app")
+@pytest.mark.xfail(strict=True, reason=(
+    "blocked on T-200: no schedule save route (`schedule.manage`, T-200 routes) on "
+    "master, so a tester's refusal and a subadmin's save cannot be driven through the "
+    "app"))
 def test_ts1_subadmin_saves_a_schedule_and_tester_cannot(world: World) -> None:
     body = {"mode": "fixed", "fixed_at": "09:00", "timezone": "UTC"}
     assert world.users["tester"].post(f"/projects/{SLUG}/schedule", data=body).status_code in (
@@ -79,9 +80,9 @@ def test_ts1_subadmin_saves_a_schedule_and_tester_cannot(world: World) -> None:
     assert world.users["subadmin"].post(f"/projects/{SLUG}/schedule", data=body).status_code == 303
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: the schedule card (next three fire times, "
-                   "skipped_overlap / blocked_no_credentials / stale scheduler) is not built "
-                   "(T-200 UI HELD)")
+@pytest.mark.xfail(strict=True, reason=(
+    "blocked on T-200: the schedule card (next three fire times, skipped_overlap / "
+    "blocked_no_credentials / stale scheduler) is not built (T-200 UI HELD)"))
 def test_ts5_the_schedule_card_shows_the_slot_and_next_fire_times(world: World) -> None:
     schedule(world)
     page = world.users["subadmin"].get(f"/projects/{SLUG}", headers=HTML).text

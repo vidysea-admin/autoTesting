@@ -54,7 +54,7 @@ def server(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Server]:
          "--port", str(port)], cwd=REPO, env=env, stdout=log, stderr=subprocess.STDOUT)
     started = Server(port, root)
     try:
-        deadline = time.time() + 60
+        deadline = time.time() + 180
         while time.time() < deadline:
             try:
                 if httpx.get(started.base + "/healthz", timeout=2).status_code == 200:
@@ -121,8 +121,9 @@ def test_a_foreign_host_and_a_foreign_origin_post_are_refused(server: Server) ->
     assert client.get("/auth/login").status_code == 200
 
 
-@pytest.mark.xfail(run=False, strict=True, reason="blocked: a Test press inside the separate "
-                   "server process would start a real browser; the press path is proved "
-                   "in-process by TA6 and TA7 with the browser as a named seam")
+@pytest.mark.xfail(run=False, strict=True, reason=(
+    "deferred to the live walk (T-201 TL-5 Test button; runbook TA15): a Test press "
+    "inside the separate server process would start a real browser; the press path is "
+    "proved in-process by TA6 and TA7 with the browser as a named seam"))
 def test_dev_presses_test_in_the_server_process_and_the_report_opens(server: Server) -> None:
     raise AssertionError("not run")

@@ -30,17 +30,14 @@ def test_no_google_host_was_contacted_and_no_sheet_client_exists_in_the_rig(worl
     assert world.store().load_project().tracker is None
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: T-199 TB7 tracker page (ui/routes_tracker.py) "
-                   "is not on master; T-199 is still pending")
 def test_tb7_subadmin_opens_the_tracker_page_and_sees_status_severity_screen(world: World) -> None:
     process_run(world.store(), world.bugs(), press(world, "dev"))
     page = world.users["subadmin"].get(f"/projects/{SLUG}/tracker")
     assert page.status_code == 200 and "severity" in page.text.lower()
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: T-199 TB15 CSV/xlsx export is not on master")
 def test_tb15_the_export_is_byte_identical_twice_and_scoped_by_report_view(world: World) -> None:
     process_run(world.store(), world.bugs(), press(world, "dev"))
-    first = world.users["subadmin"].get(f"/projects/{SLUG}/tracker.csv")
-    second = world.users["subadmin"].get(f"/projects/{SLUG}/tracker.csv")
+    first = world.users["subadmin"].get(f"/projects/{SLUG}/tracker/export.csv")
+    second = world.users["subadmin"].get(f"/projects/{SLUG}/tracker/export.csv")
     assert first.status_code == 200 and first.content == second.content

@@ -47,9 +47,10 @@ def test_an_approval_too_small_for_the_plan_is_refused_with_zero_calls(world: Wo
     assert world.provider.calls == 0
 
 
-@pytest.mark.xfail(strict=True, reason="blocked: there is no 'Run review' route or screen on "
-                   "master (the review runs from `autotester ingest review` only); a UI route "
-                   "belongs to a later unit")
+@pytest.mark.xfail(strict=True, reason=(
+    "blocked on T-169 (proposal-review UI): there is no 'Run review' route or screen "
+    "on master (the review runs from `autotester ingest review` only); a UI route "
+    "belongs to a later unit"))
 def test_admin_runs_the_review_from_the_source_page(world: World) -> None:
     source = upload_video(world, "dev")
     resp = world.users["admin"].post(f"/projects/{SLUG}/videos/{source.id}/review",
