@@ -18,43 +18,54 @@ from autotester.ui.routes_report import _run_counts
 def _credential_row() -> str:
     return (
         "<div class='intake-row credential-row'>"
-        "<input name='credential_key' placeholder='DEMO_EMAIL'>"
-        "<input type='password' name='credential_value' placeholder='value (stored only in .env)'>"
-        "<input name='credential_domains' placeholder='app.example.com'>"
-        "<input name='credential_description' placeholder='test account email'></div>"
+        "<input name='credential_key' aria-label='Credential key' placeholder='DEMO_EMAIL'>"
+        "<input type='password' name='credential_value' aria-label='Credential value' "
+        "placeholder='value (stored only in .env)'>"
+        "<input name='credential_domains' aria-label='Credential domains' "
+        "placeholder='app.example.com'>"
+        "<input name='credential_description' aria-label='Credential description' "
+        "placeholder='test account email'></div>"
     )
 
 
 def _source_row() -> str:
     return (
-        "<div class='intake-row source-row'><select name='source_kind'>"
+        "<div class='intake-row source-row'><select name='source_kind' "
+        "aria-label='Source type'>"
         "<option value=''>Choose type</option><option value='url'>URL / Drive link</option>"
         "<option value='video'>Video path</option><option value='doc'>Document path</option>"
         "<option value='text'>Inline text</option></select>"
-        "<input name='source_value' placeholder='link, path, or text'>"
-        "<input name='source_label' placeholder='what this source teaches'></div>"
+        "<input name='source_value' aria-label='Source value' placeholder='link, path, or text'>"
+        "<input name='source_label' aria-label='Source label' "
+        "placeholder='what this source teaches'></div>"
     )
 
 
 def intake_form() -> str:
     """The single operator entry point for both taught and URL/account-only modes."""
     basics = (
-        "<div class='field'><label>Project slug</label><input name='slug' "
+        "<div class='field'><label for='f-slug'>Project slug</label><input id='f-slug' name='slug' "
         "placeholder='my-product' required></div>"
-        "<div class='field'><label>Name</label><input name='name' required></div>"
-        "<div class='field'><label>URL</label><input name='base_url' type='url' required "
+        "<div class='field'>"
+        "<label for='f-name'>Name</label>"
+        "<input id='f-name' name='name' required></div>"
+        "<div class='field'>"
+        "<label for='f-base-url'>URL</label>"
+        "<input id='f-base-url' name='base_url' type='url' required "
         "placeholder='https://app.example.com/signin'></div>"
-        "<div class='field'><label>Allowed domains</label><input name='allowed_domains' "
+        "<div class='field'>"
+        "<label for='f-allowed-domains'>Allowed domains</label>"
+        "<input id='f-allowed-domains' name='allowed_domains' "
         "required placeholder='app.example.com'><span class='hint'>Comma-separated; the browser "
         "never leaves these hosts.</span></div>"
     )
     teaching = (
-        "<div class='field'><label>Evals (one per line)</label>"
-        "<textarea name='evals'></textarea></div>"
-        "<div class='field'><label>Conditions / business rules</label>"
-        "<textarea name='conditions'></textarea></div>"
-        "<div class='field'><label>Use cases / taught flows</label>"
-        "<textarea name='use_cases'></textarea></div>"
+        "<div class='field'><label for='f-evals'>Evals (one per line)</label>"
+        "<textarea id='f-evals' name='evals'></textarea></div>"
+        "<div class='field'><label for='f-conditions'>Conditions / business rules</label>"
+        "<textarea id='f-conditions' name='conditions'></textarea></div>"
+        "<div class='field'><label for='f-use-cases'>Use cases / taught flows</label>"
+        "<textarea id='f-use-cases' name='use_cases'></textarea></div>"
     )
     repeaters = (
         f"<h3>Test-account credentials</h3><div id='credential-rows'>{_credential_row()}</div>"

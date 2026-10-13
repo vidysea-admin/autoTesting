@@ -248,4 +248,3 @@ def test_au26_every_permission_checkbox_has_a_label_and_a_name(root: Path) -> No
     for box_id, value, name in boxes:
         assert f"<label for='{box_id}'" in page
         assert name.startswith(value.split("@")[0].replace(".", " ")), value
-

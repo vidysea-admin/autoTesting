@@ -24,6 +24,7 @@ from autotester.auth.config import auth_disabled, cookie_secure
 from autotester.auth.context import CURRENT_PRINCIPAL
 from autotester.auth.sessions import resolve_session
 from autotester.schema.auth import PermissionKey, Principal, RouteRule, all_permissions
+from autotester.stages.video_access import video_resource
 from autotester.ui import auth_view, error_pages
 
 SESSION_COOKIES = ("__Host-at_session", "at_session")
@@ -75,6 +76,18 @@ def _has_handler(scope) -> bool:
     return any(route.matches(scope)[0] is Match.FULL for route in routes)
 
 
+async def _video_refusal(request: Request, key: PermissionKey, params: dict[str, str],
+                         who: Principal) -> Response | None:
+    """T-198b: a `video` rule. A video that does not exist and one the account may not view
+    answer the same 404 (AU13, TP1); viewable but without `key` is 403."""
+    resource = video_resource(params.get("slug", ""), params.get("video_id", ""))
+    if resource is None or not authorize(who, PermissionKey.VIDEO_VIEW, resource):
+        return await _error(request, 404, "no such video")
+    if not authorize(who, key, resource):
+        return await _error(request, 403, "you do not have permission for this action")
+    return None
+
+
 async def _refusal(request: Request, rule: RouteRule | None, params: dict[str, str],
                    who: Principal | None) -> Response | None:
     """The response that refuses this request, or None when it may proceed."""
@@ -103,6 +116,8 @@ async def _refusal(request: Request, rule: RouteRule | None, params: dict[str, s
         ok = authorize(who, rule.key)
         return None if ok else await _error(request, 403, "you do not have permission "
                                                           f"({rule.key.value})")  # key name only
+    if rule.kind == "video":
+        return await _video_refusal(request, rule.key, params, who)
     slug = params.get("slug", "")
     resource = resource_for(slug)
     if not authorize(who, PermissionKey.PROJECT_VIEW, resource):

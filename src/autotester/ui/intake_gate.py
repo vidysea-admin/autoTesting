@@ -6,8 +6,8 @@ every intake route asks `get_gate().check(request, slug)` BEFORE it reads one by
 and again (`recheck`) when a queued Drive fetch starts, and the only identity an intake row may
 carry is the `IntakeActor` the gate returned, never a form field.
 
-Until T-204 installs a gate, the default is `OpenGate`: it admits everyone and names nobody, so
-`uploaded_by` stays empty rather than being made up.
+The default gate is `intake_gate_auth.AuthGate` (T-204 accounts, `video.upload`, TI10).
+`OpenGate` stays for tests that want no sign-in: it admits everyone and names nobody.
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ class IntakeGate(Protocol):
 
 
 class OpenGate:
-    """No sign-in exists yet (T-204): admit everyone, record nobody."""
+    """Admit everyone, record nobody (tests; not the default)."""
 
     def check(self, request: Request, slug: str) -> IntakeActor:
         return IntakeActor(email=None)
@@ -48,15 +48,20 @@ class OpenGate:
         return None
 
 
-_gate: IntakeGate = OpenGate()
+_gate: IntakeGate | None = None
 
 
 def get_gate() -> IntakeGate:
+    """The installed gate; until one is installed, T-204's `AuthGate` (imported lazily)."""
+    global _gate
+    if _gate is None:
+        from autotester.ui.intake_gate_auth import AuthGate
+        _gate = AuthGate()
     return _gate
 
 
 def set_gate(gate: IntakeGate) -> IntakeGate:
     """Install `gate`; returns the previous one so a caller (T-204, a test) can restore it."""
     global _gate
-    previous, _gate = _gate, gate
+    previous, _gate = get_gate(), gate
     return previous

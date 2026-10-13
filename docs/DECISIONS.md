@@ -2522,3 +2522,35 @@ the dependency or by a fresh licence decision.
 **Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
 
 **Links:** T-204; D-090; qa/contracts/auth.md
+
+## D-092 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided four items in chat on 2026-10-13.
+1. **Email delivery of reports is deferred to production** (the Ubuntu server), like Docker (D-090 item 3, D-091). The website reports and the website inbox suffice now. This defers the email half of T-200 (TS5 and TS7: the owner sees a refusal or failure on the project page, the schedule history and the inbox, and by email if ticked) and the email evidence of T-206 (TA6 (c) and (d), the email clause of TA8, the "Email me run reports" tick in TA15, the outbox message in TA17, and Open 2). The website half stays required.
+2. **T-206's schedule tick runs on the REAL `pathlynks` project** with the Pathlynks user test credentials already provisioned (`PATHLYNKS_USER_*` keys), not on a `pathlynks-acceptance` clone. It stays subject to the project's `write_policy` and approval rules as the code enforces them (D-088: the first crawl is read-only). Nothing in this entry widens what a run may do.
+3. **Tracker CSV/xlsx export keeps the current `TRACKER_COLUMNS` header names for now.** An exact match to the real Tracker sheet is fixed later, at real-sheet export time (D-090 item 2).
+
+4. **T-198 (added by Umesh, 2026-10-13: skip Docker/Linux here, production is Ubuntu later):** the R65 Linux run evidence (`qa/evidence/t198-linux-run.md`) and the live Google Drive fetch walk (server-gated; needs a live `gws` login on the server) are DEFERRED TO PRODUCTION (Ubuntu), same principle as D-091. They do not block T-198.
+
+**Why:** The SMTP credentials and the production host are owner-side inputs that are not available yet; the website already delivers every report. Running the schedule check on the real project uses the credentials and approval path already provisioned, with no standing clone to maintain. The real sheet's headers are not in hand, so matching them now would be guesswork.
+
+**Result:** No code change in this entry. Contracts folded by the checker: team-intake.md (R65 Linux run and live Drive fetch deferred, not blocking T-198), team-schedule.md (TS5, TS7 email half deferred), team-loop-acceptance.md (email items deferred, TA17 and Open 4 on the real project, the six D-090/D-091 proposals folded), team-bug-loop.md (TB15 header names). Not touched: `team-test-button.md` TT8/TT9 and `hosting.md` HO26-HO29 (the per-user checkbox, the outbox adapter and the SMTP adapter against a fake server remain unit criteria; only the live send and its acceptance evidence are deferred). A later entry may defer them if Umesh asks.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** D-088; D-090; D-091; T-198; T-199; T-200; T-206; qa/contracts/team-intake.md; qa/contracts/team-schedule.md; qa/contracts/team-loop-acceptance.md; qa/contracts/team-bug-loop.md
+
+## D-093 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided in chat on 2026-10-13: "no - on the server later we'll run with Docker so it'll be crash-proof; build the remaining ones quickly."
+1. **T-203 HO39 (start at boot via a Windows Scheduled Task) and HO40 (restart on failure) are DEFERRED TO PRODUCTION.** The Ubuntu Docker deployment provides the restart and crash-proofing; no Windows Scheduled Task is installed on this machine. T-203 may close on this machine once its remaining non-deferred HO criteria pass. This narrows D-090 item 3 (which had asked for the Scheduled Task).
+2. **T-201 email (TT8, TT9) and hosting HO26-HO29 are DEFERRED TO PRODUCTION**, the same principle as the email deferral in D-092 item 1. The website inbox and report scoping (TT7, HO25) stay required.
+3. **T-199's goal `done_check` scope** is aligned to D-090: the internal tracker (TB7) plus CSV/xlsx export (TB15), not the dry run against a fake sheet client and not a live write.
+
+**Why:** The production host will run in Docker on Ubuntu, which restarts the app itself; a Windows Scheduled Task here would be throwaway work, and mail needs credentials and a relay that exist only on the server.
+
+**Result:** No code change in this entry. Contracts folded by the checker: hosting.md (HO39, HO40, HO26-HO29 marked DEFERRED TO PRODUCTION), team-test-button.md (TT8, TT9 email deferred; TT7 stays), `.goal/goal.json` T-199 note and scope. Criteria otherwise unchanged; no safety rule weakened (default-off email, no recipient from a request and no real SMTP in tests remain in force for when email is built).
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** D-090; D-091; D-092; T-199; T-201; T-203; qa/contracts/hosting.md; qa/contracts/team-test-button.md

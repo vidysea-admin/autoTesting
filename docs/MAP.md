@@ -8,9 +8,15 @@
 <!-- generated:map -->
 | Module | One job |
 |---|---|
+| `agents/budget.py` | The per-run token/cost meter of the lead tester (T-179, AL11). |
+| `agents/comparison.py` | Agent-vs-pipeline on one seeded corpus (T-179, AL12/AL13). |
 | `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
 | `agents/evidence_tools.py` | The read-only evidence tools (T-180, AL8): `read_result`, `read_rubric`, `read_verdict`. |
+| `agents/gain.py` | The measured-gain harness (T-181, AL12/AL13): one corpus, two paths, one report. |
 | `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
+| `agents/lead.py` | The lead tester's loop (T-179c, AL4/AL5/AL7): a model returns one step per turn, the loop runs |
+| `agents/lead_agent.py` | The lead tester built on Deep Agents (T-179, AL1/AL4/AL5/AL6/AL7/AL11). |
+| `agents/report_tools.py` | The two remaining read tools of the lead tester (T-179, AL2): `report` and `capture_network`. |
 | `agents/subagents.py` | The five subagents of the lead tester and the one place their tool allowlists live (T-180, |
 | `agents/tools.py` | The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6). |
 | `auth/access.py` | The one authorization function (AU12) and the project relation data it reads. |
@@ -44,6 +50,7 @@
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
 | `cli_release.py` | `autotester release` / `release-log` — the release manager's way to run the whole suite (T-167). |
+| `cli_run.py` | `autotester run`, `run-report`, `catalog`, `mcp-serve`: the machine-facing commands (T-174). |
 | `cli_schedule.py` | `autotester schedule tick`: the stateless pass that makes scheduled tests run (T-200, TS7). |
 | `cli_subapps.py` | The list of CLI sub-apps `autotester` registers (T-205/TF5, design rule). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
@@ -51,6 +58,7 @@
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
 | `core/excel.py` | Workbook presentation helpers shared by every Excel exporter. |
+| `core/exit_codes.py` | The one exit-code table for machine-facing commands (T-174, CM1). |
 | `core/ids.py` | Identifier generation. The ONLY place ids are minted. |
 | `core/localtime.py` | Fixed-offset time zones and local-to-UTC conversion for the scheduler. |
 | `core/paths.py` | Filesystem layout. The ONLY place project paths are constructed. |
@@ -79,6 +87,7 @@
 | `ledger/seals.py` | L10 immutable-history dispositions: sealed records and the known-disputed claims. |
 | `ledger/store.py` | Read and append `docs/FEATURES.jsonl`. The only write path to the ledger. |
 | `loop_status.py` | Is the maker-checker loop alive, and if it stopped, was that on purpose? |
+| `mcp_server.py` | The AutoTester MCP server: three tools, a thin adapter over `stages/run_service.py` (T-174 CM4). |
 | `media/chunks.py` | Split a recording into overlapping chunks a vision model can actually read. |
 | `media/frames.py` | Pull a single still out of a recording, at a second the model named. |
 | `media/probe.py` | Ask ffmpeg what a recording actually is, and whether ffmpeg is here at all. |
@@ -95,6 +104,8 @@
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
 | `schema/acceptance.py` | The T-136 acceptance-comparison artifact: AutoTester vs a human tester, as data. |
+| `schema/agent_comparison.py` | The agent-vs-pipeline comparison report (T-179 AL12/AL13): the four north-star axes for each |
+| `schema/agent_guardrails.py` | The declared limits of an agent run and the rule that says whether it beat the pipeline |
 | `schema/agent_layer.py` | The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist, |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
@@ -107,6 +118,7 @@
 | `schema/bug_run.py` | What reading the bug store and processing one run reports: the shapes of T-199b (TB3, TB4, TB6). |
 | `schema/case.py` | A test case — one falsifiable claim about the product, plus how to check it. |
 | `schema/catalog.py` | The test catalog: schema for `stages/catalog.py::catalog()`'s output. |
+| `schema/cli_output.py` | The machine-readable result of a run (T-174, CM2/CM4). |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
 | `schema/delivery.py` | Report-delivery shapes: preference, recipient, summary, rendered message, record, SMTP settings. |
@@ -117,6 +129,7 @@
 | `schema/intake.py` | Shapes for video intake: zip limits, the per-member report, and where a source came from. |
 | `schema/issue.py` | A video-derived issue — its own artifact, deliberately NOT a `CaseClass`. |
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
+| `schema/lead_loop.py` | The steps a lead-tester model may return, and what a finished loop reports (T-179 AL5/AL7). |
 | `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
@@ -142,6 +155,7 @@
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
 | `schema/video_pointer.py` | The shape of a human's pointer file once parsed (T-197 / TV1). |
 | `schema/video_review.py` | The typed review of one recording: summary, confirm-list, what was and was not looked at (T-197). |
+| `schema/video_share.py` | The shapes of the video portal (T-198b / G9, team-intake.md TP1-TP6). |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
 | `sources/bounded_write.py` | One bounded, hashing copy for every intake path (zip member, Drive fetch). |
@@ -222,6 +236,7 @@
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
 | `stages/run_launcher.py` | The one run launcher: gates, execution and the saved `Run` (T-205, team-foundation TF1/TF2). |
+| `stages/run_service.py` | Run / report / catalog as plain functions for the CLI and the MCP server (T-174, CM1-CM4). |
 | `stages/schedule_gate.py` | The TS5 gate: a scheduled run may start only under the credential-derived approval (D-068). |
 | `stages/schedule_owner.py` | HO24: a schedule has no more rights than its owner, checked at fire time. |
 | `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |
@@ -237,10 +252,14 @@
 | `stages/similarity_score.py` | How two bug reports are compared for `stages/score.py`'s T-136 scorer. |
 | `stages/synthetic_values.py` | The synthetic value generator (X10-b, D-029): what the crawler types. |
 | `stages/text_lines.py` | Number lines by  |
+| `stages/tracker_export.py` | TRACKER EXPORT: BugStore bugs as CSV / xlsx bytes in the PathLynks Tracker sheet's layout (TB15). |
 | `stages/unified_report.py` | The damage-control report's loaders and assembly (T-168, `damage-control-report.md` DC1-DC4). |
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
+| `stages/video_access.py` | Who may open a video, and how: the video resource, shares and share links (TP1, TP3). |
+| `stages/video_comments.py` | Timestamped comments on a video, and promoting one to a pointer (TP2, TP6). |
 | `stages/video_pointers.py` | Parse a reviewer's pointer file into typed lines and a whole error list (TV1). |
+| `stages/video_requests.py` | The request-access flow (TP5): ask, route to the people who may approve, decide once. |
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
 | `stages/video_review.py` | Review one recording with human pointers: the typed, redacted, capped, idempotent run (T-197). |
 | `stages/video_review_items.py` | Turn a model reply into validated confirm-list items (TV3, TV4, TV5, TV6). |
@@ -266,9 +285,11 @@
 | `ui/error_pages.py` | App-wide `HTTPException` -> HTML page, split out of `ui/app.py` to keep that |
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
+| `ui/intake_gate_auth.py` | The real intake gate: sign-in and `video.upload` on that project (team-intake.md TI10, TI11). |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
 | `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
+| `ui/routes_access_requests.py` | Share-link opening, request-access, and the approvers' list (T-198b / G9, TP3, TP5). |
 | `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |
 | `ui/routes_auth.py` | Sign in, sign up, sign out and the waiting page (T-204, auth.md AU2-AU7). |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
@@ -291,8 +312,11 @@
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
 | `ui/routes_team_run.py` | The team Test button (T-201b, qa/contracts/team-test-button.md TT1-TT6): a teammate with |
+| `ui/routes_tracker.py` | The internal bug tracker page and its Tracker-layout export (T-199, TB7 in part, TB15). |
 | `ui/routes_unified_report.py` | The damage-control report as a page (T-168): the lead's two-step route from the project page. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
+| `ui/routes_video_comments.py` | Comment routes of the video portal (T-198b / G9, TP2, TP6). |
+| `ui/routes_video_portal.py` | The video page, its byte route and the sharing controls (T-198b / G9, TP1, TP3). |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
 | `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
 | `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
@@ -301,6 +325,7 @@
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 | `ui/upload_stream.py` | Read one multipart upload from the wire into a staged file, stopping at the admin limit. |
+| `ui/video_portal_view.py` | The HTML of the video portal: player page, request-access page, shared list, requests list. |
 <!-- /generated:map -->
 
 ## Schema summary
@@ -312,7 +337,11 @@
 | `ParticipantColumn` (`schema/acceptance.py`) | One side of the comparison, with its K6 kind and K7 ordering split. |
 | `BugRow` (`schema/acceptance.py`) | One ground-truth bug and which participants found it. |
 | `AcceptanceComparison` (`schema/acceptance.py`) | The comparison a reader who was not there can judge (bench.md K9). |
-| `AgentToolName` (`schema/agent_layer.py`) | The stage tools in this slice. `report` and `capture_network` join with the rest of T-179. |
+| `PathMeasure` (`schema/agent_comparison.py`) | What one path produced on the SAME corpus. All four numbers are measured, not estimated; |
+| `Comparison` (`schema/agent_comparison.py`) |  |
+| `WinRule` (`schema/agent_guardrails.py`) | When the agent counts as a gain over the pipeline. Default (awaiting Umesh): the agent |
+| `AgentGuardrails` (`schema/agent_guardrails.py`) | Per-run ceilings: the token/cost budget (D-042) and the step cap. Domains and the write |
+| `AgentToolName` (`schema/agent_layer.py`) | The stage tools of the lead tester. |
 | `ToolEffect` (`schema/agent_layer.py`) | What a tool can do to the outside world. T-180 allowlists subagents by this. |
 | `RefusalClass` (`schema/agent_layer.py`) | Why a tool call produced no action. A refusal is a result, never an exception the |
 | `ToolSpec` (`schema/agent_layer.py`) | One tool: its name, effect, and the existing function it wraps (C3). |
@@ -378,6 +407,8 @@
 | `PackEntry` (`schema/catalog.py`) | One `StandardPack`'s standing for one project. Reuses `BlockedReason` |
 | `AiCheckEntry` (`schema/catalog.py`) | One Track C `AiCheckKind`'s standing for one AI target (T-152, ai-target.md AI4-AI5). |
 | `Catalog` (`schema/catalog.py`) | One project's whole catalog: every `CaseClass`, exactly once (CT2), |
+| `CaseReport` (`schema/cli_output.py`) |  |
+| `RegressionReport` (`schema/cli_output.py`) |  |
 | `CoverageGap` (`schema/coverage.py`) | A screen or route observed in a run but absent from the FlowSpec. |
 | `VideoRequest` (`schema/coverage.py`) | What the system asks a human to record, and why. |
 | `DialogEvent` (`schema/crawl.py`) | One JS dialog (`alert`/`confirm`/`prompt`/`beforeunload`) the observer saw. |
@@ -434,6 +465,12 @@
 | `DriveJob` (`schema/intake.py`) | One pasted Drive link being fetched in the background (HO33). Holds the Drive id and the |
 | `Issue` (`schema/issue.py`) | One row of "what's wrong", derived from a video and (optionally) matched |
 | `IssueKind` (`schema/issue_kind.py`) | What kind of problem a crawl-detected `CrawlIssue` is. |
+| `ToolCallStep` (`schema/lead_loop.py`) |  |
+| `DelegateStep` (`schema/lead_loop.py`) |  |
+| `FinishStep` (`schema/lead_loop.py`) |  |
+| `LeadRun` (`schema/lead_loop.py`) | What one lead loop did. `delegations` counts subagent calls actually made (AL7). |
+| `TokenBudget` (`schema/lead_loop.py`) | A run's declared ceiling (AL11): tokens and/or cost. Either left unset is not enforced. |
+| `AgentRun` (`schema/lead_loop.py`) | How one framework-driven lead run ended. `stopped` names the reason, so a budget halt is |
 | `FeatureEvent` (`schema/ledger.py`) | One dated event in the life of a feature: planned, live, updated, or retired. |
 | `RelitigationVerdict` (`schema/ledger.py`) | The judge's answer to "is this new unit a retired feature coming back?". |
 | `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
@@ -524,8 +561,10 @@
 | `CredentialState` (`schema/team_enums.py`) | Why the TS5 gate admits or refuses a run; the value leads the slot record's detail. |
 | `RunVia` (`schema/team_enums.py`) | Which surface asked for a run (`Run.via`); `None` means the original UI Run button. |
 | `SourceOriginKind` (`schema/team_enums.py`) | Where a `Source` came from (`Source.origin`); `None` means it predates provenance. |
+| `AccessRequestStatus` (`schema/team_enums.py`) | Where an access request to a video stands (`AccessRequest.status`, TP5). |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
+| `ToolSpan` (`schema/trace.py`) | One agent-layer step (T-179 AL5): a lead planning step, a tool call, or a delegation to a |
 | `BugStatus` (`schema/tracked_bug.py`) |  |
 | `EventKind` (`schema/tracked_bug.py`) | What happened, in the loop's vocabulary. The first seven are verdict-derived; `case_changed` |
 | `BugSeed` (`schema/tracked_bug.py`) | What a bug is made of when its first FAIL opens it. |
@@ -566,6 +605,10 @@
 | `ConfirmItem` (`schema/video_review.py`) | One line of the confirm-list. `status` is a human's; a model can never set it. |
 | `RejectedItem` (`schema/video_review.py`) | An item that failed validation. Kept with its reason, never rendered, never blank. |
 | `VideoReview` (`schema/video_review.py`) | The stored review. `id` is derived from content (TV10), never from a clock. |
+| `Share` (`schema/video_share.py`) | One person who may open one video (the video's `shared_with` entry). |
+| `ShareLink` (`schema/video_share.py`) | A video's share link. Opening it grants nothing by itself (TP3); the token is not here. |
+| `AccessRequest` (`schema/video_share.py`) | A signed-in person without access asking for it (TP5). One pending per person+video. |
+| `VideoComment` (`schema/video_share.py`) | A comment at a second of the recording (TP2). `pointer_line` is set by TP6 promotion. |
 <!-- /generated:schema -->
 
 ## Scripts

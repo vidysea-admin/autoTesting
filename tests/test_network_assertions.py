@@ -236,7 +236,7 @@ def test_na4_no_provider_import_anywhere_in_the_capture_module() -> None:
 # -- NA5: secrets never reach captured evidence ------------------------------
 
 def test_na5_a_secret_value_in_a_captured_url_is_scrubbed(tmp_path: Path) -> None:
-    project = make_project(secrets=[SecretRef(key="API_TOKEN", domains=["pathlynks.test"])])
+    project = make_project(secrets=[SecretRef(key="API_TOKEN", domains=["app.pathlynks.test"])])
     session = session_with_fake_page(tmp_path, project, env="API_TOKEN=hunter2\n")
     session.observer.responses = [
         ("GET", "https://app.pathlynks.test/api/x?token=hunter2", 200),

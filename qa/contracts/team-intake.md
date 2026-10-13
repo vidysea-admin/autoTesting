@@ -36,7 +36,8 @@ small configured limit (for example 5 MiB) instead of 2 GiB, no real Google call
 own browser and the named persona. `SERVER-GATED` = needs the real Ubuntu server, the proxy or a real Drive file; it gates go-live
 (the T-203 rehearsal), not the unit's code PASS. **R65 (Windows and Ubuntu):** every row below that touches a path, a staging directory,
 a lock or a marker is judged on Windows by the checker and must also pass on Linux; the Linux run is recorded in
-`qa/evidence/t198-linux-run.md` (it may come from T-203's Ubuntu check, as in `auth.md` AU24). TI1 and TI6 carry the R65 assertions.
+`qa/evidence/t198-linux-run.md` (it may come from T-203's Ubuntu check, as in `auth.md` AU24). **The Linux run evidence is DEFERRED TO
+PRODUCTION (Ubuntu; D-092 item 4, same principle as D-091): it does not block T-198, and the Windows assertions stay required.** TI1 and TI6 carry the R65 assertions.
 
 ## A. Intake (unit G3, T-198a)
 
@@ -107,7 +108,8 @@ a lock or a marker is judged on Windows by the checker and must also pass on Lin
   fetch. The Drive file name is untrusted and is never used in a path (TI4). `serves:` O9, R40, D-072#10. *Re-derive:* fake `DriveClient`:
   a file with a good md5 (registers, path under the project), a wrong md5 and a short read (refused, no row, no staging), a folder with
   2 videos and a PDF, a zip id with a hostile member. *Mutation:* skip the md5 compare -> the wrong-md5 case fails. *LOCAL* (real Drive is
-  *SERVER-GATED* and needs an approved, synthetic, non-student video, `hosting.md` HO33).
+  *SERVER-GATED* and needs an approved, synthetic, non-student video, `hosting.md` HO33; **the live Google Drive fetch walk, which needs a live
+  `gws` login on the server, is DEFERRED TO PRODUCTION (Ubuntu), D-092 item 4, and does not block T-198**).
 - **TI8 — Drive failures are five distinct messages, and no token is ever printed (R40).** Not authenticated, permission denied, not found,
   quota exceeded and network error each give a different, typed, human-readable message that says what to do next (HO33 states the
   "make it viewable / share it with the server's Google identity" text; this row requires the five to be told apart, not collapsed into
@@ -273,3 +275,7 @@ visible label and is keyboard-operable (as `auth.md` AU26). Zero unexplained con
   and non-zip cases (TI5), the nested-archive signature sniff and the archive-size cap (TI2), the re-check of `video.upload` when a queued
   Drive fetch starts (TI10), the byte-route range and revoke-on-next-request cases (TP1), and the requester-cannot-self-approve and
   idempotent-approval cases (TP5). The zip cap defaults other than the 2 GiB per-file limit are checker-chosen and editable by a routine amendment.
+- 2026-10-13 - owner-authorized (D-092 item 4, Umesh chat; /checker) - **R65 Linux run evidence (`qa/evidence/t198-linux-run.md`) and the live
+  Google Drive fetch walk (TI7, server-gated) are DEFERRED TO PRODUCTION (Ubuntu)**, like Docker (D-091). Neither blocks T-198. Every LOCAL
+  assertion (TI1, TI6 path and lock behaviour on Windows, TI7 against the fake `DriveClient`) is unchanged and still required.
+  **Links:** D-092; D-091; T-198.

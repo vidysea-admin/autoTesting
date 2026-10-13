@@ -1,6 +1,6 @@
 # Contract — agent-layer (Deep Agents product agent, D-042)
 
-**Status:** DRAFT (goes DRAFT->ACTIVE on T-179's first checker PASS). AL-prefixed criteria are
+**Status:** ACTIVE for the T-179 criteria (AL1-AL7, AL11, and the AL12/AL13 mechanism; T-179 first checker PASS 2026-10-13, cycle 1). AL8-AL10 stay with T-180; the live AL12 comparison and the AL13 keep/drop decision stay with T-181. AL-prefixed criteria are
 grouped by the unit that makes them judgeable — a criterion in a T-180/T-181 group cannot be
 checked until that unit builds; the checker judges only the groups whose unit is in flight.
 **Feature:** AutoTester's lead tester agent, built with LangChain Deep Agents' `create_deep_agent`
@@ -55,14 +55,13 @@ instruction the model is asked to obey.
 
 - **AL1 — Built with `create_deep_agent`.** The lead tester agent is constructed via
   `create_deep_agent` (not a hand-rolled LangGraph `StateGraph` reimplementing planning/subagents),
-  with `deepagents>=1.7` in `pyproject.toml` added only within this unit (D-042
-  Changes-authorized). (Falsifiable: `grep -rn "create_deep_agent"` in the agent module; `deepagents`
-  present in `pyproject.toml` with a `>=1.7` floor; the agent object exposes the Deep Agents
+  with `deepagents>=0.7.24,<0.8` in `pyproject.toml` (D-089 item 1, Approved-by Umesh; the earlier `>=1.7` named a version that does not exist) added only within this unit. The planning middleware is `langchain.agents.middleware.TodoListMiddleware` passed explicitly, because 0.7.24 `create_deep_agent` adds no `write_todos` by default. (Falsifiable: `grep -rn "create_deep_agent"` in the agent module; `deepagents`
+  present in `pyproject.toml` with the `>=0.7.24,<0.8` pin; a `write_todos` call updates `todos` in state; the agent object exposes the Deep Agents
   to-do-list/planning middleware, not a bespoke planner.)
 - **AL2 — Every stage is exposed as a tool that WRAPS the existing function, never
   re-implements it (C3).** Each of `crawl`, `run_case`, `get_persona`, `get_catalog`, `grade_case`,
-  `report` (and `capture_network` once T-170 merges) is a thin tool function whose body calls the
-  named existing stage function/module and does not duplicate its logic. (Falsifiable: for each
+  `report` (and `capture_network`) is a thin tool function whose body calls the
+  named existing stage function/module and does not duplicate its logic. `capture_network(case_id)` takes a case id, re-reads that case's stored NETWORK evidence and returns it filtered through `stages/network_capture.py::first_party_evidence` (a READ-effect tool, no browser; live capture stays inside `run_case`). (Falsifiable: for each
   tool, `grep -rn` its body imports and calls the cited existing function
   — e.g. `run_case` tool imports and calls `stages.execute.run_case`, `grade_case` tool imports and
   calls `stages.grade.grade` — and contains no parallel implementation of what that function does;
@@ -84,7 +83,7 @@ instruction the model is asked to obey.
   side effects.)
 - **AL4 — Skills are loaded via `skills=`, not inline prompt strings.** The lead agent (and any
   subagent needing one) is constructed with `skills=[...]` pointing at the `SKILL.md` folders T-175
-  produces (`qa/contracts/skills.md` SK1); no agent or tool in this unit embeds a prompt as a Python
+  produces (`qa/contracts/skills.md` SK1) over a read-only backend (the model cannot write, edit or delete a skill); exposing the other packaged SK1 skills, not only `agent-*`, is permitted: they are inert prompt text with no tool or capability, and least privilege (AL10) governs tools, not skill text; no agent or tool in this unit embeds a prompt as a Python
   string literal or reads a `.md` file directly outside that loader (core-invariants C8's "prompts
   live in files" extended to the agent layer). (Falsifiable: `grep -rn` for a triple-quoted prompt
   string or a direct `read_text(...)` of a skill/prompt file inside the agent module returns
@@ -138,7 +137,9 @@ instruction the model is asked to obey.
   tool list is read programmatically and diffed against the full tool set — every tool NOT in a
   subagent's allowlist is confirmed absent from its available calls.)
 
-### T-181 group (AL11-AL13) — guardrails + measured gain (judgeable once T-181 builds)
+### AL11-AL13 — guardrails + measured gain (scope split, ruled 2026-10-13)
+
+**Scope split.** AL11 (the budget meter and halt) is a property of the lead agent and is judged in T-179. For AL12/AL13 the comparison *mechanism* (`agents/comparison.py`: both paths scored by the one `stages/bench.py` scorer, a report with the four numbers per path and an always-present verdict line) is judged in T-179 on **injected verdicts**. The *live* comparison (real `run_and_grade_case` vs the real agent on a seeded product in a visible browser, `tests/test_agent_gain.py`) and the keep/drop decision are T-181's. A T-179 PASS never claims a measured gain.
 
 - **AL11 — A per-run token/cost budget halts the run with a named reason when exceeded.** The lead
   agent's run carries a declared budget (tokens and/or cost); when a run would exceed it, the run
@@ -163,6 +164,8 @@ instruction the model is asked to obey.
   verdict line — gain / no gain, with the numbers it rests on — is present regardless of which way
   the comparison went; a report that only shows favourable outcomes and drops an unfavourable metric
   fails this criterion.)
+
+**T-181 rulings (2026-10-13, /checker t181-guardrails cycle 1).** (1) `tests/test_agent_gain.py` on caller-supplied fake runners satisfies the goal `done_check` and the guardrail/harness mechanics; AL12's *live* run (real `run_and_grade_case` vs the real agent, seeded product, visible browser) and the AL13 keep/drop declaration remain open and gate T-181 closing. (2) `schema/agent_guardrails.py::WinRule` is the one win rule for AL13 (provisional default, awaiting Umesh: agent bugs >= pipeline AND agent FP rate <= pipeline, tie = gain; budget default 200k tokens / $2.00); `comparison.compare(rule=None)` keeps T-179's stricter rule only for T-179's injected-verdict tests. (3) An FP rate of None from the scorer (nothing reported) is treated as 0.0, and the report must say so.
 
 ## Explicit no-fire list (do not raise these as findings)
 
@@ -225,3 +228,4 @@ separate refusal paths.
   (`stages/run_case_pipeline.py:143`; resilient wrapper `:174`, used by `ui/run_execution.py:52`). AL12 now names both: the stage walk
   up to the gate, then the per-case seam. The four axes, the seeded-fixture verify and AL13 are unchanged. AL1's `deepagents>=1.7`
   floor was **not** touched (NEEDS-OWNER). **Links:** T-181; AL12; AL13; AT-691.
+- 2026-10-13 - /checker t179d-agent-layer, cycle 1 PASS - **AL1** floor amended `deepagents>=1.7` -> `>=0.7.24,<0.8` per D-089 item 1 (Approved-by Umesh); explicit `TodoListMiddleware` accepted as the planner. **AL2** `capture_network` input specified (case id, stored NETWORK evidence, `first_party_evidence`). **AL4** ruled: `skills=["/"]` exposing all packaged skills read-only does not violate AL4 (skill text is not a capability; deny-write tested). **AL11-AL13** scope split written in place. Status DRAFT -> ACTIVE for the T-179 criteria. No criterion weakened. **Links:** D-042; D-089; T-179; T-181.

@@ -239,9 +239,14 @@ def test_ti11_uploaded_by_comes_from_the_gate_and_a_form_field_is_ignored(store,
     assert source.origin == UploadOrigin(file_name="who.mp4")
 
 
-def test_ti11_with_no_sign_in_yet_nobody_is_recorded_as_the_uploader(store):
-    """Until T-204 the default gate is open and says so; the row is owned by nobody."""
-    assert post_stream(UPLOAD, _body("anon.mp4", video("anon")))[0] == 303
+def test_ti11_an_open_gate_records_nobody_as_the_uploader(store):
+    """`OpenGate` (no sign-in) admits and names nobody; the real gate is tested in
+    test_intake_gate_auth.py."""
+    previous = intake_gate.set_gate(intake_gate.OpenGate())
+    try:
+        assert post_stream(UPLOAD, _body("anon.mp4", video("anon")))[0] == 303
+    finally:
+        intake_gate.set_gate(previous)
     assert store.list_sources()[0].uploaded_by is None
 
 

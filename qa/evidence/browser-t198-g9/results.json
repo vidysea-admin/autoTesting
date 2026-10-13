@@ -1,0 +1,223 @@
+{
+ "results": {
+  "dev_landing": "http://127.0.0.1:50439/",
+  "dev_shared_body": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nVideos\nShared with me\nCheckout demo (shared) (demo)\nRefund flow (not shared) (demo)\nMy access requests\nNo requests.",
+  "dev_player": 1,
+  "dev_share_panel": 1,
+  "dev_shared_with": "\ntester@team.test\nAccount email\nChange\nshare with\nstop sharing with\nSave",
+  "link_shape": "http://127.0.0.1:50439/v/<token>",
+  "link_token_len": 43,
+  "dev_comments": "0:05 dev@team.test: Checkout button looks right here\nEdit\nDeleteMake a pointer\n0:09 dev@team.test: <script>alert(1)</script>\"><img src=x onerror=alert(2)>\nEdit\nDeleteMake a pointer",
+  "dialogs_after_script_comment": [],
+  "dev_over_duration_status": 400,
+  "dev_over_duration_body": "ter\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\n400 Bad Request\n\nthe time is past the end of the video (20 seconds)\n\n\u2190 Back to projects",
+  "kbd1": "Use current time",
+  "kbd2": "text",
+  "promoted_li": "0:05 dev@team.test: Checkout button looks right here (pointer)\nEdit\nDelete",
+  "promote_btn_after": 0,
+  "tester_landing": "http://127.0.0.1:50439/",
+  "tester_home_links": [
+   "AT\nAutoTester|/",
+   "Projects|/",
+   "Videos|/shared"
+  ],
+  "tester_shared_body": "AT\nAutoTester\nProjects\nVideos\ntester@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\nVideos\nShared with me\nCheckout demo (shared) (demo)\nMy access requests\nNo requests.",
+  "clicks_from_signin_landing": 2,
+  "tester_player": 1,
+  "tester_share_panel": 0,
+  "tester_pointer_btn": 0,
+  "tester_comment_form": 1,
+  "player_duration": 22.36,
+  "seek_currentTime_after_click_at5": 6.413064,
+  "tester_comments": "0:03 tester@team.test: Tester: spinner shows twice here\nEdit\nDelete\n0:05 dev@team.test: Checkout button looks right here (pointer)\n0:09 dev@team.test: <script>alert(1)</script>\"><img src=x onerror=alert(2)>",
+  "tester_direct_share_status": 403,
+  "tester_direct_promote_status": 404,
+  "v2_in_shared_list": 0,
+  "v2_page_body": "AT\nAutoTester\nProjects\nVideos\ntester@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\nYou do not have access to this video\n\nAsk for access. Your request goes to the person who uploaded the video, a sub-admin of its project, or an admin. You will see the answer here and under Videos.\n\nRequest access",
+  "v2_player": 0,
+  "v2_media_status": 404,
+  "v2_media_len": 26,
+  "v2_media_range_status": 404,
+  "v2_media_range_len": 26,
+  "req_btn_focus": "Request access",
+  "request_sent_body": "AT\nAutoTester\nProjects\nVideos\ntester@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\nRequest sent\n\nIf the video exists, the people who can approve it have been asked. Check Videos for the answer.",
+  "v2_again_body": "AT\nAutoTester\nProjects\nVideos\ntester@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\nYou do not have access to this video\n\nYour request is waiting for a decision.\n\nAsk for access. Your request goes to the person who uploaded the video, a sub-admin of its project, or an admin. You will see the answer ",
+  "tester_my_requests": "AT\nAutoTester\nProjects\nVideos\ntester@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\nVideos\nShared with me\nCheckout demo (shared) (demo)\nMy access requests\nRefund flow (not shared): pending",
+  "dev_requests": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nAccess requests\nWaiting for you\ntester@team.test asked for Refund flow (not shared) ApproveDecline",
+  "dev_after_approve": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nAccess requests\nWaiting for you\nNo requests waiting.",
+  "share_list_before_replay": "\ntester@team.test\nAccount email\nChange\nshare with\nstop sharing with\nSave",
+  "share_list_after_replay": "\ntester@team.test\nAccount email\nChange\nshare with\nstop sharing with\nSave",
+  "dev2_requests": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev2@team.test\nSign out\nPROJECTS\nOther\n+ New project\nAccess requests\nWaiting for you\nNo requests waiting.",
+  "dev2_direct_approve": 404,
+  "dev2_v2_body": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev2@team.test\nSign out\nPROJECTS\nOther\n+ New project\nYou do not have access to",
+  "tester_shared_after": "AT\nAutoTester\nProjects\nVideos\ntester@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\nVideos\nShared with me\nCheckout demo (shared) (demo)\nRefund flow (not shared) (demo)\nMy access requests\nRefund flow (not shared): approved",
+  "tester_v2_player_after": 1,
+  "v2_media_status_after": 200,
+  "v2_media_len_after": 572325,
+  "lead_landing": "http://127.0.0.1:50439/",
+  "lead_links": [
+   "AT\nAutoTester|/",
+   "Projects|/",
+   "Videos|/shared",
+   "Access requests|/access-requests",
+   "\u25cf Live view|/live",
+   "Demo|/projects/demo",
+   "Demo\n0 cases\nnever run|/projects/demo"
+  ],
+  "lead_shared": "AT\nAutoTester\nProjects\nVideos\nAccess requests\n\u25cf Live view\nsub@team.test\nSign out\nPROJECTS\nDemo\nVideos\nShared with me\nCheckout demo (shared) (demo)\nRefund flow (not shared) (demo)\nMy access requests\nNo requests.",
+  "lead_player": 1,
+  "lead_share_panel": 1,
+  "lead_pointer_btn": 2,
+  "lead_comment_form": 1,
+  "lead_other_body": "AT\nAutoTester\nProjects\nVideos\nAccess requests\n\u25cf Live view\nsub@team.test\nSign out\nPROJECTS\nDemo\nYou do not have access to this video\n\nAsk for access. Your request goes to the person who uploaded the vi",
+  "lead_other_player": 0,
+  "lead_other_media_status": 404,
+  "lead_/admin/users": 403,
+  "lead_/admin/settings": 404,
+  "tester2_v1_player": 0,
+  "lead_requests": "AT\nAutoTester\nProjects\nVideos\nAccess requests\n\u25cf Live view\nsub@team.test\nSign out\nPROJECTS\nDemo\nAccess requests\nWaiting for you\ntester2@team.test asked for Checkout demo (shared) ApproveDecline",
+  "lead_after_approve": "AT\nAutoTester\nProjects\nVideos\nAccess requests\n\u25cf Live view\nsub@team.test\nSign out\nPROJECTS\nDemo\nAccess requests\nWaiting for you\nNo requests waiting.",
+  "tester2_v1_player_after": 1,
+  "lead_kbd_after_email": "share-change",
+  "lead_kbd_2": "",
+  "lead_kbd_3": "AT\nAutoTester\nProjects\nVideos\nAccess requests\n\u25cf Live view\nsub@team.test\nSign out\nPROJECTS\nDemo\n\u2190 Back\nVIDEOS / CHECKOUT DEMO (SHARED)\nCheckout demo (shared)\nComments\n0:03 tester@team.test: Tester: spinner shows twice here Make a pointer\n0:05 dev@team.test: Checkout button looks right here (pointer)\n0:09 dev@team.test: <script>alert(1)</script>\"><img src=x onerror=alert(2)> Make a pointer\nTime in seconds\n Use current time\nComment\nAdd comment\nShare\n\nA share link is live (made 2026-10-13T07:41:52.522046+00:00). Opening it needs sign-in and gives nothing by itself.\n\nCreate a new share linkRevoke the link\nShared with\ntester2@team.test\ntester@team.test\nAccount email\nChange\nshare with\nstop sharing with\nSave",
+  "lead_promoted": "0:03 tester@team.test: Tester: spinner shows twice here (pointer)",
+  "anon_link_url": "http://127.0.0.1:50439/auth/login?next=/v/<token>",
+  "anon_link_body": "AT\nAutoTester\nSign in\nEmail\nPassword\nSign in\n\nNo account yet? Sign up",
+  "nogroup_link": "AT\nAutoTester\nWaiting for an administrator\n\nYou are signed in as nogroup@team.test, but your account has no access yet.\n\nAsk an administrator to add y",
+  "tester_link_url": "http://127.0.0.1:50439/projects/demo/videos/src_1ecb7d4cfcd6",
+  "revoked_link_status": 404,
+  "unknown_link_status": 404,
+  "same_body_revoked_unknown": true,
+  "dev_after_decline": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nAccess requests\nWaiting for you\nNo requests waiting.",
+  "declined_requester_body": "AT\nAutoTester\nProjects\nVideos\ntester2@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\nYou do not have access to this video\n\nYour last request was declined. You can ask again.\n\nAsk for access. Your request goes to the person who uploaded the video, a s"
+ },
+ "a11y_unlabelled": {
+  "dev-shared": [],
+  "dev-video": [],
+  "tester-shared": [],
+  "tester-video": [],
+  "tester-request": [],
+  "dev-requests": [],
+  "lead-shared": [],
+  "lead-video": [],
+  "lead-requests": []
+ },
+ "console_errors": [
+  [
+   "dev@team.test",
+   "http://127.0.0.1:50439/auth/login",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "dev@team.test",
+   "http://127.0.0.1:50439/projects/demo/videos/src_1ecb7d4cfcd6/comments",
+   "error",
+   "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  [
+   "tester@team.test",
+   "http://127.0.0.1:50439/auth/login",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "tester@team.test",
+   "http://127.0.0.1:50439/projects/demo/videos/src_4100ed9ae100",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "tester@team.test",
+   "http://127.0.0.1:50439/projects/demo/videos/src_4100ed9ae100",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "dev2@team.test",
+   "http://127.0.0.1:50439/auth/login",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "dev2@team.test",
+   "http://127.0.0.1:50439/projects/demo/videos/src_4100ed9ae100",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "sub@team.test",
+   "http://127.0.0.1:50439/auth/login",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "sub@team.test",
+   "http://127.0.0.1:50439/projects/other/videos/src_35d55ebbeab7",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "sub@team.test",
+   "http://127.0.0.1:50439/admin/users",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "tester2@team.test",
+   "http://127.0.0.1:50439/auth/login",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "tester2@team.test",
+   "http://127.0.0.1:50439/projects/demo/videos/src_1ecb7d4cfcd6",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "nogroup@team.test",
+   "http://127.0.0.1:50439/auth/login",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "nogroup@team.test",
+   "http://127.0.0.1:50439/auth/waiting",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "nogroup@team.test",
+   "http://127.0.0.1:50439/v/<token>",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "nogroup@team.test",
+   "http://127.0.0.1:50439/v/<token>",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "tester2@team.test",
+   "http://127.0.0.1:50439/auth/login",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "tester2@team.test",
+   "http://127.0.0.1:50439/projects/demo/videos/src_4100ed9ae100",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "tester2@team.test",
+   "http://127.0.0.1:50439/projects/demo/videos/src_4100ed9ae100",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ ],
+ "dialogs": []
+}

@@ -7,9 +7,9 @@ Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (auth surface: a state-changing route family gated by a permission key)
 Dual check: required
 dual-trigger: security src/autotester/auth/policy.py
-Fix cycle: 2
+Fix cycle: 3
 Executor: claude-sonnet-subagent (maker build subagent)
-Status: ready-for-check
+Status: checked-PASS
 UI surface: changed (new page `GET /projects/{slug}/schedule`, new card on the project page). Persona walk needs a browser and is NOT done here.
 
 ## What changed

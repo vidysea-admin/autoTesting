@@ -1,8 +1,13 @@
-"""T-204 fix cycle 1, part 3: a table pinning every route policy row (AU14)."""
+"""AU14 (T-204, extended by T-198b): a table pinning every route policy row.
+
+Split out of test_ui_auth_escalation.py to stay under the 300-line cap.
+"""
 
 from __future__ import annotations
 
 from autotester.auth import policy
+
+# -- B P3: every route policy row is pinned -----------------------------------------------
 
 _P = "/projects/{slug}"
 EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
@@ -25,23 +30,40 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "/product-map", "/flow-diagram", "/schedule", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}")},
-    **{("GET", _P + t): ("project", "report.view") for t in ("/damage-report",
-        "/runs/{run_id}", "/test/{run_id}", "/report", "/report.xlsx", "/report.html")},
+    **{("GET", _P + t): ("project", "report.view") for t in (
+        "/runs/{run_id}", "/tracker", "/tracker/export.csv", "/tracker/export.xlsx",
+        "/tracker/{bug_key}", "/test/{run_id}", "/report", "/report.xlsx", "/report.html",
+        "/damage-report")},
     ("GET", _P + "/runs/{run_id}/videos/{video_path:path}"): ("project", "video.view"),
     ("GET", _P + "/frames/{source_id}/{name:path}"): ("project", "video.view"),
     **{("POST", _P + t): ("project", "project.edit") for t in (
         "/cases", "/cases/{case_id}/rename", "/cases/{case_id}/delete", "/edit", "/login-case",
         "/flowspec/approve", "/flowspec/request-edit", "/cases/generate",
         "/crawls/{crawl_id}/merge", "/issues/{issue_id}/pin", "/sources",
-        "/sources/{source_id}/analyze", "/env/url")},
+        "/sources/{source_id}/analyze", "/env/url", "/tracker/{bug_key}/assignee")},
     **{("POST", _P + t): ("project", "video.upload") for t in ("/sources/upload","/sources/drive")},
-    **{("POST", _P + t): ("project", "project.run") for t in ("/run", "/explore", "/test",
+    **{("POST", _P + t): ("project", "project.run") for t in ("/run", "/test", "/explore",
                                                                 "/crawl-approval")},
     **{("POST", _P + t): ("project", "credentials.edit") for t in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
     **{("POST", _P + t): ("project", "schedule.manage") for t in (
         "/schedule", "/schedule/pause", "/schedule/resume", "/schedule/delete")},
     ("POST", _P + "/access"): ("project", "project.view"),
+    # T-198b developer portal (G9): pinned independently of policy.PORTAL_POLICY.
+    ("GET", "/shared"): ("key", "video.view"), ("GET", "/v/{token}"): ("key", "video.view"),
+    ("POST", "/v/{token}/request-access"): ("key", "video.view"),
+    ("GET", _P + "/videos/{video_id}"): ("key", "video.view"),
+    ("POST", _P + "/videos/{video_id}/request-access"): ("key", "video.view"),
+    ("GET", _P + "/videos/{video_id}/media"): ("video", "video.view"),
+    ("GET", _P + "/videos/{video_id}/comments"): ("video", "video.view"),
+    **{("POST", _P + "/videos/{video_id}" + t): ("video", "video.share") for t in (
+        "/share-link", "/share-link/revoke", "/shares")},
+    **{("POST", _P + "/videos/{video_id}/comments" + t): ("video", "comment.create")
+       for t in ("", "/{comment_id}/edit", "/{comment_id}/delete")},
+    ("POST", _P + "/videos/{video_id}/comments/{comment_id}/promote"): ("project", "project.edit"),
+    ("GET", "/access-requests"): ("key", "access.approve"),
+    **{("POST", "/access-requests/{request_id}" + t): ("key", "access.approve")
+       for t in ("/approve", "/decline")},
 }
 
 

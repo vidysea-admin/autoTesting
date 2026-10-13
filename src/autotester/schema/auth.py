@@ -149,9 +149,11 @@ class RouteRule(BaseModel):
 
     kind: `public` (AU16 set), `session` (any signed-in account, even with no groups),
     `member` (signed in with at least one permission), `key` (an unscoped key) or
-    `project` (a key judged against the `{slug}` project; unviewable -> 404, AU13)."""
+    `project` (a key judged against the `{slug}` project; unviewable -> 404, AU13) or
+    `video` (a key judged against the `{slug}`/`{video_id}` video, T-198b: a video the account
+    may not view, or that does not exist, -> 404; viewable without the key -> 403)."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    kind: Literal["public", "session", "member", "key", "project"]
+    kind: Literal["public", "session", "member", "key", "project", "video"]
     key: PermissionKey | None = None

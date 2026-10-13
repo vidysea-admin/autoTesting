@@ -5897,3 +5897,49 @@ Maker never edits contracts; checker to fold or amend. K1-K10 do not cover conve
 - **K11d** Duration is measured only: the run's `finished_at - started_at`, else the sum of stored per-case durations, else None (K8 unavailable, check script fails). Never defaulted.
 
 **Status:** folded (2026-10-13, /checker) -> `qa/contracts/bench.md` K11a-d (tightened: refusal writes nothing; partial per-case durations never summed).
+
+## 2026-10-13 · /checker (contract maintenance) · T-174 cli-mcp.md tighten + activate
+
+Maker manifest asked: does `Catalog` satisfy CM4 "tool outputs use the CM2 schema"; is `schedule tick` keeping its own exit codes acceptable.
+
+**Status:** folded (2026-10-13) -> `qa/contracts/cli-mcp.md` CM1 (scope: tick/doctor keep own codes), CM3 (dry run mints/checks no approval), CM4 (`Catalog` accepted; typed `extra="forbid"` models), Status ACTIVE.
+
+## From maker t179d-agent-layer (2026-10-13), for /checker
+
+1. **AL1 floor.** Contract AL1 still says `deepagents>=1.7`; D-089 item 1 (Approved-by Umesh) pins `>=0.7.24,<0.8` and says the checker amends the text. Built to D-089 (`pyproject.toml`). Please amend AL1.
+2. **AL1 "to-do-list middleware".** In deepagents 0.7.24 `create_deep_agent` does NOT add `write_todos` by default. Narrowest reading: add the framework's own `langchain.agents.middleware.TodoListMiddleware` explicitly. Done; confirm that satisfies "exposes the Deep Agents planning middleware".
+3. **AL4 `skills=`.** `skills=["/"]` over a read-only `FilesystemBackend` rooted at `src/autotester/skills/` (SK1 folders). This exposes every packaged skill (not only `agent-*`) to the lead as available skills. Narrowest alternative (a staged dir holding only `agent-*`) was not built. Is exposing all acceptable?
+4. **AL2 `capture_network`.** The contract does not say what the tool takes. Narrowest reading: `capture_network(case_id)` re-reads the case's stored NETWORK evidence and filters it through `stages/network_capture.py::first_party_evidence` (READ effect, no browser). Live capture stays with `run_case`.
+5. **AL5 coverage.** Spans use the existing `ToolSpan` (t179c). The framework's built-in tools (`write_todos`, file tools) also get a tool span; the `task` built-in gets a `delegate` span. The subagent's own inner calls are spanned too (the same middleware instance is given to each).
+6. **AL11-AL13 scope.** The contract groups these under T-181; the brief asked for them in T-179 where in scope. Built: AL11 meter + halt in the framework path only (`agents/budget.py`, `lead_agent.py`); `run_lead` (t179c loop) has no budget. AL12/AL13: `agents/comparison.py` scores both paths with `stages/bench.py` and writes a report with the verdict line, tested on a fixture with injected verdicts. NOT built: a runner that executes the real pipeline (`run_and_grade_case`) and the real agent on a seeded product with a browser. That needs a live browser and belongs with T-181's `tests/test_agent_gain.py`. Please say whether AL12 can be judged on injected verdicts or needs the live run.
+7. **AL7 on the framework path.** Only judgement subagents (explorer, test-designer, grader, reporter) are registered; `runner`, and the framework's default `general-purpose` subagent, are refused by the rails middleware (no delegation made, counted as a refusal).
+
+**Status:** folded 2026-10-13 by /checker t179d-agent-layer (cycle 1 PASS) -> qa/contracts/agent-layer.md. Items 1-7 above: (1) AL1 amended to `>=0.7.24,<0.8` per D-089; (2) explicit TodoListMiddleware accepted; (3) `skills=["/"]` read-only exposing all packaged skills ruled NOT an AL4 violation; (4) `capture_network(case_id)` written into AL2; (5) per-call spans accepted under AL5; (6) AL11 and the AL12/AL13 comparison mechanism judged in T-179 on injected verdicts, live comparison and keep/drop belong to T-181; (7) AL7 refusal of non-judgement delegation accepted.
+
+## From Umesh via orchestrator (2026-10-13, D-092), for /checker
+
+1. **Email delivery of reports** is DEFERRED TO PRODUCTION (Ubuntu), like Docker (D-090/D-091). Website reports suffice now. Fold into `team-schedule.md` (TS5/TS7 email half) and `team-loop-acceptance.md` (TA6 (c)/(d) outbox, TA8, TA15 tick-box, TA17 outbox, Held, Open 2).
+2. **T-206 schedule tick** runs on the REAL `pathlynks` project with the `PATHLYNKS_USER_*` test credentials, not a `pathlynks-acceptance` clone; still under `write_policy` and approval as enforced in code (D-088 first crawl read-only). Fold into TA17 and Open 4.
+3. **Tracker export** keeps the current `TRACKER_COLUMNS` header names until real-sheet export time (D-090). Fold into `team-bug-loop.md` TB15 and TA9.
+4. **T-198:** the R65 Linux run evidence (`qa/evidence/t198-linux-run.md`) and the live Google Drive fetch walk are DEFERRED TO PRODUCTION (Ubuntu); not blocking T-198. Fold into `team-intake.md`.
+5. **Fold the six D-090/D-091 deferral proposals** from section 3 of `qa/evidence/t206-runbook.md` (branch `wave/t206-runbook`) into `team-loop-acceptance.md`.
+
+**Status:** folded (2026-10-13, /checker) -> `team-schedule.md` TS5/TS7 (email half deferred), `team-loop-acceptance.md` TA1/TA3/TA6/TA8/TA9/TA11-TA15/TA17, Held, No-fire, Open 2-5 (six proposals folded), `team-bug-loop.md` TB15 (header names), `team-intake.md` (R65 Linux run, live Drive walk deferred). `team-test-button.md` TT8/TT9 and `hosting.md` HO26-HO29 left unchanged (flag for a later decision). Not folded: T-199 goal `done_check` amendment (goal owner's).
+
+## From Umesh via orchestrator (2026-10-13, D-093), for /checker
+
+1. HO39/HO40 (Scheduled Task boot start, restart) DEFERRED TO PRODUCTION (Docker on Ubuntu); T-203 may close locally on the other rows.
+2. TT8/TT9 and HO26-HO29 (email) DEFERRED TO PRODUCTION.
+3. T-199 `done_check` scope aligned to D-090 (TB7 + TB15).
+
+**Status:** folded (2026-10-13, /checker) -> `hosting.md` HO26-HO29, HO39, HO40; `team-test-button.md` TT8, TT9; `.goal/goal.json` T-199 note.
+## 2026-10-13 · maker · onboard-a11y · AU16 question (favicon)
+T-198 persona walk: anonymous `/favicon.ico` returns 401 (policy.py MEMBER; app.py serves 204), logging a console error on sign-in pages. AU16's closed public set is only `/auth/login`, `/auth/signup`, `/healthz`, so the public set was NOT widened. Instead auth pages carry an inline `<link rel='icon' href='data:,'>`. Question for the checker/Umesh: is a 204 `/favicon.ico` an acceptable AU16 addition, or does the inline icon stand? (Also: signed-in pages still request `/favicon.ico` and get the 204.)
+
+**Status:** folded 2026-10-13 by /checker onboard-a11y (cycle 1 PASS) -> `qa/contracts/auth.md` AU16 clarification: inline icon stands; `/favicon.ico` is NOT added to the public set (a 204 favicon would widen the "exactly" closed set).
+## T-181 maker questions (2026-10-13, t181-guardrails)
+1. **AL12 "live comparison".** The contract says real `run_and_grade_case` vs the real agent on a seeded product in a visible browser, but `tests/test_agent_gain.py` is also the deterministic `done_check`. Built: harness with caller-supplied runners, fakes in the test; the live run is held. Please confirm the offline test satisfies the done_check and the live run is a separate gated step.
+2. **Win-rule default vs T-179.** Umesh's stated default (>= bugs at <= FP rate, tie = gain) differs from `compare()`'s T-179 rule (tie = no gain). Kept both: `rule=None` is the T-179 rule; the harness passes `WinRule`. Should AL13's wording name `WinRule` as the one rule?
+3. **FP rate when nothing is reported.** The scorer returns None; treated as 0.0 in the rule.
+
+**Status:** folded 2026-10-13 by /checker t181-guardrails (cycle 1) -> `qa/contracts/agent-layer.md` "T-181 rulings": (1) offline test satisfies done_check, live run + keep/drop still required to close T-181; (2) WinRule named as the one AL13 rule; (3) None FP rate = 0.0, stated in report.

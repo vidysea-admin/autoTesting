@@ -8,7 +8,7 @@ import pytest
 from auth_harness import ADMIN, account, gate_on
 from schedule_fakes import daily, make_deps, utc
 
-from autotester.auth import accounts, groups
+from autotester.auth import accounts, db, groups
 from autotester.schema.project import Project
 from autotester.schema.schedule import SlotOutcome
 from autotester.stages.schedule_owner import owner_guard
@@ -66,3 +66,27 @@ def test_ho24_owner_with_project_run_still_fires(world, tmp_path) -> None:
     records, q = _fire(store, tmp_path)
     assert records[0].outcome in (SlotOutcome.ENQUEUED, SlotOutcome.CATCH_UP)
     assert len(q.entries()) == 1 and store.load_project().schedule.paused is False
+
+
+def test_ho24_auth_on_with_no_account_store_fails_closed(tmp_path, monkeypatch) -> None:
+    """No store at all is not 'nothing to check': with auth ON the slot is refused and paused."""
+    root = gate_on(tmp_path, monkeypatch)
+    store = ProjectStore("p", root)
+    store.save_project(Project(slug="p", name="P", base_url="https://x.test",
+                               schedule=daily().model_copy(update={"owner": "own@team.test"})))
+    assert not db.store_exists()
+    records, q = _fire(store, tmp_path)
+    assert [r.outcome for r in records] == [SlotOutcome.REFUSED]
+    assert "owner_refused" in (records[0].detail or "")
+    assert q.entries() == [] and store.load_project().schedule.paused is True
+
+
+def test_ho24_auth_disabled_loopback_skips_the_owner_check(tmp_path, monkeypatch) -> None:
+    root = gate_on(tmp_path, monkeypatch)
+    monkeypatch.setenv("AUTOTESTER_AUTH_DISABLED", "1")
+    store = ProjectStore("p", root)
+    store.save_project(Project(slug="p", name="P", base_url="https://x.test",
+                               schedule=daily().model_copy(update={"owner": "own@team.test"})))
+    records, q = _fire(store, tmp_path)
+    assert records[0].outcome in (SlotOutcome.ENQUEUED, SlotOutcome.CATCH_UP)
+    assert len(q.entries()) == 1

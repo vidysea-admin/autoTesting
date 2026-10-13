@@ -14,6 +14,8 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from autotester.schema.schedule import ScheduleConfig
 from autotester.stages.scheduler import QueueSnapshot, Slot, TickDeps
 
@@ -85,3 +87,9 @@ def daily(at: str = "09:00", tz: str = "UTC") -> ScheduleConfig:
 def one_offs(*stamps: str) -> ScheduleConfig:
     return ScheduleConfig.model_validate(
         {"mode": "custom", "owner": "u1", "one_offs": list(stamps)})
+
+
+@pytest.fixture
+def loopback_single_user(monkeypatch: pytest.MonkeyPatch) -> None:
+    """AU17 local mode: the owner guard does not apply (auth ON fails closed, own tests)."""
+    monkeypatch.setenv("AUTOTESTER_AUTH_DISABLED", "1")
