@@ -142,6 +142,7 @@
 | `schema/verdict.py` | Grading. An independent, stateless judge reads evidence against a rubric. |
 | `schema/video_pointer.py` | The shape of a human's pointer file once parsed (T-197 / TV1). |
 | `schema/video_review.py` | The typed review of one recording: summary, confirm-list, what was and was not looked at (T-197). |
+| `schema/video_share.py` | The shapes of the video portal (T-198b / G9, team-intake.md TP1-TP6). |
 | `sources/adapters.py` | Convert teaching material into the ONE content-addressed `Source` model. |
 | `sources/audio.py` | Gemini-first transcription for AUDIO sources, Whisper as the no-API fallback. |
 | `sources/bounded_write.py` | One bounded, hashing copy for every intake path (zip member, Drive fetch). |
@@ -239,7 +240,10 @@
 | `stages/unified_report.py` | The damage-control report's loaders and assembly (T-168, `damage-control-report.md` DC1-DC4). |
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
+| `stages/video_access.py` | Who may open a video, and how: the video resource, shares and share links (TP1, TP3). |
+| `stages/video_comments.py` | Timestamped comments on a video, and promoting one to a pointer (TP2, TP6). |
 | `stages/video_pointers.py` | Parse a reviewer's pointer file into typed lines and a whole error list (TV1). |
+| `stages/video_requests.py` | The request-access flow (TP5): ask, route to the people who may approve, decide once. |
 | `stages/video_retention.py` | T-191/AT-587 V5: keep at most the N most recent kept videos, project-wide. |
 | `stages/video_review.py` | Review one recording with human pointers: the typed, redacted, capped, idempotent run (T-197). |
 | `stages/video_review_items.py` | Turn a model reply into validated confirm-list items (TV3, TV4, TV5, TV6). |
@@ -265,9 +269,11 @@
 | `ui/error_pages.py` | App-wide `HTTPException` -> HTML page, split out of `ui/app.py` to keep that |
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
+| `ui/intake_gate_auth.py` | The real intake gate: sign-in and `video.upload` on that project (team-intake.md TI10, TI11). |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
 | `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
+| `ui/routes_access_requests.py` | Share-link opening, request-access, and the approvers' list (T-198b / G9, TP3, TP5). |
 | `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |
 | `ui/routes_auth.py` | Sign in, sign up, sign out and the waiting page (T-204, auth.md AU2-AU7). |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
@@ -291,6 +297,8 @@
 | `ui/routes_team_run.py` | The team Test button (T-201b, qa/contracts/team-test-button.md TT1-TT6): a teammate with |
 | `ui/routes_unified_report.py` | The damage-control report as a page (T-168): the lead's two-step route from the project page. |
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
+| `ui/routes_video_comments.py` | Comment routes of the video portal (T-198b / G9, TP2, TP6). |
+| `ui/routes_video_portal.py` | The video page, its byte route and the sharing controls (T-198b / G9, TP1, TP3). |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
 | `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
 | `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
@@ -298,6 +306,7 @@
 | `ui/theme.py` | Shared visual system for every UI route. Contract: qa/contracts/docker.md D5. |
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 | `ui/upload_stream.py` | Read one multipart upload from the wire into a staged file, stopping at the admin limit. |
+| `ui/video_portal_view.py` | The HTML of the video portal: player page, request-access page, shared list, requests list. |
 <!-- /generated:map -->
 
 ## Schema summary
@@ -521,6 +530,7 @@
 | `CredentialState` (`schema/team_enums.py`) | Why the TS5 gate admits or refuses a run; the value leads the slot record's detail. |
 | `RunVia` (`schema/team_enums.py`) | Which surface asked for a run (`Run.via`); `None` means the original UI Run button. |
 | `SourceOriginKind` (`schema/team_enums.py`) | Where a `Source` came from (`Source.origin`); `None` means it predates provenance. |
+| `AccessRequestStatus` (`schema/team_enums.py`) | Where an access request to a video stands (`AccessRequest.status`, TP5). |
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
 | `BugStatus` (`schema/tracked_bug.py`) |  |
@@ -563,6 +573,10 @@
 | `ConfirmItem` (`schema/video_review.py`) | One line of the confirm-list. `status` is a human's; a model can never set it. |
 | `RejectedItem` (`schema/video_review.py`) | An item that failed validation. Kept with its reason, never rendered, never blank. |
 | `VideoReview` (`schema/video_review.py`) | The stored review. `id` is derived from content (TV10), never from a clock. |
+| `Share` (`schema/video_share.py`) | One person who may open one video (the video's `shared_with` entry). |
+| `ShareLink` (`schema/video_share.py`) | A video's share link. Opening it grants nothing by itself (TP3); the token is not here. |
+| `AccessRequest` (`schema/video_share.py`) | A signed-in person without access asking for it (TP5). One pending per person+video. |
+| `VideoComment` (`schema/video_share.py`) | A comment at a second of the recording (TP2). `pointer_line` is set by TP6 promotion. |
 <!-- /generated:schema -->
 
 ## Scripts
