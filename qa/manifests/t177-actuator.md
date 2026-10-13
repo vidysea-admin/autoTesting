@@ -6,7 +6,7 @@ Tier: L
 Dual check: required
 dual-trigger: security src/autotester/providers/isolated.py (killable child process around the model call) and src/autotester/browser/video.py (secret mask on every tab)
 Fix cycle: 2
-Status: ready-for-check
+Status: checked-PASS
 
 ## Criteria (qa/contracts/agent-fallback.md)
 - AF4 hard return: `providers/isolated.py::IsolatedProvider` runs `Provider.act` in a spawned child, kills it at the deadline, raises named `ProviderDeadline` (a `ProviderError`). Authorized by D-089 item 2 (new module). `BrowserUseBackend._drive` binds the provider deadline to the invocation wall clock (`bind_deadline`), and `ProviderChatModel` validates the raw JSON text an isolated provider returns for a dynamic (browser-use) schema.
