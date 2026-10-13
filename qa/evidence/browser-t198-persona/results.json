@@ -1,0 +1,141 @@
+{
+ "results": {
+  "login_url": "http://127.0.0.1:57121/",
+  "dev_forms": [
+   1,
+   1
+  ],
+  "dev_file_url": "http://127.0.0.1:57121/projects/demo/sources",
+  "dev_file_body": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\n\u2190 Back\nPROJECTS / DEMO / SOURCES\nRegister a recording already on this host\nRecording path on this machine\nThe file stays where it is; AutoTester records its content hash.\nWhat this recording shows\nAdd recording\nUpload videos\nWhat this recording shows\nA recording, or a .zip of recordings\nLargest file accepted: 2 GiB. A .zip is opened and each video in it is added; anything that is not a video is listed and skipped.\nUpload\nFrom Google Drive\nA Google Drive link\nA video, a zip",
+  "dev_goodzip": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nAdded: good.zip\n\n2 duplicate\n\nmax_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\n\nFILE\tRESULT\tWHY\none.mp4\tduplicate\tsame bytes are already registered\ntwo.mp4\tduplicate\tsame bytes are already registered\n\nBack to sources",
+  "dev_badzip": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nAdded: bad.zip\n\n1 duplicate, 1 skipped\n\nmax_upload_bytes: no setting saved yet; using 2 GiB (default 2 GiB)\n\nFILE\tRESULT\tWHY\nok.mp4\tduplicate\tsame bytes are already registered\nnotes.exe\tskipped\tnot a recording (.exe); only video files are registered\n\nBack to sources",
+  "dev_sources_rows": "single file\tvideo\tC:\\Users\\product\\AppData\\Local\\Temp\\2\\claude\\c--Users-product-Desktop-autoTesting\\c00b6147-7a2a-48e5-9337-6d6b70a75b60\\scratchpad\\root\\projects\\demo\\sources\\src_a4ccfa27e888\\recording.mp4\t\nAnalyze\n\nsrc_11c6cb2e892f\tone.mp4\tvideo\tC:\\Users\\product\\AppData\\Local\\Temp\\2\\claude\\c--Users-product-Desktop-autoTesting\\c00b6147-7a2a-48e5-9337-6d6b70a75b60\\scratchpad\\root\\projects\\demo\\sources\\src_11c6cb2e892f\\recording.mp4\t\nAnalyze\n\nsrc_354606411826\ttwo.mp4\tvideo\tC:\\Users\\product\\AppData\\Local\\Temp\\2\\claude\\c--Users-product-Desktop-autoTesting\\c00b6147-7a2a-48e5-9337-6d6b70a75b60\\scratchpad\\root\\projects\\demo\\sources\\src_354606411826\\recording.mp4\t\nAnalyze\n\nsrc_8d6848277213\tok.mp4\tvideo\tC:\\Users\\product\\AppData\\Local\\Temp\\2\\claude\\c--Users-product-Desktop-autoTesting\\c00b6147-7a2a-48e5-9337-6d6b70a75b60\\scratchpad\\root\\projects\\demo\\sources\\src_8d6848277213\\recording.mp4\t\nAnalyze",
+  "dev_drive_bad": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nNot a Drive link\n\nonly links on drive.google.com or docs.google.com are accepted\n\nBack to sources",
+  "tab_after_label": "recording",
+  "tab_2": "Upload",
+  "limit_hint": [
+   "Largest file accepted: 1 MiB. A"
+  ],
+  "dev_limit": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev@team.test\nSign out\nPROJECTS\nDemo\n+ New project\nUpload refused\n\nThat upload is larger than the 1 MiB limit the administrator set. Send a smaller file, or ask for the limit to be raised.\n\nBack to sources",
+  "tester_sources_status": 404,
+  "tester_sources_body": "AT\nAutoTester\nProjects\nVideos\ntester@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\n404 Not Found\n\nno project 'demo'\n\n\u2190 Back to projects",
+  "tester_forms": [
+   0,
+   0
+  ],
+  "tester_direct_upload": 404,
+  "tester_direct_drive": 404,
+  "tester_home_has_admin_link": 0,
+  "dev2_sources_status": 404,
+  "dev2_sources_body": "AT\nAutoTester\nProjects\n+ New project\nVideos\nAccess requests\n\u25cf Live view\ndev2@team.test\nSign out\nPROJECTS\n\nNo projects yet.\n\n+ New project\n404 Not Found\n\nno project 'demo'\n\n\u2190 Back to projects",
+  "dev2_forms": [
+   0,
+   0
+  ],
+  "dev2_direct_upload": 404,
+  "dev2_direct_drive": 404,
+  "dev2_home_has_admin_link": 0,
+  "nogroup_sources_status": 403,
+  "nogroup_sources_body": "AT\nAutoTester\nWaiting for an administrator\n\nYou are signed in as nogroup@team.test, but your account has no access yet.\n\nAsk an administrator to add you to a group. Your access starts on your next click after they do.\n\nSign out",
+  "nogroup_forms": [
+   0,
+   0
+  ],
+  "nogroup_direct_upload": 403,
+  "nogroup_direct_drive": 403,
+  "nogroup_home_has_admin_link": 0,
+  "admin_forms": [
+   1,
+   1
+  ],
+  "admin_rows": "g.mp4\t\nAnalyze\n\nsrc_11c6cb2e892f\tone.mp4\tvideo\tC:\\Users\\product\\AppData\\Local\\Temp\\2\\claude\\c--Users-product-Desktop-autoTesting\\c00b6147-7a2a-48e5-9337-6d6b70a75b60\\scratchpad\\root\\projects\\demo\\sources\\src_11c6cb2e892f\\recording.mp4\t\nAnalyze\n\nsrc_354606411826\ttwo.mp4\tvideo\tC:\\Users\\product\\AppData\\Local\\Temp\\2\\claude\\c--Users-product-Desktop-autoTesting\\c00b6147-7a2a-48e5-9337-6d6b70a75b60\\scratchpad\\root\\projects\\demo\\sources\\src_354606411826\\recording.mp4\t\nAnalyze\n\nsrc_8d6848277213\tok.mp4\tvideo\tC:\\Users\\product\\AppData\\Local\\Temp\\2\\claude\\c--Users-product-Desktop-autoTesting\\c00b6147-7a2a-48e5-9337-6d6b70a75b60\\scratchpad\\root\\projects\\demo\\sources\\src_8d6848277213\\recording.mp4\t\nAnalyze",
+  "admin_home_admin_link": 2,
+  "admin/admin": 404,
+  "admin/admin/users": 200,
+  "admin/admin/settings": 404
+ },
+ "a11y_unlabelled": {
+  "dev-sources": [],
+  "tester": [],
+  "dev2": [],
+  "nogroup": [],
+  "admin": []
+ },
+ "console": [
+  [
+   "dev@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "dev@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  [
+   "dev@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 413 (Request Entity Too Large)"
+  ],
+  [
+   "tester@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "tester@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "dev2@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "dev2@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "nogroup@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "nogroup@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "nogroup@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "nogroup@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "nogroup@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  [
+   "admin@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  [
+   "admin@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "admin@team.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ ]
+}
