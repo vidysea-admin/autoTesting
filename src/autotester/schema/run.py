@@ -87,6 +87,11 @@ class Run(Artifact):
         description="T-205/TF2: who asked for this run (a user id, or the schedule owner); "
                     "None for a run from before attribution or the original UI Run button",
     )
+    requested_by_id: str | None = Field(
+        default=None,
+        description="T-201c/TF2: the session user id of the presser (stable); "
+                    "None for a run from before this field or a schedule run",
+    )
     slot_key: str | None = Field(
         default=None,
         description="T-205/TF2: the schedule slot that fired this run (`trigger=schedule`)",

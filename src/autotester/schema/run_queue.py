@@ -37,6 +37,7 @@ class QueueEntry(BaseModel):
     status: QueueStatus = QueueStatus.QUEUED
     trigger: Literal["button", "schedule", "api"] = "button"
     requested_by: str | None = Field(None, description="who pressed it; None before login exists")
+    requested_by_id: str | None = Field(None, description="T-201c: session user id of the presser")
     slot_key: str | None = Field(
         None, description="T-200: the schedule slot that asked for this run; the queue's "
                           "idempotency key (one entry per slot), None for a button press")

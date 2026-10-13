@@ -87,7 +87,9 @@ def _run_queued(entry: QueueEntry) -> None:
     The entry's origin (trigger, owner, schedule slot) is stamped on the saved `Run` (TS6)."""
     try:
         run_launcher.launch_run(entry.project, run_id=entry.id, trigger=_TRIGGER[entry.trigger],
-                                requested_by=entry.requested_by, slot_key=entry.slot_key,
+                                requested_by=entry.requested_by,
+                                requested_by_id=entry.requested_by_id,
+                                slot_key=entry.slot_key,
                                 via=entry.via, requested_at=entry.enqueued_at,
                                 seams=_seams(), priorities=entry.priorities)
     except LaunchRefused as exc:

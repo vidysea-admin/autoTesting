@@ -121,7 +121,8 @@ def test_a_covering_approval_proceeds_and_records_who_and_how(world, entry) -> N
 
 
 PINNED = {
-    "launch_run": {"slug", "run_id", "trigger", "requested_by", "slot_key", "via", "seams",
+    "launch_run": {"slug", "run_id", "trigger", "requested_by", "requested_by_id", "slot_key",
+                   "via", "seams",
                    "priorities",          # priorities: T-178 FB4 selection, not a gate
                    "requested_at"},        # requested_at: T-201b attribution, not a gate
     "prepare_run": {"slug", "seams", "priorities"},

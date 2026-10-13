@@ -261,9 +261,8 @@ def launch_run(
     slug: str, *, run_id: str | None = None, trigger: Trigger = Trigger.MANUAL,
     requested_by: str | None = None, slot_key: str | None = None, via: RunVia | None = None,
     seams: RunSeams = DEFAULT_SEAMS, priorities: list[CasePriority] | None = None,
-    requested_at: datetime | None = None) -> Run:
-    """Run the project (every case, or `priorities` plus pinned p0) as `run_id` and save it. The one
-    place a `Run` is built.
+    requested_at: datetime | None = None, requested_by_id: str | None = None) -> Run:
+    """Run the project (all cases, or `priorities` plus pinned p0) as `run_id`; builds the `Run`.
 
     The gates run here, so every caller is gated and none can pass a flag to skip them. Raises
     `LaunchRefused` before any run directory or browser exists."""
@@ -276,7 +275,8 @@ def launch_run(
     )
     run = Run(
         id=run_id, project=slug, case_ids=[c.id for c in cases], trigger=trigger,
-        requested_by=requested_by, slot_key=slot_key, via=via, requested_at=requested_at,
+        requested_by=requested_by, requested_by_id=requested_by_id, slot_key=slot_key,
+        via=via, requested_at=requested_at,
         parallel_n=plan.n, parallel_bound_by=plan.bound_by,
         catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
                                  for tier in tiers_to_run(cat)},

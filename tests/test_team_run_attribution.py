@@ -68,9 +68,30 @@ def test_a_forged_requested_by_in_the_query_or_body_is_ignored(world) -> None:
     assert "mallory" not in users["dev"].get(f"/projects/alpha/runs/{run_id}").text
 
 
+def test_new_runs_store_the_session_user_id_on_entry_and_run(world) -> None:
+    users, store = world
+    ids = {}
+    for key, email in (("dev", "dev@team.test"), ("admin", "admin@team.test")):
+        run_id = _press(users[key])
+        ids[email] = str(user_id(email))
+        entry = next(e for e in get_queue().snapshot("alpha") if e.id == run_id)
+        run = store.load_run(run_id)
+        assert run is not None
+        assert entry.requested_by_id == run.requested_by_id == ids[email]
+        assert run.requested_by == email
+    assert len(set(ids.values())) == 2
+
+
+def test_a_forged_id_in_the_query_or_body_is_ignored(world) -> None:
+    users, store = world
+    run_id = _press(users["dev"], requested_by_id="999", user_id="999", id="999")
+    run = store.load_run(run_id)
+    assert run is not None and run.requested_by_id == str(user_id("dev@team.test"))
+
+
 def test_a_run_json_written_before_this_unit_still_loads() -> None:
     run = Run.model_validate_json(GOLDEN.read_text(encoding="utf-8"))
-    assert run.requested_by is None and run.requested_at is None and run.via is None
+    assert (run.requested_by_id, run.requested_by, run.requested_at, run.via) == (None,) * 4
     assert run.trigger is Trigger.MANUAL
 
 

@@ -78,8 +78,9 @@ def press_test(slug: str) -> RedirectResponse:
         active = [e for e in queue.snapshot(slug) if e.status in ACTIVE]
         try:
             entry = active[0] if active else queue.submit(
-                slug, run_id=f"run-{ulid()}", requested_by=who.email, trigger="button",
-                via=RunVia.TEAM_BUTTON)
+                slug, run_id=f"run-{ulid()}", requested_by=who.email,
+                requested_by_id=str(who.user_id),
+                trigger="button", via=RunVia.TEAM_BUTTON)
         except QueueFull as exc:
             raise HTTPException(429, str(exc)) from exc
     return RedirectResponse(f"/projects/{slug}/test/{entry.id}", status_code=303)
