@@ -44,6 +44,7 @@ from autotester.schema.team_enums import RunVia
 from autotester.stages.bug_wiring import record_run_bugs
 from autotester.stages.catalog import catalog, tiers_to_run
 from autotester.stages.coverage import diff_coverage, queue_requests
+from autotester.stages.entry_precondition import requires_unauthenticated
 from autotester.stages.explore_consent import covering_approval
 from autotester.stages.orchestrate import StageContext
 from autotester.stages.parallel_run import (
@@ -106,12 +107,11 @@ class Prepared(NamedTuple):
 
 
 def is_entry_case(case: Case, project: Project) -> bool:
-    """True when this case's first step navigates to the project's own declared entry screen
-    (`base_url`) -- e.g. a sign-in page. Such a case tests the entry screen itself, which only
-    means something from a genuinely logged-out state; the shared, persistently-authenticated
-    profile every other case reuses would make it never appear (AT-044)."""
-    return bool(case.steps) and case.steps[0].action is Action.NAVIGATE \
-        and case.steps[0].target == project.base_url
+    """True when the case must start logged out: its first step navigates to the project's own
+    `base_url` (a sign-in page, AT-044), or its precondition is a logged-out visitor
+    (`deeplink_unauth`): the shared signed-in profile would hide it, so it gets a wiped one."""
+    return (bool(case.steps) and case.steps[0].action is Action.NAVIGATE
+            and case.steps[0].target == project.base_url) or requires_unauthenticated(case)
 
 
 def require_declared_values(

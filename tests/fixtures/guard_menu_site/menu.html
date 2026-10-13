@@ -1,0 +1,10 @@
+<html><body><nav>
+<button class="menu-item" id="parent" aria-expanded="false"
+  onclick="this.setAttribute('aria-expanded','true');document.getElementById('sub').style.display='block'">Explore Careers</button>
+<ul id="sub" style="display:none"><li><a href="#done" id="child">University Selection</a></li></ul>
+</nav>
+<div style="position:relative;margin-top:40px"><a href="#covered" id="under">My Report</a>
+<button class="menu-item" id="cover" aria-expanded="false"
+  style="position:absolute;left:0;top:0;width:200px;height:30px;background:#ccc"
+  onclick="this.style.display='none'">cover</button></div>
+</body></html>
