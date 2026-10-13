@@ -10,6 +10,9 @@ The test is deliberately conservative toward INCONCLUSIVE: a correct PASS whose 
 mentions an expected error (a negative case) is also held. That is the cheaper error. A defect
 word preceded within three words by a negator ("no errors", "without any bug", "did not fail")
 does not count.
+
+AT-998 widened the test beyond bare defect words: a defect lexicon (blocked, timed out, stuck, 500,
+404, ...) plus negated-success phrases ("did not succeed", "not working as expected").
 """
 
 from __future__ import annotations
@@ -18,13 +21,25 @@ import re
 
 from autotester.schema.enums import Result
 
-_FAILURE_TERMS = re.compile(
+# Defect lexicon: a word or phrase that on its own says something went wrong (AT-998 widened it).
+_DEFECT_LEXICON = re.compile(
     r"\b(bugs?|defects?|errors?|fail\w*|invalid|incorrect\w*|broken|unexpected\w*|wrong|"
     r"reproduc\w*|regress\w*|reject\w*|mismatch\w*|missing|unlabell?ed|seeded|issues?|"
-    r"problems?|crash\w*|exceptions?|denied|unable|cannot|can't|doesn't|unresponsive)\b",
+    r"problems?|crash\w*|exceptions?|denied|unable|cannot|can't|doesn't|unresponsive|"
+    r"unsuccessful\w*|block(?:ed|s)?|stuck|hang(?:s|ing)?|hung|freez\w*|could\s?n[o']t|"
+    r"time[ds]?[ -]out|timeouts?|never\s+(?:appear|load|show|render|complet|finish)\w*)\b"
+    r"|(?<![\w$.,])(?:500|404)(?![\w%])",
     re.IGNORECASE)
-_NEGATOR = re.compile(r"\b(no|not|without|zero|nor|never|none|n't|free of|absence of)\b|n't\b",
-                      re.IGNORECASE)
+# Negated success: "did not / failed to / unable to / not" + a verb that names the expected outcome.
+_NEGATED_SUCCESS = re.compile(
+    r"\b(?:(?:did|does|do|was|were|is|are|has|have)(?:\s+not|n't)|failed\s+to|unable\s+to|not)"
+    r"\s+(?:\w+ly\s+)?(?:succeed\w*|load\w*|appear\w*|work(?:s|ed|ing)?|open\w*|render\w*|"
+    r"complet\w*|respond\w*|finish\w*|authenticat\w*|log(?:ged)?\s?in|sign(?:ed)?\s?in|"
+    r"submit\w*|sav(?:e|ed|ing))\b",
+    re.IGNORECASE)
+_NEGATOR = re.compile(
+    r"\b(no|not|without|zero|nor|never|none|nothing|neither|free of|absence of)\b|n't\b",
+    re.IGNORECASE)
 _LOOKBACK_WORDS = 3
 
 NOTE_DISAGREES = (
@@ -38,13 +53,13 @@ def failure_terms(note: str | None) -> list[str]:
     """The un-negated defect words in `note`, in order; empty when it reads clean."""
     if not note:
         return []
+    hits = [m for rx in (_DEFECT_LEXICON, _NEGATED_SUCCESS) for m in rx.finditer(note)]
     found: list[str] = []
-    for match in _FAILURE_TERMS.finditer(note):
+    for match in sorted(hits, key=lambda m: m.start()):
         words = re.findall(r"[\w']+", note[:match.start()])[-_LOOKBACK_WORDS:]
-        window = " ".join(words)
-        if _NEGATOR.search(window):
+        if _NEGATOR.search(" ".join(words)):
             continue
-        found.append(match.group(0).lower())
+        found.append(" ".join(match.group(0).lower().split()))
     return found
 
 

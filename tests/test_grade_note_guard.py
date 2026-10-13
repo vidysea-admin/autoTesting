@@ -66,3 +66,35 @@ def test_a_failure_note_downgrades_pass_but_not_fail_or_inconclusive(note: str) 
     assert note_guard(Result.PASS, note)[0] is Result.INCONCLUSIVE
     assert note_guard(Result.FAIL, note) == (Result.FAIL, note)
     assert note_guard(Result.INCONCLUSIVE, note) == (Result.INCONCLUSIVE, note)
+
+
+# AT-998: paraphrases of a defect that carry no bare defect word.
+DEFECT_PHRASES = [
+    "login did not succeed", "login was unsuccessful", "access was blocked",
+    "the request timed out",
+    "this is not working as expected", "the page did not load", "could not sign in",
+    "cannot reach the dashboard", "the menu never appeared", "the spinner is stuck",
+    "the page hangs after submit", "access denied", "the total is incorrect", "wrong page shown",
+    "the button is missing", "the form looks broken", "the app crash on save",
+    "an exception was shown",
+    "server returned 500", "page shows 404", "login didn't work", "failed to authenticate",
+    "unable to log in", "the save does not complete", "the request time out",
+    "login is unsuccessful",
+]
+NEGATED_PHRASES = [
+    "no error", "without errors", "did not fail", "nothing blocked", "no timeouts", "not broken",
+    "no errors and nothing is missing", "never crashed", "the page loaded in 500ms",
+    "total is $500", "without any exception", "none were blocked",
+]
+
+
+@pytest.mark.parametrize("note", DEFECT_PHRASES)
+def test_defect_paraphrases_hold_a_pass_as_inconclusive(note: str) -> None:
+    assert failure_terms(note), note
+    assert note_guard(Result.PASS, note)[0] is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", NEGATED_PHRASES)
+def test_negated_defects_do_not_hold_a_pass(note: str) -> None:
+    assert failure_terms(note) == [], note
+    assert note_guard(Result.PASS, note) == (Result.PASS, note)
