@@ -1,0 +1,2 @@
+tick at 2026-10-13T12:40:13.366010+00:00
+fixture  refused  fixture:custom:2026-10-13T12:39Z  owner_refused: the schedule's owner is disabled or no longer exists

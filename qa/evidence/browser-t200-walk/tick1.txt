@@ -1,0 +1,3 @@
+tick at 2026-10-13T12:36:01.927573+00:00
+fixture  enqueued  fixture:custom:2026-10-13T12:35Z
+fixture:custom:2026-10-13T12:35Z: run refused at start: project 'fixture' has no cases to run
