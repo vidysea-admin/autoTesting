@@ -232,6 +232,7 @@
 | `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
 | `stages/release.py` | The release trigger: stitch every flow's persisted plan into ONE gated release run (T-167). |
 | `stages/release_compare.py` | Release record assembly, the trusted-baseline rule and the regression diff (T-167, RR3/RR6). |
+| `stages/report_delivery.py` | The report label (computed once) and the website inbox listing (TT7, R58, R22). |
 | `stages/report_export.py` | Tester-style run reports: an Excel summary and a screen-by-screen HTML |
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
@@ -285,6 +286,7 @@
 | `ui/env_editor.py` | The one legitimate WRITE path to the repo-root `.env` (every other module |
 | `ui/error_pages.py` | App-wide `HTTPException` -> HTML page, split out of `ui/app.py` to keep that |
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |
+| `ui/inbox_view.py` | Markup for "My reports" (TT7). Presentation only: it renders the `InboxEntry` rows the |
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
 | `ui/intake_gate_auth.py` | The real intake gate: sign-in and `video.upload` on that project (team-intake.md TI10, TI11). |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
@@ -300,6 +302,7 @@
 | `ui/routes_crawls.py` | The explorer, on screen: crawl history, one crawl's screen graph, its |
 | `ui/routes_credentials.py` | The credentials editor: values shown (editable, passwords masked with a |
 | `ui/routes_flow_diagram.py` | The BFS-style companion to `routes_report.py`'s DFS per-run step flow: |
+| `ui/routes_inbox.py` | The website inbox, `GET /inbox` ("My reports", T-201 TT7; the owner-visible half of T-200 |
 | `ui/routes_intake.py` | The Google Drive door of Add-videos: paste a link, get a background job and its result page. |
 | `ui/routes_issues.py` | Operator-facing video issue ledger and its human-compatible workbook. |
 | `ui/routes_learn.py` | The learning loop on screen — review the FlowSpec, generate cases, see the asks. |
@@ -428,6 +431,7 @@
 | `ReportSummary` (`schema/delivery.py`) | Exactly what HO28 lets a message carry: names, counts, one coverage line, a link. |
 | `RenderedMessage` (`schema/delivery.py`) |  |
 | `DeliveryRecord` (`schema/delivery.py`) | One attempt's outcome (TT9). Stores the user id, a redacted error, never the address. |
+| `InboxEntry` (`schema/delivery.py`) | One row of the website inbox (TT7): a request the viewer may read the report of. |
 | `SmtpConfig` (`schema/delivery.py`) | Transport settings from the environment. No password: that is read at send time (C5). |
 | `EvidenceTombstoneEntry` (`schema/evidence_tombstone.py`) | One `kills` node-id, named by file + bare function name (no parametrize |
 | `EvidenceTombstone` (`schema/evidence_tombstone.py`) | `qa/evidence/<slug>/mutations.stale.json` -- absent means untagged. |

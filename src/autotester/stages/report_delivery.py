@@ -8,14 +8,26 @@ viewer may not read is absent (never a 403 row), and an all-blocked run never re
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable, Iterable
+from datetime import UTC, datetime
 
+from autotester.auth import accounts
 from autotester.auth.access import authorize, resource_for
+from autotester.delivery.inbox import DeliveryLog, delivery_key
 from autotester.schema.auth import PermissionKey, Principal
-from autotester.schema.delivery import InboxEntry, ReportLabel
+from autotester.schema.delivery import (
+    DeliveryChannel,
+    DeliveryRecord,
+    DeliveryStatus,
+    InboxEntry,
+    ReportLabel,
+)
 from autotester.schema.enums import Result
 from autotester.schema.run_queue import ACTIVE, QueueEntry, QueueStatus
 from autotester.store.project_store import ProjectStore
+
+log = logging.getLogger(__name__)
 
 
 def report_label(status: QueueStatus, results: list[Result], planned: int) -> ReportLabel | None:
@@ -72,3 +84,34 @@ def inbox_for(who: Principal, entries: Iterable[QueueEntry],
             label=_label(entry, store_for(entry.project)), position=entry.position,
             link=_link(entry)))
     return sorted(rows, key=lambda r: r.at, reverse=True)
+
+
+def _recipient(entry: QueueEntry) -> str | None:
+    """The user the report is for: the presser's id, or the schedule owner's (found by email)."""
+    if entry.requested_by_id is not None:
+        return str(entry.requested_by_id)
+    owner = accounts.find_user(entry.requested_by) if entry.requested_by else None
+    return str(owner.id) if owner else None
+
+
+def record_inbox_delivery(entry: QueueEntry, delivery: DeliveryLog) -> bool:
+    """Write the `inbox` DeliveryRecord when a request finishes (D-093 item 2). True if written.
+
+    One per run and recipient: the write-once store makes a re-delivery a no-op. Nothing is
+    written while the request is queued or running, or when it has no known recipient. The inbox
+    list itself is still derived on read (`inbox_for`); this is the delivery's audit row.
+    """
+    user = _recipient(entry)
+    if entry.status in ACTIVE or user is None:
+        return False
+    key = delivery_key(entry.id, DeliveryChannel.INBOX, user)
+    if delivery.records_for_key(key):
+        return False
+    record = DeliveryRecord(run_id=entry.id, channel=DeliveryChannel.INBOX, recipient_user_id=user,
+                            status=DeliveryStatus.SENT, attempts=1,
+                            created_at=entry.finished_at or datetime.now(UTC))
+    try:
+        delivery.append(key, record)
+    except FileExistsError:
+        return False
+    return True

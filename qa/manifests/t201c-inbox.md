@@ -5,10 +5,10 @@
 **Branch / base:** `wave/t201c-inbox` from master `eaf44d8c`.
 Tier: L (auth-scoped listing)
 Dual check: recommended (scope filter)
-Fix cycle: 1
+Fix cycle: 2
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): branch tip of wave/t201c-inbox
-Status: ready-for-check
+Status: checked-PASS
 
 ## What changed
 
@@ -39,3 +39,8 @@ Status: ready-for-check
 - Full suite; mutation runs (list without `authorize`; recompute the label in the view).
 - Headed-browser persona walk of `/inbox` (not done here; CPU shared with a live run).
 - Email (TT8/TT9) deferred; `DeliveryRecord` channel `inbox` is not written (rows are derived), flagged for the checker.
+
+## Fix cycle 2 (inbox DeliveryRecord, D-093 item 2)
+
+- `RunQueue._finish` (and `recover()` for restart-interrupted rows) calls `stages.report_delivery.record_inbox_delivery`, which writes one `DeliveryRecord(channel=inbox, status=sent, recipient_user_id=presser id or schedule owner)` via the existing write-once `delivery/inbox.py` store at `.work/team/delivery`. None while queued/running or with no known recipient; a second call is a no-op. The inbox list is still derived on read; reading `/inbox` writes nothing.
+- Tests: `tests/test_inbox_delivery.py` (done/failed/refused each one record; queued none; idempotent incl. restart; no recipient none; inbox read writes none; hostile requester escaped on /inbox). Also: test_inbox_scope (9), delivery tests (63 incl. new), policy table + run_queue (21), ruff clean, doctor clean (MAP regenerated).
