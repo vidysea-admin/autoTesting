@@ -1,4 +1,4 @@
-"""TRACKER EXPORT: BugStore bugs as CSV / xlsx bytes in the PathLynks Tracker sheet's layout (TB15).
+"""TRACKER EXPORT: BugStore bugs as CSV / xlsx bytes in the Tracker sheet's layout (TB15).
 
 Its one job is the file export of D-090: no `SheetClient`, no Google call, no network, so the live
 path (`stages/sheet_write.py::LiveWriteRefused`) is untouched. The column mapping is the one
