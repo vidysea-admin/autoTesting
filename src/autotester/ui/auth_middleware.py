@@ -101,7 +101,8 @@ async def _refusal(request: Request, rule: RouteRule | None, params: dict[str, s
     assert rule.key is not None
     if rule.kind == "key":
         ok = authorize(who, rule.key)
-        return None if ok else await _error(request, 403, "you do not have permission")
+        return None if ok else await _error(request, 403, "you do not have permission "
+                                                          f"({rule.key.value})")  # key name only
     slug = params.get("slug", "")
     resource = resource_for(slug)
     if not authorize(who, PermissionKey.PROJECT_VIEW, resource):

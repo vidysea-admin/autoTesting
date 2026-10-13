@@ -70,8 +70,10 @@ def test_ts1_403_for_a_viewer_without_the_key(world) -> None:
     before = _bytes(root, "own")
     resp = users["tester"].post("/projects/own/schedule", data=FIXED)
     assert resp.status_code == 403
+    assert "schedule.manage" in resp.text  # TS1: the 403 names the key, and only the key
     for tail in ("pause", "resume", "delete"):
-        assert users["tester"].post(f"/projects/own/schedule/{tail}").status_code == 403
+        refused = users["tester"].post(f"/projects/own/schedule/{tail}")
+        assert refused.status_code == 403 and "schedule.manage" in refused.text
     assert _bytes(root, "own") == before
     assert users["tester"].get("/projects/own/schedule").status_code == 200  # project.view
 

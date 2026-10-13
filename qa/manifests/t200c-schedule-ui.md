@@ -7,7 +7,7 @@ Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (auth surface: a state-changing route family gated by a permission key)
 Dual check: required
 dual-trigger: security src/autotester/auth/policy.py
-Fix cycle: 1
+Fix cycle: 2
 Executor: claude-sonnet-subagent (maker build subagent)
 Status: ready-for-check
 UI surface: changed (new page `GET /projects/{slug}/schedule`, new card on the project page). Persona walk needs a browser and is NOT done here.
@@ -47,3 +47,9 @@ UI surface: changed (new page `GET /projects/{slug}/schedule`, new card on the p
 - `uv run ruff check src tests scripts`: all checks passed.
 - `uv run autotester doctor`: clean (after `autotester map`).
 - No browser, no full suite (shared CPU-bound machine).
+
+## Fix cycle 2
+- Split tests/test_ui_auth_escalation.py (now 251 lines); policy table moved to tests/test_ui_auth_policy_table.py.
+- Shared gate 403 for key routes now names the permission key (TS1); schedule 403 tests assert schedule.manage.
+- HO24 owner guard: stages/schedule_owner.py, TickDeps.owner_guard, tests/test_schedule_owner_guard.py.
+- Project-delete wiring: no project-delete path exists in the codebase; schedule delete route already purges. Not built.

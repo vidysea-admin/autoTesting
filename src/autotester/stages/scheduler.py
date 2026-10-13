@@ -11,7 +11,8 @@ tick, inside the grace window, the earlier in-window slots `missed` with `supers
 older slot `missed` and never backfilled (TS3); a busy project records `skipped_overlap` and
 enqueues nothing (TS4); an enqueue error records `failed` with its cause (TS7); a claim whose
 winner died before recording is re-driven once it is older than `redrive_after_s` (TS2).
-`deps.gate` (TS5) is asked before the queue is touched. Owed: owner-rights `refused` (HO24).
+`deps.owner_guard` (HO24: the owner's rights at fire time, else `refused`) then `deps.gate` (TS5)
+are asked before the queue is touched.
 """
 
 from __future__ import annotations
@@ -96,6 +97,7 @@ class TickDeps:
     queue: Callable[[], Iterable[QueueSnapshot]]
     gate: Callable[[Slot], str | None]  # TS5: a refusal reason, or None. Required: no default allow
     scrub: Callable[[str], str]  # required like gate: a cause is never recorded unscrubbed
+    owner_guard: Callable[[Slot], str | None] | None = None  # HO24: a refusal reason, or None
 
 
 def _aware(stamp: datetime) -> datetime:
@@ -151,6 +153,10 @@ def _fire(project: str, slot: Slot, intended: SlotOutcome, now: datetime, deps: 
         own = next((e for e in snapshot if e.slot_key == slot.key), None)
         if own is not None:
             return _record(slot, project, now, intended, entry_id=own.id)
+        denied = deps.owner_guard(slot) if deps.owner_guard else None
+        if denied is not None:  # HO24: the owner no longer holds the rights; nothing is enqueued
+            return _record(slot, project, now, SlotOutcome.REFUSED,
+                           detail=deps.scrub(denied)[:500])
         refusal = deps.gate(slot)  # before any queue or run work: a refusal leaves no trace
         if refusal is not None:
             return _record(slot, project, now, SlotOutcome.BLOCKED_NO_CREDENTIALS,
