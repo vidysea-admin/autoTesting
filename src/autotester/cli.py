@@ -35,7 +35,7 @@ report_app = typer.Typer(help="Export a run as a portable tester report (Excel +
 app.add_typer(ledger_app, name="ledger")
 app.add_typer(flowspec_app, name="flowspec")
 app.add_typer(report_app, name="report")
-cli_subapps.register_subapps(app)  # T-205/TF5: ingest, issues and every later group
+cli_subapps.register_subapps(app)  # T-205/TF5: ingest, issues, auth and every later group
 
 
 @app.callback()
@@ -49,12 +49,15 @@ def _bootstrap() -> None:
 def doctor() -> None:
     """Check the repo against the design rules that keep it readable."""
     violations = doctor_module.run()
-    if not violations:
+    hard = doctor_module.blocking(violations)
+    for violation in hard:
+        typer.secho(str(violation), fg=typer.colors.RED)
+    for line in doctor_module.warning_summary(violations):
+        typer.secho(line, fg=typer.colors.YELLOW)
+    if not hard:
         typer.secho("doctor: clean", fg=typer.colors.GREEN)
         raise typer.Exit(0)
-    for violation in violations:
-        typer.secho(str(violation), fg=typer.colors.RED)
-    typer.secho(f"\n{len(violations)} violation(s)", fg=typer.colors.RED, bold=True)
+    typer.secho(f"\n{len(hard)} violation(s)", fg=typer.colors.RED, bold=True)
     raise typer.Exit(1)
 
 

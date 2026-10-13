@@ -1,0 +1,143 @@
+{
+  "repo": "D:\\autoTesting\\.worktrees\\t204-team-login",
+  "ref": "17c1422d",
+  "shards": 4,
+  "python": "D:\\autoTesting\\.worktrees\\t204-team-login\\.venv\\Scripts\\python.exe",
+  "pytest_args": [
+    "-o",
+    "addopts="
+  ],
+  "out": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\claude\\d--autoTesting\\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\\scratchpad\\ck_a3\\shards",
+  "cpu_load_pct_at_start": 67.0,
+  "blocked_s": 0.0,
+  "lock_reclaimed": [],
+  "sha": "17c1422dba7b795e98670bfc5e6f312dc26c92dc",
+  "seconds": {
+    "extract": 15.6,
+    "collect": 88.4,
+    "rerun": 593.6,
+    "run": 2783.0,
+    "overall": 3481.0
+  },
+  "wall_s": 3481.0,
+  "balance_basis": "test count (no stored durations)",
+  "pinned_files": [],
+  "per_shard": [
+    {
+      "shard": 0,
+      "pid": 8388,
+      "rc": 0,
+      "wall_s": 1588.7,
+      "units": 73,
+      "tests": 1353,
+      "collected": 1353,
+      "reported": 1353
+    },
+    {
+      "shard": 1,
+      "pid": 22784,
+      "rc": 1,
+      "wall_s": 2782.0,
+      "units": 82,
+      "tests": 1353,
+      "collected": 1353,
+      "reported": 1353
+    },
+    {
+      "shard": 2,
+      "pid": 31292,
+      "rc": 1,
+      "wall_s": 2117.1,
+      "units": 82,
+      "tests": 1353,
+      "collected": 1353,
+      "reported": 1353
+    },
+    {
+      "shard": 3,
+      "pid": 37292,
+      "rc": 1,
+      "wall_s": 1621.8,
+      "units": 82,
+      "tests": 1353,
+      "collected": 1353,
+      "reported": 1353
+    }
+  ],
+  "counts": {
+    "passed": 5384,
+    "skipped": 20,
+    "failed": 8
+  },
+  "failed": [
+    {
+      "nodeid": "tests/test_mutation_check_judgement.py::test_a_hung_baseline_is_refused_even_when_a_child_holds_the_output_open",
+      "outcome": "failed",
+      "shard": 1,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere",
+      "outcome": "failed",
+      "shard": 1,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus",
+      "outcome": "failed",
+      "shard": 2,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_core.py::test_env_creation_is_coordinated_across_processes",
+      "outcome": "failed",
+      "shard": 2,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log",
+      "outcome": "failed",
+      "shard": 2,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero",
+      "outcome": "failed",
+      "shard": 2,
+      "isolated_rerun": "failed"
+    },
+    {
+      "nodeid": "tests/test_mc_sessionstart_loop_status.py::test_hook_skips_cleanly_when_uv_is_unavailable",
+      "outcome": "failed",
+      "shard": 2,
+      "isolated_rerun": "passed"
+    },
+    {
+      "nodeid": "tests/test_video_parallel_sweep.py::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video",
+      "outcome": "failed",
+      "shard": 3,
+      "isolated_rerun": "passed"
+    }
+  ],
+  "failed_still_failing_alone": [
+    "tests/test_mutation_check_judgement.py::test_a_hung_baseline_is_refused_even_when_a_child_holds_the_output_open",
+    "tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere",
+    "tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus",
+    "tests/test_core.py::test_env_creation_is_coordinated_across_processes",
+    "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log",
+    "tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero"
+  ],
+  "collect_proof": {
+    "ok": true,
+    "baseline": 5412,
+    "baseline_unique": 5412,
+    "shard_union": 5412,
+    "ran": 5412,
+    "duplicates_across_shards": [],
+    "missing_from_shards": [],
+    "unexpected_in_shards": [],
+    "collected_but_not_run": []
+  },
+  "durations_file": "C:\\Users\\Lenovo\\AppData\\Local\\aios\\shard-durations\\t204-team-login.json",
+  "exit_code": 1
+}

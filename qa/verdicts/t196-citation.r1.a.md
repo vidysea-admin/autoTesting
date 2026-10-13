@@ -8,7 +8,7 @@ VERDICT: PASS
 ## Criteria (adjusted by D-087 item 3)
 - Advisory list (met): ADVISORY_CITATION in ledger/advisory.py = {decision-citation-coverage, decision-citation-declaration}. NON_BLOCKING adds only sealed and known-disputed (as the brief intends). dangling, subject-mismatch and subject-unavailable are not listed, so they block.
 - Probes (scratch tree, doctor.run + blocking()):
-  - dangling D-9999 in qa/gates: blocking `decision-citation-dangling`; real CLI `autotester doctor` exit 1 (met).
+  - dangling a nonexistent decision id in qa/gates: blocking `decision-citation-dangling`; real CLI `autotester doctor` exit 1 (met).
   - reviewed canonical claim with wrong quote: blocking `subject-mismatch` (met).
   - duplicate full bodies for one id: blocking `subject-unavailable` (met).
   - coverage-only gap (resolving id, no review row) and non-canonical claim: only coverage/declaration, blocking list empty (met).

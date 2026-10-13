@@ -1,0 +1,28 @@
+[13:52:05] ref 997c842b = 997c842b; 4 shards; out D:\autoTesting\.worktrees\t204-team-login\.work\shards-b-r3mr1
+[13:52:31] collecting whole set (one copy)
+[13:55:55] collected 5412 tests in 319 files; balanced by stored durations (5412/5412 tests known, 0 files at mean); pinned files: none; predicted: s0=1972, s1=1972, s2=1972, s3=1972
+[13:55:55] shard 0: pid 18240, 79 units, 1319 tests
+[13:55:55] shard 1: pid 17916, 80 units, 1187 tests
+[13:55:55] shard 2: pid 34020, 80 units, 1169 tests
+[13:55:55] shard 3: pid 33636, 80 units, 1737 tests
+[14:33:11] shard 1 finished rc=1 in 2236s
+[14:36:12] shard 3 finished rc=1 in 2417s
+[14:43:53] shard 0 finished rc=1 in 2878s
+[14:55:55] shard 2 exceeded 3600s; killing pid 34020 (ours)
+[14:56:09] shard 2 finished rc=timeout in 3615s
+[14:56:11] re-running 9 failing test(s) alone in shard-0 (load-induced vs real)
+[15:10:50]   shard 0: rc=1 wall=2878.1s units=79 tests=1319 reported=1319
+[15:10:50]   shard 1: rc=1 wall=2235.9s units=80 tests=1187 reported=1187
+[15:10:50]   shard 2: rc=timeout wall=3614.7s units=80 tests=1169 reported=None
+[15:10:50]   shard 3: rc=1 wall=2416.9s units=80 tests=1737 reported=1737
+[15:10:50] counts {'passed': 4213, 'failed': 9, 'skipped': 21}; collect proof ok=False (baseline 5412, union 4243, ran 4243)
+[15:10:50]   failed tests/test_mutation_check_judgement.py::test_a_mutation_that_hangs_pytest_times_out_and_is_not_a_kill (shard 0, alone: failed)
+[15:10:50]   failed tests/test_mutation_check_judgement.py::test_a_hung_baseline_is_refused_even_when_a_child_holds_the_output_open (shard 0, alone: failed)
+[15:10:50]   failed tests/test_redact_ignorable_perf.py::test_cjk_heavy_scan_stays_within_a_generous_multiple_of_ascii (shard 0, alone: failed)
+[15:10:50]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 0, alone: failed)
+[15:10:50]   failed tests/test_crawl_inventory_live.py::test_a_logged_in_crawl_maps_every_route_and_names_the_one_it_refused (shard 1, alone: failed)
+[15:10:50]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 3, alone: failed)
+[15:10:50]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero (shard 3, alone: failed)
+[15:10:50]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_skips_cleanly_when_uv_is_unavailable (shard 3, alone: passed)
+[15:10:50]   failed tests/test_core.py::test_env_creation_is_coordinated_across_processes (shard 3, alone: failed)
+[15:10:50] summary -> D:\autoTesting\.worktrees\t204-team-login\qa\evidence\t204-team-login-r3-mr1-b\suite-summary.json (exit 2)

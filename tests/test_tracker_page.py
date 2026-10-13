@@ -150,10 +150,11 @@ def test_export_module_never_touches_a_sheet_client_or_the_network() -> None:
 
 def test_every_tracker_route_declares_report_view_policy() -> None:
     served = {f"{m} {r.path}" for r in router.routes for m in r.methods}
-    assert served and all(r.path.endswith(("tracker", "csv", "xlsx", "{bug_key}"))
+    assert served and all(r.path.endswith(("tracker", "csv", "xlsx", "{bug_key}", "assignee"))
                           for r in router.routes)
     assert served == set(ROUTE_POLICY)
-    assert {v[0] for v in ROUTE_POLICY.values()} == {"report.view"}
+    assert {v[0] for k, v in ROUTE_POLICY.items() if k.startswith("GET")} == {"report.view"}
+    assert {v[0] for k, v in ROUTE_POLICY.items() if k.startswith("POST")} == {"project.edit"}
 
 
 def test_a_fixed_bug_filters_as_fixed(bugs: BugStore) -> None:

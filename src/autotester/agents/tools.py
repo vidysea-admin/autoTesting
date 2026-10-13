@@ -15,7 +15,7 @@ from typing import Any, cast
 
 from pydantic import BaseModel, ValidationError
 
-from autotester.agents import guards
+from autotester.agents import evidence_tools, guards
 from autotester.agents.context import AgentContext
 from autotester.browser.observe import PageObserver
 from autotester.core.consent import ApprovalRequired
@@ -53,11 +53,11 @@ TOOLS: dict[Name, ToolSpec] = {
     Name.GRADE_CASE: ToolSpec(
         name=Name.GRADE_CASE, effect=ToolEffect.GRADING, wraps="autotester.stages.grade.grade",
         description="Judge one executed case in a fresh context."),
-}
+    **evidence_tools.SPECS}
 _ARGS: dict[Name, type[BaseModel]] = {
     Name.CRAWL: CrawlArgs, Name.RUN_CASE: RunCaseArgs, Name.GET_PERSONA: EmptyArgs,
     Name.GET_CATALOG: EmptyArgs, Name.GRADE_CASE: GradeCaseArgs,
-}
+    **evidence_tools.ARGS}
 
 
 class _Refused(Exception):
@@ -169,7 +169,7 @@ def _grade_case(ctx: AgentContext, args: GradeCaseArgs) -> ToolOutcome:
 _HANDLERS: dict[Name, Callable[[AgentContext, Any], ToolOutcome]] = {
     Name.CRAWL: _crawl, Name.RUN_CASE: _run_case, Name.GET_PERSONA: _get_persona,
     Name.GET_CATALOG: _get_catalog, Name.GRADE_CASE: _grade_case,
-}
+    **evidence_tools.HANDLERS}
 
 
 def _release(ctx: AgentContext, outcome: ToolOutcome) -> ToolOutcome:

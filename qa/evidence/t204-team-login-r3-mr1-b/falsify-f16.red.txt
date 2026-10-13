@@ -1,0 +1,5 @@
+E           AssertionError: ('POST', '/projects/{slug}/crawl-approval', 400)
+E           assert 400 == 401
+E            +  where 400 = <Response [400 Bad Request]>.status_code
+FAILED tests/test_ui_auth_surface.py::test_au16_only_the_public_set_answers_unsigned_in
+======================== 1 failed, 1 warning in 8.69s =========================

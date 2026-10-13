@@ -1,0 +1,9 @@
+FAILED tests/test_mutation_check_judgement.py::test_a_hung_baseline_is_refused_even_when_a_child_holds_the_output_open
+FAILED tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus
+FAILED tests/test_core.py::test_env_creation_is_coordinated_across_processes
+FAILED tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log
+FAILED tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero
+============= 5 failed, 8 passed, 1 warning in 538.25s (0:08:58) ==============
+/c/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/236a59b4-e0ec-4b2d-b22e-73d3059dd7f6/scratchpad/ck_a3/base_16294984
+
+[exited with code 0]

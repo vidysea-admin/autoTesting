@@ -22,4 +22,6 @@ sleep 1
 
 websockify --web=/usr/share/novnc 6080 localhost:5900 &
 
-exec uv run uvicorn autotester.ui.app:app --host 0.0.0.0 --port 8000
+# --no-access-log: the access log would print the full request line for every request;
+# the audit trail (auth/audit.py) is the record, and it never carries a query string (AU22).
+exec uv run uvicorn autotester.ui.app:app --host 0.0.0.0 --port 8000 --no-access-log

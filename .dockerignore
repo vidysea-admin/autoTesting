@@ -19,6 +19,8 @@
 !.env.example
 !**/.env.example
 **/projects/
+.auth/
+**/.auth/
 **/profiles/
 qa/evidence/
 

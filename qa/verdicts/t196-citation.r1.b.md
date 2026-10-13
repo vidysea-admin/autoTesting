@@ -11,10 +11,10 @@ VERDICT: PASS (with findings F1-F3; none blocks the advisory merge)
 - `uv run autotester doctor` on the branch: exit 0, "doctor: clean"; warnings only: coverage 2317, declaration 372, known-disputed 2 (K1, K2 listed, non-blocking).
 
 ## Temp-merge onto current origin/master (18626438)
-Merge is conflict-free. Ruff clean. Citation tests + test_doctor: 145 passed, 1 failed: `test_the_real_tree_has_no_dangling_citation`. Cause: checker A's committed verdict `qa/verdicts/t196-citation.r1.a.md:11` cites a fictitious `D-9999` as a probe example, which L9 flags dangling. `autotester doctor` on the merge is therefore RED (1 blocking violation, exit 1). This is a defect of A's verdict text, not of the branch (L9 already existed on master; master itself is red from that line). Required before/at merge: reword that line without a literal fake id. My own verdict avoids literal fake ids for this reason.
+Merge is conflict-free. Ruff clean. Citation tests + test_doctor: 145 passed, 1 failed: `test_the_real_tree_has_no_dangling_citation`. Cause: checker A's committed verdict `qa/verdicts/t196-citation.r1.a.md:11` cites a fictitious a fictitious decision id as a probe example, which L9 flags dangling. `autotester doctor` on the merge is therefore RED (1 blocking violation, exit 1). This is a defect of A's verdict text, not of the branch (L9 already existed on master; master itself is red from that line). Required before/at merge: reword that line without a literal fake id. My own verdict avoids literal fake ids for this reason.
 
 ## Criteria (as adjusted by D-087 item 3)
-- Dangling blocks: probe prose `D-999` in qa/manifests: blocking `decision-citation-dangling`; also with a canonical claim to a nonexistent id: blocking. Met.
+- Dangling blocks: probe prose a fictitious id in qa/manifests: blocking `decision-citation-dangling`; also with a canonical claim to a nonexistent id: blocking. Met.
 - Wrong subject blocks, WHEN the occurrence has a review row: claim D-001 quoting D-002's What, claim quoting only Why, and reviewed-as-ordinary-reference: all blocking `subject-mismatch`. Correct claim: clean. Met, but see F1.
 - Coverage / declaration are advisory: unreviewed citations, prose authorization without canonical claim: only warnings, exit 0. Met.
 - Code block / blockquote: NOT excluded (brief has no exclusion); a fenced or quoted nonexistent id still blocks as dangling. Consistent with the brief ("examples never provide a whole-file exemption").

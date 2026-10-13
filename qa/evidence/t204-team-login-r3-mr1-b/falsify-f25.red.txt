@@ -1,0 +1,6 @@
+E       AssertionError: assert {'ingest', 'issues'} == {'auth', 'ingest', 'issues'}
+E         
+E         Extra items in the right set:
+E         'auth'
+E         Use -v to get more diff
+FAILED tests/test_cli_subapp_hook.py::test_registered_groups_come_from_the_list

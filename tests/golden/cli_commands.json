@@ -74,5 +74,9 @@
  [
   "schedule",
   "The scheduler: run the tests that are due."
+ ],
+ [
+  "auth",
+  "Team login accounts (T-204)."
  ]
 ]

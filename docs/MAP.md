@@ -9,9 +9,22 @@
 | Module | One job |
 |---|---|
 | `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
+| `agents/evidence_tools.py` | The read-only evidence tools (T-180, AL8): `read_result`, `read_rubric`, `read_verdict`. |
 | `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
+| `agents/subagents.py` | The five subagents of the lead tester and the one place their tool allowlists live (T-180, |
 | `agents/tools.py` | The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6). |
-| `auth/policy.py` | Merge each unit's own `ROUTE_POLICY` into the one central route-policy table (TF4, AU12/AU14). |
+| `auth/access.py` | The one authorization function (AU12) and the project relation data it reads. |
+| `auth/accounts.py` | Accounts: open signup, first-account admin, password check, admin account actions. |
+| `auth/audit.py` | The audit trail (AU22): one JSON line per state-changing request in |
+| `auth/config.py` | Auth startup configuration (AU3 cookie Secure rule, AU17 gate switch, AU20 hosted |
+| `auth/context.py` | The current request's principal, set by the auth middleware for the request's |
+| `auth/db.py` | The auth store's SQLite file: connection, tables, one-time seeding, last-admin guard. |
+| `auth/defaults.py` | The four seeded groups and their default ticks (auth.md "Default groups", AU11). |
+| `auth/groups.py` | IAM-style groups: create, rename, tick permissions, set members, delete (AU10). |
+| `auth/passwords.py` | Password hashing: argon2id via argon2-cffi, behind one hash/verify pair (AU1). |
+| `auth/policy.py` | The central route policy (AU14, AU16, TF4): the rule table, its matcher, the unit merge. |
+| `auth/ratelimit.py` | Login rate limit (AU5): 5 failures per account or 20 per client address inside a |
+| `auth/sessions.py` | Server-side sessions (AU3): a 256-bit random id in the cookie, only its SHA-256 in the |
 | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
 | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
 | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
@@ -24,6 +37,7 @@
 | `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |
 | `browser/video.py` | Per-case video recording for `BrowserSession` (T-191/AT-587). |
 | `cli.py` | Command line. Every action the UI offers is available here first. |
+| `cli_auth.py` | `autotester auth` -- break-glass account administration from the server shell (T-204). |
 | `cli_crawl.py` | Crawl commands — `autotester explore` and `autotester report crawl`. |
 | `cli_intake.py` | `autotester ingest zip` and `ingest fetch-drive`: hand over recordings without the browser. |
 | `cli_issues.py` | `autotester issues` — turn an analysis into the sheet a human tester reads. |
@@ -54,12 +68,15 @@
 | `delivery/inbox.py` | Delivery records on disk and the send-once procedure around a mail transport (TT9, HO29). |
 | `delivery/message.py` | Compose the report e-mail from a stored `ReportSummary` and a template file (hosting.md HO28). |
 | `doctor.py` | Design enforcement. Runs the rules that keep this repo readable. |
+| `ledger/advisory.py` | Which doctor findings are advisory warnings and which block (L10, D-087). |
 | `ledger/checks.py` | Design rules over the project's RECORDS, as opposed to its source files. |
 | `ledger/citations.py` | Does every `D-NNN` cited in a gate, contract, manifest, verdict or doc resolve to an |
 | `ledger/evidence_specs.py` | AT-516 (D-048, gate answer c): does a unit's evidence spec (`mutations.json`) |
 | `ledger/issue_ids.py` | Id uniqueness for `qa/issues.jsonl` (AT-676, AT-645). |
 | `ledger/relitigation.py` | The cyclic-rebuild gate: is this new unit a retired feature coming back? |
 | `ledger/render.py` | Derive the living docs from code and the ledger. Nothing here is hand-typed. |
+| `ledger/review_block.py` | Reads the one current citation-review block in `qa/feedback-inbox.md` (L10). |
+| `ledger/seals.py` | L10 immutable-history dispositions: sealed records and the known-disputed claims. |
 | `ledger/store.py` | Read and append `docs/FEATURES.jsonl`. The only write path to the ledger. |
 | `loop_status.py` | Is the maker-checker loop alive, and if it stopped, was that on purpose? |
 | `media/chunks.py` | Split a recording into overlapping chunks a vision model can actually read. |
@@ -83,6 +100,7 @@
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
+| `schema/auth.py` | Team login shapes (T-204, D-072; contract qa/contracts/auth.md): the closed permission |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
 | `schema/bug_run.py` | What reading the bug store and processing one run reports: the shapes of T-199b (TB3, TB4, TB6). |
@@ -98,7 +116,7 @@
 | `schema/intake.py` | Shapes for video intake: zip limits, the per-member report, and where a source came from. |
 | `schema/issue.py` | A video-derived issue — its own artifact, deliberately NOT a `CaseClass`. |
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
-| `schema/ledger.py` | The feature ledger row and the relitigation verdict. Contract: qa/contracts/living-ledger.md. |
+| `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
@@ -113,6 +131,7 @@
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/sheet_plan.py` | The shapes of a tracker-sheet sync PLAN (T-199b dry run; contract TB9, TB10, TB11, TB13 in part). |
+| `schema/subagent.py` | The shape of one subagent of the lead tester (T-180, D-042, AL8-AL10): its name, the skill |
 | `schema/team_enums.py` | The Group 10 (team features) vocabulary file: every closed value set the team units add. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
 | `schema/tracked_bug.py` | A tracked bug and the events that move it: the data shapes of T-199a (team-bug-loop TB1-TB6). |
@@ -233,7 +252,10 @@
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
 | `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
 | `store/team_store.py` | The sibling store for team data: markers, records, preferences, outboxes (T-205/TF7, R65). |
+| `ui/admin_view.py` | Markup for the admin pages: accounts, groups and the permission checkboxes (AU8, AU10). |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
+| `ui/auth_middleware.py` | The login gate (T-204, auth.md AU6/AU13/AU14/AU16/AU22): one ASGI middleware that |
+| `ui/auth_view.py` | Markup for the sign-in, sign-up and "waiting for an admin" pages (T-204). |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
 | `ui/credential_guard.py` | Credential-guard helpers: refuse a real secret typed into any UI text field. |
@@ -243,7 +265,9 @@
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
-| `ui/routers.py` | The one ordered list of routers the UI app serves (T-205/TF3; same shape as T-204's). |
+| `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
+| `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |
+| `ui/routes_auth.py` | Sign in, sign up, sign out and the waiting page (T-204, auth.md AU2-AU7). |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
 | `ui/routes_catalog.py` | The test catalog page: one row per `CaseClass`, a green runnable count, and |
 | `ui/routes_crawl_approval.py` | The crawl-approval card on the credentials page (D-018 consent, gate 2). |
@@ -256,6 +280,7 @@
 | `ui/routes_learn.py` | The learning loop on screen — review the FlowSpec, generate cases, see the asks. |
 | `ui/routes_live.py` | Presentation-only noVNC page for watching the container's real browser, plus |
 | `ui/routes_product_map.py` | Product-map cards, recorded journeys, and guarded learned-frame serving. |
+| `ui/routes_project_access.py` | Who can reach one project: owner, assignees (project.assign) and shared-with |
 | `ui/routes_project_edit.py` | Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md. |
 | `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
@@ -284,6 +309,7 @@
 | `CrawlArgs` (`schema/agent_layer.py`) | Bounds the model REQUESTS; the approval decides whether they are granted. |
 | `RunCaseArgs` (`schema/agent_layer.py`) |  |
 | `GradeCaseArgs` (`schema/agent_layer.py`) |  |
+| `ReadCaseArgs` (`schema/agent_layer.py`) | Evidence reads (T-180): which case's stored artifact to read; the run is trusted context. |
 | `EmptyArgs` (`schema/agent_layer.py`) | Tools that take nothing (`get_persona`, `get_catalog`): everything is trusted context. |
 | `ToolOutcome` (`schema/agent_layer.py`) | What a tool call returns to the model. `summary` is scrubbed before it is built, and the |
 | `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
@@ -310,6 +336,14 @@
 | `JourneyStop` (`schema/analysis.py`) | One stop in a recording's end-to-end journey — reuses `ObservedScreen`'s |
 | `VideoAnalysis` (`schema/analysis.py`) | One source's adjudicated understanding — screens, flows, the ordered |
 | `RunApproval` (`schema/approval.py`) | One human's authorisation for one kind of run against one target. |
+| `PermissionKey` (`schema/auth.py`) | The closed catalogue (auth.md "Permission catalogue"). |
+| `Scope` (`schema/auth.py`) |  |
+| `User` (`schema/auth.py`) | One account. The password hash never leaves the auth store's own modules. |
+| `Group` (`schema/auth.py`) | An IAM-style group: a name, its ticked permissions, and its members' ids. |
+| `ProjectRelation` (`schema/auth.py`) |  |
+| `ResourceRef` (`schema/auth.py`) | What `authorize` judges a scoped key against (auth.md Vocabulary). |
+| `Principal` (`schema/auth.py`) | Who makes the current request, resolved from a live server-side session. |
+| `RouteRule` (`schema/auth.py`) | One row of the central route policy table (AU14). |
 | `Provenance` (`schema/base.py`) | Who or what produced this artifact, and from what. |
 | `Artifact` (`schema/base.py`) | Common envelope: versioned, timestamped, attributable. |
 | `SeededBug` (`schema/bench.py`) | A deliberately introduced defect with known ground truth. |
@@ -392,6 +426,9 @@
 | `IssueKind` (`schema/issue_kind.py`) | What kind of problem a crawl-detected `CrawlIssue` is. |
 | `FeatureEvent` (`schema/ledger.py`) | One dated event in the life of a feature: planned, live, updated, or retired. |
 | `RelitigationVerdict` (`schema/ledger.py`) | The judge's answer to "is this new unit a retired feature coming back?". |
+| `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
+| `CitationReview` (`schema/ledger.py`) | An inline inventory declaration, bound to exact visible occurrence content. |
+| `SealedRecord` (`schema/ledger.py`) | One reviewed, hash-bound row covering the citations of a closed historical unit. |
 | `TranscriptSegment` (`schema/media.py`) | One spoken utterance, absolute seconds into the source video. |
 | `Transcript` (`schema/media.py`) | A video's narration. `from_sidecar` loads the exact shape the existing |
 | `MediaChunk` (`schema/media.py`) | One re-encoded chunk of a longer video. |
@@ -467,6 +504,9 @@
 | `SheetPlan` (`schema/sheet_plan.py`) | What a sync would write. `plan_hash` is derived from the content and checked on load. |
 | `SyncMemory` (`schema/sheet_plan.py`) | What we last wrote, per bug and column, so a later human edit is told from our own value. |
 | `PlanConfirmation` (`schema/sheet_plan.py`) | A named person saw the plan with this hash. Whether that person holds `project.edit` is |
+| `SubagentName` (`schema/subagent.py`) |  |
+| `SubagentSpec` (`schema/subagent.py`) | One subagent. Frozen: the allowlist cannot be widened after construction. |
+| `SubagentInvocation` (`schema/subagent.py`) | What ONE subagent is handed (AL9): its own prompt, the task text, the files the lead |
 | `ScheduleMode` (`schema/team_enums.py`) |  |
 | `ScheduleZone` (`schema/team_enums.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
 | `SlotOutcome` (`schema/team_enums.py`) | What a tick decided for one slot. A record carries exactly one of these. |
