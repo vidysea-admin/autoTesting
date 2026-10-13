@@ -1,6 +1,6 @@
 # Manifest - t203c-viewonly-ws (T-203 row HO12, server-side view vs control)
 
-## Status: ready-for-check
+## Status: checked-PASS
 
 **Contract:** qa/contracts/hosting.md HO12 (not edited)
 **Goal task:** T-203
