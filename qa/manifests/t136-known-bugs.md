@@ -1,6 +1,6 @@
 # Manifest - t136-known-bugs
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** T-136 known-bugs oracle (D-094)
 **Branch:** wave/t136-known-bugs
