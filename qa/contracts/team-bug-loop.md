@@ -124,7 +124,8 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
 
 - **TB15 — Export to the Tracker sheet layout, with no live write (D-090).** The tracker page offers an export of the BugStore bugs as
   **CSV and xlsx** whose columns follow the Tracker sheet's column layout, reusing the `schema/sheet_plan.py` mapping (no second mapping
-  table). Requires `report.view` on the project; every value passes `Redactor.scrub`; screenshot links are authenticated product URLs. The
+  table). **Header names (D-092 item 3):** the current `TRACKER_COLUMNS` names are acceptable until export; an exact match to the real Tracker
+  sheet's headers is fixed later, at real-sheet export time (D-090 item 2), and is not a T-199 or T-206 criterion. Requires `report.view` on the project; every value passes `Redactor.scrub`; screenshot links are authenticated product URLs. The
   export uses no `SheetClient`, no Google call, no network; the live path stays refused (`LiveWriteRefused` unchanged). Re-exporting the
   same bug set yields identical bytes. `serves:` R47, D-090, O11. *LOCAL. Verify:* export a fixture set, read both files back and compare
   header order and cell values to the layout; a user without `report.view` gets not-found; a planted secret in a bug title is absent from
@@ -175,3 +176,6 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
   sheet's column layout, no live SheetClient); **HG-TB1** reworded to "deferred to export", not blocking T-199; **TB8, TB9, TB13**
   marked export-time (they apply at the later real-sheet export). TB10-TB12 and TB14 unchanged and remain proven on the fake client. ·
   why: Umesh will not have T-199 write to the real PathLynks Tracker; the internal tracker is built first.
+- 2026-10-13 - owner-authorized (D-092 item 3, Umesh chat; /checker) - **TB15 header names:** the export keeps the current `TRACKER_COLUMNS`
+  header names for now; matching the real Tracker sheet exactly is deferred to real-sheet export time (D-090). TB15's other clauses (order,
+  identical bytes on re-export, `report.view` scoping, secret scrub, no `SheetClient`) are unchanged. **Links:** D-092; D-090; T-199.
