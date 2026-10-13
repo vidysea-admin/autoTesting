@@ -58,11 +58,66 @@ def test_live_page_is_gated_and_view_only_without_live_control(root: Path) -> No
     assert "view_only" not in login(ADMIN).get("/live").text
 
 
-def test_proxy_asks_the_app_instead_of_refusing_outright() -> None:
+def _caddy_block(head: str) -> str:
     caddy = (ROOT / "docker" / "Caddyfile").read_text(encoding="utf-8")
-    block = caddy[caddy.index("handle /novnc/*"):].split("handle {")[0]
-    assert "forward_auth autotester:8000" in block and "uri /auth/check" in block
-    assert "503" not in block
+    return caddy[caddy.index(head):].split("\n\t}\n")[0]
+
+
+def test_proxy_has_two_gated_endpoints_with_distinct_upstreams() -> None:
+    view, control = _caddy_block("handle /novnc-view/*"), _caddy_block("handle /novnc/*")
+    assert "uri /auth/check?need=view" in view and "reverse_proxy autotester:6081" in view
+    assert "uri /auth/check?need=control" in control and "reverse_proxy autotester:6080" in control
+    assert "forward_auth autotester:8000" in view and "forward_auth autotester:8000" in control
+    assert "503" not in view + control
+    caddy = (ROOT / "docker" / "Caddyfile").read_text(encoding="utf-8")
+    assert "@vnc_other path" in caddy and "respond \"Forbidden\" 403" in caddy
+
+
+def test_entrypoint_runs_a_viewonly_vnc_server_behind_the_view_port() -> None:
+    sh = (ROOT / "docker" / "entrypoint.sh").read_text(encoding="utf-8")
+    assert "-rfbport 5901 -viewonly" in sh and "6081 localhost:5901" in sh
+    assert "6080 localhost:5900" in sh
+    control_line = next(x for x in sh.splitlines() if "-rfbport 5900" in x)
+    assert "-viewonly" not in control_line
+
+
+@pytest.mark.parametrize("path,expect", [
+    ("/auth/check?need=view", {"anon": 401, "tester": 403, "dev": 200, "admin": 200}),
+    ("/auth/check?need=control", {"anon": 401, "tester": 403, "dev": 403, "admin": 200}),
+    ("/auth/check", {"anon": 401, "tester": 403, "dev": 200, "admin": 200}),
+    ("/auth/check?need=CONTROL", {"anon": 401, "tester": 403, "dev": 400, "admin": 400}),
+    ("/auth/check?need=", {"anon": 401, "tester": 403, "dev": 400, "admin": 400}),
+    ("/auth/check?need=view&need=control", {"anon": 401, "tester": 403, "dev": 403, "admin": 200}),
+    ("/auth/check/../check?need=view", {"anon": 401}),
+])
+def test_auth_check_decision_matrix(root: Path, path: str, expect: dict[str, int]) -> None:
+    """Viewer: view allowed, control 403. Controller: both. Anonymous 401. Unknown or
+    alternate `need` values fail closed (never fall back to the weaker check)."""
+    account("dev@team.test", "developer")
+    account("tester@team.test", "tester")
+    who = {"anon": client(), "tester": login("tester@team.test"),
+           "dev": login("dev@team.test"), "admin": login(ADMIN)}
+    for name, code in expect.items():
+        got = who[name].get(path).status_code
+        assert got == code or (name == "anon" and got in (302, 401, 404)), (name, path, got)
+
+
+def test_viewer_page_uses_the_viewonly_endpoint_and_controller_the_input_one(
+    root: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("AUTOTESTER_NOVNC_URL",
+                       "/novnc/vnc.html?autoconnect=true&path=novnc/websockify")
+    account("dev@team.test", "developer")
+    watcher = login("dev@team.test").get("/live").text
+    assert "/novnc-view/vnc.html" in watcher and "path=novnc-view/websockify" in watcher
+    assert "src='/novnc/" not in watcher
+    controller = login(ADMIN).get("/live").text
+    assert "src='/novnc/vnc.html" in controller and "novnc-view" not in controller
+
+
+def test_view_only_url_local_default_uses_the_viewonly_port() -> None:
+    from autotester.ui.routes_live import view_only_url
+    assert view_only_url("http://localhost:6080/vnc.html?a=1") == "http://localhost:6081/vnc.html?a=1"
 
 
 # -- HO15 --------------------------------------------------------------------------------------

@@ -27,7 +27,8 @@ services:
       # AUTOTESTER_BIND=0.0.0.0 for the temporary no-domain interim (docker/DEPLOY.md).
       - "${AUTOTESTER_BIND:-127.0.0.1}:8000:8000"
     expose:
-      - "6080"                       # noVNC: reachable by the proxy on the compose network only
+      - "6080"                       # noVNC with input (live.control): proxy on the compose network only
+      - "6081"                       # noVNC view-only (x11vnc -viewonly): same
     shm_size: "1gb"                  # headed Chromium crashes on Docker's 64 MB default
     mem_limit: ${AUTOTESTER_MEM_LIMIT:-6g}
     cpus: ${AUTOTESTER_CPUS:-3.0}

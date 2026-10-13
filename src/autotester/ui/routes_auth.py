@@ -104,13 +104,16 @@ def auth_waiting() -> Response:
 
 @router.get("/auth/check")
 def auth_check(need: str = "view") -> Response:
-    """HO12: what the reverse proxy asks before it serves `/novnc/*` (`forward_auth`), so the
+    """HO12: what the reverse proxy asks (`forward_auth`) before `/novnc-view/*` (need=view) or
+    `/novnc/*` (need=control), so the
     proxy keeps no list of its own. The login gate has already turned a missing or expired
     session into 401/302 and a signed-in account without `live.view` into 403 (policy row);
     here `need=control` additionally wants `live.control`. 200 carries the identity."""
     who = current_principal()
     if who is None or not who.authenticated:
         return JSONResponse({"detail": "authentication required"}, status_code=401)
+    if need not in ("view", "control"):       # fail closed on a mistyped proxy rule
+        return JSONResponse({"detail": "unknown need"}, status_code=400)
     if need == "control" and not authorize(who, PermissionKey.LIVE_CONTROL):
         return JSONResponse({"detail": "live.control is required to send input"}, status_code=403)
     return JSONResponse({"email": who.email,

@@ -51,12 +51,25 @@ def novnc_url() -> str:
     return raw if (same_origin or local) and not hostile else _DEFAULT_NOVNC
 
 
+def view_only_url(url: str) -> str:
+    """The same viewer pointed at the VIEW-ONLY endpoint: `/novnc/...` becomes `/novnc-view/...`
+    (incl. the websocket `path=`), local `:6080` becomes `:6081`. The upstream behind that
+    endpoint is a VNC server started `-viewonly`, so input is dropped server-side whatever a
+    hand-built client sends (HO12)."""
+    for host in ("localhost", "127.0.0.1"):
+        url = url.replace(f"{host}:6080", f"{host}:6081")
+    if url.startswith("/novnc/"):
+        url = "/novnc-view/" + url[len("/novnc/"):]
+    return url.replace("path=novnc/", "path=novnc-view/")
+
+
 def viewer_url(can_control: bool) -> str:
-    """The iframe target. Without `live.control` the viewer is told to be view-only (noVNC's
-    `view_only=1`), so a watcher cannot send keys or clicks from this page (HO12)."""
+    """The iframe target. Without `live.control` the page uses the view-only endpoint, which the
+    proxy only forwards to a view-only VNC server (HO12); `view_only=1` is kept as a UI hint."""
     url = novnc_url()
     if can_control:
         return url
+    url = view_only_url(url)
     return url + ("&" if "?" in url else "?") + "view_only=1"
 
 
