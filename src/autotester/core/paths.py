@@ -118,6 +118,16 @@ class ProjectPaths:
     def bench_trial(self, trial_id: str) -> Path:
         return self.bench_dir / f"{trial_id}.trial.json"
 
+    def bench_comparison(self, corpus_id: str) -> Path:
+        """The T-136 acceptance-comparison artifact for one corpus."""
+        return self.bench_dir / f"{corpus_id}.comparison.json"
+
+    def bench_human_trial(self, corpus_id: str) -> Path:
+        """Where the independent human list plugs in (D-089 item 3): a `BenchTrial`
+        JSON of kind `human_live`, plus a `human_confirmed` corpus at `bench_corpus`.
+        The `.trial.json` suffix is all `list_bench_trials` needs to pick it up."""
+        return self.bench_dir / f"{corpus_id}.human.trial.json"
+
     @property
     def profile_dir(self) -> Path:
         """Persistent browser profile — gitignored, holds the logged-in session."""
