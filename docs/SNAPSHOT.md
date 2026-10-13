@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-177 [high] browser-use fallback actuator for unknown screens with typed outputs; revives agent_loop.run_with_fallback (AT-253) (D-041)
 - T-181 [high] Agent guardrails + measured gain vs pipeline (bugs found, FP, tokens, time) on a fixture; per-run token/cost budget (D-042)
 ## Last decisions (computed status)
-- D-087 2026-10-12 decision ACTIVE
-- D-088 2026-10-12 decision ACTIVE
 - D-089 2026-10-13 decision ACTIVE
 - D-090 2026-10-13 decision ACTIVE
 - D-091 2026-10-13 decision ACTIVE
+- D-092 2026-10-13 decision ACTIVE
+- D-093 2026-10-13 decision ACTIVE

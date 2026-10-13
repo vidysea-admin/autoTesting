@@ -5915,3 +5915,21 @@ Maker manifest asked: does `Catalog` satisfy CM4 "tool outputs use the CM2 schem
 7. **AL7 on the framework path.** Only judgement subagents (explorer, test-designer, grader, reporter) are registered; `runner`, and the framework's default `general-purpose` subagent, are refused by the rails middleware (no delegation made, counted as a refusal).
 
 **Status:** folded 2026-10-13 by /checker t179d-agent-layer (cycle 1 PASS) -> qa/contracts/agent-layer.md. Items 1-7 above: (1) AL1 amended to `>=0.7.24,<0.8` per D-089; (2) explicit TodoListMiddleware accepted; (3) `skills=["/"]` read-only exposing all packaged skills ruled NOT an AL4 violation; (4) `capture_network(case_id)` written into AL2; (5) per-call spans accepted under AL5; (6) AL11 and the AL12/AL13 comparison mechanism judged in T-179 on injected verdicts, live comparison and keep/drop belong to T-181; (7) AL7 refusal of non-judgement delegation accepted.
+
+## From Umesh via orchestrator (2026-10-13, D-092), for /checker
+
+1. **Email delivery of reports** is DEFERRED TO PRODUCTION (Ubuntu), like Docker (D-090/D-091). Website reports suffice now. Fold into `team-schedule.md` (TS5/TS7 email half) and `team-loop-acceptance.md` (TA6 (c)/(d) outbox, TA8, TA15 tick-box, TA17 outbox, Held, Open 2).
+2. **T-206 schedule tick** runs on the REAL `pathlynks` project with the `PATHLYNKS_USER_*` test credentials, not a `pathlynks-acceptance` clone; still under `write_policy` and approval as enforced in code (D-088 first crawl read-only). Fold into TA17 and Open 4.
+3. **Tracker export** keeps the current `TRACKER_COLUMNS` header names until real-sheet export time (D-090). Fold into `team-bug-loop.md` TB15 and TA9.
+4. **T-198:** the R65 Linux run evidence (`qa/evidence/t198-linux-run.md`) and the live Google Drive fetch walk are DEFERRED TO PRODUCTION (Ubuntu); not blocking T-198. Fold into `team-intake.md`.
+5. **Fold the six D-090/D-091 deferral proposals** from section 3 of `qa/evidence/t206-runbook.md` (branch `wave/t206-runbook`) into `team-loop-acceptance.md`.
+
+**Status:** folded (2026-10-13, /checker) -> `team-schedule.md` TS5/TS7 (email half deferred), `team-loop-acceptance.md` TA1/TA3/TA6/TA8/TA9/TA11-TA15/TA17, Held, No-fire, Open 2-5 (six proposals folded), `team-bug-loop.md` TB15 (header names), `team-intake.md` (R65 Linux run, live Drive walk deferred). `team-test-button.md` TT8/TT9 and `hosting.md` HO26-HO29 left unchanged (flag for a later decision). Not folded: T-199 goal `done_check` amendment (goal owner's).
+
+## From Umesh via orchestrator (2026-10-13, D-093), for /checker
+
+1. HO39/HO40 (Scheduled Task boot start, restart) DEFERRED TO PRODUCTION (Docker on Ubuntu); T-203 may close locally on the other rows.
+2. TT8/TT9 and HO26-HO29 (email) DEFERRED TO PRODUCTION.
+3. T-199 `done_check` scope aligned to D-090 (TB7 + TB15).
+
+**Status:** folded (2026-10-13, /checker) -> `hosting.md` HO26-HO29, HO39, HO40; `team-test-button.md` TT8, TT9; `.goal/goal.json` T-199 note.

@@ -102,8 +102,9 @@ that the scheduler goes **through** it and never around it (TS6).
   **no declared credential pair**, or a pair whose values are unset, records the slot `blocked_no_credentials` naming which state refused
   it (no `SecretRef`; `SecretRef` with no value; value present but the target outside `allowed_domains`). In every refused state:
   **zero requests reach the network, asserted at the transport as in `consent.md` CN1**; no run directory is created; no queue entry is
-  made; no browser factory is called; and the schedule owner sees the refusal on the project page and in their inbox (G4's delivery
-  module; the email follows the owner's own preference, `team-test-button.md` TT8). This gate is **in addition to** HO24 (owner's rights):
+  made; no browser factory is called; and the schedule owner sees the refusal on the project page and in their website inbox (G4's delivery
+  module). **The email copy is DEFERRED TO PRODUCTION (D-092 item 1):** it is neither built nor judged here, and no TS5 evidence needs a mail
+  transport. This gate is **in addition to** HO24 (owner's rights):
   an admin-owned schedule on an uncredentialed project is still blocked (AU15: no role skips an approval). A run that proceeds uses the
   approval's own bounds (`max_actions`, `wall_clock_s`); hitting one ends the run and names what it left unreached (O4); no extra
   cooldown is built (gate `plan-approved-g10.md`). **Dependency (landed 2026-10-11):** the credential-derived `covering_approval` is the D-068 implementation
@@ -130,7 +131,7 @@ that the scheduler goes **through** it and never around it (TS6).
 
 - **TS7 — Failures are loud, and a scheduler that stopped ticking says so (R55).**
   A scheduled run that crashes, is killed, or ends in a worker death ends `failed` (or `interrupted`, HO18) **with its cause** and appears
-  on the project page, the schedule history and the owner's inbox; it is never absent. The tick records `failed` on its own slot record
+  on the project page, the schedule history and the owner's website inbox; it is never absent. (An email copy is DEFERRED TO PRODUCTION, D-092 item 1.) The tick records `failed` on its own slot record
   if enqueueing raises. The scheduler writes a heartbeat (`last_tick`) at the end of every tick, atomically; the schedule card shows
   **"scheduler stale since `<time>`"** when `now - last_tick` exceeds **two intervals** of the schedule (for a daily rule: 48 h; for a
   weekly or one-off schedule: two intervals of the tick timer, `AUTOTESTER_TICK_INTERVAL_S`, default 60, which T-203's timer unit
@@ -188,3 +189,7 @@ read-only with no editable control. Negative walks: an invalid time (inline refu
 - 2026-10-11 - routine (stale dependency removed; no criterion weakened) - **TS5 dependency note updated** the same way as
   `team-test-button.md` TT6: the D-068 credential-derived `covering_approval` (`stages/explore_consent.py:35`, a2c6124a) is on
   master, so TS5 is no longer parked as `BLOCKED-CAPABILITY`. Requirement text unchanged. **Links:** D-068; TS5; TT6.
+- 2026-10-13 - owner-authorized (D-092 item 1, Umesh chat; /checker) - **TS5 and TS7: the email half is DEFERRED TO PRODUCTION** (the Ubuntu
+  server, with Docker, D-090/D-091). The owner-visible half stays required on the website: the project page, the schedule history and the
+  website inbox. TS5/TS7 are otherwise unchanged and no mutation or evidence row is weakened. The email follow-up rows
+  (`team-test-button.md` TT8/TT9) are not edited here. **Links:** D-092; D-090; D-091; T-200.
