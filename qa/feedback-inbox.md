@@ -5880,3 +5880,12 @@ VERDICT: Approve (PLAN ONLY; implementation constrained to the above existing ta
 Contract amendments requested: `team-bug-loop.md` TB7 required for T-199, new export criterion (CSV + xlsx, Tracker column layout, reuse `schema/sheet_plan.py` mapping, no live SheetClient, LiveWriteRefused stays), HG-TB1 "deferred to export (D-090)", TB8/TB9/TB13 export-time; `hosting.md` split Local Windows host (now) / Ubuntu host (later), HO10/HO11/HO13/HO34-HO36 deferred, new local criteria; `bench.md` recall unavailable until human list, FP rate and time must pass.
 
 **Status:** folded (2026-10-13, /checker contract maintenance) → `qa/contracts/team-bug-loop.md` TB7, TB15 (new), HG-TB1, TB8/TB9/TB13 export-time; `qa/contracts/hosting.md` "Local Windows host (now, D-090)" HO39-HO46 (new), HO10/HO11/HO13/HO34-HO36 deferred to Ubuntu; `qa/contracts/bench.md` K10 (new). Gates updated: t136, t199, t203.
+
+## 2026-10-13 · maker (t136b-bench-from-run) · proposed criteria for bench.md (K11, not yet in contract)
+
+Maker never edits contracts; checker to fold or amend. K1-K10 do not cover converting a real project's stored run into bench files.
+
+- **K11a** `scripts/bench_from_run.py <slug> --run <id>` converts an executed+graded stored run into the `BenchTrial` (kind `autotester`, id `<slug>-acceptance-autotester`) via `stages.bench.run_autotester_trial`; no scoring arithmetic of its own (K3). Re-running replaces the trial, never adds a second.
+- **K11b** A run with no verdict for any of its `case_ids`, or a missing run, is refused (exit 2) and writes nothing.
+- **K11c** Corpus: a stored `<slug>-acceptance` corpus (a human list) is used untouched; absent, an empty `mode=unknown` corpus is saved, so recall is unavailable and every AutoTester finding is unadjudicated (K10).
+- **K11d** Duration is measured only: the run's `finished_at - started_at`, else the sum of stored per-case durations, else None (K8 unavailable, check script fails). Never defaulted.
