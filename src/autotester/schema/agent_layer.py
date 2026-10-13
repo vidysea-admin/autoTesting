@@ -15,7 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class AgentToolName(StrEnum):
-    """The stage tools in this slice. `report` and `capture_network` join with the rest of T-179."""
+    """The stage tools of the lead tester."""
 
     CRAWL = "crawl"
     RUN_CASE = "run_case"
@@ -25,6 +25,8 @@ class AgentToolName(StrEnum):
     READ_RESULT = "read_result"
     READ_RUBRIC = "read_rubric"
     READ_VERDICT = "read_verdict"
+    REPORT = "report"
+    CAPTURE_NETWORK = "capture_network"
 
 
 class ToolEffect(StrEnum):
