@@ -19,8 +19,8 @@ from typer.testing import CliRunner
 import autotester.providers as providers
 from autotester.cli import app as cli_app
 from autotester.providers.base import ProviderError
-from autotester.providers.langchain_fallback import LangChainFallbackProvider
 from autotester.providers.litellm_provider import LiteLLMProvider
+from autotester.providers.model_chain import ModelChainProvider
 from autotester.schema.enums import ProviderRole
 from autotester.schema.flowspec import Screen
 from autotester.schema.project import Project, ProviderConfig
@@ -72,11 +72,11 @@ def test_parse_spec_rejects_empty_models_and_embedded_credentials_without_echoin
 
 # -- the factory ------------------------------------------------------------
 
-def test_factory_default_is_the_langchain_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_factory_default_is_the_model_chain(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("AUTOTESTER_MODEL", raising=False)
-    assert isinstance(providers.for_role(), LangChainFallbackProvider)
+    assert isinstance(providers.for_role(), ModelChainProvider)
     assert isinstance(providers.for_role(_project_with(), "judge"),
-                      LangChainFallbackProvider)
+                      ModelChainProvider)
 
 
 def test_factory_honours_autotester_model_when_the_project_is_on_defaults(
@@ -126,7 +126,7 @@ def test_neither_route_constructs_the_langchain_provider_itself(module_file: str
 def _save(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, **roles: str) -> None:
     """A project `demo` with one case and the given per-role provider specs."""
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
-    for key in ("GOOGLE_API_KEY", "OLLAMA_BASE_URL"):
+    for key in ("GOOGLE_API_KEY", "OLLAMA_BASE_URL", "OLLAMA_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     store = ProjectStore("demo", tmp_path)
     store.save_project(_project_with(**roles))
@@ -157,9 +157,9 @@ def test_ll2_the_server_model_applies_when_the_project_is_on_defaults(
     assert "litellm:gemini/gemini-2.5-pro" in text and "GEMINI_API_KEY" in text
 
 
-def test_ll2_with_neither_the_run_path_is_the_langchain_fallback_as_today(
+def test_ll2_with_neither_the_run_path_is_the_model_chain(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    install(monkeypatch, [])
+    install(monkeypatch, [], missing_keys=["OLLAMA_API_KEY"])
     _save(tmp_path, monkeypatch)
     text = _run_refusal(TestClient(app))
     assert "no AI provider is configured" in text and "litellm" not in text

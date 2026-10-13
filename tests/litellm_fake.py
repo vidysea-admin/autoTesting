@@ -72,7 +72,8 @@ def install(monkeypatch: pytest.MonkeyPatch, responses: list[Any], **flags: Any)
     monkeypatch.setenv("LITELLM_MODE", "PRODUCTION")
     monkeypatch.setenv("LITELLM_LOCAL_MODEL_COST_MAP", "True")
     for key in ("AUTOTESTER_MODEL", "LITELLM_API_KEY", "LITELLM_API_BASE",
-                "OLLAMA_BASE_URL", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GEMINI_API_KEY"):
+                "OLLAMA_BASE_URL", "OLLAMA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
+                "GEMINI_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     return fake
 

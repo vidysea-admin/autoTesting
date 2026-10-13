@@ -80,7 +80,7 @@ def test_unconfigured_tier_is_skipped(monkeypatch: pytest.MonkeyPatch) -> None:
     fake.validate_environment = lambda model=None, **kw: (
         {"keys_in_environment": False, "missing_keys": ["X"]}
         if kw.get("api_key") is None and model.startswith("ollama") else real(model, **kw))
-    monkeypatch.delenv("OLLAMA_API_KEY")
+    monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-key-value-1b2c")
     chain = ModelChainProvider()
     assert chain.act("x", Answer).verdict == "g"

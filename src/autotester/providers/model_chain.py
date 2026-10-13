@@ -59,7 +59,7 @@ class ModelChainProvider(Provider):
     def unavailable_reason(self) -> str | None:
         if self.available():
             return None
-        return ("model-chain has no usable tier: set OLLAMA_API_KEY (primary) or "
+        return ("no AI provider is configured: set OLLAMA_API_KEY (primary) or "
                 "GEMINI_API_KEY (fallback) in .env")
 
     def act(self, prompt: str, schema: type[ModelT] | None = None, *,
