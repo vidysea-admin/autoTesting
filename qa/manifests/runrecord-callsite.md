@@ -1,6 +1,6 @@
 # Manifest: runrecord-callsite
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Branch: wave/runrecord-callsite
 
