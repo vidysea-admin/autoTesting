@@ -1,0 +1,98 @@
+[
+ {
+  "id": "AT-288",
+  "title": "T-135 regressed `autotester doctor`: its own docs/ARCHITECTURE.md edit pushed the file to 151 lines, breaking the core-invariants C2 <=150 cap and adding a second violation the manifest says does not exist."
+ },
+ {
+  "id": "AT-289",
+  "title": "Only the CLI video seam closes VideoRequests: the UI's crawl-merge button folds the answering screens into the FlowSpec and leaves the request that asked for them OPEN forever - the 'OPEN for life' defect T-135 says it fixed, still live on the crawl half."
+ },
+ {
+  "id": "AT-290",
+  "title": "A merge can never teach a url_pattern for a screen the FlowSpec already names: Screen.id is content-addressed on (name, signals) only, so a re-recording of a known screen that finally shows the address bar is dropped whole and its VideoRequest stays OPEN."
+ },
+ {
+  "id": "AT-291",
+  "title": "resolve_requests closes and attributes requests a merge did not answer: a no-op merge still stamps fulfilled_by_source with the unrelated recording's id."
+ },
+ {
+  "id": "AT-288",
+  "title": "t135 breaks the repo's own C2 architecture-budget gate: `autotester doctor` reports TWO violations, not the one the manifest claims"
+ },
+ {
+  "id": "AT-289",
+  "title": "resolve_requests is wired to the CLI merge door only: the UI's own 'Merge these screens into the FlowSpec' button covers the gap and leaves the answered VideoRequest OPEN forever"
+ },
+ {
+  "id": "AT-290",
+  "title": "AT-287's 'blast radius, measured rather than assumed' is false: three video-derived host-ful url_patterns are ALREADY mangled on disk in projects/erp/screenmap.json, and the fix does not heal stored data"
+ },
+ {
+  "id": "AT-291",
+  "title": "url_template is STILL not idempotent for a dotless host, and _LOOKS_LIKE_HOST silently eats a path segment that merely contains a dot"
+ },
+ {
+  "id": "AT-547",
+  "title": "Bypass: three ledger-row fixes landed as bare commits with no manifest and no verdict -- df529f2 (AT-541 REGRESSION_ANCHOR + AT-542 ensemble wiring) and a5e5b81 (AT-543 bench duration) -- while all three ledger rows remain open with no handshake"
+ },
+ {
+  "id": "AT-548",
+  "title": "Commit df529f2's message claims '+ F-044 ledger correction appended' but docs/FEATURES.jsonl has no F-044 row and the commit never touches the file -- the claimed ledger correction is not traceable anywhere"
+ },
+ {
+  "id": "AT-549",
+  "title": "x10b-form-typing is terminal-STALLED (manifest '## Status: STALLED' at :230) with its FAIL verdict at Cycle checked: 3 of max 3 and NO qa/debug/x10b-form-typing* diagnosis -- the stall was never analyzed"
+ },
+ {
+  "id": "AT-550",
+  "title": "AT-542's ensemble wiring silently shrinks: ui/routes_sources.py:237-241 drops configured providers without credentials with no recorded signal, and schema/project.py:61-70 substitutes ['gemini'] for an empty vision config -- a configured two-model ensemble can run as one with nothing noting the shrink (the exact condition F-039/AT-542 overclaimed)"
+ },
+ {
+  "id": "AT-551",
+  "title": "browser/assertions.py met() wraps the whole probe in contextlib.suppress(Exception) and returns True on error, and body_text() returns '' on a broken page -- an absent_text-only expectation on a crashed page records 'assert absent_text: met' and the run completes clean; the deterministic layer fails UNSAFE exactly where visible_text/dom_asserts fail safe"
+ },
+ {
+  "id": "AT-552",
+  "title": "Inbox residual never filed: umesh's 2026-09-06 live ask for a home-page dashboard ('/' is a bare project-card grid -- no aggregate stats, no cross-project health view) has no ledger row, while the two sibling 2026-09-07 asks were delivered"
+ },
+ {
+  "id": "AT-547",
+  "title": "at540 unit deleted three existing tests from tests/test_execute.py instead of splitting them: E3's exception->ERRORED and MissingSecret->BLOCKED_HITL pins and AT-341's secret-scrub pin are gone entirely (not moved anywhere)"
+ },
+ {
+  "id": "AT-548",
+  "title": "Capability row 'dom_asserts met only when selector exists' is unisolated: the manifest's named check (test_absent_text_and_dom_asserts_are_evaluated) contains no dom_asserts assertion at all, so a falsifying edit that ignores selector absence SURVIVES"
+ },
+ {
+  "id": "AT-549",
+  "title": "Capability row 'assertion runs still judged (C7)' is unisolated: no test anywhere constructs Outcome.ASSERTION_FAILED for grade(), so a falsifying edit that refuses to judge assertion runs SURVIVES"
+ },
+ {
+  "id": "AT-550",
+  "title": "Capability row 'ERRORED outranks earlier unmet assert' is unisolated: the fake raises on button.broken inside the handler, so the expectation-bearing step and the exception are the SAME step and no earlier-unmet-assert state is ever built; the exception-masking edit SURVIVES"
+ },
+ {
+  "id": "AT-551",
+  "title": "The unit introduced a UTF-8 BOM plus mojibake em-dash (UTF-8 em-dash bytes re-encoded as latin-1) in tests/test_execute.py's module docstring, and docs/DECISIONS.md gained 4 more mojibake lines in D-032 (pattern pre-existing: 6 lines before -> 10 after; the append script's encoding flaw predates this unit)"
+ },
+ {
+  "id": "AT-552",
+  "title": "assert_expected's docstring promises 'raises nothing' but its url evidence probe is not exception-suppressed: a page.url error during evidence recording propagates and surfaces as ERRORED instead of a recorded unmet assert"
+ },
+ {
+  "id": "AT-710",
+  "title": "Two gate files cite D-056 as the entry authorizing Pathlynks allow_writes. D-056 DOES NOT EXIST. The highest decision id on disk is D-055, across docs/DECISIONS.md and docs/archive/ together. So an authorization that every downstream reader treated as settled was never written, and the question it was supposed to close (write tier / production typing) came back to the human at least three separate times -- which is precisely the cost the append-only log exists to prevent. Nothing forged it; the entry was simply announced in prose and never appended, and no validator anywhere checks that a cited D-NNN resolves."
+ },
+ {
+  "id": "AT-710",
+  "title": "Two gate files cite D-056 as the entry authorizing Pathlynks allow_writes. D-056 DOES NOT EXIST. The highest decision id on disk is D-055, across docs/DECISIONS.md and docs/archive/ together. So an authorization that every downstream reader treated as settled was never written, and the question it was supposed to close (write tier / production typing) came back to the human at least three separate times -- which is precisely the cost the append-only log exists to prevent. Nothing forged it; the entry was simply announced in prose and never appended, and no validator anywhere checks that a cited D-NNN resolves."
+ },
+ {
+  "id": "AT-745",
+  "title": "at113-crawl-completion cycle 3 is FAIL/STALLED. The recovery gate was answered 2026-10-05, yet there is no cycle-4 action since 2026-10-06 15:18 and no qa/debug/at113-cycle3.md diagnosis (a stall without a recorded diagnosis)."
+ },
+ {
+  "id": "AT-745",
+  "title": "at113-crawl-completion cycle 3 is FAIL/STALLED. The recovery gate was answered 2026-10-05, yet there is no cycle-4 action since 2026-10-06 15:18 and no qa/debug/at113-cycle3.md diagnosis (a stall without a recorded diagnosis)."
+ }
+]

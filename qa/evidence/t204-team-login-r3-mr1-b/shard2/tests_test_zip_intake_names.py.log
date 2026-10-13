@@ -1,0 +1,8 @@
+.................................................................        [100%]
+============================== warnings summary ===============================
+tests/test_zip_intake_names.py::test_ti1_hostile_member_refused_by_name_never_written_benign_still_registered[../x.mp4-traversal]
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+65 passed, 1 warning in 22.12s

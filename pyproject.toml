@@ -17,9 +17,9 @@ dependencies = [
     "langchain-google-genai>=4.4.0",
     "langgraph==1.2.14",  # T-167/D-041: release-regression graph (checkpointer + interrupt)
     "google-genai>=2.22.0",  # AT-130/AT-268: providers/gemini.py and gemini_files.py
-                              # import this directly; it was only a transitive dep
-                              # of langchain-google-genai, undeclared for the one
-                              # package this repo's headline recall number depends on.
+    # import this directly; it was only a transitive dep
+    # of langchain-google-genai, undeclared for the one
+    # package this repo's headline recall number depends on.
     "openpyxl>=3.1.5",
     "playwright>=1.62.0",
     "pydantic>=2.13.5",
@@ -29,12 +29,16 @@ dependencies = [
     "python-dotenv>=1.2.3",
     "python-multipart>=0.0.32",
     "starlette>=1.6.0",  # AT-130 regression test: ui/routes_crawls.py, routes_issues.py and
-                          # routes_report.py import `starlette.background.BackgroundTask`
-                          # directly; it was only a transitive dep of fastapi/uvicorn -- the
-                          # same undeclared-direct-import hazard the new doctor check catches.
+    # routes_report.py import `starlette.background.BackgroundTask`
+    # directly; it was only a transitive dep of fastapi/uvicorn -- the
+    # same undeclared-direct-import hazard the new doctor check catches.
     "typer>=0.27.2",
     "uvicorn[standard]>=0.30.0",
+    "argon2-cffi==25.1.0",  # T-204 password hashing, authorized by D-072 "new modules / auth"
     "litellm==1.104.0",  # T-202 (D-071): providers/litellm_provider.py; exact pin, SDK only
+    "mcp>=2.3,<3",  # T-174 (D-071): mcp_server.py, local stdio MCP adapter
+    "deepagents>=0.7.24,<0.8",
+    "langchain>=1.4.5",
 ]
 
 [project.scripts]

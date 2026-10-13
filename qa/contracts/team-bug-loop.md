@@ -73,7 +73,7 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
   with portable file operations, R65). A crash between two bugs of one run converges on retry with no double count. `serves:` R46, R65.
   *LOCAL. Verify:* process the same run twice and compare the stores byte for byte; inject a failure after bug 1 of 2 and re-run. Run the
   same tests on Windows and, at T-203's deploy check, Ubuntu. *Sabotage:* drop the marker, the count doubles and the test goes red.
-- **TB7 — The tracker page, scoped by `report.view` and edited by `project.edit`.** The page lists bugs with status, severity, screen,
+- **TB7 — REQUIRED for T-199 (D-090). The tracker page, scoped by `report.view` and edited by `project.edit`.** The page lists bugs with status, severity, screen,
   assignee, first/last seen, count and an evidence link, with filters by status and severity. Viewing needs `report.view` over the project
   per AU12; a holder of `report.view@shared` only sees bugs whose latest evidence run report is shared with them; a user with no scope
   gets not-found, not a list (AU13). The evidence link resolves only behind the login. Editing the assignee needs `project.edit`
@@ -85,7 +85,7 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
 
 ### B. Tracker binding and sheet sync (G8, T-199b)
 
-- **TB8 — The mapping is proposed, never guessed, and inert until confirmed.** From the sheet's **header row alone**, propose columns for
+- **TB8 — EXPORT-TIME (D-090: applies at the later real-sheet export, not to T-199's build). The mapping is proposed, never guessed, and inert until confirmed.** From the sheet's **header row alone**, propose columns for
   `title, severity, screen, status, assignee, date, screenshot_link, bug_key`. Deterministic synonym matching first; a model fallback is
   allowed only with the header cells as the sole payload (the provider payload contains no data row). A column with two candidates or
   none is `unmapped`, with the candidates listed. `ColumnMapping.status` is `proposed | confirmed | stale`; only a named user holding
@@ -94,7 +94,7 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
   fake client that reads only the header range (asserted from its call log); the provider-payload assertion; flip the status to
   `proposed` in a fixture, the write is refused; confirm as a user without `project.edit`, refused and the status unchanged; rename a
   header, `stale`. *Sabotage:* let `proposed` write, the refusal test goes red.
-- **TB9 — CRITICAL. The first live write is shown, and confirmed, before it happens.** The write plan renders as exact cells (sheet, tab,
+- **TB9 — CRITICAL. EXPORT-TIME (D-090: applies at the later real-sheet export, not to T-199's build). The first live write is shown, and confirmed, before it happens.** The write plan renders as exact cells (sheet, tab,
   row action, values). `first_write_confirmed_by` and `first_write_confirmed_at` are recorded against the **plan hash**; a changed plan
   (one cell, one row) needs a new confirmation. Confirming needs `project.edit`. `serves:` R48, D-071 (5), O11. *LOCAL. Verify:* the fake
   `SheetClient` records every call; assert **zero write calls** before confirmation, and zero again after a one-cell change to the
@@ -112,7 +112,7 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
   Sync status and last error are visible to `report.view` holders on the tracker page. `serves:` R49, O11. *LOCAL. Verify:* a fake client
   raising on every call, with a bug-producing run processed; the tracker has the bug, the run verdict is untouched, the status is visible;
   then a working client, and the sheet converges.
-- **TB13 — CRITICAL. What is written is clean.** Every value passes `Redactor.scrub` before it leaves; the shown last error does too;
+- **TB13 — CRITICAL. EXPORT-TIME (D-090: applies at the later real-sheet export, not to T-199's build). What is written is clean.** Every value passes `Redactor.scrub` before it leaves; the shown last error does too;
   screenshot links are authenticated product URLs (no public link, no signed URL that works without sign-in). The sheet id is fixed at
   confirmation, and changing it requires re-confirmation (TB9). `serves:` R50, O7, O11. *LOCAL. Verify:* a planted secret in a bug title
   and in an injected error string appears in neither the recorded write plan nor the tracker page; every link in the plan is on the
@@ -122,12 +122,21 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
   binding is never read for project B. A header the code cannot map is `unmapped` and the project still works in-product. `serves:` R47,
   D-071 (5), O11. *LOCAL. Verify:* two fixtures, one test, both pass; a grep of `stages/tracker_*.py` finds no literal Pathlynks column name.
 
+- **TB15 — Export to the Tracker sheet layout, with no live write (D-090).** The tracker page offers an export of the BugStore bugs as
+  **CSV and xlsx** whose columns follow the Tracker sheet's column layout, reusing the `schema/sheet_plan.py` mapping (no second mapping
+  table). Requires `report.view` on the project; every value passes `Redactor.scrub`; screenshot links are authenticated product URLs. The
+  export uses no `SheetClient`, no Google call, no network; the live path stays refused (`LiveWriteRefused` unchanged). Re-exporting the
+  same bug set yields identical bytes. `serves:` R47, D-090, O11. *LOCAL. Verify:* export a fixture set, read both files back and compare
+  header order and cell values to the layout; a user without `report.view` gets not-found; a planted secret in a bug title is absent from
+  both files; a grep of the export module finds no `SheetClient` use and the live write still raises `LiveWriteRefused`; export twice and
+  compare. *Sabotage:* reorder one column in the mapping, the layout test goes red.
+
 ## Held (HUMAN_GATE, not a checker PASS)
 
-- **HG-TB1 — The live first write to the real Pathlynks Tracker.** The contract is proven on a fake `SheetClient`; the live step is a
+- **HG-TB1 — Deferred to export (D-090); does NOT block T-199.** The live first write to the real Pathlynks Tracker. The contract is proven on a fake `SheetClient`; the live step is a
   separate `HUMAN_GATE` row (`qa/gates/`, written by the checker when G8 reaches it). A named user holding `project.edit` is shown the plan
   as exact cells for the real sheet and confirms it; the mapping is agreed by Umesh or Mamta. An unexpected row count in the live sheet is a
-  stop, not a retry. A G8 PASS never counts as this approval, and no agent presses it.
+  stop, not a retry. A G8 PASS never counts as this approval, and no agent presses it. Until it is answered, T-199 delivers TB15 (file export) instead; TB8, TB9, TB10, TB13 bind at the later real-sheet export.
 
 ## Persona walks and cross-platform (inherited by every row)
 
@@ -162,3 +171,7 @@ Statuses are **machine-owned** (TB2); no UI route sets `status`. A user without 
   `report.view` (view) and `project.edit` (assignee edit, binding, confirmation) with no new keys; N is 2 consecutive passes; the live
   first write is `HG-TB1`; the proposal's persona-walk (TB15) and Windows/Ubuntu (TB16) rows are folded in as inherited rules.
   DRAFT until G6's first checker PASS.
+- 2026-10-13 · owner-authorized (D-090, Umesh chat) · **TB7** is required for T-199; new **TB15** (CSV + xlsx export in the Tracker
+  sheet's column layout, no live SheetClient); **HG-TB1** reworded to "deferred to export", not blocking T-199; **TB8, TB9, TB13**
+  marked export-time (they apply at the later real-sheet export). TB10-TB12 and TB14 unchanged and remain proven on the fake client. ·
+  why: Umesh will not have T-199 write to the real PathLynks Tracker; the internal tracker is built first.

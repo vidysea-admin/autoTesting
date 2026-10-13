@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import shutil
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -87,23 +88,21 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
         self._context: Any = None
         self._page: Any = None
 
-    # -- lifecycle ------------------------------------------------------------
     def start(self) -> BrowserSession:
         from playwright.sync_api import sync_playwright
-        timeout = self._timeout()
         self.state.run_dir.mkdir(parents=True, exist_ok=True)
         video_dir = (self.state.run_dir / VIDEO_DIR_NAME / self._video_scratch_id
                      if self.record_video else None)
         self._playwright = sync_playwright().start()
-        if self.budget is not None:
-            self.budget.check_start()
-            timeout = self._timeout()
-        forget_cdp_port(self.paths.profile_dir)  # a stale port file must never read as ours
-        self._context = self._playwright.chromium.launch_persistent_context(
-            **launch_options(self.project, self.paths, record_video_dir=video_dir,
-                             expose_cdp=self.expose_cdp), **timeout
-        )
         try:  # `__exit__` never runs when `__enter__` raises: nothing may outlive a failed start
+            if self.budget is not None:
+                self.budget.check_start()
+            timeout = self._timeout()
+            forget_cdp_port(self.paths.profile_dir)  # a stale port file must never read as ours
+            self._context = self._playwright.chromium.launch_persistent_context(
+                **launch_options(self.project, self.paths, record_video_dir=video_dir,
+                                 expose_cdp=self.expose_cdp), **timeout
+            )
             self._page = self._context.pages[0] if self._context.pages else self._context.new_page()
             self._timeout()
             if self.expose_cdp:
@@ -125,23 +124,27 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
 
     def _close_quietly(self) -> None:
         """Teardown on a failure path: a `close()` error must never mask the error being raised.
-        `close()` clears its state and the port file in `finally`, so nothing is left behind."""
+        `close()` clears its state and the port file, so nothing is left behind."""
         with contextlib.suppress(Exception):
             self.close()
 
     def close(self) -> None:
         """Close only this session's context and driver (B9). Never a process kill."""
-        try:
-            if self._context is not None:
-                self._context.close()
-        finally:
-            self._context = self._page = self._cdp_url = None
+        context, driver = self._context, self._playwright
+        self._context = self._page = self._playwright = self._cdp_url = None
+        for step in (getattr(context, "close", None), getattr(driver, "stop", None)):
+            if callable(step):  # each teardown step guarded: one failure skips none
+                with contextlib.suppress(Exception):
+                    step()
+        with contextlib.suppress(Exception):
             forget_cdp_port(self.paths.profile_dir)
-            if self._playwright is not None:
-                self._playwright.stop()
-                self._playwright = None
-            if self.record_video:
-                self._sweep_orphan_videos()
+        if self.record_video:
+            self._sweep_orphan_videos()
+
+    def _sweep_orphan_videos(self) -> None:
+        """Sweep only this session's video scratch, never a sibling's (V1)."""
+        scratch = self.state.run_dir / VIDEO_DIR_NAME / self._video_scratch_id
+        shutil.rmtree(scratch, ignore_errors=True)
 
     def __enter__(self) -> BrowserSession:
         return self.start()

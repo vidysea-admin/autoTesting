@@ -108,6 +108,34 @@ per-bug row showing who found it. Umesh's verdict (he owns it — *"mai btuangaa
 a decision **on** this artifact, never computed by it: the script asserts completeness, it does
 not assert that AutoTester won.
 
+### K10 — No-human-list mode is supported and honest (D-090)
+T-136 is built and accepted without the independent human bug list (D-089 item 3, D-090). With no list, the comparison artifact states
+recall as `unavailable until the human list arrives`, which is the K8 marker with that reason, never `0.0` and never a number. The
+system must work and report in this mode as a supported mode, not an error: `scripts/check_acceptance_comparison.py` accepts the
+artifact when K6, K7 and the other K9 fields are complete and recall is the unavailable marker with its reason. **False-positive rate
+and wall-clock must still be present as numbers from `BenchTrial.score`** (or the K8 marker only when their own input is missing); an
+artifact whose FP rate or time is missing or defaulted fails. When a human list later arrives, K7 ordering applies and recall is
+computed from the independent subset only. Verify: build a trial with no human list; assert recall carries the reason string, FP rate and
+time are numbers, and the check script exits 0; remove the FP rate, it exits non-zero. Mutation: default recall to 0.0, the K8 test
+goes red.
+
+### K11 — A real project's stored run converts to bench files without inventing numbers (T-136b; D-089 item 3, D-090)
+`scripts/bench_from_run.py <slug> --run <id>` (stage `stages/bench_from_run.py`) turns an executed+graded stored run into the
+acceptance bench files. It is a converter only: it sits on K3, K8 and K10 and adds no scoring of its own.
+- **K11a** The trial (kind `autotester`, id `<slug>-acceptance-autotester`) is built only by `stages.bench.run_autotester_trial`
+  (findings via `findings_from_verdicts`); no scoring or finding arithmetic anywhere in the script or stage (K3). Re-running replaces
+  the trial in place, never adds a second.
+- **K11b** A missing run, or a run with no verdict for any one of its `case_ids`, is refused: exit 2, a message on stderr, and nothing
+  written (no corpus, no trial).
+- **K11c** Corpus: a stored `<slug>-acceptance` corpus (a human list) is used untouched and never overwritten, and its `--bug-map`
+  mapping applies. Absent, an empty `mode=unknown` corpus is saved, so recall reads the K10 unavailable marker and every
+  AutoTester finding is unadjudicated; no bug is invented to match against.
+- **K11d** Duration is measured only: the run's `finished_at - started_at`, else the sum of the stored per-case durations of the
+  run, else `None` (K8 unavailable; the K9 check script then fails). Never defaulted to 0.0. A run whose per-case results are only
+  partly stored must not be summed into a lower, flattering total.
+Verify: fixture run, no human list: trial saved, `check_acceptance_comparison.py` exits 0, recall unavailable, FP rate a number;
+ungraded run exits 2 with no files; untimed run with no results gives `duration_s is None`; human corpus present stays byte-identical.
+
 ## No-fire list
 
 - **Scheduling, recruiting or instrumenting the human tester** — Umesh supplies the tester and
@@ -137,3 +165,8 @@ not assert that AutoTester won.
   **Changes-authorized:** qa/contracts/bench.md Purpose, Criteria (K6–K9), No-fire list (this
   entry). No enforcement-path file touched. **Links:** AT-281; AT-653; AT-570;
   qa/gates/write-policy-tier.md; T-169; T-136; T-120.
+- 2026-10-13 · owner-authorized (D-090, Umesh chat) · **K10** added: T-136 is built without the human list; recall is `unavailable until
+  the human list arrives`; FP rate and time must still pass. K6-K9 unchanged. **Links:** D-089 item 3; D-090; T-136; T-169.
+- 2026-10-13 · /checker fold-in (t136b-bench-from-run) · **K11a-d** added from the maker's proposal in `qa/feedback-inbox.md`,
+  tightened (refusal writes nothing; partial per-case durations never summed). Consistent with D-089 item 3 and D-090 (no human list
+  means recall unavailable, no invented numbers). K1-K10 unchanged. **Links:** D-089; D-090; T-136; T-136b.

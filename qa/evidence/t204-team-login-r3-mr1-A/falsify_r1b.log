@@ -1,0 +1,392 @@
+SRC C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\fz1\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\fz1
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 25 items
+
+tests\test_ui_auth_surface.py ....                                       [ 16%]
+tests\test_ui_auth_login.py F.FFFFFFFFFFFFF.FFF..                        [100%]
+
+================================== FAILURES ===================================
+_______________ test_au1_password_is_argon2id_and_never_stored ________________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au1_password_is_argon2id_0/root')
+caplog = <_pytest.logging.LogCaptureFixture object at 0x00000219DBA85710>
+
+    def test_au1_password_is_argon2id_and_never_stored(root: Path,
+                                                       caplog: pytest.LogCaptureFixture) -> None:
+        canary = "Canary-Pw-7f3e91ab"
+        caplog.set_level(logging.DEBUG)
+        resp = client().post("/auth/signup", data={"email": ADMIN, "password": canary})
+>       assert resp.status_code == 303
+E       assert 401 == 303
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:41: AssertionError
+------------------------------ Captured log call ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+INFO     httpx2:_client.py:1085 HTTP Request: POST http://testserver/auth/signup "HTTP/1.1 401 Unauthorized"
+___ test_au2_success_redirects_to_a_same_site_next[/projects/x-/projects/x] ___
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au2_success_redirects_to_0/root')
+given = '/projects/x', lands = '/projects/x'
+
+    @pytest.mark.parametrize(("given", "lands"), [
+        ("/projects/x", "/projects/x"), ("https://evil.example/", "/"),
+        ("//evil.example", "/"), ("javascript:alert(1)", "/")])
+    def test_au2_success_redirects_to_a_same_site_next(root: Path, given: str, lands: str) -> None:
+        account(ADMIN)
+        resp = client().post("/auth/login",
+                             data={"email": ADMIN, "password": PASSWORD, "next": given})
+>       assert resp.status_code == 303 and resp.headers["location"] == lands
+E       assert (401 == 303)
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:72: AssertionError
+___ test_au2_success_redirects_to_a_same_site_next[https://evil.example/-/] ___
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au2_success_redirects_to_1/root')
+given = 'https://evil.example/', lands = '/'
+
+    @pytest.mark.parametrize(("given", "lands"), [
+        ("/projects/x", "/projects/x"), ("https://evil.example/", "/"),
+        ("//evil.example", "/"), ("javascript:alert(1)", "/")])
+    def test_au2_success_redirects_to_a_same_site_next(root: Path, given: str, lands: str) -> None:
+        account(ADMIN)
+        resp = client().post("/auth/login",
+                             data={"email": ADMIN, "password": PASSWORD, "next": given})
+>       assert resp.status_code == 303 and resp.headers["location"] == lands
+E       assert (401 == 303)
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:72: AssertionError
+______ test_au2_success_redirects_to_a_same_site_next[//evil.example-/] _______
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au2_success_redirects_to_2/root')
+given = '//evil.example', lands = '/'
+
+    @pytest.mark.parametrize(("given", "lands"), [
+        ("/projects/x", "/projects/x"), ("https://evil.example/", "/"),
+        ("//evil.example", "/"), ("javascript:alert(1)", "/")])
+    def test_au2_success_redirects_to_a_same_site_next(root: Path, given: str, lands: str) -> None:
+        account(ADMIN)
+        resp = client().post("/auth/login",
+                             data={"email": ADMIN, "password": PASSWORD, "next": given})
+>       assert resp.status_code == 303 and resp.headers["location"] == lands
+E       assert (401 == 303)
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:72: AssertionError
+____ test_au2_success_redirects_to_a_same_site_next[javascript:alert(1)-/] ____
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au2_success_redirects_to_3/root')
+given = 'javascript:alert(1)', lands = '/'
+
+    @pytest.mark.parametrize(("given", "lands"), [
+        ("/projects/x", "/projects/x"), ("https://evil.example/", "/"),
+        ("//evil.example", "/"), ("javascript:alert(1)", "/")])
+    def test_au2_success_redirects_to_a_same_site_next(root: Path, given: str, lands: str) -> None:
+        account(ADMIN)
+        resp = client().post("/auth/login",
+                             data={"email": ADMIN, "password": PASSWORD, "next": given})
+>       assert resp.status_code == 303 and resp.headers["location"] == lands
+E       assert (401 == 303)
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:72: AssertionError
+______________________ test_au3_cookie_flags_plain_http _______________________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_cookie_flags_plain_ht0/root')
+
+    def test_au3_cookie_flags_plain_http(root: Path) -> None:
+        account(ADMIN)
+>       header = _cookie_header().lower()
+                 ^^^^^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+kwargs = {}
+
+    def _cookie_header(**kwargs: object) -> str:
+        resp = client(**kwargs).post("/auth/login", data={"email": ADMIN, "password": PASSWORD})
+>       assert resp.status_code == 303
+E       assert 401 == 303
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:77: AssertionError
+________________ test_au3_cookie_secure_over_https_and_hosted _________________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_cookie_secure_over_ht0/root')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000219DBA7A490>
+
+    def test_au3_cookie_secure_over_https_and_hosted(root: Path,
+                                                     monkeypatch: pytest.MonkeyPatch) -> None:
+        account(ADMIN)
+>       header = _cookie_header(base_url="https://testserver").lower()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+kwargs = {'base_url': 'https://testserver'}
+
+    def _cookie_header(**kwargs: object) -> str:
+        resp = client(**kwargs).post("/auth/login", data={"email": ADMIN, "password": PASSWORD})
+>       assert resp.status_code == 303
+E       assert 401 == 303
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:77: AssertionError
+_____________________ test_au3_new_session_id_every_login _____________________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_new_session_id_every_0/root')
+
+    def test_au3_new_session_id_every_login(root: Path) -> None:
+        account(ADMIN)
+>       first = login(ADMIN).cookies.get("at_session")
+                ^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'admin@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+________ test_au3_bad_cookie_is_refused_and_creates_nothing[tampered] _________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_bad_cookie_is_refused0/root')
+damage = 'tampered'
+
+    @pytest.mark.parametrize("damage", ["tampered", "truncated", "unknown", "expired"])
+    def test_au3_bad_cookie_is_refused_and_creates_nothing(root: Path, damage: str) -> None:
+        account(ADMIN)
+>       good = login(ADMIN).cookies["at_session"]
+               ^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'admin@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+________ test_au3_bad_cookie_is_refused_and_creates_nothing[truncated] ________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_bad_cookie_is_refused1/root')
+damage = 'truncated'
+
+    @pytest.mark.parametrize("damage", ["tampered", "truncated", "unknown", "expired"])
+    def test_au3_bad_cookie_is_refused_and_creates_nothing(root: Path, damage: str) -> None:
+        account(ADMIN)
+>       good = login(ADMIN).cookies["at_session"]
+               ^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'admin@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+_________ test_au3_bad_cookie_is_refused_and_creates_nothing[unknown] _________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_bad_cookie_is_refused2/root')
+damage = 'unknown'
+
+    @pytest.mark.parametrize("damage", ["tampered", "truncated", "unknown", "expired"])
+    def test_au3_bad_cookie_is_refused_and_creates_nothing(root: Path, damage: str) -> None:
+        account(ADMIN)
+>       good = login(ADMIN).cookies["at_session"]
+               ^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'admin@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+_________ test_au3_bad_cookie_is_refused_and_creates_nothing[expired] _________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_bad_cookie_is_refused3/root')
+damage = 'expired'
+
+    @pytest.mark.parametrize("damage", ["tampered", "truncated", "unknown", "expired"])
+    def test_au3_bad_cookie_is_refused_and_creates_nothing(root: Path, damage: str) -> None:
+        account(ADMIN)
+>       good = login(ADMIN).cookies["at_session"]
+               ^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'admin@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+______________ test_au3_disable_takes_effect_on_the_next_request ______________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_disable_takes_effect_0/root')
+
+    def test_au3_disable_takes_effect_on_the_next_request(root: Path) -> None:
+        account(ADMIN)
+        tester = account("t@team.test", "tester")
+>       c = login("t@team.test")
+            ^^^^^^^^^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 't@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+__________ test_au3_session_lookup_itself_refuses_a_disabled_account __________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au3_session_lookup_itself0/root')
+
+    def test_au3_session_lookup_itself_refuses_a_disabled_account(root: Path) -> None:
+        """The store flag alone (sessions left in place) still ends access: the lookup
+        joins on an enabled account, not only the disable action's session purge."""
+        account(ADMIN)
+        account("t@team.test", "tester")
+>       c = login("t@team.test")
+            ^^^^^^^^^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 't@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+______________________ test_au4_logout_ends_the_session _______________________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au4_logout_ends_the_sessi0/root')
+
+    def test_au4_logout_ends_the_session(root: Path) -> None:
+        account(ADMIN)
+>       c = login(ADMIN)
+            ^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:158: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'admin@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+______________________ test_au4_logout_is_origin_guarded ______________________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au4_logout_is_origin_guar0/root')
+
+    def test_au4_logout_is_origin_guarded(root: Path) -> None:
+        account(ADMIN)
+>       c = login(ADMIN)
+            ^^^^^^^^^^^^
+
+tests\test_ui_auth_login.py:169: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'admin@team.test', password = 'correct-horse-battery'
+
+    def login(email: str, password: str = PASSWORD) -> TestClient:
+        c = client()
+        resp = c.post("/auth/login", data={"email": email, "password": password})
+>       assert resp.status_code == 303, resp.text
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {"detail":"authentication required"}
+
+tests\auth_harness.py:50: AssertionError
+__________ test_au5_lock_after_failures_even_with_the_right_password __________
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27884/test_au5_lock_after_failures_e0/root')
+
+    def test_au5_lock_after_failures_even_with_the_right_password(root: Path) -> None:
+        account(ADMIN)
+        for _ in range(MAX_FAILURES_PER_ACCOUNT + 1):
+            client().post("/auth/login", data={"email": ADMIN, "password": "wrong-password-1"})
+        locked = client().post("/auth/login", data={"email": ADMIN, "password": PASSWORD})
+>       assert locked.status_code == 429
+E       assert 401 == 429
+E        +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests\test_ui_auth_login.py:179: AssertionError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_login.py::test_au1_password_is_argon2id_and_never_stored
+FAILED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[/projects/x-/projects/x]
+FAILED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[https://evil.example/-/]
+FAILED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[//evil.example-/]
+FAILED tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[javascript:alert(1)-/]
+FAILED tests/test_ui_auth_login.py::test_au3_cookie_flags_plain_http - assert...
+FAILED tests/test_ui_auth_login.py::test_au3_cookie_secure_over_https_and_hosted
+FAILED tests/test_ui_auth_login.py::test_au3_new_session_id_every_login - Ass...
+FAILED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[tampered]
+FAILED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[truncated]
+FAILED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[unknown]
+FAILED tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[expired]
+FAILED tests/test_ui_auth_login.py::test_au3_disable_takes_effect_on_the_next_request
+FAILED tests/test_ui_auth_login.py::test_au3_session_lookup_itself_refuses_a_disabled_account
+FAILED tests/test_ui_auth_login.py::test_au4_logout_ends_the_session - Assert...
+FAILED tests/test_ui_auth_login.py::test_au4_logout_is_origin_guarded - Asser...
+FAILED tests/test_ui_auth_login.py::test_au5_lock_after_failures_even_with_the_right_password
+================== 17 failed, 8 passed, 1 warning in 14.07s ===================
+EXIT 1

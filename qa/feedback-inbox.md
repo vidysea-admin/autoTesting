@@ -5800,6 +5800,8 @@ Concrete CitationReview candidates (root owns adoption and any reference-line re
 Release: only this attributed receipt was appended outside CURRENT. Parent owns mechanical validation/adoption and remaining inventory; no checker dispatch, code edit, migration or acceptance claim was made.
 
 2026-10-06T19:34:10Z · Umesh (chat, VS Code session) · verbatim: "plan out to fix it all and build it" — context: after a status report (59/82 goal tasks done; dirty master with 2 failing tests + 1597 doctor violations; queue AT-733 → T-125 c4 → T-151). PATTERN: human-asked authorization to work the whole remaining backlog in plan.md order; reconcile the dirty tree first. EVIDENCE: this session. APPLIES NEXT: every maker tick until BACKLOG_EMPTY; human gates still asked once each.
+
+2026-10-07T00:00:00Z · Umesh (chat, via /maker relay) · gate `qa/gates/t196-l10-coverage.md` Answered B, verbatim: "logic badalte rehte hai, product evolve hota hai, purane ka acha part rakh kar later update kar sakte hai". FOLDED by /checker (contract maintenance): L10 amended with a sealed-record disposition (qa/contracts/living-ledger.md, amendment log 2026-10-07). New, changed and unreviewed occurrences still fail doctor; the 2 disputed historical claims (D-006 body docs/DECISIONS.md:80; D-014 body docs/DECISIONS.md:209 first D-005) stay open pending Umesh's ruling, listed known-disputed and non-blocking, never sealable. PATTERN: owner prefers keeping good historical work and updating later over mass re-review of dead records. APPLIES NEXT: T-196 maker may wire `check_citation_subjects` into doctor once the sealed-row inventory exists; a low issue row for the 2 disputed claims is still to be filed.
 2026-10-07T05:27:00Z · maker (live run, Umesh's Gemini-flash ingest of 3 Pathlynks dev videos) · PATTERN: `ingest run` silently OVERWRITES an existing DRAFT flowspec.json (persist_ingest guards only APPROVED, ingest.py:234-249; one file per project, project_store.py:94) and saves no observation, so a multi-video intake loses every video but the last with no warning. EVIDENCE: V1 17 screens + V2 19 screens lost, V3 10 screens kept (2026-10-07 10:50); recovered only by paying for 2 more Gemini calls with --merge. Also, `ingest map` reads only `analyze` results, so after `run` it shows 0 screens (product_map.py:65-94). APPLIES NEXT: T-198 developer intake (many videos per upload) must default to merge or refuse to overwrite a DRAFT with another source's spec; a contract criterion is needed. Also: AT-744 is fixed by the maker (goal.json done_checks switched to check_deliverable --exists; tests/test_goal_done_checks.py 7 passed); the checker should verify and flip it.
 
 ## 2026-10-07 · Umesh (chat, verbatim) · answers to the five asks → D-070
@@ -5868,3 +5870,48 @@ Open question for checker-owned reconciliation, not a user product question: LL1
 Whole-task closure still requires LL16's two individually approved vendor-family calls and typed evidence at qa/evidence/t202-smoke.md. Local integration identities, plan approval, supporting source review and fake probe success do not close T-202 or prove hosting/live readiness.
 
 VERDICT: Approve (PLAN ONLY; implementation constrained to the above existing targets and frozen-input prerequisites).
+
+## 2026-10-13 · Umesh (chat) · T-136 / T-199 / T-203 answers → D-090
+
+1. T-136: independent human tester bug list will come later; build T-136 now without it (D-089 item 3). Recall "unavailable until human list arrives"; FP rate and time still measured and must pass.
+2. T-199: do NOT write to the real PathLynks Tracker sheet. Build an internal tracker inside AutoTester (tracker page over `store/bug_store.py` BugStore); export later to the sheet (CSV/xlsx in the Tracker sheet's column layout). Real-sheet write is a deferred export, not a T-199 blocker.
+3. T-203: production host will be Ubuntu, host+DNS later. For now build and host on this Windows machine (no Docker): launcher script + Windows Scheduled Task (start at boot, restart on failure), bound to 127.0.0.1 behind T-204 login by default, LAN exposure a single setting; Ubuntu Docker files untouched.
+
+Contract amendments requested: `team-bug-loop.md` TB7 required for T-199, new export criterion (CSV + xlsx, Tracker column layout, reuse `schema/sheet_plan.py` mapping, no live SheetClient, LiveWriteRefused stays), HG-TB1 "deferred to export (D-090)", TB8/TB9/TB13 export-time; `hosting.md` split Local Windows host (now) / Ubuntu host (later), HO10/HO11/HO13/HO34-HO36 deferred, new local criteria; `bench.md` recall unavailable until human list, FP rate and time must pass.
+
+**Status:** folded (2026-10-13, /checker contract maintenance) → `qa/contracts/team-bug-loop.md` TB7, TB15 (new), HG-TB1, TB8/TB9/TB13 export-time; `qa/contracts/hosting.md` "Local Windows host (now, D-090)" HO39-HO46 (new), HO10/HO11/HO13/HO34-HO36 deferred to Ubuntu; `qa/contracts/bench.md` K10 (new). Gates updated: t136, t199, t203.
+
+## 2026-10-13 · Umesh (chat) · T-204 AU24 Linux run → D-091
+
+Skip Docker on this Windows machine. The T-204 Linux/Docker proof run (AU24, `qa/evidence/t204-linux-run.md`) is deferred to the production Ubuntu server, same as D-090 did for T-203's Ubuntu-only criteria. T-204 may close on this machine once its other criteria pass.
+
+**Status:** folded (2026-10-13, /checker contract maintenance) → `qa/contracts/auth.md` AU24 marked "DEFERRED TO UBUNTU (D-091)", not blocking T-204.
+
+## 2026-10-13 · maker (t136b-bench-from-run) · proposed criteria for bench.md (K11, not yet in contract)
+
+Maker never edits contracts; checker to fold or amend. K1-K10 do not cover converting a real project's stored run into bench files.
+
+- **K11a** `scripts/bench_from_run.py <slug> --run <id>` converts an executed+graded stored run into the `BenchTrial` (kind `autotester`, id `<slug>-acceptance-autotester`) via `stages.bench.run_autotester_trial`; no scoring arithmetic of its own (K3). Re-running replaces the trial, never adds a second.
+- **K11b** A run with no verdict for any of its `case_ids`, or a missing run, is refused (exit 2) and writes nothing.
+- **K11c** Corpus: a stored `<slug>-acceptance` corpus (a human list) is used untouched; absent, an empty `mode=unknown` corpus is saved, so recall is unavailable and every AutoTester finding is unadjudicated (K10).
+- **K11d** Duration is measured only: the run's `finished_at - started_at`, else the sum of stored per-case durations, else None (K8 unavailable, check script fails). Never defaulted.
+
+**Status:** folded (2026-10-13, /checker) -> `qa/contracts/bench.md` K11a-d (tightened: refusal writes nothing; partial per-case durations never summed).
+
+## 2026-10-13 · /checker (contract maintenance) · T-174 cli-mcp.md tighten + activate
+
+Maker manifest asked: does `Catalog` satisfy CM4 "tool outputs use the CM2 schema"; is `schedule tick` keeping its own exit codes acceptable.
+
+**Status:** folded (2026-10-13) -> `qa/contracts/cli-mcp.md` CM1 (scope: tick/doctor keep own codes), CM3 (dry run mints/checks no approval), CM4 (`Catalog` accepted; typed `extra="forbid"` models), Status ACTIVE.
+
+## From maker t179d-agent-layer (2026-10-13), for /checker
+
+1. **AL1 floor.** Contract AL1 still says `deepagents>=1.7`; D-089 item 1 (Approved-by Umesh) pins `>=0.7.24,<0.8` and says the checker amends the text. Built to D-089 (`pyproject.toml`). Please amend AL1.
+2. **AL1 "to-do-list middleware".** In deepagents 0.7.24 `create_deep_agent` does NOT add `write_todos` by default. Narrowest reading: add the framework's own `langchain.agents.middleware.TodoListMiddleware` explicitly. Done; confirm that satisfies "exposes the Deep Agents planning middleware".
+3. **AL4 `skills=`.** `skills=["/"]` over a read-only `FilesystemBackend` rooted at `src/autotester/skills/` (SK1 folders). This exposes every packaged skill (not only `agent-*`) to the lead as available skills. Narrowest alternative (a staged dir holding only `agent-*`) was not built. Is exposing all acceptable?
+4. **AL2 `capture_network`.** The contract does not say what the tool takes. Narrowest reading: `capture_network(case_id)` re-reads the case's stored NETWORK evidence and filters it through `stages/network_capture.py::first_party_evidence` (READ effect, no browser). Live capture stays with `run_case`.
+5. **AL5 coverage.** Spans use the existing `ToolSpan` (t179c). The framework's built-in tools (`write_todos`, file tools) also get a tool span; the `task` built-in gets a `delegate` span. The subagent's own inner calls are spanned too (the same middleware instance is given to each).
+6. **AL11-AL13 scope.** The contract groups these under T-181; the brief asked for them in T-179 where in scope. Built: AL11 meter + halt in the framework path only (`agents/budget.py`, `lead_agent.py`); `run_lead` (t179c loop) has no budget. AL12/AL13: `agents/comparison.py` scores both paths with `stages/bench.py` and writes a report with the verdict line, tested on a fixture with injected verdicts. NOT built: a runner that executes the real pipeline (`run_and_grade_case`) and the real agent on a seeded product with a browser. That needs a live browser and belongs with T-181's `tests/test_agent_gain.py`. Please say whether AL12 can be judged on injected verdicts or needs the live run.
+7. **AL7 on the framework path.** Only judgement subagents (explorer, test-designer, grader, reporter) are registered; `runner`, and the framework's default `general-purpose` subagent, are refused by the rails middleware (no delegation made, counted as a refusal).
+
+**Status:** folded 2026-10-13 by /checker t179d-agent-layer (cycle 1 PASS) -> qa/contracts/agent-layer.md. Items 1-7 above: (1) AL1 amended to `>=0.7.24,<0.8` per D-089; (2) explicit TodoListMiddleware accepted; (3) `skills=["/"]` read-only exposing all packaged skills ruled NOT an AL4 violation; (4) `capture_network(case_id)` written into AL2; (5) per-call spans accepted under AL5; (6) AL11 and the AL12/AL13 comparison mechanism judged in T-179 on injected verdicts, live comparison and keep/drop belong to T-181; (7) AL7 refusal of non-judgement delegation accepted.

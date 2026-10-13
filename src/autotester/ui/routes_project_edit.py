@@ -32,6 +32,7 @@ from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths
 from autotester.schema.project import Project, SecretRef
 from autotester.ui import theme
+from autotester.ui.credential_guard import refuse_foreign_key
 from autotester.ui.helpers import (
     _load_project_or_404,
     _refuse_unsafe_submission,
@@ -46,20 +47,23 @@ def build_secret_ref(
     project: Project, key: str, domains: str, description: str = "",
     *, mask_in_screenshot: bool = True,
 ) -> SecretRef:
-    """Build one scoped reference without ever including its submitted value in errors."""
+    """Build one scoped reference without ever including its submitted value in errors.
+    The key must be this project's own namespaced key (AU21, `refuse_foreign_key`)."""
     scope = [domain.strip() for domain in domains.split(",") if domain.strip()]
     if not scope:
         raise HTTPException(400, "name at least one host this credential may be typed into")
     if any(not project.allows_domain(domain.lower().lstrip(".")) for domain in scope):
         raise HTTPException(400, "credential scope must stay inside the project's allowed domains")
     try:
-        return SecretRef(
+        ref = SecretRef(
             key=key.strip(), description=description.strip() or None, domains=scope,
             mask_in_screenshot=mask_in_screenshot,
         )
     except ValidationError as exc:
         why = exc.errors()[0]["msg"]
         raise HTTPException(400, f"cannot declare this credential: {why}") from exc
+    refuse_foreign_key(project, ref.key)
+    return ref
 
 
 def parse_secret_rows(

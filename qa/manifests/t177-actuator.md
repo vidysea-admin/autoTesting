@@ -5,8 +5,8 @@ Policy-Version: proportional-verification/2026-10-10.9
 Tier: L
 Dual check: required
 dual-trigger: security src/autotester/providers/isolated.py (killable child process around the model call) and src/autotester/browser/video.py (secret mask on every tab)
-Fix cycle: 1
-Status: checked-PASS
+Fix cycle: 2
+Status: ready-for-check
 
 ## Criteria (qa/contracts/agent-fallback.md)
 - AF4 hard return: `providers/isolated.py::IsolatedProvider` runs `Provider.act` in a spawned child, kills it at the deadline, raises named `ProviderDeadline` (a `ProviderError`). Authorized by D-089 item 2 (new module). `BrowserUseBackend._drive` binds the provider deadline to the invocation wall clock (`bind_deadline`), and `ProviderChatModel` validates the raw JSON text an isolated provider returns for a dynamic (browser-use) schema.
@@ -25,3 +25,8 @@ test_isolated_provider 7, test_isolated_backend 2, test_browser_session_cdp, tes
 - Merging master into this branch conflicts in `browser/secrets.py`, `browser/session.py`, `uv.lock`, `docs/MAP.md`, `tests/test_browser_navigation_secrets.py` (master reworked teardown and exact-host secrets; the slice 0 seam is not on master yet). Not resolved here; the merge owner must reconcile, taking master's `close()` teardown plus the CDP forget/publish lines.
 - Spawn start-up adds roughly 1-3 s per isolated call on this host; the deadline includes it.
 - Host caveat from slice 2: pymupdf needs msvcp140/vcruntime140_1 beside it (copied from the Edge folder into the untracked .venv).
+
+## Fix cycle 2 - merge of master (AT-651, T-174, T-179)
+- Conflicts: browser/secrets.py (kept master's exact-host `_host_matches`/`_norm_host`, no suffix matching; kept T-177 `bad_scheme`), browser/session.py (T-177 CDP start/close merged with master's guarded teardown and `_sweep_orphan_videos`), tests/test_browser_navigation_secrets.py (both sides' tests kept), uv.lock (master's, then `uv lock`), docs/MAP.md (regenerated).
+- D-089 item 2: IsolatedProvider already exists and is bound by BrowserUseBackend._drive; no production code constructs AgentActuator/BrowserUseBackend yet, so there is no production path to wire. Left as is.
+- Verified: 454 passed, 1 skipped across 29 related test files; ruff clean; doctor has no violation of ours.

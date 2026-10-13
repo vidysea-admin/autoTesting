@@ -1,0 +1,53 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- D:\autoTesting\.worktrees\t204-team-login\.venv\Scripts\python.exe
+rootdir: D:\autoTesting\.worktrees\t204-team-login
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collecting ... collected 31 items
+
+tests/test_ui_auth_login.py::test_au1_password_is_argon2id_and_never_stored PASSED [  3%]
+tests/test_ui_auth_login.py::test_au2_failures_are_identical PASSED      [  6%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[/projects/x-/projects/x] PASSED [  9%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[https://evil.example/-/] PASSED [ 12%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[//evil.example-/] PASSED [ 16%]
+tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[javascript:alert(1)-/] PASSED [ 19%]
+tests/test_ui_auth_login.py::test_au3_cookie_flags_plain_http PASSED     [ 22%]
+tests/test_ui_auth_login.py::test_au3_cookie_secure_over_https_and_hosted PASSED [ 25%]
+tests/test_ui_auth_login.py::test_au3_new_session_id_every_login PASSED  [ 29%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[tampered] PASSED [ 32%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[truncated] PASSED [ 35%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[unknown] PASSED [ 38%]
+tests/test_ui_auth_login.py::test_au3_bad_cookie_is_refused_and_creates_nothing[expired] PASSED [ 41%]
+tests/test_ui_auth_login.py::test_au3_disable_takes_effect_on_the_next_request PASSED [ 45%]
+tests/test_ui_auth_login.py::test_au3_session_lookup_itself_refuses_a_disabled_account PASSED [ 48%]
+tests/test_ui_auth_login.py::test_au3_lifetime_is_bounded PASSED         [ 51%]
+tests/test_ui_auth_login.py::test_au4_logout_ends_the_session PASSED     [ 54%]
+tests/test_ui_auth_login.py::test_au4_logout_is_origin_guarded PASSED    [ 58%]
+tests/test_ui_auth_login.py::test_au5_lock_after_failures_even_with_the_right_password PASSED [ 61%]
+tests/test_ui_auth_login.py::test_au5_the_window_passes PASSED           [ 64%]
+tests/test_ui_auth_login.py::test_au5_per_address_limit PASSED           [ 67%]
+tests/test_cli_harness_safety.py::test_running_every_command_leaves_the_repository_untouched PASSED [ 70%]
+tests/test_cli_harness_safety.py::test_snapshot_print_is_what_makes_the_repo_level_test_safe PASSED [ 74%]
+tests/test_cli_harness_safety.py::test_map_has_no_read_only_mode_which_is_why_it_is_excluded PASSED [ 77%]
+tests/test_cli_harness_safety.py::test_every_placeholder_stays_inside_the_temp_root PASSED [ 80%]
+tests/test_hard_timeout.py::test_a_body_that_finishes_in_time_is_untouched PASSED [ 83%]
+tests/test_hard_timeout.py::test_an_error_inside_the_bound_propagates_unchanged PASSED [ 87%]
+tests/test_hard_timeout.py::test_a_sleeping_body_is_interrupted_and_fails_within_the_bound PASSED [ 90%]
+tests/test_hard_timeout.py::test_a_body_blocked_on_a_child_started_after_arming_is_freed_by_killing_it PASSED [ 93%]
+tests/test_hard_timeout.py::test_a_child_started_before_arming_survives_the_trip PASSED [ 96%]
+tests/test_hard_timeout.py::test_the_main_thread_still_wakes_when_the_kill_step_raises PASSED [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 6 durations =============================
+88.35s call     tests/test_cli_harness_safety.py::test_running_every_command_leaves_the_repository_untouched
+20.12s call     tests/test_ui_auth_login.py::test_au2_failures_are_identical
+18.01s call     tests/test_cli_harness_safety.py::test_every_placeholder_stays_inside_the_temp_root
+17.68s call     tests/test_ui_auth_login.py::test_au3_disable_takes_effect_on_the_next_request
+9.85s call     tests/test_ui_auth_login.py::test_au2_success_redirects_to_a_same_site_next[https://evil.example/-/]
+9.04s call     tests/test_cli_harness_safety.py::test_snapshot_print_is_what_makes_the_repo_level_test_safe
+================== 31 passed, 1 warning in 272.67s (0:04:32) ==================

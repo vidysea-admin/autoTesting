@@ -1,0 +1,40 @@
+SRC C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\fz2\src\autotester\__init__.py
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\fz2
+configfile: pyproject.toml
+plugins: anyio-4.15.0, langsmith-0.12.1
+collected 3 items
+
+tests\test_ui_auth_groups.py .                                           [ 33%]
+tests\test_ui_auth_escalation.py .F                                      [100%]
+
+================================== FAILURES ===================================
+_ test_au13_the_access_page_lists_team_emails_only_to_those_who_manage_access _
+
+root = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-27880/test_au13_the_access_page_list0/root')
+
+    def test_au13_the_access_page_lists_team_emails_only_to_those_who_manage_access(
+            root: Path) -> None:
+        users = team()
+        project(root, "mine")
+        set_owner("mine", user_id("dev@team.test"))
+        set_relation("mine", user_id("sub@team.test"), ProjectRelation.ASSIGNED, True)
+        set_relation("mine", user_id("tester@team.test"), ProjectRelation.SHARED, True)
+>       assert users["tester"].get("/projects/mine/access").status_code == 403
+E       AssertionError: assert 404 == 403
+E        +  where 404 = <Response [404 Not Found]>.status_code
+E        +    where <Response [404 Not Found]> = get('/projects/mine/access')
+E        +      where get = <starlette.testclient.TestClient object at 0x0000022DC00DC390>.get
+
+tests\test_ui_auth_escalation.py:236: AssertionError
+============================== warnings summary ===============================
+D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_escalation.py::test_au13_the_access_page_lists_team_emails_only_to_those_who_manage_access
+=================== 1 failed, 2 passed, 1 warning in 8.33s ====================
+EXIT 1

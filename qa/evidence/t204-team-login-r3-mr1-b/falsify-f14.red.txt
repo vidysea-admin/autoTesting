@@ -1,0 +1,6 @@
+E       AssertionError: assert {('GET', '/au...', None), ...} == {('GET', '/au...', None), ...}
+E         
+E         Omitting 71 identical items, use -vv to show
+E         Differing items:
+E         {('POST', '/projects/{slug}/crawl-approval'): ('project', 'project.view')} != {('POST', '/projects/{slug}/crawl-approval'): ('project', 'project.run')}
+E         {('POST', '/projects/{slug}/explore'): ('project', 'project.view')} != {('POST', '/projects/{slug}/explore'): ('project', 'project.run')}

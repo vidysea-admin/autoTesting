@@ -1,4 +1,4 @@
-# Contract — hosting: AutoTester as a website on Ubuntu (T-203), with the run queue, schedule, report-mail and video-intake rows (D-072)
+# Contract — hosting: AutoTester as a website, local Windows host now (D-090) and Ubuntu later (T-203), with the run queue, schedule, report-mail and video-intake rows (D-072)
 
 **Covers:** goal task T-203 (hosting), plus the rows D-072 added around it (run queue and concurrency setting, schedule, reports by
 email, video upload limit and Drive link). Each criterion names the unit that owns it. **Owner:** /checker. **Status:** ACTIVE (2026-10-07).
@@ -25,6 +25,38 @@ Group 10 row.
 `LOCAL` = the checker runs it on the dev host (Windows). `BUILD-HOST` = needs Docker; if Docker is unavailable to the checker the row is
 `BLOCKED-CAPABILITY`, never PASS. `SERVER-GATED` = needs the real Ubuntu server, a domain or SMTP relay; judged at the go-live
 rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's code PASS.
+
+## Local Windows host (now, D-090)
+
+Until the Ubuntu server exists, T-203 is built and hosted on this Windows machine (no Docker). These rows are judged `LOCAL` and bind
+the T-203 PASS. The Ubuntu section below (Docker rows, HO10, HO11, HO13, HO34-HO36) is **deferred to Ubuntu** and does not gate the
+local PASS; the Ubuntu Docker files stay untouched.
+
+- **HO39 — Starts at boot.** A launcher script plus a Windows Scheduled Task (trigger: at system startup, runs without an interactive
+  logon) start the app; `schtasks /Query` shows the task and a scripted check confirms the trigger. *LOCAL.* `serves:` D-090.
+- **HO40 — Restarts on failure.** The task is configured to restart on failure (restart interval and count recorded); killing the app
+  process is followed by a successful health check within a documented bound. *LOCAL.* `serves:` D-090.
+- **HO41 — Behind the T-204 login.** Every route except the health endpoint and the login page requires an authenticated session
+  (`auth.md`); the launcher never sets `AUTOTESTER_AUTH_DISABLED`; an unauthenticated request to a project route gets 401/302.
+  *LOCAL.* `serves:` D-090, O7.
+- **HO42 — Persistent data root.** The launcher sets the data root to a fixed directory outside the code tree via `core.paths`; projects,
+  users, settings and the queue survive an app restart and a task restart. *LOCAL.* `serves:` D-090.
+- **HO43 — Health endpoint and check.** `/healthz` answers without a session and exposes no secret or project data; a script
+  (`scripts/` launcher or check) exits non-zero when it fails, and the task or the check uses it. *LOCAL.* `serves:` D-090.
+- **HO44 — Binds 127.0.0.1 by default; LAN exposure is one setting.** With no setting the server listens on 127.0.0.1 only (asserted
+  from the launch command and a socket check); one documented setting switches to LAN binding, the switch is logged at startup, and the
+  Host/Origin guards (`AUTOTESTER_ALLOWED_HOSTS`/`_ORIGINS`) still apply; no other knob changes the bind. *LOCAL.* `serves:` D-090, O7.
+- **HO45 — Windows section in `docker/DEPLOY.md`.** `docker/DEPLOY.md` Part B (Windows) documents the launcher, creating and removing
+  the Scheduled Task, the data root, the bind setting, the health check, creating the first admin before LAN exposure, and states that
+  Ubuntu/Docker is the later production path. It holds no secret. The Ubuntu Part A text is unchanged. *LOCAL.* `serves:` D-090.
+- **HO46 — The local host adds no regression.** The launcher and task scripts use `pathlib` / `core.paths`, introduce no Docker
+  dependency, and `uv run autotester doctor` and `uv run ruff check src tests scripts` pass. *LOCAL.* `serves:` D-090, HO37.
+
+## Ubuntu host (later)
+
+Everything below, up to the next section, is the Ubuntu/Docker production contract. Rows marked DEFERRED TO UBUNTU (D-090) wait for
+the server and DNS; the other rows bind the unit when it builds that feature (queue, settings, schedule, reports, intake are
+host-independent and still bind T-203 locally).
 
 ## Criteria
 
@@ -67,11 +99,11 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
   every `AUTOTESTER_[A-Z_]+` the code reads and fails if one is missing from the file; a second test fails if any non-comment line has a
   non-empty value that looks like a secret. Values in the settings store (concurrency, upload limit) are defaults documented here, and
   the admin page wins at runtime (HO15). *LOCAL.* `serves:` D-072#12, D-072#6.
-- **HO10 — Cross-platform: Windows dev, Ubuntu prod.** New code uses `pathlib` / `core.paths`; no hardcoded `/data`, drive letter or
+- **HO10 — DEFERRED TO UBUNTU (D-090). Cross-platform: Windows dev, Ubuntu prod.** New code uses `pathlib` / `core.paths`; no hardcoded `/data`, drive letter or
   separator outside `docker/`; no `fcntl`/`pwd` import at module level; subprocesses and signals have a Windows path. The new tests pass on
   Windows (the checker's host) and inside the image on Linux, the latter recorded in `qa/evidence/t203-linux-run.md`. *LOCAL* +
   *BUILD-HOST.* `serves:` D-072#7.
-- **HO11 — The deploy guide exists and is exercised.** `docker/DEPLOY.md` (new path under the existing `docker/`) covers, in order: server
+- **HO11 — DEFERRED TO UBUNTU (D-090). The deploy guide exists and is exercised.** `docker/DEPLOY.md` (new path under the existing `docker/`) covers, in order: server
   prerequisites (Ubuntu LTS, Docker, UFW), the two env files, building on the server from a tag (the image never leaves the box; the repo
   is public), seeding `projects/`, **creating the admin account before the port is exposed to the team** (on the hosted server the first admin is the
   account whose email equals `AUTOTESTER_FIRST_ADMIN_EMAIL`, not the first account created; with it unset nobody is auto-promoted and
@@ -85,7 +117,7 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
   route that returns the identity or 401) rather than keeping its own list. A run is watchable: with `/live` open, a real case shows the
   Chromium window moving at an Xvfb size >= the viewport. `serves:` D-072#7, O7. *LOCAL* (route + permission tests), *SERVER-GATED*
   (curl/websocket probe, recording).
-- **HO13 — HTTPS and the cookie.** Once a domain exists: `http://` redirects to `https://`, certificate valid, HSTS and the standard
+- **HO13 — DEFERRED TO UBUNTU (D-090). HTTPS and the cookie.** Once a domain exists: `http://` redirects to `https://`, certificate valid, HSTS and the standard
   security headers present, TLS 1.2+ only; `AUTOTESTER_ALLOWED_ORIGINS=https://<host>` set and `*` refused. Until then (Umesh: "the
   domain comes later"), the guide describes the one allowed interim: private-network or tunnelled access with
   `AUTOTESTER_COOKIE_SECURE=0` set explicitly, never exposed to the public internet; startup logs which mode it is in. *LOCAL* (config
@@ -195,14 +227,14 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
 
 ### F. Gates, rehearsal, backup
 
-- **HO34 — Team walkthrough (the T-203 done_check, SERVER-GATED).** A team member opens the server URL, signs up, an admin puts them in a
+- **HO34 — DEFERRED TO UBUNTU (D-090). Team walkthrough (the T-203 done_check, SERVER-GATED).** A team member opens the server URL, signs up, an admin puts them in a
   group, they sign in, onboard a project, run a case from the queue, see the report; restart keeps the data; the Origin/Host guards
   are configured for the server origin; no secret is in the image (HO1). Checker Mode D, persona walks for **dev** and **tester**.
   `serves:` T-203 acceptance, D-072#7.
-- **HO35 — Queue rehearsal on the server (SERVER-GATED).** Two projects started together run at once; a second request for the same
+- **HO35 — DEFERRED TO UBUNTU (D-090). Queue rehearsal on the server (SERVER-GATED).** Two projects started together run at once; a second request for the same
   project waits; changing the concurrency setting to 1 on the admin page makes the next start obey it. Evidence: screenshots and the
   queue listing. `serves:` D-072#6.
-- **HO36 — Backup and restore drill (T-203 unit 5; SERVER-GATED).** `scripts/backup.sh` produces an encrypted snapshot of the data
+- **HO36 — DEFERRED TO UBUNTU (D-090). Backup and restore drill (T-203 unit 5; SERVER-GATED).** `scripts/backup.sh` produces an encrypted snapshot of the data
   root; restoring it into a scratch directory and starting a second container on it lists the same projects, users and settings and
   opens a report; the snapshot is unreadable without its passphrase. `profiles/` live sessions are excluded unless Umesh says otherwise.
   The script itself passes `shellcheck`-style review and has no secret. `serves:` D-072#7.
@@ -246,3 +278,8 @@ rehearsal (a HUMAN_GATE, D-071), and it gates the **go-live**, not the unit's co
   "an IANA timezone ... DST-correct"; "unknown zone" in the refusal list becomes "a zone other than UTC or IST". · why: D-078 (Umesh, chat
   2026-10-07, no `tzdata` dependency). Same text as the checker's commit 29ce74e8 on branch `wave/g5-schedule-core`, brought onto master
   with the `team-schedule.md` TS1/TS2 amendment that cites this row. No other hosting row changed.
+- 2026-10-13 · owner-authorized (D-090, Umesh chat) · file split into **Local Windows host (now)** and **Ubuntu host (later)**; **HO10,
+  HO11, HO13, HO34, HO35, HO36** marked DEFERRED TO UBUNTU; new local rows **HO39-HO46** (boot start, restart on failure, T-204 login,
+  data root, health check, 127.0.0.1 bind with one LAN setting, Windows section in DEPLOY.md, no regression). · why: production host will
+  be Ubuntu with host and DNS later; Umesh asked to host on this Windows machine meanwhile. HO1-HO9, HO12, HO14 stay Docker/BUILD-HOST
+  rows that bind only when Docker is available.

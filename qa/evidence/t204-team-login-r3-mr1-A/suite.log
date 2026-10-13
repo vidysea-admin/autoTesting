@@ -1,0 +1,26 @@
+[12:30:16] ref 17c1422d = 17c1422d; 4 shards; out C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\shards
+[12:30:32] collecting whole set (one copy)
+[12:32:00] collected 5412 tests in 319 files; balanced by test count (no stored durations); pinned files: none; predicted: s0=1353, s1=1353, s2=1353, s3=1353
+[12:32:00] shard 0: pid 8388, 73 units, 1353 tests
+[12:32:00] shard 1: pid 22784, 82 units, 1353 tests
+[12:32:00] shard 2: pid 31292, 82 units, 1353 tests
+[12:32:00] shard 3: pid 37292, 82 units, 1353 tests
+[12:58:29] shard 0 finished rc=0 in 1589s
+[12:59:02] shard 3 finished rc=1 in 1622s
+[13:07:18] shard 2 finished rc=1 in 2117s
+[13:18:22] shard 1 finished rc=1 in 2782s
+[13:18:24] re-running 8 failing test(s) alone in shard-0 (load-induced vs real)
+[13:28:17]   shard 0: rc=0 wall=1588.7s units=73 tests=1353 reported=1353
+[13:28:17]   shard 1: rc=1 wall=2782.0s units=82 tests=1353 reported=1353
+[13:28:17]   shard 2: rc=1 wall=2117.1s units=82 tests=1353 reported=1353
+[13:28:17]   shard 3: rc=1 wall=1621.8s units=82 tests=1353 reported=1353
+[13:28:17] counts {'passed': 5384, 'skipped': 20, 'failed': 8}; collect proof ok=True (baseline 5412, union 5412, ran 5412)
+[13:28:17]   failed tests/test_mutation_check_judgement.py::test_a_hung_baseline_is_refused_even_when_a_child_holds_the_output_open (shard 1, alone: failed)
+[13:28:17]   failed tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere (shard 1, alone: failed)
+[13:28:17]   failed tests/test_redact_wrap_perf.py::test_redact_scan_stays_under_a_generous_bound_on_a_500kb_corpus (shard 2, alone: failed)
+[13:28:17]   failed tests/test_core.py::test_env_creation_is_coordinated_across_processes (shard 2, alone: failed)
+[13:28:17]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log (shard 2, alone: failed)
+[13:28:17]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_prints_unhealthy_line_only_on_an_asleep_log_and_still_exits_zero (shard 2, alone: failed)
+[13:28:17]   failed tests/test_mc_sessionstart_loop_status.py::test_hook_skips_cleanly_when_uv_is_unavailable (shard 2, alone: passed)
+[13:28:17]   failed tests/test_video_parallel_sweep.py::test_two_sessions_sharing_a_run_dir_do_not_lose_each_others_video (shard 3, alone: passed)
+[13:28:17] summary -> C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\236a59b4-e0ec-4b2d-b22e-73d3059dd7f6\scratchpad\ck_a3\shards\summary.json (exit 1)

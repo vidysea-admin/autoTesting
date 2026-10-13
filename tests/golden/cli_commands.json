@@ -1,5 +1,21 @@
 [
  [
+  "run",
+  "Run a project's cases as a regression (--output json, --dry-run)."
+ ],
+ [
+  "run-report",
+  "Print a finished run's redacted report."
+ ],
+ [
+  "catalog",
+  "Which test classes can run for a project."
+ ],
+ [
+  "mcp-serve",
+  "Serve run_tests, get_report, get_catalog over stdio MCP."
+ ],
+ [
   "doctor",
   "Check the repo against the design rules that keep it readable."
  ],
@@ -74,5 +90,9 @@
  [
   "schedule",
   "The scheduler: run the tests that are due."
+ ],
+ [
+  "auth",
+  "Team login accounts (T-204)."
  ]
 ]

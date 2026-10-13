@@ -18,6 +18,7 @@ from urllib.parse import quote
 
 import pytest
 from fastapi.testclient import TestClient
+from symlink_support import link_dir
 
 from autotester.schema.case import Case
 from autotester.schema.enums import Action, CaseClass, CaseKind, EvidenceKind, Outcome, Result
@@ -139,7 +140,7 @@ def test_safe_video_path_refuses_a_symlinked_escape(tmp_path: Path) -> None:
     (outside / "secret.webm").write_bytes(b"must-not-leak")
     run_dir = tmp_path / "run"
     run_dir.mkdir()
-    (run_dir / "escape").symlink_to(outside, target_is_directory=True)
+    link_dir(run_dir / "escape", outside)
 
     assert _safe_video_path(run_dir, "escape/secret.webm") is None
 

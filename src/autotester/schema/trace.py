@@ -54,3 +54,22 @@ class LLMSpan(BaseModel):
     fallback_hops: int = 0
     fed_id: str | None = Field(default=None, description="case or verdict id this call fed")
     recorded_at: datetime = Field(default_factory=utc_now)
+
+
+class ToolSpan(BaseModel):
+    """One agent-layer step (T-179 AL5): a lead planning step, a tool call, or a delegation to a
+    subagent. Same file, same `trace_id` (the run's own id, RT2/RT5); a tool or delegation points
+    at the planning step that asked for it through `parent_seq`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["tool"] = "tool"
+    trace_id: str
+    seq: int = Field(ge=0, description="order of this span within the lead loop")
+    op: Literal["plan", "tool", "delegate"]
+    name: str = Field(description="tool name, subagent name, or 'lead' for a planning step")
+    ok: bool = True
+    refusal: str | None = None
+    parent_seq: int | None = None
+    duration_s: float = 0.0
+    recorded_at: datetime = Field(default_factory=utc_now)

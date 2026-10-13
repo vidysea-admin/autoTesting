@@ -5,6 +5,7 @@ import contextlib
 from pathlib import Path
 
 import pytest
+from symlink_support import link_dir
 
 from autotester.core.consent import ApprovalRequired
 from autotester.core.redact import Redactor
@@ -88,9 +89,8 @@ def test_file_bound_is_visible(tmp_path: Path, monkeypatch, limit: str) -> None:
         assert len(visited) <= 1, "entry bound is shared across every approved root"
 @pytest.mark.parametrize("junction", [False, True])
 def test_symlink_escape_is_refused(tmp_path: Path, junction: bool) -> None:
-    root = tmp_path / "root"
+    root, outside = tmp_path / "root", tmp_path / "outside"
     root.mkdir()
-    outside = tmp_path / "outside"
     outside.mkdir()
     (outside / "app.py").write_text("import openai\n", encoding="utf-8")
     if junction:
@@ -99,7 +99,7 @@ def test_symlink_escape_is_refused(tmp_path: Path, junction: bool) -> None:
                         "Junction", "-Path", str(root / "escape"), "-Target", str(outside)],
                        check=True, capture_output=True, timeout=10)
     else:
-        (root / "escape").symlink_to(outside, target_is_directory=True)
+        link_dir(root / "escape", outside)
     result = scan(root, [], scope=_scope(root), redactor=Redactor({}))
     assert not result.complete and result.signals == []
     assert result.refusals[0].reason == "path_escape"

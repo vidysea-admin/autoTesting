@@ -1,10 +1,12 @@
-"""The feature ledger row and the relitigation verdict. Contract: qa/contracts/living-ledger.md."""
+"""Ledger records, relitigation and reviewed decision citations (living-ledger contract)."""
 
 from __future__ import annotations
 
 from datetime import date
+from pathlib import PurePosixPath
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from autotester.schema.base import Artifact
 from autotester.schema.enums import FeatureEventKind, UserValue
@@ -59,3 +61,100 @@ class RelitigationVerdict(BaseModel):
     @property
     def gate(self) -> bool:
         return self.same_behaviour
+
+
+class DecisionClaim(BaseModel):
+    """The strict inline declaration of a quotation attributed to a decision's What."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    id: str = Field(pattern=r"^D-\d+$")
+    what: str = Field(min_length=1)
+
+    @field_validator("what")
+    @classmethod
+    def _claim_nonempty_quote(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("a decision quotation cannot be whitespace-only")
+        return value
+
+
+class CitationReview(BaseModel):
+    """An inline inventory declaration, bound to exact visible occurrence content."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    path: str
+    line_text: str = Field(min_length=1)
+    id: str = Field(pattern=r"^D-\d+$")
+    ordinal: int = Field(ge=1)
+    multiplicity: int = Field(ge=1)
+    kind: Literal["structural-header", "ordinary-reference", "authorization-claim",
+                  "foreign-entry", "nonclaiming"]
+    reason: str
+    reviewer: str
+    review_ref: str
+    what: str | None = None
+
+    @field_validator("path")
+    @classmethod
+    def _citation_source_path(cls, value: str) -> str:
+        path = PurePosixPath(value)
+        parts = path.parts
+        source = ((len(parts) == 2 and parts[0] == "docs") or
+                  (len(parts) == 3 and parts[0] == "qa" and
+                   parts[1] in {"gates", "contracts", "manifests", "verdicts"}))
+        if (not source or not value.endswith(".md") or "\\" in value or
+                path.is_absolute() or ".." in parts or path.as_posix() != value):
+            raise ValueError("review path must be a normalized local citation-source path")
+        return value
+
+    @field_validator("reason", "reviewer", "review_ref")
+    @classmethod
+    def _citation_review_nonempty(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("review reason, attribution and evidence cannot be blank")
+        return value
+
+    @model_validator(mode="after")
+    def _historical_citation_quote(self) -> CitationReview:
+        if self.what is not None and (
+                self.path != "docs/DECISIONS.md" or self.kind != "authorization-claim"
+                or not self.what.strip()):
+            raise ValueError("historical What is only for attributed decision-history claims")
+        return self
+
+
+class SealedRecord(BaseModel):
+    """One reviewed, hash-bound row covering the citations of a closed historical unit.
+
+    The enforcing code re-derives everything here and never generates `reason` or `reviewer`
+    (living-ledger L10): a seal covers a coverage obligation, it is not evidence of authority.
+    """
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    kind: Literal["sealed-record"]
+    path: str
+    scope: str = Field(pattern=r"^(file|entry:D-\d+)$")
+    sha256: str = Field(pattern=r"^[0-9a-fA-F]{64}$")
+    baseline: str = Field(pattern=r"^[0-9a-f]{7,40}$")
+    reason: str
+    reviewer: str
+    review_ref: str
+
+    @field_validator("path")
+    @classmethod
+    def _sealed_path_shape(cls, value: str) -> str:
+        path = PurePosixPath(value)
+        if (not value.endswith(".md") or "\\" in value or path.is_absolute()
+                or ".." in path.parts or path.as_posix() != value):
+            raise ValueError("sealed path must be a normalized relative markdown path")
+        return value
+
+    @field_validator("reason", "reviewer", "review_ref")
+    @classmethod
+    def _sealed_nonempty(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("seal reason, attribution and evidence cannot be blank")
+        return value

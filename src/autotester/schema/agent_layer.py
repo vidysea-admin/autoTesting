@@ -15,13 +15,18 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class AgentToolName(StrEnum):
-    """The stage tools in this slice. `report` and `capture_network` join with the rest of T-179."""
+    """The stage tools of the lead tester."""
 
     CRAWL = "crawl"
     RUN_CASE = "run_case"
     GET_PERSONA = "get_persona"
     GET_CATALOG = "get_catalog"
     GRADE_CASE = "grade_case"
+    READ_RESULT = "read_result"
+    READ_RUBRIC = "read_rubric"
+    READ_VERDICT = "read_verdict"
+    REPORT = "report"
+    CAPTURE_NETWORK = "capture_network"
 
 
 class ToolEffect(StrEnum):
@@ -44,6 +49,7 @@ class RefusalClass(StrEnum):
     DESTINATION = "destination"
     STAGE_ERROR = "stage_error"
     NOTHING_TO_DO = "nothing_to_do"
+    NOT_ALLOWED = "not_allowed"
 
 
 class ToolSpec(BaseModel):
@@ -74,6 +80,12 @@ class RunCaseArgs(_Args):
 
 
 class GradeCaseArgs(_Args):
+    case_id: str = Field(min_length=1, max_length=200)
+
+
+class ReadCaseArgs(_Args):
+    """Evidence reads (T-180): which case's stored artifact to read; the run is trusted context."""
+
     case_id: str = Field(min_length=1, max_length=200)
 
 

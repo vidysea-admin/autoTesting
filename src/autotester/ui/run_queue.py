@@ -22,6 +22,7 @@ from pathlib import Path
 from autotester.core.ids import ulid
 from autotester.core.paths import repo_root
 from autotester.schema.run_queue import ACTIVE, QueueEntry, QueueStatus, RunQueueFile
+from autotester.schema.team_enums import RunVia
 from autotester.store.filestore import read_json, write_json
 from autotester.store.server_settings import effective_max_concurrent_runs
 
@@ -86,7 +87,8 @@ class RunQueue:
     # -- public ----------------------------------------------------------------------------
     def submit(self, project: str, *, requested_by: str | None = None,
                trigger: str = "button", run_id: str | None = None,
-               priorities: list[str] | None = None, slot_key: str | None = None) -> QueueEntry:
+               priorities: list[str] | None = None, slot_key: str | None = None,
+               via: RunVia | None = None, requested_by_id: int | None = None) -> QueueEntry:
         """Enqueue a press and start whatever the limits allow. Raises `QueueFull`.
         `run_id`: the caller mints it only after every gate passed (a refused press mints none).
         `slot_key` (HO23): a schedule slot has at most one entry; asking again returns it."""
@@ -100,8 +102,9 @@ class RunQueue:
                     raise QueueFull(f"{waiting} runs of '{project}' are already waiting; "
                                     "wait for one to start")
                 entry = QueueEntry(id=run_id or f"run-{ulid()}", project=project,
-                                   requested_by=requested_by, trigger=trigger,
-                                   slot_key=slot_key, priorities=priorities)
+                                   requested_by=requested_by, requested_by_id=requested_by_id,
+                                   trigger=trigger,
+                                   slot_key=slot_key, priorities=priorities, via=via)
                 self._entries.append(entry)
                 held, starts = entry.id, self._take_startable()
                 self._persist()

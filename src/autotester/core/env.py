@@ -29,7 +29,9 @@ test process as a side effect of testing a CLI.
 
 from __future__ import annotations
 
+import json
 import os
+import re
 from pathlib import Path
 
 from dotenv import dotenv_values
@@ -37,6 +39,39 @@ from dotenv import dotenv_values
 from autotester.core.paths import repo_root
 
 ENV_FILE = ".env"
+
+# The global provider keys (US1) -- server-wide, `settings.manage` only, never a project's.
+PROVIDER_KEYS = (
+    "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY",
+    "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OPENAI_API_KEY",
+)
+SERVER_PREFIX = "AUTOTESTER_"
+
+
+def key_namespace(slug: str) -> str:
+    """`pathlynks` -> `PATHLYNKS_`; `my-app` -> `MY_APP_` (a project's own key prefix)."""
+    return re.sub(r"[^A-Z0-9]+", "_", slug.upper()).strip("_") + "_"
+
+
+def is_server_key(key: str) -> bool:
+    """A key the server reads (provider keys, `AUTOTESTER_*`): always exported, not a project's."""
+    return key in PROVIDER_KEYS or key.startswith(SERVER_PREFIX)
+
+
+def project_credentials(root: Path) -> tuple[tuple[str, ...], frozenset[str]]:
+    """(namespaces of every project, keys any project declares) read straight from
+    `projects/*/project.json`. A project's credential is read from the file by
+    `SecretStore` and typed into a page; it is never a setting for this process."""
+    prefixes: list[str] = []
+    declared: set[str] = set()
+    for config in sorted((root / "projects").glob("*/project.json")):
+        prefixes.append(key_namespace(config.parent.name))
+        try:
+            rows = json.loads(config.read_text(encoding="utf-8")).get("secrets", [])
+            declared.update(str(row["key"]) for row in rows if isinstance(row, dict))
+        except (OSError, ValueError, KeyError, AttributeError):
+            continue  # an unreadable project still reserves its namespace
+    return tuple(prefixes), frozenset(declared)
 
 TEST_MARKER = "PYTEST_CURRENT_TEST"
 """Set by pytest for the duration of every test. Its presence is the signal that
@@ -54,16 +89,27 @@ def load_repo_env(root: Path | None = None) -> list[str]:
 
     Returning the key names makes "which credentials does this machine have" a
     question a caller can answer and a test can assert, instead of something
-    each entry point decides for itself."""
+    each entry point decides for itself.
+
+    T-204 AU21: a PROJECT's credentials are not loaded. The file is shared and a project
+    route writes into it under a prefix its creator chose (slug `http` + `HTTP_PROXY`,
+    `node` + `NODE_OPTIONS`): exporting every key would let that value steer this process,
+    a library it loads or a child it starts. Keys a project declares, and keys inside any
+    project's namespace (declared or not, so un-declaring leaves nothing to export), stay
+    in the file; server keys (`is_server_key`) are always exported."""
+    base = root or repo_root()
     if TEST_MARKER in os.environ:
         return []
-    path = (root or repo_root()) / ENV_FILE
+    path = base / ENV_FILE
     if not path.exists():
         return []
 
+    prefixes, declared = project_credentials(base)
     loaded: list[str] = []
     for key, value in dotenv_values(path).items():
         if not key or not value or os.environ.get(key):
+            continue
+        if not is_server_key(key) and (key in declared or key.startswith(prefixes)):
             continue
         os.environ[key] = value
         loaded.append(key)

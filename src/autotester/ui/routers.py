@@ -1,10 +1,12 @@
-"""The one ordered list of routers the UI app serves (T-205/TF3; same shape as T-204's).
+"""The one ordered list of routers the UI app serves (T-204/T-205, TF3).
 
 Every feature registers its router by adding it to `ROUTERS`; `ui/app.py` calls
 `include_all(app)` once and holds no per-unit `include_router` line. Order is route order, so
 the 17 routers that existed before this file keep the order `app.py` had. The Group 10 units
 (`STUBS`) are empty `APIRouter()`s registered now and filled by their own unit: such a unit
 replaces its stub in `ROUTERS` with its real router, without editing `app.py`.
+A route registered here still needs a row in the central route policy table
+(`auth/policy.py`), or the login gate refuses it (auth.md AU14, T-204).
 """
 
 from __future__ import annotations
@@ -12,6 +14,9 @@ from __future__ import annotations
 from fastapi import APIRouter, FastAPI
 
 from autotester.ui import (
+    routes_access_requests,
+    routes_admin,
+    routes_auth,
     routes_cases,
     routes_catalog,
     routes_crawl_approval,
@@ -23,12 +28,16 @@ from autotester.ui import (
     routes_learn,
     routes_live,
     routes_product_map,
+    routes_project_access,
     routes_project_edit,
     routes_report,
     routes_runs,
     routes_settings,
     routes_sources,
+    routes_team_run,
     routes_video,
+    routes_video_comments,
+    routes_video_portal,
 )
 
 STUBS: dict[str, APIRouter] = {
@@ -40,6 +49,8 @@ STUBS: dict[str, APIRouter] = {
 """Group 10 routers, empty until their unit fills them (zero routes: nothing is exposed)."""
 
 ROUTERS: tuple[APIRouter, ...] = (
+    routes_auth.router,
+    routes_admin.router,
     routes_cases.router,
     routes_project_edit.router,
     routes_runs.router,
@@ -57,6 +68,13 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_issues.router,
     routes_live.router,
     routes_catalog.router,
+    routes_project_access.router,
+    routes_team_run.router,   # T-201b; its `STUBS['team_run']` stays registered, empty
+    # T-198b/G9: the portal. The `video_portal` and `access_requests` stubs stay registered
+    # and empty (test_routers_list pins them); these are the real routers beside them.
+    routes_video_portal.router,
+    routes_video_comments.router,
+    routes_access_requests.router,
     *STUBS.values(),
 )
 

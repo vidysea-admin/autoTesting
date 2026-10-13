@@ -1,0 +1,180 @@
+{
+ "base": "http://127.0.0.1:56407",
+ "steps": {
+  "1a": {
+   "result": "pass",
+   "note": "first signup lands http://127.0.0.1:56407/; admin links=2"
+  },
+  "1b": {
+   "result": "pass",
+   "note": "second signup lands http://127.0.0.1:56407/auth/waiting"
+  },
+  "2": {
+   "result": "pass",
+   "note": "user2 next request -> http://127.0.0.1:56407/ title=Projects \u2014 AutoTester"
+  },
+  "3a": {
+   "result": "pass",
+   "note": "disabled user2 next click -> http://127.0.0.1:56407/auth/login?next=/"
+  },
+  "3b": {
+   "result": "pass",
+   "note": "row gone=True; deleted user login stays at http://127.0.0.1:56407/auth/login"
+  },
+  "P-tester": {
+   "result": "pass",
+   "note": "after login home lists Alpha link=True; clicks to project=1; url=http://127.0.0.1:56407/projects/alpha"
+  },
+  "P-dev": {
+   "result": "pass",
+   "note": "dev reaches own project http://127.0.0.1:56407/projects/devproj; admin links=0"
+  },
+  "P-lead": {
+   "result": "pass",
+   "note": "admin nav links=0; GET /admin/users status=403; sees assigned alpha=True"
+  },
+  "labels": {
+   "result": "FAIL",
+   "note": "{\"login\": [], \"signup\": [], \"/admin/users\": [], \"/admin/groups\": [], \"/\": [], \"/projects/alpha/access\": [], \"/onboard\": [\"<input name=\\\"slug\\\" placeholder=\\\"my-product\\\" required=\\\"\\\">\", \"<input name=\\\"name\\\" required=\\\"\\\">\", \"<input name=\\\"base_url\\\" type=\\\"url\\\" required=\\\"\\\" placeholder=\\\"https://app.example.com/signin\\\"\", \"<input name=\\\"allowed_domains\\\" required=\\\"\\\" placeholder=\\\"app.example.com\\\">\", \"<input name=\\\"credential_key\\\" placeholder=\\\"DEMO_EMAIL\\\">\", \"<input type=\\\"password\\\" name=\\\"credential_value\\\" placeholder=\\\"value (stored only in .env)\\\">\", \"<input name=\\\"credential_domains\\\" placeholder=\\\"app.example.com\\\">\", \"<input name=\\\"credential_description\\\" placeholder=\\\"test account email\\\">\", \"<select name=\\\"source_kind\\\"><option value=\\\"\\\">Choose type</option><option value=\\\"url\\\">URL / \", \"<input name=\\\"source_value\\\" placeholder=\\\"link, path, or text\\\">\", \"<input name=\\\"source_label\\\" placeholder=\\\"what this source teaches\\\">\", \"<textarea name=\\\"evals\\\"></textarea>\", \"<textarea name=\\\"conditions\\\"></textarea>\", \"<textarea name=\\\"use_cases\\\"></textarea>\"]}"
+  },
+  "keyboard": {
+   "result": "pass",
+   "note": "keyboard-only sign-in (Tab,type,Tab,type,Enter) lands http://127.0.0.1:56407/; tab order to email: ['ATAutoTester', 'email']"
+  },
+  "keyboard-admin": {
+   "result": "pass",
+   "note": "group ticked with Space, saved with Enter; kb user next click -> http://127.0.0.1:56407/"
+  },
+  "keyboard-focus": {
+   "result": "pass",
+   "note": "sign-out button focusable by keyboard: Sign out"
+  }
+ },
+ "console_errors": [
+  [
+   "admin",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/signup"
+  ],
+  [
+   "user2",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/signup"
+  ],
+  [
+   "user2",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:56407/auth/waiting"
+  ],
+  [
+   "user2",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login?next=/"
+  ],
+  [
+   "user2",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "user2",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "user2",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "tester",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/signup"
+  ],
+  [
+   "tester",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:56407/auth/waiting"
+  ],
+  [
+   "dev",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/signup"
+  ],
+  [
+   "dev",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:56407/auth/waiting"
+  ],
+  [
+   "lead",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/signup"
+  ],
+  [
+   "lead",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:56407/auth/waiting"
+  ],
+  [
+   "tester",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "tester",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "dev",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "dev",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "lead",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "lead",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "lead",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:56407/admin/users"
+  ],
+  [
+   "anon",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "anon",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/signup"
+  ],
+  [
+   "kbd",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/login"
+  ],
+  [
+   "kbuser",
+   "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+   "http://127.0.0.1:56407/auth/signup"
+  ],
+  [
+   "kbuser",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:56407/auth/waiting"
+  ]
+ ]
+}
