@@ -42,7 +42,8 @@ from autotester.ui.run_queue import (
 
 router = APIRouter()
 
-__all__ = ["_is_entry_case", "get_queue", "router", "tick_queue", "tick_runner"]
+__all__ = ["_is_entry_case", "get_queue", "router", "tick_queue", "tick_runner",
+           "wait_for_tick_runs"]
 
 
 def _seams(*, shared_ram: bool = True) -> RunSeams:
@@ -133,12 +134,29 @@ def tick_runner(entry: QueueEntry) -> None:
         raise
 
 
+_TICK_THREADS: list[threading.Thread] = []
+
+
+def _tick_spawn(job: Callable[[], None]) -> None:
+    thread = threading.Thread(target=job, name="autotester-run")
+    _TICK_THREADS.append(thread)
+    thread.start()
+
+
+def wait_for_tick_runs() -> None:
+    """Block until every run the tick process started has finished. The tick's main thread must
+    still be alive while they work: once it returns, the interpreter shuts down the thread pools
+    a run uses, and the run would end INCONCLUSIVE ("cannot schedule new futures after
+    interpreter shutdown"). A finishing run may start a waiting one, so loop until none is left."""
+    while _TICK_THREADS:
+        _TICK_THREADS.pop(0).join()
+
+
 def tick_queue() -> RunQueue:
     """The queue a scheduler tick process runs its entries on (T-200): in memory only, so it
-    never `recover()`s the server's persisted queue; workers are non-daemon threads, so the
-    process stays alive until the runs it started finish. Installed as the process queue, so
+    never `recover()`s the server's persisted queue. Its worker threads are tracked, and the
+    tick command calls `wait_for_tick_runs` before exiting. Installed as the process queue, so
     the executor's RAM ledger is this one. Executes through the same `_run_queued`."""
-    queue = RunQueue(runner=tick_runner,
-                     spawn=lambda job: threading.Thread(target=job, name="autotester-run").start())
+    queue = RunQueue(runner=tick_runner, spawn=_tick_spawn)
     set_queue(queue)
     return queue

@@ -1,0 +1,120 @@
+{
+ "results": {
+  "S1 owner opens schedule card (editable form present)": {
+   "pass": true,
+   "note": ""
+  },
+  "S2 invalid time refused inline, field named, nothing saved": {
+   "pass": true,
+   "note": "AT AutoTester Projects + New project Videos Access requests \u25cf Live view owner@walk.test Sign out PROJECTS Fixture Nocred"
+  },
+  "S3 save fixed daily schedule": {
+   "pass": true,
+   "note": ""
+  },
+  "S3b blocked reason names Credentials": {
+   "pass": true,
+   "note": "['Next run: 2026-10-13 15:32 UTC \u00b7 owner: owner@walk.test \u00b7 scheduler: NEVER_TICKED \u00b7 credentials: NO_SECRETREF']"
+  },
+  "S3c next three fire times shown before saving (contract)": {
+   "pass": false,
+   "note": "card shows a single 'Next run' time"
+  },
+  "S4 pause": {
+   "pass": true,
+   "note": ""
+  },
+  "S5 resume": {
+   "pass": true,
+   "note": ""
+  },
+  "S6 delete": {
+   "pass": true,
+   "note": ""
+  },
+  "S7 save custom one-offs on credentialed project": {
+   "pass": true,
+   "note": "['Next run: 2026-10-13 12:35 UTC \u00b7 owner: owner@walk.test \u00b7 scheduler: NEVER_TICKED \u00b7 credentials: PROVISIONED']"
+  },
+  "S8 viewer sees card read-only, no editable control": {
+   "pass": true,
+   "note": ""
+  },
+  "S9 viewer save -> 403 naming schedule.manage": {
+   "pass": true,
+   "note": "403 '{\"detail\":\"you do not have permission for this action (schedule.manage)\"}'"
+  },
+  "S9-pause viewer pause 403": {
+   "pass": true,
+   "note": "403"
+  },
+  "S9-resume viewer resume 403": {
+   "pass": true,
+   "note": "403"
+  },
+  "S9-delete viewer delete 403": {
+   "pass": true,
+   "note": "403"
+  },
+  "S10 tick 1 fires slot": {
+   "pass": true,
+   "note": "rc=0 \"tick at 2026-10-13T12:36:01.927573+00:00\\nfixture  enqueued  fixture:custom:2026-10-13T12:35Z\\nfixture:custom:2026-10-13T12:35Z: run refused at start: project 'fixture' has no cases to run\\n\""
+  },
+  "S11 run appears (requester owner / trigger scheduled)": {
+   "pass": false,
+   "note": "not observed: fixture has no cases, run refused at start; earlier pass was a false match on the nav email"
+  },
+  "S12 owner disabled: slot refused (owner_refused)": {
+   "pass": true,
+   "note": "rc=2 \"tick at 2026-10-13T12:40:13.366010+00:00\\nfixture  refused  fixture:custom:2026-10-13T12:39Z  owner_refused: the schedule's owner is disabled or no longer exists\\n\""
+  },
+  "S13 schedule paused with reason shown": {
+   "pass": true,
+   "note": "['Next run: paused \u00b7 owner: owner@walk.test \u00b7 scheduler: NEVER_TICKED \u00b7 credentials: PROVISIONED', \"2026-10-13 12:39 UTC\\trefused\\towner_refused: the schedule's owner is disabled or no longer exists\"]"
+  },
+  "S14 owner controls labelled": {
+   "pass": true,
+   "note": "[]"
+  },
+  "S14 viewer controls labelled": {
+   "pass": true,
+   "note": "[]"
+  },
+  "S14 admin controls labelled": {
+   "pass": true,
+   "note": "[]"
+  }
+ },
+ "console": [
+  [
+   "owner@walk.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+   "http://127.0.0.1:55698/projects/nocreds/schedule"
+  ],
+  [
+   "viewer@walk.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:55698/projects/fixture/schedule"
+  ],
+  [
+   "viewer@walk.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:55698/projects/fixture/schedule"
+  ],
+  [
+   "viewer@walk.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:55698/projects/fixture/schedule"
+  ],
+  [
+   "viewer@walk.test",
+   "error",
+   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+   "http://127.0.0.1:55698/projects/fixture/schedule"
+  ]
+ ]
+}

@@ -40,6 +40,13 @@ def _open_queue() -> Submitter:
     return tick_queue()
 
 
+def _wait_for_runs() -> None:
+    """Stay alive until the runs this tick started are over (see `wait_for_tick_runs`)."""
+    from autotester.ui.routes_runs import wait_for_tick_runs
+
+    wait_for_tick_runs()
+
+
 def _text(report: TickReport) -> str:
     lines = [f"tick at {report.tick_at.isoformat()}" + (" (dry run)" if report.dry_run else "")]
     lines += [f"{r.project}  {r.outcome.value}  {r.slot_key}" + (f"  {r.detail}" if r.detail
@@ -66,6 +73,8 @@ def tick_cmd(
     report = tick_all(_now(), queue=queue, only=project, dry_run=dry_run, grace_minutes=grace,
                       persisted=_server_queue)
     typer.echo(report.model_dump_json(indent=2) if output is OutputFormat.JSON else _text(report))
+    if not dry_run:
+        _wait_for_runs()
     raise typer.Exit(report.exit_code)
 
 

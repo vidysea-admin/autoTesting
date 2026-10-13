@@ -27,6 +27,7 @@
 | `auth/db.py` | The auth store's SQLite file: connection, tables, one-time seeding, last-admin guard. |
 | `auth/defaults.py` | The four seeded groups and their default ticks (auth.md "Default groups", AU11). |
 | `auth/groups.py` | IAM-style groups: create, rename, tick permissions, set members, delete (AU10). |
+| `auth/loopback.py` | The AU17 loopback switch, kept import-free: whether login is OFF (single-user loopback only). |
 | `auth/passwords.py` | Password hashing: argon2id via argon2-cffi, behind one hash/verify pair (AU1). |
 | `auth/policy.py` | The central route policy (AU14, AU16, TF4): the rule table, its matcher, the unit merge. |
 | `auth/ratelimit.py` | Login rate limit (AU5): 5 failures per account or 20 per client address inside a |

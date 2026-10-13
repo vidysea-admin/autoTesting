@@ -184,3 +184,17 @@ def test_cli_schedule_reaches_no_browser_or_runner_directly() -> None:
     assert not any(m.startswith(("autotester.browser", "autotester.stages.orchestrate",
                                  "autotester.stages.run_launcher", "autotester.stages.explore"))
                    for m in modules), modules
+
+
+def test_a_real_tick_waits_for_the_runs_it_started(
+    root: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Walk r3: the command drains the tick's runs before it exits (not on --dry-run)."""
+    from autotester.ui import routes_runs
+
+    waited: list[bool] = []
+    monkeypatch.setattr(routes_runs, "wait_for_tick_runs", lambda: waited.append(True))
+    runner.invoke(app, ["schedule", "tick", "--dry-run"])
+    assert waited == []
+    runner.invoke(app, ["schedule", "tick"])
+    assert waited == [True]
