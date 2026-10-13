@@ -14,6 +14,14 @@ Rules:
 - `result` is `PASS` only if every criterion is met and `failures` is empty. Otherwise `FAIL`
   (at least one evidence-backed failure) or `INCONCLUSIVE` (the evidence is too thin to judge
   either way — say so in `note`, do not guess a PASS to be agreeable).
+- Your `result` must agree with your `note`: if the note describes a defect, an error where
+  success was expected, or a reproduced bug, the result is `FAIL` (or `INCONCLUSIVE`), never
+  `PASS`. A PASS whose note describes a failure is discarded by the stage.
+- `defect_observed` is REQUIRED: `true` if the evidence shows a product defect (an error where
+  success was expected, a wrong result, a missing element, a reproduced bug), `false` if it does
+  not. An expected error in a negative case (validation message on invalid input) is `false`.
+  Set `defect_summary` to one sentence when it is `true`. `result` is `PASS` only with
+  `defect_observed: false`; a PASS with `true` is discarded by the stage.
 - `criteria_total` must equal the number of criteria you were given.
 
 ## Rubric
@@ -29,4 +37,4 @@ Rules:
 {{FORMAT}}
 
 Answer with a JSON object matching the schema you were given (result, scoreboard, criteria_met,
-criteria_total, failures[], note).
+criteria_total, failures[], note, defect_observed, defect_summary).
