@@ -34,6 +34,7 @@ def main() -> None:
     ap.add_argument("--max-tokens", type=int, default=1_000_000)
     ap.add_argument("--max-usd", type=float, default=10.0)
     ap.add_argument("--usd-per-m", type=float, default=10.0)
+    ap.add_argument("--max-steps", type=int, default=40)
     args = ap.parse_args()
     load_dotenv(args.env)
     out = Path(args.out)
@@ -62,8 +63,8 @@ def run(base: str, root: Path, out: Path, args: argparse.Namespace) -> None:
     from autotester.browser.session import BrowserSession
     from autotester.core.ids import ulid
     from autotester.core.paths import ProjectPaths
-    from autotester.providers.agent_model import agent_chat_model
-    from autotester.providers.langchain_fallback import LangChainFallbackProvider
+    from autotester.providers.agent_model import agent_chain_model
+    from autotester.providers.model_chain import ModelChainProvider
     from autotester.schema.agent_guardrails import AgentGuardrails
     from autotester.schema.approval import RunApproval
     from autotester.schema.bench import BenchCorpus
@@ -102,11 +103,12 @@ def run(base: str, root: Path, out: Path, args: argparse.Namespace) -> None:
         seeded_bugs=[bench.seeded_bug(
             "bug_login_password", "Login rejects the correct password", "/login.html",
             "Login with correct credentials should succeed but shows an error", Severity.S1)])
-    judge_p, judge_a = LangChainFallbackProvider(), LangChainFallbackProvider()
-    model_id, model = agent_chat_model()
+    judge_p, judge_a = ModelChainProvider(), ModelChainProvider()
+    judge_served = _track(judge_p, judge_a)
+    model_id, model, model_served = agent_chain_model()
     guard = AgentGuardrails(
         budget=TokenBudget(max_tokens=args.max_tokens, max_cost_usd=args.max_usd,
-                           usd_per_million_tokens=args.usd_per_m))
+                           usd_per_million_tokens=args.usd_per_m), max_steps=args.max_steps)
     pipe_run, agent_run_id = f"run-pipe-{ulid()}", f"run-agent-{ulid()}"
 
     def new_session(run_id: str, observer: object | None = None) -> BrowserSession:
@@ -144,7 +146,7 @@ def run(base: str, root: Path, out: Path, args: argparse.Namespace) -> None:
                                 pipeline_tokens=None, out=out / "comparison.json")
     finally:
         _evidence(out, store, [pipe_run, agent_run_id], captured.get("run"), judge_p, judge_a,
-                  model_id, guard, args)
+                  model_id, guard, args, model_served, judge_served)
     if cmp is not None:
         # re-score with the pipeline's own (judge) token count, known only after the run
         run_ = captured["run"].model_copy(update={"tokens_used": cmp.agent.tokens or 0})
@@ -160,10 +162,30 @@ def _tokens(provider) -> int:
     return sum(u.input_tokens + u.output_tokens for u in provider.usage)
 
 
-def _evidence(out, store, run_ids, agent_run, judge_p, judge_a, model_id, guard, args) -> None:
+def _track(*judges) -> dict[str, list[str]]:
+    """Wrap each judge so the serving tier of every call is logged (labels only)."""
+    log: dict[str, list[str]] = {"pipeline": [], "agent": []}
+    for key, j in zip(log, judges, strict=True):
+        orig = j.judge
+
+        def wrapped(*a, _o=orig, _j=j, _k=key, **kw):
+            try:
+                return _o(*a, **kw)
+            finally:
+                log[_k].append(_j.served or "none")
+        j.judge = wrapped
+    return log
+
+
+def _evidence(out, store, run_ids, agent_run, judge_p, judge_a, model_id, guard, args,
+              model_served, judge_served) -> None:
     """Redacted evidence: verdicts (reasons only), token counts, run metadata. No key values."""
     meta = {
         "agent_model_provider": model_id,
+        "agent_model_served_per_call": model_served,
+        "judge_served_per_call": judge_served,
+        "usage_by_tier": {k: [u.model_dump(mode="json") for u in p.usage]
+                          for k, p in (("pipeline", judge_p), ("agent", judge_a))},
         "pipeline_judge_tokens": _tokens(judge_p),
         "agent_judge_tokens": _tokens(judge_a),
         "agent_model_tokens": agent_run.tokens_used if agent_run else None,

@@ -1,0 +1,111 @@
+{
+  "agent_model_provider": "model-chain",
+  "agent_model_served_per_call": [
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash"
+  ],
+  "judge_served_per_call": {
+    "pipeline": [
+      "litellm:ollama_chat/glm-5.3-flash",
+      "litellm:ollama_chat/glm-5.3-flash"
+    ],
+    "agent": []
+  },
+  "usage_by_tier": {
+    "pipeline": [
+      {
+        "provider": "litellm:ollama_chat/glm-5.3-flash",
+        "role": "judge",
+        "calls": 2,
+        "input_tokens": 9781,
+        "output_tokens": 2861
+      }
+    ],
+    "agent": []
+  },
+  "pipeline_judge_tokens": 12642,
+  "agent_judge_tokens": 0,
+  "agent_model_tokens": 62476,
+  "agent_run": {
+    "run_id": "run-agent-01M4TQ9E1DJ53B78PXP54SCFGS",
+    "stopped": "step_cap",
+    "reason": "graph step cap reached",
+    "tokens_used": 62476,
+    "tool_calls": 6,
+    "delegations": 0,
+    "refusals": 1,
+    "summary": ""
+  },
+  "guardrails": {
+    "budget": {
+      "max_tokens": 1000000,
+      "max_cost_usd": 10.0,
+      "usd_per_million_tokens": 10.0
+    },
+    "max_steps": 40,
+    "win_rule": {
+      "min_bugs_delta": 0,
+      "max_fp_rate_delta": 0.0,
+      "require_strict_gain": false
+    }
+  },
+  "usd_per_million_tokens_configured_estimate": 10.0,
+  "verdicts": {
+    "run-pipe-01M4TQ9E1DPGBA4T5Q6AX8YW3T": [
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T13:31:14.400735Z",
+        "provenance": null,
+        "run_id": "run-pipe-01M4TQ9E1DPGBA4T5Q6AX8YW3T",
+        "case_id": "case_a5060cf3a872",
+        "result": "FAIL",
+        "scoreboard": "Criteria 0/1 met.",
+        "criteria_met": 0,
+        "criteria_total": 1,
+        "failures": [
+          {
+            "criterion_id": "c1",
+            "reason": "The product rejected the login attempt: after navigating to the login page, filling #email with test@example.com and #password, and clicking #submit, the page displayed an 'Invalid credentials' rejection instead of the expected successful login. An error/rejection where success was expected is evidence of the defect this corpus exists to detect, so c1 is not met.",
+            "evidence_refs": [
+              "04-step04-click.png",
+              "clicked #submit (step 4)",
+              "http://127.0.0.1:56941/login.html"
+            ],
+            "fix_hint": "Investigate the authentication path that causes the seeded rejection of the submitted credentials; per the no-fire rule, do not treat the exact wording of the error message as the issue."
+          }
+        ],
+        "grader_provider": "litellm:ollama_chat/glm-5.3-flash",
+        "rubric_hash": "rub_166ba7602e5b",
+        "note": "The flow ran to completion (navigate, fill email, fill password, submit), but the final screenshot shows the product responding with an 'Invalid credentials' rejection where a successful login was expected \u2014 the defect manifestation this case targets. The brittle-locator notes about #email/#password concern test-script quality, not product behavior, and are not graded.",
+        "images_requested": 4,
+        "images_seen": 4
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T13:31:26.650891Z",
+        "provenance": null,
+        "run_id": "run-pipe-01M4TQ9E1DPGBA4T5Q6AX8YW3T",
+        "case_id": "case_f572b21de5f5",
+        "result": "INCONCLUSIVE",
+        "scoreboard": "Criteria 1/1 met.",
+        "criteria_met": 1,
+        "criteria_total": 1,
+        "failures": [],
+        "grader_provider": "litellm:ollama_chat/glm-5.3-flash",
+        "rubric_hash": "rub_998c3dddfd88",
+        "note": "judge answered PASS but its own note describes a failure (missing, defect): result and reasoning disagree, so the PASS is not trusted (fail closed, core-invariants C12). Held as INCONCLUSIVE for a human to look at; judge note: \"The run completed and the recorded evidence shows the demo site index page (http://127.0.0.1:56941/index.html) loaded and rendered correctly in 05-step01-navigate.png, with the 'Welcome to the demo site' heading and a 'Sign in' link present and no error, rejection, wrong result, or missing element visible. No evidence of a defect, so c1 is met.\".",
+        "images_requested": 1,
+        "images_seen": 1
+      }
+    ],
+    "run-agent-01M4TQ9E1DJ53B78PXP54SCFGS": []
+  }
+}
