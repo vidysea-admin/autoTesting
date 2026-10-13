@@ -170,3 +170,55 @@ def test_cli_flags_fp_rate_unadjudicated_only_without_a_human_list(tmp_path: Pat
     assert cli.main(["demo", "--root", str(tmp_path)]) == 0
     out = capsys.readouterr().out
     assert "FP rate:" in out and "unadjudicated" not in out
+
+
+# --- K12: AI-assisted known-bugs corpus (synthetic fixtures only) -------------------
+
+ROWS = [
+    {"id": "X-1", "title": "Bug one", "screen/flow": "Screen A", "severity": "High",
+     "description": "d1", "video_ref": "a.mp4 @ 00:10"},
+    {"id": "X-2", "title": "Bug two", "screen/flow": "Screen B", "severity": "Medium",
+     "description": "d2", "video_ref": "b.mp4 @ 00:20"},
+    {"id": "X-3", "title": "Praise", "severity": "Working well"},
+    {"id": "X-S1", "title": "Summary", "severity": None},
+]
+
+
+def test_known_bugs_converter_keeps_only_real_bugs():
+    from autotester.stages.known_bugs import known_bugs_corpus
+    corpus = known_bugs_corpus(ROWS, "demo", "b")
+    assert [b.id for b in corpus.seeded_bugs] == ["X-1", "X-2"]
+    assert [b.severity for b in corpus.seeded_bugs] == [Severity.S1, Severity.S2]
+    assert corpus.mode == "known_bugs_ai_assisted" and corpus.material_refs == ["a.mp4", "b.mp4"]
+
+
+def test_known_bugs_recall_is_labelled_not_independent(tmp_path):
+    from autotester.stages.known_bugs import known_bugs_corpus
+    corpus = known_bugs_corpus(ROWS, "demo", "b")
+    store = ProjectStore("demo", tmp_path)
+    store.save_bench_trial(_ai().model_copy(update={
+        "findings": [Finding(text="a", matched_bug_id="X-1"), Finding(text="z")]}))
+    cmp = build_comparison(store, "demo", corpus)
+    assert cmp.recall_basis == "AI-assisted video review, not independent"
+    assert cmp.autotester.severity_weighted_recall.value == 0.6  # 3 of (3 + 2)
+    assert cmp.autotester.denominator_population == "ai_video_review"
+    assert cmp.fp_rate_unadjudicated and cmp.human_list == "absent"
+    assert "AI-assisted video review, not independent" in _cli().render(cmp)
+
+
+def test_known_bugs_corpus_rejects_other_provenance():
+    with pytest.raises(ValueError):
+        BenchCorpus(id="c", app="a", build_ref="b", mode="known_bugs_ai_assisted",
+                    seeded_bugs=[SeededBug(id="1", description="d", location="l",
+                                           detect_hint="h", provenance="human_independent")])
+
+
+def test_converter_refuses_tracked_output(tmp_path, capsys):
+    src = tmp_path / "rows.json"
+    src.write_text(json.dumps(ROWS), encoding="utf-8")
+    cli = importlib.util.spec_from_file_location(
+        "kbc", SCRIPT.parent / "known_bugs_corpus.py")
+    mod = importlib.util.module_from_spec(cli)
+    cli.loader.exec_module(mod)
+    assert mod.main(["demo", "--from", str(src),
+                     "--out", str(SCRIPT.parents[1] / "docs" / "x.json")]) == 2

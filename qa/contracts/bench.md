@@ -147,6 +147,16 @@ ungraded run exits 2 with no files; untimed run with no results gives `duration_
   one real comparison, is the bar for this unit.
 - CI wiring to run bench automatically — future enhancement, not required here.
 
+### K12 - AI-assisted known-bugs corpus (D-094)
+A corpus of `mode: known_bugs_ai_assisted` (ground truth `provenance: ai_video_review`) is a third kind,
+distinct from `human_confirmed` and `human_live`. (a) Only real bug rows (High, Medium) enter it; praise and
+summary rows never do. (b) Any recall computed against it is labelled "AI-assisted video review, not
+independent" in the comparison artifact (`recall_basis`) and in the printed output, and is never presented as
+independent-human recall; its denominator population is `ai_video_review`. (c) FP rate stays unadjudicated
+(human confirmation required). (d) The source list is internal feedback: the corpus is written only to a
+gitignored path (the converter refuses a tracked one) and is read via `--corpus`; the repo holds only code,
+schema, synthetic-fixture tests and decision text. K1-K11 are unchanged.
+
 ## Amendment log (append-only; git history is the version)
 
 - 2026-09-03 · init · contract created for T-120 — no contract existed before this cycle.
@@ -170,3 +180,5 @@ ungraded run exits 2 with no files; untimed run with no results gives `duration_
 - 2026-10-13 · /checker fold-in (t136b-bench-from-run) · **K11a-d** added from the maker's proposal in `qa/feedback-inbox.md`,
   tightened (refusal writes nothing; partial per-case durations never summed). Consistent with D-089 item 3 and D-090 (no human list
   means recall unavailable, no invented numbers). K1-K10 unchanged. **Links:** D-089; D-090; T-136; T-136b.
+- 2026-10-13 - /checker fold-in (t136-known-bugs) - **K12** added per D-094 (Umesh chat): Karunn's PathLynks review used as an
+  AI-assisted KNOWN-BUGS oracle, labelled not independent. K1-K11 unchanged. **Links:** D-094; D-089; D-090; T-136.

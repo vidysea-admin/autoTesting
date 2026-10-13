@@ -19,6 +19,12 @@ from autotester.stages import bench
 from autotester.store.project_store import ProjectStore
 
 NO_HUMAN = "no human list"
+AI_ASSISTED = "known_bugs_ai_assisted"
+RECALL_BASIS = {
+    "fixture": "seeded fixture bugs",
+    "human_confirmed": "independent human list",
+    AI_ASSISTED: "AI-assisted video review, not independent",
+}
 
 
 class MissingInput(Exception):
@@ -50,7 +56,7 @@ def _absent(participant: str, reason: str) -> ParticipantColumn:
 def _column(corpus: BenchCorpus, trial: BenchTrial, human_missing: bool) -> ParticipantColumn:
     score = bench.scorecard(corpus, [trial])[trial.participant_label or trial.participant.value]
     # With no human list the AutoTester recall has no independent denominator.
-    override = NO_HUMAN if human_missing and corpus.mode != "fixture" else None
+    override = NO_HUMAN if human_missing and corpus.mode not in ("fixture", AI_ASSISTED) else None
     independent = sum(1 for f in trial.findings if f.provenance == "independent")
     prompted = sum(1 for f in trial.findings if f.provenance == "prompted")
     return ParticipantColumn(
@@ -79,10 +85,14 @@ def _bug_rows(corpus: BenchCorpus, trials: list[BenchTrial]) -> list[BugRow]:
     ]
 
 
-def build_comparison(store: ProjectStore, slug: str) -> AcceptanceComparison:
-    """Assemble the comparison; raise `MissingInput` naming what is absent."""
-    corpus_id = corpus_id_for(slug)
-    corpus = store.load_bench_corpus(corpus_id)
+def build_comparison(
+    store: ProjectStore, slug: str, corpus: BenchCorpus | None = None
+) -> AcceptanceComparison:
+    """Assemble the comparison; raise `MissingInput` naming what is absent.
+
+    `corpus` overrides the stored one (the gitignored known-bugs corpus, K12)."""
+    corpus_id = corpus.id if corpus else corpus_id_for(slug)
+    corpus = corpus or store.load_bench_corpus(corpus_id)
     if corpus is None:
         raise MissingInput(f"bench corpus {store.paths.bench_corpus(corpus_id)}")
     trials = store.list_bench_trials(corpus_id)
@@ -95,6 +105,7 @@ def build_comparison(store: ProjectStore, slug: str) -> AcceptanceComparison:
     human = next((t for t in trials if t.participant.value == "human"), None)
     return AcceptanceComparison(
         id=f"cmp_{corpus_id}", project=slug, corpus_id=corpus_id, corpus_mode=corpus.mode,
+        recall_basis=RECALL_BASIS.get(corpus.mode, "unknown"),
         human_list="present" if human else "absent",
         fp_rate_unadjudicated=human is None,
         autotester=_column(corpus, ai, human is None),
