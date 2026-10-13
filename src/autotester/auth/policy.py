@@ -70,6 +70,7 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     ("GET", "/"): MEMBER,
     ("GET", "/onboard"): _key(K.PROJECT_CREATE), ("POST", "/onboard"): _key(K.PROJECT_CREATE),
     ("GET", "/live"): _key(K.LIVE_VIEW),
+    ("GET", "/inbox"): _key(K.REPORT_VIEW),   # T-201c/TT7; rows are filtered per project
     ("GET", "/settings/providers"): _SETTINGS, ("POST", "/settings/providers"): _SETTINGS,
     ("GET", "/openapi.json"): _SETTINGS, ("GET", "/docs"): _SETTINGS,
     ("GET", "/docs/oauth2-redirect"): _SETTINGS, ("GET", "/redoc"): _SETTINGS,
