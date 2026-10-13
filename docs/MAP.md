@@ -225,6 +225,7 @@
 | `stages/ingest.py` | INGEST: turn a video Source into a FlowSpec, provenance-tracked to the second. |
 | `stages/issues.py` | ISSUES: turn an adjudicated analysis into rows a human tester can read. |
 | `stages/knowledge_graph.py` | KNOWLEDGE GRAPH: build the typed graph from the persona + FlowSpec, and resolve a |
+| `stages/known_bugs.py` | Map an AI-assisted video-review findings list to a `BenchCorpus` (bench.md K12). |
 | `stages/manual_login.py` | Manual one-time login. Contract: qa/contracts/manual-login.md ML1-ML5. |
 | `stages/media_prep.py` | MEDIA PREP: make a recording readable — probe it, cut it, transcribe it. |
 | `stages/merge_flowspec.py` | Fold a freshly ingested FlowSpec into the reviewed one (Track A6, T-135). |
@@ -656,6 +657,7 @@
 | `scripts/flake_probe.py` | Measure a flaky test's real failure rate — and say how little N green runs prove. |
 | `scripts/hosting_state_listing.py` | Print the durable state under a data root as JSON, for a before/after-restart diff (HO4). |
 | `scripts/install_windows_task.ps1` | (no description) |
+| `scripts/known_bugs_corpus.py` | Convert an AI-assisted review findings list to a known-bugs bench corpus (bench.md K12). |
 | `scripts/migrate_stamp_legacy_rubrics.py` | Stamp `Provenance` on legacy default rubrics, in stored project data. |
 | `scripts/migrate_url_patterns.py` | Repair `url_pattern` values mangled by AT-287/AT-294, in stored project data. |
 | `scripts/mutation_check.py` | Prove a unit's new tests are not vacuous, by killing them on purpose. |

@@ -24,3 +24,6 @@ Agent tool calls actually made: 3 (run_case path, 0 delegations, 0 refusals); st
 
 ## Recommendation (not a decision)
 Agent matched the pipeline on detection but cost about 6x tokens and never finished. Drop unless a rerun at a cap near 160 (about 40 turns) finishes and beats the pipeline on bugs or FP; n=1 bug, 1 run.
+
+## AL13 keep/drop declaration (Umesh, 2026-10-13, D-095 per D-042)
+**DROPPED AS DEFAULT.** The plain pipeline stays the main path. The agent layer code stays in the repo, OFF by default and opt-in only (no default path imports it; `tests/test_agent_gain.py::test_no_default_path_imports_the_agent_layer`), and may be re-tried later (first try: cap near 160). Basis: r1 0 vs 0 bugs at about 15x tokens; r2 pipeline 1 bug vs agent 0; r3 equal detection (1 bug, 0 FP each) at 73,781 vs 12,554 tokens, step_cap halt, about $0.87 estimated total. T-181's done_check is `uv run pytest tests/test_agent_gain.py`; this file is its verdict record.

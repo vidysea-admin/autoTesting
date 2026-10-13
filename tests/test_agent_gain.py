@@ -176,3 +176,18 @@ def test_a_zero_tie_that_also_step_capped_still_reads_no_evidence_and_names_the_
 def test_a_nonzero_tie_keeps_the_win_rule_and_states_it_is_a_tie() -> None:
     cmp = _measure(["c1"], ["c1"], WinRule())
     assert cmp.verdict == "gain" and "tie" in cmp.verdict_line
+
+
+# -- AL13 (D-095): the agent layer is OFF by default; the plain pipeline is the main path -------
+def test_no_default_path_imports_the_agent_layer() -> None:
+    """Only the agents package, the model constructor and opt-in scripts may import it, so a
+    fresh project (any CLI, UI or stage run) executes the pipeline unless someone opts in."""
+    src = Path(__file__).resolve().parents[1] / "src" / "autotester"
+    allowed = {"agents", "providers"}
+    offenders = [p.relative_to(src).as_posix() for p in src.rglob("*.py")
+                 if p.relative_to(src).parts[0] not in allowed
+                 and ("autotester.agents" in p.read_text(encoding="utf-8")
+                      or "from autotester import agents" in p.read_text(encoding="utf-8"))]
+    assert offenders == []
+    from autotester.schema.project import Project
+    assert "agent_mode" not in Project.model_fields  # no setting makes the agent the default

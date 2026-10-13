@@ -2570,3 +2570,15 @@ the dependency or by a fresh licence decision.
 **Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
 
 **Links:** T-136; D-089; D-090; qa/gates/t136-independent-human-list.md; qa/contracts/bench.md
+
+## D-095 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided in chat on 2026-10-13, after the three live AL12 comparisons (r1-r3), per D-042: the agent layer is DROPPED AS DEFAULT. The plain pipeline stays the main path. The agent layer code (T-179 lead agent, T-180 tools, T-181 guardrails and gain measurement) stays in the repo, OFF by default and opt-in only, and may be re-tried later. AL13 keep/drop: DROP as default.
+
+**Why:** D-042 keeps the layer only on a measured gain over the pipeline. r1 (Gemini): both paths 0 of 1 bugs, agent about 15x tokens, step-capped. r2 (GLM chain): pipeline 1 bug, agent 0, agent step-capped. r3 (GLM chain, cap 40): pipeline 1 bug, 0 FP, 12,554 tokens, 88 s versus agent 1 bug, 0 FP, 73,781 tokens, 96 s, halted at step_cap; about 5.9x the tokens for the same detection, about $0.87 estimated across the run. No gain on bugs found or false positives, higher cost.
+
+**Result:** No default path runs the agent layer (only scripts and tests import it); a test now asserts a fresh project runs the pipeline unless opted in. AL13 declaration recorded in qa/verdicts/t181-live.r3.md. Note: the step cap counts graph supersteps (about 4 per model turn), so cap 40 is about 10 turns; a rerun near cap 160 is the first thing to try if the layer is revisited.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** T-181; T-179; T-180; D-042; D-089; qa/verdicts/t181-live.r3.md
