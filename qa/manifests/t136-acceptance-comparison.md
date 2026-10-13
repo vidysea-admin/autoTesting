@@ -2,7 +2,7 @@
 
 **Unit:** T-136 `done_check` script and its logic, built in no-human-list mode (D-089 item 3).
 **Status:** ready-for-check
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Contract:** `qa/contracts/bench.md` K3, K5-K9. Recall is judged "unavailable allowed" per D-089 item 3.
 **Goal task:** T-136 stays `pending`: no Pathlynks bench data exists locally.
 
@@ -29,7 +29,12 @@ Nothing yet turns a real Pathlynks run's verdicts into the corpus + AutoTester t
 
 ## Verify
 
-- `uv run pytest tests/test_acceptance_comparison.py tests/test_bench.py` -> 42 passed
+- `uv run pytest tests/test_acceptance_comparison.py tests/test_bench.py` -> 43 passed
 - `uv run ruff check src tests scripts` -> clean
-- `uv run autotester doctor` -> 3 pre-existing violations (D-9999/D-999 dangling citations in `qa/verdicts/t196-citation.*`), none from this unit
+- `uv run autotester doctor` -> 3 pre-existing hits, all in `qa/verdicts/t196-citation.*` (placeholder decision ids in that unit's verdicts); no hit from t136 files after this cycle's reword
 - `uv run python scripts/check_acceptance_comparison.py pathlynks` -> exit 2, as above
+
+## Fix cycle 2
+
+- Reworded the doctor line above (dangling citations removed; the earlier 'none from this unit' claim was wrong).
+- `AcceptanceComparison.fp_rate_unadjudicated: bool` (true when no human list). CLI prints `FP rate: <n> (unadjudicated: no human list)`; with a list the suffix is absent. Tests cover both modes.

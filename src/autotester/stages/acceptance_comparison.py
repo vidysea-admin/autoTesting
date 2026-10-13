@@ -96,6 +96,7 @@ def build_comparison(store: ProjectStore, slug: str) -> AcceptanceComparison:
     return AcceptanceComparison(
         id=f"cmp_{corpus_id}", project=slug, corpus_id=corpus_id, corpus_mode=corpus.mode,
         human_list="present" if human else "absent",
+        fp_rate_unadjudicated=human is None,
         autotester=_column(corpus, ai, human is None),
         human=_column(corpus, human, False) if human else _absent("human", NO_HUMAN),
         bugs=_bug_rows(corpus, [t for t in (ai, human) if t]),

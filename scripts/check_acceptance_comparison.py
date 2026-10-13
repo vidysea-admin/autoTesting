@@ -43,6 +43,9 @@ def render(cmp: AcceptanceComparison) -> str:
                      f"detection: {col.detection_rate.text()}  "
                      f"fp_rate: {col.false_positive_rate.text()} "
                      f"({col.false_positive_population})  time_s: {col.duration_s.text()}")
+    fp = cmp.autotester.false_positive_rate.text()
+    lines.append(f"FP rate: {fp}" + (" (unadjudicated: no human list)"
+                                      if cmp.fp_rate_unadjudicated else ""))
     for bug in cmp.bugs:
         lines.append(f"  bug {bug.bug_id} [{bug.severity}] found by: {bug.found_by or 'nobody'}")
     if cmp.bugs_unavailable_reason:

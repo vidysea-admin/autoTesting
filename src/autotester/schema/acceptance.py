@@ -80,6 +80,8 @@ class AcceptanceComparison(Artifact):
     corpus_id: str
     corpus_mode: str
     human_list: Literal["present", "absent"]
+    # True when no human list exists: every finding then counts as a false positive.
+    fp_rate_unadjudicated: bool
     autotester: ParticipantColumn
     human: ParticipantColumn
     bugs: list[BugRow] = Field(default_factory=list)

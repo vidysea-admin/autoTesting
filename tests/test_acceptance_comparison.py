@@ -81,6 +81,7 @@ def test_no_human_list_is_a_supported_mode_with_recall_unavailable(tmp_path: Pat
     assert cmp.autotester.false_positive_rate.value == pytest.approx(1.0)
     assert cmp.autotester.duration_s.value == 12.0
     assert cmp.bugs_unavailable_reason == "no ground-truth bug list"
+    assert cmp.fp_rate_unadjudicated is True
     assert completeness_problems(cmp) == []
 
 
@@ -107,6 +108,7 @@ def test_human_list_plugs_in_as_files_with_no_code_change(tmp_path: Path) -> Non
     store = _seed(tmp_path, corpus=_human_corpus(), trials=[_ai(), _human()])
     cmp = build_comparison(store, "demo")
     assert cmp.human_list == "present"
+    assert cmp.fp_rate_unadjudicated is False
     assert cmp.human.kind == "human_live" and cmp.human.independent_findings == 1
     assert cmp.human.severity_weighted_recall.value == 1.0
     assert cmp.autotester.severity_weighted_recall.value == 1.0
@@ -157,3 +159,14 @@ def test_cli_exit_codes_and_artifact(tmp_path: Path, capsys) -> None:
     assert saved["human_list"] == "absent" and "Umesh" in saved["verdict"]
     store.save_bench_trial(_ai(duration=None))
     assert cli.main(["demo", "--root", str(tmp_path)]) == 1
+
+
+def test_cli_flags_fp_rate_unadjudicated_only_without_a_human_list(tmp_path: Path, capsys) -> None:
+    cli = _cli()
+    _seed(tmp_path, corpus=_no_list_corpus(), trials=[_ai()])
+    assert cli.main(["demo", "--root", str(tmp_path)]) == 0
+    assert "FP rate: 1 (unadjudicated: no human list)" in capsys.readouterr().out
+    _seed(tmp_path, corpus=_human_corpus(), trials=[_ai(), _human()])
+    assert cli.main(["demo", "--root", str(tmp_path)]) == 0
+    out = capsys.readouterr().out
+    assert "FP rate:" in out and "unadjudicated" not in out

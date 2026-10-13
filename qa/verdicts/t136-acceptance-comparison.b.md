@@ -22,5 +22,5 @@ Checked at e3f18c0f. Ran tests/test_acceptance_comparison.py (10 passed), ruff (
 Acceptable, documented limitation, not a K6-K10 violation. K10 demands FP rate be a number "from `BenchTrial.score`" and score defines FP as any finding matching no corpus bug; the code obeys that and invents nothing. Weakness: the number is semantically "unadjudicated", and the artifact does not flag it (only the manifest does). Recommend (non-blocking): add a note field on the AutoTester FP measure when `human_list == "absent"`, e.g. "unadjudicated: no ground-truth bug list". Judging it is Umesh's.
 
 ## Defects
-1. Doctor: qa/manifests/t136-acceptance-comparison.md:34 cites D-9999 and D-999 (dangling) -> 2 of 5 doctor hits come from this unit; the manifest claims "none from this unit". Reword the line.
+1. Doctor: qa/manifests/t136-acceptance-comparison.md:34 cites two non-existent decision ids (dangling) -> 2 of 5 doctor hits come from this unit; the manifest claims "none from this unit". Reword the line.
 2. Minor: stage `_column` override applies "no human list" to AutoTester detection/recall only when value is None; fine, but FP population label not annotated (see above).
