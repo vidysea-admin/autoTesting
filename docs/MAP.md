@@ -307,6 +307,7 @@
 | `ui/routes_project_edit.py` | Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md. |
 | `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
+| `ui/routes_server_settings.py` | The admin page for server limits (hosting.md HO15): run concurrency and the upload ceiling. |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
 | `ui/routes_sources.py` | The operator-facing recording registry. |
 | `ui/routes_team_run.py` | The team Test button (T-201b, qa/contracts/team-test-button.md TT1-TT6): a teammate with |
@@ -623,6 +624,7 @@
 | `scripts/check_no_secrets.py` | Scan files for any real value currently loaded in .env. Prints OK/LEAK only. |
 | `scripts/explore_proof.py` | Credential-free end-to-end proof of the explorer (Track B3). |
 | `scripts/flake_probe.py` | Measure a flaky test's real failure rate — and say how little N green runs prove. |
+| `scripts/hosting_state_listing.py` | Print the durable state under a data root as JSON, for a before/after-restart diff (HO4). |
 | `scripts/install_windows_task.ps1` | (no description) |
 | `scripts/migrate_stamp_legacy_rubrics.py` | Stamp `Provenance` on legacy default rubrics, in stored project data. |
 | `scripts/migrate_url_patterns.py` | Repair `url_pattern` values mangled by AT-287/AT-294, in stored project data. |

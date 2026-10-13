@@ -70,6 +70,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     ("GET", "/"): MEMBER,
     ("GET", "/onboard"): _key(K.PROJECT_CREATE), ("POST", "/onboard"): _key(K.PROJECT_CREATE),
     ("GET", "/live"): _key(K.LIVE_VIEW),
+    ("GET", "/auth/check"): _key(K.LIVE_VIEW),   # HO12: the proxy's forward_auth target
+    ("GET", "/settings/server"): _SETTINGS, ("POST", "/settings/server"): _SETTINGS,   # HO15
     ("GET", "/settings/providers"): _SETTINGS, ("POST", "/settings/providers"): _SETTINGS,
     ("GET", "/openapi.json"): _SETTINGS, ("GET", "/docs"): _SETTINGS,
     ("GET", "/docs/oauth2-redirect"): _SETTINGS, ("GET", "/redoc"): _SETTINGS,

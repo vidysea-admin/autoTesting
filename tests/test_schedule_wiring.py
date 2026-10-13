@@ -201,7 +201,14 @@ def world(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     import autotester.ui.routes_runs as routes_runs
     import autotester.ui.run_execution as run_execution
 
+    from autotester.schema.auth import Principal, all_permissions
+
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    # These tests are about stamping, so the entry's requester "u1" is a live account that
+    # holds every permission (HO19's start-time recheck still runs; tests/test_hosting_gaps.py
+    # covers it refusing a demoted or disabled requester).
+    monkeypatch.setattr(routes_runs, "principal_for_email", lambda email: Principal(
+        user_id=1, email=email, permissions=frozenset(all_permissions())))
     store = ProjectStore("demo", tmp_path)
     store.save_project(Project(slug="demo", name="Demo", base_url="https://demo.test",
                                allowed_domains=["demo.test"]))

@@ -51,8 +51,19 @@ def novnc_url() -> str:
     return raw if (same_origin or local) and not hostile else _DEFAULT_NOVNC
 
 
+def viewer_url(can_control: bool) -> str:
+    """The iframe target. Without `live.control` the viewer is told to be view-only (noVNC's
+    `view_only=1`), so a watcher cannot send keys or clicks from this page (HO12)."""
+    url = novnc_url()
+    if can_control:
+        return url
+    return url + ("&" if "?" in url else "?") + "view_only=1"
+
+
 @router.get("/live", response_class=HTMLResponse)
 def live_view() -> str:
+    who = current_principal()
+    can_control = who is not None and authorize(who, PermissionKey.LIVE_CONTROL)
     body = (
         theme.breadcrumb(("Projects", "/"), ("Live view", None))
         + "<h1>Live view</h1>"
@@ -60,10 +71,13 @@ def live_view() -> str:
         "<div class='live-tip'><strong>A black screen below is normal.</strong> It is the "
         "container's real display, empty whenever no run is in progress. Open a project and "
         "press <em>▶ Run tests</em> with this page open in a second tab.</div>"
-        "<div class='live-tip live-tip-muted'>To slow a run down, set "
+        + ("" if can_control else
+           "<div class='live-tip live-tip-muted'>View only: sending input needs the "
+           "<code>live.control</code> permission.</div>")
+        + "<div class='live-tip live-tip-muted'>To slow a run down, set "
         "<code>AUTOTESTER_SLOW_MO_MS=1500</code> before "
         "<code>docker compose up -d</code>.</div>"
-        f"<div class='live-shell'><iframe src='{escape(novnc_url())}'></iframe></div>"
+        f"<div class='live-shell'><iframe src='{escape(viewer_url(can_control))}'></iframe></div>"
     )
     return theme.page("Live view", body)
 

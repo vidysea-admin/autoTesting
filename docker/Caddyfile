@@ -15,10 +15,17 @@
 		max_size {$AUTOTESTER_MAX_UPLOAD_BYTES}
 	}
 
-	# The live browser view is only for signed-in people. Until the app's own check lands
-	# (T-204: forward_auth to /auth/check) this path is refused outright rather than left open.
+	# The live browser view is only for signed-in people holding live.view (HO12). The proxy
+	# keeps no list of its own: it asks the app (GET /auth/check), which answers 401/302 without
+	# a session, 403 without live.view, and 200 with the identity. Browsers and the websocket
+	# upgrade both carry the session cookie, so both are checked. Sending input is limited by
+	# the viewer URL's view_only=1 for anyone without live.control (see docker/DEPLOY.md).
 	handle /novnc/* {
-		respond "Live view is unavailable until sign-in is enabled." 503
+		forward_auth autotester:8000 {
+			uri /auth/check
+		}
+		uri strip_prefix /novnc
+		reverse_proxy autotester:6080
 	}
 
 	handle {

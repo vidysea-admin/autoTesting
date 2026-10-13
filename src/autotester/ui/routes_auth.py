@@ -8,15 +8,17 @@ locked scope gets 429 even with the right password (AU5).
 from __future__ import annotations
 
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from autotester.auth import audit
+from autotester.auth.access import authorize
 from autotester.auth.accounts import AccountError, authenticate, normalize_email, signup
 from autotester.auth.config import cookie_secure
 from autotester.auth.context import current_principal
 from autotester.auth.passwords import WeakPassword
 from autotester.auth.ratelimit import login_limiter, signup_limiter
 from autotester.auth.sessions import create_session, end_session, session_hours
+from autotester.schema.auth import PermissionKey
 from autotester.ui import auth_view
 from autotester.ui.auth_middleware import SESSION_COOKIES, safe_next, session_token
 
@@ -98,3 +100,18 @@ def auth_waiting() -> Response:
     if who is not None and who.permissions:
         return RedirectResponse("/", status_code=303)
     return HTMLResponse(auth_view.waiting_page(who.email if who else ""))
+
+
+@router.get("/auth/check")
+def auth_check(need: str = "view") -> Response:
+    """HO12: what the reverse proxy asks before it serves `/novnc/*` (`forward_auth`), so the
+    proxy keeps no list of its own. The login gate has already turned a missing or expired
+    session into 401/302 and a signed-in account without `live.view` into 403 (policy row);
+    here `need=control` additionally wants `live.control`. 200 carries the identity."""
+    who = current_principal()
+    if who is None or not who.authenticated:
+        return JSONResponse({"detail": "authentication required"}, status_code=401)
+    if need == "control" and not authorize(who, PermissionKey.LIVE_CONTROL):
+        return JSONResponse({"detail": "live.control is required to send input"}, status_code=403)
+    return JSONResponse({"email": who.email,
+                         "can_control": authorize(who, PermissionKey.LIVE_CONTROL)})

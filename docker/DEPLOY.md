@@ -120,9 +120,12 @@ certificate itself, sets security headers, and limits request bodies to
 `AUTOTESTER_MAX_UPLOAD_BYTES`. Prefer your own nginx? Proxy to `127.0.0.1:8000`, forward `Host`
 and `X-Forwarded-Proto`, and set `client_max_body_size` to the same upload limit.
 
-The live browser view (`/novnc/*`) answers 503 through Caddy until sign-in is enabled (T-204
-wires the check). Port 6080 is not published on the host, so there is no tunnel to it in this
-release; the live view is reachable only from inside the compose network until then.
+The live browser view (`/novnc/*`) is served through Caddy only after the app agrees: Caddy
+asks `GET /auth/check` (`forward_auth`), so no session gets 401/302 and an account without
+`live.view` gets 403. Anyone without `live.control` gets a view-only viewer (`view_only=1` in the
+`/live` iframe). Port 6080 is not published on the host. Residual (verify at the server): the
+view-only flag is enforced by the viewer page, not by the websocket itself, so treat `live.view`
+as trusted to watch and `live.control` as the right to drive until a second proxy path blocks input.
 
 ### 8. Interim without a domain
 
