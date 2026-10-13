@@ -12,6 +12,7 @@ from autotester.providers.gemini import GeminiProvider
 from autotester.providers.langchain_fallback import LangChainFallbackProvider
 from autotester.providers.litellm_provider import MODEL_ENV, LiteLLMProvider
 from autotester.providers.mock import MockProvider
+from autotester.providers.model_chain import ModelChainProvider
 from autotester.schema.enums import ProviderRole
 from autotester.schema.project import ProviderConfig
 
@@ -24,6 +25,7 @@ _REGISTRY: dict[str, type[Provider]] = {
     "langchain-fallback": LangChainFallbackProvider,
     "gemini": GeminiProvider,
     "litellm": LiteLLMProvider,
+    "model-chain": ModelChainProvider,
 }
 
 _CREDENTIAL_IN_SPEC = re.compile(r"://|@|\s")
@@ -115,5 +117,5 @@ def available_ids() -> list[str]:
     return sorted(ready)
 
 
-__all__ = ["Provider", "ProviderError", "Unsupported", "available_ids", "for_role",
-           "get", "parse_spec", "register", "why_unavailable"]
+__all__ = ["ModelChainProvider", "Provider", "ProviderError", "Unsupported",
+           "available_ids", "for_role", "get", "parse_spec", "register", "why_unavailable"]

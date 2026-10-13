@@ -104,6 +104,8 @@
 | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `providers/model_chain.py` | Ordered model chain over LiteLLM: Ollama GLM -> Ollama DeepSeek -> Gemini. |
+| `providers/ollama_cloud.py` | Ollama cloud endpoint settings for LiteLLM: the one place that knows them. |
 | `schema/acceptance.py` | The T-136 acceptance-comparison artifact: AutoTester vs a human tester, as data. |
 | `schema/agent_comparison.py` | The agent-vs-pipeline comparison report (T-179 AL12/AL13): the four north-star axes for each |
 | `schema/agent_fallback.py` | Typed shapes for the browser-use fallback actuator (T-177, qa/contracts/agent-fallback.md). |

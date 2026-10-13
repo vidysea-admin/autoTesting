@@ -66,6 +66,10 @@ def providers_check() -> None:
     """Show which model providers have credentials present on this machine."""
     ready = providers.available_ids()
     typer.echo("available providers: " + (", ".join(ready) if ready else "none"))
+    chain = providers.ModelChainProvider()
+    ok = {t._model for t in chain.ready_tiers()}
+    typer.echo("model order (agent/judge): " + " -> ".join(
+        f"{m} [{'ready' if m in ok else 'no credentials'}]" for m in chain.order()))
 
 
 @app.command("map")
