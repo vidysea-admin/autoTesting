@@ -3,7 +3,7 @@
 **Unit:** T-199 gaps from the task-level check: (1) wire `process_run` into run completion, (2) TB12 and TB14. Internal tracker only (D-090): no live sheet write, no `SheetClient` in the run path.
 **Branch / base:** wave/t199d-bug-wiring, master b2d42c9b.
 Fix cycle: 1
-Status: ready-for-check
+Status: checked-PASS
 
 ## What changed
 | Path | One job |
