@@ -30,6 +30,7 @@ from autotester.ui import (
     routes_product_map,
     routes_project_access,
     routes_project_edit,
+    routes_proposals,
     routes_report,
     routes_runs,
     routes_schedule,
@@ -71,6 +72,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_live.router,
     routes_catalog.router,
     routes_tracker.router,
+    routes_proposals.router,
     routes_project_access.router,
     routes_schedule.router,
     routes_team_run.router,   # T-201b; its `STUBS['team_run']` stays registered, empty

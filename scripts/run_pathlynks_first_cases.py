@@ -31,10 +31,10 @@ from autotester.providers.langchain_fallback import LangChainFallbackProvider
 from autotester.schema.case import Case
 from autotester.schema.enums import Action, CaseClass, CaseKind, EvidenceKind
 from autotester.schema.flowspec import Step
-from autotester.schema.run import Run
 from autotester.schema.verdict import Criterion, Rubric
 from autotester.stages.execute import run_case
 from autotester.stages.grade import grade
+from autotester.stages.run_record import now_utc, record_run, run_id_lines
 from autotester.store import ProjectStore
 
 SIGNIN_EMAIL = 'input[name="identifier"]'
@@ -185,6 +185,7 @@ def main() -> None:
     shutil.rmtree(login_test_paths.profile_dir, ignore_errors=True)
     run_order = sorted(cases, key=lambda c: 0 if c.kind is not CaseKind.BEST else 1)
 
+    started_at = now_utc()
     session = BrowserSession(headed_project, secrets, run_dir, login_test_paths)
     session.start()
     results = []
@@ -199,7 +200,7 @@ def main() -> None:
     finally:
         session.close()
 
-    store.save_run(Run(id=run_id, project=project.slug, case_ids=[c.id for c, _, _ in results]))
+    record_run(store, run_id, project.slug, [c.id for c, _, _ in results], started_at, now_utc())
 
     for case, result, verdict in results:
         verdict_str = (
@@ -207,7 +208,8 @@ def main() -> None:
         )
         print(f"{case.kind.value:5s} {case.id}  outcome={result.outcome.value:9s} "
               f"verdict={verdict_str}")
-    print(f"run: {run_dir}")
+    for line in run_id_lines(run_id, run_dir):
+        print(line)
 
 
 if __name__ == "__main__":

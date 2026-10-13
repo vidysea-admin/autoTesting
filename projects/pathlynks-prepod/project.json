@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-13T00:00:00.000000Z",
+  "slug": "pathlynks-prepod",
+  "name": "Pathlynks (prepod)",
+  "base_url": "https://dev-new.vidysea.com/login",
+  "allowed_domains": [
+    "dev-new.vidysea.com"
+  ],
+  "write_policy": "read_only",
+  "max_parallel": 1,
+  "permitted_surface": [],
+  "secrets": [
+    {
+      "key": "PATHLYNKS_COUNSELLOR_EMAIL",
+      "domains": [
+        "dev-new.vidysea.com"
+      ],
+      "include_subdomains": false,
+      "mask_in_screenshot": false
+    },
+    {
+      "key": "PATHLYNKS_COUNSELLOR_PASSWORD",
+      "domains": [
+        "dev-new.vidysea.com"
+      ],
+      "include_subdomains": false,
+      "mask_in_screenshot": true
+    }
+  ],
+  "providers": {
+    "vision": "gemini",
+    "agent": "langchain-fallback",
+    "judge": "langchain-fallback"
+  },
+  "headed": true,
+  "description": "Vidysea's Pathlynks PREPOD environment (dev-new.vidysea.com; D-087 item 1: each environment its own project). Counsellor role logs in at /login. Not production. No login case authored yet.",
+  "login_case_id": null
+}

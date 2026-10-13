@@ -17,6 +17,7 @@ from autotester.store.filestore import read_json, read_jsonl, upsert_jsonl, writ
 
 RUN_AUX_FILES = frozenset({
     "run.json", "ux_report.json", "state.json", "checkpoint.json", "scope.json", "release.json",
+    "ingest.flowspec.json", "discover.flowspec.json",  # T-169: parked proposals
 })
 """Non-result JSON files that sit in a run dir. `load_results` skips exactly these; any other
 unreadable JSON there still fails loudly, as before."""
