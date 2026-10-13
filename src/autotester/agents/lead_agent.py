@@ -32,6 +32,7 @@ from autotester.agents.context import AgentContext
 from autotester.agents.lead import JUDGEMENT, LEAD_SKILL
 from autotester.core.trace import TraceWriter
 from autotester.providers.base import load_skill_prompt
+from autotester.schema.agent_guardrails import AgentGuardrails
 from autotester.schema.agent_layer import AgentToolName, RefusalClass, ToolOutcome
 from autotester.schema.lead_loop import AgentRun, TokenBudget
 from autotester.schema.subagent import SubagentName
@@ -169,9 +170,13 @@ def build_lead_agent(ctx: AgentContext, model: BaseChatModel, *, budget: TokenBu
 
 def run_lead_agent(ctx: AgentContext, model: BaseChatModel, task: str, *,
                    budget: TokenBudget | None = None, skills_dir: Path | None = None,
-                   max_graph_steps: int = 60) -> AgentRun:
+                   max_graph_steps: int = 60, guardrails: AgentGuardrails | None = None
+                   ) -> AgentRun:
     """Drive one task to the end. A budget breach is a HALT with a named reason (AL11); a
-    secret-gate hit or model failure is `model_error` with nothing echoed."""
+    secret-gate hit or model failure is `model_error` with nothing echoed. `guardrails`
+    (T-181) supplies the budget and the step cap from one declared place."""
+    if guardrails is not None:  # T-181: the configured ceilings replace the loose arguments
+        budget, max_graph_steps = guardrails.budget, guardrails.max_steps
     agent, rails = build_lead_agent(ctx, model, budget=budget, skills_dir=skills_dir)
     stopped, reason, summary = "finished", "", ""
     try:

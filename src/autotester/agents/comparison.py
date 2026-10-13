@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 
 from autotester.schema.agent_comparison import Comparison, PathMeasure
+from autotester.schema.agent_guardrails import WinRule
 from autotester.schema.bench import BenchCorpus
 from autotester.schema.lead_loop import AgentRun
 from autotester.schema.verdict import Verdict
@@ -28,6 +29,7 @@ def measure(label: str, corpus: BenchCorpus, verdicts: list[Verdict], case_bug_m
     card = bench.scorecard(corpus, [trial])[trial.participant_label or trial.participant.value]
     return PathMeasure(label=label, bugs_found=int(card["detected"] or 0),
                        false_positives=int(card["false_positives"] or 0),
+                       false_positive_rate=float(card["false_positive_rate"] or 0.0),
                        tokens=tokens, wall_s=wall_s)
 
 
@@ -40,20 +42,28 @@ def _fmt(m: PathMeasure) -> str:
 
 def compare(corpus: BenchCorpus, case_bug_map: dict[str, str], pipeline: list[Verdict],
             agent: list[Verdict], agent_run: AgentRun, *, pipeline_tokens: int | None = None,
-            pipeline_wall_s: float | None = None, agent_wall_s: float | None = None
-            ) -> Comparison:
+            pipeline_wall_s: float | None = None, agent_wall_s: float | None = None,
+            rule: WinRule | None = None) -> Comparison:
+    """`rule` None is T-179's strict rule (a strict gain, no worse on the other axis); T-181
+    passes the configured `WinRule` (`agents/gain.py`)."""
     base = measure("pipeline", corpus, pipeline, case_bug_map, pipeline_tokens, pipeline_wall_s)
     lead = measure("agent", corpus, agent, case_bug_map, agent_run.tokens_used, agent_wall_s)
     in_budget = agent_run.stopped != "budget_exceeded"
     better = lead.bugs_found > base.bugs_found or lead.false_positives < base.false_positives
     worse = lead.bugs_found < base.bugs_found or lead.false_positives > base.false_positives
-    gain = in_budget and better and not worse
+    if rule is None:
+        gain = in_budget and better and not worse
+    else:
+        ok = (lead.bugs_found - base.bugs_found >= rule.min_bugs_delta
+              and lead.false_positive_rate - base.false_positive_rate <= rule.max_fp_rate_delta)
+        worse = not ok
+        gain = in_budget and ok and (better or not rule.require_strict_gain)
     if gain:
         why = "more bugs found or fewer false positives, within budget"
     elif not in_budget:
         why = "the agent run breached its budget"
     elif worse:
-        why = "the agent did worse on bugs found or false positives"
+        why = "the agent did worse than the win rule allows on bugs found or false positives"
     else:
         why = "the agent found no more bugs and no fewer false positives"
     line = f"{'GAIN' if gain else 'NO GAIN'} ({why}) | {_fmt(base)} | {_fmt(lead)}"

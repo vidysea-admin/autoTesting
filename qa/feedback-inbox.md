@@ -5937,3 +5937,9 @@ Maker manifest asked: does `Catalog` satisfy CM4 "tool outputs use the CM2 schem
 T-198 persona walk: anonymous `/favicon.ico` returns 401 (policy.py MEMBER; app.py serves 204), logging a console error on sign-in pages. AU16's closed public set is only `/auth/login`, `/auth/signup`, `/healthz`, so the public set was NOT widened. Instead auth pages carry an inline `<link rel='icon' href='data:,'>`. Question for the checker/Umesh: is a 204 `/favicon.ico` an acceptable AU16 addition, or does the inline icon stand? (Also: signed-in pages still request `/favicon.ico` and get the 204.)
 
 **Status:** folded 2026-10-13 by /checker onboard-a11y (cycle 1 PASS) -> `qa/contracts/auth.md` AU16 clarification: inline icon stands; `/favicon.ico` is NOT added to the public set (a 204 favicon would widen the "exactly" closed set).
+## T-181 maker questions (2026-10-13, t181-guardrails)
+1. **AL12 "live comparison".** The contract says real `run_and_grade_case` vs the real agent on a seeded product in a visible browser, but `tests/test_agent_gain.py` is also the deterministic `done_check`. Built: harness with caller-supplied runners, fakes in the test; the live run is held. Please confirm the offline test satisfies the done_check and the live run is a separate gated step.
+2. **Win-rule default vs T-179.** Umesh's stated default (>= bugs at <= FP rate, tie = gain) differs from `compare()`'s T-179 rule (tie = no gain). Kept both: `rule=None` is the T-179 rule; the harness passes `WinRule`. Should AL13's wording name `WinRule` as the one rule?
+3. **FP rate when nothing is reported.** The scorer returns None; treated as 0.0 in the rule.
+
+**Status:** folded 2026-10-13 by /checker t181-guardrails (cycle 1) -> `qa/contracts/agent-layer.md` "T-181 rulings": (1) offline test satisfies done_check, live run + keep/drop still required to close T-181; (2) WinRule named as the one AL13 rule; (3) None FP rate = 0.0, stated in report.
