@@ -1,0 +1,104 @@
+{
+  "agent_model_provider": "gemini",
+  "pipeline_judge_tokens": 8725,
+  "agent_judge_tokens": 8725,
+  "agent_model_tokens": 126954,
+  "agent_run": {
+    "run_id": "run-agent-01M4T96MGR93FRNTM6ACJFGA43",
+    "stopped": "step_cap",
+    "reason": "graph step cap reached",
+    "tokens_used": 126954,
+    "tool_calls": 6,
+    "delegations": 0,
+    "refusals": 0,
+    "summary": ""
+  },
+  "guardrails": {
+    "budget": {
+      "max_tokens": 1000000,
+      "max_cost_usd": 10.0,
+      "usd_per_million_tokens": 10.0
+    },
+    "max_steps": 60,
+    "win_rule": {
+      "min_bugs_delta": 0,
+      "max_fp_rate_delta": 0.0,
+      "require_strict_gain": false
+    }
+  },
+  "usd_per_million_tokens_configured_estimate": 10.0,
+  "verdicts": {
+    "run-pipe-01M4T96MGRPGAZSM18P252FNB7": [
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T09:24:26.435456Z",
+        "provenance": null,
+        "run_id": "run-pipe-01M4T96MGRPGAZSM18P252FNB7",
+        "case_id": "case_2976ce59ce56",
+        "result": "PASS",
+        "scoreboard": "Criteria 1/1 met.",
+        "criteria_met": 1,
+        "criteria_total": 1,
+        "failures": [],
+        "grader_provider": "gemini",
+        "rubric_hash": "rub_29095faf037a",
+        "note": "The evidence confirms unlabelled input fields and missing test IDs consistent with the seeded issue.",
+        "images_requested": 4,
+        "images_seen": 4
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T09:24:34.836553Z",
+        "provenance": null,
+        "run_id": "run-pipe-01M4T96MGRPGAZSM18P252FNB7",
+        "case_id": "case_9de862894366",
+        "result": "PASS",
+        "scoreboard": "Criteria 1/1 met.",
+        "criteria_met": 1,
+        "criteria_total": 1,
+        "failures": [],
+        "grader_provider": "gemini",
+        "rubric_hash": "rub_27cd2f6cec1b",
+        "note": null,
+        "images_requested": 1,
+        "images_seen": 1
+      }
+    ],
+    "run-agent-01M4T96MGR93FRNTM6ACJFGA43": [
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T09:28:32.640550Z",
+        "provenance": null,
+        "run_id": "run-agent-01M4T96MGR93FRNTM6ACJFGA43",
+        "case_id": "case_2976ce59ce56",
+        "result": "PASS",
+        "scoreboard": "Criteria 1/1 met.",
+        "criteria_met": 1,
+        "criteria_total": 1,
+        "failures": [],
+        "grader_provider": "gemini",
+        "rubric_hash": "rub_29095faf037a",
+        "note": "The login attempt reproduced the expected bug resulting in an invalid credentials error.",
+        "images_requested": 4,
+        "images_seen": 4
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T09:28:43.756493Z",
+        "provenance": null,
+        "run_id": "run-agent-01M4T96MGR93FRNTM6ACJFGA43",
+        "case_id": "case_9de862894366",
+        "result": "PASS",
+        "scoreboard": "Criteria 1/1 met.",
+        "criteria_met": 1,
+        "criteria_total": 1,
+        "failures": [],
+        "grader_provider": "gemini",
+        "rubric_hash": "rub_27cd2f6cec1b",
+        "note": "The navigation completed successfully and the homepage loaded as expected.",
+        "images_requested": 1,
+        "images_seen": 1
+      }
+    ]
+  }
+}
