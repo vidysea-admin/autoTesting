@@ -2,10 +2,10 @@
 
 **Unit:** T-174 CLI contract (`--output json`, one exit-code table, `--dry-run`) + AutoTester MCP server
 (run tests, get report, get catalog).
-**Contract:** `qa/contracts/cli-mcp.md` CM1-CM5 (DRAFT until first PASS) · `qa/contracts/core-invariants.md` C3, C5, C11
+**Contract:** `qa/contracts/cli-mcp.md` CM1-CM5 (ACTIVE) · `qa/contracts/core-invariants.md` C3, C5, C11
 **Goal task:** T-174 (D-071 approved the `mcp` SDK dependency)
 **Date:** 2026-10-13
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Dual check:** no
 

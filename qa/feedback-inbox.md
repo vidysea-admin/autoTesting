@@ -5880,3 +5880,9 @@ VERDICT: Approve (PLAN ONLY; implementation constrained to the above existing ta
 Contract amendments requested: `team-bug-loop.md` TB7 required for T-199, new export criterion (CSV + xlsx, Tracker column layout, reuse `schema/sheet_plan.py` mapping, no live SheetClient, LiveWriteRefused stays), HG-TB1 "deferred to export (D-090)", TB8/TB9/TB13 export-time; `hosting.md` split Local Windows host (now) / Ubuntu host (later), HO10/HO11/HO13/HO34-HO36 deferred, new local criteria; `bench.md` recall unavailable until human list, FP rate and time must pass.
 
 **Status:** folded (2026-10-13, /checker contract maintenance) → `qa/contracts/team-bug-loop.md` TB7, TB15 (new), HG-TB1, TB8/TB9/TB13 export-time; `qa/contracts/hosting.md` "Local Windows host (now, D-090)" HO39-HO46 (new), HO10/HO11/HO13/HO34-HO36 deferred to Ubuntu; `qa/contracts/bench.md` K10 (new). Gates updated: t136, t199, t203.
+
+## 2026-10-13 · /checker (contract maintenance) · T-174 cli-mcp.md tighten + activate
+
+Maker manifest asked: does `Catalog` satisfy CM4 "tool outputs use the CM2 schema"; is `schedule tick` keeping its own exit codes acceptable.
+
+**Status:** folded (2026-10-13) -> `qa/contracts/cli-mcp.md` CM1 (scope: tick/doctor keep own codes), CM3 (dry run mints/checks no approval), CM4 (`Catalog` accepted; typed `extra="forbid"` models), Status ACTIVE.
