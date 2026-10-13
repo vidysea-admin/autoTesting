@@ -1725,7 +1725,7 @@
     {
       "id": "T-203",
       "title": "Hosted website: AutoTester UI runs on a Linux/Ubuntu server for the Vidysea internal development and product teams (Docker image, service, HTTPS, persistent project store, AUTOTESTER_ALLOWED_ORIGINS set to the server URL) (D-071)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-204"
       ],
@@ -1736,7 +1736,7 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-203-hosted-website.md",
         "expect_exit": 0
       },
-      "note": "D-071: Umesh -- 'abhi vidysea ki internal development team aur product team ke paas chalega, host properly website mai hoga', Linux/Ubuntu server. D-081 item 4 (2026-10-10): proceeds as a LOCAL deployment on the dev machine; the real server host and DNS stay an open HUMAN_GATE (qa/gates/t203-host-and-dns.md) and now gate only the hosted check of T-206. | Acceptance: A team member opens the server URL in a browser, signs in, onboards a project and runs a case; data survives a restart; the Origin/CSRF guard is configured for the server origin; no secret value is baked into the image. | Merged (local hosting part only): land-t203-hosting at 05b8b7ba via merge commit 82bc4954 (checker PASS on fddbf469, qa/verdicts/land-t203-hosting.md); not built yet: the server host and DNS are still open (qa/gates/t203-host-and-dns.md) and the local deploy waits on T-204. | 2026-10-13 merged: t203-local Windows host scripts + tests; HO42-HO46 PASS, HO41 PASS after T-204 (verdict .c). HO39/HO40 pending a real install. Task stays pending.",
+      "note": "CLOSED 2026-10-13 on task-level PASS (qa/verdicts/t-203-hosted-website.md; HO23 fixed by the auth.loopback split); Docker/Ubuntu rows deferred (D-090), email rows deferred (D-093). | D-071: Umesh -- 'abhi vidysea ki internal development team aur product team ke paas chalega, host properly website mai hoga', Linux/Ubuntu server. D-081 item 4 (2026-10-10): proceeds as a LOCAL deployment on the dev machine; the real server host and DNS stay an open HUMAN_GATE (qa/gates/t203-host-and-dns.md) and now gate only the hosted check of T-206. | Acceptance: A team member opens the server URL in a browser, signs in, onboards a project and runs a case; data survives a restart; the Origin/CSRF guard is configured for the server origin; no secret value is baked into the image. | Merged (local hosting part only): land-t203-hosting at 05b8b7ba via merge commit 82bc4954 (checker PASS on fddbf469, qa/verdicts/land-t203-hosting.md); not built yet: the server host and DNS are still open (qa/gates/t203-host-and-dns.md) and the local deploy waits on T-204. | 2026-10-13 merged: t203-local Windows host scripts + tests; HO42-HO46 PASS, HO41 PASS after T-204 (verdict .c). HO39/HO40 pending a real install. Task stays pending.",
       "criticality": "critical"
     },
     {
