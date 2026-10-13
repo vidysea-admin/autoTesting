@@ -1,6 +1,6 @@
 # Manifest - t179d-agent-layer (T-179 slice d: the Deep Agents lead tester, remaining AL1-AL7, AL11-AL13)
 
-## Status: ready-for-check
+## Status: checked-PASS
 Fix cycle: 1
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (dependency add; the rails middleware sits on the AL3/AL6 boundary)
