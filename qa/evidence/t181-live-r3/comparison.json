@@ -1,0 +1,22 @@
+{
+  "corpus_id": "corpus_regression_demo_login",
+  "pipeline": {
+    "label": "pipeline",
+    "bugs_found": 1,
+    "false_positives": 0,
+    "false_positive_rate": 0.0,
+    "tokens": 12554,
+    "wall_s": 88.19103710000127
+  },
+  "agent": {
+    "label": "agent",
+    "bugs_found": 1,
+    "false_positives": 0,
+    "false_positive_rate": 0.0,
+    "tokens": 73781,
+    "wall_s": 95.81520819999969
+  },
+  "agent_stopped": "step_cap",
+  "verdict": "no_gain",
+  "verdict_line": "NO GAIN (the agent run halted at its step cap before finishing) | pipeline: 1 bugs, 0 false positives, 12554 tokens, 88.2s | agent: 1 bugs, 0 false positives, 73781 tokens, 95.8s"
+}

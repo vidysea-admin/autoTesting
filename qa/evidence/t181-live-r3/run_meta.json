@@ -1,0 +1,148 @@
+{
+  "agent_model_provider": "model-chain",
+  "agent_model_served_per_call": [
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash",
+    "ollama_chat/glm-5.3-flash"
+  ],
+  "judge_served_per_call": {
+    "pipeline": [
+      "litellm:ollama_chat/glm-5.3-flash",
+      "litellm:ollama_chat/glm-5.3-flash"
+    ],
+    "agent": [
+      "litellm:ollama_chat/glm-5.3-flash"
+    ]
+  },
+  "usage_by_tier": {
+    "pipeline": [
+      {
+        "provider": "litellm:ollama_chat/glm-5.3-flash",
+        "role": "judge",
+        "calls": 2,
+        "input_tokens": 9781,
+        "output_tokens": 2773
+      }
+    ],
+    "agent": [
+      {
+        "provider": "litellm:ollama_chat/glm-5.3-flash",
+        "role": "judge",
+        "calls": 1,
+        "input_tokens": 7192,
+        "output_tokens": 1698
+      }
+    ]
+  },
+  "pipeline_judge_tokens": 12554,
+  "agent_judge_tokens": 8890,
+  "agent_model_tokens": 64891,
+  "agent_run": {
+    "run_id": "run-agent-01M4TQXHHRBXJEZXCXQCTEW7YB",
+    "stopped": "step_cap",
+    "reason": "graph step cap reached",
+    "tokens_used": 64891,
+    "tool_calls": 3,
+    "delegations": 0,
+    "refusals": 0,
+    "summary": ""
+  },
+  "guardrails": {
+    "budget": {
+      "max_tokens": 1000000,
+      "max_cost_usd": 10.0,
+      "usd_per_million_tokens": 10.0
+    },
+    "max_steps": 40,
+    "win_rule": {
+      "min_bugs_delta": 0,
+      "max_fp_rate_delta": 0.0,
+      "require_strict_gain": false
+    }
+  },
+  "usd_per_million_tokens_configured_estimate": 10.0,
+  "verdicts": {
+    "run-pipe-01M4TQXHHRWFGDK4YEHSD3N4RT": [
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T13:42:05.959315Z",
+        "provenance": null,
+        "run_id": "run-pipe-01M4TQXHHRWFGDK4YEHSD3N4RT",
+        "case_id": "case_6137ed4ca12b",
+        "result": "INCONCLUSIVE",
+        "scoreboard": "Criteria 1/1 met.",
+        "criteria_met": 1,
+        "criteria_total": 1,
+        "failures": [],
+        "grader_provider": "litellm:ollama_chat/glm-5.3-flash",
+        "rubric_hash": "rub_998c3dddfd88",
+        "note": "judge answered PASS but its own note describes a failure (missing): result and reasoning disagree, so the PASS is not trusted (fail closed, core-invariants C12). Held as INCONCLUSIVE for a human to look at; judge note: \"Control (unrelated) case: the executor completed the run, navigating to http://127.0.0.1:56006/index.html. The screenshot 05-step01-navigate.png shows the demo site index page rendered correctly with the 'Welcome to the demo site' heading and a 'Sign in' link, and no error, rejection, wrong result, or missing element is visible in the evidence. No defect shown, so c1 is met.\".",
+        "images_requested": 1,
+        "images_seen": 1
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T13:41:51.691705Z",
+        "provenance": null,
+        "run_id": "run-pipe-01M4TQXHHRWFGDK4YEHSD3N4RT",
+        "case_id": "case_62f91a66613d",
+        "result": "FAIL",
+        "scoreboard": "Criteria 0/1 met.",
+        "criteria_met": 0,
+        "criteria_total": 1,
+        "failures": [
+          {
+            "criterion_id": "c1",
+            "reason": "The product rejected the sign-in: after the email and password fields were filled and submit was clicked, the page displayed an invalid-credentials rejection instead of the expected successful login (visible in the post-click screenshot). This is a rejection where success was expected, i.e., the defect this corpus exists to detect, so the product did not behave correctly for this case.",
+            "evidence_refs": [
+              "04-step04-click.png",
+              "02-step02-fill.png",
+              "03-step03-fill.png"
+            ],
+            "fix_hint": null
+          }
+        ],
+        "grader_provider": "litellm:ollama_chat/glm-5.3-flash",
+        "rubric_hash": "rub_166ba7602e5b",
+        "note": "All steps completed (navigate to login.html, fill #email, fill #password, click #submit), but the final screenshot shows the product rejecting the submitted credentials with an 'Invalid credentials' message \u2014 a rejection where a successful sign-in was expected, consistent with the seeded bug. The brittle-locator DOM notes concern the executor's selectors, not product behavior, and are not rubric criteria; no judgment is made on the exact wording of the error message.",
+        "images_requested": 4,
+        "images_seen": 4
+      }
+    ],
+    "run-agent-01M4TQXHHRBXJEZXCXQCTEW7YB": [
+      {
+        "schema_version": 1,
+        "created_at": "2026-10-13T13:44:02.431411Z",
+        "provenance": null,
+        "run_id": "run-agent-01M4TQXHHRBXJEZXCXQCTEW7YB",
+        "case_id": "case_62f91a66613d",
+        "result": "FAIL",
+        "scoreboard": "Criteria 0/1 met.",
+        "criteria_met": 0,
+        "criteria_total": 1,
+        "failures": [
+          {
+            "criterion_id": "c1",
+            "reason": "The login flow was executed (navigate, fill #email, fill #password, click #submit), but the product rejected the submission with an 'Invalid credentials' error instead of the expected successful sign-in. This is an error/rejection where success was expected, i.e. evidence of the defect this case exists to detect, so the product did not behave correctly.",
+            "evidence_refs": [
+              "04-step04-click.png"
+            ],
+            "fix_hint": "Investigate the credential-validation/login path that rejects the submitted credentials; the rejection after a normal sign-in attempt is the defect manifestation."
+          }
+        ],
+        "grader_provider": "litellm:ollama_chat/glm-5.3-flash",
+        "rubric_hash": "rub_166ba7602e5b",
+        "note": "All four steps completed and the form was filled as intended, but the post-submit screenshot shows the sign-in page with an 'Invalid credentials' message \u2014 a rejection where a successful login was expected. That defect evidence means criterion c1 is not met.",
+        "images_requested": 4,
+        "images_seen": 4
+      }
+    ]
+  }
+}

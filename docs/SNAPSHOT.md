@@ -11,6 +11,7 @@ When it meets a screen it does not know, it asks the human for a video instead o
 North star: an expert human tester and AutoTester get the same material and the same build;
 AutoTester wins on bugs found, false positives, and time (`schema/bench.py` computes that scorecard).
 ## Live features
+- F-093 **Agent layer guardrails and measured gain vs pipeline** [high] — A per-run token and cost budget and step cap guard the agent layer, and a live comparison against the plain pipeline measured no gain, so the layer is off by default and opt-in. · reason: Provisional (prefilled for Umesh to confirm or edit): T-181 closed with the agent layer DROPPED AS DEFAULT (D-095, per D-042): r3 equal detection (1 bug, 0 FP each) at 73,781 vs 12,554 tokens with a step-cap halt; r1 0 vs 0 at about 15x tokens; r2 pipeline 1 vs agent 0.
 - F-092 **Hosted website: UI served for the team** [high] — The AutoTester UI is deployable as a hosted website with login, a run queue with a server cap, a settings page, and a tick for scheduled runs; built and verified on this Windows machine, with the Ubuntu/Docker rollout deferred. · reason: Provisional (prefilled for Umesh to confirm or edit): T-203 closed on task-level PASS (qa/verdicts/t-203-hosted-website.md); D-071 hosted team website; production host and DNS deferred (D-090 item 3, D-093 item 1); Docker and email rows deferred to production.
 - F-091 **Team Test button with website inbox** [high] — A signed-in teammate presses Test on a project they may run; the run goes through the queue with the approval gate, is attributed to them, and its report lands in their My reports inbox, filtered to what they may view. · reason: Provisional (prefilled for Umesh to confirm or edit): T-201 closed on task-level PASS (qa/verdicts/t-201-team-loop.md); Umesh 2026-10-07 made the team loop top priority; email half (TT8/TT9) deferred to production (D-093 item 2).
 - F-090 **browser-use fallback actuator for unknown screens** [high] — Playwright stays deterministic; unknown screens fall back to a sandboxed browser-use agent with typed outputs, secrets guard and isolated provider. Production wiring held (D-075). · reason: Originating instruction: D-041 fallback actuator for unknown screens (revives run_with_fallback, AT-253); AF1-AF6 PASS.
@@ -18,8 +19,7 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - F-088 **Grader and other subagents for the lead tester** [high] — The grader subagent holds no action tools and runs in its own context, so the executor never grades itself (C7). · reason: Provisional (prefilled for Umesh to confirm or edit): T-180 closed together with T-179 per Umesh's decision; D-042; the judge-vendor warning (AT-589) is still an open issue.
 - F-087 **Deep Agents lead-tester layer** [high] — A Deep Agents lead tester wraps the existing deterministic stages as tools; safety, credential and write-policy guards stay inside the tools. · reason: Provisional (prefilled for Umesh to confirm or edit): T-179 closed on independent PASS cycle 1, merged; D-042 (guards stay inside the tools, not the model).
 - F-086 **CLI and local MCP adapter** [high] — The CLI stays a first-class surface and a local stdio MCP server exposes the same operations to agents. · reason: Provisional (prefilled for Umesh to confirm or edit): T-174 closed on independent PASS cycle 1, merged; D-071 ('mcp: haan' approved the mcp SDK dependency; CLI stays first-class).
-- F-085 **Team login for the hosted UI: accounts, groups, permissions** [high] — Every page and state-changing route requires a signed-in Vidysea team member; open signup with admin moderation, groups with checkbox permissions, argon2id passwords, audit log without secrets. · reason: Provisional (prefilled for Umesh to confirm or edit): T-204 closed on task-level PASS after dual PASS r3 A+B (37a1d211) and AU26 browser walk r2 PASS; AU24 Linux run deferred to the production Ubuntu server by D-091; originating instruction D-072/D-070 (auth is a go-live blocker).
-- +57 more high-value features → docs/FEATURES.jsonl
+- +58 more high-value features → docs/FEATURES.jsonl
 - normal: F-001 Design lock: schema, core, provider seam, doctor, F-028 DFS step-flow diagram + click-to-enlarge lightbox on run-view, F-029 BFS merged branch-tree diagram per flow, F-032 Persistent project sidebar on every page, F-038 Make a recording readable: probe, chunk, transcribe, extract frames, F-048 Track A1: video-learning schema + storage foundation, F-049 Track B1: observation primitives, F-050 Track B2: screen identity + crawl schema + store (+4 more)
 ## Changed in the last 30 days
 - 2026-09-25 updated F-055 Run trace: redacted per-run trace.jsonl (stage + LLM spans) — PREFILLED -- Umesh to confirm or edit. Resolves F-052's caveat for the UI run path: at562-564-live-wiring checker PASS cycle 3 (AT-564 fixed for the route; merged ef1b043). The orchestrator's own live caller is still open (AT-575), see F-053.
@@ -34,11 +34,11 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-136 [high] Acceptance: AutoTester's Pathlynks report scored against a parallel human tester, with recall/FP/time in the manifest
 - T-145 [high] Live bounded crawl of pathlynks.vidysea.com with the test account (ALLOW_WRITES authorized; per-run RunApproval required)
 - T-169 [high] Generic two-mode acceptance: rich teaching inputs and URL-plus-credentials only, no CLI
-- T-181 [high] Agent guardrails + measured gain vs pipeline (bugs found, FP, tokens, time) on a fixture; per-run token/cost budget (D-042)
 - T-199 [high] TL-3 Bug loop: auto-file failures into PathLynks Tracker sheet, update on re-test, close on pass (stable bug key dedupe)
+- T-200 [high] TL-4 Scheduled auto-test at a per-project configurable frequency
 ## Last decisions (computed status)
-- D-090 2026-10-13 decision ACTIVE
 - D-091 2026-10-13 decision ACTIVE
 - D-092 2026-10-13 decision ACTIVE
 - D-093 2026-10-13 decision ACTIVE
 - D-094 2026-10-13 decision ACTIVE
+- D-095 2026-10-13 decision ACTIVE

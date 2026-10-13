@@ -1343,7 +1343,7 @@
     {
       "id": "T-181",
       "title": "Agent guardrails + measured gain vs pipeline (bugs found, FP, tokens, time) on a fixture; per-run token/cost budget (D-042)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-180"
       ],
@@ -1354,7 +1354,7 @@
         "cmd": "uv run pytest tests/test_agent_gain.py",
         "expect_exit": 0
       },
-      "note": "D-042: the agent layer stays only if it shows a measured gain over the plain pipeline on this fixture. | 2026-10-13: wave/t181-guardrails merged (unit-scope checked-PASS, e8118070); T-181 stays open: live comparison and keep/drop pending.",
+      "note": "CLOSED 2026-10-13: live comparison r1-r3 NO GAIN; agent layer DROPPED AS DEFAULT by Umesh (D-095); qa/verdicts/t-181-agent-guardrails.md. | D-042: the agent layer stays only if it shows a measured gain over the plain pipeline on this fixture. | 2026-10-13: wave/t181-guardrails merged (unit-scope checked-PASS, e8118070); T-181 stays open: live comparison and keep/drop pending.",
       "attempts": 0,
       "created": "2026-09-24T22:20:00",
       "user_value": "high"
