@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-13T11:52:01.879798Z",
+  "id": "cmp_pathlynks-acceptance",
+  "project": "pathlynks",
+  "corpus_id": "pathlynks-acceptance",
+  "corpus_mode": "unknown",
+  "human_list": "absent",
+  "fp_rate_unadjudicated": true,
+  "autotester": {
+    "participant": "autotester",
+    "present": true,
+    "label": "autotester-real-run",
+    "kind": "autotester",
+    "ordering": "independent_parallel",
+    "findings_reported": 0,
+    "independent_findings": 0,
+    "prompted_findings": 0,
+    "detected": 0,
+    "seeded": 0,
+    "detection_rate": {
+      "unavailable_reason": "no human list"
+    },
+    "false_positive_rate": {
+      "unavailable_reason": "no reported findings"
+    },
+    "severity_weighted_recall": {
+      "unavailable_reason": "no human list"
+    },
+    "duration_s": {
+      "value": 84.095174
+    },
+    "false_positive_population": "all_reported_findings",
+    "denominator_population": "unknown"
+  },
+  "human": {
+    "participant": "human",
+    "present": false,
+    "absent_reason": "no human list",
+    "label": "",
+    "kind": "unknown",
+    "ordering": "unknown",
+    "findings_reported": 0,
+    "independent_findings": 0,
+    "prompted_findings": 0,
+    "detected": 0,
+    "seeded": 0,
+    "detection_rate": {
+      "unavailable_reason": "no human list"
+    },
+    "false_positive_rate": {
+      "unavailable_reason": "no human list"
+    },
+    "severity_weighted_recall": {
+      "unavailable_reason": "no human list"
+    },
+    "duration_s": {
+      "unavailable_reason": "no human list"
+    },
+    "false_positive_population": "all_reported_findings",
+    "denominator_population": "unknown"
+  },
+  "bugs": [],
+  "bugs_unavailable_reason": "no ground-truth bug list",
+  "verdict": "not computed here: Umesh records the verdict on this artifact"
+}
