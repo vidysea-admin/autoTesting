@@ -186,3 +186,34 @@ def test_ts1_every_schedule_route_has_a_policy_row() -> None:
     assert rows[("GET", "/projects/{slug}/schedule")].key is PermissionKey.PROJECT_VIEW
     posts = [v for (m, _p), v in rows.items() if m == "POST"]
     assert len(posts) == 4 and all(v.key is PermissionKey.SCHEDULE_MANAGE for v in posts)
+
+
+def test_ts1_invalid_time_is_refused_inline_with_typed_values_kept(world) -> None:
+    root, users = world
+    before = _bytes(root, "own")
+    resp = users["dev"].post("/projects/own/schedule", data={
+        "mode": "fixed", "fixed_at": "25:99", "timezone": "IST"}, headers=HTML)
+    assert resp.status_code == 400
+    assert "role='alert'" in resp.text and "fixed_at" in resp.text
+    assert "value='25:99'" in resp.text and "<option value='IST' selected>" in resp.text
+    assert "Save schedule" in resp.text  # the card, not a bare error page
+    assert _bytes(root, "own") == before
+
+
+def test_ts1_preview_shows_next_three_fire_times_and_stores_nothing(world) -> None:
+    root, users = world
+    before = _bytes(root, "own")
+    resp = users["dev"].post("/projects/own/schedule", data={
+        "mode": "fixed", "fixed_at": "09:30", "timezone": "IST", "intent": "preview"})
+    assert resp.status_code == 200
+    assert "Next three runs" in resp.text and resp.text.count("09:30 IST") == 3
+    assert "value='09:30'" in resp.text
+    assert _bytes(root, "own") == before
+
+
+def test_ts1_saved_card_lists_next_three_and_blocked_credentials_link(world) -> None:
+    _root, users = world
+    assert users["dev"].post("/projects/own/schedule", data=FIXED).status_code == 303
+    page = users["dev"].get("/projects/own/schedule").text
+    assert page.count("09:30 UTC") >= 3
+    assert "href='/projects/own/env'" in page and "Credentials page" in page

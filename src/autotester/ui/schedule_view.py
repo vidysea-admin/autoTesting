@@ -12,6 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from html import escape
 
+from autotester.core.localtime import zone
 from autotester.schema.project import Project
 from autotester.schema.schedule import ScheduleConfig, ScheduleMode, ScheduleZone
 from autotester.stages.schedule_gate import credential_state
@@ -24,6 +25,7 @@ from autotester.ui import theme
 
 _DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 _LOOKAHEAD = timedelta(days=8)
+_PREVIEW_SPAN = timedelta(days=60)
 
 
 def _describe(cfg: ScheduleConfig) -> str:
@@ -44,14 +46,27 @@ def _options(choices: list[str], chosen: str) -> str:
                    for c in choices)
 
 
-def _form(slug: str, cfg: ScheduleConfig) -> str:
-    modes = _options([m.value for m in ScheduleMode], cfg.mode.value)
-    zones = _options([z.value for z in ScheduleZone], cfg.timezone.value)
-    on = set(cfg.weekly.weekdays) if cfg.weekly else set()
+def _values(cfg: ScheduleConfig, draft: dict[str, object] | None) -> dict[str, object]:
+    """The field values to show: what the user typed (refused or previewed save), else saved."""
+    if draft is not None:
+        return draft
+    return {"mode": cfg.mode.value, "timezone": cfg.timezone.value,
+            "fixed_at": cfg.fixed_at or "",
+            "weekdays": [str(d) for d in (cfg.weekly.weekdays if cfg.weekly else [])],
+            "weekly_at": cfg.weekly.at if cfg.weekly else "",
+            "one_offs": "\n".join(s.strftime("%Y-%m-%dT%H:%M") for s in cfg.one_offs)}
+
+
+def _form(slug: str, cfg: ScheduleConfig, draft: dict[str, object] | None = None) -> str:
+    v = _values(cfg, draft)
+    modes = _options([m.value for m in ScheduleMode], str(v["mode"]))
+    zones = _options([z.value for z in ScheduleZone], str(v["timezone"]))
+    fixed_at, weekly_at, one_offs = (escape(str(v[k])) for k in
+                                     ('fixed_at', 'weekly_at', 'one_offs'))
+    on = {str(d) for d in v["weekdays"]}  # type: ignore[attr-defined]
     days = " ".join(f"<label><input type='checkbox' name='weekdays' value='{i}'"
-                    f"{' checked' if i in on else ''}> {d}</label>" for i, d in enumerate(_DAYS))
-    one_offs = "\n".join(s.strftime("%Y-%m-%dT%H:%M") for s in cfg.one_offs)
-    weekly_at = cfg.weekly.at if cfg.weekly else ""
+                    f"{' checked' if str(i) in on else ''}> {d}</label>"
+                    for i, d in enumerate(_DAYS))
     return (
         f"<form method='post' action='/projects/{escape(slug)}/schedule'>"
         f"<div class='field'><label for='mode'>Mode</label><select id='mode' name='mode'>"
@@ -59,13 +74,15 @@ def _form(slug: str, cfg: ScheduleConfig) -> str:
         f"<div class='field'><label for='timezone'>Time zone (no daylight saving)</label>"
         f"<select id='timezone' name='timezone'>{zones}</select></div>"
         f"<div class='field'><label for='fixed_at'>Daily time (fixed), HH:MM</label>"
-        f"<input id='fixed_at' name='fixed_at' value='{escape(cfg.fixed_at or '')}'></div>"
+        f"<input id='fixed_at' name='fixed_at' value='{fixed_at}'></div>"
         f"<div class='field'><label>Weekly days (custom)</label>{days}</div>"
         f"<div class='field'><label for='weekly_at'>Weekly time (custom), HH:MM</label>"
-        f"<input id='weekly_at' name='weekly_at' value='{escape(weekly_at)}'></div>"
+        f"<input id='weekly_at' name='weekly_at' value='{weekly_at}'></div>"
         f"<div class='field'><label for='one_offs'>One-off times (custom), one per line, "
-        f"YYYY-MM-DDTHH:MM</label><textarea id='one_offs' name='one_offs'>{escape(one_offs)}"
-        "</textarea></div><button class='btn btn-primary' type='submit'>Save schedule</button>"
+        f"YYYY-MM-DDTHH:MM</label><textarea id='one_offs' name='one_offs'>{one_offs}"
+        "</textarea></div><button class='btn' type='submit' name='intent' value='preview'>"
+        "Preview next three runs</button> "
+        "<button class='btn btn-primary' type='submit'>Save schedule</button>"
         "</form>"
     )
 
@@ -91,7 +108,24 @@ def _history(slug: str) -> str:
     return f"<table><tr><th>Slot</th><th>Outcome</th><th>Why</th></tr>{rows}</table>"
 
 
-def _status(cfg: ScheduleConfig, project: Project, store: ProjectStore, now: datetime) -> str:
+def next_fires(cfg: ScheduleConfig, now: datetime, count: int = 3) -> list[datetime]:
+    """The next fire instants (UTC) from the one schedule computation, `slot_instants`."""
+    return slot_instants(cfg, now, now + _PREVIEW_SPAN)[:count]
+
+
+def preview_html(cfg: ScheduleConfig, now: datetime, heading: str = "Next three runs") -> str:
+    """The next three fire times in the schedule's own zone (and UTC), shown before saving."""
+    fires = next_fires(cfg, now)
+    if not fires:
+        return f"<p role='status'>{heading}: none in the next 60 days.</p>"
+    tz, name = zone(cfg.timezone), cfg.timezone.value
+    items = "".join(f"<li>{f.astimezone(tz):%a %Y-%m-%d %H:%M} {name} ({f:%H:%M} UTC)</li>"
+                    for f in fires)
+    return f"<div role='status'><p>{heading}:</p><ol>{items}</ol></div>"
+
+
+def _status(slug: str, cfg: ScheduleConfig, project: Project, store: ProjectStore,
+            now: datetime) -> str:
     if cfg.mode is ScheduleMode.MANUAL:
         return ""
     nxt = slot_instants(cfg, now, now + _LOOKAHEAD)
@@ -99,23 +133,33 @@ def _status(cfg: ScheduleConfig, project: Project, store: ProjectStore, now: dat
         "paused" if cfg.paused else "none in the next 8 days")
     health = scheduler_health(cfg, read_heartbeat(schedule_paths().heartbeat), now).state.value
     creds = credential_state(project, store).value
+    cred_pill = theme.pill(escape(creds), "positive" if creds == "provisioned" else "warning")
+    if creds != "provisioned":
+        cred_pill += (f" <a href='/projects/{escape(slug)}/env'>Declare or set credentials on the"
+                      " Credentials page</a>")
     return (f"<p>Next run: <b>{escape(when)}</b> &middot; owner: {escape(cfg.owner or '-')}"
             f" &middot; scheduler: "
             f"{theme.pill(escape(health), 'positive' if health == 'healthy' else 'warning')}"
-            f" &middot; credentials: "
-            f"{theme.pill(escape(creds), 'positive' if creds == 'provisioned' else 'warning')}</p>")
+            f" &middot; credentials: {cred_pill}</p>") + preview_html(cfg, now)
 
 
 def schedule_card(slug: str, project: Project, store: ProjectStore, *, manage: bool,
-                  now: datetime | None = None) -> str:
-    """The card for one project; `manage` shows the edit controls."""
+                  now: datetime | None = None, error: str | None = None,
+                  draft: dict[str, object] | None = None,
+                  preview: ScheduleConfig | None = None) -> str:
+    """The card for one project; `manage` shows the edit controls. `error` is an inline refusal
+    and `draft` the typed values it keeps; `preview` is an unsaved config whose next three runs
+    are shown above the form."""
     now = now or datetime.now(UTC)
     cfg = project.schedule or ScheduleConfig()
     scheduled = cfg.mode is not ScheduleMode.MANUAL
     state = f" ({'paused' if cfg.paused else 'active'})" if scheduled else ""
     head = (f"<p>{theme.pill(escape(cfg.mode.value), 'neutral')} "
             f"{escape(_describe(cfg))}{state}</p>")
-    body = head + _status(cfg, project, store, now) + _history(slug)
+    body = head + _status(slug, cfg, project, store, now) + _history(slug)
     if manage:
-        body += _buttons(slug, cfg) + _form(slug, cfg)
+        note = f"<p class='subtitle' role='alert'>{escape(error)}</p>" if error else ""
+        shown = (preview_html(preview, now, "Preview, not saved yet. Next three runs")
+                 if preview is not None else "")
+        body += _buttons(slug, cfg) + note + shown + _form(slug, cfg, draft)
     return theme.card(body, title="Scheduled test")

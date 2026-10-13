@@ -66,15 +66,29 @@ def _who() -> str:
     return who.email
 
 
-@router.get("/projects/{slug}/schedule", response_class=HTMLResponse)
-def schedule_page(slug: str) -> str:
+def _page(slug: str, *, error: str | None = None, draft: dict[str, object] | None = None,
+          preview: ScheduleConfig | None = None) -> str:
     store, project = _load_project_or_404(slug)
     name = escape(project.name)
     body = (theme.breadcrumb(("Projects", "/"), (name, f"/projects/{escape(slug)}"),
                              ("Schedule", None))
             + "<h1>Schedule</h1>"
-            + schedule_view.schedule_card(slug, project, store, manage=can_manage(slug)))
+            + schedule_view.schedule_card(slug, project, store, manage=can_manage(slug),
+                                          error=error, draft=draft, preview=preview))
     return theme.page(f"{name} - schedule", body, active_slug=slug)
+
+
+@router.get("/projects/{slug}/schedule", response_class=HTMLResponse)
+def schedule_page(slug: str) -> str:
+    return _page(slug)
+
+
+def _draft(form: object) -> dict[str, object]:
+    """The typed values, kept so a refusal or a preview re-renders the form as the user left it."""
+    out: dict[str, object] = {k: str(form.get(k) or "") for k in (  # type: ignore[attr-defined]
+        "mode", "timezone", "fixed_at", "weekly_at", "one_offs")}
+    out["weekdays"] = [str(v) for v in form.getlist("weekdays")]  # type: ignore[attr-defined]
+    return out
 
 
 @router.post("/projects/{slug}/schedule")
@@ -86,7 +100,10 @@ async def schedule_save(slug: str, request: Request) -> Response:
         data = _form_data(dict(form), [str(v) for v in form.getlist("weekdays")])
         cfg = ScheduleConfig.parse_for_save({**data, "owner": owner}, now=datetime.now(UTC))
     except ScheduleInvalid as exc:
-        raise HTTPException(400, f"{exc.field}: {exc.reason}") from exc
+        return HTMLResponse(_page(slug, error=f"{exc.field}: {exc.reason}", draft=_draft(form)),
+                            status_code=400)
+    if form.get("intent") == "preview":
+        return HTMLResponse(_page(slug, preview=cfg, draft=_draft(form)))
     store.save_project(project.model_copy(update={"schedule": cfg}))
     audit.record_action(actor=owner, target=slug, action="schedule.save")
     return _back(slug)
