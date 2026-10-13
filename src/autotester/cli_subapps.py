@@ -16,8 +16,8 @@ from autotester.cli_auth import app as auth_app
 SUBAPPS: list[tuple[str, typer.Typer]] = [
     ("ingest", cli_video.app),
     ("issues", cli_issues.app),
-    ("auth", auth_app),  # T-204 team login
     ("schedule", cli_schedule.app),
+    ("auth", auth_app),  # T-204 team login
 ]
 
 

@@ -121,6 +121,7 @@ def test_au21_a_slug_that_swallows_a_variable_the_server_has_is_refused(
     dev = team()["dev"]
     assert _onboard(dev, "http", "HTTP_USER") == 400
     (root / ".env").write_text("NODE_OPTIONS=--max-old-space-size=512\n", encoding="utf-8")
+    monkeypatch.setenv("NODE_OPTIONS", "--max-old-space-size=512")  # what the start-up load does
     assert _onboard(dev, "node", "NODE_USER") == 400
     assert _onboard(dev, "fresh", "FRESH_USER") == 303  # nothing collides: unchanged
     with pytest.raises(HTTPException):

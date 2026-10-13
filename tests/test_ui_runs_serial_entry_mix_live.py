@@ -42,7 +42,12 @@ def _free_ram_mb() -> float:
 @pytest.fixture(scope="module")
 def _regression_site(tmp_path_factory: pytest.TempPathFactory,
                      serve_dir: Callable[[Path], str]) -> str:
-    pytest.importorskip("playwright")
+    sync_api = pytest.importorskip("playwright.sync_api")
+    try:  # same probe as conftest's page_factory: skip when the browser binary is missing
+        with sync_api.sync_playwright() as runner:
+            runner.chromium.launch(headless=True).close()
+    except Exception as exc:
+        pytest.skip(f"chromium unavailable: {type(exc).__name__}")
     site_dir = Path(__file__).resolve().parent / "fixtures" / "regression_site"
     return serve_dir(site_dir)
 

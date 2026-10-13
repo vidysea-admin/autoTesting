@@ -251,4 +251,6 @@ Not run here (the checker owes them): the full suite (the `tests/conftest.py` au
 PROPOSED-ISSUE: {"severity":"medium","type":"hardening","title":"Per-address sign-in limit (20 failures / 10 min) reads request.client.host; behind the compose Caddy proxy every user shares the proxy address, so 20 failed logins from anyone lock sign-in for everyone for 10 minutes unless uvicorn trusts the proxy's X-Forwarded-For","file":"src/autotester/ui/routes_auth.py","fix":"decide with the owner: set uvicorn --forwarded-allow-ips for the proxy network in docker/entrypoint.sh and document it, or key the address limit on the forwarded client only when the peer is the configured proxy"}
 PROPOSED-ISSUE: {"severity":"low","type":"hardening","title":"auth/config.py bind_host() reads sys.argv and UVICORN_HOST only, so a server started through a config file or a programmatic uvicorn.run bound to 0.0.0.0 is treated as loopback (AU7 local first-account-admin, AU17 auth-disabled allowed)","file":"src/autotester/auth/config.py","fix":"also read the socket the server actually bound, or require AUTOTESTER_HOSTED=1 for any non-dev start"}
 
-Status: ready-for-check
+Status: checked-PASS
+
+Close-out 2026-10-13: dual PASS r3 A+B at 37a1d211, merge-reconcile A PASS (r3-mr1.a); merged to master with the master-side conflicts in cli_subapps.py, test_cli_subapp_hook.py and golden/cli_commands.json resolved to keep both 'schedule' and 'auth'. Task T-204 NOT closed: AU24 Linux run evidence (qa/evidence/t204-linux-run.md) missing; see qa/verdicts/t-204-team-login.md.

@@ -1,0 +1,82 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_______ test_run_once_kills_a_real_hung_process_and_its_real_grandchild _______
+
+tmp_path = WindowsPath('C:/Users/Lenovo/AppData/Local/Temp/pytest-of-Lenovo/pytest-28276/test_run_once_kills_a_real_hun0')
+scenario_dir = WindowsPath('D:/autoTesting/.worktrees/t204-team-login/.work/at700-scenario-46120')
+
+    def test_run_once_kills_a_real_hung_process_and_its_real_grandchild(
+        tmp_path: Path, scenario_dir: Path,
+    ) -> None:
+        """The kill AT-494 added has never been proven against reality: every stub above
+        raises `TimeoutExpired` synchronously and never spawns anything of its own. This
+        spawns a REAL `python -m pytest` process whose one test starts its own child
+        holding the log file's inherited handle open — the grandchild `run_once`'s
+        docstring worries about — times it out at a real bound, and asserts that
+        child is DEAD afterward, not merely that `run_once` returned. An earlier version
+        of the sibling test in `mutation_check` asserted only the latter, and a mutation
+        removing the tree kill survived it; that is the shape being guarded against
+        here too.
+    
+        AT-700: the bound used to be 10s, which sat BELOW this scenario's floor cost, so
+        the test was a coin flip that could not catch the mutation it exists for. The
+        grandchild is spawned only if the nested pytest finishes starting before the
+        bound fires; if it does not, `child.pid` is never written and the run dies on a
+        `FileNotFoundError` reading it -- the SAME red a build with the tree kill removed
+        entirely would produce, because in that build the grandchild never starts either.
+        Setup failure and subject failure were indistinguishable, which is exactly what
+        the paragraph above claims this test prevents.
+    
+        Measured on two machines, not assumed. Nested `python -m pytest` on ONE no-op
+        test, same argv `run_once` builds: 9.28 / 7.26 / 7.95 / 8.47s here and 11.59 /
+        9.76 / 10.32 / 9.57s on the peer session's box -- against the old 10s bound. The
+        cost is not the 600s sleep and not machine load; it is startup, and it appears
+        only when the test file lives OUTSIDE the repo as `tmp_path` does. The identical
+        no-op INSIDE the repo runs in 1.31-2.55s, and pytest's own clock reports 7.70s
+        against 0.36s for the two cases, so the floor is a property of this fixture's
+        shape rather than of the machine.
+    
+        Two changes below, and BOTH are needed. A bigger bound alone leaves the
+        conflation in place for a slower machine; separating the missing-file branch
+        alone would turn the red into a permanent skip -- silencing with extra steps."""
+        pid_file = tmp_path / "child.pid"
+        child = (f"import os, pathlib, time; pathlib.Path({str(pid_file)!r})"
+                 ".write_text(str(os.getpid())); time.sleep(600)")
+        test_file = scenario_dir / "hang_case.py"
+        test_file.write_text(
+            chr(10).join(["import subprocess, sys, time", "", "",
+                          "def test_hang():",
+                          f"    subprocess.Popen([sys.executable, '-c', {child!r}])",
+                          "    time.sleep(600)", ""]),
+            encoding="utf-8")
+    
+        run, elapsed = _within(
+            120, lambda: flake_probe.run_once(f"{test_file}::test_hang", 1, timeout=BOUND_S))
+    
+        assert run.timed_out is True
+        assert run.returncode == flake_probe.TIMED_OUT
+        assert elapsed < 120, f"the {BOUND_S}s bound must bound the call, not just the child"
+        # The SETUP branch, kept separate from the subject below on purpose (AT-700): a
+        # missing pid file means the grandchild never STARTED, so this run measured
+        # nothing about the kill. It is reported as its own failure naming the floor --
+        # never folded into the kill assertion, and never skipped, because a skip here is
+        # the silence that was the bug.
+        if not pid_file.exists():
+>           pytest.fail(
+                f"scenario never started: the nested pytest did not spawn its grandchild "
+                f"within the {BOUND_S}s bound, so `child.pid` was never written. This says "
+                f"NOTHING about run_once's tree kill, passing or broken. The measured "
+                f"startup floor for this fixture shape was 7.3-11.6s across two machines; "
+                f"if it has grown past {BOUND_S}s, raise BOUND_S -- do not skip or delete.")
+E           Failed: scenario never started: the nested pytest did not spawn its grandchild within the 20s bound, so `child.pid` was never written. This says NOTHING about run_once's tree kill, passing or broken. The measured startup floor for this fixture shape was 7.3-11.6s across two machines; if it has grown past 20s, raise BOUND_S -- do not skip or delete.
+
+tests\test_flake_probe_real_process.py:119: Failed
+============================== warnings summary ===============================
+tests/test_flake_probe_real_process.py::test_run_once_kills_a_real_hung_process_and_its_real_grandchild
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_flake_probe_real_process.py::test_run_once_kills_a_real_hung_process_and_its_real_grandchild
+1 failed, 1 passed, 1 warning in 38.69s

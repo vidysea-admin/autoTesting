@@ -1,6 +1,6 @@
 # Manifest - t179a-lead-tester-core (T-179 slice a: the guarded stage-tool core)
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t179a-lead-tester-core.r2.a.md + r2.b.md, cycle 2; merged bc07c967; does not close T-179)
 
 **OPEN QUESTION FOR THE OWNER (product decision the contract does not settle; the build below is the fail-closed answer, "refuse when in doubt"):** under `READ_ONLY`, `run_case` can today only navigate, wait, assert, hover, scroll, go back, and sign in through the declared login case. It cannot CLICK anything, type anything, or press any key, so a READ_ONLY case that needs to open a menu or follow an in-page link is refused. Where to draw the line is Umesh's call: (a) keep this (safe, narrow); (b) allow a CLICK only when the LIVE element is known to be a plain link (needs act-time enforcement in `browser/session.py` / `stages/execute.py`, which this unit does not own and which would be a second guard site); (c) point READ_ONLY runs at `TEST_ACCOUNT`, which keeps the click deny-list. Nothing is built for (b)/(c).
 

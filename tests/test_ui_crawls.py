@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from symlink_support import link_dir
 
 from autotester.schema.crawl import Crawl, CrawlIssue
 from autotester.schema.enums import Action, CrawlStatus, EdgeOutcome, IssueKind, ReviewStatus
@@ -135,7 +136,7 @@ def test_crawl_page_never_embeds_a_screenshot_outside_its_shots_directory(
     outside.write_bytes(b"not-a-crawl-screenshot")
     ref = str(outside) if escape == "absolute" else "../../../outside.png"
     if escape == "symlink":
-        store.paths.crawl_shots_dir(crawl.id).symlink_to(store.paths.dir, target_is_directory=True)
+        link_dir(store.paths.crawl_shots_dir(crawl.id), store.paths.dir)
         ref = outside.name
     store.add_node(ScreenNode(crawl_id=crawl.id, project="demo", url_template="demo.test/x",
                               url_example="https://demo.test/x", signature="s", screenshot_ref=ref))

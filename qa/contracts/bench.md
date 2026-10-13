@@ -108,6 +108,17 @@ per-bug row showing who found it. Umesh's verdict (he owns it — *"mai btuangaa
 a decision **on** this artifact, never computed by it: the script asserts completeness, it does
 not assert that AutoTester won.
 
+### K10 — No-human-list mode is supported and honest (D-090)
+T-136 is built and accepted without the independent human bug list (D-089 item 3, D-090). With no list, the comparison artifact states
+recall as `unavailable until the human list arrives`, which is the K8 marker with that reason, never `0.0` and never a number. The
+system must work and report in this mode as a supported mode, not an error: `scripts/check_acceptance_comparison.py` accepts the
+artifact when K6, K7 and the other K9 fields are complete and recall is the unavailable marker with its reason. **False-positive rate
+and wall-clock must still be present as numbers from `BenchTrial.score`** (or the K8 marker only when their own input is missing); an
+artifact whose FP rate or time is missing or defaulted fails. When a human list later arrives, K7 ordering applies and recall is
+computed from the independent subset only. Verify: build a trial with no human list; assert recall carries the reason string, FP rate and
+time are numbers, and the check script exits 0; remove the FP rate, it exits non-zero. Mutation: default recall to 0.0, the K8 test
+goes red.
+
 ## No-fire list
 
 - **Scheduling, recruiting or instrumenting the human tester** — Umesh supplies the tester and
@@ -137,3 +148,5 @@ not assert that AutoTester won.
   **Changes-authorized:** qa/contracts/bench.md Purpose, Criteria (K6–K9), No-fire list (this
   entry). No enforcement-path file touched. **Links:** AT-281; AT-653; AT-570;
   qa/gates/write-policy-tier.md; T-169; T-136; T-120.
+- 2026-10-13 · owner-authorized (D-090, Umesh chat) · **K10** added: T-136 is built without the human list; recall is `unavailable until
+  the human list arrives`; FP rate and time must still pass. K6-K9 unchanged. **Links:** D-089 item 3; D-090; T-136; T-169.

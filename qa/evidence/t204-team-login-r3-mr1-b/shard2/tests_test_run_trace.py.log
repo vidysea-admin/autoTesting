@@ -1,0 +1,28 @@
+..........                                                               [100%]
+============================== warnings summary ===============================
+tests/test_run_trace.py::test_two_runs_of_a_project_get_two_distinct_nonempty_trace_files
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_run_trace.py::test_two_runs_of_a_project_get_two_distinct_nonempty_trace_files
+  <string>:11: RuntimeWarning: StageContext for run 'run_a' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_run_trace.py::test_two_runs_of_a_project_get_two_distinct_nonempty_trace_files
+  <string>:11: RuntimeWarning: StageContext for run 'run_b' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_run_trace.py::test_every_span_trace_id_equals_the_runs_own_run_id
+  <string>:11: RuntimeWarning: StageContext for run 'run_tid' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_run_trace.py::test_a_run_produces_exactly_one_stage_span_per_stage_that_ran
+  <string>:11: RuntimeWarning: StageContext for run 'run_three' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_run_trace.py::test_a_stage_that_never_ran_produces_no_span
+  <string>:11: RuntimeWarning: StageContext for run 'run_stop' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+.venv\Lib\site-packages\_pytest\pathlib.py:95
+  D:\autoTesting\.worktrees\t204-team-login\.venv\Lib\site-packages\_pytest\pathlib.py:95: PytestWarning: (rm_rf) error removing \\?\C:\Users\Lenovo\AppData\Local\Temp\pytest-of-Lenovo\garbage-671a4d5f-eed5-464f-adcd-66f2bac154b9
+  <class 'OSError'>: [WinError 145] The directory is not empty: '\\\\?\\C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pytest-of-Lenovo\\garbage-671a4d5f-eed5-464f-adcd-66f2bac154b9'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+10 passed, 7 warnings in 14.35s

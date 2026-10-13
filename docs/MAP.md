@@ -9,7 +9,9 @@
 | Module | One job |
 |---|---|
 | `agents/context.py` | The trusted context of a lead-tester run: everything a model may NOT choose. |
+| `agents/evidence_tools.py` | The read-only evidence tools (T-180, AL8): `read_result`, `read_rubric`, `read_verdict`. |
 | `agents/guards.py` | The checks that stop an acting tool, in code (AL3). One job: decide, before any browser |
+| `agents/subagents.py` | The five subagents of the lead tester and the one place their tool allowlists live (T-180, |
 | `agents/tools.py` | The lead tester's stage tools and their one dispatcher (T-179, AL2/AL3/AL6). |
 | `auth/access.py` | The one authorization function (AU12) and the project relation data it reads. |
 | `auth/accounts.py` | Accounts: open signup, first-account admin, password check, admin account actions. |
@@ -66,11 +68,15 @@
 | `delivery/inbox.py` | Delivery records on disk and the send-once procedure around a mail transport (TT9, HO29). |
 | `delivery/message.py` | Compose the report e-mail from a stored `ReportSummary` and a template file (hosting.md HO28). |
 | `doctor.py` | Design enforcement. Runs the rules that keep this repo readable. |
+| `ledger/advisory.py` | Which doctor findings are advisory warnings and which block (L10, D-087). |
 | `ledger/checks.py` | Design rules over the project's RECORDS, as opposed to its source files. |
 | `ledger/citations.py` | Does every `D-NNN` cited in a gate, contract, manifest, verdict or doc resolve to an |
 | `ledger/evidence_specs.py` | AT-516 (D-048, gate answer c): does a unit's evidence spec (`mutations.json`) |
+| `ledger/issue_ids.py` | Id uniqueness for `qa/issues.jsonl` (AT-676, AT-645). |
 | `ledger/relitigation.py` | The cyclic-rebuild gate: is this new unit a retired feature coming back? |
 | `ledger/render.py` | Derive the living docs from code and the ledger. Nothing here is hand-typed. |
+| `ledger/review_block.py` | Reads the one current citation-review block in `qa/feedback-inbox.md` (L10). |
+| `ledger/seals.py` | L10 immutable-history dispositions: sealed records and the known-disputed claims. |
 | `ledger/store.py` | Read and append `docs/FEATURES.jsonl`. The only write path to the ledger. |
 | `loop_status.py` | Is the maker-checker loop alive, and if it stopped, was that on purpose? |
 | `media/chunks.py` | Split a recording into overlapping chunks a vision model can actually read. |
@@ -88,6 +94,7 @@
 | `providers/litellm_provider.py` | LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach. |
 | `providers/litellm_schema.py` | One job: the schema and answer-parsing half of the LiteLLM provider. |
 | `providers/mock.py` | Deterministic provider for tests and dry runs. Never calls a network. |
+| `schema/acceptance.py` | The T-136 acceptance-comparison artifact: AutoTester vs a human tester, as data. |
 | `schema/agent_layer.py` | The shapes the lead tester's tool surface speaks (T-179, D-042): which tools exist, |
 | `schema/ai_check.py` | Track C check vocabulary: which behavioural checks exist for an AI target (D-017). |
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
@@ -110,7 +117,7 @@
 | `schema/intake.py` | Shapes for video intake: zip limits, the per-member report, and where a source came from. |
 | `schema/issue.py` | A video-derived issue — its own artifact, deliberately NOT a `CaseClass`. |
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
-| `schema/ledger.py` | The feature ledger row and the relitigation verdict. Contract: qa/contracts/living-ledger.md. |
+| `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
@@ -125,6 +132,7 @@
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/sheet_plan.py` | The shapes of a tracker-sheet sync PLAN (T-199b dry run; contract TB9, TB10, TB11, TB13 in part). |
+| `schema/subagent.py` | The shape of one subagent of the lead tester (T-180, D-042, AL8-AL10): its name, the skill |
 | `schema/team_enums.py` | The Group 10 (team features) vocabulary file: every closed value set the team units add. |
 | `schema/trace.py` | Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1, |
 | `schema/tracked_bug.py` | A tracked bug and the events that move it: the data shapes of T-199a (team-bug-loop TB1-TB6). |
@@ -153,6 +161,7 @@
 | `sources/intake_commit.py` | Atomic video registration, the per-project intake lock, staging and orphan sweep. |
 | `sources/zip_intake.py` | Safe zip expansion: one video source per video member, everything else accounted for. |
 | `sources/zip_names.py` | Zip member-name vetting that behaves identically under Windows and Ubuntu path rules. |
+| `stages/acceptance_comparison.py` | Build and check the T-136 acceptance comparison from stored bench artifacts. |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/adversarial.py` | ADVERSARIAL: a bounded pass of file-defined probes at one AI endpoint. It records, never judges. |
 | `stages/agent_loop.py` | Agent fallback: when a case's steps break, ask the agent for a fix and retry. |
@@ -302,6 +311,10 @@
 <!-- generated:schema -->
 | Model | Meaning |
 |---|---|
+| `Measure` (`schema/acceptance.py`) | One reported measurement: exactly one of a value or an unavailable reason. |
+| `ParticipantColumn` (`schema/acceptance.py`) | One side of the comparison, with its K6 kind and K7 ordering split. |
+| `BugRow` (`schema/acceptance.py`) | One ground-truth bug and which participants found it. |
+| `AcceptanceComparison` (`schema/acceptance.py`) | The comparison a reader who was not there can judge (bench.md K9). |
 | `AgentToolName` (`schema/agent_layer.py`) | The stage tools in this slice. `report` and `capture_network` join with the rest of T-179. |
 | `ToolEffect` (`schema/agent_layer.py`) | What a tool can do to the outside world. T-180 allowlists subagents by this. |
 | `RefusalClass` (`schema/agent_layer.py`) | Why a tool call produced no action. A refusal is a result, never an exception the |
@@ -309,6 +322,7 @@
 | `CrawlArgs` (`schema/agent_layer.py`) | Bounds the model REQUESTS; the approval decides whether they are granted. |
 | `RunCaseArgs` (`schema/agent_layer.py`) |  |
 | `GradeCaseArgs` (`schema/agent_layer.py`) |  |
+| `ReadCaseArgs` (`schema/agent_layer.py`) | Evidence reads (T-180): which case's stored artifact to read; the run is trusted context. |
 | `EmptyArgs` (`schema/agent_layer.py`) | Tools that take nothing (`get_persona`, `get_catalog`): everything is trusted context. |
 | `ToolOutcome` (`schema/agent_layer.py`) | What a tool call returns to the model. `summary` is scrubbed before it is built, and the |
 | `AiCheckKind` (`schema/ai_check.py`) | One behavioural check an AI target can be put through. Enum order is report order. |
@@ -425,6 +439,9 @@
 | `IssueKind` (`schema/issue_kind.py`) | What kind of problem a crawl-detected `CrawlIssue` is. |
 | `FeatureEvent` (`schema/ledger.py`) | One dated event in the life of a feature: planned, live, updated, or retired. |
 | `RelitigationVerdict` (`schema/ledger.py`) | The judge's answer to "is this new unit a retired feature coming back?". |
+| `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
+| `CitationReview` (`schema/ledger.py`) | An inline inventory declaration, bound to exact visible occurrence content. |
+| `SealedRecord` (`schema/ledger.py`) | One reviewed, hash-bound row covering the citations of a closed historical unit. |
 | `TranscriptSegment` (`schema/media.py`) | One spoken utterance, absolute seconds into the source video. |
 | `Transcript` (`schema/media.py`) | A video's narration. `from_sidecar` loads the exact shape the existing |
 | `MediaChunk` (`schema/media.py`) | One re-encoded chunk of a longer video. |
@@ -500,6 +517,9 @@
 | `SheetPlan` (`schema/sheet_plan.py`) | What a sync would write. `plan_hash` is derived from the content and checked on load. |
 | `SyncMemory` (`schema/sheet_plan.py`) | What we last wrote, per bug and column, so a later human edit is told from our own value. |
 | `PlanConfirmation` (`schema/sheet_plan.py`) | A named person saw the plan with this hash. Whether that person holds `project.edit` is |
+| `SubagentName` (`schema/subagent.py`) |  |
+| `SubagentSpec` (`schema/subagent.py`) | One subagent. Frozen: the allowlist cannot be widened after construction. |
+| `SubagentInvocation` (`schema/subagent.py`) | What ONE subagent is handed (AL9): its own prompt, the task text, the files the lead |
 | `ScheduleMode` (`schema/team_enums.py`) |  |
 | `ScheduleZone` (`schema/team_enums.py`) | The only two zones a schedule may use (Umesh, 2026-10-07). IST is +05:30, no DST. |
 | `SlotOutcome` (`schema/team_enums.py`) | What a tick decided for one slot. A record carries exactly one of these. |
@@ -564,6 +584,7 @@
 | `scripts/adversarial_proof.py` | Credential-free, network-free proof that the adversarial pass refuses to exceed its scope. |
 | `scripts/append_decision.ps1` | append_decision.ps1 -- the ONLY legitimate write path to docs/DECISIONS.md |
 | `scripts/bench_trial.py` | T-120: the north star made measurable — first real human-vs-AI trial scorecard. |
+| `scripts/check_acceptance_comparison.py` | T-136 done_check: is the Pathlynks acceptance comparison complete? (bench.md K9) |
 | `scripts/check_crawl_approval.py` | T-145's done_check (D-018): a live crawl counts as done only if it actually |
 | `scripts/check_deliverable.py` | Assert a task's deliverables exist — a `done_check` that can actually fail. |
 | `scripts/check_no_secrets.py` | Scan files for any real value currently loaded in .env. Prints OK/LEAK only. |
@@ -574,6 +595,7 @@
 | `scripts/mutation_check.py` | Prove a unit's new tests are not vacuous, by killing them on purpose. |
 | `scripts/onboard_pathlynks.py` | Onboard Pathlynks: real login via the credential boundary, evidence, knowledge.md. |
 | `scripts/regression_proof.py` | T-110: break a feature, confirm exactly that case FAILs while an unrelated |
+| `scripts/renumber_duplicate_issue_ids.py` | Give fresh ids to the LATER row of every duplicated id in qa/issues.jsonl. |
 | `scripts/run_pathlynks_first_cases.py` | T-050: 3 hand-written Pathlynks login cases (best/worst/edge), run headed and |
 | `scripts/score_video_issues.py` | Score AutoTester's issues against a human tester's sheet — T-136's acceptance. |
 <!-- /generated:scripts -->

@@ -2459,3 +2459,54 @@ the dependency or by a fresh licence decision.
 **Approved-by:** Umesh (chat, 2026-10-12)
 
 **Links:** AT-644; AT-651; T-196
+
+## D-088 | 2026-10-12 | type: decision | status: ACTIVE
+
+**What:** Umesh answered T-200, AT-891/AT-654 and T-145 timing questions in the Claude Code session on 2026-10-12.
+1. **T-200 owner question 1 (private queue for the tick):** option (a). Scheduled runs keep their own separate worker for the local deployment, as built and checker-PASSed in `qa/verdicts/t200-schedule-wiring.md`. Umesh accepts that a scheduled run is outside the server run cap and can overlap a manual Test. Revisit when T-203 hosting lands. This answers the ISS-3 owner choice (a/b/c) as (a). The checker's separate finding that an unreadable queue file "fails open" is still a defect and is not waived by this answer.
+2. **T-200 owner question 2:** the "api" trigger maps to the label "CI". Confirmed.
+3. **AT-891 / AT-654:** `pathlynks.vidysea.com` IS PRODUCTION. Approval rows for it must be signed `production: true`. The existing `appr_ce61e4420ac9`, signed `production: false`, is superseded and must not be used for runs. Typing and submitting on it stays refused under the production rules. `projects/pathlynks/project.json`, which says dev, is corrected to production by a builder unit, not by this entry.
+4. **T-145 timing:** run the READ_ONLY crawl only AFTER the AT-651 exact-host secrets fix (`wave/at651-exact-host-secrets`) is merged. Under D-081 item 3's standing approval, the maker mints the per-run row, with production true, at that time.
+
+**Why:** These answers close the T-200 owner questions, settle the consent record for the Pathlynks host, and order T-145 behind the secret-scoping fix so a production secret cannot leak to another host.
+
+**Result:** No code change or run has been made by this entry. The maker dispatches the project.json correction and the T-145 run (after the AT-651 merge) next.
+
+**Changes-authorized:** none (no ARCHITECTURE.md prose, no enforcement path).
+
+**Approved-by:** Umesh (chat, 2026-10-12)
+
+**Links:** D-081; D-086; T-145; T-200; T-203; AT-651; AT-654; AT-891; qa/verdicts/t200-schedule-wiring.md
+
+## D-089 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh answered four open items in the Claude Code session on 2026-10-13.
+1. **T-179 AL1 / D-042, deepagents version:** "Upgrade version". The D-042/AL1 floor `deepagents>=1.7` names a version that does not exist; the newest real release is 0.7.24. Pin `deepagents>=0.7.24,<0.8` (compatible with 0.7.x). AL1's floor is amended accordingly, and the checker amends the brief text. D-042's design (deepagents as the planner, no hand-rolled planner) stays.
+2. **T177-HARD-PROVIDER-DEADLINE:** option C. Run the fallback provider in an isolated, killable process, so AF4 guarantees a hard return within `wall_clock_s` even when the provider hangs. This needs a new module, and this entry authorises that module.
+3. **T-136 independent human bug list:** build T-136 now WITHOUT the human list. AutoTester produces its own analysis and report. Recall vs a human stays "unavailable" until Umesh provides a list later; false-positive rate and time are still measured. The system must work and report when no human list exists, as a supported mode and not an error.
+4. **T-199 tracker writes:** option A. The bug loop may write to a separate TEST tracker sheet that AutoTester creates in Umesh's Drive (D-083 item 3 reading confirmed). The real Pathlynks Tracker stays gated (still "abhi nhi"). The Drive access uses the gws CLI login on this machine.
+
+**Why:** These answers unblock T-179, T-177, T-136 and T-169, and the test-sheet half of T-199, which were waiting on owner choices.
+
+**Result:** No code change has been made by this entry. The maker dispatches the unblocked units next.
+
+**Changes-authorized:** the new isolated-provider-process module for T-177 (item 2); the `deepagents>=0.7.24,<0.8` pin in pyproject.toml (item 1). No ARCHITECTURE.md prose, no enforcement path.
+
+**Approved-by:** Umesh (chat, 2026-10-13)
+
+**Links:** D-042; D-081; D-083; T-136; T-169; T-177; T-179; T-199; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md
+
+## D-090 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided three items in chat on 2026-10-13.
+1. **T-136:** the independent human tester bug list will come later. Build T-136 now without it, consistent with D-089 item 3: recall vs a human is reported "unavailable" until a list arrives; false-positive rate and time are still measured and must pass (bench.md K6-K9, new K10).
+2. **T-199:** do NOT write to the real PathLynks Tracker sheet. Build an internal tracker inside AutoTester (a tracker page over `store/bug_store.py` BugStore) and export it later to the sheet as CSV/xlsx in the Tracker sheet's column layout. The real-sheet write becomes a deferred export and is not a T-199 blocker. This supersedes the test-sheet-in-Drive route of D-089 item 4 for T-199's build scope; the real Tracker stays gated.
+3. **T-203:** the production host will be Ubuntu, with host and DNS provided later. For now build and host on THIS Windows machine (no Docker here): a launcher script plus a Windows Scheduled Task (start at boot, restart on failure), bound to 127.0.0.1 behind the T-204 login by default, LAN exposure a single setting. The Ubuntu Docker files are left untouched.
+
+**Why:** The human list, the real sheet and the Ubuntu host are all owner-side inputs that are not available yet. Splitting each into a part buildable now and a deferred part removes them as blockers without weakening any safety rule (no live sheet write, no unauthenticated exposure).
+
+**Result:** No code change in this entry. Contracts folded by the checker: team-bug-loop.md (TB7 required, TB15 export, HG-TB1 reworded, TB8/TB9/TB13 export-time), hosting.md (local Windows host section, HO39-HO46, Ubuntu rows deferred), bench.md (K10). Gate files t136, t199 and t203 updated.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** D-081; D-089; T-136; T-199; T-203; T-204; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md; qa/gates/t203-host-and-dns.md
