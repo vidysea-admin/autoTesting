@@ -233,7 +233,7 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   `repo_root()` (which honours `AUTOTESTER_ROOT`), in a path that `git check-ignore` and `.dockerignore` both cover, with atomic writes
   and owner-only permissions where the platform supports them (best effort on Windows, asserted on Linux). New shapes are Pydantic
   models in `schema/` with `extra="forbid"`; no second `.env`-style store. `serves:` O7, docker.md D6, `core-invariants.md` C1-C5.
-- **AU24 — Windows dev and Ubuntu prod.** Paths use `pathlib` / `core.paths`; no POSIX-only module (`fcntl`, `pwd`) is imported at
+- **AU24 — Windows dev and Ubuntu prod. DEFERRED TO UBUNTU (D-091): the Linux run is owed on the production Ubuntu server and does not block T-204; the Windows-side checks still apply.** Paths use `pathlib` / `core.paths`; no POSIX-only module (`fcntl`, `pwd`) is imported at
   module top level, and no Windows-only call is made without a guard. The concurrency-sensitive code (first-admin, session store, rate
   limit) is correct under both: it relies on the store's own atomicity or a portable lock, not on `flock` alone. The auth tests pass
   on Windows (the checker's host) **and** inside the project's Docker image on Linux; the Linux run is recorded as evidence

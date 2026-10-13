@@ -29,12 +29,35 @@ def _project(key: K) -> RouteRule:
     return RouteRule(kind="project", key=key)
 
 
+def _video(key: K) -> RouteRule:
+    return RouteRule(kind="video", key=key)
+
+
 _P = "/projects/{slug}"
 _VIEW, _EDIT, _RUN = _project(K.PROJECT_VIEW), _project(K.PROJECT_EDIT), _project(K.PROJECT_RUN)
 _REPORT, _VIDEO = _project(K.REPORT_VIEW), _project(K.VIDEO_VIEW)
 _CRED = _project(K.CREDENTIALS_EDIT)
 _SETTINGS, _USERS, _GROUPS = (_key(K.SETTINGS_MANAGE), _key(K.USERS_MANAGE),
                               _key(K.GROUPS_MANAGE))
+
+_V = _P + "/videos/{video_id}"
+PORTAL_POLICY: dict[tuple[str, str], RouteRule] = {
+    # T-198b (team-intake.md TP1-TP6). The page and the request-access POST answer a person with
+    # no access with the request-access page (handler); every byte/data route is a `video` rule.
+    ("GET", "/shared"): _key(K.VIDEO_VIEW),
+    ("GET", _V): _key(K.VIDEO_VIEW), ("POST", _V + "/request-access"): _key(K.VIDEO_VIEW),
+    ("GET", "/v/{token}"): _key(K.VIDEO_VIEW),
+    ("POST", "/v/{token}/request-access"): _key(K.VIDEO_VIEW),
+    ("GET", _V + "/media"): _video(K.VIDEO_VIEW), ("GET", _V + "/comments"): _video(K.VIDEO_VIEW),
+    **{("POST", _V + tail): _video(K.VIDEO_SHARE) for tail in (
+        "/share-link", "/share-link/revoke", "/shares")},
+    **{("POST", _V + tail): _video(K.COMMENT_CREATE) for tail in (
+        "/comments", "/comments/{comment_id}/edit", "/comments/{comment_id}/delete")},
+    ("POST", _V + "/comments/{comment_id}/promote"): _project(K.PROJECT_EDIT),
+    ("GET", "/access-requests"): _key(K.ACCESS_APPROVE),
+    **{("POST", "/access-requests/{request_id}/" + tail): _key(K.ACCESS_APPROVE)
+       for tail in ("approve", "decline")},
+}
 
 ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     # AU16: the closed public set
@@ -62,7 +85,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}")},
     **{("GET", _P + tail): _REPORT for tail in (
-        "/runs/{run_id}", "/report", "/report.xlsx", "/report.html", "/damage-report")},
+        "/runs/{run_id}", "/report", "/report.xlsx", "/report.html", "/damage-report",
+        "/test/{run_id}")},
     ("GET", _P + "/runs/{run_id}/videos/{video_path:path}"): _VIDEO,
     ("GET", _P + "/frames/{source_id}/{name:path}"): _VIDEO,
     **{("POST", _P + tail): _EDIT for tail in (
@@ -72,11 +96,12 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "/sources/{source_id}/analyze", "/env/url")},
     **{("POST", _P + tail): _project(K.VIDEO_UPLOAD) for tail in (
         "/sources/upload", "/sources/drive")},   # T-198: file and Drive-link intake
-    **{("POST", _P + tail): _RUN for tail in ("/run", "/explore", "/crawl-approval")},
+    **{("POST", _P + tail): _RUN for tail in ("/run", "/explore", "/crawl-approval", "/test")},
     **{("POST", _P + tail): _CRED for tail in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
     # the handler checks project.assign or video.share for the relation asked (AU12)
     ("POST", _P + "/access"): _VIEW,
+    **PORTAL_POLICY,
 }
 
 

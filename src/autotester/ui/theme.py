@@ -30,6 +30,8 @@ from autotester.ui.theme_style import PAGE_STYLE
 _NAV_LINKS = (
     (None, "/", "Projects", ""),
     (PermissionKey.PROJECT_CREATE, "/onboard", "+ New project", ""),
+    (PermissionKey.VIDEO_VIEW, "/shared", "Videos", ""),
+    (PermissionKey.ACCESS_APPROVE, "/access-requests", "Access requests", ""),
     (PermissionKey.LIVE_VIEW, "/live", "● Live view", " class=\"nav-live\""),
     (PermissionKey.SETTINGS_MANAGE, "/settings/providers", "⚙ Settings", ""),
 )

@@ -2510,3 +2510,15 @@ the dependency or by a fresh licence decision.
 **Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
 
 **Links:** D-081; D-089; T-136; T-199; T-203; T-204; qa/gates/t136-independent-human-list.md; qa/gates/t199-first-live-write.md; qa/gates/t203-host-and-dns.md
+
+## D-091 | 2026-10-13 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) decided in chat on 2026-10-13 to skip Docker on this Windows machine. The T-204 Linux/Docker proof run (criterion AU24 in qa/contracts/auth.md, evidence qa/evidence/t204-linux-run.md) is deferred to the production Ubuntu server, the same way D-090 deferred T-203's Ubuntu-only criteria. T-204 may close on this machine once its other criteria pass; AU24 does not block it.
+
+**Why:** Docker is not available here and the Ubuntu host is an owner-side input still to come (D-090 item 3). The Windows side of AU24 (pathlib, no POSIX-only top-level import, portable concurrency) is already checked locally, so deferring only the Linux run removes a blocker without weakening any auth rule.
+
+**Result:** No code change in this entry. The checker folded the amendment into qa/contracts/auth.md: AU24 is marked DEFERRED TO UBUNTU (D-091), not blocking T-204. The Linux run stays owed on the production Ubuntu server.
+
+**Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
+
+**Links:** T-204; D-090; qa/contracts/auth.md

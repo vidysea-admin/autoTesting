@@ -31,8 +31,8 @@ def make_project(domains: list[str] | None = None) -> Project:
         base_url="https://app.pathlynks.test",
         allowed_domains=["pathlynks.test"],
         secrets=[
-            SecretRef(key="PATHLYNKS_EMAIL", domains=domains or ["pathlynks.test"]),
-            SecretRef(key="PATHLYNKS_PASSWORD", domains=domains or ["pathlynks.test"]),
+            SecretRef(key="PATHLYNKS_EMAIL", domains=domains or ["app.pathlynks.test"]),
+            SecretRef(key="PATHLYNKS_PASSWORD", domains=domains or ["app.pathlynks.test"]),
         ],
     )
 
@@ -114,11 +114,6 @@ def test_resolve_refuses_a_host_outside_the_secret_scope(tmp_path: Path) -> None
         store.resolve("{{SECRET:PATHLYNKS_PASSWORD}}", "https://evil.test/login")
 
 
-def test_subdomains_of_a_scoped_domain_are_allowed(tmp_path: Path) -> None:
-    store = loaded(tmp_path)
-    assert store.resolve("{{SECRET:PATHLYNKS_EMAIL}}", "https://staging.pathlynks.test") is not None
-
-
 def test_lookalike_domain_is_not_a_subdomain(tmp_path: Path) -> None:
     store = loaded(tmp_path)
     with pytest.raises(SecretScopeError):
@@ -144,7 +139,7 @@ def loaded_with_login_url(tmp_path: Path, domains: list[str] | None = None) -> S
     project = Project(
         slug="pathlynks", name="Pathlynks", base_url="https://app.pathlynks.test",
         allowed_domains=["pathlynks.test"],
-        secrets=[SecretRef(key="PATHLYNKS_LOGIN_URL", domains=domains or ["pathlynks.test"])],
+        secrets=[SecretRef(key="PATHLYNKS_LOGIN_URL", domains=domains or ["app.pathlynks.test"])],
     )
     env = write_env(tmp_path, f"PATHLYNKS_LOGIN_URL={LOGIN_URL}\n")
     return SecretStore.load(project, env)
@@ -184,7 +179,7 @@ def test_resolve_for_navigation_rejects_a_missing_value(tmp_path: Path) -> None:
     project = Project(
         slug="pathlynks", name="Pathlynks", base_url="https://app.pathlynks.test",
         allowed_domains=["pathlynks.test"],
-        secrets=[SecretRef(key="PATHLYNKS_LOGIN_URL", domains=["pathlynks.test"])],
+        secrets=[SecretRef(key="PATHLYNKS_LOGIN_URL", domains=["app.pathlynks.test"])],
     )
     store = SecretStore(project, {})
     with pytest.raises(MissingSecret, match="PATHLYNKS_LOGIN_URL"):

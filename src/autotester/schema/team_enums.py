@@ -72,3 +72,11 @@ class SourceOriginKind(StrEnum):
     ZIP = "zip"
     DRIVE = "drive"
     RECORDING = "recording"
+
+
+class AccessRequestStatus(StrEnum):
+    """Where an access request to a video stands (`AccessRequest.status`, TP5)."""
+
+    PENDING = "pending"
+    APPROVED = "approved"
+    DECLINED = "declined"

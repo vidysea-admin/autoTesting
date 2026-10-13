@@ -196,3 +196,31 @@ HTTPS: keep uvicorn on `127.0.0.1:8000` and put a reverse proxy in front (Caddy 
 the same `Caddyfile` idea, or IIS with URL Rewrite and ARR), forwarding `Host` and raising the
 body limit to `AUTOTESTER_MAX_UPLOAD_BYTES`. Back up the repo's `projects/`, `profiles/` and
 `.env` the same way as Part A step 9.
+
+### B.1 Local Windows host (T-203, D-090)
+
+Ubuntu/Docker (Part A) is the later production path. Until then the UI can run on a Windows
+machine with no Docker, from two scripts in `scripts/`:
+
+- `scripts\serve_windows.ps1` runs `uv run uvicorn autotester.ui.app:app`. It binds **127.0.0.1:8000**
+  by default. The one setting that exposes it to the LAN is `-Lan` (or env `AUTOTESTER_BIND_HOST=0.0.0.0`);
+  LAN binding is logged at startup. `-Port`, `-DataRoot` and `-AllowedOrigins` (env
+  `AUTOTESTER_ALLOWED_ORIGINS`) are optional; the Host/Origin guards still apply.
+  `-DryRun` prints the resolved plan and starts nothing.
+- Data root: `AUTOTESTER_ROOT`, default `%ProgramData%\AutoTester` (outside the code tree; projects,
+  users and queue live there, and so does the repo-root `.env`). Logs: `<data root>\logs\serve.log`.
+  Back up that folder.
+- Health check: `scripts\serve_windows.ps1 -Check` calls `/healthz` (no session needed, no project data)
+  and exits non-zero on failure.
+- Login: the launcher never sets `AUTOTESTER_AUTH_DISABLED`. **Create the first admin account before
+  using `-Lan`** (Part A step 5 describes the command). Do not expose the port until T-204 login is live.
+
+Create the Scheduled Task (start at boot, restart on failure; run in an elevated PowerShell; it
+prompts for the password of the account the task runs as):
+
+    powershell -File scripts\install_windows_task.ps1 -WhatIf     # preview, changes nothing
+    powershell -File scripts\install_windows_task.ps1             # register task "AutoTester"
+    powershell -File scripts\install_windows_task.ps1 -Uninstall  # remove it
+
+Check with `schtasks /Query /TN AutoTester /V /FO LIST`. Restart policy: 5 restarts, 1 minute apart.
+A headed browser needs a desktop session for the run user. No secret belongs in these files.

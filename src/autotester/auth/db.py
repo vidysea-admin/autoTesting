@@ -53,6 +53,22 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE TABLE IF NOT EXISTS project_grants (
     slug TEXT NOT NULL, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     relation TEXT NOT NULL, PRIMARY KEY (slug, user_id, relation));
+CREATE TABLE IF NOT EXISTS video_shares (
+    slug TEXT NOT NULL, video_id TEXT NOT NULL, email TEXT NOT NULL,
+    granted_by TEXT NOT NULL, granted_at TEXT NOT NULL, PRIMARY KEY (slug, video_id, email));
+CREATE TABLE IF NOT EXISTS video_links (
+    token_hash TEXT PRIMARY KEY, slug TEXT NOT NULL, video_id TEXT NOT NULL,
+    created_by TEXT NOT NULL, created_at TEXT NOT NULL, revoked_at TEXT);
+CREATE TABLE IF NOT EXISTS access_requests (
+    id INTEGER PRIMARY KEY, slug TEXT NOT NULL, video_id TEXT NOT NULL,
+    requester TEXT NOT NULL, status TEXT NOT NULL, created_at TEXT NOT NULL,
+    decided_by TEXT, decided_at TEXT);
+CREATE UNIQUE INDEX IF NOT EXISTS one_pending_request
+    ON access_requests (slug, video_id, requester) WHERE status = 'pending';
+CREATE TABLE IF NOT EXISTS video_comments (
+    id INTEGER PRIMARY KEY, slug TEXT NOT NULL, video_id TEXT NOT NULL,
+    author TEXT NOT NULL, at_s REAL NOT NULL, text TEXT NOT NULL, created_at TEXT NOT NULL,
+    edited_at TEXT, pointer_line TEXT);
 """
 
 _READY: set[Path] = set()
