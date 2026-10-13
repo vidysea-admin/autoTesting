@@ -1,6 +1,6 @@
 """TA9 (as re-scoped by D-090 item 2): the tracker page and the CSV/xlsx export, plus the standing
-limit that no real sheet is bound or written. The page and the export are xfail(strict): T-199
-TB7/TB15 are not on master. The standing limit runs today."""
+limit that no real sheet is bound or written. The page and the export (TB7, TB15) run as real tests.
+The standing limit runs today."""
 
 from __future__ import annotations
 

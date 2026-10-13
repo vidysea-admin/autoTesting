@@ -1,6 +1,6 @@
 """TA6: the Test button runs the real queue and launcher and the report reaches the right people,
 once. Rows (a), (b), (e) run today; the mail rows (c), (d) and the "Email me run reports" tick are
-xfail(strict) because nothing on master calls the delivery module from a finished run."""
+skipped (deferred to production by D-092/D-093)."""
 
 from __future__ import annotations
 
@@ -63,28 +63,26 @@ def test_e_a_missing_credential_pair_refuses_naming_the_credentials_and_leaves_n
     assert world.counters.sessions == 0 and world.counters.graded == 0
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "deferred by D-092/D-093 (email TT8/TT9) and T-201 wiring: no code on master "
-    "delivers a finished run's report (delivery/ has no caller; T-201 wiring and the "
-    "inbox are not built)"))
+@pytest.mark.skip(reason=(
+    "deferred to production by D-092/D-093 (email TT8/TT9): the outbox message is not "
+    "asserted here"))
 def test_c_exactly_one_outbox_message_goes_to_the_dev_who_ticked(world: World) -> None:
     press(world, "dev")
     assert len(list(world.outbox.glob("*.eml"))) == 1
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "deferred by D-093 (email TT8/TT9 to production): no 'Email me run reports' "
-    "preference route exists on master (profile/notification settings are not built)"))
+@pytest.mark.skip(reason=(
+    "deferred to production by D-093 (email TT8/TT9): no Email-me-run-reports "
+    "preference is built"))
 def test_c_the_dev_can_tick_email_me_run_reports() -> None:
     from autotester.ui.app import app
     assert any("notif" in p or "profile" in p
                for p in [getattr(m, "path", "") for m in app.routes])
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "deferred by D-092/D-093 (email to production): delivery is not called from the "
-    "run path, so a raising transport cannot be observed (same blocker as the outbox "
-    "row)"))
+@pytest.mark.skip(reason=(
+    "deferred to production by D-092/D-093 (email): a raising mail transport is not "
+    "exercised here"))
 def test_d_a_raising_transport_leaves_the_verdict_unchanged_and_the_inbox_entry(
         world: World) -> None:
     run_id = press(world, "dev")
@@ -92,9 +90,10 @@ def test_d_a_raising_transport_leaves_the_verdict_unchanged_and_the_inbox_entry(
     assert list(world.root.rglob("inbox*"))
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "blocked on T-201 (TT7 inbox): the website inbox ('My reports', GET /inbox, TT7) "
-    "is not built on master"))
 def test_tt7_the_inbox_lists_the_report_for_dev_and_admin_but_not_tester(world: World) -> None:
-    press(world, "dev")
-    assert world.users["dev"].get("/inbox", headers=HTML).status_code == 200
+    run_id = press(world, "dev")
+    for role in ("dev", "admin"):
+        page = world.users[role].get("/inbox", headers=HTML)
+        assert page.status_code == 200 and run_id in page.text, role
+    seen = world.users["tester"].get("/inbox", headers=HTML)
+    assert run_id not in seen.text

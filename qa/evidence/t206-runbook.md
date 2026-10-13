@@ -48,23 +48,23 @@ Never set `AUTOTESTER_AUTH_DISABLED`. Kill only the PID started; record it.
 
 ### TA6 - Test button to queue/launcher to report, once (O12, O13)
 1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta06_button_to_report.py`. Pass (a)-(e): one request attributed to dev; second press returns the existing one; launcher log `trigger=button`; exactly one outbox message, to dev; a raising transport leaves the verdict unchanged; missing credential pair refuses with no run directory.
-2. BLOCKED(no "Email me run reports" control, no delivery call from a finished run, no inbox on master) Live on the stub product with the defect ON: dev ticks "Email me run reports", presses Test (`POST /projects/{slug}/test`), opens `GET /projects/{slug}/test/{run_id}`; admin (not ticked) sees the report in the inbox but gets no mail. Evidence `t206-ta06-live/` (screenshots, outbox listing with names only).
+2. DEFERRED(D-093 items 1-2: the "Email me run reports" control and mail go to production; the inbox half is built, run it without the tick) Live on the stub product with the defect ON: dev ticks "Email me run reports", presses Test (`POST /projects/{slug}/test`), opens `GET /projects/{slug}/test/{run_id}`; admin (not ticked) sees the report in the inbox but gets no mail. Evidence `t206-ta06-live/` (screenshots, outbox listing with names only).
 3. READY Mail path: the test environment points `AUTOTESTER_SMTP_HOST` at 127.0.0.1 (loopback fake SMTP or outbox adapter), never the SES values.
 4. BLOCKED(Umesh answer: is a real send required, and which inbox) Optional one real SES message. Default not required (contract Open 2). Never sent by a test or the checker.
 
 ### TA7 - failure becomes one bug, closes on evidence (O10)
 1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta07_failure_to_bug.py`. Pass: one `TrackedBug` with a stable key; second press raises count not a second bug; fixed only after two consecutive passes; INCONCLUSIVE closes nothing; reopen keeps the key; button and schedule failures share a key; reprocessing a run changes nothing; TB7 scoping holds.
-2. BLOCKED(T-199 TB7 tracker page not built) Live: dev, subadmin, admin open the tracker page; tester sees a bug only if its report is shared; `other` shows nothing. Evidence screenshots.
+2. READY (tracker page `/tracker` built, TB7) Live: dev, subadmin, admin open the tracker page; tester sees a bug only if its report is shared; `other` shows nothing. Evidence screenshots.
 3. READY Store-level check after the TA6 run: read `store/bug_store.py` BugStore and save key, count, last_seen, status only to `t206-ta07-bugs.txt`.
 
 ### TA8 - schedule fires once through the same launcher (O12)
 1. READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance/test_ta08_schedule_to_report.py` with the injected clock. Pass: nothing before the slot; one enqueue at the slot (`trigger=schedule`, requested_by = owner); a second tick and a second scheduler instance enqueue nothing; `blocked_no_credentials` shows zero transport requests; a busy project gives `skipped_overlap`; `tester` cannot save.
-2. BLOCKED(no schedule save route or schedule card on master) Live: subadmin saves a daily schedule on the stub project; the schedule card shows the next three fire times in project timezone; trigger one tick with the tick command documented in `qa/manifests/t200-schedule-wiring.md` (read it at run time); confirm one run and one inbox report. Evidence `t206-ta08-live/`.
+2. READY (schedule card `/projects/{slug}/schedule` built, T-200) Live: subadmin saves a daily schedule on the stub project; the schedule card shows the next three fire times in project timezone; trigger one tick with the tick command documented in `qa/manifests/t200-schedule-wiring.md` (read it at run time); confirm one run and one inbox report. Evidence `t206-ta08-live/`.
 
 ### TA9 - tracker (the contract text is the OLD sheet dry run, see proposal 3)
 Under D-090 the checks that realise O11 now are TB7 (page) and TB15 (export):
-1. BLOCKED(T-199 TB7/TB15 not built) subadmin opens the tracker page; bugs from TA7/TA8 are listed with status, severity, screen.
-2. BLOCKED(T-199 TB15 not built) Export CSV and xlsx; read both back; header order equals the Tracker layout; export twice and compare bytes (identical); a user without `report.view` gets not-found; a planted secret in a bug title is absent from both files.
+1. READY (TB7 built) subadmin opens the tracker page; bugs from TA7/TA8 are listed with status, severity, screen.
+2. READY (TB15 `/tracker/export.csv` built) Export CSV and xlsx; read both back; header order equals the Tracker layout; export twice and compare bytes (identical); a user without `report.view` gets not-found; a planted secret in a bug title is absent from both files.
 3. BLOCKED(Umesh answer: Tracker sheet header row) Compare the export header to the real Tracker header row. Without it the layout check is against `schema/sheet_plan.py` only.
 4. READY Standing limit: after the whole acceptance, `projects/pathlynks/project.json` has no tracker binding with `first_write_confirmed_by`, and no Google call was made. Evidence `t206-ta09-no-live-write.txt`.
 5. DEFERRED(D-090 item 2) Sheet bind, mapping confirm, SheetClient write log (original TA9 body), real-sheet export.
@@ -91,10 +91,10 @@ Under D-090 the checks that realise O11 now are TB7 (page) and TB15 (export):
 
 ### TA15 - persona walks in a live browser (Mode D)
 Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no browser tool connects, never curl.
-1. BLOCKED("Email me run reports" control not built) dev: add videos <= 3 steps; Test <= 3 steps; finds "Email me run reports" unaided. Files `persona-t206-dev/persona-walk.md`, `browser-t206-dev-checker/report.json`. Pass: no `high` finding, zero unexplained console errors, labelled keyboard-operable controls, masked secret inputs.
+1. DEFERRED(D-093: "Email me run reports" control goes to production; walk the rest) dev: add videos <= 3 steps; Test <= 3 steps; finds "Email me run reports" unaided. Files `persona-t206-dev/persona-walk.md`, `browser-t206-dev-checker/report.json`. Pass: no `high` finding, zero unexplained console errors, labelled keyboard-operable controls, masked secret inputs.
 2. BLOCKED(no review UI on master) admin: review with pointers <= 4 steps; approve access <= 2; names the unreviewed spans unprompted. Files for `persona-t206-admin`.
 3. READY (live; accounts as above) tester: reaches the shared video <= 3 steps from the mail link, comments at a second, sees nothing else. Files for `persona-t206-tester`.
-4. BLOCKED(schedule UI and T-199 tracker not built) subadmin: schedule <= 3 steps with the next three fire times shown. The "bind a sheet in <= 5 steps" part is DEFERRED(D-090 item 2), see proposal 4.
+4. READY (schedule card and tracker built) subadmin: schedule <= 3 steps with the next three fire times shown. The "bind a sheet in <= 5 steps" part is DEFERRED(D-090 item 2), see proposal 4.
 5. DEFERRED(D-091; hosting HO34) Repeat the walks against the Ubuntu server URL.
 
 ### TA16 - redacted-video review vs the oracle (O8; LIVE-ARTIFACT)
@@ -110,7 +110,7 @@ Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no bro
 
 ### Invariants
 - TAI1 READY `git diff --stat 30bb5b03..HEAD -- src/` is empty at close.
-- TAI2 BLOCKED(ruling needed: TAI2 forbids xfail, but the 13 xfail(strict) tests each name a missing-piece blocker, as the brief for this unit required; see manifest) `grep -rnE "xfail|skip\(|skipif|importorskip" tests/acceptance` finds nothing.
+- TAI2 BLOCKED(ruling needed: TAI2 forbids xfail, but the 2 remaining xfail(strict) tests each name a pending T-169 blocker, as the brief for this unit required; see manifest) `grep -rnE "xfail|skip\(|skipif|importorskip" tests/acceptance` finds nothing.
 - TAI3 READY (rig built; passes locally, see section 4) `uv run pytest tests/acceptance` twice, once in reverse order.
 - TAI4 READY `uv run autotester doctor` and `uv run ruff check src tests scripts`.
 - TAI5 READY pathlib/no POSIX-only check by grep of `tests/acceptance` once it exists; the Ubuntu leg is DEFERRED(D-091).
@@ -132,13 +132,11 @@ Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no bro
 
 ## 4. Status after the rig was built (2026-10-13)
 
-Step counts (numbered steps and TAI rows above): READY 36, BLOCKED 19, DEFERRED 4. Before the rig: READY 15, BLOCKED 40, DEFERRED 4.
+Step counts (numbered steps and TAI rows above): READY 41, BLOCKED 12, DEFERRED 6. After fix cycle 3 (master merged: T-199 c/d bug wiring, T-200 schedule UI, T-201 inbox). Fix cycle 2: READY 36, BLOCKED 19, DEFERRED 4. Before the rig: READY 15, BLOCKED 40, DEFERRED 4.
 
-`uv run pytest tests/acceptance`: 55 passed, 13 xfailed (strict), run forward and in reverse file order. Each xfail names its blocker in its `reason`:
-- no delivery call from a finished run, no "Email me run reports" control, no inbox route (TA6 c, d, TT7);
-- T-199 tracker page and CSV/xlsx export not built (TA7 TB7, TA9);
-- no schedule save route and no schedule card (TA8, TA14);
-- no review route or screen, the review runs from the CLI (TA5);
-- turning an intake source into DRAFT flows needs a model-backed video analysis (TA4 TV9, RC10);
-- a Test press inside the separate server process would start a real browser (TA3, `run=False`).
+`uv run pytest tests/acceptance` (fix cycle 3): 62 passed, 4 skipped, 2 xfailed (strict).
+- strict xfail (genuinely pending, both T-169): TA4 TV9 (DRAFT flows from an intake source need the model-backed video analysis), TA5 "Run review" button (no route; the review runs from `autotester ingest review`).
+- skip, deferred to production by D-092/D-093 (email TT8/TT9): TA6 outbox message, "Email me run reports" tick, raising transport.
+- skip, live walk only (runbook TA15): TA3 Test press inside the separate server process.
+- converted to real tests this cycle: TT7 `/inbox` (dev and admin list the run, tester does not), TS1 schedule save (subadmin 303 and owner stored, tester refused), TS5 schedule card, TA14 subadmin journey. The TA8 no-credentials row now assigns the subadmin to the project first (owner guard HO24 runs before the credential gate).
 Not rig-testable at all: TA16 (artifact missing) and TA17 (AT-891).

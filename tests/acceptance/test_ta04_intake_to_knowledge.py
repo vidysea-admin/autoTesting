@@ -1,8 +1,8 @@
 """TA4: intake becomes knowledge from both doors, with no approval step. `dev` uploads a zip (two
 videos, one document, one hostile member) and pastes a Drive link served by the fake DriveClient;
 every member is accounted for, each source carries uploader, time and origin, the same bytes add
-nothing, and `tester` / `pending` are refused. The FlowSpec-DRAFT and "Another possibility" rows
-are xfail(strict): they need a model-backed video analysis that has no offline route on master."""
+nothing, and `tester` / `pending` are refused. The FlowSpec-DRAFT and "Another possibility" row
+is xfail(strict) (T-169): it needs a model-backed video analysis with no offline route."""
 
 from __future__ import annotations
 

@@ -8,7 +8,6 @@ from __future__ import annotations
 import re
 import time
 
-import pytest
 from auth_harness import user_id
 from review_support import UPLOAD, grant_review, make_zip, review, upload, upload_video
 from rig import CRED_KEY, HTML, SLUG, World, email, press
@@ -118,9 +117,6 @@ def test_removing_the_last_admin_is_refused_with_a_reason(world: World) -> None:
     assert world.users["admin"].get("/admin/users", headers=HTML).status_code == 200
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "blocked on T-200: no schedule save route or schedule card on master (T-200 UI "
-    "HELD), so the subadmin journey and the stale-scheduler dead end cannot be driven"))
 def test_subadmin_schedules_and_sees_the_next_fire_times(world: World) -> None:
     resp = world.users["subadmin"].post(f"/projects/{SLUG}/schedule", data={
         "mode": "fixed", "fixed_at": "09:00", "timezone": "UTC"})

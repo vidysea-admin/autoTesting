@@ -1,17 +1,19 @@
 """TA8: a schedule fires once, through the same queue and launcher as the button, and feeds the
 same bug. The injected clock is the only time source. The schedule is set on the project file
-directly because the save route (`schedule.manage`, the schedule card) is not on master (those
-rows are xfail(strict)); the tick, the queue, the gate and the launcher are the repo's own."""
+directly for the tick rows; the save route and the schedule card (T-200) are driven through the app
+in TS1 and TS5. The tick, the queue, the gate and the launcher are the repo's own."""
 
 from __future__ import annotations
 
 from datetime import datetime
 
-import pytest
-from rig import HTML, SLUG, World, press
+from auth_harness import user_id
+from rig import HTML, SLUG, World, email, press
 from schedule_support import BEFORE, SLOT, schedule
 from team_run_fakes import runnable_project
 
+from autotester.auth.access import set_relation
+from autotester.schema.auth import ProjectRelation
 from autotester.schema.enums import Trigger
 from autotester.schema.run_queue import QueueEntry, QueueStatus
 from autotester.schema.team_enums import SlotOutcome
@@ -53,6 +55,7 @@ def test_a_scheduled_failure_and_a_button_failure_share_one_bug(world: World) ->
 
 def test_a_project_without_a_credential_pair_is_blocked_with_zero_requests(world: World) -> None:
     runnable_project(world.root, "nocred")
+    set_relation("nocred", user_id(email("subadmin")), ProjectRelation.ASSIGNED, True)
     schedule(world, "nocred")
     report = tick(world, SLOT, only="nocred")
     assert [r.outcome for r in report.records] == [SlotOutcome.BLOCKED_NO_CREDENTIALS]
@@ -69,21 +72,18 @@ def test_a_busy_project_is_skipped_overlap(world: World) -> None:
     assert world.counters.graded == 0
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "blocked on T-200: no schedule save route (`schedule.manage`, T-200 routes) on "
-    "master, so a tester's refusal and a subadmin's save cannot be driven through the "
-    "app"))
 def test_ts1_subadmin_saves_a_schedule_and_tester_cannot(world: World) -> None:
     body = {"mode": "fixed", "fixed_at": "09:00", "timezone": "UTC"}
     assert world.users["tester"].post(f"/projects/{SLUG}/schedule", data=body).status_code in (
         403, 404)
     assert world.users["subadmin"].post(f"/projects/{SLUG}/schedule", data=body).status_code == 303
+    saved = world.store().load_project()
+    assert saved is not None and saved.schedule is not None
+    assert saved.schedule.owner == email("subadmin")
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "blocked on T-200: the schedule card (next three fire times, skipped_overlap / "
-    "blocked_no_credentials / stale scheduler) is not built (T-200 UI HELD)"))
 def test_ts5_the_schedule_card_shows_the_slot_and_next_fire_times(world: World) -> None:
     schedule(world)
-    page = world.users["subadmin"].get(f"/projects/{SLUG}", headers=HTML).text
-    assert "Next runs" in page
+    resp = world.users["subadmin"].get(f"/projects/{SLUG}/schedule", headers=HTML)
+    assert resp.status_code == 200
+    assert "Next run" in resp.text and "every day at 09:00 UTC" in resp.text

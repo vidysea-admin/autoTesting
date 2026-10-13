@@ -1,7 +1,7 @@
 """TA7: a failure becomes one bug, closes only on evidence, reopens on the same key. The runs
 are real presses on the stub product; each finished run is applied with `bug_run.process_run`
 (nothing on master calls it from the run path yet, so the rig calls it exactly as the TB tests
-do). The tracker page row (TB7) is xfail(strict) until T-199 adds the page."""
+do). The tracker page row (TB7) runs as a real test."""
 
 from __future__ import annotations
 

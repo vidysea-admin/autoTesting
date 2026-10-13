@@ -2,10 +2,10 @@
 
 **Unit:** T-206 / G10 acceptance rig: `tests/acceptance/rig.py` and the per-criterion local tests TA1-TA14 that `qa/contracts/team-loop-acceptance.md` and `qa/evidence/t206-runbook.md` name. Prerequisite P of the runbook. This manifest does NOT close T-206 (live walks, TA16, TA17 and the close-out manifest `t206-g10-acceptance` remain).
 **Contract:** `qa/contracts/team-loop-acceptance.md` (TA1-TA14, TAI1-TAI6); reuses `tests/auth_harness.py`, `team_run_fakes.py`, `delivery_fakes.py`, `drive_fakes.py`, `video_review_fakes.py`, `run_approval_fixture.py`, `zip_fixtures.py`, `conftest.py::serve_dir`.
-**Branch / base:** `wave/t206-runbook` on 22eac602.
+**Branch / base:** `wave/t206-runbook` on 22eac602; local master merged in fix cycle 3.
 Tier: S (test files and evidence only, no `src/`)
 Dual check: no
-Fix cycle: 2
+Fix cycle: 3
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): the commit that adds this file (`git log -1 -- qa/manifests/t206-rig.md`)
 Status: ready-for-check
@@ -57,6 +57,14 @@ Drive client (`routes_intake.drive_factory`), the judge/browser/grader for a run
 | TA14 test_subadmin_schedules_and_sees_the_next_fire_times | T-200 (pending) |
 
 All are strict=True. TAI2: each must be removed when its task lands; none may remain at T-206 PASS.
+
+## Fix cycle 3 (local master merged: T-199 c/d, T-200 schedule UI, T-201 inbox, proposal review UI, hosting, model chain)
+
+- Became real tests (xfail removed): TT7 `/inbox` (dev and admin list the run, tester does not), TS1 schedule save and tester refusal (owner stored), TS5 schedule card (`/projects/{slug}/schedule`, "Next run"), TA14 subadmin journey. TA8 no-credentials row now assigns the subadmin to `nocred` (the owner guard, HO24, runs before the credential gate and gave `refused`).
+- Converted to skip (never pass here): TA6 outbox message, "Email me run reports" tick, raising transport (D-092/D-093, email deferred to production); TA3 server-process Test press (live walk TA15).
+- Strict xfail kept (2, genuinely pending): TA4 TV9 and TA5 "Run review" button, both T-169. TAI2: remove when T-169 lands.
+- Result forward and reverse file order: **62 passed, 4 skipped, 2 xfailed**. Ruff clean; doctor only the two pre-existing known-disputed warnings.
+- Runbook counts: READY 41, BLOCKED 12, DEFERRED 6 (was 36/19/4).
 
 ## For the checker to rule on
 

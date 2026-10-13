@@ -1,7 +1,7 @@
 """TA5: a pointer review of an intake source returns a traced confirm-list. The source arrives
 through the Add-videos route (registered by `dev`) and the review is run for `admin`; the model
 Provider is the recording fake. With the per-use approval missing the provider makes zero calls.
-The live-UI "Run review" button has no route on master, so that row is xfail(strict)."""
+The live-UI "Run review" button has no route on master, so that row is xfail(strict) (T-169)."""
 
 from __future__ import annotations
 
