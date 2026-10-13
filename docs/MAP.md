@@ -302,6 +302,7 @@
 | `ui/routes_product_map.py` | Product-map cards, recorded journeys, and guarded learned-frame serving. |
 | `ui/routes_project_access.py` | Who can reach one project: owner, assignees (project.assign) and shared-with |
 | `ui/routes_project_edit.py` | Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md. |
+| `ui/routes_proposals.py` | Review a project's proposed test cases from the UI: list, approve, prune, single or bulk. |
 | `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
 | `ui/routes_settings.py` | Global AI/API provider keys. Contract: qa/contracts/ui-settings.md US1-US4. |
