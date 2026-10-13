@@ -578,6 +578,7 @@
 | `scripts/check_no_secrets.py` | Scan files for any real value currently loaded in .env. Prints OK/LEAK only. |
 | `scripts/explore_proof.py` | Credential-free end-to-end proof of the explorer (Track B3). |
 | `scripts/flake_probe.py` | Measure a flaky test's real failure rate — and say how little N green runs prove. |
+| `scripts/install_windows_task.ps1` | (no description) |
 | `scripts/migrate_stamp_legacy_rubrics.py` | Stamp `Provenance` on legacy default rubrics, in stored project data. |
 | `scripts/migrate_url_patterns.py` | Repair `url_pattern` values mangled by AT-287/AT-294, in stored project data. |
 | `scripts/mutation_check.py` | Prove a unit's new tests are not vacuous, by killing them on purpose. |
@@ -586,4 +587,5 @@
 | `scripts/renumber_duplicate_issue_ids.py` | Give fresh ids to the LATER row of every duplicated id in qa/issues.jsonl. |
 | `scripts/run_pathlynks_first_cases.py` | T-050: 3 hand-written Pathlynks login cases (best/worst/edge), run headed and |
 | `scripts/score_video_issues.py` | Score AutoTester's issues against a human tester's sheet — T-136's acceptance. |
+| `scripts/serve_windows.ps1` | (no description) |
 <!-- /generated:scripts -->
