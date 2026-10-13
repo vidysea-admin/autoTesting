@@ -5,10 +5,10 @@
 **Branch / base:** `wave/t201b-test-button`.
 Tier: L (auth, outward-facing run)
 Dual check: required (TT1, TT5, TT6)
-Fix cycle: 1
+Fix cycle: 2
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): 4566ae12
-Status: ready-for-check
+Status: checked-PASS
 
 ## What changed
 
@@ -39,3 +39,10 @@ Status: ready-for-check
 - Merged origin/master (conflicts in cli_subapps, routes_runs, run_queue, golden, hook test: kept both `auth` and `schedule`, and both `slot_key` and `via`); regenerated MAP/SNAPSHOT. Trimmed one comment line in `run_launcher.py` to stay under the 300-line doctor limit.
 - TT3 not done, deliberate: `requested_by` stores the email only. Storing the user id needs a new id field on `QueueEntry` and `Run` plus launcher plumbing (schema change), not small. Report header "Started by <email>" unchanged. Left for the checker/orchestrator to decide.
 - Per-file results: auth escalation + six `test_team_run_*` files 54 passed; `test_cli_subapp_hook` 4 passed; ruff clean; doctor clean.
+
+## Fix cycle 2
+
+- TT3 (r2.a FAIL): added optional `requested_by_id: int | None` to `Run` and `QueueEntry`; `routes_team_run.press_test` fills it from the session (`who.user_id`); `RunQueue.submit`, `_run_queued` and `launch_run` carry it onto the saved `Run`. The status page and report header show "(user #N)" beside the email. A pre-change `run.json` still loads (field optional, golden test asserts `None`).
+- `tests/test_team_run_attribution.py` now asserts two different ids on queue entry and `Run`, the id in the report header, and the id surviving a forged body; `tests/team_run_fakes.py` FakeQueue accepts the field.
+- r1 AU14 defect stays fixed (`test_ui_auth_escalation.py`).
+- Scoped results: 94 passed (six team_run files, auth escalation, cli subapp hook, run_queue, run_launcher, ui_runs_queue); ruff clean; doctor: only 3 pre-existing dangling-citation hits in qa/verdicts/t196-citation.* (untouched).

@@ -57,8 +57,9 @@ def started_by(run: Run | None) -> str:
         return ""
     how = " with the Test button" if run.via is RunVia.TEAM_BUTTON else ""
     when = f" at {run.requested_at:%Y-%m-%d %H:%M} UTC" if run.requested_at else ""
+    uid = f" (user #{run.requested_by_id})" if run.requested_by_id is not None else ""
     return (f"<p class='subtitle'>Started by <strong>{escape(run.requested_by)}</strong>"
-            f"{how}{when}</p>")
+            f"{uid}{how}{when}</p>")
 
 
 def status_page(slug: str, entry: QueueEntry) -> str:
@@ -71,7 +72,8 @@ def status_page(slug: str, entry: QueueEntry) -> str:
     why = (f"<p class='meta'>Reason: {escape(entry.reason)}</p>" if entry.reason else "")
     report = (f"<p><a class='btn btn-primary' href='/projects/{safe_slug}/runs/{run_id}'>"
               "Open the report</a></p>" if entry.status is QueueStatus.DONE else "")
-    who = (f" by <strong>{escape(entry.requested_by)}</strong>" if entry.requested_by else "")
+    uid = f" (user #{entry.requested_by_id})" if entry.requested_by_id is not None else ""
+    who = (f" by <strong>{escape(entry.requested_by)}</strong>{uid}" if entry.requested_by else "")
     body = (
         theme.breadcrumb(("Projects", "/"), (safe_slug, f"/projects/{safe_slug}"),
                          ("Test", None))

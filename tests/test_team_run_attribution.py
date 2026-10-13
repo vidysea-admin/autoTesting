@@ -48,15 +48,21 @@ def test_two_teammates_each_get_their_own_name_on_entry_run_and_report(world) ->
     assert first != second
     entries = {e.id: e for e in get_queue().snapshot("alpha")}
     assert entries[first].requested_by == "dev@team.test"
+    ids = {"dev@team.test": user_id("dev@team.test"), "admin@team.test": user_id("admin@team.test")}
+    assert ids["dev@team.test"] != ids["admin@team.test"]
+    assert entries[first].requested_by_id == ids["dev@team.test"]
+    assert entries[second].requested_by_id == ids["admin@team.test"]
     assert entries[second].requested_by == "admin@team.test"
     for run_id, who in ((first, "dev@team.test"), (second, "admin@team.test")):
         run = store.load_run(run_id)
         assert run is not None
-        assert (run.requested_by, run.via, run.trigger) == (who, RunVia.TEAM_BUTTON, Trigger.MANUAL)
-        assert run.requested_at is not None
+        assert (run.requested_by, run.via, run.trigger) == (
+            who, RunVia.TEAM_BUTTON, Trigger.MANUAL)
+        assert run.requested_at is not None and run.requested_by_id == ids[who]
         assert entries[run_id].via is RunVia.TEAM_BUTTON and entries[run_id].trigger == "button"
         page = users["admin"].get(f"/projects/alpha/runs/{run_id}").text
-        assert f"Started by <strong>{who}</strong>" in page and "with the Test button" in page
+        assert f"Started by <strong>{who}</strong> (user #{ids[who]})" in page
+        assert "with the Test button" in page
 
 
 def test_a_forged_requested_by_in_the_query_or_body_is_ignored(world) -> None:
@@ -64,13 +70,15 @@ def test_a_forged_requested_by_in_the_query_or_body_is_ignored(world) -> None:
     run_id = _press(users["dev"], **FORGED)
     run = store.load_run(run_id)
     assert run is not None and run.requested_by == "dev@team.test"
+    assert run.requested_by_id == user_id("dev@team.test")
     assert get_queue().snapshot("alpha")[0].requested_by == "dev@team.test"
     assert "mallory" not in users["dev"].get(f"/projects/alpha/runs/{run_id}").text
 
 
 def test_a_run_json_written_before_this_unit_still_loads() -> None:
     run = Run.model_validate_json(GOLDEN.read_text(encoding="utf-8"))
-    assert run.requested_by is None and run.requested_at is None and run.via is None
+    assert (run.requested_by, run.requested_by_id) == (None, None)
+    assert run.requested_at is None and run.via is None
     assert run.trigger is Trigger.MANUAL
 
 

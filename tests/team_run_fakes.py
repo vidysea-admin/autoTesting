@@ -120,11 +120,11 @@ class FakeQueue:
 
     def submit(self, project: str, *, requested_by: str | None = None, trigger: str = "button",
                run_id: str | None = None, priorities=None, via: RunVia | None = None,
-               slot_key: str | None = None) -> QueueEntry:
+               slot_key: str | None = None, requested_by_id: int | None = None) -> QueueEntry:
         self.submitted.append(Submitted(project, requested_by, via, trigger))
         entry = QueueEntry(id=run_id or f"run-fake{len(self.entries)}", project=project,
-                           requested_by=requested_by, trigger=trigger, via=via,
-                           enqueued_at=datetime.now(UTC))
+                           requested_by=requested_by, requested_by_id=requested_by_id,
+                           trigger=trigger, via=via, enqueued_at=datetime.now(UTC))
         self.entries.append(entry)
         return self.get(entry.id)
 
