@@ -15,10 +15,13 @@ from autotester.ui.theme_style import PAGE_STYLE
 _BRAND = ("<header class='topbar'><a class='brand' href='/'><span class='brand-mark'>AT</span>"
           "<span class='brand-name'>AutoTester</span></a></header>")
 
+# AU16: /favicon.ico is not in the closed public set, so a signed-out page must not request it.
+_ICON = "<link rel='icon' href='data:,'>"
+
 
 def auth_page(title: str, body: str) -> str:
     """`title` and `body` must already be escaped by the caller."""
-    return (f"<!doctype html><title>{title} — AutoTester</title>{PAGE_STYLE}{_BRAND}"
+    return (f"<!doctype html><title>{title} — AutoTester</title>{_ICON}{PAGE_STYLE}{_BRAND}"
             f"<div class='layout'><main style='max-width:440px;margin:40px auto'>"
             f"{body}</main></div>")
 
