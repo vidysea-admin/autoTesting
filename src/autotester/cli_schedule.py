@@ -15,22 +15,17 @@ from __future__ import annotations
 
 import os
 from datetime import UTC, datetime
-from enum import StrEnum
 from typing import Annotated
 
 import typer
 
+from autotester.cli_run import OutputFormat
 from autotester.schema.run_queue import QueueEntry
 from autotester.schema.schedule import TickReport
 from autotester.stages.schedule_wiring import LazyQueue, NullQueue, Submitter, tick_all
 from autotester.stages.scheduler import grace_from_env
 
 app = typer.Typer(help="The scheduler: run the tests that are due.")
-
-
-class OutputFormat(StrEnum):
-    TEXT = "text"
-    JSON = "json"
 
 
 def _now() -> datetime:
