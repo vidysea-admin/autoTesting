@@ -42,3 +42,15 @@ Probed on a 13-row oracle so the 20% distinctive-token cap is realistic.
 - NEW over-match (blocking): same screen, different specific noun. Item "profile photo upload fails silently without message" matched the row "profile email update fails silently without message" (B5). The distinguishing noun (email vs photo) is not required: 0.6 coverage is met by the generic remainder (fails, silently, without, message).
 - Fix: require the row's most specific token (rarest across rows, e.g. "email") to appear in the item, or require coverage 0.8 / >=3 distinctive tokens when the row's hint is short; add the photo-vs-email pair as a negative test.
 - Scoped tests 26 passed, ruff clean, doctor clean, merge-tree clean.
+
+## Cycle 5 (head 7866bf29)
+
+Cycle checked: 5
+Verdict: PASS
+
+- Photo-vs-email probe: now unmatched. Login-vs-checkout, profile-duplicate, all "works correctly" probes: unmatched.
+- Still matched (all restate the row's own defect words on the same screen; none is a different bug): history-list/placeholder, checkout retry/charge, duplicate charge amount, phone field invalid-value, plus two new probes that quote the row's rarest token and most of its hint (B12 unread/oldest-first on Messages; B5 email update fails silently on Profile).
+- True matches: exact, reordered paraphrase, near-duplicate, and "email update fails to save silently without message" all match. Recall is not trivially 0.
+- Misses are conservative: synonym for the rarest token ("mail change", "double debit") does not match; that is under-matching, acceptable and disclosed ("conservative, untuned"). The human override remains for these.
+- Scoped tests 28 passed, ruff clean, doctor clean, merge-tree clean.
+- Residual (non-blocking): an item that restates a row's wording while describing a different instance would still match; keep the thresholds recorded in recall.json and spot-check live matches before quoting recall.
