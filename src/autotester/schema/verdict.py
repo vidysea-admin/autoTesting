@@ -41,6 +41,11 @@ class Rubric(Artifact):
     case_id: str | None = None
     criteria: list[Criterion] = Field(default_factory=list)
     no_fire: list[str] = Field(default_factory=list)
+    expects_error: bool = Field(
+        default=False,
+        description="The case's own expected outcome is an error / validation message / "
+                    "rejection (a worst or edge case). Lets the note guard accept defect words "
+                    "that the note says were expected; never relaxes it for anything else.")
     feedback_format: str = Field(
         default="Line 1: `Criteria N/M met.` Then one bullet per failure: "
         "`<criterion id> — <what is wrong>. <what to do>.`"

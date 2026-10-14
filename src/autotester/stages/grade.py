@@ -218,7 +218,7 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
                          note=f"self-consistency check failed: {problem}", **counts)
     shortfall = _shortfall(**counts)
     final, note = _assertion_guard(result, judgment.result, judgment.scoreboard, judgment.note)
-    final, note = _defect_decision(judgment, final, note)
+    final, note = _defect_decision(judgment, final, note, rubric.expects_error)
     return _verdict(run_id, result, rubric, verdict_result=final,
                      provider_id=judge.id,
                      scoreboard=_joined(shortfall, judgment.scoreboard) or "",
@@ -233,8 +233,8 @@ DEFECT_CONTRADICTION = (
 )
 
 
-def _defect_decision(judgment: Judgment, final: Result, note: str | None
-                     ) -> tuple[Result, str | None]:
+def _defect_decision(judgment: Judgment, final: Result, note: str | None,
+                     expects_error: bool = False) -> tuple[Result, str | None]:
     """The judge's structured `defect_observed` decides a PASS; the note guard is the backstop.
 
     PASS stands only if the judge said defect_observed=false AND the note guard finds no
@@ -244,11 +244,12 @@ def _defect_decision(judgment: Judgment, final: Result, note: str | None
     if final is not Result.PASS:
         return final, note
     if judgment.defect_observed is None:
-        return note_guard(final, note)
+        return note_guard(final, note, expects_error)
     if judgment.defect_observed:
         return Result.INCONCLUSIVE, _joined(DEFECT_CONTRADICTION.format(
             summary=judgment.defect_summary or "no summary"), note)
-    return note_guard(final, note)  # defect_observed=false never overrides a defect note
+    # defect_observed=false never overrides a defect note
+    return note_guard(final, note, expects_error)
 
 
 def _shortfall(*, images_requested: int, images_seen: int) -> str | None:

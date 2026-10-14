@@ -25,6 +25,7 @@ from autotester.schema.run import Evidence, RawResult
 from autotester.schema.verdict import Criterion, Rubric, Verdict
 from autotester.stages.agent_actuator import FallbackActuator
 from autotester.stages.agent_loop import AgentLoopResult, run_with_fallback
+from autotester.stages.case_expectation import expects_error
 from autotester.stages.execute import run_case
 from autotester.stages.grade import grade
 from autotester.stages.script_replay import Executor, run_scripted
@@ -60,7 +61,8 @@ def default_rubric(case: Case, rubric_id: str) -> Rubric:
 
     Stamps `provenance.note` with the exact claim it was built from, which is
     what makes `is_stale_default` below possible (AT-059)."""
-    return _rubric_for_claim(claim_of(case), case.id, rubric_id)
+    rubric = _rubric_for_claim(claim_of(case), case.id, rubric_id)
+    return rubric.model_copy(update={"expects_error": expects_error(case)})
 
 
 def is_stale_default(rubric: Rubric, case: Case) -> bool:

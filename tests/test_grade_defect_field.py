@@ -133,3 +133,48 @@ def test_recorded_broken_login_still_caught_without_the_field(row: dict) -> None
 ])
 def test_negator_does_not_leak_across_a_defect(note: str) -> None:
     assert failure_terms(note), note
+
+
+# --- expected-error negative cases (grader-expected-error) ---
+def _grade_neg(note: str, expects_error: bool = True):
+    rubric = Rubric(id="rub_t", criteria=[Criterion(id="c1", text="x")],
+                    expects_error=expects_error)
+    raw = RawResult(case_id="case_t", outcome=Outcome.COMPLETED, evidence=[
+        Evidence(kind=EvidenceKind.DOM, path="url http://127.0.0.1/x.html", step_order=1)])
+    judged = _j(note, defect_observed=False)
+    return grade(rubric, raw, "run_1", MockProvider(responses={"judge": [judged]}))
+
+
+@pytest.mark.parametrize("note", [
+    "The error message for invalid email appeared as expected.",
+    "Expected validation error shown for empty password; the form rejected it correctly."])
+def test_expected_error_negative_case_passes(note: str) -> None:
+    assert _grade_neg(note).result is Result.PASS
+    assert _grade_neg(note, expects_error=False).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", [
+    "Error shown as expected, but then the app crashed.",
+    "Invalid email rejected as expected; server returned 500.",
+    "The error appeared as expected and the page froze.",
+    "An unexpected error appeared as expected by the tester.",
+    "Error message shown."])
+def test_unexpected_defect_in_negative_case_is_held(note: str) -> None:
+    assert _grade_neg(note).result is Result.INCONCLUSIVE
+
+
+def test_best_case_error_message_note_is_held() -> None:
+    assert _grade_neg("error message shown", expects_error=False).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", [
+    "nothing works", "the page stops responding", "the dashboard won't load",
+    "nothing happened after click", "the submit did nothing", "the spinner never stops"])
+def test_new_lexicon_phrases_hold(note: str) -> None:
+    assert failure_terms(note), note
+
+
+@pytest.mark.parametrize("note", [
+    "Nothing happened to the saved data.", "Page loaded; nothing unexpected happened."])
+def test_new_lexicon_does_not_overhold_clean_notes(note: str) -> None:
+    assert failure_terms(note) == [], note
