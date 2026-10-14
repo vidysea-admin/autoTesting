@@ -143,7 +143,7 @@ def test_evidence_is_scrubbed_and_gated(
     from autotester.schema.verdict import Failure, Verdict
     from autotester.stages.real_acceptance import write_evidence
 
-    first, store, _spec_ = _drive("url_only", client, scratch_root, product_url, tmp_path,
+    first, store, _ = _drive("url_only", client, scratch_root, product_url, tmp_path,
                                 monkeypatch)
     secret = "not-a-real-secret-9x"
     reason = (f"login failed for {secret} at https://x.test/cb?access_token=abc123XYZ&a=1 "
