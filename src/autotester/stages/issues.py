@@ -25,7 +25,7 @@ from pathlib import Path
 
 from openpyxl import Workbook
 
-from autotester.core.excel import autosize_columns
+from autotester.core.excel import append_row, autosize_columns
 from autotester.schema.analysis import AnalysedIssue, VideoAnalysis
 from autotester.schema.case import Case
 from autotester.schema.enums import CaseClass, CaseKind, IssueOrigin
@@ -248,9 +248,9 @@ def export_issues_excel(issues: list[Issue], out_path: Path) -> Path:
     workbook = Workbook()
     sheet = workbook.active
     sheet.title = "All issues"
-    sheet.append(ISSUE_COLUMNS)
+    append_row(sheet, ISSUE_COLUMNS)
     for issue in sorted(issues, key=lambda i: (i.recording_label, i.at_s)):
-        sheet.append(issue_row(issue))
+        append_row(sheet, issue_row(issue))
     autosize_columns(sheet)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
