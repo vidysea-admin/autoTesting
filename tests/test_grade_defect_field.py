@@ -147,7 +147,7 @@ def _grade_neg(note: str, expects_error: bool = True):
 
 @pytest.mark.parametrize("note", [
     "The error message for invalid email appeared as expected.",
-    "Expected validation error shown for empty password; the form rejected it correctly."])
+    "Expected validation error shown for empty password; the form rejected it as expected."])
 def test_expected_error_negative_case_passes(note: str) -> None:
     assert _grade_neg(note).result is Result.PASS
     assert _grade_neg(note, expects_error=False).result is Result.INCONCLUSIVE
@@ -178,3 +178,41 @@ def test_new_lexicon_phrases_hold(note: str) -> None:
     "Nothing happened to the saved data.", "Page loaded; nothing unexpected happened."])
 def test_new_lexicon_does_not_overhold_clean_notes(note: str) -> None:
     assert failure_terms(note) == [], note
+
+
+@pytest.mark.parametrize("note", [
+    "invalid total shown correctly formatted",
+    "wrong amount charged correctly",
+    "denied access properly but data leaked",
+    "Error shown as expected but data leaked.",
+    "wrong amount charged as expected",
+    "Invalid total shown as expected."])
+def test_cycle2_false_pass_phrases_are_held(note: str) -> None:
+    assert failure_terms(note, expects_error=True), note
+    assert _grade_neg(note).result is Result.INCONCLUSIVE
+
+
+def test_cue_must_be_adjacent_to_the_term() -> None:
+    far = "Error shown. Then a long list of other unrelated things happened as expected."
+    assert failure_terms(far, expects_error=True)
+    assert failure_terms("Error one two three four five six seven as expected.", expects_error=True)
+
+
+def test_best_case_login_failed_as_expected_is_held() -> None:
+    note = "login failed with invalid password error as expected"
+    assert _grade_neg(note, expects_error=False).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("title, expected", [
+    ("User should not see an error when saving", False),
+    ("Never shows an error on valid input", False),
+    ("No validation warning without a typo", False),
+    ("Empty email shows an error", True),
+    ("Rejects invalid password", True)])
+def test_expects_error_respects_negation(title: str, expected: bool) -> None:
+    from autotester.schema.case import Case
+    from autotester.schema.enums import CaseClass, CaseKind
+    from autotester.stages.case_expectation import expects_error
+    case = Case(project="p", flow_id="f", kind=CaseKind.WORST, case_class=CaseClass.INPUT_EMPTY,
+                title=title)
+    assert expects_error(case) is expected

@@ -3,7 +3,7 @@
 **Unit:** expected-error exemption for the note guard (negative cases held INCONCLUSIVE since judge-defect-field cycle 3)
 **Branch:** wave/grader-expected-error (from 138dbc2a; grader-lexicon now on master 93d6eb1a)
 **Status:** ready-for-check
-**Fix cycle:** 1
+**Fix cycle:** 2
 
 ## Built
 - `schema/verdict.py`: `Rubric.expects_error: bool = False` (no Case field existed that grade can see; grade only gets the Rubric).
@@ -14,3 +14,9 @@
 
 ## Tests
 `tests/test_grade_defect_field.py`: expected-error negative passes (and is held when flag false); crash/500/froze/"unexpected error"/bare "Error message shown" held; best-case "error message shown" held; 6 new phrases hold; "Nothing happened to the saved data" stays clean; 7 real fixture notes unchanged. Grade/schema/golden/pipeline/doctor tests 273 passed, ruff clean, doctor 0 violations (docs/MAP.md regenerated).
+
+## Fix cycle 2 (verdict 87b77815)
+- Cues are now only "expected" / "as intended" / "as designed" (correctly/properly dropped), and must sit within 6 words of the exempted term (4 was too tight for the canonical "error message for invalid email appeared as expected").
+- Exempt terms: error(s), denied, reject*, and "invalid" only before an input noun (email, password, ...). "wrong" and "incorrect" never exempt. "leak*" added to the lexicon.
+- `case_expectation.expects_error` ignores keywords negated in their clause ("should not see an error").
+- Tests added for every phrase in findings (b) and (c) plus the best-case "login failed ... as expected" hold.

@@ -16,6 +16,10 @@ _ERROR_EXPECTED = re.compile(
     re.IGNORECASE)
 
 
+_NEGATION = re.compile(r"\b(?:not|never|no|without|n't|cannot|shouldn't|doesn't|won't)\b|n't\b",
+                       re.IGNORECASE)
+
+
 def expects_error(case: Case) -> bool:
     """True when a worst/edge case's own stated outcome is an error, validation message or
     rejection (its rationale, title or a step's expected visible text says so)."""
@@ -23,4 +27,11 @@ def expects_error(case: Case) -> bool:
         return False
     text = [case.rationale or "", case.title]
     text += [t for step in case.steps for t in step.expected.visible_text]
-    return bool(_ERROR_EXPECTED.search(" ".join(text)))
+    return any(not _negated(m) for m in _ERROR_EXPECTED.finditer(" ".join(text)))
+
+
+def _negated(match: re.Match[str]) -> bool:
+    """True when the keyword is negated in its clause ("should not see an error")."""
+    before = match.string[:match.start()]
+    clause = re.split(r"[.;:!?\n]", before)[-1]
+    return bool(_NEGATION.search(clause))

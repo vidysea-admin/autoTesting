@@ -35,7 +35,7 @@ _DEFECT_LEXICON = re.compile(
     r"unsuccessful\w*|fro(?:ze|zen)|no\s+longer\s+works?|stopped\s+working|"
     r"(?:does\s+not|doesn't)\s+work|block(?:ed|s)?|stuck|hang(?:s|ing)?|hung|freez\w*|could\s?n[o']t|"
     r"time[ds]?[ -]out|timeouts?|never\s+(?:appear|load|show|render|complet|finish)\w*|"
-    r"nothing\s+works?|stop(?:s|ped)?\s+responding|won.t\s+load|"
+    r"leak\w*|nothing\s+works?|stop(?:s|ped)?\s+responding|won.t\s+load|"
     r"nothing\s+happened(?!\s+to\b)|did\s+nothing|spinner\s+never\s+stops?)\b"
     r"|(?<![\w$.,])(?:500|404)(?![\w%])",
     re.IGNORECASE)
@@ -70,10 +70,15 @@ _CLAUSE_BREAK = re.compile(r"[.;:!?\n]")
 # T-169 follow-up: a negative / worst case whose OWN expected outcome is an error. Only these words
 # are exempted, only in a clause that also says the outcome was the expected one. A crash, 500,
 # freeze or "unexpected" anything is never exempt, so an unexpected defect still holds.
-_EXPECTED_ERROR_TERMS = frozenset({"error", "errors", "invalid", "incorrect", "wrong", "denied",
+_EXPECTED_ERROR_TERMS = frozenset({"error", "errors", "invalid", "denied",
                                    "reject", "rejects", "rejected", "rejection", "rejections"})
-_EXPECTED_CUE = re.compile(r"\b(?:expected|as\s+(?:intended|designed)|correctly|properly)\b",
-                           re.IGNORECASE)
+# "invalid" is exempt only when it qualifies an input ("invalid email"), not a result.
+_INVALID_INPUTS = frozenset({"email", "password", "input", "credentials", "username", "format",
+                             "entry", "phone", "date", "login", "characters", "address", "code"})
+# Only an explicit statement that the outcome was the expected one; "correctly" / "properly" say
+# nothing about whether the error was wanted. The cue must sit within _CUE_WORDS of the term.
+_EXPECTED_CUE = re.compile(r"\b(?:expected|as\s+(?:intended|designed))\b", re.IGNORECASE)
+_CUE_WORDS = 6
 _UNEXPECTED = re.compile(r"\bunexpected\w*|\bunintended\b", re.IGNORECASE)
 
 NOTE_DISAGREES = (
@@ -90,7 +95,18 @@ def _expected_error(note: str, start: int, term: str) -> bool:
     begin = max((m.end() for m in _CLAUSE_BREAK.finditer(note[:start])), default=0)
     stop = _CLAUSE_BREAK.search(note, start)
     clause = note[begin:stop.start() if stop else len(note)]
-    return bool(_EXPECTED_CUE.search(clause)) and not _UNEXPECTED.search(clause)
+    if _UNEXPECTED.search(clause):
+        return False
+    rel = start - begin
+    if term == "invalid":
+        following = re.match(r"\s*(\w+)", clause[rel + len(term):])
+        if not following or following.group(1).lower() not in _INVALID_INPUTS:
+            return False
+    for cue in _EXPECTED_CUE.finditer(clause):
+        gap = clause[rel + len(term):cue.start()] if cue.start() >= rel else clause[cue.end():rel]
+        if len(gap.split()) <= _CUE_WORDS:
+            return True
+    return False
 
 
 def failure_terms(note: str | None, expects_error: bool = False) -> list[str]:
