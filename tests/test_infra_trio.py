@@ -11,9 +11,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-HOST_WIDE = re.compile(r"/IMs|Stop-Processs+-Name|bpkillb|bkillallb"
-                       r"|Get-Processs+(python|uv)",
-                       re.IGNORECASE)
+HOST_WIDE = re.compile(r"/IM\s|Stop-Process\s+-Name|pkill|killall"
+                       r"|Get-Process\s+(python|uv)", re.IGNORECASE)
 
 
 def test_no_host_wide_kill_in_shipped_code():
