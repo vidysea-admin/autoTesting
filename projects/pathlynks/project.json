@@ -7,7 +7,7 @@
   "allowed_domains": [
     "pathlynks.vidysea.com"
   ],
-  "write_policy": "read_only",
+  "write_policy": "allow_writes",
   "production": true,
   "max_parallel": 1,
   "permitted_surface": [],
