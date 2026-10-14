@@ -74,6 +74,7 @@ class CaseLine(BaseModel):
     case_id: str
     title: str
     flow_id: str | None = None
+    provenance: str | None = Field(default=None, description="D-097: unreviewed DRAFT flow")
     result: str
     outcome: str | None = None
     scoreboard: str = ""

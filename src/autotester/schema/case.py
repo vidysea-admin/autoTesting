@@ -40,6 +40,11 @@ class Case(Artifact):
         description="T-190/PU1: advisory UserPersona override for this case, by id. By-reference "
                     "like rubric_ref; not in compute_id and never read by grading (PU4)",
     )
+    provenance: str | None = Field(
+        default=None,
+        description="D-097: set when the case came from an unreviewed DRAFT flow "
+                    "(source_id + 'from unreviewed DRAFT flow'); not in compute_id",
+    )
     status: CaseStatus = CaseStatus.PROPOSED
     priority: CasePriority = Field(default="p2", description="Legacy defaults to p2; pinned is p0")
     pinned: bool = Field(
@@ -91,6 +96,7 @@ class Case(Artifact):
             rubric_ref=self.rubric_ref, script_ref=self.script_ref, status=self.status,
             user_persona_ref=self.user_persona_ref,
             priority=self.priority, pinned=self.pinned, pinned_issue_id=self.pinned_issue_id,
+            provenance=self.provenance,
         )
 
 

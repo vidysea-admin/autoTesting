@@ -189,9 +189,8 @@ def _case_section(
     ux=(None, None),
 ) -> str:
     run_dir = store.paths.run_dir(run_id)
-    # AT-609: `Case.title` (<h2>) and `Evidence.label` (<figcaption>) are operator free text
-    # with no upstream guarantee against a pasted raw secret -- scrubbed here, the same
-    # last-stop rule the repro steps get, before `escape` sees them.
+    # AT-609: `Case.title` and `Evidence.label` are operator free text: scrubbed here, then escaped.
+    note = escape(f" [{case.provenance}]") if case and case.provenance else ""  # D-097
     title = escape(redactor.scrub(case.title) if case else result.case_id)
     color = _BADGE_COLOR.get(verdict.result.value if verdict else "", "#6b7280")
     badge_text = escape(verdict.result.value) if verdict else escape(result.outcome.value)
@@ -210,7 +209,7 @@ def _case_section(
     return (
         f"<section><h2>{title} "
         f"<span class='badge' style='background:{color}'>{badge_text}</span></h2>"
-        f"<p class='meta'>{scoreboard}{error}</p>"
+        f"<p class='meta'>{scoreboard}{error}{note}</p>"
         f"{detail}{ux_findings_html(ux, result.case_id, redactor)}"
         f"<div class='shots'>{figures or no_shots}</div>"
         f"{video_html}"

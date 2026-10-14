@@ -186,7 +186,8 @@ def load_workflows(store: ProjectStore, run_id: str) -> WorkflowSection:
         detail = _needs_developer_detail(verdict)
         lines.append(CaseLine(
             case_id=case_id, title=case.title if case else case_id,
-            flow_id=case.flow_id if case else None, **_status(result, verdict),
+            flow_id=case.flow_id if case else None,
+            provenance=case.provenance if case else None, **_status(result, verdict),
             failures=[FailureLine(criterion_id=c, reason=r, fix_hint=h)
                       for c, r, h in _failure_rows(verdict)] if detail else [],
             repro_steps=_repro_steps(case, redactor) if detail else []))

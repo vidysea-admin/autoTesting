@@ -2,30 +2,17 @@
 
 Contract: qa/contracts/ui.md (U1-U6), review-gate R1-R3, expand.md X1.
 
-**AT-241 — the cold start was a dead end.** A freshly onboarded product's only
-route to being runnable was hand-writing cases one at a time. INGEST was
-CLI-only, the review gate was CLI-only, and EXPAND — the feature this repo's own
-ledger calls "the differentiator" — had no entry point at all. So T-100's
-acceptance note, *"full onboarding → report without touching the CLI"*, was
-false, and the business-truth campaign proved it by driving the real UI.
+**AT-241** closed the cold-start dead end (INGEST, review and EXPAND were CLI-only).
+D-097: a reconciled DRAFT flowspec can Generate too; its cases are marked unreviewed.
 
-Three surfaces close that loop:
-
-* **the review page** — what the system thinks it learned, and the gate, which
-  swings **both ways**. A review page with only an Approve button is a rubber
-  stamp, not a gate.
-* **Generate cases** — EXPAND's button. Persisting stays with the caller because
-  expand.md's no-fire list puts it there, so this route saves what it gets.
-* **the request queue** — the first place the product's "ask me for a video"
-  promise is visible to the human it is asking. A `VideoRequest` written to a
-  file nothing renders is indistinguishable from not asking.
-
-Plain server-rendered HTML, no JS framework (ui.md's no-fire list), matching
-`routes_cases.py`.
+Three surfaces: the review page (a gate that swings both ways, not a rubber stamp), the
+Generate cases button (this route saves what `expand` returns), and the request queue (the
+"ask me for a video" promise made visible). Plain server-rendered HTML, like `routes_cases.py`.
 """
 
 from __future__ import annotations
 
+from contextlib import suppress
 from html import escape
 
 from fastapi import APIRouter, Form, HTTPException
@@ -121,6 +108,13 @@ def _learned_card(spec, name: str) -> str:
         title=f"What AutoTester learned about {name}")
 
 
+def _can_generate(spec) -> bool:
+    with suppress(review_stage.FlowSpecNotReviewed):
+        review_stage.require_generatable(spec)
+        return True
+    return False
+
+
 def _gate_cards(slug: str, spec) -> str:
     """The review gate, and -- only once approved -- the Generate button.
 
@@ -139,11 +133,12 @@ def _gate_cards(slug: str, spec) -> str:
       </form>"""
 
     body = theme.card(gate, title="Review gate")
-    if spec.review.status is ReviewStatus.APPROVED:
+    if _can_generate(spec):
         body += theme.card(
             f"<form method='post' action='/projects/{escape(slug)}/cases/generate'>"
             f"<button type='submit'>Generate cases</button></form>"
-            f"<p class='muted'>Covers best / worst / edge for every flow above.</p>",
+            "<p class='muted'>Covers best / worst / edge for every flow above."
+            f"{'' if spec.review.status is ReviewStatus.APPROVED else ' Cases are marked.'}</p>",
             title="Generate test cases")
     return body
 
@@ -227,16 +222,16 @@ def generate_cases(slug: str):
             slug, "Nothing to generate from",
             f"{project.name} has no flowspec yet, so there are no flows to expand.",
             _link(f"/projects/{slug}/sources", "Add a recording"))
-    if spec.review.status is not ReviewStatus.APPROVED:
+    if not _can_generate(spec):
         return _refusal(
-            slug, "The flowspec is not approved yet",
-            f"Generating from an unreviewed flowspec would build cases on top of "
-            f"whatever the model guessed. It is currently {spec.review.status.value}.",
+            slug, "The flowspec cannot generate cases yet",
+            f"It is {spec.review.status.value}: sent back, or a flow is not reconciled.",
             _link(f"/projects/{slug}/flowspec", "Review it"))
 
     try:
-        store.stage_case_proposals(propose_cases(spec))
-        store.preflight_case_proposals(spec)
+        if spec.review.status is ReviewStatus.APPROVED:
+            store.stage_case_proposals(propose_cases(spec))
+            store.preflight_case_proposals(spec)
     except ValueError as exc:
         return _refusal(
             slug, "Case proposals need human review", str(exc),

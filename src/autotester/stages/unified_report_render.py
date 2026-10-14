@@ -104,7 +104,8 @@ def _case(line: CaseLine) -> str:
     head = (f"<h3>{_e(line.title)} <code>{_e(line.case_id)}</code> "
             f"<span class='{tone}'>{_e(line.result)}</span></h3>"
             f"<p class='muted'>flow {_e(line.flow_id or 'unknown')} · executor outcome "
-            f"{_e(line.outcome or 'none')} {_e(line.scoreboard)}</p>")
+            f"{_e(line.outcome or 'none')} {_e(line.scoreboard)}"
+            f"{' · ' + _e(line.provenance) if line.provenance else ''}</p>")
     why = f"<p class='warn'>{_e(line.reason)}</p>" if line.reason else ""
     fails = "".join(
         f"<li><b>{_e(f.criterion_id)}</b>: {_e(f.reason)}"

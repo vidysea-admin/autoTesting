@@ -48,3 +48,32 @@ def require_reviewed(spec: FlowSpec) -> None:
             f"FlowSpec for '{spec.project}' is {spec.review.status.value}, not approved — "
             "run `autotester flowspec approve <project> --by <name>` before expanding cases"
         )
+
+
+DRAFT_PROVENANCE = "from unreviewed DRAFT flow"
+
+
+def is_unreviewed_draft(spec: FlowSpec) -> bool:
+    """A generatable spec that no human approved (D-097): cases from it carry provenance."""
+    return spec.review.status is not ReviewStatus.APPROVED
+
+
+def require_generatable(spec: FlowSpec) -> None:
+    """The case-generation gate (D-097, supersedes the review requirement for source-derived
+    DRAFT flows). APPROVED passes; DRAFT passes once every flow is reconciled (`kind` set);
+    NEEDS_EDIT (a human said "fix this") and an unreconciled flow still raise. Never reads
+    the status to choose, drop or reorder a flow and never changes it."""
+    status = spec.review.status
+    if status is ReviewStatus.APPROVED:
+        return
+    if status is ReviewStatus.DRAFT and all(f.kind is not None for f in spec.flows):
+        return
+    raise FlowSpecNotReviewed(
+        f"FlowSpec for '{spec.project}' is {status.value}, not approved, and cannot generate cases "
+        "(NEEDS_EDIT, or a flow with no kind): reconcile it or run `autotester flowspec approve`"
+    )
+
+
+def case_provenance(flow_source_id: str | None) -> str:
+    """The provenance string every case from an unreviewed DRAFT flow carries."""
+    return f"{DRAFT_PROVENANCE} (source_id={flow_source_id or 'none'})"

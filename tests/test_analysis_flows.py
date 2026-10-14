@@ -115,9 +115,6 @@ def test_a_hand_corrected_flow_inside_a_draft_spec_is_untouched(root, monkeypatc
     assert after.flows == [fixed] and after.review.status is ReviewStatus.DRAFT
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "expand() still calls require_reviewed on DRAFT (review-gate R5: changing it is a separate L "
-    "unit, D-073, not authorized here; video flows are also kind=None/unreconciled)"))
 def test_expand_over_a_draft_only_spec_generates_cases(root, monkeypatch) -> None:
     from autotester.stages.expand import propose_cases
     store, source = _setup(root, monkeypatch)
@@ -125,3 +122,62 @@ def test_expand_over_a_draft_only_spec_generates_cases(root, monkeypatch) -> Non
     spec = store.load_flowspec()
     assert spec.review.status is ReviewStatus.DRAFT
     assert propose_cases(spec)
+
+
+def test_analyze_assigns_kind_to_every_source_flow(root, monkeypatch) -> None:
+    store, source = _setup(root, monkeypatch, flows=[_flow("Pay now"), _flow("Pay later")])
+    assert _analyze(source) == 303
+    assert all(f.kind is not None for f in store.load_flowspec().flows)
+
+
+def _draft_cases(root, monkeypatch):
+    from autotester.stages.expand import expand
+    store, source = _setup(root, monkeypatch)
+    assert _analyze(source) == 303
+    spec = store.load_flowspec()
+    from autotester.schema.case import ExpandedSteps
+    step = ObservedStep(order=1, action=Action.CLICK, target="Pay", t_start=1, screen="Cart")
+    answer = ExpandedSteps(steps=[__import__("autotester.schema.flowspec", fromlist=["Step"]).Step(
+        order=1, action=Action.CLICK, target=step.target)], rationale="x")
+    provider = MockProvider(responses={"agent": [answer] * 60})
+    return store, spec, expand(spec, provider, store=store)
+
+
+def test_draft_cases_carry_provenance_and_the_spec_stays_draft(root, monkeypatch) -> None:
+    store, spec, cases = _draft_cases(root, monkeypatch)
+    assert cases and all(c.provenance for c in cases)
+    sid = spec.flows[0].source_id
+    assert all("from unreviewed DRAFT flow" in c.provenance and sid in c.provenance
+               for c in cases)
+    assert store.load_flowspec() == spec and spec.review.status is ReviewStatus.DRAFT
+
+
+def test_provenance_shows_in_the_unified_report_line() -> None:
+    from autotester.schema.unified_report import CaseLine
+    from autotester.stages.unified_report_render import _case
+    html = _case(CaseLine(case_id="c1", title="t", result="pass",
+                          provenance="from unreviewed DRAFT flow (source_id=s1)"))
+    assert "from unreviewed DRAFT flow" in html
+
+
+def test_needs_edit_and_unreconciled_specs_still_refuse(root, monkeypatch) -> None:
+    from autotester.stages.expand import propose_cases
+    from autotester.stages.review import FlowSpecNotReviewed, request_edit
+    _, spec, _ = _draft_cases(root, monkeypatch)
+    with pytest.raises(FlowSpecNotReviewed):
+        propose_cases(request_edit(spec, "Ana", "fix"))
+    blank = spec.model_copy(update={"flows": [spec.flows[0].model_copy(update={"kind": None})]})
+    with pytest.raises(FlowSpecNotReviewed):
+        propose_cases(blank)
+
+
+def test_approved_truth_is_never_overwritten_and_its_cases_have_no_provenance(
+        root, monkeypatch) -> None:
+    store, source = _setup(root, monkeypatch)
+    assert _analyze(source) == 303
+    approved = store.load_flowspec().model_copy(update={
+        "review": Review(status=ReviewStatus.APPROVED, by="Umesh")})
+    store.save_flowspec(approved)
+    before = store.paths.flowspec.read_bytes()
+    assert _analyze(source) == 303
+    assert store.paths.flowspec.read_bytes() == before

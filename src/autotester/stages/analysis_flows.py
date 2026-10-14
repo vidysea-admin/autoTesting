@@ -18,7 +18,7 @@ from autotester.schema.project import Source
 from autotester.stages.analyze_video import load_transcript
 from autotester.stages.ingest import flowspec_from_observation, project_redactor
 from autotester.stages.merge_flowspec import merge_flowspec
-from autotester.stages.reconcile import verify_narration
+from autotester.stages.reconcile import assign_kinds, verify_narration
 from autotester.store.project_store import ProjectStore
 
 
@@ -65,5 +65,16 @@ def propose_draft_flows(
     checked = [verify_narration(f, heard, scrub)[0] for f in incoming.flows]
     incoming = incoming.model_copy(update={"flows": retain_distinct(checked)})
     merged = merge_flowspec(existing, incoming, source_id=source.id)
+    merged = _with_kinds(merged)
     store.save_flowspec(merged)
     return merged
+
+
+def _with_kinds(spec: FlowSpec) -> FlowSpec:
+    """D-097: give flows with no `kind` one via reconcile's own `assign_kinds` (no crawl
+    evidence here, so none is claimed). A flow that already has a kind is left as it was."""
+    if all(f.kind is not None for f in spec.flows):
+        return spec
+    decided = {f.id: f for f in assign_kinds(spec.flows, set())[0]}
+    return spec.model_copy(update={"flows": [
+        decided[f.id] if f.kind is None else f for f in spec.flows]})
