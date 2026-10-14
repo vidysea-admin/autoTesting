@@ -14,6 +14,7 @@ from pydantic import BaseModel
 
 from autotester.schema.crawl import Crawl
 from autotester.schema.crawl_summary import CrawlSummary
+from autotester.schema.enums import NodeStatus
 
 if TYPE_CHECKING:
     from autotester.stages.explore_runtime import ExploreRuntime
@@ -52,8 +53,18 @@ def scrubbed(rt: ExploreRuntime, model: ModelT) -> ModelT:
     return type(model).model_validate(clean)
 
 
+def _split_paths(rt: ExploreRuntime) -> tuple[list[str], list[str]]:
+    """(visited, never visited) url templates. Path templates only: no host, query or content."""
+    done = {NodeStatus.EXPLORED, NodeStatus.SKIPPED_UNCHANGED}
+    reached = {n.url_template for n in rt.nodes.values() if n.status in done}
+    rest = {n.url_template for n in rt.nodes.values() if n.status not in done}
+    return sorted(reached), sorted(rest - reached)
+
+
 def write(rt: ExploreRuntime, crawl: Crawl) -> CrawlSummary:
+    reached, unreached = _split_paths(rt)
     summary = CrawlSummary(
+        reached_paths=reached, unreached_paths=unreached,
         crawl_id=crawl.id, project=crawl.project, status=crawl.status,
         approval_id=crawl.approval_id, approval_production=crawl.approval_production,
         project_production=rt.project.production, bounds=crawl.bounds,

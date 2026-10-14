@@ -124,6 +124,10 @@ class Run(Artifact):
             raise ValueError("catalog runnable counts must include all three tiers")
         return value
 
+    preflight_warnings: list[str] = Field(
+        default_factory=list,
+        description="AT-887 clause 2: cases whose first target the latest crawl never reached; "
+                    "a warning only -- those cases still ran")
     parallel_n: int | None = Field(
         default=None,
         description="T-173/D-041: cases that ran concurrently in this run; None means the run "

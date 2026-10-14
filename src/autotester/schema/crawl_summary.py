@@ -33,3 +33,10 @@ class CrawlSummary(Artifact):
     denied: int = 0
     issues: int = 0
     tool_failures: int = 0
+    reached_paths: list[str] = Field(
+        default_factory=list,
+        description="AT-887 clause 2: url_template (path only) of each screen the crawl visited")
+    unreached_paths: list[str] = Field(
+        default_factory=list,
+        description="AT-887 clause 2: url_template of each screen found but never visited -- "
+                    "still queued, or aborted -- when the crawl stopped (the frontier)")

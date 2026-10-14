@@ -53,6 +53,7 @@ from autotester.stages.parallel_run import (
     _free_ram_mb,
     plan_parallel_run,
 )
+from autotester.stages.reachability import latest_warnings
 from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
 from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
@@ -279,7 +280,8 @@ def launch_run(
     run = save_tracked_run(
         store, id=run_id, project=slug, case_ids=[c.id for c in cases], trigger=trigger,
         requested_by=requested_by, requested_by_id=requested_by_id, slot_key=slot_key,
-        via=via, requested_at=requested_at, parallel_n=plan.n, parallel_bound_by=plan.bound_by,
+        via=via, requested_at=requested_at, preflight_warnings=latest_warnings(store, cases),
+        parallel_n=plan.n, parallel_bound_by=plan.bound_by,
         catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
                                  for tier in tiers_to_run(cat)},
         # CN10: what it ran under, reported not capped -- a 19-year wall clock is visible.
@@ -292,9 +294,7 @@ def launch_run(
 
 
 def ask_for_what_it_did_not_recognise(store: ProjectStore, run_id: str) -> None:
-    """Turn this run's coverage gaps into video requests (AT-240). Deliberately after the save:
-    a request is about a run that HAPPENED, and failing to ask must never lose it."""
+    """Coverage gaps -> video requests (AT-240), after the save; never loses a run."""
     spec = store.load_flowspec()
-    if spec is None:
-        return                      # nothing learned yet -> nothing is "unknown" (V2)
-    queue_requests(store, diff_coverage(spec, store.load_results(run_id)))
+    if spec is not None:        # nothing learned yet -> nothing is "unknown" (V2)
+        queue_requests(store, diff_coverage(spec, store.load_results(run_id)))
