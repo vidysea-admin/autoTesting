@@ -140,3 +140,22 @@ Step counts (numbered steps and TAI rows above): READY 41, BLOCKED 12, DEFERRED 
 - LIVE-WALK (no test, runbook TA15): TA3 Test press inside the separate server process (starts a real browser).
 - converted to real tests this cycle: TT7 `/inbox` (dev and admin list the run, tester does not), TS1 schedule save (subadmin 303 and owner stored, tester refused), TS5 schedule card, TA14 subadmin journey. The TA8 no-credentials row now assigns the subadmin to the project first (owner guard HO24 runs before the credential gate).
 Not rig-testable at all: TA16 (artifact missing) and TA17 (AT-891).
+
+
+## 5. TA15 Test press and TA17 live tick: exact sequence (prepared 2026-10-14, not executed)
+
+Approval: `appr_99ba814cd8df` (live_case, production, 300 actions, 3600 s, until 2026-10-21), signed by Umesh. Real project `pathlynks`, no clone. Do NOT start while the live crawl holds the shared profile and test account.
+
+Env for every command below (no `uv run`, never print secrets):
+`$env:PYTHONPATH='C:\Users\product\Desktop\autoTesting\src'; $env:AUTOTESTER_ROOT='C:\Users\product\Desktop\autoTesting'; $env:AUTOTESTER_AUTH_DIR='C:\Users\product\Desktop\autoTesting\.work\t206-auth'; $py='C:\Users\product\Desktop\autoTesting\.venv\Scripts\python.exe'`
+(Data root = the repo root because the real `projects/pathlynks` lives there; the auth store is kept in `.work/t206-auth`, gitignored.)
+
+1. Server (already started 2026-10-14, 127.0.0.1:8206, log `.work/t206-serve/serve.log`; `serve_windows.ps1` itself runs `uv run`, so uvicorn was launched directly with the venv python): `& $py -m uvicorn autotester.ui.app:app --host 127.0.0.1 --port 8206` with `AUTOTESTER_ALLOWED_ORIGINS=http://127.0.0.1:8206,http://localhost:8206`. Check: `powershell -File scripts/serve_windows.ps1 -Port 8206 -Check` -> "healthz ok".
+2. Account (HELD: creating it was blocked by the permission classifier; Umesh or a human-approved step must run it): `& $py -m autotester auth bootstrap-admin --email umeshsugara@vidysea.com --password-stdin` (password on stdin, store it outside the repo).
+3. Approval check: `& $py scripts/check_crawl_approval.py pathlynks` (exit 0).
+4. Schedule (HELD on step 2): sign in at http://127.0.0.1:8206/auth/login as the owner, open `/projects/pathlynks/schedule`, mode fixed, timezone UTC, `fixed_at` = a minute a few minutes ahead of the planned tick, Save. Record the card's next three fire times to `qa/evidence/t206-ta17-live/schedule.txt`.
+5. Dry run: `& $py -m autotester schedule tick --project pathlynks --dry-run` -> must print `would fire`, not `would be refused`. Save to `qa/evidence/t206-ta17-live/dryrun.txt`.
+6. TA15 Test press (after the crawl ends): signed in as the owner, open `/projects/pathlynks`, press Test (`POST /projects/pathlynks/test`), open `GET /projects/pathlynks/test/<run_id>`. Evidence `qa/evidence/t206-ta17-live/test-press/` (screenshot, run id, `requested_by`).
+7. TA17 live tick, only after the Test run is over (runs serialised): `& $py -m autotester schedule tick --project pathlynks --output json > qa/evidence/t206-ta17-live/tick.json` (the command stays alive until the run finishes). Expect one enqueue, `trigger=schedule`, `requested_by` = owner.
+8. Audit: read run, inbox and `store/bug_store.py` BugStore (key, count, status only) into `qa/evidence/t206-ta17-live/`; `& $py scripts/check_no_secrets.py qa/evidence/t206-*`.
+9. Stop the server only by its own PID (python process listening on 8206).
