@@ -27,10 +27,10 @@ SINCE = utc(2026, 10, 7, 12)
 NOW = utc(2026, 10, 8, 9, 0, 10)
 
 
-def test_slot_outcomes_are_the_closed_set_of_seven() -> None:
+def test_slot_outcomes_are_the_closed_set_of_eight() -> None:
     assert {o.value for o in SlotOutcome} == {
         "enqueued", "catch_up", "missed", "skipped_overlap", "blocked_no_credentials",
-        "refused", "failed"}
+        "refused", "failed", "interrupted"}
 
 
 def test_a_record_with_an_outcome_outside_the_set_fails_the_model() -> None:
