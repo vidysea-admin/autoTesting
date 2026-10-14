@@ -1,6 +1,6 @@
 # Manifest - approval-revoke
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** signed revocation of a RunApproval (user asked to revoke pathlynks appr_d89c9e3c61fd)
 **Branch:** wave/approval-revoke
