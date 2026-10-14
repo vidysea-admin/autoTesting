@@ -15,3 +15,24 @@ Checker: independent security review of wave/approval-prod-gate (b6336876). Test
 ## Required fixes
 - D1: fail closed (exit 1) when project.production or summary.project_production and no key.
 - D2: pass production through orchestrate_gate.py:46 (and state which other paths remain open).
+
+---
+
+# Cycle 2
+
+Cycle checked: 2
+Verdict: PASS (with notes)
+Head checked: be2f0bd3. Tests: 118 passed (test_approval_prod_gate, _paths, test_release_gate, test_consent, test_explore_consent, test_approval_signing) with AUTOTESTER_APPROVAL_KEY unset; ruff clean; doctor clean.
+
+## Cycle-1 defects
+- D1 PASS: scripts/check_crawl_approval.py:68-72 exits 1 for a production project when the key is unset ("cannot be verified"). Covered by tests/test_approval_prod_gate_paths.py::test_done_check_fails_closed_for_production_without_the_key (asserts exit 1 and the message) and ::..._forged_signature. Live run of `check_crawl_approval.py pathlynks` with the key unset exits 1, but in this worktree only because no tracked projects/pathlynks/crawl_summaries/ exists (clean checkout); the key branch is proven by the test, not that live run.
+- D2 PASS: orchestrate_gate.py:46 calls core.consent.require_project_approval(project=...), the same function explore_consent.covering_approval uses (production => non-account-derived production:true row). test_hand_edited_scope_naming_a_non_production_row_does_not_pass_release expects ApprovalRequired for a production project; the valid human row passes.
+- stop_reason PASS: explore_summary.safe_stop_reason yields an enumerated code plus <=80-char URL-free detail; parametrized tests cover URLs and None.
+
+## Path audit
+Enforcing require_project_approval: covering_approval (crawl, release scope, UI trigger_run via run_launcher.require_live_case_approval:154), release_preflight, agents/guards.py:66,73, stages/adversarial.py:108. AT-570 gap is closed in this path (trigger_run -> prepare_run -> covering_approval); the table in the path test covers it.
+Remaining raw require_approval (not production-aware):
+- stages/ai_capture.py:95 (caller-stated production flag, project slug only).
+- stages/discover.py:49 (filesystem read gate, not a live target).
+- cli_video_review.py:76 (video review; not examined for live target use).
+The manifest discloses the first two; cli_video_review.py:76 is not disclosed. These are non-blocking notes, not criteria failures.
