@@ -10,11 +10,11 @@ import contextlib
 import os
 import re
 import tempfile
-import time
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
 from autotester.browser.secrets import parse_env
+from autotester.core.file_lock import file_lock
 
 _KEY_RE = re.compile(r"^[A-Z_][A-Z0-9_]*$")
 
@@ -68,40 +68,8 @@ def validate_env_values(values: dict[str, str]) -> None:
 @contextlib.contextmanager
 def _env_lock(env_path: Path, timeout_s: float = 5.0) -> Iterator[None]:
     """Stable advisory sidecar lock; all cooperative writers share this inode."""
-    import math
-
-    if not math.isfinite(timeout_s) or timeout_s <= 0:
-        raise ValueError("env lock timeout must be positive and finite")
-    env_path = env_path.resolve()
-    env_path.parent.mkdir(parents=True, exist_ok=True)
-    fd = os.open(str(env_path) + ".lock", os.O_CREAT | os.O_RDWR, 0o600)
-    with os.fdopen(fd, "r+b") as handle:
-        if os.fstat(handle.fileno()).st_size == 0:
-            handle.write(b"\0")
-            handle.flush()
-        deadline = time.monotonic() + timeout_s
-        while True:
-            try:
-                handle.seek(0)
-                if os.name == "nt":
-                    import msvcrt
-                    msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
-                else:
-                    import fcntl
-                    fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-                break
-            except OSError as exc:
-                if time.monotonic() >= deadline:
-                    raise TimeoutError("env writer lock timed out") from exc
-                time.sleep(min(0.01, max(0, deadline - time.monotonic())))
-        try:
-            yield
-        finally:
-            handle.seek(0)
-            if os.name == "nt":
-                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
-            else:
-                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    with file_lock(env_path.resolve().with_name(env_path.name + ".lock"), timeout_s, what="env"):
+        yield
 
 
 def _write_env_lines(env_path: Path, lines: list[str], rendered: dict[str, str]) -> None:
