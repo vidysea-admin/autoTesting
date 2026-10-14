@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-14T18:23:04.541534Z",
+  "crawl_id": "crawl_01M4XRTHH96QAGSJNP954G826Z",
+  "project": "pathlynks",
+  "status": "stopped_bound",
+  "approval_id": "appr_a5c000b027dc",
+  "approval_production": true,
+  "project_production": true,
+  "bounds": {
+    "max_screens": 40,
+    "max_actions": 150,
+    "wall_clock_s": 1800.0,
+    "max_depth": 6,
+    "per_node_action_cap": 25,
+    "dialog_repeat_limit": 3,
+    "settle_ms": 2500,
+    "heartbeat_every_actions": 5,
+    "heartbeat_stale_after_s": 90.0
+  },
+  "started_at": "2026-10-14T17:54:40.279752+00:00",
+  "finished_at": "2026-10-14T18:23:04.485227+00:00",
+  "stop_reason": "max_screens",
+  "screens": 40,
+  "edges": 140,
+  "actions": 130,
+  "denied": 8,
+  "issues": 17,
+  "tool_failures": 0
+}
