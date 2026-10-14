@@ -18,6 +18,8 @@ from __future__ import annotations
 import math
 import threading
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
@@ -45,7 +47,7 @@ class RunBudget:
     zero budget -- one field, two opposite meanings, and the permissive one
     governed what actually happened."""
 
-    def __init__(self, approval: RunApproval) -> None:
+    def __init__(self, approval: RunApproval, judge_allowance_s: float = 0.0) -> None:
         if approval is None:
             raise ValueError(
                 "RunBudget requires a RunApproval: a run with no approval is an unapproved "
@@ -56,11 +58,59 @@ class RunBudget:
             value = getattr(approval, name)
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"invalid run budget {name}")
+        if not math.isfinite(judge_allowance_s) or judge_allowance_s < 0:
+            raise ValueError("invalid judge allowance")
+        # Judge (model-grading) time is accounted SEPARATELY from the approval's clock:
+        # the approval bounds the time the browser acts on the target; grading is bounded
+        # by this allowance, and any grading beyond it is charged to the approval clock.
+        self._judge_allowance_s = float(judge_allowance_s)
+        self._judge_done_s = 0.0
+        self._judge_active = 0
+        self._judge_since = 0.0
         self._lock = threading.Lock()
         self._actions_used = 0
         self._probes_used = 0
         self._start = time.monotonic()
         self._stop_reason: str | None = None
+
+    @classmethod
+    def for_cases(cls, approval: RunApproval, cases: list[Case]) -> RunBudget:
+        """The budget for a run of `cases`: the approval plus its bounded judge allowance."""
+        return cls(approval, judge_allowance_s=judge_allowance_s(cases))
+
+    @contextmanager
+    def judging(self) -> Iterator[None]:
+        """Time spent inside is judge time: excluded from the approval clock, up to the
+        judge allowance. Overlapping judges (parallel workers) count their UNION once."""
+        with self._lock:
+            if self._judge_active == 0:
+                self._judge_since = time.monotonic()
+            self._judge_active += 1
+        try:
+            yield
+        finally:
+            with self._lock:
+                self._judge_active -= 1
+                if self._judge_active == 0:
+                    self._judge_done_s += time.monotonic() - self._judge_since
+
+    def _judge_excluded_locked(self, now: float) -> float:
+        spent = self._judge_done_s + (now - self._judge_since if self._judge_active else 0.0)
+        return min(spent, self._judge_allowance_s)
+
+    def _browser_elapsed_locked(self) -> float:
+        now = time.monotonic()
+        return now - self._start - self._judge_excluded_locked(now)
+
+    @property
+    def judge_s_used(self) -> float:
+        with self._lock:
+            now = time.monotonic()
+            return self._judge_done_s + (now - self._judge_since if self._judge_active else 0.0)
+
+    @property
+    def judge_allowance_s(self) -> float:
+        return self._judge_allowance_s
 
     def try_consume(self, *, actions: int = 0, probes: int = 0) -> bool:
         return self._consume(actions=actions, probes=probes, require_running=False)
@@ -78,7 +128,7 @@ class RunBudget:
             # would refuse or allow depending on how fast the host is, and a
             # fail-closed rule that is only usually closed is not one.
             if (approval.wall_clock_s <= 0
-                    or time.monotonic() - self._start >= approval.wall_clock_s):
+                    or self._browser_elapsed_locked() >= approval.wall_clock_s):
                 self._stop_reason = self._stop_reason or "wall_clock_s"
                 return False
             actions_after = self._actions_used + actions
@@ -109,7 +159,8 @@ class RunBudget:
 
     def remaining_ms(self, requested: float = 30000) -> int:
         self.check()
-        remaining = (self._approval.wall_clock_s - (time.monotonic() - self._start)) * 1000
+        with self._lock:
+            remaining = (self._approval.wall_clock_s - self._browser_elapsed_locked()) * 1000
         if remaining < 1:
             with self._lock:
                 self._stop_reason = self._stop_reason or "wall_clock_s"
@@ -161,5 +212,22 @@ is at the 300-line design cap and cannot take an exported constant (AT-681)."""
 def wall_clock_request_s(cases: list[Case]) -> float:
     """The wall clock this run asks the gate for: its own action total times
     the per-action ceiling. Derived from the run, never a constant, so the
-    grant command the refusal prints carries bounds the run actually needs."""
-    return sum(action_cost(c) for c in cases) * WALL_CLOCK_PER_ACTION_S
+    grant command the refusal prints carries bounds the run actually needs.
+
+    Includes the bounded judge allowance (`judge_allowance_s`), so the grant covers the
+    whole run's time; `RunBudget` holds that allowance outside the browser clock."""
+    return (sum(action_cost(c) for c in cases) * WALL_CLOCK_PER_ACTION_S
+            + judge_allowance_s(cases))
+
+
+JUDGE_ALLOWANCE_PER_CASE_S = 45.0
+"""Seconds of serial judge (model grading) latency allowed per case, held OUTSIDE the
+approval's wall clock. Measured on the real PathLynks run: 8-27 s per call plus image
+handling, ~35 s per judged case; 45 s leaves headroom. Bounded, so total run time is
+at most `wall_clock_s + judge_allowance_s(cases)` (grading beyond it is charged to the
+approval clock instead)."""
+
+
+def judge_allowance_s(cases: list[Case]) -> float:
+    """The separate judge-time budget for a run: one per-case allowance per case."""
+    return len(cases) * JUDGE_ALLOWANCE_PER_CASE_S

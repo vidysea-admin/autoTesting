@@ -226,7 +226,7 @@ def run_cases_traced(
     ctx = StageContext(store=store, run_id=run_id, secrets=secrets)
     judge.trace = ctx.trace
     plan = plan_under_shared_budget(project, run_id, seams)
-    budget = RunBudget(approval)
+    budget = RunBudget.for_cases(approval, cases)
     cat = catalog_snapshot if catalog_snapshot is not None else catalog(
         project, store.load_flowspec(), store)
     started = ctx.clock()
