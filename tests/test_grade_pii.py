@@ -1,0 +1,33 @@
+"""AT-840: an email or phone number in the evidence never reaches the judge provider."""
+
+from __future__ import annotations
+
+from autotester.core.redact import Redactor
+from autotester.providers.mock import MockProvider
+from autotester.schema.enums import EvidenceKind, Outcome, Result
+from autotester.schema.run import Evidence, RawResult
+from autotester.schema.verdict import Criterion, Judgment, Rubric
+from autotester.stages.grade import grade
+
+
+def _run(rubric_text: str, ev_path: str):
+    rubric = Rubric(id="r", criteria=[Criterion(id="c1", text=rubric_text)])
+    result = RawResult(case_id="case_abc", outcome=Outcome.COMPLETED,
+                       evidence=[Evidence(kind=EvidenceKind.DOM, path=ev_path, step_order=1)])
+    j = Judgment(result=Result.PASS, scoreboard="1/1", criteria_met=1, criteria_total=1)
+    mock = MockProvider(responses={"judge": [j]})
+    verdict = grade(rubric, result, "run_1", mock, redactor=Redactor({"K": "hunter2-secret"}))
+    return mock, verdict
+
+
+def test_email_and_phone_in_evidence_never_reach_provider():
+    mock, verdict = _run("Greeting shows", "assert text: unmet (saw ravi.k@school.edu, 9876543210)")
+    sent = mock.prompts[0][1]
+    assert "ravi.k@school.edu" not in sent and "9876543210" not in sent
+    assert "<email>" in sent and "<phone>" in sent
+    assert verdict.result is Result.INCONCLUSIVE or verdict.result is Result.PASS
+
+
+def test_pii_in_rubric_text_masked():
+    mock, _ = _run("Page shows anu@x.org", "01.png")
+    assert "anu@x.org" not in mock.prompts[0][1]

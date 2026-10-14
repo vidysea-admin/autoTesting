@@ -15,7 +15,7 @@ from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import RepoDocs
-from autotester.core.redact import Redactor
+from autotester.core.redact import Redactor, mask_pii
 from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
@@ -208,6 +208,10 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     withheld = _withheld(run_id, result, rubric, prompt, secrets, redactor)
     if withheld is not None:
         return withheld
+    # AT-840: rubric text, evidence labels (assertion messages carry page text) and any
+    # visual_text/OCR reach the judge only through this prompt; mask emails/phones last.
+    # Images are sent as captured: no image-PII masking exists (see manifest at840-judge-pii).
+    prompt = mask_pii(prompt)
 
     # AT-366: filter HERE, once, and count what was lost. All three providers drop a
     # non-existent path in silence, so a screenshot the executor recorded but failed to
