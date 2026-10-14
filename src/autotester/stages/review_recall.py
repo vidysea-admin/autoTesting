@@ -129,12 +129,11 @@ def score_reviews(
     found = [t for t in targets if matches.get(t)]
     matched_items = {i for ids in matches.values() for i in ids}
     unconfirmed = [i for i in item_ids if i not in matched_items]
-    wanted = DENOMINATOR_PROVENANCE.get(oracle.mode)
     return ReviewRecall(
         id=f"recall_{oracle.id}",
         claim=f"measured on {len({r.source_id for r in reviews})} videos",
         oracle=OracleRef(
-            corpus_id=oracle.id, mode=oracle.mode, provenance=wanted or "unknown",
+            corpus_id=oracle.id, mode=oracle.mode, provenance=DENOMINATOR_PROVENANCE.get(oracle.mode, "unknown"),
             recall_basis=RECALL_BASIS.get(oracle.mode, "unknown"), severity=severity,
             file_sha256=hashlib.sha256(oracle_bytes).hexdigest(),
         ),
