@@ -3,7 +3,7 @@
 **Unit:** TV9 — the analyze route writes the adjudicated video flows into the FlowSpec as DRAFT (unblocks the strict xfail on T-206 TA4).
 **Contract:** `qa/contracts/team-video-review.md` TV9 (R37); `review-gate.md`; `reconcile.md` RC3.
 **Goal task:** T-206 / T-169
-**Status:** ready-for-check
+**Status:** checked-PASS (partial: TV9 clause 2 held on gate D-073/R5)
 **Fix cycle:** 2
 **Branch:** wave/tv9-draft-flows
 

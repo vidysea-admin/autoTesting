@@ -3,7 +3,7 @@
 **Goal task:** none (follow-up to the T-169 real PathLynks run, inconclusive-analysis Cause 2)
 **Date:** 2026-10-13
 **Fix cycle:** 3
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Executor:** claude-sonnet-subagent
 
 ## What changed
