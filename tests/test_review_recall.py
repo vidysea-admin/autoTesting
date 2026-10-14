@@ -39,7 +39,8 @@ def _files(tmp_path: Path, matches: dict) -> list[str]:
     (tmp_path / "o.json").write_text(corpus.model_dump_json())
     (tmp_path / "m.json").write_text(json.dumps(matches))
     return ["--review", str(tmp_path / "r.json"), "--oracle", str(tmp_path / "o.json"),
-            "--matches", str(tmp_path / "m.json"), "--out", str(tmp_path / "out" / "recall.json")]
+            "--matches", str(tmp_path / "m.json"),
+            "--out", str(tmp_path / "out" / "recall.json"), "--expected-n", "3"]
 
 
 def test_recall_k_missed_unconfirmed_and_label(tmp_path):

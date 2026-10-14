@@ -1,42 +1,95 @@
 """Score stored video reviews against an oracle corpus into a `ReviewRecall` (TA16).
 
-No model call. Which review item corresponds to which oracle row is a human judgement, so it
-arrives as a `matches` mapping {oracle_id: [item_id, ...]}; this module only does the
-arithmetic, validates the ids, and labels the basis via the acceptance-comparison table.
+No model call. Review items become `Finding`s whose `matched_bug_id` is set by deterministic
+lexical overlap with the oracle rows (the same `Finding.matched_bug_id` link that
+`acceptance_comparison` reads); a human `matches` mapping may override it.
 """
 
 from __future__ import annotations
 
 import hashlib
+import re
 
-from autotester.schema.bench import DENOMINATOR_PROVENANCE, BenchCorpus
+from autotester.schema.bench import DENOMINATOR_PROVENANCE, BenchCorpus, Finding
 from autotester.schema.review_recall import OracleRef, ReviewRecall
 from autotester.schema.video_review import VideoReview
 from autotester.stages.acceptance_comparison import RECALL_BASIS
 
 HIGH = "S1"
+EXPECTED_HIGH = 13
+MIN_SHARED = 3
+MIN_COVER = 0.4
+_STOP = frozenset({
+    "the", "a", "an", "and", "or", "of", "to", "in", "on", "is", "are", "was", "for", "with",
+    "from", "at", "as", "by", "it", "this", "that", "not", "be", "has", "have", "page", "screen",
+    "when",
+})
 
 
 class RecallInputError(ValueError):
     """The oracle, reviews or matches do not fit together; no number is produced."""
 
 
+def _tokens(text: str) -> set[str]:
+    return {t for t in re.findall(r"[a-z0-9]{3,}", text.lower()) if t not in _STOP}
+
+
+def review_findings(reviews: list[VideoReview], oracle: BenchCorpus) -> list[tuple[str, Finding]]:
+    """(item id, Finding) per review item; `matched_bug_id` set by lexical overlap.
+
+    An item matches the oracle row sharing most content tokens with it, provided it shares
+    at least MIN_SHARED and covers MIN_COVER of the row's tokens. Otherwise it stays None:
+    unconfirmed, never a false positive (D-094)."""
+    rows = [(b.id, _tokens(f"{b.location} {b.detect_hint} {b.description}"))
+            for b in oracle.seeded_bugs]
+    out: list[tuple[str, Finding]] = []
+    for review in reviews:
+        for item in review.items:
+            text = f"{item.screen}: {item.seen} {item.suggestion}"
+            toks = _tokens(text)
+            best, best_n = None, 0
+            for bug_id, rt in rows:
+                n = len(toks & rt)
+                if n >= MIN_SHARED and rt and n / len(rt) >= MIN_COVER and n > best_n:
+                    best, best_n = bug_id, n
+            out.append((item.id, Finding(text=text, matched_bug_id=best,
+                                         reported_at_s=item.time_s)))
+    return out
+
+
+def _auto_matches(reviews: list[VideoReview], oracle: BenchCorpus) -> dict[str, list[str]]:
+    matches: dict[str, list[str]] = {}
+    for item_id, finding in review_findings(reviews, oracle):
+        if finding.matched_bug_id:
+            matches.setdefault(finding.matched_bug_id, []).append(item_id)
+    return matches
+
+
 def score_reviews(
     reviews: list[VideoReview], oracle: BenchCorpus, oracle_bytes: bytes,
-    matches: dict[str, list[str]], severity: str = HIGH,
+    matches: dict[str, list[str]] | None = None, severity: str = HIGH,
+    expected_n: int | None = EXPECTED_HIGH,
 ) -> ReviewRecall:
-    """Recall = rows at `severity` with >=1 matched item / rows at `severity`."""
+    """Recall = rows at `severity` with >=1 matched item / rows at `severity`.
+
+    `matches` is an optional human override of the automatic matching."""
     if not reviews:
         raise RecallInputError("no reviews supplied")
     rows = {b.id: b for b in oracle.seeded_bugs}
+    targets = sorted(b.id for b in oracle.seeded_bugs if b.severity.value == severity)
+    if expected_n is not None and len(targets) != expected_n:
+        raise RecallInputError(
+            f"oracle has {len(targets)} {severity} rows, TA16 expects {expected_n}")
     item_ids = [i.id for r in reviews for i in r.items]
     if len(set(item_ids)) != len(item_ids):
         raise RecallInputError("duplicate review item ids across the supplied reviews")
+    method = "human override" if matches is not None else "automatic lexical"
+    if matches is None:
+        matches = _auto_matches(reviews, oracle)
     bad = [o for o in matches if o not in rows]
     bad_items = [i for ids in matches.values() for i in ids if i not in set(item_ids)]
     if bad or bad_items:
         raise RecallInputError(f"matches name unknown oracle ids {bad} / item ids {bad_items}")
-    targets = sorted(b.id for b in oracle.seeded_bugs if b.severity.value == severity)
     found = [t for t in targets if matches.get(t)]
     matched_items = {i for ids in matches.values() for i in ids}
     unconfirmed = [i for i in item_ids if i not in matched_items]
@@ -49,6 +102,7 @@ def score_reviews(
             recall_basis=RECALL_BASIS.get(oracle.mode, "unknown"), severity=severity,
             file_sha256=hashlib.sha256(oracle_bytes).hexdigest(),
         ),
+        match_method=method,
         n=len(targets), k=len(found), recall=len(found) / len(targets) if targets else None,
         found_ids=found, missed_ids=[t for t in targets if t not in found],
         matches={k: v for k, v in sorted(matches.items()) if v},
