@@ -35,7 +35,9 @@ _DEFECT_LEXICON = re.compile(
     r"unsuccessful\w*|fro(?:ze|zen)|no\s+longer\s+works?|stopped\s+working|"
     r"(?:does\s+not|doesn't)\s+work|block(?:ed|s)?|stuck|hang(?:s|ing)?|hung|freez\w*|could\s?n[o']t|"
     r"time[ds]?[ -]out|timeouts?|never\s+(?:appear|load|show|render|complet|finish)\w*|"
-    r"leak\w*|nothing\s+works?|stop(?:s|ped)?\s+responding|won.t\s+load|"
+    r"leak\w*|expos(?:ed|es?|ing)|duplicat\w*|lost|data\s+loss|loss\s+of\s+data|"
+    r"blank\s+(?:page|screen)|went\s+blank|(?:another|other)\s+user'?s|someone\s+else'?s|"
+    r"nothing\s+works?|stop(?:s|ped)?\s+responding|won.t\s+load|"
     r"nothing\s+happened(?!\s+to\b)|did\s+nothing|spinner\s+never\s+stops?)\b"
     r"|(?<![\w$.,])(?:500|404)(?![\w%])",
     re.IGNORECASE)
