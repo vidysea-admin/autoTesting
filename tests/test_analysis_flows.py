@@ -32,7 +32,13 @@ def root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return tmp_path
 
 
-def _setup(root: Path, monkeypatch: pytest.MonkeyPatch, label: str = "Checkout"):
+def _flow(target: str) -> ObservedFlow:
+    return ObservedFlow(name="Pay", entry_screen="Cart", steps=[ObservedStep(
+        order=1, action=Action.CLICK, target=target, t_start=1, screen="Cart")])
+
+
+def _setup(root: Path, monkeypatch: pytest.MonkeyPatch, label: str = "Checkout",
+           flows: list[ObservedFlow] | None = None):
     store = ProjectStore("demo", root)
     store.save_project(Project(slug="demo", name="Demo", base_url="https://demo.test"))
     recording = root / "rec.mp4"
@@ -43,8 +49,7 @@ def _setup(root: Path, monkeypatch: pytest.MonkeyPatch, label: str = "Checkout")
         chunks=[MediaChunk(index=0, path=str(recording), offset_s=0, length_s=3)]))
     observation = VideoObservation(
         screens=[ObservedScreen(name="Cart", t_start=0)],
-        flows=[ObservedFlow(name="Pay", entry_screen="Cart", steps=[ObservedStep(
-            order=1, action=Action.CLICK, target="Pay now", t_start=1, screen="Cart")])])
+        flows=flows or [_flow("Pay now")])
     provider = MockProvider(responses={"vision": [observation, observation]})
     monkeypatch.setattr("autotester.ui.routes_sources.providers.get", lambda _n: provider)
     return store, source
@@ -86,3 +91,37 @@ def test_an_approved_flowspec_is_never_rewritten(root, monkeypatch) -> None:
     before = store.paths.flowspec.read_bytes()
     assert _analyze(source) == 303
     assert store.paths.flowspec.read_bytes() == before
+
+
+def test_same_named_flows_with_different_steps_are_all_retained(root, monkeypatch) -> None:
+    store, source = _setup(root, monkeypatch, flows=[_flow("Pay now"), _flow("Pay later")])
+    assert _analyze(source) == 303
+    flows = store.load_flowspec().flows
+    assert sorted(s.target for f in flows for s in f.steps) == ["Pay later", "Pay now"]
+    assert len({f.id for f in flows}) == 2
+    first = store.paths.flowspec.read_bytes()
+    assert _analyze(source) == 303
+    assert store.paths.flowspec.read_bytes() == first   # idempotent, no third row
+
+
+def test_a_hand_corrected_flow_inside_a_draft_spec_is_untouched(root, monkeypatch) -> None:
+    store, source = _setup(root, monkeypatch)
+    assert _analyze(source) == 303
+    spec = store.load_flowspec()
+    fixed = spec.flows[0].model_copy(update={"name": "Pay (Ana)", "preconditions": ["x"]})
+    store.save_flowspec(spec.model_copy(update={"flows": [fixed]}))
+    assert _analyze(source) == 303
+    after = store.load_flowspec()
+    assert after.flows == [fixed] and after.review.status is ReviewStatus.DRAFT
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "expand() still calls require_reviewed on DRAFT (review-gate R5: changing it is a separate L "
+    "unit, D-073, not authorized here; video flows are also kind=None/unreconciled)"))
+def test_expand_over_a_draft_only_spec_generates_cases(root, monkeypatch) -> None:
+    from autotester.stages.expand import propose_cases
+    store, source = _setup(root, monkeypatch)
+    assert _analyze(source) == 303
+    spec = store.load_flowspec()
+    assert spec.review.status is ReviewStatus.DRAFT
+    assert propose_cases(spec)
