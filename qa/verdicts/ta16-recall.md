@@ -10,3 +10,13 @@ Verdict: FAIL (one mechanical fix, plus one flagged design issue)
 3. Reuse: PASS. RECALL_BASIS and DENOMINATOR_PROVENANCE are imported, not copied. ReviewRecall/OracleRef are `extra="forbid"`-compatible: OracleRef explicit; ReviewRecall inherits Artifact - confirm Artifact base forbids extras.
 4. Shape vs TA16: PASS. k of n (S1), missed_ids, unconfirmed_count, redaction_windows, not_reviewed, "measured on N videos", threshold "none", independent=false with "not independent" basis label. Minor: n is derived from the oracle severity filter; if the oracle's S1 count is not 13 nothing flags it.
 5. Checks: tests/test_review_recall.py + acceptance comparison tests 18 passed; ruff clean; merge-tree with master clean.
+
+## Cycle 2 (head 3372a11f)
+
+Cycle checked: 2
+Verdict: FAIL
+
+- (a) No existing text matcher in acceptance_comparison, bench, known_bugs (grep for similarity/difflib/jaccard/overlap: none). Not a duplication. `Finding.matched_bug_id` is reused.
+- (b) BLOCKING - the lexical matcher over-matches. Adversarial probe (3 oracle rows; items on the same screen with a different defect): 5 of 5 different-bug items matched an oracle row, e.g. "emails sent successfully with correct student name displayed" -> the placeholder-name bug; "charge shown once after retry works correctly" -> the duplicate-charge bug; an unrelated profile-page defect -> the phone-field bug. Cause: the item's screen text is in the matched string and equals the row's location, so location words alone plus 1 common word clear MIN_SHARED=3 / MIN_COVER=0.4. A false match inflates recall. Fix: exclude screen/location tokens from the overlap (match on seen vs detect_hint only), require a higher shared count, and add these pairs as negative tests; or only propose matches and leave confirmation to the override.
+- (c) Partial - `match_method: "automatic lexical"` is in recall.json, but "untuned" and the thresholds (MIN_SHARED, MIN_COVER) are not. Add them to the output.
+- (d) PASS - 21 scoped tests, ruff clean, doctor clean (MAP fixed), merge-tree clean, 13-row guard present.
