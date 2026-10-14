@@ -34,6 +34,37 @@ MISFIRES = [
 GUARD_CLEAN = MISFIRES
 
 
+REAL_NOTES = json.loads((Path(__file__).parent / "fixtures" / "t169_real_judge_notes.json")
+                        .read_text(encoding="utf-8"))
+# 7a978722a38c says "validation errors appeared" on a negative case: the accepted held case.
+ACCEPTED_HELD = {"case_7a978722a38c"}
+MUST_HOLD = [
+    "no spinner and an error message is shown",
+    "The login showed no spinner and an error message is shown",
+    "No data was saved and the error banner is displayed",
+    "There is no confirmation, error message shown",
+    "No redirect happened and an error is shown",
+    "The page did not load and the form is broken",
+    "No error, but the page crashed",
+]
+
+
+@pytest.mark.parametrize("case", sorted(set(REAL_NOTES) - ACCEPTED_HELD))
+def test_verbatim_real_notes_are_not_held(case: str) -> None:
+    assert failure_terms(REAL_NOTES[case]) == [], case
+    assert _grade(_j(REAL_NOTES[case])).result is Result.PASS
+
+
+def test_accepted_negative_case_note_is_still_held() -> None:
+    assert failure_terms(REAL_NOTES["case_7a978722a38c"])
+
+
+@pytest.mark.parametrize("note", MUST_HOLD)
+def test_negator_does_not_hide_a_later_defect(note: str) -> None:
+    assert failure_terms(note), note
+    assert _grade(_j(note)).result is Result.INCONCLUSIVE
+
+
 def _grade(judgment: Judgment):
     rubric = Rubric(id="rub_t", criteria=[Criterion(id="c1", text="x")])
     raw = RawResult(case_id="case_t", outcome=Outcome.COMPLETED, evidence=[

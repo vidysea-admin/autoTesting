@@ -11,8 +11,10 @@ mentions an expected error (a negative case) is also held. That is the cheaper e
 word preceded in its own clause by a negator ("no errors", "without any bug", "did not fail")
 does not count.
 
-T-169 real run: negation is now clause-scoped (see `_negated`) instead of a 3-word lookback, which
-misfired on 7 of 8 held PASSes in the real PathLynks run. The structured `Judgment.defect_observed`
+T-169 real run: negation now binds to the defect word it directly governs (see `_negated`) instead
+of a 3-word lookback, which misfired on 7 of 8 held PASSes in the real PathLynks run. It does not
+reach across "and", a verb or an unrelated noun, so "no spinner and an error is shown" is held.
+The structured `Judgment.defect_observed`
 field is the primary signal; this module is the backstop when it is absent.
 
 AT-998 widened the test beyond bare defect words: a defect lexicon (blocked, timed out, stuck, 500,
@@ -41,16 +43,24 @@ _NEGATED_SUCCESS = re.compile(
     r"complet\w*|respond\w*|finish\w*|authenticat\w*|log(?:ged)?\s?in|sign(?:ed)?\s?in|"
     r"submit\w*|sav(?:e|ed|ing))\b",
     re.IGNORECASE)
-_NEGATOR = re.compile(
-    r"\b(no|not|without|zero|nor|never|none|nothing|neither|free of|absence of|rather than|"
-    r"instead of|other than)\b|n't\b",
-    re.IGNORECASE)
-# A negator's scope is its own clause: it ends at sentence punctuation or a contrast word, and
-# at most this many words back. A list ("No error, rejection, or missing element") stays one
-# clause, so the leading "No" negates every item (the old 3-word lookback missed it).
-_CLAUSE_BREAK = re.compile(
-    r"[.;:!?\n]|\b(?:but|however|although|though|yet|whereas|while|except)\b", re.IGNORECASE)
-_SCOPE_WORDS = 14
+# Negation binds only to the defect word it directly governs. Walking back from a defect term, the
+# only tokens allowed between it and a negator are fillers ("an", "evidence of", "product"), list
+# separators ("," / "or") and other defect words ("No error, rejection, wrong result, or missing
+# element"). Anything else - "and", a verb, a noun that is not a defect ("no confirmation, error
+# shown") - ends the scope, so the term counts as un-negated. When in doubt the term is flagged:
+# a false INCONCLUSIVE is far cheaper than a false PASS (C12).
+_NEGATORS = frozenset({"no", "not", "without", "zero", "nor", "never", "none", "nothing",
+                       "neither"})
+_PHRASE_NEGATORS = {"free": "of", "absence": "of", "rather": "than", "instead": "of",
+                    "other": "than"}
+_FILLERS = frozenset({"a", "an", "any", "the", "of", "evidence", "evidenced", "product", "observed",
+                      "sign", "signs", "trace", "visible", "visibly", "apparent", "other", "than",
+                      "result", "results", "element", "elements", "content", "message",
+                      "messages", "or", ",", "is", "are", "was", "were", "be", "been",
+                      "single", "such", "kind", "types", "type"})
+_TOKEN = re.compile(r"[\w']+|,")
+# A clause ends at sentence punctuation, so a negator never reaches into the next sentence.
+_CLAUSE_BREAK = re.compile(r"[.;:!?\n]")
 
 NOTE_DISAGREES = (
     "judge answered PASS but its own note describes a failure ({terms}): result and reasoning "
@@ -74,19 +84,20 @@ def failure_terms(note: str | None) -> list[str]:
 
 
 def _negated(note: str, start: int, success_spans: list[tuple[int, int]]) -> bool:
-    """True when a negator earlier in the same clause scopes over the term at `start`.
+    """True when a negator directly governs the term at `start` (see the scope rule above).
 
     A negator that is itself part of a negated-success phrase ("did not load") reports a
-    defect, so it never negates a later term ("did not load and the form is broken")."""
+    defect, so it never negates a later term."""
     clause_start = max((m.end() for m in _CLAUSE_BREAK.finditer(note[:start])), default=0)
-    clause = note[clause_start:start]
-    words = list(re.finditer(r"[\w']+", clause))[-_SCOPE_WORDS:]
-    if not words:
-        return False
-    window_start = clause_start + words[0].start()
-    for neg in _NEGATOR.finditer(note, window_start, start):
-        if not any(a <= neg.start() < b for a, b in success_spans):
-            return True
+    toks = list(_TOKEN.finditer(note, clause_start, start))
+    for i in range(len(toks) - 1, -1, -1):
+        word = toks[i].group(0).lower()
+        nxt = toks[i + 1].group(0).lower() if i + 1 < len(toks) else ""
+        if (word in _NEGATORS or word.endswith("n't")
+                or _PHRASE_NEGATORS.get(word) == nxt):
+            return not any(a <= toks[i].start() < b for a, b in success_spans)
+        if word not in _FILLERS and not _DEFECT_LEXICON.fullmatch(word):
+            return False
     return False
 
 
