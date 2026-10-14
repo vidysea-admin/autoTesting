@@ -144,8 +144,8 @@ def test_the_heartbeat_a_tick_writes_is_what_the_stale_card_reads(tmp_path: Path
 
 # --- TS6 guard: the scheduler side never reaches a browser or a pipeline module ---------------
 SCHEDULER_SIDE = ("autotester.stages.scheduler", "autotester.stages.schedule_store",
+                  "autotester.stages.schedule_time", "autotester.stages.schedule_gate",
                   "autotester.stages.schedule_tick", "autotester.stages.schedule_sweep",
-                  "autotester.stages.schedule_tick",
                   "autotester.stages.schedule_wiring")
 # Outside core/, schema/ and store/, the scheduler side may reach exactly these modules. Anything
 # else (a runner, a pipeline stage, the browser session, a provider, the UI app, a CLI) fails.

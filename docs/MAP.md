@@ -260,6 +260,7 @@
 | `stages/schedule_gate.py` | The TS5 gate: a scheduled run may start only under the credential-derived approval (D-068). |
 | `stages/schedule_owner.py` | HO24: a schedule has no more rights than its owner, checked at fire time. |
 | `stages/schedule_store.py` | The files the scheduler writes: slot claim markers, slot records and the tick heartbeat. |
+| `stages/schedule_sweep.py` | TS7: a scheduled run killed after its enqueue must not stay `enqueued` forever. |
 | `stages/schedule_tick.py` | One stateless pass over every scheduled project, plus the heartbeat and `--dry-run` (TS7). |
 | `stages/schedule_time.py` | Slot arithmetic: which UTC instants does a schedule mean to fire at, inside a window? |
 | `stages/schedule_wiring.py` | Wires the scheduler core to the real world: the projects on disk, the run queue, the TS5 gate. |
