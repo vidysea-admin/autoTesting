@@ -1,8 +1,8 @@
 """TA4: intake becomes knowledge from both doors, with no approval step. `dev` uploads a zip (two
 videos, one document, one hostile member) and pastes a Drive link served by the fake DriveClient;
 every member is accounted for, each source carries uploader, time and origin, the same bytes add
-nothing, and `tester` / `pending` are refused. The FlowSpec-DRAFT and "Another possibility" row
-is xfail(strict) (T-169): it needs a model-backed video analysis with no offline route."""
+nothing, and `tester` / `pending` are refused. The DRAFT-flows row is proven
+offline with a prepared media.json and a fake vision provider (TV9; needs wave/tv9-draft-flows)."""
 
 from __future__ import annotations
 
@@ -12,6 +12,17 @@ import pytest
 from review_support import make_zip, upload
 from rig import HTML, SLUG, World
 from zip_fixtures import video
+
+from autotester import providers
+from autotester.providers.mock import MockProvider
+from autotester.schema.enums import Action, ReviewStatus, SourceKind
+from autotester.schema.media import MediaChunk, MediaPrep
+from autotester.schema.observation import (
+    ObservedFlow,
+    ObservedScreen,
+    ObservedStep,
+    VideoObservation,
+)
 
 UPLOAD = f"/projects/{SLUG}/sources/upload"
 DRIVE = f"/projects/{SLUG}/sources/drive"
@@ -64,16 +75,28 @@ def test_tester_and_pending_cannot_upload(world: World, who: str) -> None:
     assert world.snapshot() == before
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "blocked on T-169 (model-backed video analysis): turning an intake source into "
-    "DRAFT flows (TV9) and an 'Another possibility' report item (RC10) needs the "
-    "model-backed video analysis (ffmpeg plus a Provider); no offline route exists on "
-    "master"))
 def test_tv9_the_flowspec_holds_draft_flows_with_source_id_and_no_approval_step(
-        world: World) -> None:
+        world: World, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Needs wave/tv9-draft-flows merged (TV9); re-run after it lands. Asserts behaviour only."""
     upload(world, "dev", "clips.zip", make_zip())
-    source = world.store().list_sources()[0]
-    resp = world.users["dev"].post(f"/projects/{SLUG}/sources/{source.id}/analyze", headers=HTML)
-    assert resp.status_code in (200, 303)
+    store = world.store()
+    source = next(s for s in store.list_sources() if s.kind is SourceKind.VIDEO)
+    store.save_media_prep(MediaPrep(source_id=source.id, chunks=[
+        MediaChunk(index=0, path=str(source.path), offset_s=0, length_s=3)]))
+    observation = VideoObservation(
+        screens=[ObservedScreen(name="Cart", t_start=0)],
+        flows=[ObservedFlow(name="Pay", entry_screen="Cart", steps=[ObservedStep(
+            order=1, action=Action.CLICK, target="Pay now", t_start=1, screen="Cart")])])
+    fake = MockProvider(responses={"vision": [observation, observation]})
+    # the Provider seam: the registry entry the project's vision config names (no setattr)
+    monkeypatch.setitem(providers._REGISTRY, "mock", lambda **_o: fake)
+    project = store.load_project()
+    project.providers.vision = "mock"
+    store.save_project(project)
+    resp = world.users["dev"].post(f"/projects/{SLUG}/sources/{source.id}/analyze",
+                                   headers=HTML, follow_redirects=False)
+    assert resp.status_code in (200, 303), resp.text[:300]
     spec = world.store().load_flowspec()
-    assert spec is not None and any(f.source_id == source.id for f in spec.flows)
+    assert spec is not None
+    mine = [f for f in spec.flows if f.source_id == source.id]
+    assert mine and spec.review.status is not ReviewStatus.APPROVED   # DRAFT, no approval step

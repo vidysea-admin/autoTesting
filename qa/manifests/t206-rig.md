@@ -5,7 +5,7 @@
 **Branch / base:** `wave/t206-runbook` on 22eac602; local master merged in fix cycle 3.
 Tier: S (test files and evidence only, no `src/`)
 Dual check: no
-Fix cycle: 5
+Fix cycle: 6
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): the commit that adds this file (`git log -1 -- qa/manifests/t206-rig.md`)
 Status: ready-for-check
@@ -88,3 +88,16 @@ All are strict=True. TAI2: each must be removed when its task lands; none may re
 - Locally proven: TA1-TA3 (server-process Test press is a live walk), TA4 (except TV9), TA5, TA6 (a,b; email halves skipped), TA7-TA14.
 - Still not green, by design: TA4 TV9 xfail (T-169 pending; the analyze route does not create DRAFT flows); skips = TA3 server-process Test press (live walk TA15), TA6 email x3 (DEFERRED TO PRODUCTION D-092/D-093). Live evidence: TA16 (artifact missing), TA17 (needs signed prod approval), TA15 walks, hosted Ubuntu / T-203 host and DNS.
 - TAI2 still unmet while the TA4 xfail and the skips stand; checker to rule.
+
+## Fix cycle 6 (rebased on master 26e68661; wave/tv9-draft-flows a5b7621b merged IN)
+
+- Rebase: route commits dropped out; `git diff master -- src` now shows only the two TV9 files (analysis_flows.py, routes_sources.py, 51 lines), which come solely from the merged TV9 branch.
+- DEPENDENCY: TA4 TV9 needs wave/tv9-draft-flows to PASS and merge first. TV9 is in fix cycle 2 (flow ids, expand over DRAFT, "no baseline" phrase will change). Re-merge and RE-RUN TA4 after TV9 merges; the test asserts behaviour (DRAFT flows carrying source_id, spec not APPROVED), not flow ids.
+- TA4 TV9: strict xfail removed. The test writes a prepared media.json (MediaPrep) and sets project vision = "mock" with the registry entry swapped via `monkeypatch.setitem(providers._REGISTRY, "mock", ...)` returning MockProvider(responses={"vision": [...]}). This is a setitem, not a setattr, so TA1's closed-seam scan stays green; checker to rule whether the Provider registry counts as the model-Provider seam (the analyze route does not use `routes_runs.for_role`).
+- Skips kept (4), for the checker's TAI2 ruling:
+  1. TA3 `test_dev_presses_test_in_the_server_process_and_the_report_opens`: live-only (runbook TA15 / T-201 TL-5); a Test press in the separate server process starts a real browser. Same path proved in-process by TA6 and TA7.
+  2. TA6 c `exactly_one_outbox_message`: deferred by D-092/D-093 (email TT8/TT9).
+  3. TA6 c `dev_can_tick_email_me_run_reports`: deferred by D-093 (no preference built).
+  4. TA6 d `raising_transport_leaves_verdict_unchanged`: deferred by D-092/D-093.
+  None is locally provable today.
+- Result: tests/acceptance + test_analysis_flows + test_ui_sources: 77 passed, 4 skipped, 0 xfailed (before the TA4 registry change; TA1 and TA4 re-run 11 passed). Ruff clean, doctor clean.
