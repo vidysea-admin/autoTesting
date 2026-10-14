@@ -148,16 +148,9 @@ def _end_of_day(day: date) -> datetime:
 
 
 def _validate_grant(expires: str, target: str, proj: Any) -> None:
-    """Refuse a grant that can never cover anything, and flag a likely typo (AT-145).
-
-    The safety property was never in doubt -- `require_consent` refuses an
-    expired or unparseable row at run time. What was wrong is what the HUMAN is
-    told: `approve --expires 2020-01-01` printed a green "granted" line for a
-    consent that will refuse every run it is asked about. A gate that reports
-    success for a grant it will never honour trains the operator to stop
-    reading it, and the operator here is granting production consent for a
-    crawl of a live ERP.
-    """
+    """Refuse a grant that can never cover anything, and flag a likely typo (AT-145):
+    a green "granted" line for consent that will refuse every run trains operators
+    to stop reading it."""
     try:
         expiry = date.fromisoformat(expires)
     except ValueError:
@@ -178,19 +171,22 @@ def _validate_grant(expires: str, target: str, proj: Any) -> None:
     _warn_on_target_mismatch(target, proj)
 
 
-def _is_under(path: str, base: str) -> bool:
-    """Is `path` the same as, or genuinely beneath, `base`? (AT-149)
+def _caps_or_refuse(actions: int, wall_clock: float, expires_at: str) -> None:
+    """The shared grant caps (core.consent.validate_grant_bounds); exit 1 over a cap."""
+    from autotester.core.consent import validate_grant_bounds
 
-    A bare `startswith` is the same defect AT-148 fixed in the HOST half, and
-    it survived one line below that fix in the PATH half: against a base_url of
-    `https://demo.test/app`, both `/apple-secrets` and `/appliance/admin` were
-    silently accepted as being under `/app`. A prefix is only a containment if
-    it ends at a separator."""
+    try:
+        validate_grant_bounds(actions, wall_clock, datetime.fromisoformat(expires_at))
+    except ValueError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(1) from None
+
+
+def _is_under(path: str, base: str) -> bool:
+    """Is `path` the same as, or genuinely beneath, `base`? (AT-149) A bare
+    `startswith` accepts `/apple` under `/app`; a prefix must end at a separator."""
     if ".." in path.split("/"):
-        # AT-152: `urlparse` normalises nothing, so `/app/../evil` reads as
-        # contained while resolving to `/evil`. Anything that can climb out is
-        # not "under" anything -- refuse to vouch for it rather than guess
-        # where it lands.
+        # AT-152: `/app/../evil` reads as contained but resolves to `/evil`.
         return False
     stem = base.rstrip("/")
     return path in (stem, base) or path.startswith(stem + "/")
@@ -269,6 +265,7 @@ def approve_cmd(
     _validate_grant(expires, target, store_.load_project())
     # CN4: only NEW rows get an offset-aware end-of-day expiry (D-048).
     expires_at = _end_of_day(date.fromisoformat(expires)).isoformat()
+    _caps_or_refuse(max_actions, wall_clock, expires_at)
     candidate = RunApproval(
         project=project, run_kind=run_kind, target=target, scope=scope,
         max_actions=max_actions, max_probes=max_probes, wall_clock_s=wall_clock,

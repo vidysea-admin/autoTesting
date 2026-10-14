@@ -171,7 +171,7 @@ def test_the_grant_and_the_runtime_agree_on_every_expiry_they_accept(
     from autotester.schema.crawl import CrawlBounds
     from autotester.stages.explore_consent import require_consent
 
-    for offset in (1, 2, 30):
+    for offset in (1, 2, 29):   # 30 days is the grant cap (end of day included)
         when = (date.today() + timedelta(days=offset)).isoformat()
         assert grant("--max-actions", str(CLI_DEFAULT_ACTIONS),
                      "--wall-clock", CLI_DEFAULT_WALL_CLOCK,

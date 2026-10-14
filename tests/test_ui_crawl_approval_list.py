@@ -13,6 +13,7 @@ file proves a grant is saved correctly; this one proves the human can SEE it.
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -25,8 +26,9 @@ from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app
 
 _GRANT = {
-    "granted_by": "Umesh", "scope": "read and click safe controls",
-    "expires_at": "2099-09-11T12:00", "timezone_offset_minutes": "330",
+    "scope": "read and click safe controls",
+    "expires_at": (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%dT%H:%M"),
+    "timezone_offset_minutes": "330",
     "max_actions": "17", "wall_clock_s": "45",
 }
 

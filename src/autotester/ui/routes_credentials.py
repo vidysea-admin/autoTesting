@@ -199,7 +199,7 @@ def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
         f"{theme.card(table)}"
         f"{_platform_url_card(slug, project)}"
         f"{_custom_credential_card(slug, project)}"
-        f"{_crawl_approval_form(slug, project.base_url)}"
+        f"{_crawl_approval_form(slug, project.base_url, project.production)}"
         f"{_approvals_card(store.list_approvals(), slug, project.base_url, saved, bool(existing))}"
     )
     return theme.page(f"{name} — credentials", body, active_slug=slug)

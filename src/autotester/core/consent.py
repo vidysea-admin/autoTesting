@@ -37,6 +37,24 @@ def is_account_derived(approval: RunApproval) -> bool:
     return approval.granted_by.startswith("account-derived:")
 
 
+MAX_GRANT_ACTIONS, MAX_GRANT_WALL_CLOCK_S, MAX_GRANT_DAYS = 2000, 86400.0, 30
+
+
+def validate_grant_bounds(
+    actions: int, wall_clock_s: float, expires_at: datetime, now: datetime | None = None,
+) -> None:
+    """The ONE cap on a NEW human grant, shared by the UI route and the CLI `approve`:
+    at most 2000 actions, 24h wall clock, 30 days to expiry. Raises ValueError naming the
+    limit. Grant time only; rows already on disk are never re-judged."""
+    if actions > MAX_GRANT_ACTIONS:
+        raise ValueError(f"max actions {actions} exceeds the limit of {MAX_GRANT_ACTIONS}")
+    if wall_clock_s > MAX_GRANT_WALL_CLOCK_S:
+        raise ValueError(f"wall clock {wall_clock_s:g}s exceeds the limit of "
+                         f"{MAX_GRANT_WALL_CLOCK_S:g}s (24h)")
+    if expires_at > (now or datetime.now(UTC)) + timedelta(days=MAX_GRANT_DAYS):
+        raise ValueError(f"expiry is more than {MAX_GRANT_DAYS} days away")
+
+
 def account_probe_budget(actions: int) -> int:
     """The system-selected probe brake for an account-derived grant (CN11: positive, finite)."""
     return max(1, actions * PROBES_PER_ACTION)
