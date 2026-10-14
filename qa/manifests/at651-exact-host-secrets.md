@@ -1,6 +1,7 @@
 # Manifest — at651-exact-host-secrets
 
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/at651-exact-host-secrets.r2.b.md (merge f6a3f524)
 Fix cycle: 1
 Issues addressed: AT-651
 Decision: D-087 item 1 (docs/DECISIONS.md) — each environment is a separate project; secret host scope is an EXACT host match; no `environments` schema concept.

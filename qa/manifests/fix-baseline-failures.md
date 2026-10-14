@@ -1,6 +1,7 @@
 # Manifest — fix-baseline-failures
 
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/fix-baseline-failures.r3.a.md (branch merged to master)
 Fix cycle: 2
 
 **Goal task:** none (test-isolation fixes; no product code changed)

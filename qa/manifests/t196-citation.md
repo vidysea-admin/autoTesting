@@ -2,7 +2,8 @@
 
 Contract: qa/contracts/living-ledger.md L10. Brief: qa/briefs/t196-citation-subject-check.md. Detail manifest: qa/manifests/t196-citation-subject-check.md.
 Fix cycle: 1
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/t196-citation.r1.b.md (merge 137ceace)
 
 ## Result
 - Branch wave/t196-citation merged with origin/master (clean). Code slice (scanner, seals, known-disputed split, doctor wiring) already present.

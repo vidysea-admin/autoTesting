@@ -7,7 +7,8 @@ Policy-Version: proportional-verification/2026-10-10.9
 Tier: L
 Dual check: required
 Fix cycle: 2
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/t177-actuator.r2.md (merge a1bab8e8; T-177 done; branch merged)
 
 ## Merge 819af45f (master 737fcc9d into the branch) - verified
 - No conflict markers in src, tests, scripts, pyproject.toml.

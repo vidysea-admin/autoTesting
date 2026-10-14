@@ -6,7 +6,8 @@ Tier: L
 Dual check: required
 dual-trigger: security src/autotester/stages/agent_actuator.py (ActionGuard, the AF3 refusal logic)
 Fix cycle: 0
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/t177-actuator.r2.md (merge a1bab8e8; T-177 done; branch merged)
 
 ## Criteria covered (qa/contracts/agent-fallback.md)
 - AF1 fallback only when the deterministic path has no answer (run_with_fallback engages the actuator only on ERRORED after the fix loop).

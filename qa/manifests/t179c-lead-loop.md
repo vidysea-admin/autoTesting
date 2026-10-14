@@ -1,6 +1,7 @@
 # Manifest - t179c-lead-loop (T-179 slice c: the lead loop, trace spans, delegation counts)
 
-## Status: ready-for-check
+## Status: superseded
+Superseded-by: commit b4adcbb1 (merged; T-179 done)
 Fix cycle: 0
 Policy-Version: proportional-verification/2026-10-10.9
 Tier: L (trace-writer edit; the loop sits on the AL3/AL6 boundary)

@@ -1,6 +1,7 @@
 # ledger-integrity
 
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/ledger-integrity.r1.a.md (patch on master as e827808c)
 Fix cycle: 0
 
 **Issues addressed:** AT-676 (high, open -> fixed), AT-645 (high, open -> fixed; code half, data migration run by maker)

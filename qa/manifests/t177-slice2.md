@@ -6,7 +6,8 @@ Tier: L
 Dual check: required
 dual-trigger: dependency addition (browser-use==0.5.9, D-075) and security src/autotester/stages/browser_use_backend.py (per-action guard)
 Fix cycle: 0
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/t177-actuator.r2.md (merge a1bab8e8; T-177 done; branch merged)
 
 ## Criteria covered (qa/contracts/agent-fallback.md)
 - AF6 completed: `browser-use==0.5.9` pinned in pyproject.toml, uv.lock regenerated with `uv lock` (resolves on 3.11; no existing pin changed except transitive markdown-it-py/pytest lock churn); vendor-import grep and import-isolation tests (`browser_use` imported only inside the backend, lazily; importing the product loads no SDK module); telemetry, cloud sync and dotenv forced off.

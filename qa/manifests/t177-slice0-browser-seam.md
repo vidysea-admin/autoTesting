@@ -11,7 +11,8 @@ dual-trigger: security src/autotester/browser/launch.py:208 (the `--remote-debug
 Fix cycle: 2
 Repair base: 0a4859a1
 Executor: claude-sonnet-subagent (maker build subagent)
-Status: ready-for-check
+Status: superseded
+Superseded-by: qa/verdicts/t177-actuator.r2.md (merge a1bab8e8; T-177 done; branch merged)
 Full-suite trigger: none run by the builder. Shared surface touched: `BrowserSession` (every run), `check_destination` (every navigation), `settle` (every step). The maker should schedule one integration suite under the machine lock.
 
 ## Contract and criteria this slice serves (quoted)

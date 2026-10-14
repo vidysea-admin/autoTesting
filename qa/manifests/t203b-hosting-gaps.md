@@ -1,6 +1,7 @@
 # Manifest - t203b-hosting-gaps (T-203 rows HO4, HO12, HO15, HO19, HO21)
 
-## Status: ready-for-check
+## Status: superseded
+Superseded-by: commit 80c15ebb (merged via t203c); T-203 done, qa/verdicts/t203-task
 
 **Contract:** qa/contracts/hosting.md HO4, HO12, HO15, HO19, HO21 (not edited)
 **Goal task:** T-203
