@@ -55,7 +55,7 @@ def test_automatic_matching_needs_no_matches_file(tmp_path):
     assert rec.found_ids == ["B1"] and rec.missed_ids == ["B2"]
     assert rec.unconfirmed_ids == ["i2"]
     assert rec.match_method.startswith("automatic lexical: screen match + >=2 distinctive")
-    assert rec.match_thresholds == {"min_distinctive_tokens": 2, "min_hint_coverage": 0.6,
+    assert rec.match_thresholds == {"min_distinctive_tokens": 2, "min_hint_coverage": 0.75,
                                      "max_row_fraction": 0.2}
 
 
@@ -141,3 +141,21 @@ def test_same_screen_with_distinctive_tokens_matches(tmp_path):
                        "error toast shown after payment submit declined card", "Checkout")
     assert _cli().main(args) == 0
     assert _load(tmp_path).found_ids == ["T1"]
+
+
+def test_photo_upload_does_not_match_email_update(tmp_path):
+    args = _toast_args(tmp_path, "Profile", "profile photo upload fails silently without message",
+                       "profile email update fails silently without message", "Profile")
+    assert _cli().main(args) == 0
+    assert _load(tmp_path).found_ids == []
+
+
+def test_email_update_paraphrase_and_near_duplicate_match(tmp_path):
+    hint = "profile email update fails silently without message"
+    for n, seen in enumerate(["profile email update fails silently without message",
+                              "updating profile email just fails, user gets no message at all, "
+                              "email update silently dropped"]):
+        d = tmp_path / str(n)
+        d.mkdir()
+        assert _cli().main(_toast_args(d, "Profile", seen, hint, "Profile")) == 0
+        assert _load(d).found_ids == ["T1"], seen

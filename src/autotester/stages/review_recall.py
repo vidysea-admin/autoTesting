@@ -18,14 +18,15 @@ from autotester.stages.acceptance_comparison import RECALL_BASIS
 HIGH = "S1"
 EXPECTED_HIGH = 13
 MIN_DISTINCT = 2
-MIN_COVER = 0.6
+MIN_COVER = 0.75
 MAX_ROW_FRACTION = 0.2
-MATCH_METHOD = (
-    "automatic lexical: screen match + >=2 distinctive tokens, conservative, untuned")
+MATCH_METHOD = ("automatic lexical: screen match + >=2 distinctive tokens + rarest distinctive "
+                "token + coverage of distinctive tokens, conservative, untuned")
 _GENERIC = frozenset({
     "error", "toast", "duplicate", "shown", "shows", "showing", "failed", "fail", "wrong",
     "incorrect", "missing", "broken", "displayed", "issue", "bug", "button", "after", "before",
     "text", "message", "click", "user", "form", "submit", "entry", "data", "list", "listed",
+    "fails", "silently", "without",
 })
 _NEGATING = frozenset({"correct", "correctly", "works", "working", "successfully", "fine", "ok",
                        "expected", "properly"})
@@ -48,14 +49,14 @@ def _screen(text: str) -> str:
     return " ".join(re.findall(r"[a-z0-9]+", text.lower()))
 
 
-def _distinctive(rows: dict[str, set[str]]) -> set[str]:
+def _distinctive(rows: dict[str, set[str]]) -> dict[str, int]:
     """Hint tokens that are not generic defect words and occur in few oracle rows (IDF-style)."""
     cap = max(1, int(MAX_ROW_FRACTION * len(rows)))
     counts: dict[str, int] = {}
     for hint in rows.values():
         for t in hint:
             counts[t] = counts.get(t, 0) + 1
-    return {t for t, c in counts.items() if c <= cap and t not in _GENERIC}
+    return {t: c for t, c in counts.items() if c <= cap and t not in _GENERIC}
 
 
 def review_findings(reviews: list[VideoReview], oracle: BenchCorpus) -> list[tuple[str, Finding]]:
@@ -63,7 +64,9 @@ def review_findings(reviews: list[VideoReview], oracle: BenchCorpus) -> list[tup
 
     A pair matches only when the item's screen equals the row's location (normalised; either
     side empty means no match) AND the item's `seen` shares >= MIN_DISTINCT distinctive
-    tokens with the row's `detect_hint` AND covers >= MIN_COVER of the hint tokens. An item
+    tokens with the row's `detect_hint`, covers >= MIN_COVER of the row's distinctive tokens
+    (generic words do not count) AND contains the row's rarest distinctive token (lowest oracle
+    frequency, then longest). An item
     that reads as "works correctly" never matches. One item takes at most one row and one row
     at most one item (best first). Doubt leaves the item unmatched: unconfirmed, the row
     missed (D-094)."""
@@ -78,10 +81,13 @@ def review_findings(reviews: list[VideoReview], oracle: BenchCorpus) -> list[tup
         if toks & _NEGATING or not screen:
             continue
         for bug_id, hint in rows.items():
-            shared = toks & hint
-            if (where[bug_id] == screen and hint and len(shared & distinct) >= MIN_DISTINCT
-                    and len(shared) / len(hint) >= MIN_COVER):
-                scored.append((len(shared) / len(hint), len(shared), k, bug_id))
+            key = hint & distinct.keys()
+            if where[bug_id] != screen or len(key) < MIN_DISTINCT:
+                continue
+            rarest = min(key, key=lambda t: (distinct[t], -len(t), t))
+            hit = toks & key
+            if rarest in toks and len(hit) >= MIN_DISTINCT and len(hit) / len(key) >= MIN_COVER:
+                scored.append((len(hit) / len(key), len(hit), k, bug_id))
     chosen: dict[int, str] = {}
     used: set[str] = set()
     for _, _, k, bug_id in sorted(scored, key=lambda t: (-t[0], -t[1], t[2], t[3])):
