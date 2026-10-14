@@ -127,8 +127,7 @@ def score_reviews(
     if bad or bad_items:
         raise RecallInputError(f"matches name unknown oracle ids {bad} / item ids {bad_items}")
     found = [t for t in targets if matches.get(t)]
-    matched_items = {i for ids in matches.values() for i in ids}
-    unconfirmed = [i for i in item_ids if i not in matched_items]
+    unconfirmed = [i for i in item_ids if i not in {x for v in matches.values() for x in v}]
     return ReviewRecall(
         id=f"recall_{oracle.id}",
         claim=f"measured on {len({r.source_id for r in reviews})} videos",
