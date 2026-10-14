@@ -80,11 +80,17 @@ DEFECT_PHRASES = [
     "server returned 500", "page shows 404", "login didn't work", "failed to authenticate",
     "unable to log in", "the save does not complete", "the request time out",
     "login is unsuccessful",
+    "no crash, or the error banner appeared", "no error, a bug or two remain",
+    "no error, rejection or crash, then the app froze", "no error but the app froze",
+    "no error, however the page hung", "the app is frozen", "the page hangs",
+    "the button no longer works", "the export stopped working", "the link doesn't work",
+    "the link does not work", "without error, broken or not",
 ]
 NEGATED_PHRASES = [
     "no error", "without errors", "did not fail", "nothing blocked", "no timeouts", "not broken",
     "no errors and nothing is missing", "never crashed", "the page loaded in 500ms",
-    "total is $500", "without any exception", "none were blocked",
+    "total is $500", "No error, rejection, wrong result, or missing element",
+    "no error, crash or hang on submit", "without any exception", "none were blocked",
 ]
 
 
