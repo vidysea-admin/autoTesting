@@ -1,6 +1,6 @@
 # Plan — AutoTester, remaining units
 
-**Purpose:** the 26 remaining work units (refreshed 2026-10-07 from `.goal/goal.json`: 59 of 90 tasks done, 31 pending) in dependency order — files touched, how each is tested, criticality, persona walk — and the tasks held on a human gate.
+**Purpose:** the 4 remaining tasks (refreshed 2026-10-14 from `.goal/goal.json`: 88 of 92 tasks done, 4 pending) in dependency order — files touched, how each is tested, criticality, persona walk — and the tasks held on a human gate.
 **Open me when:** picking the next unit or wave, or asking what is deliberately not being built right now.
 
 <!-- PLAN phase step 4, BACKFILL. Covers only what is NOT yet shipped; M0–M6 units are already
@@ -8,6 +8,8 @@
      2026-10-07 refresh (AT-744..756 drift): the 2026-09-27 list said "26 units"; nine of them have
      since closed (T-195, T-185, AT-335, T-186, T-189, T-191, T-192, T-150, T-171) and group 10 + the
      D-071 tasks were added. The count happens to be 26 again, but it is a different 26. -->
+
+**Status 2026-10-14:** T-200 done. T-145, T-169, T-206: code done, live runs in progress under Umesh's production approvals. T-136: deferred until the human tester list arrives. Hosted Ubuntu check: deferred until host details arrive. TV9 clause 2 is decided by D-097.
 
 **Spec:** docs/spec.md (backfill, 2026-09-27; Group 10 R32-R65 added 2026-10-07) · **Status:** draft; Group 10 units G1-G10 await `qa/gates/plan-approved-g10.md`
 

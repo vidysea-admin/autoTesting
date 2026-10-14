@@ -260,7 +260,9 @@ to exceed its declared scope. `write_policy` stays `read_only`.*
 2. Both intake modes work on a real target and beat-or-match a human tester (T-169).
 3. Every finding is evidence-backed and correctly classified; coverage shows untested branches.
 
-## Progress (from `.goal/goal.json`, 2026-10-07): **59 / 90 done (66%)**
+## Progress (from `.goal/goal.json`, 2026-10-14): **88 / 92 done (96%)**
+
+**Status 2026-10-14:** T-200 done. T-145, T-169, T-206: code done, live runs in progress under Umesh's production approvals. T-136: deferred until the human tester list arrives. Hosted Ubuntu check: deferred until host details arrive. TV9 clause 2 is decided by D-097.
 
 **Roadmap reconciliation, 2026-09-27:** this file previously read "47 / 70 done (67%)" and listed no
 tasks above T-184. `T-185..T-195` were in the machine backlog and absent here — **nine of the eleven
