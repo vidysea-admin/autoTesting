@@ -18,7 +18,10 @@ from autotester.stages.acceptance_comparison import RECALL_BASIS
 HIGH = "S1"
 EXPECTED_HIGH = 13
 MIN_SHARED = 3
-MIN_COVER = 0.4
+MIN_COVER = 0.6
+MATCH_METHOD = "automatic lexical (conservative, untuned)"
+_NEGATING = frozenset({"correct", "correctly", "works", "working", "successfully", "fine", "ok",
+                       "expected", "properly"})
 _STOP = frozenset({
     "the", "a", "an", "and", "or", "of", "to", "in", "on", "is", "are", "was", "for", "with",
     "from", "at", "as", "by", "it", "this", "that", "not", "be", "has", "have", "page", "screen",
@@ -35,26 +38,33 @@ def _tokens(text: str) -> set[str]:
 
 
 def review_findings(reviews: list[VideoReview], oracle: BenchCorpus) -> list[tuple[str, Finding]]:
-    """(item id, Finding) per review item; `matched_bug_id` set by lexical overlap.
+    """(item id, Finding) per review item; `matched_bug_id` set conservatively, no model.
 
-    An item matches the oracle row sharing most content tokens with it, provided it shares
-    at least MIN_SHARED and covers MIN_COVER of the row's tokens. Otherwise it stays None:
-    unconfirmed, never a false positive (D-094)."""
-    rows = [(b.id, _tokens(f"{b.location} {b.detect_hint} {b.description}"))
-            for b in oracle.seeded_bugs]
-    out: list[tuple[str, Finding]] = []
-    for review in reviews:
-        for item in review.items:
-            text = f"{item.screen}: {item.seen} {item.suggestion}"
-            toks = _tokens(text)
-            best, best_n = None, 0
-            for bug_id, rt in rows:
-                n = len(toks & rt)
-                if n >= MIN_SHARED and rt and n / len(rt) >= MIN_COVER and n > best_n:
-                    best, best_n = bug_id, n
-            out.append((item.id, Finding(text=text, matched_bug_id=best,
-                                         reported_at_s=item.time_s)))
-    return out
+    Only the item's observed text (`seen`) is compared with a row's `detect_hint`; screen,
+    location and stopword tokens are excluded. A pair needs >= MIN_SHARED shared tokens
+    covering >= MIN_COVER of the hint, and an item that reads as "works correctly" never
+    matches. Each item takes at most one row and each row at most one item (best first).
+    Doubt leaves the item unmatched: unconfirmed, the row missed (D-094)."""
+    rows = {b.id: _tokens(b.detect_hint) - _tokens(b.location) for b in oracle.seeded_bugs}
+    items = [i for r in reviews for i in r.items]
+    scored = []
+    for k, item in enumerate(items):
+        toks = _tokens(item.seen)
+        if toks & _NEGATING:
+            continue
+        for bug_id, hint in rows.items():
+            n = len(toks & hint)
+            if n >= MIN_SHARED and hint and n / len(hint) >= MIN_COVER:
+                scored.append((n / len(hint), n, k, bug_id))
+    chosen: dict[int, str] = {}
+    used: set[str] = set()
+    for _, _, k, bug_id in sorted(scored, key=lambda t: (-t[0], -t[1], t[2], t[3])):
+        if k not in chosen and bug_id not in used:
+            chosen[k] = bug_id
+            used.add(bug_id)
+    return [(item.id, Finding(text=f"{item.screen}: {item.seen}", matched_bug_id=chosen.get(k),
+                              reported_at_s=item.time_s))
+            for k, item in enumerate(items)]
 
 
 def _auto_matches(reviews: list[VideoReview], oracle: BenchCorpus) -> dict[str, list[str]]:
@@ -83,7 +93,7 @@ def score_reviews(
     item_ids = [i.id for r in reviews for i in r.items]
     if len(set(item_ids)) != len(item_ids):
         raise RecallInputError("duplicate review item ids across the supplied reviews")
-    method = "human override" if matches is not None else "automatic lexical"
+    method = "human override" if matches is not None else MATCH_METHOD
     if matches is None:
         matches = _auto_matches(reviews, oracle)
     bad = [o for o in matches if o not in rows]
@@ -103,6 +113,7 @@ def score_reviews(
             file_sha256=hashlib.sha256(oracle_bytes).hexdigest(),
         ),
         match_method=method,
+        match_thresholds={"min_shared_tokens": MIN_SHARED, "min_hint_coverage": MIN_COVER},
         n=len(targets), k=len(found), recall=len(found) / len(targets) if targets else None,
         found_ids=found, missed_ids=[t for t in targets if t not in found],
         matches={k: v for k, v in sorted(matches.items()) if v},

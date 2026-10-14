@@ -32,7 +32,8 @@ class ReviewRecall(Artifact):
     oracle: OracleRef
     independent: bool = False
     threshold: str = "none (intent Q3 carried)"
-    match_method: str = "automatic lexical"
+    match_method: str = "automatic lexical (conservative, untuned)"
+    match_thresholds: dict[str, float] = Field(default_factory=dict)
     n: int = Field(ge=0, description="oracle rows at the chosen severity")
     k: int = Field(ge=0, description="of those, rows with at least one matched review item")
     recall: float | None = None

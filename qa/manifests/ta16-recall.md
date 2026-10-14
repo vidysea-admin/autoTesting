@@ -3,7 +3,7 @@
 Unit: ta16-recall
 Contract: qa/contracts/team-loop-acceptance.md TA16
 Tier: M
-Fix cycle: 2
+Fix cycle: 3
 Executor: maker
 Status: ready-for-check
 Branch: wave/ta16-recall

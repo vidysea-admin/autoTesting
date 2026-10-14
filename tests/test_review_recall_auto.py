@@ -53,7 +53,9 @@ def test_automatic_matching_needs_no_matches_file(tmp_path):
     assert _cli().main(_args(tmp_path)) == 0
     rec = _load(tmp_path)
     assert rec.found_ids == ["B1"] and rec.missed_ids == ["B2"]
-    assert rec.unconfirmed_ids == ["i2"] and rec.match_method == "automatic lexical"
+    assert rec.unconfirmed_ids == ["i2"]
+    assert rec.match_method == "automatic lexical (conservative, untuned)"
+    assert rec.match_thresholds == {"min_shared_tokens": 3, "min_hint_coverage": 0.6}
 
 
 def test_override_replaces_automatic(tmp_path):
@@ -66,3 +68,31 @@ def test_override_replaces_automatic(tmp_path):
 def test_oracle_must_have_expected_high_rows(tmp_path):
     assert _cli().main(_args(tmp_path, expected="13")) == 2
     assert not (tmp_path / "out").exists()
+
+
+def _match(tmp_path: Path, seen: str, screen: str = "Payments checkout") -> ReviewRecall:
+    args = _args(tmp_path)
+    review = VideoReview(id="rv1", source_id="src_a", status="ok", summary="flow",
+                         items=[_item("i1", screen, seen)])
+    (tmp_path / "r.json").write_text(review.model_dump_json())
+    assert _cli().main(args) == 0
+    return _load(tmp_path)
+
+
+def test_different_bug_probes_do_not_match(tmp_path):
+    for n, (screen, seen) in enumerate([
+        ("School Journey Communication history",
+         "emails sent successfully with correct student name displayed"),
+        ("Payments checkout", "charge shown once after retry works correctly"),
+        ("Payments checkout", "charge button colour wrong after retry"),
+        ("School Journey Communication history", "history page loads slowly with many emails"),
+        ("Profile", "phone field accepts letters"),
+    ]):
+        d = tmp_path / str(n)
+        d.mkdir()
+        assert _match(d, seen, screen).found_ids == [], seen
+
+
+def test_paraphrase_with_key_terms_matches_once(tmp_path):
+    rec = _match(tmp_path, "customer charge shown twice after retry, a duplicate")
+    assert rec.found_ids == ["B2"] and rec.matches == {"B2": ["i1"]}
