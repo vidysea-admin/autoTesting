@@ -11,6 +11,8 @@ from fastapi.responses import HTMLResponse
 
 from autotester.auth.context import current_principal
 from autotester.stages.report_delivery import inbox_for
+from autotester.stages.schedule_store import read_all_records
+from autotester.stages.schedule_wiring import schedule_paths
 from autotester.ui import inbox_view
 from autotester.ui.run_queue import get_queue
 
@@ -22,4 +24,5 @@ def inbox() -> str:
     who = current_principal()
     if who is None or not who.authenticated:
         raise HTTPException(401, "sign in to see your reports")
-    return inbox_view.inbox_page(inbox_for(who, get_queue().snapshot()))
+    return inbox_view.inbox_page(inbox_for(
+        who, get_queue().snapshot(), slots=read_all_records(schedule_paths().records)))

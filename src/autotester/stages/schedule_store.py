@@ -97,6 +97,13 @@ def read_records(path: Path) -> list[SlotRecord]:
     return out
 
 
+def read_all_records(records_dir: Path) -> list[SlotRecord]:
+    """Every project's slot records (the inbox lists the blocked ones: TS5). Empty if none."""
+    if not records_dir.is_dir():
+        return []
+    return [r for f in sorted(records_dir.glob("*.jsonl")) for r in read_records(f)]
+
+
 def project_records_path(records_dir: Path, project: str) -> Path:
     """The one records file of a project. One file per project, never one shared file: a purge
     then never touches another project's lines, so a neighbour's append cannot be lost."""
