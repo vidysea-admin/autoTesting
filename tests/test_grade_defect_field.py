@@ -46,6 +46,15 @@ MUST_HOLD = [
     "No redirect happened and an error is shown",
     "The page did not load and the form is broken",
     "No error, but the page crashed",
+    "No crash, error shown",
+    "no error, broken layout",
+    "no errors, wrong value",
+    "no error, 500",
+    "no issues, crash on submit",
+    "no problems, unable to submit",
+    "Not blocked, missing field",
+    "no error, unexpected redirect",
+    "no error, invalid total shown",
 ]
 
 
@@ -77,11 +86,14 @@ def _j(note: str | None, **kw) -> Judgment:
                     criteria_total=1, note=note, **kw)
 
 
-@pytest.mark.parametrize("note", [
-    *MISFIRES,
-    "Required-field validation errors appeared on the empty form. No defect observed."])
+@pytest.mark.parametrize("note", MISFIRES)
 def test_defect_observed_false_keeps_a_misfire_note_pass(note: str) -> None:
     assert _grade(_j(note, defect_observed=False)).result is Result.PASS
+
+
+@pytest.mark.parametrize("note", [*MUST_HOLD, REAL_NOTES["case_7a978722a38c"]])
+def test_defect_observed_false_never_overrides_a_defect_note(note: str) -> None:
+    assert _grade(_j(note, defect_observed=False)).result is Result.INCONCLUSIVE
 
 
 @pytest.mark.parametrize("note", GUARD_CLEAN)

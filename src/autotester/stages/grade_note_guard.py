@@ -77,25 +77,44 @@ def failure_terms(note: str | None) -> list[str]:
     spans = [m.span() for m in _NEGATED_SUCCESS.finditer(note)]
     found: list[str] = []
     for match in sorted(hits, key=lambda m: m.start()):
-        if _negated(note, match.start(), spans):
+        if _negated(note, match.start(), match.end(), spans):
             continue
         found.append(" ".join(match.group(0).lower().split()))
     return found
 
 
-def _negated(note: str, start: int, success_spans: list[tuple[int, int]]) -> bool:
+def _list_closes(note: str, end: int) -> bool:
+    """True when the list continues after `end` and closes with "or"/"nor" in the same clause.
+
+    A comma extends a negation only inside such a list ("no error, rejection, or missing
+    element"); "no error, broken layout" is two statements, so the second is un-negated."""
+    stop = _CLAUSE_BREAK.search(note, end)
+    for tok in _TOKEN.finditer(note, end, stop.start() if stop else len(note)):
+        word = tok.group(0).lower()
+        if word in ("or", "nor"):
+            return True
+        if word != "," and word not in _FILLERS and not _DEFECT_LEXICON.fullmatch(word):
+            return False
+    return False
+
+
+def _negated(note: str, start: int, end: int, success_spans: list[tuple[int, int]]) -> bool:
     """True when a negator directly governs the term at `start` (see the scope rule above).
 
     A negator that is itself part of a negated-success phrase ("did not load") reports a
     defect, so it never negates a later term."""
     clause_start = max((m.end() for m in _CLAUSE_BREAK.finditer(note[:start])), default=0)
     toks = list(_TOKEN.finditer(note, clause_start, start))
+    seen_or = False
     for i in range(len(toks) - 1, -1, -1):
         word = toks[i].group(0).lower()
         nxt = toks[i + 1].group(0).lower() if i + 1 < len(toks) else ""
         if (word in _NEGATORS or word.endswith("n't")
                 or _PHRASE_NEGATORS.get(word) == nxt):
             return not any(a <= toks[i].start() < b for a, b in success_spans)
+        seen_or = seen_or or word in ("or", "nor")
+        if word == "," and not (seen_or or _list_closes(note, end)):
+            return False
         if word not in _FILLERS and not _DEFECT_LEXICON.fullmatch(word):
             return False
     return False

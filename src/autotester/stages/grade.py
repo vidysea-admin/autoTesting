@@ -237,7 +237,8 @@ def _defect_decision(judgment: Judgment, final: Result, note: str | None
                      ) -> tuple[Result, str | None]:
     """The judge's structured `defect_observed` decides a PASS; the note guard is the backstop.
 
-    PASS stands only if the judge said defect_observed=false. True -> INCONCLUSIVE (the
+    PASS stands only if the judge said defect_observed=false AND the note guard finds no
+    un-negated defect term (a false INCONCLUSIVE beats a false PASS). True -> INCONCLUSIVE (the
     judge contradicted itself). Field absent -> the clause-scoped note guard (AT-997) decides.
     A non-boolean value never reaches here: `Judgment` rejects it (fail closed)."""
     if final is not Result.PASS:
@@ -247,7 +248,7 @@ def _defect_decision(judgment: Judgment, final: Result, note: str | None
     if judgment.defect_observed:
         return Result.INCONCLUSIVE, _joined(DEFECT_CONTRADICTION.format(
             summary=judgment.defect_summary or "no summary"), note)
-    return final, note
+    return note_guard(final, note)  # defect_observed=false never overrides a defect note
 
 
 def _shortfall(*, images_requested: int, images_seen: int) -> str | None:

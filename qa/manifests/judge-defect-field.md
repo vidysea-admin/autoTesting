@@ -2,7 +2,7 @@
 **Contract:** qa/contracts/core-invariants.md (C12 fail closed)
 **Goal task:** none (follow-up to the T-169 real PathLynks run, inconclusive-analysis Cause 2)
 **Date:** 2026-10-13
-**Fix cycle:** 2
+**Fix cycle:** 3
 **Status:** ready-for-check
 **Executor:** claude-sonnet-subagent
 
@@ -34,6 +34,15 @@
   (`tests/fixtures/t169_real_judge_notes.json`, clean of secrets). 7 of the 8 are not held; the 8th
   (7a978722a38c, "validation errors appeared ... No defect observed") stays guard-held when the field
   is absent (accepted conservative case, as in the analysis) and passes with defect_observed=false.
-- ACCEPTED RISK: `defect_observed=false` is trusted over the note, so a judge that sets false while
+- (SUPERSEDED in cycle 3, see below) ACCEPTED RISK: `defect_observed=false` is trusted over the note, so a judge that sets false while
   its note describes a defect yields PASS. Not mitigated: holding on an un-negated defect word would
   re-hold the legitimate negative-case notes the field exists to release. Decision for Umesh.
+
+## Fix cycle 3
+- A comma extends a negation only when the list closes with "or"/"nor" in the same clause
+  (`_list_closes` / seen-or). "no error, broken layout", "No crash, error shown" and 7 sibling
+  phrases are held; verbatim "No error, rejection, wrong result, or missing element" is not.
+- `grade._defect_decision`: `defect_observed=false` no longer overrides a defect note; the note guard
+  still runs and holds INCONCLUSIVE on an un-negated defect term (the cycle-2 accepted risk is closed).
+  Consequence: real note 7a978722a38c ("validation errors appeared") is now held even with the field
+  false (false INCONCLUSIVE, accepted). The other 7 real notes still PASS.
