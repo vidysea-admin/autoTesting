@@ -22,3 +22,20 @@
 
 ## Handback
 Maker: run `autotester map`, commit docs/MAP.md, set `Fix cycle: 2`, status ready-for-check. Optionally tie the probe time to the budget.
+
+---
+
+# Cycle 2
+
+**Cycle checked:** 2
+**Verdict:** PASS
+**Head checked:** a0f92212
+
+- doctor: clean (MAP.md no longer stale). ruff: clean.
+- Timeout: `browser/session.py:209` passes `max(1.0, 30000 - spent_ms)` to `BrowserSession._timeout`, then `RunBudget.remaining_ms` (`stages/run_budget.py:110`), which rejects `requested < 1` and raises on an exhausted budget. A zero or negative timeout cannot reach Playwright. With no budget, `_timeout` returns `{}` so Playwright's 30 s default applies. `test_recovery_probe_time_is_deducted_from_the_click_timeout` proves the deduction (asserts 18000); it does not exercise the `max(1.0, ...)` floor, which is a minor test gap.
+- Unauth cases still take `is_entry_case` -> the wiped entry profile. Sidebar expand is bounded: at most 2.5 s per probe, one expand attempt, no retry loop.
+- `run_launcher.py` is still exactly 300 lines (at the limit, passes).
+- Targeted tests: 14 passed (`test_click_recovery`, `test_unauth_entry_case`).
+- `test_mc_sessionstart_loop_status.py::test_the_timeout_kills_the_real_grandchild_process_not_just_uv` FAILS identically on this branch and on a master checkout (26e68661). It is pre-existing and not a regression from this branch.
+- `git merge-tree` against master: clean.
+- Not run: the live-browser test `test_unauth_menu_live` (no-browser rule).
