@@ -20,3 +20,13 @@ Verdict: FAIL
 - (b) BLOCKING - the lexical matcher over-matches. Adversarial probe (3 oracle rows; items on the same screen with a different defect): 5 of 5 different-bug items matched an oracle row, e.g. "emails sent successfully with correct student name displayed" -> the placeholder-name bug; "charge shown once after retry works correctly" -> the duplicate-charge bug; an unrelated profile-page defect -> the phone-field bug. Cause: the item's screen text is in the matched string and equals the row's location, so location words alone plus 1 common word clear MIN_SHARED=3 / MIN_COVER=0.4. A false match inflates recall. Fix: exclude screen/location tokens from the overlap (match on seen vs detect_hint only), require a higher shared count, and add these pairs as negative tests; or only propose matches and leave confirmation to the override.
 - (c) Partial - `match_method: "automatic lexical"` is in recall.json, but "untuned" and the thresholds (MIN_SHARED, MIN_COVER) are not. Add them to the output.
 - (d) PASS - 21 scoped tests, ruff clean, doctor clean (MAP fixed), merge-tree clean, 13-row guard present.
+
+## Cycle 3 (head cdc8f344)
+
+Cycle checked: 3
+Verdict: FAIL (narrow)
+
+- Original 5 probes: 3 now unmatched; 2 still match (items 3 and 4: same-screen items repeating the row's key words, arguably ambiguous). Genuine true match still found.
+- New defect-vocabulary probes: "duplicate entry shown twice on profile save after retry" -> matched the duplicate-charge row (WRONG); "error toast shown on login after submit" -> matched the checkout error-toast row (WRONG, the same flaw as the example you named); two contrived probes that quote most of a row's hint also matched (acceptable). Cause: the screen is now ignored entirely and only generic words (error, toast, shown, after, submit) carry the 3/0.6 test, so a different screen with the same defect vocabulary matches.
+- Required fix: gate a match on screen agreement (item.screen shares a token with the row location) in addition to the hint overlap, or demand the row's rarest/most specific token (e.g. "charge", "phone"); add the login-vs-checkout and profile-duplicate pairs as negative tests. Alternatively mark auto matches as "proposed" and count only confirmed ones.
+- Disclosure OK (method string "conservative, untuned"). Scoped tests 23 passed, ruff clean, doctor clean, merge-tree clean.
