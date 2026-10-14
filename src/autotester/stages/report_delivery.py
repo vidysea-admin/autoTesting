@@ -8,6 +8,7 @@ viewer may not read is absent (never a 403 row), and an all-blocked run never re
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from collections.abc import Callable, Iterable
 from datetime import UTC, datetime
@@ -25,6 +26,7 @@ from autotester.schema.delivery import (
 )
 from autotester.schema.enums import Result
 from autotester.schema.run_queue import ACTIVE, QueueEntry, QueueStatus
+from autotester.schema.schedule import SlotOutcome, SlotRecord
 from autotester.store.project_store import ProjectStore
 
 log = logging.getLogger(__name__)
@@ -65,9 +67,23 @@ def _link(entry: QueueEntry) -> str:
     return f"{base}/runs/{entry.id}" if done else f"{base}/test/{entry.id}"
 
 
+_BLOCKED_SLOTS = (SlotOutcome.BLOCKED_NO_CREDENTIALS, SlotOutcome.REFUSED)
+
+
+def _slot_row(rec: SlotRecord) -> InboxEntry:
+    """A blocked scheduled slot as an inbox row (TS5): no run exists, so the id is a stable
+    digest of the slot key and the link goes to the schedule card, which names the reason."""
+    digest = hashlib.sha256(rec.slot_key.encode()).hexdigest()[:12]
+    return InboxEntry(project=rec.project, run_id=f"slot-{digest}", status=QueueStatus.REFUSED,
+                      at=rec.recorded_at, scheduled=True, label=ReportLabel.BLOCKED,
+                      link=f"/projects/{rec.project}/schedule")
+
+
 def inbox_for(who: Principal, entries: Iterable[QueueEntry],
-              store_for: Callable[[str], ProjectStore] = ProjectStore) -> list[InboxEntry]:
-    """Requests whose project the viewer holds `report.view` on, newest first."""
+              store_for: Callable[[str], ProjectStore] = ProjectStore,
+              slots: Iterable[SlotRecord] = ()) -> list[InboxEntry]:
+    """Requests, plus blocked scheduled slots (`slots`), whose project the viewer holds
+    `report.view` on, newest first."""
     allowed: dict[str, bool] = {}
     rows: list[InboxEntry] = []
     for entry in entries:
@@ -83,6 +99,14 @@ def inbox_for(who: Principal, entries: Iterable[QueueEntry],
             started_by=None if scheduled else entry.requested_by,
             label=_label(entry, store_for(entry.project)), position=entry.position,
             link=_link(entry)))
+    for rec in slots:
+        if rec.outcome not in _BLOCKED_SLOTS:
+            continue
+        if rec.project not in allowed:
+            allowed[rec.project] = authorize(who, PermissionKey.REPORT_VIEW,
+                                             resource_for(rec.project))
+        if allowed[rec.project]:
+            rows.append(_slot_row(rec))
     return sorted(rows, key=lambda r: r.at, reverse=True)
 
 
