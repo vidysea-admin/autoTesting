@@ -61,6 +61,7 @@
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
 | `core/excel.py` | Workbook presentation helpers shared by every Excel exporter. |
 | `core/exit_codes.py` | The one exit-code table for machine-facing commands (T-174, CM1). |
+| `core/file_lock.py` | One job: a cross-process advisory file lock (`msvcrt.locking` on Windows, `flock` elsewhere). |
 | `core/ids.py` | Identifier generation. The ONLY place ids are minted. |
 | `core/localtime.py` | Fixed-offset time zones and local-to-UTC conversion for the scheduler. |
 | `core/paths.py` | Filesystem layout. The ONLY place project paths are constructed. |
