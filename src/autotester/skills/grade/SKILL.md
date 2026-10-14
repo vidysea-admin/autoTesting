@@ -22,6 +22,11 @@ Rules:
 - Your `result` must agree with your `note`: if the note describes a defect, an error where
   success was expected, or a reproduced bug, the result is `FAIL` (or `INCONCLUSIVE`), never
   `PASS`. A PASS whose note describes a failure is discarded by the stage.
+- `defect_observed` is REQUIRED: `true` if the evidence shows a product defect (an error where
+  success was expected, a wrong result, a missing element, a reproduced bug), `false` if it does
+  not. An expected error in a negative case (validation message on invalid input) is `false`.
+  Set `defect_summary` to one sentence when it is `true`. `result` is `PASS` only with
+  `defect_observed: false`; a PASS with `true` is discarded by the stage.
 - `criteria_total` must equal the number of criteria you were given.
 
 ## Rubric
@@ -37,4 +42,4 @@ Rules:
 {{FORMAT}}
 
 Answer with a JSON object matching the schema you were given (result, scoreboard, criteria_met,
-criteria_total, failures[], note).
+criteria_total, failures[], note, defect_observed, defect_summary).

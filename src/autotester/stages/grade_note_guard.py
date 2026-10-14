@@ -8,8 +8,14 @@ INCONCLUSIVE for a human, never persisted as PASS. A FAIL/INCONCLUSIVE answer is
 
 The test is deliberately conservative toward INCONCLUSIVE: a correct PASS whose note merely
 mentions an expected error (a negative case) is also held. That is the cheaper error. A defect
-word preceded within three words by a negator ("no errors", "without any bug", "did not fail")
+word preceded in its own clause by a negator ("no errors", "without any bug", "did not fail")
 does not count.
+
+T-169 real run: negation now binds to the defect word it directly governs (see `_negated`) instead
+of a 3-word lookback, which misfired on 7 of 8 held PASSes in the real PathLynks run. It does not
+reach across "and", a verb or an unrelated noun, so "no spinner and an error is shown" is held.
+The structured `Judgment.defect_observed`
+field is the primary signal; this module is the backstop when it is absent.
 
 AT-998 widened the test beyond bare defect words: a defect lexicon (blocked, timed out, stuck, 500,
 404, ...) plus negated-success phrases ("did not succeed", "not working as expected").
@@ -37,10 +43,24 @@ _NEGATED_SUCCESS = re.compile(
     r"complet\w*|respond\w*|finish\w*|authenticat\w*|log(?:ged)?\s?in|sign(?:ed)?\s?in|"
     r"submit\w*|sav(?:e|ed|ing))\b",
     re.IGNORECASE)
-_NEGATOR = re.compile(
-    r"\b(no|not|without|zero|nor|never|none|nothing|neither|free of|absence of)\b|n't\b",
-    re.IGNORECASE)
-_LOOKBACK_WORDS = 3
+# Negation binds only to the defect word it directly governs. Walking back from a defect term, the
+# only tokens allowed between it and a negator are fillers ("an", "evidence of", "product"), list
+# separators ("," / "or") and other defect words ("No error, rejection, wrong result, or missing
+# element"). Anything else - "and", a verb, a noun that is not a defect ("no confirmation, error
+# shown") - ends the scope, so the term counts as un-negated. When in doubt the term is flagged:
+# a false INCONCLUSIVE is far cheaper than a false PASS (C12).
+_NEGATORS = frozenset({"no", "not", "without", "zero", "nor", "never", "none", "nothing",
+                       "neither"})
+_PHRASE_NEGATORS = {"free": "of", "absence": "of", "rather": "than", "instead": "of",
+                    "other": "than"}
+_FILLERS = frozenset({"a", "an", "any", "the", "of", "evidence", "evidenced", "product", "observed",
+                      "sign", "signs", "trace", "visible", "visibly", "apparent", "other", "than",
+                      "result", "results", "element", "elements", "content", "message",
+                      "messages", "or", ",", "is", "are", "was", "were", "be", "been",
+                      "single", "such", "kind", "types", "type"})
+_TOKEN = re.compile(r"[\w']+|,")
+# A clause ends at sentence punctuation, so a negator never reaches into the next sentence.
+_CLAUSE_BREAK = re.compile(r"[.;:!?\n]")
 
 NOTE_DISAGREES = (
     "judge answered PASS but its own note describes a failure ({terms}): result and reasoning "
@@ -54,17 +74,57 @@ def failure_terms(note: str | None) -> list[str]:
     if not note:
         return []
     hits = [m for rx in (_DEFECT_LEXICON, _NEGATED_SUCCESS) for m in rx.finditer(note)]
+    spans = [m.span() for m in _NEGATED_SUCCESS.finditer(note)]
     found: list[str] = []
     for match in sorted(hits, key=lambda m: m.start()):
-        words = re.findall(r"[\w']+", note[:match.start()])[-_LOOKBACK_WORDS:]
-        if _NEGATOR.search(" ".join(words)):
+        if _negated(note, match.start(), match.end(), spans):
             continue
         found.append(" ".join(match.group(0).lower().split()))
     return found
 
 
+def _list_closes(note: str, end: int) -> bool:
+    """True when the list continues after `end` and closes with "or"/"nor" in the same clause.
+
+    A comma extends a negation only inside such a list ("no error, rejection, or missing
+    element"); "no error, broken layout" is two statements, so the second is un-negated."""
+    stop = _CLAUSE_BREAK.search(note, end)
+    for tok in _TOKEN.finditer(note, end, stop.start() if stop else len(note)):
+        word = tok.group(0).lower()
+        if word in ("or", "nor"):
+            return True
+        if word != "," and word not in _FILLERS and not _DEFECT_LEXICON.fullmatch(word):
+            return False
+    return False
+
+
+def _negated(note: str, start: int, end: int, success_spans: list[tuple[int, int]]) -> bool:
+    """True when a negator directly governs the term at `start` (see the scope rule above).
+
+    A negator that is itself part of a negated-success phrase ("did not load") reports a
+    defect, so it never negates a later term."""
+    clause_start = max((m.end() for m in _CLAUSE_BREAK.finditer(note[:start])), default=0)
+    toks = list(_TOKEN.finditer(note, clause_start, start))
+    seen_or = False
+    for i in range(len(toks) - 1, -1, -1):
+        word = toks[i].group(0).lower()
+        nxt = toks[i + 1].group(0).lower() if i + 1 < len(toks) else ""
+        if (word in _NEGATORS or word.endswith("n't")
+                or _PHRASE_NEGATORS.get(word) == nxt):
+            return not any(a <= toks[i].start() < b for a, b in success_spans)
+        seen_or = seen_or or word in ("or", "nor")
+        if word == "," and not (seen_or or _list_closes(note, end)):
+            return False
+        if word not in _FILLERS and not _DEFECT_LEXICON.fullmatch(word):
+            return False
+    return False
+
+
 def note_guard(judged: Result, note: str | None) -> tuple[Result, str | None]:
-    """Downgrade a PASS whose note describes a failure to INCONCLUSIVE; else pass through."""
+    """Downgrade a PASS whose note describes a failure to INCONCLUSIVE; else pass through.
+
+    Backstop only: `grade()` consults it when the judge omitted the structured
+    `defect_observed` field (when present, that field decides)."""
     terms = failure_terms(note)
     if judged is Result.PASS and terms:
         return Result.INCONCLUSIVE, NOTE_DISAGREES.format(
