@@ -2,7 +2,7 @@
 
 **Contract:** qa/contracts/parallel-run.md PR7; qa/contracts/consent.md CN10 (bounds mean one thing; C12 fail closed)
 **Goal task:** none (defect from the T-169 real PathLynks run; analysis: `check/t169-real:qa/evidence/t169-real/inconclusive-analysis.md`)
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Date:** 2026-10-13
 
