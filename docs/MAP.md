@@ -247,6 +247,7 @@
 | `stages/portal_persona_view.py` | Render a `PortalPersona` as `knowledge.md` — a human-readable VIEW of the |
 | `stages/product_map.py` | PRODUCT MAP: fold every recording analysis into one navigable screen map. |
 | `stages/read_context.py` | Read approved Markdown as metadata only, never a vault graph or body corpus. |
+| `stages/real_acceptance.py` | REAL-TARGET ACCEPTANCE DRIVER (T-169 GR1-GR4): approvals, evidence files, human checklist. |
 | `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
 | `stages/release.py` | The release trigger: stitch every flow's persisted plan into ONE gated release run (T-167). |
 | `stages/release_compare.py` | Release record assembly, the trusted-baseline rule and the regression diff (T-167, RR3/RR6). |
@@ -678,6 +679,7 @@
 | `scripts/regression_proof.py` | T-110: break a feature, confirm exactly that case FAILs while an unrelated |
 | `scripts/renumber_duplicate_issue_ids.py` | Give fresh ids to the LATER row of every duplicated id in qa/issues.jsonl. |
 | `scripts/run_pathlynks_first_cases.py` | T-050: 3 hand-written Pathlynks login cases (best/worst/edge), run headed and |
+| `scripts/run_real_acceptance.py` | T-169 GR1-GR4: drive one acceptance mode against a REAL, already-onboarded project. |
 | `scripts/score_video_issues.py` | Score AutoTester's issues against a human tester's sheet — T-136's acceptance. |
 | `scripts/serve_windows.ps1` | (no description) |
 <!-- /generated:scripts -->
