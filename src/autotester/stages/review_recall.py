@@ -133,7 +133,8 @@ def score_reviews(
         id=f"recall_{oracle.id}",
         claim=f"measured on {len({r.source_id for r in reviews})} videos",
         oracle=OracleRef(
-            corpus_id=oracle.id, mode=oracle.mode, provenance=DENOMINATOR_PROVENANCE.get(oracle.mode, "unknown"),
+            corpus_id=oracle.id, mode=oracle.mode,
+            provenance=DENOMINATOR_PROVENANCE.get(oracle.mode, "unknown"),
             recall_basis=RECALL_BASIS.get(oracle.mode, "unknown"), severity=severity,
             file_sha256=hashlib.sha256(oracle_bytes).hexdigest(),
         ),
