@@ -67,7 +67,10 @@ def _link(entry: QueueEntry) -> str:
     return f"{base}/runs/{entry.id}" if done else f"{base}/test/{entry.id}"
 
 
-_BLOCKED_SLOTS = (SlotOutcome.BLOCKED_NO_CREDENTIALS, SlotOutcome.REFUSED)
+# FAILED (enqueue raised, or the worker died) is a row too; the row carries no detail or URL,
+# only a link to the schedule card, so a cause that held a secret never reaches the inbox.
+_BLOCKED_SLOTS = (SlotOutcome.BLOCKED_NO_CREDENTIALS, SlotOutcome.REFUSED, SlotOutcome.FAILED,
+                  SlotOutcome.INTERRUPTED)
 
 
 def _slot_row(rec: SlotRecord) -> InboxEntry:

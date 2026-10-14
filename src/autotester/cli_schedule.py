@@ -52,7 +52,8 @@ def _text(report: TickReport) -> str:
     lines += [f"{r.project}  {r.outcome.value}  {r.slot_key}" + (f"  {r.detail}" if r.detail
                                                                 else "") for r in report.records]
     lines += [f"{key}  would fire" for key in report.would_fire]
-    lines += [f"{key}  would be blocked" for key in report.would_block]
+    lines += [f"{key}  would be refused: {report.would_block_reasons.get(key, 'blocked')}"
+              for key in report.would_block]
     lines += [f"{slug}  schedule invalid" for slug in report.invalid]
     lines += [f"error  {error}" for error in report.errors]
     return "\n".join(lines)

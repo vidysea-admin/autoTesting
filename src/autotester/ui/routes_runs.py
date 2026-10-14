@@ -30,6 +30,7 @@ from autotester.stages import run_launcher
 from autotester.stages.parallel_run import _free_ram_mb, plan_parallel_run
 from autotester.stages.run_launcher import LaunchRefused, RunSeams
 from autotester.stages.run_launcher import is_entry_case as _is_entry_case
+from autotester.stages.schedule_wiring import record_worker_end
 from autotester.ui.intake_gate_auth import principal_for_email
 from autotester.ui.run_queue import (
     QueueFull,
@@ -131,6 +132,10 @@ def tick_runner(entry: QueueEntry) -> None:
         _run_queued(entry)
     except RunRefused as exc:
         print(f"{entry.slot_key or entry.id}: run refused at start: {exc}", file=sys.stderr)
+        record_worker_end(entry, exc)
+        raise
+    except BaseException as exc:  # TS7: the slot record must show the death, then re-raise
+        record_worker_end(entry, exc)
         raise
 
 
