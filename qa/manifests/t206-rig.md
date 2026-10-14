@@ -5,7 +5,7 @@
 **Branch / base:** `wave/t206-runbook` on 22eac602; local master merged in fix cycle 3.
 Tier: S (test files and evidence only, no `src/`)
 Dual check: no
-Fix cycle: 6
+Fix cycle: 7
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): the commit that adds this file (`git log -1 -- qa/manifests/t206-rig.md`)
 Status: ready-for-check
@@ -101,3 +101,10 @@ All are strict=True. TAI2: each must be removed when its task lands; none may re
   4. TA6 d `raising_transport_leaves_verdict_unchanged`: deferred by D-092/D-093.
   None is locally provable today.
 - Result: tests/acceptance + test_analysis_flows + test_ui_sources: 77 passed, 4 skipped, 0 xfailed (before the TA4 registry change; TA1 and TA4 re-run 11 passed). Ruff clean, doctor clean.
+
+## Fix cycle 7 (TAI2: no skip allowed)
+
+- Rebased on master 502feb93 (TV9 cycle 2 is on master); my merge of the old TV9 a5b7621b is dropped. `git diff master...HEAD -- src` is empty (TAI1).
+- The 4 skipped tests are DELETED and recorded as runbook rows: TA3 server-process Test press = LIVE-WALK (TA15); TA6 outbox message, "Email me run reports" tick, raising transport = DEFERRED (D-092/D-093). Nothing else referenced them.
+- TA4 TV9 re-run against merged TV9 cycle 2: passes. TA1 setitem seam sanctioned per ruling.
+- Result: tests/acceptance + test_analysis_flows + test_ui_sources: 79 passed, 0 skipped, 1 xfailed (outside tests/acceptance: the held TV9 clause 2, to be flipped by the expand-over-DRAFT unit). tests/acceptance has no skip and no xfail. Ruff clean.

@@ -1,6 +1,6 @@
 """TA6: the Test button runs the real queue and launcher and the report reaches the right people,
 once. Rows (a), (b), (e) run today; the mail rows (c), (d) and the "Email me run reports" tick are
-skipped (deferred to production by D-092/D-093)."""
+recorded as DEFERRED rows in the runbook (D-092/D-093), not tests."""
 
 from __future__ import annotations
 
@@ -61,33 +61,6 @@ def test_e_a_missing_credential_pair_refuses_naming_the_credentials_and_leaves_n
     assert CANARY_SECRET not in resp.text
     assert world.snapshot() == before
     assert world.counters.sessions == 0 and world.counters.graded == 0
-
-
-@pytest.mark.skip(reason=(
-    "deferred to production by D-092/D-093 (email TT8/TT9): the outbox message is not "
-    "asserted here"))
-def test_c_exactly_one_outbox_message_goes_to_the_dev_who_ticked(world: World) -> None:
-    press(world, "dev")
-    assert len(list(world.outbox.glob("*.eml"))) == 1
-
-
-@pytest.mark.skip(reason=(
-    "deferred to production by D-093 (email TT8/TT9): no Email-me-run-reports "
-    "preference is built"))
-def test_c_the_dev_can_tick_email_me_run_reports() -> None:
-    from autotester.ui.app import app
-    assert any("notif" in p or "profile" in p
-               for p in [getattr(m, "path", "") for m in app.routes])
-
-
-@pytest.mark.skip(reason=(
-    "deferred to production by D-092/D-093 (email): a raising mail transport is not "
-    "exercised here"))
-def test_d_a_raising_transport_leaves_the_verdict_unchanged_and_the_inbox_entry(
-        world: World) -> None:
-    run_id = press(world, "dev")
-    assert world.store().load_run(run_id) is not None
-    assert list(world.root.rglob("inbox*"))
 
 
 def test_tt7_the_inbox_lists_the_report_for_dev_and_admin_but_not_tester(world: World) -> None:

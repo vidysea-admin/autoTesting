@@ -1,7 +1,7 @@
 """TA3: the deployment under test is a real server process. Starts the same ASGI app the launcher
 script serves (`uvicorn autotester.ui.app:app`, T-203) on a free loopback port over a fresh data
 root with auth ON, and replays the core path over real HTTP with real Host and Origin headers.
-The Test press inside the server process is skipped (live walk): it would start a real browser."""
+Recorded as a LIVE-WALK row (runbook TA15), not a test (a real browser)."""
 
 from __future__ import annotations
 
@@ -121,9 +121,3 @@ def test_a_foreign_host_and_a_foreign_origin_post_are_refused(server: Server) ->
     assert client.get("/auth/login").status_code == 200
 
 
-@pytest.mark.skip(reason=(
-    "live walk only (runbook TA15, T-201 TL-5 Test button): a Test press in the "
-    "separate server process would start a real browser; the press path is proved "
-    "in-process by TA6 and TA7"))
-def test_dev_presses_test_in_the_server_process_and_the_report_opens(server: Server) -> None:
-    raise AssertionError("not run")

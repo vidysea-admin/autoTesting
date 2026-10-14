@@ -136,7 +136,7 @@ Step counts (numbered steps and TAI rows above): READY 41, BLOCKED 12, DEFERRED 
 
 `uv run pytest tests/acceptance` (fix cycle 3): 62 passed, 4 skipped, 2 xfailed (strict).
 - strict xfail (genuinely pending, both T-169): TA4 TV9 (DRAFT flows from an intake source need the model-backed video analysis), TA5 "Run review" button (no route; the review runs from `autotester ingest review`).
-- skip, deferred to production by D-092/D-093 (email TT8/TT9): TA6 outbox message, "Email me run reports" tick, raising transport.
-- skip, live walk only (runbook TA15): TA3 Test press inside the separate server process.
+- DEFERRED (no test, D-092/D-093, email TT8/TT9): TA6 exactly-one outbox message to the dev who ticked; "Email me run reports" tick; raising transport leaves verdict and inbox entry unchanged.
+- LIVE-WALK (no test, runbook TA15): TA3 Test press inside the separate server process (starts a real browser).
 - converted to real tests this cycle: TT7 `/inbox` (dev and admin list the run, tester does not), TS1 schedule save (subadmin 303 and owner stored, tester refused), TS5 schedule card, TA14 subadmin journey. The TA8 no-credentials row now assigns the subadmin to the project first (owner guard HO24 runs before the credential gate).
 Not rig-testable at all: TA16 (artifact missing) and TA17 (AT-891).
