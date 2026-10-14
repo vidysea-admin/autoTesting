@@ -120,7 +120,7 @@ def _share_panel(base: str, link_since: str | None, people: list[str]) -> str:
 def player_page(slug: str, source: Source, comments: list[VideoComment], *, viewer: str,
                 moderator: bool, can_comment: bool, can_promote: bool,
                 share: tuple[str | None, list[str]] | None,
-                refused: tuple[str, str, str] | None = None) -> str:
+                refused: tuple[str, str, str] | None = None, review_html: str = "") -> str:
     base = f"/projects/{esc(slug)}/videos/{esc(source.id)}"
     items = "".join(_comment_li(
         c, base, can_edit=can_comment and c.author == viewer,
@@ -132,6 +132,7 @@ def player_page(slug: str, source: Source, comments: list[VideoComment], *, view
             + f"<h1>{esc(source.label or 'Video')}</h1>" + theme.card(player)
             + theme.card(f"<ul class='comments'>{items}</ul>"
                          + (_comment_form(base, refused) if can_comment else ""), title="Comments"))
+    body += review_html
     if share is not None:
         body += theme.card(_share_panel(base, share[0], share[1]), title="Share")
     return theme.page(esc(source.label or "Video"), body + SEEK_SCRIPT)

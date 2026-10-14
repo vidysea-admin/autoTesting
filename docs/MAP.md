@@ -285,6 +285,7 @@
 | `stages/video_review_plan.py` | Which seconds of a recording get looked at, and which do not (TV2, TV7 preview). |
 | `stages/video_review_prompt.py` | Build the model prompt for one batch of frames, and say what narration there is (TV5, TV6). |
 | `stages/video_review_render.py` | Render a stored review as Markdown or HTML with the identical item set (TV10, TV4, TV6). |
+| `stages/video_review_store.py` | Find the stored reviews of one recording (T-197 TV10): newest first, read-only. |
 | `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a/b, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
@@ -340,6 +341,7 @@
 | `ui/routes_video.py` | Serves a kept run video (T-191 evidence) by its evidence-relative path -- |
 | `ui/routes_video_comments.py` | Comment routes of the video portal (T-198b / G9, TP2, TP6). |
 | `ui/routes_video_portal.py` | The video page, its byte route and the sharing controls (T-198b / G9, TP1, TP3). |
+| `ui/routes_video_review.py` | POST /projects/{slug}/videos/{video_id}/review: the "Run review" button (TA5, TV7). |
 | `ui/run_execution.py` | Serial and parallel case-execution helpers for a triggered run. |
 | `ui/run_queue.py` | The server-wide run queue (T-203, D-072 G6, hosting.md HO15-HO20): pressing Test returns at once. |
 | `ui/run_queue_view.py` | The queue status card shown on a project's runs page (T-203): what is queued, running, done. |
@@ -349,6 +351,7 @@
 | `ui/theme_style.py` | The raw CSS/font-link template for every page. Split out of `theme.py` |
 | `ui/upload_stream.py` | Read one multipart upload from the wire into a staged file, stopping at the admin limit. |
 | `ui/video_portal_view.py` | The HTML of the video portal: player page, request-access page, shared list, requests list. |
+| `ui/video_review_view.py` | The Review card on the video page: a Run review form (if allowed) and the latest review. |
 <!-- /generated:map -->
 
 ## Schema summary

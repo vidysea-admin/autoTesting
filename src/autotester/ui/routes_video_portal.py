@@ -21,8 +21,11 @@ from autotester.schema.project import Source
 from autotester.stages import video_access as access
 from autotester.stages import video_comments as comments
 from autotester.stages.video_requests import latest_request, requests_by
+from autotester.stages.video_review_store import stored_reviews
+from autotester.store.project_store import ProjectStore
 from autotester.ui import video_portal_view as view
 from autotester.ui.helpers import _project_slugs
+from autotester.ui.video_review_view import review_panel
 
 router = APIRouter()
 K = PermissionKey
@@ -83,7 +86,11 @@ def render_player(who: Principal, slug: str, video_id: str, res: ResourceRef, so
         moderator=authorize(who, K.COMMENT_CREATE, ResourceRef(project_slug=slug)),
         can_comment=authorize(who, K.COMMENT_CREATE, res),
         can_promote=authorize(who, K.PROJECT_EDIT, project),
-        share=_share_panel_data(who, slug, res, video_id), refused=refused)
+        share=_share_panel_data(who, slug, res, video_id), refused=refused,
+        review_html=review_panel(
+            f"/projects/{slug}/videos/{video_id}",
+            next(iter(stored_reviews(ProjectStore(slug).paths, video_id)), None),
+            can_run=authorize(who, K.VIDEO_UPLOAD, res)))
 
 
 @router.get("/projects/{slug}/videos/{video_id}/media")
