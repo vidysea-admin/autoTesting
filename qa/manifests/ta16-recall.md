@@ -5,7 +5,7 @@ Contract: qa/contracts/team-loop-acceptance.md TA16
 Tier: M
 Fix cycle: 5
 Executor: maker
-Status: ready-for-check
+Status: checked-PASS
 Branch: wave/ta16-recall
 
 ## Change
