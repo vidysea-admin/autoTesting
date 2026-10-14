@@ -1,6 +1,6 @@
 # Manifest - approval-prod-gate
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Unit:** T-145 blind-checker defects D1-D3 (approval traceability, production gate, redaction, clean-checkout done_check)
 **Branch:** wave/approval-prod-gate
