@@ -64,3 +64,29 @@ def test_collapsed_parent_is_expanded_once_and_recorded() -> None:
 def test_still_blocked_target_is_left_for_the_real_click_to_fail_honestly() -> None:
     loc = _Loc(blocked_until=99, expander=None)
     assert ready_to_click(_Page(), loc) == ["scrolled target into view"]
+
+
+def test_recovery_probe_time_is_deducted_from_the_click_timeout(monkeypatch: Any) -> None:
+    from autotester.browser import session as sess_mod
+
+    clock = iter([100.0, 112.0])  # recovery consumed 12 s
+    monkeypatch.setattr(sess_mod.time, "monotonic", lambda: next(clock))
+    monkeypatch.setattr(sess_mod, "ready_to_click", lambda *_: [])
+    asked: list[float] = []
+
+    class _Budget:
+        def remaining_ms(self, requested: float = 30000) -> int:
+            asked.append(requested)
+            return int(requested)
+
+    class _Target:
+        def click(self, **kw: Any) -> None:
+            self.kw = kw
+
+    s = object.__new__(sess_mod.BrowserSession)
+    s.budget, tgt = _Budget(), _Target()  # type: ignore[misc]
+    s.locate = lambda _: tgt  # type: ignore[method-assign]
+    s._page = object()  # type: ignore[misc]
+    s._record = lambda *a, **k: None  # type: ignore[method-assign]
+    s.click("#x")
+    assert tgt.kw["timeout"] == 18000

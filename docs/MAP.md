@@ -33,6 +33,7 @@
 | `auth/ratelimit.py` | Login rate limit (AU5): 5 failures per account or 20 per client address inside a |
 | `auth/sessions.py` | Server-side sessions (AU3): a 256-bit random id in the cookie, only its SHA-256 in the |
 | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
+| `browser/click_recovery.py` | Click readiness: scroll into view, wait out overlays, expand a collapsed parent menu. |
 | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
 | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
 | `browser/evidence.py` | Screenshot capture and evidence-recording for `BrowserSession`. |
@@ -203,6 +204,7 @@
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
 | `stages/credential_files.py` | Which file names and suffixes hold credentials; they are refused without being opened. |
 | `stages/discover.py` | Inspect approved bounded file trees for deterministic, cited lexical signals. |
+| `stages/entry_precondition.py` | Whether a case needs a logged-out visitor (so it must not share the signed-in profile). |
 | `stages/eval_compiler.py` | EVAL COMPILER: compile evals from the knowledge graph, the FlowSpec and a written scenario |
 | `stages/execute.py` | EXECUTE: run one case's steps in a real browser, producing a RawResult. |
 | `stages/expand.py` | EXPAND: FlowSpec -> Case[], covering every applicable CaseClass per flow. |

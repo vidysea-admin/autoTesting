@@ -4,7 +4,7 @@
 **Contract:** `qa/contracts/core-invariants.md` C1, C2, C7 · `qa/contracts/ui-run.md` RU-entry rules (unchanged)
 **Goal task:** none (defects from the real PathLynks run, `qa/evidence/t169-real/inconclusive-analysis.md`)
 **Date:** 2026-10-13
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Status:** ready-for-check
 **Dual check:** no
 

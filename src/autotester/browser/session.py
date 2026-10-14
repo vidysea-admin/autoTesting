@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import shutil
+import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -200,10 +201,12 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
 
     def click(self, locator: str, *, step_order: int | None = None) -> Evidence:
         target = self.locate(locator)
+        began = time.monotonic()
         for note in ready_to_click(self.page, target):  # never a force-click; each step recorded
             self._record(EvidenceKind.DOM, f"{note} before clicking {locator}",
                          step_order=step_order)
-        target.click(**self._timeout())
+        spent_ms = (time.monotonic() - began) * 1000  # probes count against the step timeout
+        target.click(**self._timeout(max(1.0, 30000 - spent_ms)))
         return self._record(EvidenceKind.DOM, f"clicked {locator}", step_order=step_order)
 
     def current_url(self) -> str:
