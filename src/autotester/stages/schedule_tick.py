@@ -69,5 +69,9 @@ def _preview(report: TickReport, item: ScheduledProject, now: datetime, deps: Ti
                  since=item.since, grace_minutes=grace_minutes)
     if result.fire is None:
         return
-    blocked = preview is not None and preview(item.project) is not None
-    (report.would_block if blocked else report.would_fire).append(result.fire.key)
+    why = preview(item.project) if preview is not None else None
+    if why is None:
+        report.would_fire.append(result.fire.key)
+        return
+    report.would_block.append(result.fire.key)
+    report.would_block_reasons[result.fire.key] = why[:500]

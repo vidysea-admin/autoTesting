@@ -23,7 +23,7 @@ from urllib.parse import quote, unquote
 
 from pydantic import ValidationError
 
-from autotester.schema.schedule import SlotClaim, SlotRecord
+from autotester.schema.schedule import SlotClaim, SlotOutcome, SlotRecord
 
 _CLAIM_SUFFIX = ".claim"
 
@@ -57,6 +57,24 @@ def list_claims(claim_dir: Path) -> dict[str, SlotClaim | None]:
         except (OSError, ValidationError):
             out[key] = None
     return out
+
+
+class QueueUnreadable(Exception):
+    """The run queue's file exists but cannot be read: whether the project is busy is unknown."""
+
+
+def amend_record(path: Path, slot_key: str, outcome: SlotOutcome, detail: str) -> bool:
+    """Rewrite one slot's record with a terminal outcome (a worker failed after the enqueue,
+    TS7). Atomic replace of the one project file; False when the slot has no record."""
+    records = read_records(path)
+    if not any(r.slot_key == slot_key for r in records):
+        return False
+    lines = [(r.model_copy(update={"outcome": outcome, "detail": detail[:500]}) if r.slot_key
+              == slot_key else r).model_dump_json() for r in records]
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
+    return True
 
 
 def append_record(path: Path, record: SlotRecord) -> bool:

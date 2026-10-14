@@ -25,6 +25,7 @@ from autotester.delivery.inbox import DeliveryLog
 from autotester.schema.run_queue import ACTIVE, QueueEntry, QueueStatus, RunQueueFile
 from autotester.schema.team_enums import RunVia
 from autotester.stages.report_delivery import record_inbox_delivery
+from autotester.stages.schedule_store import QueueUnreadable
 from autotester.store.filestore import read_json, write_json
 from autotester.store.server_settings import effective_max_concurrent_runs
 
@@ -273,9 +274,10 @@ def set_queue(queue: RunQueue) -> None:
 
 def persisted_entries() -> list[QueueEntry]:
     """The server's queue file, read only: another process's view, for the scheduler's overlap
-    check. Never `recover()`s, never writes; an absent or unreadable file is an empty queue."""
+    check. Never `recover()`s, never writes. An absent file is an empty queue; an unreadable or
+    corrupt one raises `QueueUnreadable` (busy is unknown, so the slot is skipped, not run)."""
     try:
         stored = read_json(_queue_file(), RunQueueFile)
-    except (ValueError, OSError):
-        return []
+    except (ValueError, OSError) as exc:
+        raise QueueUnreadable(f"the run queue file cannot be read ({type(exc).__name__})") from exc
     return list(stored.entries) if stored else []

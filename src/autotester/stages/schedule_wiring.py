@@ -20,13 +20,21 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import NamedTuple, Protocol
 
+from autotester.auth.loopback import auth_disabled
 from autotester.browser.secrets import SecretStore
+from autotester.core.consent import ApprovalRequired, require_project_approval
 from autotester.core.paths import ProjectPaths, repo_root, team_path
+from autotester.schema.enums import ApprovalKind
+from autotester.schema.project import Project
 from autotester.schema.run_queue import ACTIVE, QueueEntry
-from autotester.schema.schedule import ScheduleMode, TickReport
+from autotester.schema.schedule import ScheduleMode, SlotOutcome, TickReport
 from autotester.stages.schedule_gate import credential_gate, refusal_for
-from autotester.stages.schedule_owner import owner_guard
-from autotester.stages.schedule_store import project_records_path, read_heartbeat
+from autotester.stages.schedule_owner import owner_guard, owner_refusal
+from autotester.stages.schedule_store import (
+    amend_record,
+    project_records_path,
+    read_heartbeat,
+)
 from autotester.stages.schedule_tick import ScheduledProject, run_tick
 from autotester.stages.scheduler import DEFAULT_GRACE_MINUTES, QueueSnapshot, Slot, TickDeps
 from autotester.store.project_store import ProjectStore
@@ -128,7 +136,40 @@ def real_preview(slug: str, root: Path | None) -> str | None:
     """The read-only TS5 check a `--dry-run` uses in place of the gate."""
     store = ProjectStore(slug, root)
     project = store.load_project()
-    return f"project '{slug}' no longer exists" if project is None else refusal_for(project, store)
+    if project is None:
+        return f"project '{slug}' no longer exists"
+    return (refusal_for(project, store) or _production_refusal(project, store)
+            or (None if auth_disabled() else owner_refusal(slug, project.schedule.owner
+                                                           if project.schedule else None)))
+
+
+def _production_refusal(project: Project, store: ProjectStore) -> str | None:
+    """Read-only twin of the real gate's D-088 step: a production project needs a human-granted
+    signed row (`require_project_approval`); the preview must not say "would run" without one."""
+    if not project.production:
+        return None
+    try:
+        require_project_approval(store.list_approvals(), project=project,
+                                 kind=ApprovalKind.LIVE_CASE, target=project.base_url)
+    except ApprovalRequired as exc:
+        return f"approval_required: {str(exc).splitlines()[0]}"
+    return None
+
+
+def record_worker_end(entry: QueueEntry, exc: BaseException, root: Path | None = None) -> bool:
+    """TS7: a scheduled run's worker died after the enqueue, so its slot record (still
+    `enqueued`) is rewritten `failed` with the exception CLASS only (a message may carry a
+    secret). Never raises: the queue entry's own terminal state is what the caller keeps."""
+    if entry.trigger != "schedule" or not entry.slot_key:
+        return False
+    outcome = SlotOutcome.REFUSED if type(exc).__name__ == "RunRefused" else SlotOutcome.FAILED
+    detail = "run refused at start" if outcome is SlotOutcome.REFUSED else (
+        f"worker ended: {type(exc).__name__}")
+    try:
+        path = project_records_path(schedule_paths(root).records, entry.project)
+        return amend_record(path, entry.slot_key, outcome, detail)
+    except OSError:
+        return False
 
 
 def _scrubber(slug: str, root: Path | None) -> Callable[[str], str]:

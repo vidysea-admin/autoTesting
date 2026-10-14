@@ -231,5 +231,6 @@ class TickReport(BaseModel):
     records: list[SlotRecord] = Field(default_factory=list)
     would_fire: list[str] = Field(default_factory=list)
     would_block: list[str] = Field(default_factory=list)
+    would_block_reasons: dict[str, str] = Field(default_factory=dict)  # slot key -> why (dry run)
     invalid: list[str] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)

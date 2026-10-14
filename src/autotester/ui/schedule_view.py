@@ -14,7 +14,13 @@ from html import escape
 
 from autotester.core.localtime import zone
 from autotester.schema.project import Project
-from autotester.schema.schedule import ScheduleConfig, ScheduleMode, ScheduleZone
+from autotester.schema.schedule import (
+    ScheduleConfig,
+    ScheduleMode,
+    SchedulerHealth,
+    ScheduleZone,
+    SlotRecord,
+)
 from autotester.stages.schedule_gate import credential_state
 from autotester.stages.schedule_store import project_records_path, read_heartbeat, read_records
 from autotester.stages.schedule_time import slot_instants
@@ -98,13 +104,22 @@ def _buttons(slug: str, cfg: ScheduleConfig) -> str:
         + one("delete", "Delete schedule")
 
 
+def _why(rec: SlotRecord) -> str:
+    """The reason column: the detail, and for a skipped slot the blocking entry's id (TS4)."""
+    parts = [rec.detail or ""]
+    if rec.blocking_entry_id:
+        parts.insert(0, f"project busy: blocked by run {rec.blocking_entry_id}; "
+                        "this slot was skipped, not retried")
+    return " - ".join(p for p in parts if p)
+
+
 def _history(slug: str) -> str:
     records = read_records(project_records_path(schedule_paths().records, slug))[-5:]
     if not records:
         return "<p class='subtitle'>No scheduled slot has been decided yet.</p>"
     rows = "".join(
         f"<tr><td>{r.instant:%Y-%m-%d %H:%M} UTC</td><td>{escape(r.outcome.value)}</td>"
-        f"<td>{escape(r.detail or '')}</td></tr>" for r in reversed(records))
+        f"<td>{escape(_why(r))}</td></tr>" for r in reversed(records))
     return f"<table><tr><th>Slot</th><th>Outcome</th><th>Why</th></tr>{rows}</table>"
 
 
@@ -131,7 +146,10 @@ def _status(slug: str, cfg: ScheduleConfig, project: Project, store: ProjectStor
     nxt = slot_instants(cfg, now, now + _LOOKAHEAD)
     when = f"{nxt[0]:%Y-%m-%d %H:%M} UTC" if nxt else (
         "paused" if cfg.paused else "none in the next 8 days")
-    health = scheduler_health(cfg, read_heartbeat(schedule_paths().heartbeat), now).state.value
+    status = scheduler_health(cfg, read_heartbeat(schedule_paths().heartbeat), now)
+    health = status.state.value
+    health_text = (f"scheduler stale since {status.since:%Y-%m-%d %H:%M} UTC"
+                   if status.state is SchedulerHealth.STALE and status.since else health)
     creds = credential_state(project, store).value
     cred_pill = theme.pill(escape(creds), "positive" if creds == "provisioned" else "warning")
     if creds != "provisioned":
@@ -139,7 +157,7 @@ def _status(slug: str, cfg: ScheduleConfig, project: Project, store: ProjectStor
                       " Credentials page</a>")
     return (f"<p>Next run: <b>{escape(when)}</b> &middot; owner: {escape(cfg.owner or '-')}"
             f" &middot; scheduler: "
-            f"{theme.pill(escape(health), 'positive' if health == 'healthy' else 'warning')}"
+            f"{theme.pill(escape(health_text), 'positive' if health == 'healthy' else 'warning')}"
             f" &middot; credentials: {cred_pill}</p>") + preview_html(cfg, now)
 
 

@@ -33,6 +33,7 @@ from autotester.schema.schedule import (
     slot_key,
 )
 from autotester.stages.schedule_store import (
+    QueueUnreadable,
     append_record,
     claim,
     claim_path,
@@ -166,6 +167,9 @@ def _fire(project: str, slot: Slot, intended: SlotOutcome, now: datetime, deps: 
             return _record(slot, project, now, SlotOutcome.SKIPPED_OVERLAP,
                            blocking_entry_id=blocker.id)
         return _record(slot, project, now, intended, entry_id=deps.enqueue(slot))
+    except QueueUnreadable as exc:  # fail closed: busy-unknown is a skip, never a run
+        return _record(slot, project, now, SlotOutcome.SKIPPED_OVERLAP,
+                       detail=f"busy unknown: {exc}"[:500])
     except Exception as exc:  # recorded, never swallowed: a failed slot is shown, not absent
         cause = deps.scrub(f"{type(exc).__name__}: {exc}")[:500]
         return _record(slot, project, now, SlotOutcome.FAILED, detail=cause)
