@@ -52,6 +52,7 @@
 | `cli_loop.py` | `autotester loop-status` — was the maker-checker loop alive, and if not, on purpose? |
 | `cli_orchestrate.py` | `autotester orchestrate` — the live caller of `stages/orchestrate.py::run_or_resume`. |
 | `cli_release.py` | `autotester release` / `release-log` — the release manager's way to run the whole suite (T-167). |
+| `cli_revoke.py` | `autotester revoke`: withdraw a previously granted approval with a signed row. |
 | `cli_run.py` | `autotester run`, `run-report`, `catalog`, `mcp-serve`: the machine-facing commands (T-174). |
 | `cli_schedule.py` | `autotester schedule tick`: the stateless pass that makes scheduled tests run (T-200, TS7). |
 | `cli_subapps.py` | The list of CLI sub-apps `autotester` registers (T-205/TF5, design rule). |
@@ -119,6 +120,7 @@
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
+| `schema/approval_revocation.py` | A signed withdrawal of one `RunApproval` (D-018 follow-up, AT-110 key). |
 | `schema/auth.py` | Team login shapes (T-204, D-072; contract qa/contracts/auth.md): the closed permission |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
@@ -291,6 +293,7 @@
 | `stages/video_review_prompt.py` | Build the model prompt for one batch of frames, and say what narration there is (TV5, TV6). |
 | `stages/video_review_render.py` | Render a stored review as Markdown or HTML with the identical item set (TV10, TV4, TV6). |
 | `stages/video_review_store.py` | Find the stored reviews of one recording (T-197 TV10): newest first, read-only. |
+| `store/approval_revocations.py` | Read and append the sibling `approval_revocations.jsonl` of a project. |
 | `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a/b, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
@@ -411,6 +414,7 @@
 | `JourneyStop` (`schema/analysis.py`) | One stop in a recording's end-to-end journey — reuses `ObservedScreen`'s |
 | `VideoAnalysis` (`schema/analysis.py`) | One source's adjudicated understanding — screens, flows, the ordered |
 | `RunApproval` (`schema/approval.py`) | One human's authorisation for one kind of run against one target. |
+| `ApprovalRevocation` (`schema/approval_revocation.py`) | One human's withdrawal of consent previously granted by `approval_id`. |
 | `PermissionKey` (`schema/auth.py`) | The closed catalogue (auth.md "Permission catalogue"). |
 | `Scope` (`schema/auth.py`) |  |
 | `User` (`schema/auth.py`) | One account. The password hash never leaves the auth store's own modules. |
