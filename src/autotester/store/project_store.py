@@ -19,6 +19,7 @@ from autotester.schema.project import Project, Source
 from autotester.schema.run import RawResult, Run
 from autotester.schema.screenmap import ScreenMap
 from autotester.schema.verdict import Rubric, Verdict
+from autotester.store.approval_revocations import load_unrevoked
 from autotester.store.crawl_store import CrawlStoreMixin
 from autotester.store.filestore import (
     append_jsonl,
@@ -71,7 +72,7 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
         return approval
 
     def list_approvals(self) -> list[RunApproval]:
-        return read_jsonl(self.paths.approvals, RunApproval)
+        return load_unrevoked(self.paths)
 
     def save_flowspec(self, spec: FlowSpec) -> None:
         write_json(self.paths.flowspec, spec)

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import typer
 
-from autotester import cli_issues, cli_run, cli_schedule, cli_video
+from autotester import cli_issues, cli_revoke, cli_run, cli_schedule, cli_video
 from autotester.cli_auth import app as auth_app
 from autotester.core.exit_codes import exit_code_table
 
@@ -30,6 +30,7 @@ def register_subapps(app: typer.Typer) -> None:
                 epilog=exit_code_table())(cli_run.regress_cmd)
     app.command("run-report", help="Print a finished run's redacted report.")(
         cli_run.run_report_cmd)
+    app.command("revoke", help="Revoke an approval with a signed row.")(cli_revoke.revoke_cmd)
     app.command("catalog", help="Which test classes can run for a project.")(cli_run.catalog_cmd)
     app.command("mcp-serve", help="Serve run_tests, get_report, get_catalog over stdio MCP.")(
         cli_run.mcp_serve_cmd)

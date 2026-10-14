@@ -18,6 +18,7 @@ from urllib.parse import urlparse
 from autotester.browser.secrets import SecretStore, _host_matches, host_of
 from autotester.core.ids import SigningKeyMissing
 from autotester.schema.approval import RunApproval
+from autotester.schema.approval_revocation import ApprovalRevocation, revoked_ids
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
 
@@ -190,19 +191,27 @@ def require_approval(
     wall_clock_s: float = 0.0,
     production: bool = False,
     now: datetime | None = None,
+    revocations: list[ApprovalRevocation] | None = None,
 ) -> RunApproval:
     """Return the approval covering this run, or raise `ApprovalRequired`.
+
+    A row with a valid SIGNED `ApprovalRevocation` is dropped; an unsigned or forged
+    revocation is ignored (it cannot revoke). `ProjectStore.list_approvals` applies the same
+    filter, so callers that pass its output are covered without passing `revocations`.
 
     Target matching is EXACT. A prefix match would let an approval for one
     endpoint authorise another under the same host, which is the whole thing
     this gate exists to prevent.
     """
     now = now or datetime.now(UTC)
+    revoked = revoked_ids(revocations or [])
     candidates = [
-        a for a in approvals
+        a for a in approvals if a.id not in revoked
         if a.project == project and a.run_kind is kind and a.target == target
     ]
-    rejections = []
+    rejections = [f"{a.id}: revoked" for a in approvals
+                  if a.id in revoked and a.project == project and a.run_kind is kind
+                  and a.target == target]
     for approval in candidates:
         reason = _reject_reason(approval, now, actions, probes, wall_clock_s, production)
         if reason is None:
@@ -224,6 +233,7 @@ def require_project_approval(
     approvals: list[RunApproval], *, project: Project, kind: ApprovalKind, target: str,
     actions: int = 0, probes: int = 0, wall_clock_s: float = 0.0,
     now: datetime | None = None, production: bool = False,
+    revocations: list[ApprovalRevocation] | None = None,
 ) -> RunApproval:
     """The ONE rule for acting on a project's live target (D-088). A project declared
     `production` is covered only by a signed, human-granted `production: true` row for this
@@ -233,12 +243,14 @@ def require_project_approval(
     if not project.production:
         return require_approval(
             approvals, project=project.slug, kind=kind, target=target, actions=actions,
-            probes=probes, wall_clock_s=wall_clock_s, production=production, now=now)
+            probes=probes, wall_clock_s=wall_clock_s, production=production, now=now,
+            revocations=revocations)
     human = [row for row in approvals if not is_account_derived(row)]
     try:
         return require_approval(
             human, project=project.slug, kind=kind, target=target, actions=actions,
-            probes=probes, wall_clock_s=wall_clock_s, production=True, now=now)
+            probes=probes, wall_clock_s=wall_clock_s, production=True, now=now,
+            revocations=revocations)
     except ApprovalRequired as why:
         skipped = [row.id for row in approvals if row.project == project.slug
                    and row.run_kind is kind and row.target == target
