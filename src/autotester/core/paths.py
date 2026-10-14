@@ -210,6 +210,15 @@ class ProjectPaths:
     def crawls_dir(self) -> Path:
         return self.dir / "crawl"
 
+    @property
+    def crawl_summaries_dir(self) -> Path:
+        """Tracked, redacted one-file summaries of finished crawls (the full crawl dir is
+        gitignored), so a done_check can pass from a clean checkout."""
+        return self.dir / "crawl_summaries"
+
+    def crawl_summary(self, crawl_id: str) -> Path:
+        return self.crawl_summaries_dir / f"{crawl_id}.json"
+
     def crawl_dir(self, crawl_id: str) -> Path:
         return self.crawls_dir / crawl_id
 

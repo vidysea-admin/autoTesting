@@ -8,6 +8,7 @@
     "pathlynks.vidysea.com"
   ],
   "write_policy": "read_only",
+  "production": true,
   "max_parallel": 1,
   "permitted_surface": [],
   "secrets": [

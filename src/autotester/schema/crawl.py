@@ -243,6 +243,11 @@ class Crawl(Artifact):
     same reason `tool_failures` is counted apart from `issues`: a number a human
     reads as "screens explored" must never silently include screens nobody looked
     at. A non-zero value here means this crawl did NOT explore the whole portal."""
+    approval_id: str | None = Field(
+        default=None, description="the RunApproval whose check passed at the start gate; "
+                                  "None only on a crawl recorded before this field existed")
+    approval_production: bool | None = Field(
+        default=None, description="that approval's `production` flag, copied at the gate")
     provider: str = "mock"
     started_at: str | None = None
     finished_at: str | None = None

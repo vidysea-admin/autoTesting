@@ -22,6 +22,7 @@ from autotester.core.consent import (
     is_account_derived,
     prepare_account_grant,
     require_approval,
+    require_project_approval,
     validate_account_bounds,
     validate_account_scope,
 )
@@ -56,6 +57,10 @@ def covering_approval(project: Project, store: ProjectStore, bounds: CrawlBounds
     rows alone, so removing a credential ends coverage at once instead of at row expiry."""
     rows = store.list_approvals()
     human = [row for row in rows if not is_account_derived(row)]  # AT-759: see below
+    if project.production:  # D-088: a production target is covered by human-granted rows only
+        return require_project_approval(
+            rows, project=project, kind=kind, target=project.base_url,
+            actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s)
     if kind not in ACCOUNT_KINDS or not project.secrets:
         return _require(human, project, kind, bounds)
     try:
@@ -133,7 +138,7 @@ def _approval_history(store: ProjectStore) -> list[RunApproval]:
 
 
 def require_consent(project: Project, store: ProjectStore, bounds: CrawlBounds,
-                    policy: SafetyPolicy | None = None) -> None:
+                    policy: SafetyPolicy | None = None) -> RunApproval:
     """D-018 gate 2, plus X10-b condition 3 (AT-535): a synthetic-typing crawl
     must be covered by an approval whose target is NOT production — typing on
     a production system is the one thing D-029's four conditions exist to
@@ -141,7 +146,8 @@ def require_consent(project: Project, store: ProjectStore, bounds: CrawlBounds,
 
     `policy` is optional so every existing caller stays valid; `run_crawl`
     always passes the run's policy, so the runtime seam holds even when a
-    pre-flight caller forgets to."""
+    pre-flight caller forgets to. Returns the approval that gated the run, so the caller
+    can record it."""
     approval = covering_approval(project, store, bounds)
     if policy is not None and policy.synthetic_typing and approval.production:
         raise ApprovalRequired(
@@ -149,3 +155,4 @@ def require_consent(project: Project, store: ProjectStore, bounds: CrawlBounds,
             "production target — grant a dev-environment approval "
             "(production: false) instead"
         )
+    return approval

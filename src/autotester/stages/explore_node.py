@@ -19,6 +19,7 @@ from autotester.schema.crawl import CrawlIssue
 from autotester.schema.enums import Action, EdgeOutcome, IssueKind, NodeStatus
 from autotester.schema.screen_graph import ElementRef, ScreenEdge, ScreenNode
 from autotester.stages import crawl_coverage, explore, explore_safety, explore_traversal
+from autotester.stages import explore_summary as persisted
 from autotester.stages.explore_return import return_to, why_lost
 from autotester.stages.explore_safety import (
     OFF_DOMAIN_LINK_REFUSED,
@@ -69,7 +70,7 @@ def add_issue(rt: ExploreRuntime, node_id: str, kind: IssueKind, detail: str,
     issue = CrawlIssue(crawl_id=rt.crawl.id, project=rt.project.slug, kind=kind,
                        node_id=node_id, detail=rt.session.secrets.scrub_optional(detail) or "",
                        first_party=first_party)
-    rt.store.add_crawl_issue(issue)
+    rt.store.add_crawl_issue(persisted.scrubbed(rt, issue))
     if kind is IssueKind.EVIDENCE:
         rt.tool_failures += 1  # AT-120: never inflate the product's issue total
     else:
@@ -82,7 +83,7 @@ def record_edge(rt: ExploreRuntime, node: ScreenNode, el: ElementRef, action: Ac
     edge = ScreenEdge(crawl_id=rt.crawl.id, from_node=node.id, to_node=to_node,
                       action=action, target=el.selector, name=el.name,
                       outcome=outcome, reason=rt.session.secrets.scrub_optional(reason))
-    rt.store.add_edge(edge)
+    rt.store.add_edge(persisted.scrubbed(rt, edge))
     rt.edges += 1
     return edge
 
@@ -117,7 +118,7 @@ def _enqueue(rt: ExploreRuntime, new: ScreenNode, edge: ScreenEdge) -> None:
                                  "screenshot_ref": capture(rt, new)})
     rt.nodes[new.id] = new
     rt.discovery[new.id] = edge
-    rt.store.add_node(new)
+    rt.store.add_node(persisted.scrubbed(rt, new))
     rt.frontier.queue.append(new.id)
     rt.frontier.screens_found += 1
 
@@ -181,7 +182,7 @@ def _mark(rt: ExploreRuntime, node: ScreenNode, status: NodeStatus) -> None:
     idempotent, so an updated status needs `update_node` to land."""
     updated = node.model_copy(update={"status": status})
     rt.nodes[node.id] = updated
-    rt.store.update_node(updated)
+    rt.store.update_node(persisted.scrubbed(rt, updated))
 
 
 def _candidate_denial(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> bool:

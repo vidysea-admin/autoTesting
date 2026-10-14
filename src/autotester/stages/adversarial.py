@@ -22,7 +22,7 @@ from math import isfinite
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from autotester.core.consent import ApprovalRequired, require_approval
+from autotester.core.consent import ApprovalRequired, require_project_approval
 from autotester.core.ids import run_id as new_run_id
 from autotester.core.paths import RepoDocs
 from autotester.core.redact import Redactor
@@ -105,8 +105,8 @@ def _gate(*, project: Project, endpoint: str, sets: list[ProbeSet], planned: int
           production: bool, now: datetime) -> RunApproval:
     """Every check that must hold before the first byte leaves; raises, never sends."""
     _check_inputs(project, endpoint, sets, approvals, redactor)
-    approval = require_approval(
-        approvals, project=project.slug, kind=ApprovalKind.ADVERSARIAL, target=endpoint,
+    approval = require_project_approval(
+        approvals, project=project, kind=ApprovalKind.ADVERSARIAL, target=endpoint,
         probes=planned, wall_clock_s=wall_clock_s, production=production, now=now)
     if planned > PROBE_CEILING:
         raise ProbeCeilingExceeded(
@@ -165,6 +165,7 @@ def run_adversarial(
     `CaptureWithheld` with nothing sent; each is logged to `refusals.jsonl` first (AD7)."""
     if not isfinite(wall_clock_s) or wall_clock_s < 0:
         raise ValueError("wall_clock_s must be finite and nonnegative")
+    production = production or project.production  # D-088: the declared flag is not optional
     moment = now or datetime.now(UTC)
     planned = 0
     try:

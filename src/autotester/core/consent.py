@@ -218,3 +218,33 @@ def require_approval(
         "Grant one with:\n  "
         f"{_grant_command(project, kind, target, actions, probes, wall_clock_s, production)}"
     )
+
+
+def require_project_approval(
+    approvals: list[RunApproval], *, project: Project, kind: ApprovalKind, target: str,
+    actions: int = 0, probes: int = 0, wall_clock_s: float = 0.0,
+    now: datetime | None = None, production: bool = False,
+) -> RunApproval:
+    """The ONE rule for acting on a project's live target (D-088). A project declared
+    `production` is covered only by a signed, human-granted `production: true` row for this
+    exact target and run kind: an account-derived (D-068) or `production: false` row is never
+    accepted and the refusal names why. Any other project is checked as before (`production`
+    stays the caller's own stated flag, e.g. an adversarial run's `--production`)."""
+    if not project.production:
+        return require_approval(
+            approvals, project=project.slug, kind=kind, target=target, actions=actions,
+            probes=probes, wall_clock_s=wall_clock_s, production=production, now=now)
+    human = [row for row in approvals if not is_account_derived(row)]
+    try:
+        return require_approval(
+            human, project=project.slug, kind=kind, target=target, actions=actions,
+            probes=probes, wall_clock_s=wall_clock_s, production=True, now=now)
+    except ApprovalRequired as why:
+        skipped = [row.id for row in approvals if row.project == project.slug
+                   and row.run_kind is kind and row.target == target
+                   and (is_account_derived(row) or not row.production)]
+        note = (f"\n(production gate, D-088: {project.slug} is declared production; "
+                f"account-derived or production:false rows are refused: {', '.join(skipped)})"
+                if skipped else "\n(production gate, D-088: only a human-granted "
+                "production:true row for this target and run kind is accepted)")
+        raise ApprovalRequired(f"{why}{note}") from None

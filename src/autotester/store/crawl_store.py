@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from autotester.core.paths import ProjectPaths
 from autotester.schema.crawl import Crawl, CrawlIssue
+from autotester.schema.crawl_summary import CrawlSummary
 from autotester.schema.run import Evidence
 from autotester.schema.screen_graph import CrawlFrontier, ScreenEdge, ScreenNode
 from autotester.store.filestore import (
@@ -38,6 +39,17 @@ class CrawlStoreMixin:
         return sorted(
             (p.name for p in self.paths.crawls_dir.iterdir() if p.is_dir()), reverse=True
         )
+
+    def save_crawl_summary(self, summary: CrawlSummary) -> None:
+        write_json(self.paths.crawl_summary(summary.crawl_id), summary)
+
+    def list_crawl_summaries(self) -> list[CrawlSummary]:
+        """Newest first (crawl ids are time-ordered)."""
+        folder = self.paths.crawl_summaries_dir
+        stems = [p.stem for p in folder.glob("*.json")] if folder.exists() else []
+        names = sorted(stems, reverse=True)
+        loaded = (read_json(self.paths.crawl_summary(n), CrawlSummary) for n in names)
+        return [s for s in loaded if s]
 
     def add_node(self, node: ScreenNode) -> ScreenNode:
         """Idempotent on id within one crawl, same lazy-cache pattern as `add_case`."""
