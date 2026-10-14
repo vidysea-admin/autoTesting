@@ -3,7 +3,7 @@
 Unit: close the residual bare `require_approval` callers flagged by both approval-prod-gate checkers
 Contract: qa/contracts/ (production-gate criteria used by approval-prod-gate; no contract edited)
 Fix cycle: 1
-Status: ready-for-check
+Status: checked-PASS
 Branch: wave/approval-residual-callers
 
 ## Change
