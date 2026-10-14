@@ -1,7 +1,8 @@
 """The files the scheduler writes: slot claim markers, slot records and the tick heartbeat.
 
 Its one job is making those writes safe on Windows and Ubuntu with only `os.open`/`os.replace`
-(R65: no `fcntl`, no `flock`). The caller passes every path; this module knows no data root.
+(R65: no `fcntl`/`flock` here; appends also take `core.file_lock`, so processes
+serialise). The caller passes every path; this module knows no data root.
 
 - **Claim marker**: `os.open(O_CREAT | O_EXCL | O_WRONLY)` is the atomic "first wins" for a
   slot. The file name is the percent-encoded `slot_key` (reversible, no `:` for Windows).
@@ -24,6 +25,7 @@ from urllib.parse import quote, unquote
 
 from pydantic import ValidationError
 
+from autotester.core.file_lock import file_lock
 from autotester.schema.schedule import SlotClaim, SlotOutcome, SlotRecord
 
 _CLAIM_SUFFIX = ".claim"
@@ -79,10 +81,15 @@ def amend_record(path: Path, slot_key: str, outcome: SlotOutcome, detail: str) -
 _APPEND_LOCK = threading.RLock()  # Windows' CRT emulates O_APPEND (seek, write): not atomic
 
 
+def _lock_path(path: Path) -> Path:
+    return path.with_name(f".{path.name}.lock")
+
+
 def _append_line(path: Path, record: SlotRecord) -> bool:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = (record.model_dump_json() + chr(10)).encode("utf-8")
-    with _APPEND_LOCK:  # open inside the lock: the CRT positions at end only when it opens
+    # thread lock for in-process callers, file lock so separate OS processes serialise too
+    with _APPEND_LOCK, file_lock(_lock_path(path), what="records"):
         fd = os.open(path, os.O_APPEND | os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0))
         try:
             os.write(fd, data)
