@@ -2,7 +2,7 @@
 
 **Unit:** expected-error exemption for the note guard (negative cases held INCONCLUSIVE since judge-defect-field cycle 3)
 **Branch:** wave/grader-expected-error (from 138dbc2a; grader-lexicon now on master 93d6eb1a)
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 3
 
 ## Built
