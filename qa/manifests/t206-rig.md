@@ -8,11 +8,11 @@ Dual check: no
 Fix cycle: 7
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): the commit that adds this file (`git log -1 -- qa/manifests/t206-rig.md`)
-Status: ready-for-check
+Status: checked-PASS (rig local; task-level T-206 pending live TA15-TA17, hosted check, TV9 clause 2)
 
 ## What changed
 
-Status: checked-PASS (rig local; task-level T-206 pending live TA15-TA17, hosted check, TV9 clause 2)
+| Path | One job |
 |---|---|
 | `tests/acceptance/rig.py` | the real app over a fresh root, login gate ON, per-role clients (admin, subadmin, dev, tester, pending) created with `accounts.signup` / `set_user_groups` / `set_owner` / `set_relation`, stub product on loopback with a switchable defect, egress guard, seam logs |
 | `tests/acceptance/conftest.py` | `cold` (admin + pending) and `world` (full team + stub project) fixtures |
