@@ -1,8 +1,9 @@
 """EXPAND: FlowSpec -> Case[], covering every applicable CaseClass per flow.
 
-Contract: qa/contracts/expand.md X1-X5. Requires an APPROVED FlowSpec
-(`stages/review.py::require_reviewed`) — expanding an unreviewed guess would
-multiply one guess into a dozen, exactly what the review gate exists to stop.
+Contract: qa/contracts/expand.md X1-X5. Gate: `stages/review.py::require_generatable` (D-097):
+an APPROVED spec expands through human-approved proposals; a reconciled DRAFT spec built from
+sources expands with no human step, every case carrying "from unreviewed DRAFT flow" provenance.
+NEEDS_EDIT and unreconciled flows are still refused.
 
 AT-890 (D-084): a flow's steps come from source material (a video, a crawl), and the prompt
 built from them goes to an external model. Emails and phone numbers are masked as the prompt is
@@ -19,7 +20,11 @@ from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.case import Case, CaseProposal, ExpandedSteps
 from autotester.schema.enums import KIND_BY_CLASS, Action, CaseClass
 from autotester.schema.flowspec import Flow, FlowSpec
-from autotester.stages.review import require_reviewed
+from autotester.stages.review import (
+    case_provenance,
+    is_unreviewed_draft,
+    require_generatable,
+)
 from autotester.store.project_store import ProjectStore
 
 SKILL_NAME = "expand-case"  # src/autotester/skills/expand-case/SKILL.md (T-175, was expand_case_v1)
@@ -119,8 +124,8 @@ def _store_secrets(store: ProjectStore | None) -> SecretStore | None:
     return SecretStore.load(project, store.paths.env_file, strict=False)
 
 
-def _happy_case(flow: Flow, project: str) -> Case:
-    return Case(
+def _happy_case(flow: Flow, project: str, provenance: str | None = None) -> Case:
+    return Case(provenance=provenance,
         project=project, flow_id=flow.id, kind=KIND_BY_CLASS[CaseClass.HAPPY],
         case_class=CaseClass.HAPPY, title=f"{flow.name} — happy path",
         rationale="the flow's own observed steps", steps=list(flow.steps),
@@ -128,11 +133,12 @@ def _happy_case(flow: Flow, project: str) -> Case:
 
 
 def _expanded_case(
-    flow: Flow, project: str, case_class: CaseClass, expanded: ExpandedSteps
+    flow: Flow, project: str, case_class: CaseClass, expanded: ExpandedSteps,
+    provenance: str | None = None,
 ) -> Case | None:
     if not expanded.steps:
         return None
-    return Case(
+    return Case(provenance=provenance,
         project=project, flow_id=flow.id, kind=KIND_BY_CLASS[case_class],
         case_class=case_class, title=f"{flow.name} — {case_class.value}",
         rationale=expanded.rationale, steps=expanded.steps,
@@ -141,7 +147,7 @@ def _expanded_case(
 
 def propose_cases(spec: FlowSpec) -> list[CaseProposal]:
     """Prepare a deterministic step-less taxonomy for human review, with no provider calls."""
-    require_reviewed(spec)
+    require_generatable(spec)
     return [CaseProposal(
         project=spec.project, flow_id=flow.id,
         spec_fingerprint=CaseProposal.fingerprint_for(spec), case_class=case_class,
@@ -167,6 +173,9 @@ def stage_and_review(store: ProjectStore, spec: FlowSpec, approve: list[str],
 def _reviewed_batch(spec: FlowSpec, store: ProjectStore | None,
                     proposal_ids: list[str] | None = None,
                     flow_id: str | None = None) -> list[CaseProposal]:
+    if is_unreviewed_draft(spec):  # D-097: no human step; the whole taxonomy, unapproved
+        return [p for p in propose_cases(spec) if (flow_id is None or p.flow_id == flow_id)
+                and (proposal_ids is None or p.id in proposal_ids)]
     if store is None:
         raise ValueError("saved human-reviewed case proposals are required")
     batch = store.preflight_case_proposals(spec, proposal_ids, flow_id)
@@ -177,14 +186,16 @@ def _reviewed_batch(spec: FlowSpec, store: ProjectStore | None,
 
 
 def _expand_reviewed_flow(flow: Flow, project: str, provider: Provider, docs: RepoDocs,
-                          proposals: list[CaseProposal], secrets: SecretStore | None) -> list[Case]:
-    cases = [_happy_case(flow, project)]
+                          proposals: list[CaseProposal], secrets: SecretStore | None,
+                          draft: bool = False) -> list[Case]:
+    prov = case_provenance(flow.source_id) if draft else None
+    cases = [_happy_case(flow, project, prov)]
     for proposal in proposals:
         if proposal.flow_id != flow.id or proposal.case_class is CaseClass.HAPPY:
             continue
         prompt = guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets)
         expanded = provider.act(prompt, ExpandedSteps, prompt_file=SKILL_NAME, fed_id=flow.id)
-        case = _expanded_case(flow, project, proposal.case_class, expanded)
+        case = _expanded_case(flow, project, proposal.case_class, expanded, prov)
         if case is not None:
             cases.append(case)
     return cases
@@ -199,21 +210,22 @@ def expand_flow(
     spec = store.load_flowspec() if store else None
     if spec is None or spec.project != project or spec.flow(flow.id) != flow:
         raise ValueError("flow differs from the current saved FlowSpec")
-    require_reviewed(spec)
+    require_generatable(spec)
     batch = _reviewed_batch(spec, store, proposal_ids, flow.id)
     return _expand_reviewed_flow(flow, project, provider, docs or RepoDocs(), batch,
-                                 secrets or _store_secrets(store))
+                                 secrets or _store_secrets(store), is_unreviewed_draft(spec))
 
 
 def expand(spec: FlowSpec, provider: Provider, docs: RepoDocs | None = None,
            *, store: ProjectStore | None = None, proposal_ids: list[str] | None = None,
            secrets: SecretStore | None = None) -> list[Case]:
     """Generate only saved approved proposals; check every flow before the first model call."""
-    require_reviewed(spec)
+    require_generatable(spec)
     batch = _reviewed_batch(spec, store, proposal_ids)
     guard = secrets or _store_secrets(store)
     cases: list[Case] = []
     for flow in spec.flows:
         cases.extend(_expand_reviewed_flow(
-            flow, spec.project, provider, docs or RepoDocs(), batch, guard))
+            flow, spec.project, provider, docs or RepoDocs(), batch, guard,
+            is_unreviewed_draft(spec)))
     return cases

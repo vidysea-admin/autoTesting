@@ -20,7 +20,7 @@ from autotester.schema.portal_persona import GraphEdge, GraphNode, KnowledgeGrap
 from autotester.schema.scenario import Branch, CompileResult, ScenarioSpec, UncoveredBranch
 from autotester.stages.expand import expand_flow
 from autotester.stages.knowledge_graph import add_case, build_graph, flow_of
-from autotester.stages.review import require_reviewed
+from autotester.stages.review import require_generatable
 from autotester.store.project_store import ProjectStore
 
 
@@ -96,7 +96,7 @@ def compile_evals(spec: FlowSpec, persona: PortalPersona, scenarios: list[Scenar
     named in `untraced_flows`. Every scenario branch ends as a case or an `uncovered` row
     (EC5); each scenario is its own node with its own case set (EC4). FB5: a traced flow is
     expanded only from `store`'s approved proposals; with no store it raises, spending 0 calls."""
-    require_reviewed(spec)
+    require_generatable(spec)
     graph = build_graph(persona, spec)
     result = CompileResult(graph=graph, total_branches=sum(len(s.branches) for s in scenarios))
     for flow in spec.flows:
