@@ -244,11 +244,12 @@ def _defect_decision(judgment: Judgment, final: Result, note: str | None,
     if final is not Result.PASS:
         return final, note
     if judgment.defect_observed is None:
-        return note_guard(final, note, expects_error)
+        return note_guard(final, note)
     if judgment.defect_observed:
         return Result.INCONCLUSIVE, _joined(DEFECT_CONTRADICTION.format(
             summary=judgment.defect_summary or "no summary"), note)
-    # defect_observed=false never overrides a defect note
+    # defect_observed=false never overrides a defect note; only it can unlock the expected-error
+    # exemption (field absent: no exemption)
     return note_guard(final, note, expects_error)
 
 

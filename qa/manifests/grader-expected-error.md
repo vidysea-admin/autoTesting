@@ -3,7 +3,7 @@
 **Unit:** expected-error exemption for the note guard (negative cases held INCONCLUSIVE since judge-defect-field cycle 3)
 **Branch:** wave/grader-expected-error (from 138dbc2a; grader-lexicon now on master 93d6eb1a)
 **Status:** ready-for-check
-**Fix cycle:** 2
+**Fix cycle:** 3
 
 ## Built
 - `schema/verdict.py`: `Rubric.expects_error: bool = False` (no Case field existed that grade can see; grade only gets the Rubric).
@@ -20,3 +20,6 @@
 - Exempt terms: error(s), denied, reject*, and "invalid" only before an input noun (email, password, ...). "wrong" and "incorrect" never exempt. "leak*" added to the lexicon.
 - `case_expectation.expects_error` ignores keywords negated in their clause ("should not see an error").
 - Tests added for every phrase in findings (b) and (c) plus the best-case "login failed ... as expected" hold.
+
+## Fix cycle 3 (verdict ac292110)
+Replaced the clause/window logic with one whole-note rule. Exemption applies only when expects_error is set, the judge said defect_observed=false (field absent: no exemption), the note contains "as expected/intended/designed", and contains NONE of the contrary markers (but, however, also, anyway, although, yet, instead, not, never, no, missing, absent, without, generic, unexpected, deleted, submitted, saved, charged, leaked, other, wrong, incorrect, crash, 500, froze, valid, n't). Then error(s), denied, reject*, and invalid+input-noun are dropped; otherwise held as before. Tests: the 6 required held notes, 4 simple clean negative notes pass, and the field-absent case is held.

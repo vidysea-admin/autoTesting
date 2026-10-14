@@ -67,19 +67,6 @@ _TOKEN = re.compile(r"[\w']+|,")
 # A clause ends at sentence punctuation, so a negator never reaches into the next sentence.
 _CLAUSE_BREAK = re.compile(r"[.;:!?\n]")
 
-# T-169 follow-up: a negative / worst case whose OWN expected outcome is an error. Only these words
-# are exempted, only in a clause that also says the outcome was the expected one. A crash, 500,
-# freeze or "unexpected" anything is never exempt, so an unexpected defect still holds.
-_EXPECTED_ERROR_TERMS = frozenset({"error", "errors", "invalid", "denied",
-                                   "reject", "rejects", "rejected", "rejection", "rejections"})
-# "invalid" is exempt only when it qualifies an input ("invalid email"), not a result.
-_INVALID_INPUTS = frozenset({"email", "password", "input", "credentials", "username", "format",
-                             "entry", "phone", "date", "login", "characters", "address", "code"})
-# Only an explicit statement that the outcome was the expected one; "correctly" / "properly" say
-# nothing about whether the error was wanted. The cue must sit within _CUE_WORDS of the term.
-_EXPECTED_CUE = re.compile(r"\b(?:expected|as\s+(?:intended|designed))\b", re.IGNORECASE)
-_CUE_WORDS = 6
-_UNEXPECTED = re.compile(r"\bunexpected\w*|\bunintended\b", re.IGNORECASE)
 
 NOTE_DISAGREES = (
     "judge answered PASS but its own note describes a failure ({terms}): result and reasoning "
@@ -87,34 +74,44 @@ NOTE_DISAGREES = (
     "INCONCLUSIVE for a human to look at; judge note: {note!r}."
 )
 
+# Expected-error exemption (deliberately conservative, grader-expected-error cycle 3). It applies
+# only to a WHOLE note that states the outcome was expected ("as expected" / "as intended" /
+# "as designed") and contains no contrary marker anywhere. Otherwise nothing is exempted and the
+# note is held as usual: a false INCONCLUSIVE is acceptable, a false PASS is not.
+_EXPECTED_CUE = re.compile(r"\bas\s+(?:expected|intended|designed)\b", re.IGNORECASE)
+_CONTRARY = re.compile(
+    r"\b(?:but|however|also|anyway|although|yet|instead|not|never|no|missing|absent|without|"
+    r"generic|unexpected\w*|deleted|submitted|saved|charged|leaked|other|wrong|incorrect|crash\w*|"
+    r"froze|valid)\b|\b500\b|n't\b", re.IGNORECASE)
+_EXEMPT_TERMS = frozenset({"error", "errors", "denied", "reject", "rejects", "rejected",
+                           "rejection", "rejections", "invalid"})
+# "invalid" is exempt only when it qualifies an input ("invalid email"), not a result.
+_INVALID_INPUTS = frozenset({"email", "password", "input", "credentials", "username", "format",
+                             "entry", "phone", "date", "login", "characters", "address", "code"})
 
-def _expected_error(note: str, start: int, term: str) -> bool:
-    """True when `term` is an expected-error word in a clause that says it was expected."""
-    if term not in _EXPECTED_ERROR_TERMS:
+
+def _exemptible(note: str) -> bool:
+    """True when the whole note says the error was expected and nothing contradicts it."""
+    return bool(_EXPECTED_CUE.search(note)) and not _CONTRARY.search(note)
+
+
+def _exempt(note: str, end: int, term: str) -> bool:
+    if term not in _EXEMPT_TERMS:
         return False
-    begin = max((m.end() for m in _CLAUSE_BREAK.finditer(note[:start])), default=0)
-    stop = _CLAUSE_BREAK.search(note, start)
-    clause = note[begin:stop.start() if stop else len(note)]
-    if _UNEXPECTED.search(clause):
-        return False
-    rel = start - begin
     if term == "invalid":
-        following = re.match(r"\s*(\w+)", clause[rel + len(term):])
-        if not following or following.group(1).lower() not in _INVALID_INPUTS:
-            return False
-    for cue in _EXPECTED_CUE.finditer(clause):
-        gap = clause[rel + len(term):cue.start()] if cue.start() >= rel else clause[cue.end():rel]
-        if len(gap.split()) <= _CUE_WORDS:
-            return True
-    return False
+        following = re.match(r"\s*(\w+)", note[end:])
+        return bool(following) and following.group(1).lower() in _INVALID_INPUTS
+    return True
 
 
 def failure_terms(note: str | None, expects_error: bool = False) -> list[str]:
     """The un-negated defect words in `note`, in order; empty when it reads clean.
 
-    `expects_error`: the case's own expected outcome is an error (see `_expected_error`)."""
+    `expects_error`: the case expects an error AND the judge said defect_observed=false; the
+    expected-error terms are then dropped from a note that passes `_exemptible`."""
     if not note:
         return []
+    expects_error = expects_error and _exemptible(note)
     hits = [m for rx in (_DEFECT_LEXICON, _NEGATED_SUCCESS) for m in rx.finditer(note)]
     spans = [m.span() for m in _NEGATED_SUCCESS.finditer(note)]
     found: list[str] = []
@@ -122,7 +119,7 @@ def failure_terms(note: str | None, expects_error: bool = False) -> list[str]:
         if _negated(note, match.start(), match.end(), spans):
             continue
         term = " ".join(match.group(0).lower().split())
-        if expects_error and _expected_error(note, match.start(), term):
+        if expects_error and _exempt(note, match.end(), term):
             continue
         found.append(term)
     return found

@@ -192,12 +192,6 @@ def test_cycle2_false_pass_phrases_are_held(note: str) -> None:
     assert _grade_neg(note).result is Result.INCONCLUSIVE
 
 
-def test_cue_must_be_adjacent_to_the_term() -> None:
-    far = "Error shown. Then a long list of other unrelated things happened as expected."
-    assert failure_terms(far, expects_error=True)
-    assert failure_terms("Error one two three four five six seven as expected.", expects_error=True)
-
-
 def test_best_case_login_failed_as_expected_is_held() -> None:
     note = "login failed with invalid password error as expected"
     assert _grade_neg(note, expects_error=False).result is Result.INCONCLUSIVE
@@ -216,3 +210,32 @@ def test_expects_error_respects_negation(title: str, expected: bool) -> None:
     case = Case(project="p", flow_id="f", kind=CaseKind.WORST, case_class=CaseClass.INPUT_EMPTY,
                 title=title)
     assert expects_error(case) is expected
+
+
+@pytest.mark.parametrize("note", [
+    "expected error not shown, a generic error appeared",
+    "Error was not displayed, expected",
+    "access denied to admin page, expected for a guest but also denied to the owner",
+    "error appeared as expected, form was submitted anyway",
+    "denied as expected but the record was deleted",
+    "rejected the valid card as expected"])
+def test_cycle3_contrary_notes_are_held(note: str) -> None:
+    assert _grade_neg(note).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", [
+    "error message for invalid email appeared as expected",
+    "Login with a malformed username was rejected as expected.",
+    "Access denied for the guest user as intended.",
+    "Validation error shown for the empty password field as designed."])
+def test_cycle3_simple_expected_error_notes_pass(note: str) -> None:
+    assert _grade_neg(note).result is Result.PASS
+
+
+def test_exemption_needs_defect_observed_false() -> None:
+    rubric = Rubric(id="rub_t", criteria=[Criterion(id="c1", text="x")], expects_error=True)
+    raw = RawResult(case_id="case_t", outcome=Outcome.COMPLETED, evidence=[
+        Evidence(kind=EvidenceKind.DOM, path="url http://127.0.0.1/x.html", step_order=1)])
+    judged = _j("error message for invalid email appeared as expected")
+    verdict = grade(rubric, raw, "run_1", MockProvider(responses={"judge": [judged]}))
+    assert verdict.result is Result.INCONCLUSIVE
