@@ -147,6 +147,7 @@
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
 | `schema/release.py` | Release regression shapes: a flow's persisted plan, a run's scope, its record and diff. |
+| `schema/review_recall.py` | The TA16 evidence record: a video review measured against an oracle, in numbers (T-206). |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
 | `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
@@ -257,6 +258,7 @@
 | `stages/report_delivery.py` | The report label (computed once) and the website inbox listing (TT7, R58, R22). |
 | `stages/report_export.py` | Tester-style run reports: an Excel summary and a screen-by-screen HTML |
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
+| `stages/review_recall.py` | Score stored video reviews against an oracle corpus into a `ReviewRecall` (TA16). |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | RUN_CASE_PIPELINE: the one function that runs a case and grades it. |
 | `stages/run_launcher.py` | The one run launcher: gates, execution and the saved `Run` (T-205, team-foundation TF1/TF2). |
@@ -557,6 +559,8 @@
 | `ReleaseIssue` (`schema/release.py`) | One entry of the release's single issues log, always naming its flow (RR6). |
 | `RegressionDiff` (`schema/release.py`) | This release against its trusted baseline (RR3). `baseline_run_id` None = no baseline. |
 | `ReleaseRecord` (`schema/release.py`) | One release's durable outcome: per-flow results, ONE issues log and the diff. |
+| `OracleRef` (`schema/review_recall.py`) | Where the denominator came from. Never a claim of independence. |
+| `ReviewRecall` (`schema/review_recall.py`) | `recall.json`. `k` and `unconfirmed_count` must be re-derivable from the id lists. |
 | `Evidence` (`schema/run.py`) | A file or value the grader may cite. Already redacted and masked. |
 | `ProviderUsage` (`schema/run.py`) | Token and call accounting per provider role — the cost story per run. |
 | `RawResult` (`schema/run.py`) | One case's execution record. |
@@ -683,6 +687,7 @@
 | `scripts/onboard_pathlynks.py` | Onboard Pathlynks: real login via the credential boundary, evidence, knowledge.md. |
 | `scripts/regression_proof.py` | T-110: break a feature, confirm exactly that case FAILs while an unrelated |
 | `scripts/renumber_duplicate_issue_ids.py` | Give fresh ids to the LATER row of every duplicated id in qa/issues.jsonl. |
+| `scripts/review_recall.py` | Write `recall.json` (TA16): stored video reviews scored against an oracle corpus. |
 | `scripts/run_pathlynks_first_cases.py` | T-050: 3 hand-written Pathlynks login cases (best/worst/edge), run headed and |
 | `scripts/run_real_acceptance.py` | T-169 GR1-GR4: drive one acceptance mode against a REAL, already-onboarded project. |
 | `scripts/score_video_issues.py` | Score AutoTester's issues against a human tester's sheet — T-136's acceptance. |
