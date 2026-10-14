@@ -2,7 +2,7 @@
 
 **Unit:** grader hardening follow-up to judge-defect-field (cycle 3 checker advisory)
 **Branch:** wave/grader-lexicon (from 033931a5)
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 
 ## Built
