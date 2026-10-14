@@ -1,7 +1,7 @@
 # ui-production-approval
 
 Status: ready-for-check
-Fix cycle: 1
+Fix cycle: 2
 Branch: wave/ui-production-approval
 
 ## Change
@@ -16,3 +16,6 @@ tests/test_ui_production_approval.py (new), test_ui_crawl_approval*.py, test_ui_
 
 ## Verify
 scoped ui approval tests, ruff, doctor clean.
+
+## Fix cycle 2
+Grant-time caps in one place, `core/consent.py::validate_grant_bounds` (actions <= 2000, wall clock <= 86400s, expiry <= 30 days), used by the UI route (400) and CLI `approve` (exit 1). Tests: tests/test_grant_bounds_caps.py. Existing tests moved off far-future expiries. MAP.md/SNAPSHOT.md regenerated.

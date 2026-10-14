@@ -12,7 +12,7 @@ Contract: qa/contracts/ui.md + explore.md (D-018).
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -65,7 +65,8 @@ def test_credentials_page_grants_a_server_scoped_crawl_approval(
     assert "applies only to <code>https://demo.test</code>" in page.text
     assert "new Date(expiry.value)" in page.text
     assert "name='target'" not in page.text and "name='project'" not in page.text
-    expiry = "2099-09-11T12:00"
+    soon = datetime.now().replace(second=0, microsecond=0) + timedelta(days=10)
+    expiry = soon.strftime("%Y-%m-%dT%H:%M")
     response = client.post("/projects/demo/crawl-approval", data={
         "scope": "read and click safe controls",
         "expires_at": expiry, "timezone_offset_minutes": "330",
@@ -78,7 +79,8 @@ def test_credentials_page_grants_a_server_scoped_crawl_approval(
         "demo", "https://demo.test", 17)
     assert approval.wall_clock_s == 45
     assert approval.granted_by != "Umesh" and "@" in approval.granted_by   # the session's
-    assert approval.expires_at == "2099-09-11T06:30:00+00:00"
+    assert approval.expires_at == (soon - timedelta(minutes=330)).replace(
+        tzinfo=UTC).isoformat()
 
 
 def test_crawl_approval_refuses_a_secret_in_free_text(

@@ -17,6 +17,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore
+from autotester.core.consent import validate_grant_bounds
 from autotester.core.ids import SigningKeyMissing
 from autotester.core.paths import ProjectPaths
 from autotester.schema.approval import RunApproval
@@ -176,6 +177,13 @@ def _future_iso(value: str, offset_minutes: int) -> str:
 
 
 
+def _capped(actions: int, seconds: float, expiry: str) -> None:
+    try:
+        validate_grant_bounds(actions, seconds, datetime.fromisoformat(expiry))
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from None
+
+
 def _checked_kind(kind: str, scope: str) -> ApprovalKind:
     run_kind = ApprovalKind(kind)
     if run_kind not in _KINDS:
@@ -211,6 +219,7 @@ def crawl_approval_submit(
         if not -840 <= offset <= 840:
             raise HTTPException(400, "timezone offset must be between -840 and 840 minutes")
         expiry = _future_iso(expires_at, offset)
+        _capped(actions, seconds, expiry)
     except ValueError:
         return _approval_error(slug, "kind and bounds must be valid, numbers for bounds")
     except HTTPException as exc:

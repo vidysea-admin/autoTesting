@@ -7,6 +7,7 @@ missing signing key fails closed; the row passes `require_project_approval`.
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -19,7 +20,8 @@ from autotester.schema.project import Project
 from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app
 
-FORM = {"scope": "read and click", "expires_at": "2099-09-11T12:00",
+_SOON = (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%dT%H:%M")
+FORM = {"scope": "read and click", "expires_at": _SOON,
         "timezone_offset_minutes": "0", "max_actions": "17", "wall_clock_s": "45"}
 
 
