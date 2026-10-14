@@ -2582,3 +2582,15 @@ the dependency or by a fresh licence decision.
 **Decided-by:** Umesh (chat, 2026-10-13). No enforcement path touched.
 
 **Links:** T-181; T-179; T-180; D-042; D-089; qa/verdicts/t181-live.r3.md
+
+## D-096 | 2026-10-14 | type: decision | status: ACTIVE
+
+**What:** Umesh (sole approver) answered AT-891 in chat on 2026-10-14: pathlynks.vidysea.com IS a production target. projects/pathlynks/project.json declares `production: true`. A live run against it (crawl or explore, UI case run, schedule tick, release re-check) needs a human-signed approval row with `production: true`; require_project_approval (merged from wave/approval-prod-gate) is the one enforcement point and refuses an unsigned, account-derived or production:false row.
+
+**Why:** The T-145 crawl approval was signed production:false for the same host the queue row and gate file call production, and the flag's only reader was the synthetic-typing refusal, so it admitted a production run on a non-production record. Umesh's answer settles the host's class; the gate makes the record match it.
+
+**Result:** AT-891 closed. scripts/check_crawl_approval.py pathlynks is expected to fail until Umesh signs a production:true approval. No enforcement path (hooks, settings) touched.
+
+**Decided-by:** Umesh (chat, 2026-10-14). No enforcement path touched.
+
+**Links:** T-145; T-206; T-169; AT-891
