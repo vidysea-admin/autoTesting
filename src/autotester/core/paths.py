@@ -48,6 +48,11 @@ class ProjectPaths:
         return self.dir / "approvals.jsonl"
 
     @property
+    def approval_revocations(self) -> Path:
+        """Signed `ApprovalRevocation` rows; sibling of `approvals.jsonl`."""
+        return self.dir / "approval_revocations.jsonl"
+
+    @property
     def env_file(self) -> Path:
         """One credential file for the whole repo, at the root (Umesh, 2026-09-03).
 
