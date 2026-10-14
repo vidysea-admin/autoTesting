@@ -1,6 +1,6 @@
 # grader-lexicon-2
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Branch: wave/grader-lexicon-2 (from d33033c2)
 
