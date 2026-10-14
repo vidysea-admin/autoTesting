@@ -5,7 +5,7 @@
 **Goal task:** none (defects from the real PathLynks run, `qa/evidence/t169-real/inconclusive-analysis.md`)
 **Date:** 2026-10-13
 **Fix cycle:** 2
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Dual check:** no
 
 ## Changes
