@@ -22,11 +22,12 @@ from collections.abc import Callable
 from datetime import datetime
 from math import isfinite
 
-from autotester.core.consent import require_approval
+from autotester.core.consent import require_project_approval
 from autotester.core.redact import Redactor
 from autotester.schema.ai_check import AiCapture, AiCheckKind, AiExchange, AiReply
 from autotester.schema.approval import RunApproval
 from autotester.schema.enums import ApprovalKind
+from autotester.schema.project import Project
 
 Send = Callable[[str, str], AiReply]
 
@@ -75,7 +76,7 @@ def _send_one(send: Send, endpoint: str, prompt: str, clock: Callable[[], float]
 
 
 def capture_run(
-    *, project: str, endpoint: str, check: AiCheckKind, prompts: list[str], send: Send,
+    *, project: Project, endpoint: str, check: AiCheckKind, prompts: list[str], send: Send,
     approvals: list[RunApproval], redactor: Redactor, expected_keys: list[str] | None = None,
     wall_clock_s: float = 60.0, production: bool = False,
     clock: Callable[[], float] = time.monotonic, now: datetime | None = None,
@@ -88,13 +89,14 @@ def capture_run(
         raise ValueError("wall_clock_s must be finite and nonnegative")
     keys = list(expected_keys or [])
     try:
-        for text in [project, endpoint, *prompts, *(a.model_dump_json() for a in approvals)]:
+        for text in [project.slug, endpoint, *prompts, *(a.model_dump_json() for a in approvals)]:
             redactor.assert_clean(text)
     except ValueError:
         raise CaptureWithheld("capture input carries a secret value; nothing was sent") from None
-    require_approval(approvals, project=project, kind=ApprovalKind.LIVE_CASE, target=endpoint,
-                     actions=len(prompts), wall_clock_s=wall_clock_s, production=production,
-                     now=now)
+    # D-088: the endpoint is a project's live target, so the production rule applies.
+    require_project_approval(
+        approvals, project=project, kind=ApprovalKind.LIVE_CASE, target=endpoint,
+        actions=len(prompts), wall_clock_s=wall_clock_s, production=production, now=now)
     started, exchanges = clock(), []
     for prompt in prompts:
         if clock() - started >= wall_clock_s:
@@ -102,7 +104,7 @@ def capture_run(
         reply, error, took = _send_one(send, endpoint, prompt, clock)
         exchanges.append(_exchange(prompt, reply, error, took, keys, redactor))
     result = AiCapture(
-        project=project, endpoint=redactor.scrub(endpoint), check=check,
+        project=project.slug, endpoint=redactor.scrub(endpoint), check=check,
         expected_keys=_scrub_all(redactor, keys), exchanges=exchanges,
         unsent_prompts=len(prompts) - len(exchanges))
     try:

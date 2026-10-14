@@ -72,7 +72,7 @@ def build_gate(store: ProjectStore, project: str, provider: Provider,
     def gate() -> None:
         permission()
         plan = plan_fn()
-        try:
+        try:  # bare gate: target is a provider id, never a live URL
             require_approval(store.list_approvals(), project=project,
                              kind=ApprovalKind.VIDEO_REVIEW, target=provider.id,
                              actions=plan.call_count)

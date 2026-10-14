@@ -58,3 +58,12 @@ def grant_live_case_approval(
         approval.sign()
     store.add_approval(approval)
     return approval
+
+
+def project_of(slug, *, production: bool = False):
+    """A minimal `Project` for gate tests (unvalidated; a `Project` passes through)."""
+    from autotester.schema.project import Project
+    if isinstance(slug, Project):
+        return slug
+    return Project.model_construct(slug=slug, name="x", base_url="https://llm.test/",
+                                   allowed_domains=["llm.test"], production=production)

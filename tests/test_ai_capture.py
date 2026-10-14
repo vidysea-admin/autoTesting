@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from run_approval_fixture import project_of
 
 from autotester.core.consent import ApprovalRequired
 from autotester.core.redact import Redactor
@@ -22,8 +23,7 @@ from autotester.stages.ai_judge import judge_capture
 
 SRC = Path(__file__).resolve().parents[1] / "src" / "autotester"
 URL = "https://llm.test/chat"
-NOW = datetime(2026, 10, 7, tzinfo=UTC)
-SECRET = "sk-live-1234567890abcdef"
+NOW, SECRET = datetime(2026, 10, 7, tzinfo=UTC), "sk-live-1234567890abcdef"
 def _approval(**kw: object) -> RunApproval:
     fields: dict[str, object] = {
         "project": "demo", "run_kind": ApprovalKind.LIVE_CASE, "target": URL,
@@ -42,11 +42,11 @@ class _Clock:
         return self.t
 def _capture(check: AiCheckKind = AiCheckKind.GROUND_TRUTH_ANSWER, *, send=None,
              prompts=("capital of France?",), approvals=None, redactor=None, **kw: object):
-    return capture_run(project=kw.pop("project", "demo"), endpoint=kw.pop("endpoint", URL),
-        check=check, prompts=list(prompts), send=send or (lambda url, prompt: _reply()),
+    return capture_run(project=project_of(kw.pop("project", "demo")),
+        endpoint=kw.pop("endpoint", URL), check=check, prompts=list(prompts),
+        send=send or (lambda url, prompt: _reply()), clock=kw.pop("clock", _Clock()),
         approvals=[_approval()] if approvals is None else approvals,
-        redactor=redactor or Redactor({"KEY": SECRET}), clock=kw.pop("clock", _Clock()),
-        now=NOW, **kw)
+        redactor=redactor or Redactor({"KEY": SECRET}), now=NOW, **kw)
 def _judge(cap: AiCapture, judge: MockProvider | None = None, **kw: object):
     return judge_capture(cap, run_id="run_1", judge=judge or MockProvider(),
                          redactor=Redactor({"KEY": SECRET}), **kw)  # type: ignore[arg-type]
