@@ -133,15 +133,6 @@ def _vision(base: str) -> MockProvider:
     return MockProvider(responses={"vision": [obs]})
 
 
-def _review(store_: ProjectStore) -> None:
-    """Stand-in for the missing proposal-review UI route (see contract GA5)."""
-    from autotester.stages.expand import propose_cases
-    rows = propose_cases(store_.load_flowspec())  # type: ignore[arg-type]
-    store_.stage_case_proposals(rows)
-    for row in rows:
-        store_.review_case_proposal(row.id, by="fixture-human", approved=True)
-
-
 def _drive(mode: str, client: TestClient, root: Path, base: str, tmp_path: Path,
            monkeypatch: pytest.MonkeyPatch) -> tuple[ModeResult, ProjectStore, ModeSpec]:
     spec = _spec(mode, base, tmp_path)
@@ -169,7 +160,6 @@ def _drive(mode: str, client: TestClient, root: Path, base: str, tmp_path: Path,
 
     seams = ModeSeams(
         ingest_provider=_vision(base), crawl_fn=_crawl_fixture(base, store),
-        review_proposals=_review,
         before_run=lambda s: grant_live_case_approval(
             s, project=spec.slug, target=s.load_project().base_url))  # type: ignore[union-attr]
     return run_mode(client, store, spec, seams), store, spec
@@ -251,7 +241,7 @@ def test_harness_reuses_an_onboarded_project_by_slug(
 
     monkeypatch.setattr(client, "post", spy)
     spec.onboard = False
-    seams = ModeSeams(crawl_fn=_crawl_fixture(product_url, store), review_proposals=_review,
+    seams = ModeSeams(crawl_fn=_crawl_fixture(product_url, store),
                       before_run=lambda s: grant_live_case_approval(
                           s, project=spec.slug, target=s.load_project().base_url))  # type: ignore[union-attr]
     second = run_mode(client, store, spec, seams)

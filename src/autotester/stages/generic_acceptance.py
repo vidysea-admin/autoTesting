@@ -81,8 +81,6 @@ class ModeSeams:
 
     ingest_provider: Provider | None = None
     crawl_fn: Callable[[], tuple[Crawl, list[ScreenNode]]] | None = None
-    review_proposals: Callable[[ProjectStore], None] | None = None
-    """Case-proposal review has no UI route yet (see qa/feedback-inbox.md); a seam, not a bypass."""
     before_run: Callable[[ProjectStore], None] | None = None
     """Grant the signed live-case approval a UI run needs (AT-570)."""
     case_bug_map: dict[str, str] = field(default_factory=dict)
@@ -134,6 +132,19 @@ def _press_run(client: Any, store: ProjectStore) -> str:
     return made[0]
 
 
+def _review_proposals_in_ui(client: Any, store: ProjectStore, slug: str, by: str) -> None:
+    """GA5: stage, then bulk-approve every proposal through the proposal-review page's routes."""
+    base = f"/projects/{slug}/proposals"
+    _check(client.get(base), "proposals page")
+    _check(client.post(f"{base}/stage", follow_redirects=False), "stage proposals")
+    ids = [p.id for p in store.list_case_proposals()]
+    if not ids:
+        raise AssertionError("no case proposals were staged for review")
+    _check(client.post(f"{base}/review", data={"by": by, "decision": "approve",
+                                                "proposal_id": ids},
+                       follow_redirects=False), "approve proposals")
+
+
 def run_mode(client: Any, store: ProjectStore, spec: ModeSpec, seams: ModeSeams,
              *, approver: str = "acceptance-reviewer") -> ModeResult:
     """Onboard -> orchestrate -> approve -> generate -> run -> score, through the app."""
@@ -144,8 +155,7 @@ def run_mode(client: Any, store: ProjectStore, spec: ModeSpec, seams: ModeSeams,
     _check(client.post(f"/projects/{slug}/flowspec/approve",
                        data={"by": approver, "note": "generic acceptance"},
                        follow_redirects=False), "flowspec approve")
-    if seams.review_proposals is not None:
-        seams.review_proposals(store)
+    _review_proposals_in_ui(client, store, slug, approver)
     _check(client.post(f"/projects/{slug}/cases/generate", follow_redirects=False), "generate")
     if seams.before_run is not None:
         seams.before_run(store)
