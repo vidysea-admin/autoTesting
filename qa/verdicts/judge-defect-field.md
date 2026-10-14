@@ -48,3 +48,25 @@ Head checked: 93fad43f
    Same shape as the cycle-1 hole ("no confirmation, error message shown") but with a defect word as the first item.
    Narrowest fix: a comma bridges only when the list is closed by "or"/"and"-free coordination, i.e. require an "or" later in the same list ("no error, rejection, or missing element"); a bare "A, B" with no "or" after the comma does not extend scope. Add the above as tests, keep the verbatim "No error, rejection, wrong result, or missing element" PASS.
 2. Accepted risk (defect_observed=false overrides a defect note): consistent with C12 as the structured field is the judge's explicit claim and the note guard is only a backstop when it is absent; but it is a real hole where the judge says false and the note says "error shown". Not failing on this alone; narrowest mitigation: when defect_observed=false and note_guard finds terms, hold INCONCLUSIVE (costs only false INCONCLUSIVEs, and the real-run notes under the fix above stay clean). Recommend adopting it with fix 1.
+
+---
+
+# Cycle 3
+
+Cycle checked: 3
+Verdict: PASS
+Head checked: 033931a5
+
+## Passed
+- All 9 cycle-2 comma-chain false-PASS notes and the other 20 of my notes are held (only "no longer works" passes, a pre-existing lexicon gap, not a regression).
+- Verbatim "No error, rejection, wrong result, or missing element" stays clean; all 8 real-run fixture notes are clean, and 7a978722a38c is now held (expected, per the intentional INCONCLUSIVE tradeoff).
+- defect_observed=false no longer overrides a defect note (accepted-risk mitigation adopted).
+- 307 passed (grade, schema, golden, gemini schema); ruff clean; doctor clean; git merge-tree vs master 6d800f84 conflict-free.
+
+## Residual (non-blocking, advisory; contrived, behind the structured field)
+Of 15 new notes aimed at the "or"-closing rule, 5 pass:
+- "no crash, or the error banner appeared" (an "or" plus "the" fillers let a new clause be absorbed)
+- "no error, a bug or two remain"
+- "without error, broken or not" (ambiguous)
+- "no error, crash or hang on submit" (an all-defect or-list; the negated reading is correct)
+- "no error, rejection or crash, then the app froze": the lexicon lacks "froze"; add it, along with "no longer works".
