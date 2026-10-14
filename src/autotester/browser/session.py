@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import contextlib
 import shutil
+import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from autotester.browser import assertions
+from autotester.browser.click_recovery import ready_to_click
 from autotester.browser.evidence import MASK_ATTR, MASK_CSS, EvidenceMixin
 from autotester.browser.launch import (
     CdpEndpointError,
@@ -198,7 +200,13 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
                          + f" before={before} after={after}", step_order=step_order)
 
     def click(self, locator: str, *, step_order: int | None = None) -> Evidence:
-        self.locate(locator).click(**self._timeout())
+        target = self.locate(locator)
+        began = time.monotonic()
+        for note in ready_to_click(self.page, target):  # never a force-click; each step recorded
+            self._record(EvidenceKind.DOM, f"{note} before clicking {locator}",
+                         step_order=step_order)
+        spent_ms = (time.monotonic() - began) * 1000  # probes count against the step timeout
+        target.click(**self._timeout(max(1.0, 30000 - spent_ms)))
         return self._record(EvidenceKind.DOM, f"clicked {locator}", step_order=step_order)
 
     def current_url(self) -> str:
