@@ -82,3 +82,79 @@ def test_driver_writes_evidence_and_checklist(
     assert (out / "checklist.md").read_text(encoding="utf-8") == text + "\n"
 
 
+
+
+def _prod_project(root: Path) -> ProjectStore:
+    from autotester.schema.project import Project
+    store = ProjectStore("demo", root)
+    store.save_project(Project(slug="demo", name="Demo", base_url="https://demo.test/app",
+                               allowed_domains=["demo.test"], production=True))
+    return store
+
+
+def _row(variant: str):
+    from autotester.schema.approval import RunApproval
+    row = RunApproval(project="demo", run_kind=ApprovalKind.LIVE_CASE,
+                      target="https://demo.test/app", scope="t", max_actions=1000,
+                      max_probes=0, wall_clock_s=100_000.0, granted_by="Umesh",
+                      granted_at="2026-10-13", expires_at="2099-01-01",
+                      production=variant != "production_false")
+    return row if variant == "unsigned" else row.sign()
+
+
+@pytest.mark.parametrize("variant", ["unsigned", "production_false"])
+def test_production_preflight_refuses_a_bad_row(
+    variant: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store = _prod_project(tmp_path)
+    store.add_approval(_row(variant))
+    with pytest.raises(ApprovalRequired):
+        preflight(store, "teaching")
+
+
+def test_ui_run_trigger_refuses_production_without_approval(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """GR4/AT-570 truth test: the real route refuses (403) before any browser launches."""
+    from test_ui_runs_live_case_approval import _case
+
+    import autotester.ui.routes_runs as routes_runs_module
+    from autotester.browser.session import BrowserSession
+    from autotester.ui.app import app
+
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store = _prod_project(tmp_path)
+    store.add_case(_case(0))
+    launched: list[str] = []
+    monkeypatch.setattr(BrowserSession, "start", lambda self: launched.append("start"))
+    judge = type("J", (), {"available": lambda self: True})()
+    monkeypatch.setattr(routes_runs_module, "for_role", lambda project, role: judge)
+    response = TestClient(app).post("/projects/demo/run", follow_redirects=False)
+    assert response.status_code == 403, response.text
+    assert launched == [] and store.list_approvals() == []
+
+
+def test_evidence_is_scrubbed_and_gated(
+    client: TestClient, scratch_root: Path, product_url: str,  # noqa: F811
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from autotester.schema.enums import Result
+    from autotester.schema.verdict import Failure, Verdict
+    from autotester.stages.real_acceptance import write_evidence
+
+    first, store, _spec_ = _drive("url_only", client, scratch_root, product_url, tmp_path,
+                                monkeypatch)
+    secret = "not-a-real-secret-9x"
+    reason = (f"login failed for {secret} at https://x.test/cb?access_token=abc123XYZ&a=1 "
+              "user tester@fixture.test")
+    bad = Verdict(run_id=first.run_id, case_id="c1", result=Result.INCONCLUSIVE,
+                  grader_provider="fake", failures=[Failure(criterion_id="c", reason=reason)])
+    monkeypatch.setattr(store, "load_verdicts", lambda run_id: [bad])
+    out, _lines = write_evidence(store, first, ["ap1"], scratch_root)
+    for name in ("evidence.json", "comparison.json", "checklist.md"):
+        text = (out / name).read_text(encoding="utf-8")
+        assert secret not in text and "abc123XYZ" not in text
+        assert "tester@fixture.test" not in text
+    ev = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
+    assert any("[REDACTED" in k for k in ev["inconclusive_breakdown"])
