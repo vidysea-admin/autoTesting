@@ -192,6 +192,7 @@
 | `stages/ai_catalog.py` | AI CATALOG: which Track C checks apply to a classified AI target, and which can run now. |
 | `stages/ai_judge.py` | AI JUDGE: map captured observations into the existing grade stage's evidence and rubric. |
 | `stages/ai_report.py` | AI REPORT: one Excel workbook of a project's stored Track C evidence, grouped by tier (T-155). |
+| `stages/analysis_flows.py` | Turn a finished `VideoAnalysis` into DRAFT flows in the FlowSpec (TV9, R37). |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/bench_from_run.py` | Turn a real project's executed+graded run into the T-136 bench files. Contract: bench.md K10. |
