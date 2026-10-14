@@ -1677,7 +1677,7 @@
     {
       "id": "T-200",
       "title": "TL-4 Scheduled auto-test at a per-project configurable frequency",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "user_value": "high",
@@ -1687,7 +1687,8 @@
         "expect_exit": 0
       },
       "note": "Group 10 'Team loop' (Umesh 2026-10-07: top priority, ahead of groups 5-9). Maker PLAN gate first: intent -> /grill -> spec -> plan -> qa/gates/plan-approved.md. Plan: C:/Users/Lenovo/.claude/plans/hello-hello-hello-resilient-reddy.md. Frequency field in schema/project.py; trigger reuses stages/parallel_run.py; must respect RunApproval (D-018). | Merged (phase A only): t200a-schedule-core at 782bb254 via merge commit 7e0ef5b9 (checker PASS, qa/verdicts/t200a-schedule-core.md); not built yet: phase B (t200b-scheduled-test) is still in repair check (verdict qa/verdicts/t200b-scheduled-test.md), and wiring is held on T-205.",
-      "criticality": "critical"
+      "criticality": "critical",
+      "completed": "2026-10-14T17:30:14"
     },
     {
       "id": "T-201",
