@@ -30,3 +30,15 @@ Verdict: FAIL (narrow)
 - New defect-vocabulary probes: "duplicate entry shown twice on profile save after retry" -> matched the duplicate-charge row (WRONG); "error toast shown on login after submit" -> matched the checkout error-toast row (WRONG, the same flaw as the example you named); two contrived probes that quote most of a row's hint also matched (acceptable). Cause: the screen is now ignored entirely and only generic words (error, toast, shown, after, submit) carry the 3/0.6 test, so a different screen with the same defect vocabulary matches.
 - Required fix: gate a match on screen agreement (item.screen shares a token with the row location) in addition to the hint overlap, or demand the row's rarest/most specific token (e.g. "charge", "phone"); add the login-vs-checkout and profile-duplicate pairs as negative tests. Alternatively mark auto matches as "proposed" and count only confirmed ones.
 - Disclosure OK (method string "conservative, untuned"). Scoped tests 23 passed, ruff clean, doctor clean, merge-tree clean.
+
+## Cycle 4 (head f13f43a5)
+
+Cycle checked: 4
+Verdict: FAIL (one residual over-match; otherwise much improved)
+
+Probed on a 13-row oracle so the 20% distinctive-token cap is realistic.
+- Earlier probes (5 original + 4 cycle-3): the login-vs-checkout and profile-duplicate pairs are now unmatched, and 3 of the originals stay unmatched. Still matched: 4 same-screen items that quote the row's own words (history list/placeholder, checkout retry/charge, duplicate charge amount, phone field slow/invalid). These are ambiguous, near-restatements, tolerable.
+- True matches: exact, reordered paraphrase with extra words, and near-duplicate wording all match (B3, B3, B2). Recall is not trivially 0. Pure synonym ("double debit") is missed, acceptable.
+- NEW over-match (blocking): same screen, different specific noun. Item "profile photo upload fails silently without message" matched the row "profile email update fails silently without message" (B5). The distinguishing noun (email vs photo) is not required: 0.6 coverage is met by the generic remainder (fails, silently, without, message).
+- Fix: require the row's most specific token (rarest across rows, e.g. "email") to appear in the item, or require coverage 0.8 / >=3 distinctive tokens when the row's hint is short; add the photo-vs-email pair as a negative test.
+- Scoped tests 26 passed, ruff clean, doctor clean, merge-tree clean.
