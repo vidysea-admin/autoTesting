@@ -20,6 +20,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
+from run_approval_fixture import project_of
 from typer.testing import CliRunner
 
 from autotester.cli import app
@@ -258,7 +259,6 @@ def test_capture_refuses_invalid_bound_before_any_send(requested: float) -> None
     from autotester.core.redact import Redactor
     from autotester.schema.ai_check import AiCheckKind, AiReply
     from autotester.stages.ai_capture import capture_run
-
     sent = []
     endpoint = "https://capture.test"
     approval = _granted(target=endpoint, run_kind=ApprovalKind.LIVE_CASE).sign()
@@ -268,7 +268,7 @@ def test_capture_refuses_invalid_bound_before_any_send(requested: float) -> None
         return AiReply(text="{}")
 
     with pytest.raises(ValueError, match=r"^wall_clock_s must be finite and nonnegative$"):
-        capture_run(project="erp", endpoint=endpoint, check=AiCheckKind.RESPONSE_SHAPE,
+        capture_run(project=project_of("erp"), endpoint=endpoint, check=AiCheckKind.RESPONSE_SHAPE,
                     prompts=["one"], send=send, approvals=[approval], redactor=Redactor({}),
                     wall_clock_s=requested, clock=lambda: 0.0)
     assert sent == []
@@ -281,7 +281,6 @@ def test_capture_honors_zero_time_without_blocking_positive_bound(
     from autotester.core.redact import Redactor
     from autotester.schema.ai_check import AiCheckKind, AiReply
     from autotester.stages.ai_capture import capture_run
-
     sent = []
     endpoint = "https://capture.test"
     approval = _granted(target=endpoint, run_kind=ApprovalKind.LIVE_CASE,
@@ -291,9 +290,10 @@ def test_capture_honors_zero_time_without_blocking_positive_bound(
         sent.append(prompt)
         return AiReply(text="{}")
 
-    capture = capture_run(project="erp", endpoint=endpoint, check=AiCheckKind.RESPONSE_SHAPE,
-                          prompts=["one"], send=send, approvals=[approval], redactor=Redactor({}),
-                          wall_clock_s=bound, clock=lambda: 0.0)
+    capture = capture_run(project=project_of("erp"), endpoint=endpoint,
+                          check=AiCheckKind.RESPONSE_SHAPE, prompts=["one"], send=send,
+                          approvals=[approval], redactor=Redactor({}), wall_clock_s=bound,
+                          clock=lambda: 0.0)
     assert sent == (["one"] if expected else [])
     assert len(capture.exchanges) == expected and capture.unsent_prompts == 1 - expected
     if not expected:

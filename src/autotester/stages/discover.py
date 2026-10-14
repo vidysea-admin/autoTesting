@@ -46,6 +46,8 @@ def approved_roots(paths: list[Path], scope: ReadScope, redactor: Redactor) -> l
             raise ValueError("discovery root must be a directory")
         if not root.is_relative_to(project):
             try:
+                # Bare gate on purpose: the target is a resolved LOCAL directory (strict, is_dir),
+                # never a project's live URL, so the D-088 production rule cannot apply.
                 require_approval(
                     scope.approvals,
                     project=scope.project,
