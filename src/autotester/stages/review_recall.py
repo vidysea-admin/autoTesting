@@ -17,9 +17,16 @@ from autotester.stages.acceptance_comparison import RECALL_BASIS
 
 HIGH = "S1"
 EXPECTED_HIGH = 13
-MIN_SHARED = 3
+MIN_DISTINCT = 2
 MIN_COVER = 0.6
-MATCH_METHOD = "automatic lexical (conservative, untuned)"
+MAX_ROW_FRACTION = 0.2
+MATCH_METHOD = (
+    "automatic lexical: screen match + >=2 distinctive tokens, conservative, untuned")
+_GENERIC = frozenset({
+    "error", "toast", "duplicate", "shown", "shows", "showing", "failed", "fail", "wrong",
+    "incorrect", "missing", "broken", "displayed", "issue", "bug", "button", "after", "before",
+    "text", "message", "click", "user", "form", "submit", "entry", "data", "list", "listed",
+})
 _NEGATING = frozenset({"correct", "correctly", "works", "working", "successfully", "fine", "ok",
                        "expected", "properly"})
 _STOP = frozenset({
@@ -37,25 +44,44 @@ def _tokens(text: str) -> set[str]:
     return {t for t in re.findall(r"[a-z0-9]{3,}", text.lower()) if t not in _STOP}
 
 
+def _screen(text: str) -> str:
+    return " ".join(re.findall(r"[a-z0-9]+", text.lower()))
+
+
+def _distinctive(rows: dict[str, set[str]]) -> set[str]:
+    """Hint tokens that are not generic defect words and occur in few oracle rows (IDF-style)."""
+    cap = max(1, int(MAX_ROW_FRACTION * len(rows)))
+    counts: dict[str, int] = {}
+    for hint in rows.values():
+        for t in hint:
+            counts[t] = counts.get(t, 0) + 1
+    return {t for t, c in counts.items() if c <= cap and t not in _GENERIC}
+
+
 def review_findings(reviews: list[VideoReview], oracle: BenchCorpus) -> list[tuple[str, Finding]]:
     """(item id, Finding) per review item; `matched_bug_id` set conservatively, no model.
 
-    Only the item's observed text (`seen`) is compared with a row's `detect_hint`; screen,
-    location and stopword tokens are excluded. A pair needs >= MIN_SHARED shared tokens
-    covering >= MIN_COVER of the hint, and an item that reads as "works correctly" never
-    matches. Each item takes at most one row and each row at most one item (best first).
-    Doubt leaves the item unmatched: unconfirmed, the row missed (D-094)."""
+    A pair matches only when the item's screen equals the row's location (normalised; either
+    side empty means no match) AND the item's `seen` shares >= MIN_DISTINCT distinctive
+    tokens with the row's `detect_hint` AND covers >= MIN_COVER of the hint tokens. An item
+    that reads as "works correctly" never matches. One item takes at most one row and one row
+    at most one item (best first). Doubt leaves the item unmatched: unconfirmed, the row
+    missed (D-094)."""
     rows = {b.id: _tokens(b.detect_hint) - _tokens(b.location) for b in oracle.seeded_bugs}
+    where = {b.id: _screen(b.location) for b in oracle.seeded_bugs}
+    distinct = _distinctive(rows)
     items = [i for r in reviews for i in r.items]
     scored = []
     for k, item in enumerate(items):
         toks = _tokens(item.seen)
-        if toks & _NEGATING:
+        screen = _screen(item.screen)
+        if toks & _NEGATING or not screen:
             continue
         for bug_id, hint in rows.items():
-            n = len(toks & hint)
-            if n >= MIN_SHARED and hint and n / len(hint) >= MIN_COVER:
-                scored.append((n / len(hint), n, k, bug_id))
+            shared = toks & hint
+            if (where[bug_id] == screen and hint and len(shared & distinct) >= MIN_DISTINCT
+                    and len(shared) / len(hint) >= MIN_COVER):
+                scored.append((len(shared) / len(hint), len(shared), k, bug_id))
     chosen: dict[int, str] = {}
     used: set[str] = set()
     for _, _, k, bug_id in sorted(scored, key=lambda t: (-t[0], -t[1], t[2], t[3])):
@@ -113,7 +139,8 @@ def score_reviews(
             file_sha256=hashlib.sha256(oracle_bytes).hexdigest(),
         ),
         match_method=method,
-        match_thresholds={"min_shared_tokens": MIN_SHARED, "min_hint_coverage": MIN_COVER},
+        match_thresholds={"min_distinctive_tokens": MIN_DISTINCT, "min_hint_coverage": MIN_COVER,
+                          "max_row_fraction": MAX_ROW_FRACTION},
         n=len(targets), k=len(found), recall=len(found) / len(targets) if targets else None,
         found_ids=found, missed_ids=[t for t in targets if t not in found],
         matches={k: v for k, v in sorted(matches.items()) if v},

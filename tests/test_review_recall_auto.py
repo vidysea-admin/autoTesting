@@ -54,8 +54,9 @@ def test_automatic_matching_needs_no_matches_file(tmp_path):
     rec = _load(tmp_path)
     assert rec.found_ids == ["B1"] and rec.missed_ids == ["B2"]
     assert rec.unconfirmed_ids == ["i2"]
-    assert rec.match_method == "automatic lexical (conservative, untuned)"
-    assert rec.match_thresholds == {"min_shared_tokens": 3, "min_hint_coverage": 0.6}
+    assert rec.match_method.startswith("automatic lexical: screen match + >=2 distinctive")
+    assert rec.match_thresholds == {"min_distinctive_tokens": 2, "min_hint_coverage": 0.6,
+                                     "max_row_fraction": 0.2}
 
 
 def test_override_replaces_automatic(tmp_path):
@@ -96,3 +97,47 @@ def test_different_bug_probes_do_not_match(tmp_path):
 def test_paraphrase_with_key_terms_matches_once(tmp_path):
     rec = _match(tmp_path, "customer charge shown twice after retry, a duplicate")
     assert rec.found_ids == ["B2"] and rec.matches == {"B2": ["i1"]}
+
+
+def _toast_args(tmp_path: Path, screen: str, seen: str, hint: str, loc: str) -> list[str]:
+    bugs = [SeededBug(id="T1", description=hint, severity=Severity.S1, location=loc,
+                      detect_hint=hint, provenance="ai_video_review"),
+            SeededBug(id="T2", description="phone", severity=Severity.S1, location="Profile",
+                      detect_hint="phone field accepts letters", provenance="ai_video_review")]
+    corpus = BenchCorpus(id="oc", app="a", build_ref="b", seeded_bugs=bugs,
+                         mode="known_bugs_ai_assisted")
+    review = VideoReview(id="rv1", source_id="src_a", status="ok", summary="flow",
+                         items=[_item("i1", screen, seen)])
+    (tmp_path / "r.json").write_text(review.model_dump_json())
+    (tmp_path / "o.json").write_text(corpus.model_dump_json())
+    return ["--review", str(tmp_path / "r.json"), "--oracle", str(tmp_path / "o.json"),
+            "--out", str(tmp_path / "out" / "recall.json"), "--expected-n", "2"]
+
+
+def test_generic_words_on_another_screen_do_not_match(tmp_path):
+    pairs = [
+        ("Login", "error toast shown on login after submit", "Checkout",
+         "error toast shown after payment submit declined card"),
+        ("Profile save", "duplicate entry shown twice on profile save after retry",
+         "Payments checkout",
+         "duplicate charge shown twice after retry"),
+    ]
+    for n, (screen, seen, loc, hint) in enumerate(pairs):
+        d = tmp_path / str(n)
+        d.mkdir()
+        assert _cli().main(_toast_args(d, screen, seen, hint, loc)) == 0
+        assert _load(d).found_ids == []
+
+
+def test_same_screen_without_distinctive_tokens_does_not_match(tmp_path):
+    args = _toast_args(tmp_path, "Checkout", "error toast shown after payment submit",
+                       "error toast shown after payment submit declined card", "Checkout")
+    assert _cli().main(args) == 0
+    assert _load(tmp_path).found_ids == []
+
+
+def test_same_screen_with_distinctive_tokens_matches(tmp_path):
+    args = _toast_args(tmp_path, "checkout", "error toast shown after payment submit declined card",
+                       "error toast shown after payment submit declined card", "Checkout")
+    assert _cli().main(args) == 0
+    assert _load(tmp_path).found_ids == ["T1"]
