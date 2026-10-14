@@ -1,6 +1,6 @@
 # t200-advisories
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Branch: wave/t200-advisories (rebased on a172f38a)
 
