@@ -1,6 +1,6 @@
 # Manifest - run-review-route
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** TA5 "Run review" button and route (team-video-review.md TV7, TV10; team-loop-acceptance.md TA5)
 **Branch:** wave/run-review-route

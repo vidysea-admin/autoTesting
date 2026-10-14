@@ -1,6 +1,6 @@
 # Manifest: ga5-harness-ui
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Contract: qa/contracts/generic-acceptance.md (GA5)
 Branch: wave/ga5-harness-ui
