@@ -104,3 +104,27 @@ def test_defect_paraphrases_hold_a_pass_as_inconclusive(note: str) -> None:
 def test_negated_defects_do_not_hold_a_pass(note: str) -> None:
     assert failure_terms(note) == [], note
     assert note_guard(Result.PASS, note) == (Result.PASS, note)
+
+
+import pytest as _pytest  # noqa: E402
+
+_LEX2_HELD = [
+    "error shown as expected and page went blank",
+    "access denied as expected, then redirected to another user's profile",
+    "rejected as expected; duplicate entry created",
+    "denied as expected and the session was exposed",
+    "rejected as expected, data loss occurred",
+    "form data was lost",
+]
+
+
+@_pytest.mark.parametrize("note", _LEX2_HELD)
+@_pytest.mark.parametrize("expects", [False, True])
+def test_lexicon_2_held(note, expects):
+    assert failure_terms(note, expects)
+
+
+def test_lexicon_2_clean():
+    assert not failure_terms("error message for invalid email appeared as expected", True)
+    assert not failure_terms("user logged in and dashboard shown")
+    assert not failure_terms("no duplicate entries and no data loss")
