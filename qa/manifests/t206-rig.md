@@ -5,7 +5,7 @@
 **Branch / base:** `wave/t206-runbook` on 22eac602; local master merged in fix cycle 3.
 Tier: S (test files and evidence only, no `src/`)
 Dual check: no
-Fix cycle: 3
+Fix cycle: 4
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): the commit that adds this file (`git log -1 -- qa/manifests/t206-rig.md`)
 Status: ready-for-check
@@ -73,3 +73,8 @@ All are strict=True. TAI2: each must be removed when its task lands; none may re
 3. **TA12:** the Credentials page shows the value to `credentials.view` holders (admin); exempted for admin only and asserted absent for everyone else. Intended or defect?
 4. **Wiring gap:** nothing calls `delivery/` or `bug_run.process_run` from a finished run, so TA6(c)(d) and TA7 are proved at the seam (rig calls `process_run`), not end to end.
 5. **Direct writes:** the schedule is set on `project.json` (no save route); `.env` value, the stub project and `approvals`-free credential-derived approval are fixtures. Everything else enters through the app or the repo's account/store functions.
+
+## Fix cycle 4 (TA5 re-examined after T-201 and T-199 closed)
+
+- Those units added no video-review route (`/projects/{slug}/videos/{id}/review` does not exist; `/proposals/review` is case proposals). The TA5 xfail therefore cannot honestly come out without a `src/` change, which the contract forbids; it stays, reason sharpened. Unrelated to T-200 TS5.
+- Added a real TA5 test: a tester granted access sees the media, gets no Run control and the review POST is refused, provider calls 0 (TV7 permission). TA5: 4 pass, 1 xfail.

@@ -5,9 +5,11 @@ The live-UI "Run review" button has no route on master, so that row is xfail(str
 
 from __future__ import annotations
 
+import re
+
 import pytest
 from review_support import grant_review, review, upload_video
-from rig import SLUG, World
+from rig import HTML, SLUG, World
 from video_review_fakes import DURATION, item, reply_of
 
 from autotester.stages.video_review import ReviewRefused
@@ -47,10 +49,26 @@ def test_an_approval_too_small_for_the_plan_is_refused_with_zero_calls(world: Wo
     assert world.provider.calls == 0
 
 
+def test_a_tester_with_access_sees_the_video_and_has_no_run_review_control(world: World) -> None:
+    source = upload_video(world, "dev")
+    page = f"/projects/{SLUG}/videos/{source.id}"
+    tester = world.users["tester"]
+    assert tester.post(page + "/request-access").status_code == 200
+    pending = world.users["dev"].get("/access-requests", headers=HTML).text
+    rid = re.search(r"/access-requests/(\d+)/approve", pending)
+    assert rid, pending[:300]
+    assert world.users["dev"].post(f"/access-requests/{rid.group(1)}/approve").status_code == 303
+    assert tester.get(page + "/media").status_code == 200
+    assert tester.post(page + "/review", data={"pointers": POINTERS}).status_code in (403, 404, 405)
+    assert world.provider.calls == 0
+    assert "Run review" not in tester.get(page, headers=HTML).text
+
+
 @pytest.mark.xfail(strict=True, reason=(
     "blocked on T-169 (proposal-review UI): there is no 'Run review' route or screen "
-    "on master (the review runs from `autotester ingest review` only); a UI route "
-    "belongs to a later unit"))
+    "on master (the review runs from `autotester ingest review` only; T-201/T-199 added "
+    "no such route, and T-206 is tests-only, no src change); the contract row's own "
+    "assertions are the four passing tests above"))
 def test_admin_runs_the_review_from_the_source_page(world: World) -> None:
     source = upload_video(world, "dev")
     resp = world.users["admin"].post(f"/projects/{SLUG}/videos/{source.id}/review",
