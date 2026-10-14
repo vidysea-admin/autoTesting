@@ -200,6 +200,7 @@
 | `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
 | `stages/bug_run.py` | BUG RUN: turn one finished run's verdicts into bug events, and notice cases that moved (T-199b). |
 | `stages/bug_wiring.py` | BUG WIRING: the one door from a finished run to the project's tracked bugs (T-199d). |
+| `stages/case_expectation.py` | Does a case's own expected outcome say an error is the correct result? (grader-expected-error) |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |

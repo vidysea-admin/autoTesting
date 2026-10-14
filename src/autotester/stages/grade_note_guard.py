@@ -34,7 +34,9 @@ _DEFECT_LEXICON = re.compile(
     r"problems?|crash\w*|exceptions?|denied|unable|cannot|can't|doesn't|unresponsive|"
     r"unsuccessful\w*|fro(?:ze|zen)|no\s+longer\s+works?|stopped\s+working|"
     r"(?:does\s+not|doesn't)\s+work|block(?:ed|s)?|stuck|hang(?:s|ing)?|hung|freez\w*|could\s?n[o']t|"
-    r"time[ds]?[ -]out|timeouts?|never\s+(?:appear|load|show|render|complet|finish)\w*)\b"
+    r"time[ds]?[ -]out|timeouts?|never\s+(?:appear|load|show|render|complet|finish)\w*|"
+    r"leak\w*|nothing\s+works?|stop(?:s|ped)?\s+responding|won.t\s+load|"
+    r"nothing\s+happened(?!\s+to\b)|did\s+nothing|spinner\s+never\s+stops?)\b"
     r"|(?<![\w$.,])(?:500|404)(?![\w%])",
     re.IGNORECASE)
 # Negated success: "did not / failed to / unable to / not" + a verb that names the expected outcome.
@@ -65,24 +67,61 @@ _TOKEN = re.compile(r"[\w']+|,")
 # A clause ends at sentence punctuation, so a negator never reaches into the next sentence.
 _CLAUSE_BREAK = re.compile(r"[.;:!?\n]")
 
+
 NOTE_DISAGREES = (
     "judge answered PASS but its own note describes a failure ({terms}): result and reasoning "
     "disagree, so the PASS is not trusted (fail closed, core-invariants C12). Held as "
     "INCONCLUSIVE for a human to look at; judge note: {note!r}."
 )
 
+# Expected-error exemption (deliberately conservative, grader-expected-error cycle 3). It applies
+# only to a WHOLE note that states the outcome was expected ("as expected" / "as intended" /
+# "as designed") and contains no contrary marker anywhere. Otherwise nothing is exempted and the
+# note is held as usual: a false INCONCLUSIVE is acceptable, a false PASS is not.
+_EXPECTED_CUE = re.compile(r"\bas\s+(?:expected|intended|designed)\b", re.IGNORECASE)
+_CONTRARY = re.compile(
+    r"\b(?:but|however|also|anyway|although|yet|instead|not|never|no|missing|absent|without|"
+    r"generic|unexpected\w*|deleted|submitted|saved|charged|leaked|other|wrong|incorrect|crash\w*|"
+    r"froze|valid)\b|\b500\b|n't\b", re.IGNORECASE)
+_EXEMPT_TERMS = frozenset({"error", "errors", "denied", "reject", "rejects", "rejected",
+                           "rejection", "rejections", "invalid"})
+# "invalid" is exempt only when it qualifies an input ("invalid email"), not a result.
+_INVALID_INPUTS = frozenset({"email", "password", "input", "credentials", "username", "format",
+                             "entry", "phone", "date", "login", "characters", "address", "code"})
 
-def failure_terms(note: str | None) -> list[str]:
-    """The un-negated defect words in `note`, in order; empty when it reads clean."""
+
+def _exemptible(note: str) -> bool:
+    """True when the whole note says the error was expected and nothing contradicts it."""
+    return bool(_EXPECTED_CUE.search(note)) and not _CONTRARY.search(note)
+
+
+def _exempt(note: str, end: int, term: str) -> bool:
+    if term not in _EXEMPT_TERMS:
+        return False
+    if term == "invalid":
+        following = re.match(r"\s*(\w+)", note[end:])
+        return bool(following) and following.group(1).lower() in _INVALID_INPUTS
+    return True
+
+
+def failure_terms(note: str | None, expects_error: bool = False) -> list[str]:
+    """The un-negated defect words in `note`, in order; empty when it reads clean.
+
+    `expects_error`: the case expects an error AND the judge said defect_observed=false; the
+    expected-error terms are then dropped from a note that passes `_exemptible`."""
     if not note:
         return []
+    expects_error = expects_error and _exemptible(note)
     hits = [m for rx in (_DEFECT_LEXICON, _NEGATED_SUCCESS) for m in rx.finditer(note)]
     spans = [m.span() for m in _NEGATED_SUCCESS.finditer(note)]
     found: list[str] = []
     for match in sorted(hits, key=lambda m: m.start()):
         if _negated(note, match.start(), match.end(), spans):
             continue
-        found.append(" ".join(match.group(0).lower().split()))
+        term = " ".join(match.group(0).lower().split())
+        if expects_error and _exempt(note, match.end(), term):
+            continue
+        found.append(term)
     return found
 
 
@@ -136,12 +175,13 @@ def _negated(note: str, start: int, end: int, success_spans: list[tuple[int, int
     return False
 
 
-def note_guard(judged: Result, note: str | None) -> tuple[Result, str | None]:
+def note_guard(judged: Result, note: str | None, expects_error: bool = False
+               ) -> tuple[Result, str | None]:
     """Downgrade a PASS whose note describes a failure to INCONCLUSIVE; else pass through.
 
     Backstop only: `grade()` consults it when the judge omitted the structured
     `defect_observed` field (when present, that field decides)."""
-    terms = failure_terms(note)
+    terms = failure_terms(note, expects_error)
     if judged is Result.PASS and terms:
         return Result.INCONCLUSIVE, NOTE_DISAGREES.format(
             terms=", ".join(dict.fromkeys(terms)), note=note)

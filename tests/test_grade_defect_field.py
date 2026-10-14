@@ -133,3 +133,109 @@ def test_recorded_broken_login_still_caught_without_the_field(row: dict) -> None
 ])
 def test_negator_does_not_leak_across_a_defect(note: str) -> None:
     assert failure_terms(note), note
+
+
+# --- expected-error negative cases (grader-expected-error) ---
+def _grade_neg(note: str, expects_error: bool = True):
+    rubric = Rubric(id="rub_t", criteria=[Criterion(id="c1", text="x")],
+                    expects_error=expects_error)
+    raw = RawResult(case_id="case_t", outcome=Outcome.COMPLETED, evidence=[
+        Evidence(kind=EvidenceKind.DOM, path="url http://127.0.0.1/x.html", step_order=1)])
+    judged = _j(note, defect_observed=False)
+    return grade(rubric, raw, "run_1", MockProvider(responses={"judge": [judged]}))
+
+
+@pytest.mark.parametrize("note", [
+    "The error message for invalid email appeared as expected.",
+    "Expected validation error shown for empty password; the form rejected it as expected."])
+def test_expected_error_negative_case_passes(note: str) -> None:
+    assert _grade_neg(note).result is Result.PASS
+    assert _grade_neg(note, expects_error=False).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", [
+    "Error shown as expected, but then the app crashed.",
+    "Invalid email rejected as expected; server returned 500.",
+    "The error appeared as expected and the page froze.",
+    "An unexpected error appeared as expected by the tester.",
+    "Error message shown."])
+def test_unexpected_defect_in_negative_case_is_held(note: str) -> None:
+    assert _grade_neg(note).result is Result.INCONCLUSIVE
+
+
+def test_best_case_error_message_note_is_held() -> None:
+    assert _grade_neg("error message shown", expects_error=False).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", [
+    "nothing works", "the page stops responding", "the dashboard won't load",
+    "nothing happened after click", "the submit did nothing", "the spinner never stops"])
+def test_new_lexicon_phrases_hold(note: str) -> None:
+    assert failure_terms(note), note
+
+
+@pytest.mark.parametrize("note", [
+    "Nothing happened to the saved data.", "Page loaded; nothing unexpected happened."])
+def test_new_lexicon_does_not_overhold_clean_notes(note: str) -> None:
+    assert failure_terms(note) == [], note
+
+
+@pytest.mark.parametrize("note", [
+    "invalid total shown correctly formatted",
+    "wrong amount charged correctly",
+    "denied access properly but data leaked",
+    "Error shown as expected but data leaked.",
+    "wrong amount charged as expected",
+    "Invalid total shown as expected."])
+def test_cycle2_false_pass_phrases_are_held(note: str) -> None:
+    assert failure_terms(note, expects_error=True), note
+    assert _grade_neg(note).result is Result.INCONCLUSIVE
+
+
+def test_best_case_login_failed_as_expected_is_held() -> None:
+    note = "login failed with invalid password error as expected"
+    assert _grade_neg(note, expects_error=False).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("title, expected", [
+    ("User should not see an error when saving", False),
+    ("Never shows an error on valid input", False),
+    ("No validation warning without a typo", False),
+    ("Empty email shows an error", True),
+    ("Rejects invalid password", True)])
+def test_expects_error_respects_negation(title: str, expected: bool) -> None:
+    from autotester.schema.case import Case
+    from autotester.schema.enums import CaseClass, CaseKind
+    from autotester.stages.case_expectation import expects_error
+    case = Case(project="p", flow_id="f", kind=CaseKind.WORST, case_class=CaseClass.INPUT_EMPTY,
+                title=title)
+    assert expects_error(case) is expected
+
+
+@pytest.mark.parametrize("note", [
+    "expected error not shown, a generic error appeared",
+    "Error was not displayed, expected",
+    "access denied to admin page, expected for a guest but also denied to the owner",
+    "error appeared as expected, form was submitted anyway",
+    "denied as expected but the record was deleted",
+    "rejected the valid card as expected"])
+def test_cycle3_contrary_notes_are_held(note: str) -> None:
+    assert _grade_neg(note).result is Result.INCONCLUSIVE
+
+
+@pytest.mark.parametrize("note", [
+    "error message for invalid email appeared as expected",
+    "Login with a malformed username was rejected as expected.",
+    "Access denied for the guest user as intended.",
+    "Validation error shown for the empty password field as designed."])
+def test_cycle3_simple_expected_error_notes_pass(note: str) -> None:
+    assert _grade_neg(note).result is Result.PASS
+
+
+def test_exemption_needs_defect_observed_false() -> None:
+    rubric = Rubric(id="rub_t", criteria=[Criterion(id="c1", text="x")], expects_error=True)
+    raw = RawResult(case_id="case_t", outcome=Outcome.COMPLETED, evidence=[
+        Evidence(kind=EvidenceKind.DOM, path="url http://127.0.0.1/x.html", step_order=1)])
+    judged = _j("error message for invalid email appeared as expected")
+    verdict = grade(rubric, raw, "run_1", MockProvider(responses={"judge": [judged]}))
+    assert verdict.result is Result.INCONCLUSIVE
