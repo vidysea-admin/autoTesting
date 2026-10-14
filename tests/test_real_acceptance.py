@@ -158,3 +158,65 @@ def test_evidence_is_scrubbed_and_gated(
         assert "tester@fixture.test" not in text
     ev = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
     assert any("[REDACTED" in k for k in ev["inconclusive_breakdown"])
+
+
+# --- scripts-env-bounds: .env key loading, bounds fit the approval, newest wide row wins ---
+
+def _crawl_row(actions: int, wall: float, granted_at: str):
+    from autotester.schema.approval import RunApproval
+    return RunApproval(project="demo", run_kind=ApprovalKind.CRAWL, target="https://demo.test/app",
+                       scope="t", max_actions=actions, max_probes=0, wall_clock_s=wall,
+                       granted_by="Umesh", granted_at=granted_at, expires_at="2099-01-01",
+                       production=True).sign()
+
+
+def _two_rows(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> ProjectStore:
+    monkeypatch.setenv("AUTOTESTER_APPROVAL_KEY", "k" * 32)
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store = _prod_project(tmp_path)
+    old, new = _crawl_row(150, 600.0, "2026-10-13"), _crawl_row(150, 1800.0, "2026-10-14")
+    store.add_approval(old)
+    store.add_approval(new)
+    store.add_approval(_row("production"))
+    return store
+
+
+def test_bounds_never_exceed_the_approval(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from autotester.stages.real_acceptance import crawl_bounds
+    store = _two_rows(tmp_path, monkeypatch)
+    b = crawl_bounds(store)
+    assert (b.max_actions, b.wall_clock_s) == (150, 600.0)  # default 200 clamped to 150
+    ids = preflight(store, "url_only", b)
+    assert len(ids) == 2
+    with pytest.raises(ApprovalRequired):
+        crawl_bounds(store, max_actions=151)
+
+
+def test_1800s_run_selects_the_1800s_row(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from autotester.stages.real_acceptance import crawl_bounds
+    store = _two_rows(tmp_path, monkeypatch)
+    new_id = next(a.id for a in store.list_approvals() if a.wall_clock_s == 1800.0)
+    b = crawl_bounds(store, wall_clock_s=1800.0)
+    assert (b.max_actions, b.wall_clock_s) == (150, 1800.0)
+    assert preflight(store, "url_only", b)[0] == new_id
+    with pytest.raises(ApprovalRequired):
+        crawl_bounds(store, wall_clock_s=1801.0)
+
+
+def test_script_verifies_with_the_key_only_in_dotenv(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import os
+    import subprocess
+    import sys
+    store = _two_rows(tmp_path, monkeypatch)
+    (tmp_path / ".env").write_text("AUTOTESTER_APPROVAL_KEY=" + "k" * 32 + "\n", encoding="utf-8")
+    env = {k: v for k, v in os.environ.items()
+           if k not in ("AUTOTESTER_APPROVAL_KEY", "PYTEST_CURRENT_TEST")}
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src")
+    script = Path(__file__).resolve().parents[1] / "scripts" / "run_real_acceptance.py"
+    out = subprocess.run([sys.executable, str(script), store.paths.slug, "--mode", "url_only",
+                          "--dry-run", "--root", str(tmp_path), "--wall-clock", "1800"],
+                         capture_output=True, text=True, env=env, timeout=120)
+    assert out.returncode == 0, out.stderr
+    assert "crawl bounds: max_actions=150 wall_clock_s=1800.0" in out.stdout
+    assert "cannot verify" not in out.stderr + out.stdout

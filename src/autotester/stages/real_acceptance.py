@@ -17,9 +17,11 @@ from pathlib import Path
 from typing import Any
 
 from autotester.browser.secrets import SecretStore
-from autotester.core.consent import require_project_approval
+from autotester.core.consent import ApprovalRequired, require_project_approval
 from autotester.core.redact import mask_pii_obj
 from autotester.schema.acceptance import AcceptanceComparison
+from autotester.schema.approval import RunApproval
+from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import ApprovalKind, Result
 from autotester.stages.generic_acceptance import Mode, ModeResult, ModeSeams, ModeSpec, run_mode
 from autotester.store.project_store import ProjectStore
@@ -58,16 +60,56 @@ def required_kinds(mode: Mode) -> list[ApprovalKind]:
     return ([ApprovalKind.CRAWL] if mode == "url_only" else []) + [ApprovalKind.LIVE_CASE]
 
 
-def preflight(store: ProjectStore, mode: Mode) -> list[str]:
-    """Check every approval the mode needs BEFORE anything starts; raises `ApprovalRequired`
-    (message includes the grant command). Returns the approval ids that cover the run."""
+def _newest_first(rows: list[RunApproval]) -> list[RunApproval]:
+    """`require_approval` returns the first covering row, so order decides: newest grant wins."""
+    return sorted(rows, key=lambda r: r.granted_at, reverse=True)
+
+
+def crawl_bounds(store: ProjectStore, max_actions: int | None = None,
+                 wall_clock_s: float | None = None) -> CrawlBounds:
+    """Crawl bounds that fit the covering approval: min(request or default, approval).
+
+    An explicit request larger than every approval raises `ApprovalRequired` (never clamped
+    silently). Among rows that cover the request, the one with the widest wall clock, then the
+    newest grant, is used, so a 1800 s run selects the 1800 s row and not an older 600 s one."""
     project = store.load_project()
     if project is None:
         raise ValueError(f"project {store.paths.slug!r} is not onboarded; nothing to approve")
-    rows = store.list_approvals()
-    return [require_project_approval(rows, project=project, kind=kind,
-                                     target=project.base_url).id
-            for kind in required_kinds(mode)]
+    default = CrawlBounds()
+    ask_a, ask_w = max_actions or 0, wall_clock_s or 0.0
+    rows = _newest_first(store.list_approvals())
+    covering: list[RunApproval] = []
+    for row in rows:
+        try:
+            require_project_approval([row], project=project, kind=ApprovalKind.CRAWL,
+                                     target=project.base_url, actions=ask_a, wall_clock_s=ask_w)
+            covering.append(row)
+        except ApprovalRequired:
+            continue
+    if not covering:  # raise the full, specific refusal over every row
+        require_project_approval(rows, project=project, kind=ApprovalKind.CRAWL,
+                                 target=project.base_url, actions=ask_a, wall_clock_s=ask_w)
+    best = max(covering, key=lambda r: r.wall_clock_s)  # max() keeps the first (newest) on ties
+    return CrawlBounds(
+        max_actions=min(max_actions or default.max_actions, best.max_actions),
+        wall_clock_s=min(wall_clock_s or default.wall_clock_s, best.wall_clock_s))
+
+
+def preflight(store: ProjectStore, mode: Mode, bounds: CrawlBounds | None = None) -> list[str]:
+    """Check every approval the mode needs BEFORE anything starts; raises `ApprovalRequired`
+    (message includes the grant command). Returns the approval ids that cover the run. The
+    CRAWL row must cover `bounds` (the bounds the crawl will actually use)."""
+    project = store.load_project()
+    if project is None:
+        raise ValueError(f"project {store.paths.slug!r} is not onboarded; nothing to approve")
+    rows = _newest_first(store.list_approvals())
+    ids = []
+    for kind in required_kinds(mode):
+        extra = ({"actions": bounds.max_actions, "wall_clock_s": bounds.wall_clock_s}
+                 if bounds is not None and kind is ApprovalKind.CRAWL else {})
+        ids.append(require_project_approval(rows, project=project, kind=kind,
+                                            target=project.base_url, **extra).id)
+    return ids
 
 
 def verdict_counts(store: ProjectStore, run_id: str) -> tuple[dict[str, int], dict[str, int]]:
@@ -135,11 +177,12 @@ def write_evidence(store: ProjectStore, result: ModeResult, approval_ids: list[s
 
 def drive_real(client: Any, store: ProjectStore, spec: ModeSpec, seams: ModeSeams,
                evidence_root: Path, *, approver: str = "acceptance-reviewer",
+               bounds: CrawlBounds | None = None,
                on_preflight: Callable[[list[str]], None] | None = None,
                ) -> tuple[ModeResult, Path, list[str]]:
     """Preflight approvals (refuse without them), `run_mode`, write evidence, return the
     checklist. `spec.onboard` should be False for an already-onboarded real target."""
-    approval_ids = preflight(store, spec.mode)
+    approval_ids = preflight(store, spec.mode, bounds)
     if on_preflight is not None:
         on_preflight(approval_ids)
     result = run_mode(client, store, spec, seams, approver=approver)
