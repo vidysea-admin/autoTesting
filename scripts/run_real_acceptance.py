@@ -1,0 +1,80 @@
+"""T-169 GR1-GR4: drive one acceptance mode against a REAL, already-onboarded project.
+
+    PYTHONPATH=src python scripts/run_real_acceptance.py <slug> --mode teaching|url_only
+        [--dry-run] [--root DIR]
+
+Refuses to start without the signed approvals the mode needs (prints the grant command).
+`--dry-run` checks approvals and prints the plan only: no browser, no model. Otherwise it
+drives `run_mode` through the app's routes with real seams, writes
+qa/evidence/t169-real/<mode>/ and prints the GR1-GR4 checklist. Umesh's verdict (GR3) and the
+AT-281 thresholds are never computed. Contract: qa/contracts/generic-acceptance.md.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from autotester.core.consent import ApprovalRequired
+from autotester.core.paths import repo_root
+from autotester.stages.generic_acceptance import ModeSeams, ModeSpec
+from autotester.stages.real_acceptance import drive_real, preflight, required_kinds
+from autotester.store.project_store import ProjectStore
+
+
+def _real_seams(store: ProjectStore, mode: str) -> ModeSeams:
+    """Real model and browser contact points (never built in --dry-run or in tests)."""
+    from autotester import providers
+    from autotester.browser.secrets import SecretStore
+    from autotester.cli_orchestrate import _make_crawl_fn
+    from autotester.schema.crawl import CrawlBounds
+
+    project = store.load_project()
+    assert project is not None
+    if mode == "teaching":
+        return ModeSeams(ingest_provider=providers.get("gemini"))
+    secrets = SecretStore.load(project, store.paths.env_file, strict=False)
+    return ModeSeams(crawl_fn=_make_crawl_fn(
+        project, store, store.paths, secrets, CrawlBounds(), None))
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("slug")
+    parser.add_argument("--mode", required=True, choices=["teaching", "url_only"])
+    parser.add_argument("--dry-run", action="store_true",
+                        help="check approvals and print the plan; start nothing")
+    parser.add_argument("--root", type=Path, default=None)
+    args = parser.parse_args(argv)
+    root = args.root or repo_root()
+    store = ProjectStore(args.slug, root)
+    project = store.load_project()
+    if project is None:
+        print(f"project {args.slug!r} is not onboarded under {root}", file=sys.stderr)
+        return 2
+    try:
+        ids = preflight(store, args.mode)
+    except ApprovalRequired as why:
+        print(f"REFUSED: {why}", file=sys.stderr)
+        return 3
+    print(f"approvals OK for {[k.value for k in required_kinds(args.mode)]}: {ids}")
+    if args.dry_run:
+        print(f"dry run: would drive {args.mode} on {project.base_url}; nothing started")
+        return 0
+    from fastapi.testclient import TestClient
+
+    from autotester.ui.app import app
+
+    spec = ModeSpec(mode=args.mode, slug=args.slug, name=project.name, base_url=project.base_url,
+                    allowed_domains=list(project.allowed_domains), onboard=False)
+    _, out, lines = drive_real(TestClient(app), store, spec, _real_seams(store, args.mode), root)
+    print(f"evidence: {out}")
+    print("\n".join(lines))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
