@@ -26,6 +26,7 @@ from autotester.schema.run_queue import ACTIVE, QueueEntry, QueueStatus, RunQueu
 from autotester.schema.team_enums import RunVia
 from autotester.stages.report_delivery import record_inbox_delivery
 from autotester.stages.schedule_store import QueueUnreadable
+from autotester.stages.schedule_sweep import record_interrupted
 from autotester.store.filestore import read_json, write_json
 from autotester.store.server_settings import effective_max_concurrent_runs
 
@@ -130,7 +131,18 @@ class RunQueue:
             self._persist()
         for entry in self._entries:
             self._deliver(entry)
+            self._mark_slot_interrupted(entry)
         self._launch(starts)
+
+    def _mark_slot_interrupted(self, entry: QueueEntry) -> None:
+        """TS7: a scheduled run recovered as interrupted says so on its slot record."""
+        if entry.status is not QueueStatus.INTERRUPTED:
+            return
+        try:
+            from autotester.stages.schedule_wiring import schedule_paths
+            record_interrupted(entry, schedule_paths().records)
+        except Exception:
+            log.exception("slot record for %s could not be marked interrupted", entry.id)
 
     def nudge(self) -> None:
         """Start whatever the limits allow now (the admin raised the cap; nothing else changed)."""

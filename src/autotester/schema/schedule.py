@@ -201,6 +201,7 @@ class SlotRecord(BaseModel):
     blocking_entry_id: str | None = None
     superseded_by: str | None = None
     detail: str | None = None
+    amended: bool = False  # an amendment line: the latest one per slot wins (TS7, append-only)
 
 
 class SlotClaim(BaseModel):

@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import threading
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -64,16 +65,29 @@ class QueueUnreadable(Exception):
 
 
 def amend_record(path: Path, slot_key: str, outcome: SlotOutcome, detail: str) -> bool:
-    """Rewrite one slot's record with a terminal outcome (a worker failed after the enqueue,
-    TS7). Atomic replace of the one project file; False when the slot has no record."""
-    records = read_records(path)
-    if not any(r.slot_key == slot_key for r in records):
+    """Record a terminal outcome for a slot already decided (a worker died after the enqueue,
+    TS7) by APPENDING an `amended` line; `read_records` lets the latest amendment win. Nothing
+    is rewritten, so a concurrent O_APPEND from another tick can never be lost. False when the
+    slot has no record."""
+    base = next((r for r in read_records(path) if r.slot_key == slot_key), None)
+    if base is None:
         return False
-    lines = [(r.model_copy(update={"outcome": outcome, "detail": detail[:500]}) if r.slot_key
-              == slot_key else r).model_dump_json() for r in records]
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    os.replace(tmp, path)
+    line = base.model_copy(update={"outcome": outcome, "detail": detail[:500], "amended": True})
+    return _append_line(path, line)
+
+
+_APPEND_LOCK = threading.RLock()  # Windows' CRT emulates O_APPEND (seek, write): not atomic
+
+
+def _append_line(path: Path, record: SlotRecord) -> bool:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = (record.model_dump_json() + chr(10)).encode("utf-8")
+    with _APPEND_LOCK:  # open inside the lock: the CRT positions at end only when it opens
+        fd = os.open(path, os.O_APPEND | os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0))
+        try:
+            os.write(fd, data)
+        finally:
+            os.close(fd)
     return True
 
 
@@ -85,24 +99,20 @@ def append_record(path: Path, record: SlotRecord) -> bool:
     per slot, and a duplicate line can never show twice."""
     if any(r.slot_key == record.slot_key for r in read_records(path)):
         return False
-    path.parent.mkdir(parents=True, exist_ok=True)
-    line = (record.model_dump_json() + "\n").encode("utf-8")
-    fd = os.open(path, os.O_APPEND | os.O_CREAT | os.O_WRONLY)
-    try:
-        os.write(fd, line)
-    finally:
-        os.close(fd)
-    return True
+    return _append_line(path, record)
 
 
 def read_records(path: Path) -> list[SlotRecord]:
     """One record per slot, oldest first. A torn line (power cut mid-append) is skipped, not
-    fatal, and a second line for the same slot (a re-drive race) is ignored."""
+    fatal; a second plain line for the same slot (a re-drive race) is ignored, while an
+    `amended` line replaces it in place (latest amendment wins)."""
     if not path.is_file():
         return []
     out: list[SlotRecord] = []
-    seen: set[str] = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
+    seen: dict[str, int] = {}
+    with _APPEND_LOCK:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    for line in lines:
         if not line.strip():
             continue
         try:
@@ -110,8 +120,10 @@ def read_records(path: Path) -> list[SlotRecord]:
         except ValidationError:
             continue
         if rec.slot_key not in seen:
-            seen.add(rec.slot_key)
+            seen[rec.slot_key] = len(out)
             out.append(rec)
+        elif rec.amended:
+            out[seen[rec.slot_key]] = rec
     return out
 
 

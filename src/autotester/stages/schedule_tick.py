@@ -19,7 +19,8 @@ from autotester.schema.schedule import ScheduleConfig, SlotOutcome, TickReport
 from autotester.stages.schedule_store import list_claims, write_heartbeat
 from autotester.stages.scheduler import DEFAULT_GRACE_MINUTES, TickDeps, due, tick_project
 
-_BAD = (SlotOutcome.BLOCKED_NO_CREDENTIALS, SlotOutcome.REFUSED, SlotOutcome.FAILED)
+_BAD = (SlotOutcome.BLOCKED_NO_CREDENTIALS, SlotOutcome.REFUSED, SlotOutcome.FAILED,
+        SlotOutcome.INTERRUPTED)
 
 
 @dataclass(frozen=True)

@@ -35,6 +35,7 @@ from autotester.stages.schedule_store import (
     project_records_path,
     read_heartbeat,
 )
+from autotester.stages.schedule_sweep import sweep_dead_enqueued
 from autotester.stages.schedule_tick import ScheduledProject, run_tick
 from autotester.stages.scheduler import DEFAULT_GRACE_MINUTES, QueueSnapshot, Slot, TickDeps
 from autotester.store.project_store import ProjectStore
@@ -181,6 +182,19 @@ def _scrubber(slug: str, root: Path | None) -> Callable[[str], str]:
                             ).redactor().scrub
 
 
+def _sweep(items: list[ScheduledProject], now: datetime, paths: SchedulePaths,
+           queue: Submitter, persisted: Callable[[], list[QueueEntry]], root: Path | None) -> None:
+    """TS7: amend slot records whose run was killed unseen. Never stops the tick."""
+    for item in items:
+        try:
+            sweep_dead_enqueued(
+                item.project, paths.records, now,
+                lambda: {s.id for s in _snapshots(queue, persisted) if s.active},
+                ProjectStore(item.project, root))
+        except Exception:  # an unreadable queue means "unknown": leave the record as it is
+            continue
+
+
 def tick_all(
     now: datetime, *, queue: Submitter, root: Path | None = None,
     persisted: Callable[[], list[QueueEntry]] = list, only: str | None = None,
@@ -206,6 +220,8 @@ def tick_all(
             scrub=_scrubber(slug, root),
             owner_guard=owner_guard(slug, owners[slug], ProjectStore(slug, root)))
 
+    if not dry_run:
+        _sweep(items, now, paths, queue, persisted, root)
     return run_tick(items, now, deps_for=deps_for, heartbeat_path=None if only else paths.heartbeat,
                     dry_run=dry_run, invalid=invalid, grace_minutes=grace_minutes,
                     preview=preview or (lambda slug: real_preview(slug, root)))

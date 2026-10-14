@@ -37,6 +37,7 @@ class SlotOutcome(StrEnum):
     BLOCKED_NO_CREDENTIALS = "blocked_no_credentials"
     REFUSED = "refused"
     FAILED = "failed"
+    INTERRUPTED = "interrupted"  # the run was cut off (restart, kill) after the enqueue
 
 
 class SchedulerHealth(StrEnum):

@@ -204,3 +204,80 @@ def test_cli_text_says_would_be_refused_with_the_reason() -> None:
     r = TickReport(tick_at=datetime(2026, 10, 8, tzinfo=UTC), dry_run=True, exit_code=2,
                    would_block=["k"], would_block_reasons={"k": "approval_required: x"})
     assert "k  would be refused: approval_required: x" in cli_schedule._text(r)
+
+
+# --- fix cycle 2: a killed run is not `enqueued` forever; amendments are append-only ------
+def test_amend_appends_a_line_and_the_latest_amendment_wins(tmp_path: Path) -> None:
+    path, _ = _enqueued(tmp_path)
+    before = path.read_text(encoding="utf-8")
+    assert amend_record(path, KEY, SlotOutcome.FAILED, "first")
+    assert amend_record(path, KEY, SlotOutcome.INTERRUPTED, "second")
+    assert path.read_text(encoding="utf-8").startswith(before)  # nothing rewritten
+    [rec] = read_records(path)
+    assert rec.outcome is SlotOutcome.INTERRUPTED and rec.detail == "second"
+    assert not append_record(path, _rec(SlotOutcome.ENQUEUED))  # still one record per slot
+
+
+def test_appends_concurrent_with_amends_lose_nothing(tmp_path: Path) -> None:
+    import threading
+    path, _ = _enqueued(tmp_path)
+    stop = threading.Event()
+
+    def amend_loop() -> None:
+        while not stop.is_set():
+            amend_record(path, KEY, SlotOutcome.FAILED, "x")
+
+    worker = threading.Thread(target=amend_loop)
+    worker.start()
+    keys = [f"demo:fixed:2026-10-{d:02d}T09:00Z" for d in range(9, 29)]
+    for k in keys:
+        append_record(path, _rec(SlotOutcome.ENQUEUED).model_copy(update={"slot_key": k}))
+    stop.set()
+    worker.join()
+    assert {r.slot_key for r in read_records(path)} == {KEY, *keys}
+
+
+def test_recover_marks_a_scheduled_slot_interrupted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from autotester.schema.run_queue import QueueStatus, RunQueueFile
+    from autotester.store.filestore import write_json
+    from autotester.ui.run_queue import RunQueue
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    path, entry = _enqueued(tmp_path)
+    qfile = tmp_path / "queue.json"
+    write_json(qfile, RunQueueFile(entries=[entry.model_copy(
+        update={"status": QueueStatus.RUNNING})]))
+    RunQueue(path=lambda: qfile, spawn=lambda job: None).recover()
+    [rec] = read_records(path)
+    assert rec.outcome is SlotOutcome.INTERRUPTED and rec.entry_id == "run-q1"
+    assert SlotOutcome.INTERRUPTED in _BLOCKED_SLOTS  # reaches the inbox
+
+
+def test_tick_sweep_amends_a_stale_enqueued_slot_with_no_live_run(tmp_path: Path) -> None:
+    from datetime import timedelta
+
+    from autotester.stages.schedule_sweep import sweep_dead_enqueued
+    path, _ = _enqueued(tmp_path)
+    store = _save(tmp_path)
+    records = schedule_paths(tmp_path).records
+    soon = NOW + timedelta(hours=1)
+    assert sweep_dead_enqueued("demo", records, soon, set, store) == 0      # not stale yet
+    late = NOW + timedelta(hours=4)
+    assert sweep_dead_enqueued("demo", records, late, lambda: {"run-q1"}, store) == 0  # live
+    assert sweep_dead_enqueued("demo", records, late, set, store) == 1
+    assert read_records(path)[0].outcome is SlotOutcome.INTERRUPTED
+    assert sweep_dead_enqueued("demo", records, late, set, store) == 0      # idempotent
+
+
+def test_sweep_leaves_a_finished_run_alone(tmp_path: Path) -> None:
+    from datetime import timedelta
+
+    from autotester.schema.run import Run
+    from autotester.stages.schedule_sweep import sweep_dead_enqueued
+    path, _ = _enqueued(tmp_path)
+    store = _save(tmp_path)
+    store.save_run(Run(id="run-q1", project="demo", finished_at=NOW))
+    assert sweep_dead_enqueued("demo", schedule_paths(tmp_path).records,
+                               NOW + timedelta(hours=4), set, store) == 0
+    assert read_records(path)[0].outcome is SlotOutcome.ENQUEUED
