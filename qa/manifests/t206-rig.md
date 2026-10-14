@@ -12,7 +12,7 @@ Status: ready-for-check
 
 ## What changed
 
-| Path | One job |
+Status: checked-PASS (rig local; task-level T-206 pending live TA15-TA17, hosted check, TV9 clause 2)
 |---|---|
 | `tests/acceptance/rig.py` | the real app over a fresh root, login gate ON, per-role clients (admin, subadmin, dev, tester, pending) created with `accounts.signup` / `set_user_groups` / `set_owner` / `set_relation`, stub product on loopback with a switchable defect, egress guard, seam logs |
 | `tests/acceptance/conftest.py` | `cold` (admin + pending) and `world` (full team + stub project) fixtures |

@@ -16,3 +16,35 @@ Head checked: 3ee8202b (ea25d946 + master merge; only qa/feedback-inbox.md confl
 
 ## Ran
 `uv run pytest tests/acceptance` on merged tree: 54 passed, 11 xfailed, 2 failed (F1), 1 error (F3), 328 s. Reverse-order, ruff and doctor runs were still queued behind the loaded CPU and are not counted.
+
+---
+# Cycle 6
+Cycle checked: 6
+Verdict: FAIL (single blocker: TAI2 skips; TA4 re-run owed after TV9 fix cycle 2 lands)
+Head checked: bc0ee74a (detached worktree, PYTHONPATH=worktree src, import path verified)
+
+## Rulings
+1. TAI1: `git diff master -- src` is noisy (6 files) only because the branch is behind master. `git diff master...HEAD -- src` is exactly the TV9 commit a5b7621b: `stages/analysis_flows.py` (+49) and `ui/routes_sources.py` (+2). The rig adds no product code of its own. Acceptable on condition TV9 merges first: once it is on master the three-dot diff is empty. Until then TAI1 holds only transitively; re-check after TV9 lands.
+2. TA1 seam: `monkeypatch.setitem(providers._REGISTRY, "mock", ...)` plus project vision = "mock" is the model Provider seam the contract names ("the model Provider (fake, request log)"), not patching an `autotester.*` callable: no function is replaced, the project config selects a registry id and the fake instance is returned for it. It is the same seam by a different door than `routes_runs.for_role`. "mock" is already registered, so naming it in project config needs no patch for default responses; the patch is only to inject a scripted MockProvider with a request log. Acceptable. Nit (non-blocking): the TA1(a) AST test only inspects `setattr` string targets, so `setitem(providers._REGISTRY` is invisible to it; add it to CLOSED_SEAMS handling so the closed set is real.
+3. TAI2: FAIL as worded. `grep -E "skip\(|skipif|importorskip"` matches 4 `@pytest.mark.skip` (TA3 server-process Test press; TA6 email x3). TAI2 permits only strict xfail naming a pending task or D-number; it has no allowance for skip, and a decision-deferred or live-only row is not exempt. What satisfies it: delete those 4 test functions from tests/acceptance and carry them as DEFERRED / live-walk rows in the runbook (TA15 walk; D-092/D-093 email), as the cycle 1 ruling said; or the Approver amends TAI2 to allow decision-cited skip. The checker does not self-amend a relaxation.
+4. Locally proven: TA1-TA14 each have a green LOCAL test. TA4 is green only against the old TV9 (a5b7621b); re-run after TV9 cycle 2 (1b81a133) merges. TA15 is live-walk, not local. TA6 email half and TA3 server-process Test press are not proven.
+
+## Ran
+tests/acceptance + test_analysis_flows + test_ui_sources: 77 passed, 4 skipped, 0 failed, 90 s. ruff: clean. doctor: rc 0. `git merge-tree master HEAD`: clean, no conflicts. Reverse-order/second run not repeated this cycle (TAI3 unchanged since cycle 5).
+
+---
+# Cycle 7
+Cycle checked: 7
+Verdict: PASS (rig, local part). Task-level T-206 NOT closed.
+Head checked: 8b0f95ef (based on 502feb93; master is now 93d6eb1a, merge-tree against it is clean)
+
+## Rulings
+1. TAI1: `git diff master...HEAD -- src` is empty. TAI2: grep for skip/skipif/importorskip/xfail in tests/acceptance finds nothing; the 4 skips are deleted and carried as runbook rows (TA3 LIVE-WALK for TA15; TA6 email DEFERRED, D-092/D-093).
+2. The strict xfail in tests/test_analysis_flows.py (TV9 clause 2, expand over DRAFT, D-073/R5) is outside tests/acceptance, so TAI2 does not bind it, and it names a D-number that defers it. It does not block the rig PASS and TA4 does not depend on it. It is TV9's own held item, not T-206's.
+3. TAI3: acceptance suite green three ways: normal 79-run combined, second run 65 passed, reverse file order 65 passed.
+
+## Ran
+acceptance + analysis_flows + ui_sources: 79 passed, 1 xfailed. acceptance alone twice: 65 passed each; reverse order: 65 passed. ruff clean, doctor rc 0.
+
+## Remaining for task-level T-206
+TA15/TA16/TA17 live evidence (incl. TA3 server-process Test press), hosted Ubuntu check (TAI5), the email rows once D-092/D-093 lift, and TV9 clause 2 on its human gate (Umesh).
