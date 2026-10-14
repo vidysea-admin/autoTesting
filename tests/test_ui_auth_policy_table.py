@@ -47,8 +47,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
         "/sources/{source_id}/analyze", "/env/url", "/tracker/{bug_key}/assignee",
         "/proposals/stage", "/proposals/review")},
     **{("POST", _P + t): ("project", "video.upload") for t in ("/sources/upload","/sources/drive")},
-    **{("POST", _P + t): ("project", "project.run") for t in ("/run", "/test", "/explore",
-                                                                "/crawl-approval")},
+    **{("POST", _P + t): ("project", "project.run") for t in ("/run", "/test", "/explore")},
+    ("POST", _P + "/crawl-approval"): ("project", "access.approve"),
     **{("POST", _P + t): ("project", "credentials.edit") for t in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
     **{("POST", _P + t): ("project", "schedule.manage") for t in (

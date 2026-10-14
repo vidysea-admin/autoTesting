@@ -12,9 +12,10 @@ from datetime import UTC, datetime, timedelta, timezone
 from html import escape
 from math import isfinite
 
-from fastapi import APIRouter, Form, HTTPException
+from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
+from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore
 from autotester.core.ids import SigningKeyMissing
 from autotester.core.paths import ProjectPaths
@@ -25,14 +26,34 @@ from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submissio
 
 router = APIRouter()
 
-def _crawl_approval_form(slug: str, target: str) -> str:
-    """Human-readable counterpart to the CLI-only crawl approval command."""
+_KINDS = (ApprovalKind.CRAWL, ApprovalKind.LIVE_CASE)   # what the UI may grant, as the CLI can
+
+def _signer() -> str:
+    """The signed-in human's email, or '' when there is no real session behind the request."""
+    who = current_principal()
+    return who.email if who is not None and who.user_id else ""
+
+
+def _kind_and_production(project_production: bool) -> str:
+    """The kind selector and the production checkbox - forced on (and submitted) for a
+    production project, so a UI row is never the production:false row D-088 refuses."""
+    options = "".join(f"<option value='{k.value}'>{k.value}</option>" for k in _KINDS)
+    box = ("<input type='checkbox' checked disabled> <input type='hidden' name='production' "
+           "value='1'> required: this project is declared production (D-088)"
+           if project_production else "<input type='checkbox' name='production' value='1'>")
+    return (f"<div class='field'><label>Kind</label><select name='kind'>{options}</select></div>"
+            f"<div class='field'><label>Production</label>{box}</div>")
+
+
+def _crawl_approval_form(slug: str, target: str, production: bool = False) -> str:
+    """Human-readable counterpart to the CLI `approve` command. The signer is the signed-in
+    account, never a field: a human grant has to be attributable."""
     safe = escape(slug)
     form = (
         f"<p>This approval applies only to <code>{escape(target)}</code>.</p>"
         f"<form method='post' action='/projects/{safe}/crawl-approval'>"
-        "<div class='field'><label>Signed by</label>"
-        "<input name='granted_by' required placeholder='your name'></div>"
+        f"<p>Signed by <code>{escape(_signer() or 'nobody - sign in first')}</code></p>"
+        f"{_kind_and_production(production)}"
         "<div class='field'><label>Scope</label>"
         "<input name='scope' required placeholder='what this crawl may read and click'></div>"
         "<div class='field'><label>Expires at</label>"
@@ -55,7 +76,7 @@ def _crawl_approval_form(slug: str, target: str) -> str:
         "<input name='note' placeholder='why this crawl is approved'></div>"
         "<button type='submit'>Save crawl approval</button></form>"
     )
-    return f"<section id='crawl-approval'>{theme.card(form, title='Approve a crawl')}</section>"
+    return f"<section id='crawl-approval'>{theme.card(form, title='Approve a run')}</section>"
 
 
 def _in_force(approval: RunApproval, slug: str, target: str) -> bool:
@@ -89,13 +110,15 @@ def _approvals_card(approvals: list[RunApproval], slug: str, target: str, saved:
         banner = (f"<p>{theme.pill('Γ£ô ' + heading, 'positive')} {what} "
                   f"<code>{escape(just_saved.id)}</code></p>")
     rows = "".join(
-        f"<tr><td>{escape(a.granted_by)}</td><td>{escape(a.scope)}</td>"
+        f"<tr><td>{escape(a.granted_by)}</td><td>{a.run_kind.value}"
+        f"{' (production)' if a.production else ''}</td><td>{escape(a.scope)}</td>"
         f"<td>{a.max_actions}</td><td>{a.wall_clock_s:g}s</td>"
         f"<td>{escape(a.expires_at)}</td><td><code>{escape(a.id)}</code></td></tr>"
         for a in active
     )
     table = (
-        "<table><tr><th>Signed by</th><th>Scope</th><th>Max actions</th><th>Wall clock</th>"
+        "<table><tr><th>Signed by</th><th>Kind</th><th>Scope</th><th>Max actions</th>"
+        "<th>Wall clock</th>"
         f"<th>Expires (UTC)</th><th>Id</th></tr>{rows}</table>" if active
         else "<p class='meta'>No crawl approval is in force for this target.</p>"
     )
@@ -123,7 +146,7 @@ def _matching_grant(approvals: list[RunApproval], candidate: RunApproval) -> Run
                 None)
 
 
-def _approval_error(slug: str, detail: str) -> HTMLResponse:
+def _approval_error(slug: str, detail: str, status: int = 400) -> HTMLResponse:
     safe = escape(slug)
     body = theme.breadcrumb(
         ("Projects", "/"), (safe, f"/projects/{safe}"), ("Credentials", None),
@@ -132,7 +155,7 @@ def _approval_error(slug: str, detail: str) -> HTMLResponse:
         "Return to crawl approval</a></p>", title="Check the approval details",
     )
     return HTMLResponse(
-        theme.page("Crawl approval not saved", body, active_slug=slug), status_code=400,
+        theme.page("Crawl approval not saved", body, active_slug=slug), status_code=status,
     )
 
 
@@ -153,22 +176,31 @@ def _future_iso(value: str, offset_minutes: int) -> str:
 
 
 
+def _checked_kind(kind: str, scope: str) -> ApprovalKind:
+    run_kind = ApprovalKind(kind)
+    if run_kind not in _KINDS:
+        raise HTTPException(400, "kind must be crawl or live_case")
+    if not scope:
+        raise HTTPException(400, "an approval requires a scope")
+    return run_kind
+
+
 @router.post("/projects/{slug}/crawl-approval")
 def crawl_approval_submit(
-    slug: str, granted_by: str = Form(""), scope: str = Form(""),
-    expires_at: str = Form(""), max_actions: str = Form(""),
-    wall_clock_s: str = Form(""), timezone_offset_minutes: str = Form("0"),
-    note: str = Form(""),
+    request: Request, slug: str, kind: str = Form("crawl"), production: str = Form(""),
+    scope: str = Form(""), expires_at: str = Form(""), max_actions: str = Form(""),
+    wall_clock_s: str = Form(""), timezone_offset_minutes: str = Form("0"), note: str = Form(""),
 ) -> Response:
     """Persist one bounded approval; project and target always come from disk."""
     store, project = _load_project_or_404(slug)
-    signer, allowed_scope = granted_by.strip(), scope.strip()
+    signer, allowed_scope = _signer(), scope.strip()
+    if not signer or "authorization" in request.headers:   # human session only, no API token
+        return _approval_error(slug, "a grant must come from a signed-in person", 403)
     try:
-        if not signer or not allowed_scope:
-            raise HTTPException(400, "crawl approval requires a signer and scope")
+        run_kind = _checked_kind(kind, allowed_scope)
         secrets = SecretStore.load(project, ProjectPaths(slug).env_file, strict=False)
         _refuse_unsafe_submission([
-            ("signer", signer), ("scope", allowed_scope), ("expiry", expires_at),
+            ("scope", allowed_scope), ("expiry", expires_at),
             ("maximum actions", max_actions), ("wall clock", wall_clock_s),
             ("timezone offset", timezone_offset_minutes), ("note", note),
         ], project, secrets)
@@ -180,12 +212,13 @@ def crawl_approval_submit(
             raise HTTPException(400, "timezone offset must be between -840 and 840 minutes")
         expiry = _future_iso(expires_at, offset)
     except ValueError:
-        return _approval_error(slug, "crawl bounds must be numbers")
+        return _approval_error(slug, "kind and bounds must be valid, numbers for bounds")
     except HTTPException as exc:
         return _approval_error(slug, str(exc.detail))
     now = datetime.now(UTC).isoformat()
     candidate = RunApproval(
-        project=project.slug, run_kind=ApprovalKind.CRAWL, target=project.base_url,
+        project=project.slug, run_kind=run_kind, target=project.base_url,
+        production=project.production or bool(production),
         scope=allowed_scope, max_actions=actions, wall_clock_s=seconds,
         granted_by=signer, granted_at=now, expires_at=expiry,
         note=note.strip() or None,
