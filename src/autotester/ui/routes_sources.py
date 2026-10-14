@@ -21,6 +21,7 @@ from autotester.providers.base import ProviderError
 from autotester.schema.enums import ReviewStatus, SourceKind
 from autotester.schema.observation import VisionOptions
 from autotester.schema.project import Source
+from autotester.stages.analysis_flows import propose_draft_flows
 from autotester.stages.analyze_video import DuplicateProviders, NoObservations, analyze
 from autotester.stages.ingest import NotARecording, register_source
 from autotester.stages.issues import derive_issues, sync_source_issues
@@ -153,6 +154,7 @@ def _save_analysis_outputs(store, source, analysis) -> None:
         derive_issues(analysis, source, store.paths.slug),
         remove_missing=analysis.is_complete,
     )
+    propose_draft_flows(store, source, analysis)  # TV9: video flows -> DRAFT, never gating
     screen_map = build_screen_map(store)
     store.save_screen_map(screen_map)
     spec = store.load_flowspec()
