@@ -102,7 +102,7 @@ Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no bro
 2. READY (once the file exists) `uv run python scripts/check_deliverable.py --exists qa/evidence/t206-review-live/recall.json`; re-derive k and the unconfirmed count from the id lists against `.work/pathlynks-dev-videos-oracle-2026-10-07.md` (local read only, gitignored). `scripts/score_video_issues.py` may do the arithmetic. No model call.
 
 ### TA17 - one Test press and one schedule tick on Pathlynks (LIVE-ARTIFACT)
-1. BLOCKED(AT-891: is pathlynks.vidysea.com recorded as production in the approval; D-084 item 3) Every step below waits on this.
+1. ANSWERED 2026-10-14 (Umesh, AT-891): pathlynks.vidysea.com IS production. Every run below therefore REQUIRES a human-signed production approval row (signed by Umesh with AUTOTESTER_APPROVAL_KEY, production flag set, one per run); an agent never signs it. No signed row, no run. Test account only.
 2. BLOCKED(AT-891) `uv run python scripts/check_crawl_approval.py pathlynks` exits 0; read the per-run approval row for each T-206 run.
 3. BLOCKED(AT-891; T-145 Pathlynks report still pending) dev presses Test on Pathlynks with the `PATHLYNKS_USER_*` test account; report in the inbox; outbox message for a ticking user.
 4. BLOCKED(AT-891; Umesh answer: clone project `pathlynks-acceptance` or the real project, contract Open 4) Schedule tick; one enqueue; report; bug rows.

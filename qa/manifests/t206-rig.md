@@ -5,7 +5,7 @@
 **Branch / base:** `wave/t206-runbook` on 22eac602; local master merged in fix cycle 3.
 Tier: S (test files and evidence only, no `src/`)
 Dual check: no
-Fix cycle: 4
+Fix cycle: 5
 Executor: claude-sonnet-subagent (maker build subagent)
 Code commit (pre-check sha): the commit that adds this file (`git log -1 -- qa/manifests/t206-rig.md`)
 Status: ready-for-check
@@ -78,3 +78,13 @@ All are strict=True. TAI2: each must be removed when its task lands; none may re
 
 - Those units added no video-review route (`/projects/{slug}/videos/{id}/review` does not exist; `/proposals/review` is case proposals). The TA5 xfail therefore cannot honestly come out without a `src/` change, which the contract forbids; it stays, reason sharpened. Unrelated to T-200 TS5.
 - Added a real TA5 test: a tester granted access sees the media, gets no Run control and the review POST is refused, provider calls 0 (TV7 permission). TA5: 4 pass, 1 xfail.
+
+## Fix cycle 5 (rebased on master 09f968d8; wave/run-review-route merged INTO this branch)
+
+- NOTE: `wave/run-review-route` (96a96384) was NOT yet on master (only a branch); it is merged here so the route exists. This unit's own diff stays tests and evidence only; the `src/` lines in `git diff master` come solely from that branch and vanish once it reaches master.
+- TA5: xfail removed; `test_admin_runs_the_review_from_the_source_page` posts to the real `/projects/{slug}/videos/{id}/review` (refused 403 with zero calls before approval; 303 and stored review after). TA5 5 pass.
+- Result: `uv run pytest tests/acceptance`: 64 passed, 4 skipped, 1 xfailed. Ruff clean, doctor clean.
+- Runbook TA17 step 1: AT-891 answered (production); a human-signed production approval is required per run.
+- Locally proven: TA1-TA3 (server-process Test press is a live walk), TA4 (except TV9), TA5, TA6 (a,b; email halves skipped), TA7-TA14.
+- Still not green, by design: TA4 TV9 xfail (T-169 pending; the analyze route does not create DRAFT flows); skips = TA3 server-process Test press (live walk TA15), TA6 email x3 (DEFERRED TO PRODUCTION D-092/D-093). Live evidence: TA16 (artifact missing), TA17 (needs signed prod approval), TA15 walks, hosted Ubuntu / T-203 host and DNS.
+- TAI2 still unmet while the TA4 xfail and the skips stand; checker to rule.

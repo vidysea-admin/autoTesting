@@ -1,7 +1,7 @@
 """TA5: a pointer review of an intake source returns a traced confirm-list. The source arrives
 through the Add-videos route (registered by `dev`) and the review is run for `admin`; the model
 Provider is the recording fake. With the per-use approval missing the provider makes zero calls.
-The live-UI "Run review" button has no route on master, so that row is xfail(strict) (T-169)."""
+The live-UI "Run review" button is the real route (ui/routes_video_review.py)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import re
 import pytest
 from review_support import grant_review, review, upload_video
 from rig import HTML, SLUG, World
-from video_review_fakes import DURATION, item, reply_of
+from video_review_fakes import DURATION, FakeFrames, item, reply_of
 
 from autotester.stages.video_review import ReviewRefused
 
@@ -64,13 +64,20 @@ def test_a_tester_with_access_sees_the_video_and_has_no_run_review_control(world
     assert "Run review" not in tester.get(page, headers=HTML).text
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "blocked on T-169 (proposal-review UI): there is no 'Run review' route or screen "
-    "on master (the review runs from `autotester ingest review` only; T-201/T-199 added "
-    "no such route, and T-206 is tests-only, no src change); the contract row's own "
-    "assertions are the four passing tests above"))
-def test_admin_runs_the_review_from_the_source_page(world: World) -> None:
+def test_admin_runs_the_review_from_the_source_page(
+        world: World, monkeypatch: pytest.MonkeyPatch) -> None:
+    from autotester.ui import routes_video_review as route
+    monkeypatch.setattr(route, "provider_factory", lambda _store: world.provider)
+    monkeypatch.setattr(route, "probe_fn", lambda _p: (DURATION, 640, 360))
+    monkeypatch.setattr(route, "frames_fn", FakeFrames)
     source = upload_video(world, "dev")
-    resp = world.users["admin"].post(f"/projects/{SLUG}/videos/{source.id}/review",
-                                     data={"pointers": POINTERS})
-    assert resp.status_code in (200, 303)
+    world.provider.replies = [reply_of([item(source_id=source.id, time_s=62,
+                                             seen="total is wrong")])] * 40
+    page = f"/projects/{SLUG}/videos/{source.id}"
+    refused = world.users["admin"].post(page + "/review", data={"pointers": POINTERS})
+    assert refused.status_code == 403 and world.provider.calls == 0     # no approval yet
+    grant_review(world)
+    resp = world.users["admin"].post(page + "/review", data={"pointers": POINTERS})
+    assert resp.status_code == 303 and resp.headers["location"].startswith(page)
+    assert world.provider.calls > 0
+    assert "total is wrong" in world.users["dev"].get(page, headers=HTML).text
