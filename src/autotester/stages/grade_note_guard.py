@@ -32,7 +32,8 @@ _DEFECT_LEXICON = re.compile(
     r"\b(bugs?|defects?|errors?|fail\w*|invalid|incorrect\w*|broken|unexpected\w*|wrong|"
     r"reproduc\w*|regress\w*|reject\w*|mismatch\w*|missing|unlabell?ed|seeded|issues?|"
     r"problems?|crash\w*|exceptions?|denied|unable|cannot|can't|doesn't|unresponsive|"
-    r"unsuccessful\w*|block(?:ed|s)?|stuck|hang(?:s|ing)?|hung|freez\w*|could\s?n[o']t|"
+    r"unsuccessful\w*|fro(?:ze|zen)|no\s+longer\s+works?|stopped\s+working|"
+    r"(?:does\s+not|doesn't)\s+work|block(?:ed|s)?|stuck|hang(?:s|ing)?|hung|freez\w*|could\s?n[o']t|"
     r"time[ds]?[ -]out|timeouts?|never\s+(?:appear|load|show|render|complet|finish)\w*)\b"
     r"|(?<![\w$.,])(?:500|404)(?![\w%])",
     re.IGNORECASE)
@@ -58,6 +59,8 @@ _FILLERS = frozenset({"a", "an", "any", "the", "of", "evidence", "evidenced", "p
                       "result", "results", "element", "elements", "content", "message",
                       "messages", "or", ",", "is", "are", "was", "were", "be", "been",
                       "single", "such", "kind", "types", "type"})
+# After "or" these start a new clause ("no crash, or the error banner appeared"), not a list item.
+_NEW_CLAUSE = frozenset({"the", "this", "that", "these", "those", "it", "they", "there", "we"})
 _TOKEN = re.compile(r"[\w']+|,")
 # A clause ends at sentence punctuation, so a negator never reaches into the next sentence.
 _CLAUSE_BREAK = re.compile(r"[.;:!?\n]")
@@ -83,6 +86,17 @@ def failure_terms(note: str | None) -> list[str]:
     return found
 
 
+def _defect_follows(note: str, start: int, stop: int) -> bool:
+    """True when the item after "or"/"nor" is a defect word, not "two" / "not" / a new clause."""
+    for tok in _TOKEN.finditer(note, start, stop):
+        word = tok.group(0).lower()
+        if word in _NEW_CLAUSE:
+            return False
+        if word not in _FILLERS:
+            return bool(_DEFECT_LEXICON.match(note, tok.start()))
+    return False
+
+
 def _list_closes(note: str, end: int) -> bool:
     """True when the list continues after `end` and closes with "or"/"nor" in the same clause.
 
@@ -92,7 +106,7 @@ def _list_closes(note: str, end: int) -> bool:
     for tok in _TOKEN.finditer(note, end, stop.start() if stop else len(note)):
         word = tok.group(0).lower()
         if word in ("or", "nor"):
-            return True
+            return _defect_follows(note, tok.end(), stop.start() if stop else len(note))
         if word != "," and word not in _FILLERS and not _DEFECT_LEXICON.fullmatch(word):
             return False
     return False
@@ -112,6 +126,8 @@ def _negated(note: str, start: int, end: int, success_spans: list[tuple[int, int
         if (word in _NEGATORS or word.endswith("n't")
                 or _PHRASE_NEGATORS.get(word) == nxt):
             return not any(a <= toks[i].start() < b for a, b in success_spans)
+        if word in ("or", "nor") and nxt in _NEW_CLAUSE:
+            return False
         seen_or = seen_or or word in ("or", "nor")
         if word == "," and not (seen_or or _list_closes(note, end)):
             return False
