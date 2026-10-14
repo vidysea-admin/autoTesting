@@ -1,6 +1,6 @@
 # Manifest - tv9-expand-draft
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** TV9 clause 2 - generate cases from source-derived DRAFT flows with no human review step
 **Branch:** wave/tv9-expand-draft

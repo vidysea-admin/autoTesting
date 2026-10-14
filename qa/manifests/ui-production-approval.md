@@ -1,6 +1,6 @@
 # ui-production-approval
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 2
 Branch: wave/ui-production-approval
 

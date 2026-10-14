@@ -1,6 +1,6 @@
 # Manifest - t169-real-driver
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Unit:** T-169 turnkey real-target driver (evidence for GR1-GR4)
 **Branch:** wave/t169-real-driver
