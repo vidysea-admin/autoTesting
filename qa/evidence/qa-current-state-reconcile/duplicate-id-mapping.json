@@ -1,0 +1,115 @@
+{
+  "base": "4c7a9efd72776c5d467e73fc3098020bc63055fb",
+  "row_count": 1025,
+  "mapping": [
+    {
+      "line": 287,
+      "old_id": "AT-288",
+      "new_id": "AT-1000",
+      "title": "t135 breaks the repo's own C2 architecture-budget gate: `autotester doctor` reports TWO violations, not the one the manifest claims",
+      "date": "2026-09-11",
+      "status": "verified",
+      "original_row_sha256": "8bab77da11ca0220d3f90c59a6c9f99947768259b5a51e3b9a4f4897476ba344"
+    },
+    {
+      "line": 288,
+      "old_id": "AT-289",
+      "new_id": "AT-1001",
+      "title": "resolve_requests is wired to the CLI merge door only: the UI's own 'Merge these screens into the FlowSpec' button covers the gap and leaves the answered VideoRequest OPEN forever",
+      "date": "2026-09-11",
+      "status": "verified",
+      "original_row_sha256": "792237e1db3e201eac38ef3ead937c5f205121817e71568813c7c3aae3bcbc86"
+    },
+    {
+      "line": 289,
+      "old_id": "AT-290",
+      "new_id": "AT-1002",
+      "title": "AT-287's 'blast radius, measured rather than assumed' is false: three video-derived host-ful url_patterns are ALREADY mangled on disk in projects/erp/screenmap.json, and the fix does not heal stored data",
+      "date": "2026-09-11",
+      "status": "verified",
+      "original_row_sha256": "411547549dd24d5a902b819f839ead1d60917e0d2685e612a1224b5c0573a411"
+    },
+    {
+      "line": 290,
+      "old_id": "AT-291",
+      "new_id": "AT-1003",
+      "title": "url_template is STILL not idempotent for a dotless host, and _LOOKS_LIKE_HOST silently eats a path segment that merely contains a dot",
+      "date": "2026-09-11",
+      "status": "verified",
+      "original_row_sha256": "56b9f7ac4ff8021c49006147ea9221b621aaef6a0d6d32c2f108a8b007027b28"
+    },
+    {
+      "line": 549,
+      "old_id": "AT-547",
+      "new_id": "AT-1004",
+      "title": "at540 unit deleted three existing tests from tests/test_execute.py instead of splitting them: E3's exception->ERRORED and MissingSecret->BLOCKED_HITL pins and AT-341's secret-scrub pin are gone entirely (not moved anywhere)",
+      "date": "2026-09-22",
+      "status": "verified",
+      "original_row_sha256": "638cf405470f3de4fdb465e8ca7f432d78d71ed1489d4ff376581badb7a446c8"
+    },
+    {
+      "line": 550,
+      "old_id": "AT-548",
+      "new_id": "AT-1005",
+      "title": "Capability row 'dom_asserts met only when selector exists' is unisolated: the manifest's named check (test_absent_text_and_dom_asserts_are_evaluated) contains no dom_asserts assertion at all, so a falsifying edit that ignores selector absence SURVIVES",
+      "date": "2026-09-22",
+      "status": "verified",
+      "original_row_sha256": "2e2f8fffd46ea1e04f13c4c3ab48fa6bb26773a57a243650d346578af8ecfad3"
+    },
+    {
+      "line": 551,
+      "old_id": "AT-549",
+      "new_id": "AT-1006",
+      "title": "Capability row 'assertion runs still judged (C7)' is unisolated: no test anywhere constructs Outcome.ASSERTION_FAILED for grade(), so a falsifying edit that refuses to judge assertion runs SURVIVES",
+      "date": "2026-09-22",
+      "status": "verified",
+      "original_row_sha256": "428d13632411f8d99e0d634bd5c090520ba1768ce35cc140be3738e7ea7e25b5"
+    },
+    {
+      "line": 552,
+      "old_id": "AT-550",
+      "new_id": "AT-1007",
+      "title": "Capability row 'ERRORED outranks earlier unmet assert' is unisolated: the fake raises on button.broken inside the handler, so the expectation-bearing step and the exception are the SAME step and no earlier-unmet-assert state is ever built; the exception-masking edit SURVIVES",
+      "date": "2026-09-22",
+      "status": "verified",
+      "original_row_sha256": "21cc91e6e39378d86e57171819c63fdf8e7dfb72a6b28edd531b16d32cdb0cd8"
+    },
+    {
+      "line": 553,
+      "old_id": "AT-551",
+      "new_id": "AT-1008",
+      "title": "The unit introduced a UTF-8 BOM plus mojibake em-dash (UTF-8 em-dash bytes re-encoded as latin-1) in tests/test_execute.py's module docstring, and docs/DECISIONS.md gained 4 more mojibake lines in D-032 (pattern pre-existing: 6 lines before -> 10 after; the append script's encoding flaw predates this unit)",
+      "date": "2026-09-22",
+      "status": "open",
+      "original_row_sha256": "22a9eec7fe8f8fdf76a396eed2dc7cc4abfebda6771b37a8a41f30bff338c1a5"
+    },
+    {
+      "line": 554,
+      "old_id": "AT-552",
+      "new_id": "AT-1009",
+      "title": "assert_expected's docstring promises 'raises nothing' but its url evidence probe is not exception-suppressed: a page.url error during evidence recording propagates and surfaces as ERRORED instead of a recorded unmet assert",
+      "date": "2026-09-22",
+      "status": "fixed",
+      "original_row_sha256": "20378bde0c4d050e0532dcf9429c14c4660087606f5f6bd58bba3f793af5f78d"
+    },
+    {
+      "line": 750,
+      "old_id": "AT-710",
+      "new_id": "AT-1010",
+      "title": "Two gate files cite D-056 as the entry authorizing Pathlynks allow_writes. D-056 DOES NOT EXIST. The highest decision id on disk is D-055, across docs/DECISIONS.md and docs/archive/ together. So an authorization that every downstream reader treated as settled was never written, and the question it was supposed to close (write tier / production typing) came back to the human at least three separate times -- which is precisely the cost the append-only log exists to prevent. Nothing forged it; the entry was simply announced in prose and never appended, and no validator anywhere checks that a cited D-NNN resolves.",
+      "date": "2026-09-28",
+      "status": "fixed",
+      "original_row_sha256": "33d3c0718cae06358a3d036f690df70024c1a3739ef079eb99198a455a550a47"
+    },
+    {
+      "line": 866,
+      "old_id": "AT-745",
+      "new_id": "AT-1011",
+      "title": "at113-crawl-completion cycle 3 is FAIL/STALLED. The recovery gate was answered 2026-10-05, yet there is no cycle-4 action since 2026-10-06 15:18 and no qa/debug/at113-cycle3.md diagnosis (a stall without a recorded diagnosis).",
+      "date": "2026-10-07",
+      "status": "verified",
+      "original_row_sha256": "861142b6c309cc8838bdcdf86277ee5d79e7c258cc9e0cd447494af28e537720"
+    }
+  ],
+  "note": "All duplicate dates tie; later file occurrence receives fresh id. AT-710 and AT-745 pairs share titles but divergent status/evidence: both preserved as historical records, not adjudicated as independent bugs. Historical references remain unchanged; resolve by title/evidence and this mapping."
+}

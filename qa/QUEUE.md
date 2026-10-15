@@ -1,12 +1,13 @@
 # qa/QUEUE.md — checker sweep queue (top-3 recommended next units)
 
-- GRILL: real two-mode acceptance thresholds for D-023/T-169 (AT-281) -- unanswered; the contract covers it by a pointer only. (2026-10-11 sweep: the AT-218 GRILL line and the intent Q1 GRILL line were removed, both answered: `qa/gates/at218-vacuous-guard-class.md` 2026-09-26, `docs/intent.md` Q1 2026-10-07.)
+- T-169 comparison acceptance remains OPEN (AT-281); Umesh answered the threshold decision on 2026-09-27: mechanically complete comparison artifact, with judgment by Umesh. D-089 permits progress without an independent human list, marking recall unavailable. The missing live acceptance evidence remains open; no numeric threshold decision is pending.
 
 ## Approved 2026-10-10 (D-081): buildable rows, dependency order (added by d081-plan-refresh)
 
 Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below is `approved: 2026-10-10`. Rows are in dependency order; rows on separate lanes may run in parallel. Worktrees and branches named in a row are INPUTS to re-land unit by unit, never state to merge wholesale (D-080 item 1). Lanes follow `qa/adapter.json` `parallel.lanes` (code max 4, browser max 1). `unknown` marks a fact the repo does not state; the maker resolves it at plan time. Group 10 follows the wave order of `docs/plan.md` (G1; G2, G3, G4; G5, G6, G7; G8, G9; G10), with the T-203 re-land first because it and G1 both edit `ui/routes_runs.py` and `ui/app.py`.
 
-- [ ] t145-pathlynks-live-report - live bounded crawl of pathlynks.vidysea.com with the PATHLYNKS_USER_* test account, then cases, execution, grading and the exported report delivered to Umesh (FIRST ROW)
+- [x] t145-pathlynks-live-report - live bounded crawl of pathlynks.vidysea.com with the PATHLYNKS_USER_* test account, then cases, execution, grading and the exported report delivered to Umesh (FIRST ROW)
+  closed: reconciled 2026-10-15; task-level checked record committed at f3c1b42a, qa/verdicts/t145-live.done.md. Bounded crawl/report PASS; coverage remains thin, and AT-999 selection repair stays open. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: live-run; criticality: critical (dual check)
   files: projects/pathlynks/project.json (write_policy -> allow_writes, authorized by D-081 and qa/gates/write-policy-tier.md), projects/pathlynks/** (crawl, flowspec.json, cases, runs, signed RunApproval rows), qa/evidence/t145-*; no src/ change expected
@@ -66,7 +67,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   after: t205-g10-headroom
   owner: cli_video.py: this row before t198a-zip-drive-intake
 
-- [ ] t198a-zip-drive-intake - G3 / T-198: safe zip expansion to one source per video; `ingest fetch-drive <fileId>` over sources/drive.py
+- [x] t198a-zip-drive-intake - G3 / T-198: safe zip expansion to one source per video; `ingest fetch-drive <fileId>` over sources/drive.py
+  closed: reconciled 2026-10-15; task-level checked record committed at b2d42c9b, qa/verdicts/t-198-team-loop.md. Task-level local intake PASS; Linux and real Drive fetch deferred to production. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: E src/autotester/sources/drive.py, cli_video.py, ui/routes_sources.py, schema/project.py (Source.uploaded_by/at/origin); N sources/zip_intake.py, tests for zip-slip, symlink, device, bomb, nested-zip and corrupt-member fixtures (names unknown)
@@ -90,7 +92,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   after: none
   owner: pyproject.toml and uv.lock: this row, t167 (langgraph), t174 (mcp), t179 (deepagents) each add a dependency; serialize them, one lock-file writer at a time
 
-- [ ] t204-team-login - T-204: email+password sign-up, sessions, groups with checkbox permissions, require_permission with scopes, credentials.view, admin screens
+- [x] t204-team-login - T-204: email+password sign-up, sessions, groups with checkbox permissions, require_permission with scopes, credentials.view, admin screens
+  closed: reconciled 2026-10-15; task-level checked record committed at 3a0d82b4, qa/verdicts/t-204-team-login.md. Windows/auth acceptance PASS; Ubuntu AU24 deferred. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: N auth, session, group and permission modules plus admin routes (names unknown; new modules authorized by D-072), E ui/routers.py (after t205), core/env.py (AUTOTESTER_FIRST_ADMIN_EMAIL), tests/test_auth*.py (unknown)
@@ -102,7 +105,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: core/env.py after land-t203-hosting; ui/routers.py after t205
   note: the login mechanism is NOT a HUMAN_GATE (answered by D-072)
 
-- [ ] t199a-bug-loop - G6 / T-199: in-product bug loop (stable bug key, transitions, stale, replayed runs count)
+- [x] t199a-bug-loop - G6 / T-199: in-product bug loop (stable bug key, transitions, stale, replayed runs count)
+  closed: reconciled 2026-10-15; task-level checked record committed at 2d617cc5, qa/verdicts/t-199-team-loop.md. Internal tracker scope PASS; real sheet binding/first write remains deferred. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: E src/autotester/stages/issues.py (adapter, 58 lines at most); N schema/tracked_bug.py, stages/bug_loop.py, ui/routes_tracker.py, tests/test_bug_loop*.py (unknown)
@@ -125,7 +129,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: none beyond new files
   note: PASS is proven on a fake sheet; task T-199 is not closed by this row until the live-write gate is answered or the checker amends the done_check; test-sheet writes answered 2026-10-13, see D-089 (real Tracker still gated)
 
-- [ ] t201a-report-delivery - G4 / T-201: report delivery on the website inbox and by email behind a per-user checkbox
+- [x] t201a-report-delivery - G4 / T-201: report delivery on the website inbox and by email behind a per-user checkbox
+  closed: reconciled 2026-10-15; task-level checked record committed at 6de54196, qa/verdicts/t-201-team-loop.md. Website inbox PASS; email half deferred to production. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: N schema/delivery.py, stages/report_delivery.py, delivery/inbox.py, delivery/email.py, ui/routes_inbox.py, tests (names unknown)
@@ -137,7 +142,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: none beyond new files
   note: email values are never printed or committed and are declared as SecretRef keys
 
-- [ ] t200-schedule - G5 / T-200: scheduled auto-test (manual, fixed or custom time) with single-flight and credential-derived approval
+- [x] t200-schedule - G5 / T-200: scheduled auto-test (manual, fixed or custom time) with single-flight and credential-derived approval
+  closed: reconciled 2026-10-15; task-level checked record committed at 7239563a, qa/verdicts/t-200-team-loop.md. Task-level r4 PASS; email deferred to production. Remaining historical row details below are the original build brief, not current blockers.
   status: partial. t200a-schedule-core merged 7e0ef5b9 (PASS, qa/verdicts/t200a-schedule-core.md; does not close T-200). t200b FAIL at cycle 0 (qa/verdicts/t200b-scheduled-test.md, 0d9a3b56); fix cycle 1 built on wave/t200b-scheduled-test (6d6bc318), awaiting check. Row stays open.
   Answered 2026-10-12, see D-088 (owner Q1 private queue: option (a); owner Q2 "api" trigger label "CI").
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
@@ -150,7 +156,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   after: t205-g10-headroom; t201a-report-delivery; land-t203-hosting (queue)
   owner: schema/project.py after t205
 
-- [ ] t201b-test-button - G7 / T-201: team on-demand Test button, report to whoever pressed it
+- [x] t201b-test-button - G7 / T-201: team on-demand Test button, report to whoever pressed it
+  closed: reconciled 2026-10-15; task-level checked record committed at 6de54196, qa/verdicts/t-201-team-loop.md. On-demand Test and scoped inbox PASS; email deferred. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: critical
   files: E src/autotester/ui/project_view.py; N ui/routes_team_run.py, tests (names unknown); no queue code
@@ -161,7 +168,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   after: t201a-report-delivery; t200-schedule; t204-team-login; land-t203-hosting
   owner: ui/project_view.py: this row
 
-- [ ] t198b-dev-portal - G9 / T-198: developer video portal (share, access requests, timestamped comments)
+- [x] t198b-dev-portal - G9 / T-198: developer video portal (share, access requests, timestamped comments)
+  closed: reconciled 2026-10-15; task-level checked record committed at b2d42c9b, qa/verdicts/t-198-team-loop.md. Portal/persona evidence PASS; production Drive acceptance remains separate. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: high
   files: N schema/video_share.py, stages/video_access.py, ui/routes_video_portal.py, ui/routes_access_requests.py, tests (names unknown); E ui/routes_video.py
@@ -173,7 +181,8 @@ Owner's instruction (D-081, 2026-10-10): run all remaining work. Each row below 
   owner: ui/routes_video.py: this row
   note: senior-software-engineer review is mandatory on the route table; ui/routes_video.py has no feature trio yet (AT-748)
 
-- [ ] t203-local-deploy - T-203 remainder after the slice lands: local deployment complete (queue, settings page, upload limit, tick timer, deploy guide); the hosted check waits on the real host
+- [x] t203-local-deploy - T-203 remainder after the slice lands: local deployment complete (queue, settings page, upload limit, tick timer, deploy guide); the hosted check waits on the real host
+  closed: reconciled 2026-10-15; task-level checked record committed at e0869409, qa/verdicts/t-203-hosted-website.md. Local Windows scope PASS; Ubuntu/Docker/DNS acceptance remains deferred. Remaining historical row details below are the original build brief, not current blockers.
   approved: 2026-10-10 (D-081; the owner asked for all remaining work to run)
   class: feature; criticality: critical
   files: unknown (depends on what the landed slice covers; the branch diff shows no tick-timer unit and no Settings route, so likely a new docker/ tick unit and E ui/routes_settings.py); docker/DEPLOY.md
