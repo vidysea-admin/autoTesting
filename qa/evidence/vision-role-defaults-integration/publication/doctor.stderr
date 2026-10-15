@@ -1,0 +1,19 @@
+Timeout (0:00:30)!
+Thread 0x00003a34 (most recent call first):
+  File "C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\ast.py", line 50 in parse
+  File "C:\Users\product\Desktop\autoTesting\.work\wt-vision-publication-reconcile\src\autotester\ledger\render.py", line 48 in _first_docstring_line
+  File "C:\Users\product\Desktop\autoTesting\.work\wt-vision-publication-reconcile\src\autotester\ledger\render.py", line 84 in render_map
+  File "C:\Users\product\Desktop\autoTesting\.work\wt-vision-publication-reconcile\src\autotester\ledger\render.py", line 105 in apply_map
+  File "C:\Users\product\Desktop\autoTesting\.work\wt-vision-publication-reconcile\src\autotester\doctor.py", line 206 in check_generated_fresh
+  File "C:\Users\product\Desktop\autoTesting\.work\wt-vision-publication-reconcile\src\autotester\doctor.py", line 285 in run
+  File "C:\Users\product\Desktop\autoTesting\.work\wt-vision-publication-reconcile\src\autotester\cli.py", line 51 in doctor
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\main.py", line 1524 in wrapper
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\_click\core.py", line 483 in invoke
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\_click\core.py", line 740 in invoke
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\core.py", line 1119 in invoke
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\core.py", line 187 in _main
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\core.py", line 1197 in main
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\_click\core.py", line 801 in __call__
+  File "C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\typer\main.py", line 1137 in __call__
+  File "C:\Users\product\Desktop\autoTesting\.work\wt-vision-publication-reconcile\src\autotester\cli.py", line 300 in main
+  File "<string>", line 1 in <module>

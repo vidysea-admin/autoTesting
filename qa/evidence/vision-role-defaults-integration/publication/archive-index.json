@@ -1,0 +1,80 @@
+{
+  "candidate": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+  "raw_files": [
+    {
+      "path": "receipts.json",
+      "sha256": "a2f646369cc53de8a800ea6fb683b95ffb1fb84c88d90217fc7c2d12a426de63",
+      "bytes": 10014
+    },
+    {
+      "path": "environment.json",
+      "sha256": "ea14a14763d57240d5b6df97e13e992ddda654c294e0be92966697e15f5a2d34",
+      "bytes": 1781
+    },
+    {
+      "path": "started.json",
+      "sha256": "1d91845b217dedcdfbb9c772766420d618b88a2b209db28a6586dbc30e57f81f",
+      "bytes": 1036
+    },
+    {
+      "path": "completed.json",
+      "sha256": "bb0ce3eea40d1d978308bebfffbde65f6a4a9f10300dcf7908abadbcdf5fc3d7",
+      "bytes": 226
+    },
+    {
+      "path": "preflight.stdout",
+      "sha256": "bf6cd3588d8591bc42d12280f4a39259ea04c87d6ff51c5665094c3975190c85",
+      "bytes": 1335
+    },
+    {
+      "path": "preflight.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "dockerfile-consumers.stdout",
+      "sha256": "85a2e4b130b29cc7fae7ac9ce2581482a62c2ffdc6b7c0767e82c8ac6c22f14f",
+      "bytes": 925
+    },
+    {
+      "path": "dockerfile-consumers.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "consumers.xml",
+      "sha256": "d0408b7a5dcb99c9e9fa9ebdd4d1e25019f04715b380f54bfa3f827f18eb0576",
+      "bytes": 3637
+    },
+    {
+      "path": "ruff.stdout",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "ruff.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "doctor.stdout",
+      "sha256": "78d820652b8a924023065741acd299a29127d31ab0f949abd04d9491d2de764a",
+      "bytes": 1830
+    },
+    {
+      "path": "doctor.stderr",
+      "sha256": "c4aa4425ca33073f8027ebf321b3e5a48296715ba7048258ca7ce26d18054a8d",
+      "bytes": 2021
+    },
+    {
+      "path": "maker-reconciliation.json",
+      "sha256": "2b41dc8a61f3e0a0ae5b3d6bbef73728999692b7ce6fcb4f5460f8a605d13c1e",
+      "bytes": 5339
+    },
+    {
+      "path": "initial-push-result.json",
+      "sha256": "3e9f43e8aa399bf4936489f4b336d2874a4b652e94cbb41e0f41a9b32ca546d1",
+      "bytes": 1082
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "pid": 19264,
+  "candidate": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+  "binding": {
+    "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+    "status": "",
+    "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+    "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+    "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+    "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+  },
+  "flags": {
+    "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+    "UV_NO_SYNC": "1",
+    "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile\\src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_ADDOPTS_present": false,
+    "PYTEST_ADDOPTS_nonempty": false
+  },
+  "docker_cli_available": false,
+  "container_python312_acceptance": "UNVERIFIED; no image build/live container acceptance performed",
+  "actual_master_unchanged": "eb3afa2c982079c3c0702e099aa7017950ac474e"
+}

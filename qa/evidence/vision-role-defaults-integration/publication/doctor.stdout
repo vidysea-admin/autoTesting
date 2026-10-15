@@ -1,0 +1,18 @@
+warning: decision-citation-coverage: 2929 advisory finding(s) (D-087, non-blocking)
+  decision-citation-coverage: qa/gates/at113-cycle3-recovery.md:40 — D-070 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at792-round-cap.md:1 — D-014 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at792-round-cap.md:3 — D-082 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at792-round-cap.md:3 — D-014 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at792-round-cap.md:4 — D-014 occurrence 1 needs one current review
+  ... and 2924 more
+warning: decision-citation-declaration: 370 advisory finding(s) (D-087, non-blocking)
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-008 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-010 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-011 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-019 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:52 — D-020 mutable authorization requires canonical visible claim
+  ... and 365 more
+warning: decision-citation-known-disputed: 2 advisory finding(s) (D-087, non-blocking)
+  decision-citation-known-disputed: docs/DECISIONS.md:80 — D-000 K1: recorded known-disputed historical claim (D-069), non-blocking
+  decision-citation-known-disputed: docs/DECISIONS.md:209 — D-005 K2: recorded known-disputed historical claim (D-069), non-blocking
+doctor: clean

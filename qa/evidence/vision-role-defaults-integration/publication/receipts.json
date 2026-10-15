@@ -1,0 +1,182 @@
+[
+  {
+    "name": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-c",
+      "import autotester,pathlib,sys,tempfile,tomllib,importlib.metadata as m,json\nfrom packaging.requirements import Requirement\nroot=pathlib.Path.cwd();assert pathlib.Path(autotester.__file__).resolve().is_relative_to(root/'src');cfg=tomllib.loads((root/'pyproject.toml').read_text());versions={}\nfor raw in cfg['project']['dependencies']+cfg['dependency-groups']['dev']:\n req=Requirement(raw)\n if req.marker and not req.marker.evaluate():continue\n v=m.version(req.name);assert req.specifier.contains(v,prereleases=True),(req.name,v);versions[req.name]=v\nt=tempfile.TemporaryDirectory(dir=sys.argv[1]);pathlib.Path(t.name,'probe').write_text('ok');t.cleanup();print(json.dumps({'python':sys.executable,'version':sys.version,'import':autotester.__file__,'dependencies':versions,'temp_parent':sys.argv[1],'writable':True},indent=2))",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\temp"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile",
+    "start": "2026-10-15T23:47:20.989461+00:00",
+    "end": "2026-10-15T23:47:30.079062+00:00",
+    "wall_seconds": 9.0779999999977,
+    "exit_code": 0,
+    "before": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "after": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "flags": {
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\preflight.stdout",
+    "stdout_sha256": "bf6cd3588d8591bc42d12280f4a39259ea04c87d6ff51c5665094c3975190c85",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\preflight.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "environment_fingerprint": "f8a5d79671a068c13bdbdceed254dc9fb34cc4605885e6ebeaae144b4640fc05"
+  },
+  {
+    "name": "dockerfile-consumers",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_hosting_deploy.py",
+      "tests/test_container_supervision.py",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\temp\\pytest",
+      "--junitxml",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\consumers.xml"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile",
+    "start": "2026-10-15T23:47:30.601364+00:00",
+    "end": "2026-10-15T23:47:43.233764+00:00",
+    "wall_seconds": 12.625,
+    "exit_code": 0,
+    "before": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "after": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "flags": {
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\dockerfile-consumers.stdout",
+    "stdout_sha256": "85a2e4b130b29cc7fae7ac9ce2581482a62c2ffdc6b7c0767e82c8ac6c22f14f",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\dockerfile-consumers.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "environment_fingerprint": "f8a5d79671a068c13bdbdceed254dc9fb34cc4605885e6ebeaae144b4640fc05"
+  },
+  {
+    "name": "ruff",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src",
+      "tests",
+      "scripts"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile",
+    "start": "2026-10-15T23:47:44.099557+00:00",
+    "end": "2026-10-15T23:47:46.057983+00:00",
+    "wall_seconds": 1.9529999999977008,
+    "exit_code": 0,
+    "before": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "after": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "flags": {
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\ruff.stdout",
+    "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\ruff.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "environment_fingerprint": "f8a5d79671a068c13bdbdceed254dc9fb34cc4605885e6ebeaae144b4640fc05"
+  },
+  {
+    "name": "doctor",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-c",
+      "import faulthandler; faulthandler.dump_traceback_later(30); from autotester import main; main()",
+      "doctor"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile",
+    "start": "2026-10-15T23:47:46.526655+00:00",
+    "end": "2026-10-15T23:48:32.607238+00:00",
+    "wall_seconds": 46.07800000000134,
+    "exit_code": 0,
+    "before": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "after": {
+      "sha": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+      "status": "",
+      "tree": "eba892feb19f5fd3c08c10697b53fb0b6dd1dba7",
+      "docker_blob": "25687904db962fd0be5501777cccc09a137ff661",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "flags": {
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\doctor.stdout",
+    "stdout_sha256": "78d820652b8a924023065741acd299a29127d31ab0f949abd04d9491d2de764a",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\doctor.stderr",
+    "stderr_sha256": "c4aa4425ca33073f8027ebf321b3e5a48296715ba7048258ca7ce26d18054a8d",
+    "environment_fingerprint": "f8a5d79671a068c13bdbdceed254dc9fb34cc4605885e6ebeaae144b4640fc05"
+  }
+]

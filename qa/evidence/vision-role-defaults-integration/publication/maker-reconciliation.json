@@ -1,0 +1,78 @@
+{
+  "status": "normal-merge-on-actual-master-focused-gates-passed-awaiting-independent-publication-review",
+  "merge_candidate": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+  "merge_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile",
+  "parents": [
+    "eb3afa2c982079c3c0702e099aa7017950ac474e",
+    "d381e16949c3c8501b7d38a0e8eb2f28af6459d2"
+  ],
+  "local_to_merge_paths": [
+    "Dockerfile"
+  ],
+  "remote_dockerfile_blob": "25687904db962fd0be5501777cccc09a137ff661",
+  "successful_full_gate_candidate": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "governing": [
+    "qa/loop.md:49-59 compatible bound deterministic reuse; changed candidate invalidates affected evidence and narrower reuse must be explained",
+    "qa/adapter.json verify.unit_policy.evidence_reuse and integration_gate.reuse",
+    "qa/contracts/hosting.md HO6 BUILD-HOST and HO14 static coupling; Docker build/runtime obligations remain distinct"
+  ],
+  "decision": "The existing successful full-scope7518/12/14 receipt may be retained for unchanged local application/tests/dependencies under the explicit narrower-reuse clause, provided every affected Dockerfile consumer is checked at the exact merged candidate with compatible environment. Keep original full-run identity3c9; do not claim pytest full command ran atmerge. This differs from previous failedprefix/tail proposal: successful full-gate evidence exists, and affected Dockerfile-reading cases receive fresh evidence. No new sharding or failed-command PASS is authorized.",
+  "required_before_local_publication": [
+    "Exact merged candidate/import/dependency/temp preflight; clean bindings, full unchanged-product/blob mapping to3c9",
+    "Both complete tests/test_hosting_deploy.py and tests/test_container_supervision.py atmerge; these encompass all three directly identified Dockerfile readers plus adjacent hardening/secret/entrypoint guards",
+    "Merged full Ruff src/tests/scripts and actual doctor CLI exit0; independently authenticate receipts/outputs and any advisory limits",
+    "Canonical reconciliation finding records original receipt identity, exact unchanged scope, fresh Dockerfile-consumer node results and noncertification of container runtime; QA closeout/parser and nonforce fastforward/push checks"
+  ],
+  "docker_static_review": [
+    "Python3.12 selected for install and both frozen sync layers; declared project supports>=3.11; local3.11 receipts do not prove3.12 runtime.",
+    "Managed interpreter/venv rooted under/opt and chmod a+rX add read/search rather than write; existing root ownership, final USER10001:10001, UV_NO_SYNC and external frozenvenv retained.",
+    "No secret values, additional ports, entrypoint change, source-code change or production permission relaxation found.",
+    "namei/readlink diagnostics and downloaded managed-runtime operability not executed here; container build/deployment remains UNVERIFIED."
+  ],
+  "docker_engine": "No docker executable found onPATH; no install/build/deploy attempted.",
+  "findings": [],
+  "actual_active_seconds": null,
+  "actual_total_tokens": null,
+  "cost": null,
+  "ratio": "UNVERIFIED",
+  "history_reset": false,
+  "prior_evidence": "All prior checker/helper/retry/accounting records retained; no budget reset or identical helper retry.",
+  "observed_at": "2026-10-15T23:46:57.788172+00:00",
+  "actual_master": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+  "all_original_user_files_preserved_after_ff": {
+    "docs/SNAPSHOT.md": true,
+    "projects/pathlynks/crawl/crawl_01M4WGWNGQYD6TRFJFDA8ZVKF3/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4WWYW8KN5GJP888G37T39WX/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XRTHH96QAGSJNP954G826Z/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3/network.jsonl": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4WWYW8KN5GJP888G37T39WX.json": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3.json": true,
+    "projects/pathlynks/flowspec.json": true,
+    "qa/manifests/t-200-team-loop.md": true,
+    "qa/verdicts/t-200-team-loop.b.md": true
+  },
+  "focused_gate_receipts": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\receipts.json",
+  "focused_results": {
+    "preflight": {
+      "exit": 0,
+      "wall_seconds": 9.078
+    },
+    "dockerfile_consumer_files": {
+      "exit": 0,
+      "tests_passed": 25,
+      "reported_pytest_seconds": 5.29,
+      "command_wall_seconds": 12.625
+    },
+    "ruff": {
+      "exit": 0,
+      "wall_seconds": 1.953
+    },
+    "doctor": {
+      "exit": 0,
+      "wall_seconds": 46.078
+    }
+  },
+  "reuse_adjudication": "Parent/checker resolve qa/loop.md49-59 narrow reuse: successful full3c9pytest remains at original3c9identity; source/tests/dependency blobs unchanged, changedDockerfile consumers plus mergedRuff/doctor now passed. No merged fullsuite is claimed.",
+  "container_python312_acceptance": "UNVERIFIED/deferred; no DockerCLI onPATH, no image install/build/run performed; scope is publication of accepted Python integration.",
+  "pending": "Checker independent reconciliation review/canonicalQA record and sole verified-origin/master push; maker did not push."
+}

@@ -1,0 +1,6 @@
+{
+  "candidate": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+  "status": "FOCUSED_CHECKS_PASSED",
+  "container_python312_acceptance": "UNVERIFIED",
+  "actual_master_unchanged": "eb3afa2c982079c3c0702e099aa7017950ac474e"
+}

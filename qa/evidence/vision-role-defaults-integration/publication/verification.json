@@ -1,0 +1,152 @@
+{
+  "status": "INDEPENDENT_PUBLICATION_RECONCILIATION_ACCEPTED",
+  "merge_candidate": "bf7e07c61ec90d074139691d9511104b2c2bbfff",
+  "reviewed_application_candidate": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "original_pass_cycle": 1,
+  "canonical_verdict": "qa/verdicts/vision-role-defaults-integration.md",
+  "canonical_verdict_sha256": "196d6f56833097e0f5775e067dbc8416f1018afb006a02a6ce54ab42eba6dc35",
+  "merge_parents": [
+    "eb3afa2c982079c3c0702e099aa7017950ac474e",
+    "d381e16949c3c8501b7d38a0e8eb2f28af6459d2"
+  ],
+  "only_nonqa_delta": "Dockerfile",
+  "docker_blob_preserved_from_remote": "25687904db962fd0be5501777cccc09a137ff661",
+  "unchanged_scope_git_trees": {
+    "src": "96d1e76a2422e9a8d95cb4a10b501b5ab9255ab3",
+    "tests": "f18c169daee19a82333a3219f901367df92dc05e",
+    "scripts": "43e9f6d804239f8d550d57d28e88d00c0489f7b9",
+    "docs": "db41bb341ab3e002fb310482ec5ac42a1d73cd4e",
+    "docker": "85bcef345348748b6736a950ef4e589315be4216",
+    "pyproject.toml": "e248b82482aef6e87f6fb7f2e48a7109b800634b",
+    "uv.lock": "2d9b397196355180a9bde391743196d5581068f8",
+    ".env.example": "64fb3675b948b67fdf47092f0f16d860b5c6bc1f",
+    ".gitattributes": "1e61e0f764e7f2711ef93e9e79007d87cede5796"
+  },
+  "unchanged_scopes_match_merge": true,
+  "gates": [
+    {
+      "name": "preflight",
+      "exit": 0,
+      "bindings_and_hashes_valid": true,
+      "wall_seconds": 9.0779999999977,
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-c",
+        "import autotester,pathlib,sys,tempfile,tomllib,importlib.metadata as m,json\nfrom packaging.requirements import Requirement\nroot=pathlib.Path.cwd();assert pathlib.Path(autotester.__file__).resolve().is_relative_to(root/'src');cfg=tomllib.loads((root/'pyproject.toml').read_text());versions={}\nfor raw in cfg['project']['dependencies']+cfg['dependency-groups']['dev']:\n req=Requirement(raw)\n if req.marker and not req.marker.evaluate():continue\n v=m.version(req.name);assert req.specifier.contains(v,prereleases=True),(req.name,v);versions[req.name]=v\nt=tempfile.TemporaryDirectory(dir=sys.argv[1]);pathlib.Path(t.name,'probe').write_text('ok');t.cleanup();print(json.dumps({'python':sys.executable,'version':sys.version,'import':autotester.__file__,'dependencies':versions,'temp_parent':sys.argv[1],'writable':True},indent=2))",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\temp"
+      ]
+    },
+    {
+      "name": "dockerfile-consumers",
+      "exit": 0,
+      "bindings_and_hashes_valid": true,
+      "wall_seconds": 12.625,
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_hosting_deploy.py",
+        "tests/test_container_supervision.py",
+        "--basetemp",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\temp\\pytest",
+        "--junitxml",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\publication-checks\\consumers.xml"
+      ]
+    },
+    {
+      "name": "ruff",
+      "exit": 0,
+      "bindings_and_hashes_valid": true,
+      "wall_seconds": 1.9529999999977008,
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "scripts"
+      ]
+    },
+    {
+      "name": "doctor",
+      "exit": 0,
+      "bindings_and_hashes_valid": true,
+      "wall_seconds": 46.07800000000134,
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-c",
+        "import faulthandler; faulthandler.dump_traceback_later(30); from autotester import main; main()",
+        "doctor"
+      ]
+    }
+  ],
+  "fresh25_node_inventory_matches_baseline_complete_files": true,
+  "fresh_node_inventory": [
+    "tests.test_container_supervision::test_any_exit_fails_stack_and_reaps_other_services[0]",
+    "tests.test_container_supervision::test_any_exit_fails_stack_and_reaps_other_services[7]",
+    "tests.test_container_supervision::test_cleanup_escalates_to_kill_and_waits_for_children",
+    "tests.test_container_supervision::test_failed_spawn_cleans_started_services_without_logging_command",
+    "tests.test_container_supervision::test_image_runs_unprivileged_with_frozen_environment_outside_source",
+    "tests.test_container_supervision::test_posix_cleanup_signals_groups_even_after_leader_exits",
+    "tests.test_container_supervision::test_posix_reaper_preserves_exit_status_and_collects_orphans",
+    "tests.test_container_supervision::test_readiness_requires_a_real_listener",
+    "tests.test_container_supervision::test_readiness_timeout_stops_stack_before_dependent_service",
+    "tests.test_container_supervision::test_signal_during_startup_drains_children_and_restores_handler",
+    "tests.test_hosting_deploy::test_app_service_is_told_its_public_origin_for_the_wildcard_bind",
+    "tests.test_hosting_deploy::test_compose_default_fed_through_startup_raises_on_a_list_naming_nothing_useful[interim-wrong-ip]",
+    "tests.test_hosting_deploy::test_compose_default_fed_through_startup_raises_on_a_list_naming_nothing_useful[nothing-set]",
+    "tests.test_hosting_deploy::test_compose_default_public_origin_is_empty_without_a_domain",
+    "tests.test_hosting_deploy::test_compose_domain_fed_through_startup_starts_only_when_the_lists_name_it",
+    "tests.test_hosting_deploy::test_compose_needs_no_domain_unless_the_https_profile_is_used",
+    "tests.test_hosting_deploy::test_deploy_guide_claims_only_what_the_compose_file_does",
+    "tests.test_hosting_deploy::test_dockerfile_playwright_tag_equals_the_locked_version",
+    "tests.test_hosting_deploy::test_dockerignore_keeps_secrets_and_project_state_out_of_the_image",
+    "tests.test_hosting_deploy::test_env_example_documents_every_key_the_code_reads",
+    "tests.test_hosting_deploy::test_env_example_holds_no_secret_looking_value",
+    "tests.test_hosting_deploy::test_no_secret_value_anywhere_under_docker_or_in_the_dockerfile",
+    "tests.test_hosting_deploy::test_prod_compose_is_hardened_and_does_not_mount_the_source_tree",
+    "tests.test_hosting_deploy::test_prod_compose_publishes_the_app_on_loopback_only_and_never_a_raw_port",
+    "tests.test_hosting_deploy::test_the_canary_check_itself_notices_a_dropped_rule"
+  ],
+  "full_suite_original_identity": {
+    "candidate": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "result": "7518passed12skipped14xfailed;zero failures/errors",
+    "receipt_sha256": "32f16d504bc422b455f6bc316133a778fd54ae6f15e8c456b5b4ebf055cc5093",
+    "junit_sha256": "d786898ff5f6faca871f9ec720ac8a3dcfee1001a85bbd673f52e9235ed968e1"
+  },
+  "environment_fingerprint_recomputed": "f8a5d79671a068c13bdbdceed254dc9fb34cc4605885e6ebeaae144b4640fc05",
+  "same_interpreter_version_dependency_versions_as_successful_full_gate": true,
+  "relocated_import_root_verified": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-publication-reconcile\\src\\autotester\\__init__.py",
+  "original10userhashes_preserved": {
+    "docs/SNAPSHOT.md": true,
+    "projects/pathlynks/crawl/crawl_01M4WGWNGQYD6TRFJFDA8ZVKF3/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4WWYW8KN5GJP888G37T39WX/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XRTHH96QAGSJNP954G826Z/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3/network.jsonl": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4WWYW8KN5GJP888G37T39WX.json": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3.json": true,
+    "projects/pathlynks/flowspec.json": true,
+    "qa/manifests/t-200-team-loop.md": true,
+    "qa/verdicts/t-200-team-loop.b.md": true
+  },
+  "reuse_authority": "qa/loop.md D-100 reuse/integration paragraphs49-59; qa/adapter.json verify.unit_policy.evidence_reuse/integration_gate.reuse. Unchanged successful full-scope application evidence retains3c9 identity; fresh exactmerge affectedDockerfile evidence, Ruff and doctor replace affected claims. No full-run-atmerge claim or failedprefix/tail composition.",
+  "container_python312_runtime": "UNVERIFIED/deferred; no Docker CLI installed, build or deploy performed. LocalCPython3.11 acceptance only.",
+  "prior_push": "First nonforcepush rejected fetch-first; original remote work preserved by normalmerge. Original push-result remains retained.",
+  "accounting": {
+    "token_metric": "actual_total",
+    "actual_active_seconds": null,
+    "wait_seconds": null,
+    "actual_total_tokens": null,
+    "cost": null,
+    "ratio": "UNVERIFIED",
+    "history_reset": false,
+    "prior_charges": "Existing checker/retry/helper allocations and unknown tails preserved in archived review accounting; no budget reassessment/reset.",
+    "shared_checks": "Focused command costs retained in receipts; not measured checker active usage.",
+    "observed_phase_start_utc": "2026-10-15T23:50:26.121717+00:00",
+    "observed_phase_end_utc": "2026-10-15T23:51:55.466934+00:00",
+    "observed_phase_wall_seconds": 89.34400000000096,
+    "scope": "Receipt/hash/inventory/blob/authenticated evidence reuse adjudication, publicationQA record/commit; push command receipts kept separately."
+  },
+  "verified_at": "2026-10-15T23:51:14.290972+00:00"
+}
