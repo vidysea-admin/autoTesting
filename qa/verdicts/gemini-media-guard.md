@@ -1,5 +1,5 @@
-VERDICT: HOLD
-Status: HOLD
+VERDICT: PASS
+Status: PASS
 Cycle checked: 1
 Reviewed SHA: 7ee3e3d9227578d8dd7686a959a5bf23285c99bb
 Source SHA: c6e2f30edad51ce67666e194cbd29982c807dd93
@@ -13,3 +13,5 @@ HOLD reason: independent mutation metadata aliases a mutable argv list; the raw 
 Residual: HTTPX read timeout is inactivity-based; shared SDK timeout checks reject late chunks/responses but cannot hard-cancel a socket read. Narration behavior/integration belongs to checked narration and combined release gates; full pytest/ruff/doctor still required on the combined exact candidate. No actual API, browser or network research performed.
 
 Accounting: maker actual active time/tokens/cost unknown; checker tokens/cost unknown. Prior allocation debits 180s/6000 plus 120s/3000 preserved; closure authorized 30s/1000, cumulative330s/10000. Both 10 percent objectives unverified. Setup errors and invalid early assessment remain disclosed; no efficiency success claim. Closure budget inputs/results and earlier HOLD checkpoint retained.
+
+Correction: checker-corrected-results.json and immutable prelaunch records now bind exact same candidate/environment/source, named sabotage RED and byte-restored GREEN. Prior HOLD and erroneous receipt preserved as historical evidence. PASS applies to this SDK unit only; combined release gates remain. Cumulative allocation375s/11000, ratios still unverified.

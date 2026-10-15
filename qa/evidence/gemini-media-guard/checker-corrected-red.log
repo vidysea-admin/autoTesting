@@ -1,0 +1,31 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_sdk_global_budget_cannot_retry_or_send _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000223C7660B90>
+
+    def test_sdk_global_budget_cannot_retry_or_send(monkeypatch):
+        calls = sdk_fake(monkeypatch, [{"count": "bad"}])
+        with attempt_budget(1) as budget, pytest.raises(ProviderError):
+            GeminiProvider(api_key="fake-test-key").judge("count", GuardAnswer)
+>       assert len(calls) == budget.used == 1
+E       AssertionError: assert 2 == 0
+E        +  where 2 = len([<Request('POST', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent')>, <Request('POST', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent')>])
+E        +  and   0 = <autotester.providers.attempts.AttemptBudget object at 0x00000223C7402090>.used
+
+tests\test_gemini_media_guard.py:79: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  google_genai.models:models.py:6247 Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\gemini-media-guard\.work\checker-sdk-copy\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_gemini_media_guard.py::test_sdk_global_budget_cannot_retry_or_send
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_sdk_global_budget_cannot_retry_or_send
+1 failed, 2 warnings in 2.29s

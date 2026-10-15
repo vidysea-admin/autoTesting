@@ -1,0 +1,19 @@
+{
+  "phase": "restored-green",
+  "argv": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_gemini_media_guard.py::test_sdk_global_budget_cannot_retry_or_send",
+    "--basetemp",
+    ".work/checker-corrected-restored-green"
+  ],
+  "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\checker-sdk-copy",
+  "candidate": "7ee3e3d9227578d8dd7686a959a5bf23285c99bb",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\checker-sdk-copy\\src",
+  "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+  "source_sha256": "3f079e4754e48655f894d0aceeaed54c528130da32bc11b127ad2970ac41e002",
+  "start_utc": "2026-10-15T09:38:24.112525+00:00"
+}
