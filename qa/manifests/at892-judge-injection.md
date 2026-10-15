@@ -1,6 +1,6 @@
 # at892-judge-injection
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Branch: wave/at892-judge-injection
 Issue: AT-892
