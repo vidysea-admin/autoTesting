@@ -1,6 +1,6 @@
 # Independent verdict â€” ollama-only-defaults
 
-**Verdict: HOLD â€” NEEDS_EXTRA_REVIEW**
+**Verdict: PASS - bounded unit only**
 **Cycle checked: 1**
 **Reviewed SHA:** ea8b8f3e9898f0a05c04c055cf07355ea2443715
 **Base:** abc4a0ef
@@ -15,3 +15,5 @@ Closure: qa/loop.md D-100 bounded-code clause requires scoped lint and applicabl
 The earlier doctor timeout remains incomplete evidence and does not satisfy any full gate. Its blanket per-unit requirement was an incorrect interpretation; prior HOLD is preserved in checker/prior-hold.md and commit164a0a09. Full combined pytest/Ruff/doctor remains mandatory and pending. No vision/accounting/future OC2 or integration/release certification is issued here.
 
 Budget: cumulative240s/8000tokens conservatively charged as allocation debits (prior180/6000 plus authorized closure60/2000), not measured use. Actual active time/tokens/cost unknown; ratios unverified. No efficiency-success claim. Inputs/assessments and identity fingerprint are retained under checker/. Finite closure escalation is recorded in closure-input.json and closure-assessment.json; no behavior test, mutation or full doctor was repeated. Helper F24A90DA84E89A8A03E4A405997F6A0A9ADD3C4F9E1C282471D0BF9237542BBF; skill45B1FD647CEF4612D12A8ECB333129A8CF6DDEB2A78823F0CFAF4772A5D9A2D0.
+
+Mechanical header correction: the closure decision is PASS for the bounded unit. The earlier HOLD remains historical in commit164a0a09 and checker/prior-hold.md. Cumulative allocated budget debit250s/8500tokens includes this authorized10s/500token correction; actual usage and efficiency ratios remain unknown.
