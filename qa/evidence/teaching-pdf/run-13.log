@@ -1,0 +1,33 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_scanned_pdf_real_local_ocr_keeps_page_and_method ____________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-e5a8os14/repo/.work/pytest-13/test_scanned_pdf_real_local_oc0')
+
+    def test_scanned_pdf_real_local_ocr_keeps_page_and_method(tmp_path):
+        import shutil
+    
+        from PIL import Image, ImageDraw, ImageFont
+    
+        if not all(shutil.which(tool) for tool in ("pdftoppm", "tesseract")):
+            pytest.skip("real scanned-PDF acceptance requires local Poppler and Tesseract")
+        path = tmp_path / "scan.pdf"
+        image = Image.new("RGB", (1600, 600), "white")
+        ImageDraw.Draw(image).text((90, 200), "Choose Login then Submit",
+                                  fill="black", font=ImageFont.load_default(size=64))
+        image.save(path, "PDF", resolution=144)
+        result = extract_pdf_document(path)
+>       assert result.error is None
+E       AssertionError: assert 'PDF has unreadable pages; inspect the page extraction evidence' is None
+E        +  where 'PDF has unreadable pages; inspect the page extraction evidence' = DocumentReading(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 7, 45, 16, 131055, tzinfo=TzInfo(0)), pro...nreadable', confidence=None, error='skipped')], error='PDF has unreadable pages; inspect the page extraction evidence').error
+
+tests\test_pdf_teaching.py:151: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method
+1 failed, 1 warning in 7.27s

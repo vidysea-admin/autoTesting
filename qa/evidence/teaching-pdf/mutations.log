@@ -1,0 +1,92 @@
+collection: exit=0
+run-00: exit=0
+run-01: exit=1
+run-02: exit=1
+run-03: exit=1
+run-04: exit=1
+run-05: exit=1
+run-06: exit=1
+run-07: exit=1
+run-08: exit=1
+run-09: exit=1
+run-10: exit=1
+run-11: exit=1
+run-12: exit=1
+run-13: exit=1
+run-14: exit=1
+run-15: exit=1
+run-16: exit=1
+run-17: exit=1
+run-18: exit=1
+run-19: exit=1
+run-20: exit=1
+run-21: exit=1
+run-22: exit=1
+KILLED  PDF dispatch removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance
+    actually failed: tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance
+KILLED  PDF secret sanitation removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_registration_scrubs_root_secrets_and_contact_details
+    actually failed: tests/test_pdf_teaching.py::test_pdf_registration_scrubs_root_secrets_and_contact_details
+KILLED  PDF encoded secret gate removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence
+    actually failed: tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence
+KILLED  encrypted refusal removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures
+    actually failed: tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures
+KILLED  input byte bound removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+    actually failed: tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+KILLED  page bound removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+    actually failed: tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+KILLED  character bound removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+    actually failed: tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+KILLED  missing OCR tools guard removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence
+    actually failed: tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence
+KILLED  OCR TSV line breaks removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence
+    actually failed: tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence
+KILLED  worker deadline ignored  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed
+    actually failed: tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed
+KILLED  local tool deadline ignored  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed
+    actually failed: tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed
+KILLED  OCR single-thread cap removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed
+    actually failed: tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed
+KILLED  OCR page dispatch removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method
+    actually failed: tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method
+KILLED  low confidence accepted  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement
+    actually failed: tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement
+KILLED  worker output bound removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output
+    actually failed: tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output
+KILLED  max_bytes validated bounds removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+    actually failed: tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+KILLED  max_pages validated bounds removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+    actually failed: tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+KILLED  max_chars validated bounds removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+    actually failed: tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+KILLED  timeout_s validated bounds removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+    actually failed: tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+KILLED  page_timeout_s validated bounds removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+    actually failed: tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+KILLED  image_side validated bounds removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+    actually failed: tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+KILLED  min_confidence validated bounds removed  (pytest exit 1)
+    claims to kill : tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+    actually failed: tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+
+22/22 mutations killed

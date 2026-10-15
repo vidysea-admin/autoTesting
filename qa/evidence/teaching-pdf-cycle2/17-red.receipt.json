@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "17-red",
+  "started_utc": "2026-10-15T08:03:53.830560+00:00",
+  "ended_utc": "2026-10-15T08:04:01.971894+00:00",
+  "elapsed_s": 7.75,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\17-red"
+  ],
+  "before_tree_sha256": "a36aab960b2b46302efa948c5b86d8564935a7258dfd6e10be50fc5d45a71281",
+  "after_tree_sha256": "a36aab960b2b46302efa948c5b86d8564935a7258dfd6e10be50fc5d45a71281",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+  ],
+  "output": "17-red.log",
+  "output_sha256": "daa99369441fa63d2ae9478022679817f92910b273f5ed88645125873094430b"
+}

@@ -4,11 +4,10 @@ Turns an uploaded document into plain text on the host, with NO model call —
 the DOC half of the source-adapter seam (qa/contracts/source-adapters.md,
 SA-table + SA5). `.txt`/`.md` are read as UTF-8; `.docx` is unzipped and its
 `word/document.xml` stripped of tags (stdlib only — the contract open-question
-#1 default, "stdlib-first, no new heavyweight dependency"). Pure-python `.pdf`
-text extraction needs a dependency this repo does not yet declare, so it
-degrades honestly to an extraction error (SA5) rather than silent empty text —
-never a model call that would let a model DECIDE (SA6). Corrupt or unreadable
-input also yields an error, never empty text passed off as a real reading.
+#1 default, "stdlib-first, no new heavyweight dependency"). PDFs use a bounded
+local pypdf worker, with Poppler/Tesseract for scanned pages. Corrupt, encrypted
+or partly unreadable inputs yield explicit errors and page evidence, never
+empty text passed off as a real reading. No extraction calls a model.
 """
 
 from __future__ import annotations
@@ -18,17 +17,15 @@ import zipfile
 from pathlib import Path
 from typing import NamedTuple
 
+from autotester.schema.document import DocumentReading
+from autotester.sources.pdf_extract import extract_pdf_document
+
 TEXT_SUFFIXES = frozenset({".txt", ".md"})
 DOCX_SUFFIX = ".docx"
 PDF_SUFFIX = ".pdf"
 DOC_SUFFIXES = frozenset(TEXT_SUFFIXES | {DOCX_SUFFIX, PDF_SUFFIX})
 
 _DOCX_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-_PDF_DEFERRED = (
-    "pdf text extraction is not wired in phase-1a — host-side PDF reading needs a "
-    "pure-python dependency (e.g. pypdf) that is not yet declared; a later unit adds "
-    "it. Scanned-image PDFs additionally need the vision provider (SA5)."
-)
 
 
 class Extraction(NamedTuple):
@@ -40,6 +37,7 @@ class Extraction(NamedTuple):
 
     text: str | None
     error: str | None
+    reading: DocumentReading | None = None
 
 
 def extract_document_text(path: Path) -> Extraction:
@@ -56,7 +54,9 @@ def extract_document_text(path: Path) -> Extraction:
         if suffix == DOCX_SUFFIX:
             return Extraction(_read_docx(path), None)
         if suffix == PDF_SUFFIX:
-            return Extraction(None, _PDF_DEFERRED)
+            reading = extract_pdf_document(path)
+            text = "\n\n".join(f"[page {p.number}]\n{p.text}" for p in reading.pages)
+            return Extraction(text if not reading.error else None, reading.error, reading)
         return Extraction(None, f"unsupported document type '{suffix or path.name}'")
     except Exception as exc:  # honest degradation (SA5): a reading is never faked
         return Extraction(None, f"{type(exc).__name__}: {exc}")

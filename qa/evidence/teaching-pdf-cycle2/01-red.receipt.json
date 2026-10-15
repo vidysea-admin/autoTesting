@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "01-red",
+  "started_utc": "2026-10-15T08:00:45.405915+00:00",
+  "ended_utc": "2026-10-15T08:00:53.679279+00:00",
+  "elapsed_s": 7.984000000000378,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\01-red"
+  ],
+  "before_tree_sha256": "f1c5859cd84aea40efdb02f90524a6a8d0b69b8fccad43e9644a4bb071f04b34",
+  "after_tree_sha256": "f1c5859cd84aea40efdb02f90524a6a8d0b69b8fccad43e9644a4bb071f04b34",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance"
+  ],
+  "output": "01-red.log",
+  "output_sha256": "29debd1d4394fdd87e82b67d6371a26e880d5670ad58bcfee3053ee9f5c05e31"
+}

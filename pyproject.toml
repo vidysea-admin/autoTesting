@@ -21,6 +21,8 @@ dependencies = [
     # of langchain-google-genai, undeclared for the one
     # package this repo's headline recall number depends on.
     "openpyxl>=3.1.5",
+    "pypdf>=6.20.1,<7",  # bounded host-side PDF teaching extraction
+    "Pillow>=11,<13",  # local screenshot sanitation; no external image service
     "playwright>=1.62.0",
     "pydantic>=2.13.5",
     "pydantic-settings>=2.15.0",

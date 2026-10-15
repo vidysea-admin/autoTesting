@@ -1,0 +1,28 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_pdf_supervisor_refuses_oversized_and_invalid_worker_output _______
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-0w8mwjn8/repo/.work/14-red/test_pdf_supervisor_refuses_ov0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000024ABC950E50>
+
+    def test_pdf_supervisor_refuses_oversized_and_invalid_worker_output(tmp_path, monkeypatch):
+        def output(arguments, **kwargs):
+            Path(arguments[-2]).write_text(" " * 2000, encoding="utf-8")
+    
+        monkeypatch.setattr("autotester.sources.pdf_extract.subprocess.run", output)
+        result = extract_pdf_document(_pdf(tmp_path / "guide.pdf"),
+                                      PdfLimits(max_chars=1, max_pages=1))
+>       assert "output exceeds" in result.error
+E       AssertionError: assert 'output exceeds' in 'PDF extraction failed or exceeded its deadline'
+E        +  where 'PDF extraction failed or exceeded its deadline' = DocumentReading(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 8, 3, 26, 818718, tzinfo=datetime.timezone.utc), provenance=None, source_id=None, pages=[], error='PDF extraction failed or exceeded its deadline').error
+
+tests\test_pdf_teaching.py:204: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output
+1 failed, 1 warning in 2.51s

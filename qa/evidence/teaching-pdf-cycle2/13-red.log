@@ -1,0 +1,33 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_low_confidence_ocr_is_explicit_review_requirement ____________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-0w8mwjn8/repo/.work/13-red/test_low_confidence_ocr_is_exp0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F72F08AA90>
+
+    def test_low_confidence_ocr_is_explicit_review_requirement(tmp_path, monkeypatch):
+        monkeypatch.setattr("autotester.sources.pdf_ocr.shutil.which", lambda tool: tool)
+    
+        def fake_tool(arguments, timeout):
+            if arguments[0] == "tesseract":
+                Path(arguments[2]).with_suffix(".tsv").write_text(
+                    "page_num\tblock_num\tpar_num\tline_num\tconf\ttext\n"
+                    "1\t1\t1\t1\t30\tLogin\n", encoding="utf-8")
+    
+        monkeypatch.setattr("autotester.sources.pdf_ocr._pdf_tool", fake_tool)
+        page = ocr_pdf_page(tmp_path / "scan.pdf", 1, PdfLimits())
+        assert page.text == "Login" and page.confidence == 30
+>       assert "confidence" in page.error
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: argument of type 'NoneType' is not iterable
+
+tests\test_pdf_teaching.py:179: TypeError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement
+1 failed, 1 warning in 1.18s

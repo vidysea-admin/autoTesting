@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "07-red",
+  "started_utc": "2026-10-15T08:02:01.131731+00:00",
+  "ended_utc": "2026-10-15T08:02:09.350005+00:00",
+  "elapsed_s": 7.90599999999904,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\07-red"
+  ],
+  "before_tree_sha256": "84f42677f6976d25c9446b459ff37780cb02fe1bd6a3a5f63acf06df4ae6085b",
+  "after_tree_sha256": "84f42677f6976d25c9446b459ff37780cb02fe1bd6a3a5f63acf06df4ae6085b",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence"
+  ],
+  "output": "07-red.log",
+  "output_sha256": "d046391c273160e705116bd6bb7102bcff825c022e3d49d9846bfd951b2c744c"
+}

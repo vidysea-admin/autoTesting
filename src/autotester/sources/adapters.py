@@ -26,13 +26,16 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import NamedTuple
 
+from autotester.browser.secrets import parse_env
 from autotester.core.ids import file_sha256
+from autotester.core.redact import Redactor, mask_pii_obj
 from autotester.providers.base import Provider
 from autotester.schema.base import Provenance
 from autotester.schema.enums import SourceKind
 from autotester.schema.project import Source
 from autotester.sources.audio import AUDIO_SUFFIXES, transcribe_audio
-from autotester.sources.extract import DOC_SUFFIXES, extract_document_text
+from autotester.sources.extract import DOC_SUFFIXES, Extraction, extract_document_text
+from autotester.store.filestore import write_json
 from autotester.store.project_store import ProjectStore
 
 _EXTRACTION_ERROR_PREFIX = "extraction_error"
@@ -89,9 +92,7 @@ def register_document(
     note and `text=None`, never silently as empty text (SA5). The same file
     registered twice is ONE Source and is not re-extracted (SA2).
 
-    `provenance`/`url` are optional (default `None`, every existing caller
-    unchanged): `register_email` sets `provenance` so an attachment cites its
-    parent (SA4); `register_drive` sets both, `url` being the Drive file id.
+    Optional `provenance`/`url` retain email-parent and Drive-file attribution.
     """
     if not path.exists():
         raise FileNotFoundError(f"no such document: {path}")
@@ -105,7 +106,7 @@ def register_document(
     existing = _existing_by_digest(store, digest)
     if existing is not None:
         return Registration(existing, created=False)
-    extraction = extract_document_text(path)
+    extraction = _sanitize_pdf_reading(store, extract_document_text(path))
     note = (
         f"{_EXTRACTION_ERROR_PREFIX}: {extraction.error}" if extraction.error is not None else None
     )
@@ -123,7 +124,28 @@ def register_document(
             url=url,
         )
     )
+    _document_receipt(store, source, extraction)
     return Registration(source, created=True)
+
+
+def _document_receipt(store: ProjectStore, source: Source, extraction: Extraction) -> None:
+    if extraction.reading is None:
+        return
+    reading = extraction.reading
+    reading.source_id = source.id
+    write_json(store.paths.sources_dir / source.id / "document.json", reading)
+
+
+def _sanitize_pdf_reading(store: ProjectStore, extraction: Extraction) -> Extraction:
+    if extraction.reading is None:
+        return extraction
+    env = store.paths.env_file
+    redactor = Redactor(parse_env(env.read_text(encoding="utf-8")) if env.exists() else {})
+    payload = redactor.scrub_obj(extraction.reading.model_dump(mode="json"))
+    reading = extraction.reading.model_validate(mask_pii_obj(payload))
+    redactor.assert_clean(reading.model_dump_json())
+    text = redactor.scrub(extraction.text) if extraction.text else None
+    return Extraction(mask_pii_obj(text), extraction.error, reading)
 
 
 def register_audio(

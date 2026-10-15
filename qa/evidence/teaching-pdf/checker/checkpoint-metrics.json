@@ -1,0 +1,30 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "reviewers": [
+    {
+      "id": "review_pdf_ocr",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 180,
+        "tokens": 6000
+      }
+    }
+  ],
+  "escalation": null,
+  "next_phase": {
+    "active_s": 30,
+    "tokens": 1000,
+    "cost": null
+  },
+  "bootstrap_scope": "PDF OCR exact candidate, selected extraction/resource/privacy boundary checks and one independent discriminating probe"
+}

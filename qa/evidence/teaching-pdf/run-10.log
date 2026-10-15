@@ -1,0 +1,36 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed _____
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-e5a8os14/repo/.work/pytest-10/test_pdf_worker_deadline_is_ex0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001FA09191BD0>
+
+    def test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed(tmp_path, monkeypatch):
+        import subprocess
+    
+        observed = []
+    
+        def hang(*args, **kwargs):
+            observed.append(kwargs["timeout"])
+            raise subprocess.TimeoutExpired("private command", 0.25)
+    
+        monkeypatch.setattr("autotester.sources.pdf_extract.subprocess.run", hang)
+        result = extract_pdf_document(_pdf(tmp_path / "guide.pdf"), PdfLimits(timeout_s=0.25))
+        assert "deadline" in result.error
+        assert "private" not in result.error
+>       assert observed == [0.25]
+E       assert [600] == [0.25]
+E         
+E         At index 0 diff: 600 != 0.25
+E         Use -v to get more diff
+
+tests\test_pdf_teaching.py:115: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed
+1 failed, 1 warning in 1.53s

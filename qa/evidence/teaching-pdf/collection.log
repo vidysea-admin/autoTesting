@@ -1,0 +1,21 @@
+tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance
+tests/test_pdf_teaching.py::test_pdf_registration_scrubs_root_secrets_and_contact_details
+tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures
+tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence
+tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence
+tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed
+tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed
+tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method
+tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement
+tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output
+tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence
+
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\AppData\Local\Temp\mutation-check-e5a8os14\repo\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+13 tests collected in 0.56s

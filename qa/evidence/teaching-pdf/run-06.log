@@ -1,0 +1,32 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_pdf_file_page_and_character_limits_refuse_incomplete_readings ______
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-e5a8os14/repo/.work/pytest-6/test_pdf_file_page_and_charact0')
+
+    def test_pdf_file_page_and_character_limits_refuse_incomplete_readings(tmp_path):
+        path = _pdf(tmp_path / "guide.pdf")
+        assert "file size" in extract_pdf_document(path, PdfLimits(max_bytes=1)).error
+        limited = read_pdf_pages(path, PdfLimits(max_chars=1))
+        assert "character" in limited.error
+        assert limited.pages[0].number == 1 and limited.pages[0].error
+        writer = PdfWriter()
+        writer.add_blank_page(100, 100)
+        writer.add_blank_page(100, 100)
+        writer.write(path)
+>       assert "page count" in read_pdf_pages(path, PdfLimits(max_pages=1)).error
+E       AssertionError: assert 'page count' in 'PDF has unreadable pages; inspect the page extraction evidence'
+E        +  where 'PDF has unreadable pages; inspect the page extraction evidence' = DocumentReading(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 7, 44, 10, 66530, tzinfo=datetime.timezon...ailed, timed out, or found no readable text')], error='PDF has unreadable pages; inspect the page extraction evidence').error
+E        +    where DocumentReading(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 7, 44, 10, 66530, tzinfo=datetime.timezon...ailed, timed out, or found no readable text')], error='PDF has unreadable pages; inspect the page extraction evidence') = read_pdf_pages(WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-e5a8os14/repo/.work/pytest-6/test_pdf_file_page_and_charact0/guide.pdf'), PdfLimits(max_bytes=50000000, max_pages=1, max_chars=500000, timeout_s=120, page_timeout_s=15, image_side=2000, min_confidence=70))
+E        +      where PdfLimits(max_bytes=50000000, max_pages=1, max_chars=500000, timeout_s=120, page_timeout_s=15, image_side=2000, min_confidence=70) = PdfLimits(max_pages=1)
+
+tests\test_pdf_teaching.py:82: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+1 failed, 1 warning in 2.58s

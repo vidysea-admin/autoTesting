@@ -1,0 +1,24 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_pdf_ocr_tsv_preserves_lines_and_confidence _______________
+
+    def test_pdf_ocr_tsv_preserves_lines_and_confidence():
+        tsv = ("page_num\tblock_num\tpar_num\tline_num\tconf\ttext\n"
+               "1\t1\t1\t1\t90\tChoose\n1\t1\t1\t1\t80\tLogin\n"
+               "1\t1\t1\t2\t100\tSubmit\n")
+>       assert _pdf_tsv(tsv) == ("Choose Login\nSubmit", 90.0)
+E       AssertionError: assert ('Choose Login Submit', 90.0) == ('Choose Login\nSubmit', 90.0)
+E         
+E         At index 0 diff: 'Choose Login Submit' != 'Choose Login\nSubmit'
+E         Use -v to get more diff
+
+tests\test_pdf_teaching.py:97: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence
+1 failed, 1 warning in 1.51s

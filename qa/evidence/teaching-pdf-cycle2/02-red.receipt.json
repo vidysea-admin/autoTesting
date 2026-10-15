@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "02-red",
+  "started_utc": "2026-10-15T08:00:54.742479+00:00",
+  "ended_utc": "2026-10-15T08:01:08.424020+00:00",
+  "elapsed_s": 13.359999999998763,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\02-red"
+  ],
+  "before_tree_sha256": "95b9bdb9e05363f16dcf56b82df758eecffd0e653988b9033e58d0e4fe201bd6",
+  "after_tree_sha256": "95b9bdb9e05363f16dcf56b82df758eecffd0e653988b9033e58d0e4fe201bd6",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence"
+  ],
+  "output": "02-red.log",
+  "output_sha256": "5d4143e3efd971c89f0575aee90b7f22155fedda0877659412a9d24814555c18"
+}

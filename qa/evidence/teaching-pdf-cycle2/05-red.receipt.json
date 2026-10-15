@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "05-red",
+  "started_utc": "2026-10-15T08:01:41.299021+00:00",
+  "ended_utc": "2026-10-15T08:01:50.846924+00:00",
+  "elapsed_s": 9.281000000000859,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\05-red"
+  ],
+  "before_tree_sha256": "109903ce808697b4c1540c3506a347d8760f4d699eefa87aa2a77f5a0a65686a",
+  "after_tree_sha256": "109903ce808697b4c1540c3506a347d8760f4d699eefa87aa2a77f5a0a65686a",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+  ],
+  "output": "05-red.log",
+  "output_sha256": "cfc11902572e102076ca0ea1efa53cdc07d99790a87d1dc4cfb5a021b42fab9a"
+}
