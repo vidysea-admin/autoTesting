@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "candidate": "0f48beaea6abc9c3a0ce9c238c6cf09abe03d118",
+  "cycle": 2,
+  "sealed_artifacts": 55,
+  "bound_proofs": 21,
+  "source_manifest_entries": 983,
+  "source_unchanged": true,
+  "corrupted_seal_rejected": true,
+  "elapsed_s": 0.34399999999914144,
+  "tokens": null,
+  "cost": null
+}

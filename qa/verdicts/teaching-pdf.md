@@ -1,27 +1,27 @@
 # teaching-pdf independent verdict
 
-Status: HOLD
-Cycle checked: 1
-Reviewed candidate: c1f67d93b9ae1c9cab0c0cdbffdb5adadf68fcee
+Status: PASS
+Cycle checked: 2
+Reviewed candidate: 0f48beaea6abc9c3a0ce9c238c6cf09abe03d118
 Base: abc4a0ef
-Checker: fresh review_pdf_ocr
+Checker: fresh review_pdf_ocr, provenance-only continuation
 
-## Evidence independently produced
+Scoped unit PASS: bounded local PDF extraction/registration. This does not close all-source teaching, T-169/T-206, or integration/release acceptance.
 
-- Exact SHA/diff, schema, subprocess supervisor/worker, local OCR, source registration and immediate extract consumer reviewed for SA1/2/4/5/6 and SA7 PDF subset; core C1/2/3/5/6/7/8/10/12 considered.
-- Verified Python3.11.16 existing root venv and worktree src import containment; writable temp probe passed under standard escalation after one sandbox ACL failure.
-- `python -m pytest tests/test_pdf_teaching.py tests/test_source_adapters.py tests/test_schema.py tests/test_core.py --basetemp .work/checker-pdf-01 -p no:cacheprovider`: exit0,62passed,54.42s. PDF13 cover actual scanned/mixed bytes, provenance, unreadable/error/low confidence, resource bounds and sanitation; source11 cover immediate registration/dedupe consumer; foundation38 included C1/C5 Verify commands. This last group was broader than minimum D100 scope; no duplicate run.
-- Scoped Ruff on all seven changed Python files: exit0.
-- Independent isolated repository mutation harness: sanitation removal baseline green; mutation exit1 with named `test_pdf_registration_scrubs_root_secrets_and_contact_details` failure; unique anchor, changed bytes and restoration asserted by inspected harness. Evidence: checker-pdf-mutation*.log/json and driver.
-- Doctor exit1: only stale-generated docs/SNAPSHOT.md; no code-rule violations, citation advisories nonblocking. docs/MAP.md is preexisting uncommitted generated output excluded from unit. SNAPSHOT/MAP refresh and full pytest/Ruff/doctor remain combined integration obligations.
+Cycle1 HOLD remains in commit1e6d9276 and checker/cycle1-verdict.md. Its two gaps are now closed:21 missing mutation proofs have contemporaneous source/environment/log bindings; parent explicitly authorized cumulative225active-seconds/8000allocated-tokens continuation with45s/2000 additional allocation.
 
-## HOLD reasons
+## Independently verified cycle2
 
-1. Supplied maker22 mutation rows all have expected named failures, but lack an immutable source/environment binding receipt. Committing historical output does not authenticate which source bytes produced it. Twenty-one proofs remain unauthenticated; either supply their original immutable fingerprints/environment receipts or rerun bounded affected proofs. No evidence reuse certified. No demonstrated runtime defect.
-2. NEEDS_EXTRA_REVIEW: cumulative committed allocation180s/6000tokens exhausted; helper rejects next30s/1000. Requested finite cumulative300s/9000 escalation not yet received at checkpoint. Required work is not dropped for efficiency.
+The deterministic checker probe exits0:21 proof rows,55 sealed artifact hashes and983 source/test/script/dependency manifest entries match actual bytes. Each mutation has one anchor, actual distinct mutated hash, attributable named test failure, correct per-command mutated-tree binding, and restored source/tree hashes. Baseline and final restored controls each report12passed. Python executable hash, installed dependency versions and OCR binary hashes match context. Raw log hashes match receipts. A deliberately corrupted seal digest is rejected. Probe measured0.344s. Raw checker driver/result: qa/evidence/teaching-pdf/checker/checker-pdf-cycle2.py and .json.
 
-## Accounting and limits
+`git diff c1f67d93b9ae1c9cab0c0cdbffdb5adadf68fcee 0f48beaea6abc9c3a0ce9c238c6cf09abe03d118 -- src tests scripts pyproject.toml uv.lock` is empty. Therefore prior independent runtime evidence remains applicable without repeat:62tests passed54.42s, scoped Ruff passed, representative secret-sanitation mutation killed by its named test after green baseline with verified restoration. Actual scanned/mixed pages, errors/unreadable/low confidence, bounds/deadlines, provenance/dedupe and raw/encoded-secret/PII registration boundaries were independently exercised. Exact old commands and limitations are preserved in cycle1 verdict/evidence. No historical unbound maker logs are retroactively authenticated; new contemporaneous proofs supply the missing evidence.
 
-Actual checker active_s/tokens/currency cost null; initial monotonic launch was not recorded. Conservative budget debit180s/6000tokens represents committed allocation, never measured usage. No efficiency-success claim; maker denominators null, ratios unverified. No checker children. Actual pytest execution54.42s; other command overall active durations unavailable. Initial preflight ACL failure included; selected commands were completed, not repeated. Wait intervals after escalation request are not represented as measured active time. Phase2 input and terminal helper checkpoint preserved. Parent predispatch pdf.json/-assess.json remains external raw evidence.
+Applicable scope: SA1/2/4/5/6 and SA7 PDF subset; core C1/2/3/5/6/7/8/10/12. Independent code/consumer review and boundary tests remain from cycle1 unchanged bytes.
 
-Unit manifest remains ready-for-check. No merge, push, closeout or integration/release certification.
+## Remaining integration obligations
+
+Full pytest/Ruff/doctor on exact combined candidate remains mandatory. Cycle1 doctor exit1 only stale-generated docs/SNAPSHOT.md; dirty generated docs/MAP.md excluded from unit. Neither is certified current here. No fixed child memory quota; English OCR; timed-out supervisor can leave an OCR child bounded by its own deadline, as disclosed by maker. No merge/push/manifest closeout performed.
+
+## Accounting
+
+Parent dispatch metrics .work/checker-dispatch/pdf-provenance.json and -assess.json authorize this finite scope; helper assess passed before material review. Prior actual active_s/tokens/cost remain null plus180s/6000token debit. This continuation adds committed45s/2000tokens: cumulative225s/8000tokens, never represented as actual usage. Probe alone measured0.344s; initial cycle1 monotonic launch/complete active time unavailable. Maker usage null, cost null, efficiency ratios unverified. No children; no tests/mutations/doctor repeated in cycle2.
