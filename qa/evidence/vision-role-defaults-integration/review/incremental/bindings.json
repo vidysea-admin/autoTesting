@@ -1,0 +1,169 @@
+{
+  "candidate": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "head": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "clean_head": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "clean_status": "",
+  "incremental_paths": [
+    ".env.example",
+    "src/autotester/auth/policy.py",
+    "tests/acceptance/test_ta02_nothing_before_access.py",
+    "tests/auth_login_fixture.py",
+    "tests/test_agent_fallback.py",
+    "tests/test_agent_read_only.py",
+    "tests/test_auth_deploy_files.py",
+    "tests/test_browser_actions.py",
+    "tests/test_gemini_media_guard.py",
+    "tests/test_mc_sessionstart_loop_status.py",
+    "tests/test_notification_profile.py",
+    "tests/test_permission_coverage.py",
+    "tests/test_prompt_skills.py",
+    "tests/test_run_case_pipeline.py",
+    "tests/test_run_case_pipeline_resilient.py",
+    "tests/test_ui_auth_policy_table.py",
+    "tests/test_video_evidence.py"
+  ],
+  "paths_match_packet": true,
+  "fingerprints": {
+    ".env.example": "87a388b8f2042a4e8d84cab064c7a7d5d5a9a59c4a51a9df0833cc84093840c9",
+    "src/autotester/auth/policy.py": "2024cc1d0b1c423632e817eb80f5821f556a5f178d0f2eb951039af500da9a51",
+    "tests/acceptance/test_ta02_nothing_before_access.py": "3aea7ff88f943b4b8fa3d0b2760fe5c07ea5634a3dace7e187e129ba86fc300a",
+    "tests/auth_login_fixture.py": "fc7bd83e601150cc1ba373ccd2e9ffed6487f4ee67241707acfb946b301371ba",
+    "tests/test_agent_fallback.py": "14150f18de8c2e6d8460fcebdd090c94aabfbb28448f9ffc5c7c2508b584599f",
+    "tests/test_agent_read_only.py": "2c0b56550602a4ce2da1d1c22a23814de2b4c2c20fcdb1dba4ecd711f48ce3b7",
+    "tests/test_auth_deploy_files.py": "d84340afc22ba7cf197bbb275db6babfa775b2fe4803dbdfe276367561c2b72a",
+    "tests/test_browser_actions.py": "042b4f07785cbbbe8a84e6e9e6d4a15d4c5436f313c70f810e623aeebcf9f4d5",
+    "tests/test_gemini_media_guard.py": "9369091e81516c9e55a11b1a31536ab13721f43520bb470075a070b28ed669f3",
+    "tests/test_mc_sessionstart_loop_status.py": "57464e142ba89f7078e2f09f0106bb766dbab1796d7844c8e99aaf8cbc7b8be7",
+    "tests/test_notification_profile.py": "b716c32ee4215b3d308c69d10576aab6fbac38573cc521e918ae5c4808934deb",
+    "tests/test_permission_coverage.py": "9bb191e60e5fc89f06ae31078b529eda34eed415f404654ffd0c957ca55843c6",
+    "tests/test_prompt_skills.py": "6cc976d03d6e290a3f7fc5de39b55ca1e2aba17368524828766923c33edba5fd",
+    "tests/test_run_case_pipeline.py": "6a7f07bc5d652431f40481212b83df08c078487a101b5fc542d3a7a56ecc5c45",
+    "tests/test_run_case_pipeline_resilient.py": "18fe7b41dde8dc290cb8e064ee774fd52d1d50a0d092eba17243fcf2788c6e6e",
+    "tests/test_ui_auth_policy_table.py": "f6f0e0b5de657074f3fafb3aa6fdf3f5cbda5326ccc69b759c2d43f4913ff857",
+    "tests/test_video_evidence.py": "43797311ba0d956f3a461e4b734433cf3eaf2d1e28efce8d30d81f264a01679f"
+  },
+  "fingerprints_match_packet": true,
+  "accepted_rows": [
+    {
+      "path": "scripts/migrate_provider_roles.py",
+      "candidate_blob": "a88059206fd32022c1025088a08793456e14e496",
+      "accepted_blob": "a88059206fd32022c1025088a08793456e14e496"
+    },
+    {
+      "path": "src/autotester/providers/__init__.py",
+      "candidate_blob": "5732e11d4a367e6f1173aa426e1dcc6761808206",
+      "accepted_blob": "5732e11d4a367e6f1173aa426e1dcc6761808206"
+    },
+    {
+      "path": "src/autotester/providers/attempts.py",
+      "candidate_blob": "a93890855e27b513ad11d0448a343b178bac70ed",
+      "accepted_blob": "a93890855e27b513ad11d0448a343b178bac70ed"
+    },
+    {
+      "path": "src/autotester/providers/config_migration.py",
+      "candidate_blob": "7fede294d956a6dee4f88df9edb4e78fbc979bd1",
+      "accepted_blob": "7fede294d956a6dee4f88df9edb4e78fbc979bd1"
+    },
+    {
+      "path": "src/autotester/providers/gemini.py",
+      "candidate_blob": "76a1200ab92e8055860a817ef9f4d591587b0ebf",
+      "accepted_blob": "76a1200ab92e8055860a817ef9f4d591587b0ebf"
+    },
+    {
+      "path": "src/autotester/providers/litellm_provider.py",
+      "candidate_blob": "18551d69a48b34d8d08c02e3cac4412429aa33e5",
+      "accepted_blob": "18551d69a48b34d8d08c02e3cac4412429aa33e5"
+    },
+    {
+      "path": "src/autotester/providers/vision_probe.py",
+      "candidate_blob": "32c985950e3ee17a20595f90df1d98903a3adb0b",
+      "accepted_blob": "32c985950e3ee17a20595f90df1d98903a3adb0b"
+    },
+    {
+      "path": "src/autotester/providers/vision_roles.py",
+      "candidate_blob": "d76d174490da479cfae88fdc439bc7737c358972",
+      "accepted_blob": "d76d174490da479cfae88fdc439bc7737c358972"
+    },
+    {
+      "path": "src/autotester/schema/project.py",
+      "candidate_blob": "77dbf2c5cc90874d297a0a18f5000cecd26b8c94",
+      "accepted_blob": "77dbf2c5cc90874d297a0a18f5000cecd26b8c94"
+    },
+    {
+      "path": "src/autotester/schema/provider_migration.py",
+      "candidate_blob": "33aa4af6fb096873af074e60303bc6f812b24672",
+      "accepted_blob": "33aa4af6fb096873af074e60303bc6f812b24672"
+    },
+    {
+      "path": "src/autotester/schema/vision_capabilities.py",
+      "candidate_blob": "81ec53b2c95c87d12719e26607b83a1a16794ead",
+      "accepted_blob": "81ec53b2c95c87d12719e26607b83a1a16794ead"
+    },
+    {
+      "path": "src/autotester/skills/vision-probe/capabilities.json",
+      "candidate_blob": "34b30be54d62c28777235e8cef6d16941fd843cb",
+      "accepted_blob": "34b30be54d62c28777235e8cef6d16941fd843cb"
+    },
+    {
+      "path": "src/autotester/store/filestore.py",
+      "candidate_blob": "781eb6ac048efa5e240a1d9d21c685b666c70ac6",
+      "accepted_blob": "781eb6ac048efa5e240a1d9d21c685b666c70ac6"
+    },
+    {
+      "path": "tests/test_ensemble_honesty.py",
+      "candidate_blob": "c1afe155d17e20a4ae5839bb007fd1cd6176bb0d",
+      "accepted_blob": "c1afe155d17e20a4ae5839bb007fd1cd6176bb0d"
+    },
+    {
+      "path": "tests/test_provider_attempts.py",
+      "candidate_blob": "d73e3d9f62a7970e3ae811254cb9116d456a24a0",
+      "accepted_blob": "d73e3d9f62a7970e3ae811254cb9116d456a24a0"
+    },
+    {
+      "path": "tests/test_provider_deadline_consumers.py",
+      "candidate_blob": "83898b8e302c23599db2dc788c237be73b944e01",
+      "accepted_blob": "83898b8e302c23599db2dc788c237be73b944e01"
+    },
+    {
+      "path": "tests/test_provider_deadlines.py",
+      "candidate_blob": "6c6b646b4f1ff296355b566a2cc9b2b9dc9bb6fc",
+      "accepted_blob": "6c6b646b4f1ff296355b566a2cc9b2b9dc9bb6fc"
+    },
+    {
+      "path": "tests/test_provider_factory.py",
+      "candidate_blob": "de4d2838f0d70b12c3ce36725583e4199c06e68f",
+      "accepted_blob": "de4d2838f0d70b12c3ce36725583e4199c06e68f"
+    },
+    {
+      "path": "tests/test_provider_migration.py",
+      "candidate_blob": "994f048b70d74ca36085bd47e87df0eaf4f5e2dd",
+      "accepted_blob": "994f048b70d74ca36085bd47e87df0eaf4f5e2dd"
+    },
+    {
+      "path": "tests/test_schema.py",
+      "candidate_blob": "3db8c233795ac1e33ebb2bdb7a74066d63caaddb",
+      "accepted_blob": "3db8c233795ac1e33ebb2bdb7a74066d63caaddb"
+    },
+    {
+      "path": "tests/test_text_availability.py",
+      "candidate_blob": "9b22d1f768fed203d9fdf4946cbd9ab7a2d02e70",
+      "accepted_blob": "9b22d1f768fed203d9fdf4946cbd9ab7a2d02e70"
+    },
+    {
+      "path": "tests/test_vision_role_deadline.py",
+      "candidate_blob": "367a6af25a21696a6d23124250aea0c1b514ea24",
+      "accepted_blob": "367a6af25a21696a6d23124250aea0c1b514ea24"
+    },
+    {
+      "path": "tests/test_vision_roles.py",
+      "candidate_blob": "f8af01ed39fd853b8ab833a3aed35ad364078f00",
+      "accepted_blob": "f8af01ed39fd853b8ab833a3aed35ad364078f00"
+    }
+  ],
+  "accepted_all_equal": true,
+  "config_hashes": {
+    "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+    "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+  }
+}

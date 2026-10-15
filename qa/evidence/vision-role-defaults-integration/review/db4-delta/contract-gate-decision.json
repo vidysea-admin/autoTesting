@@ -1,0 +1,29 @@
+{
+  "status": "FULL_SUCCESSFUL_GATE_STILL_REQUIRED",
+  "observed_at": "2026-10-15T22:24:34.732465+00:00",
+  "candidate": "db4af225181663cf81730ac5b54a8eaabe30c577",
+  "governing": [
+    "qa/loop.md:14-17 exact full commands mandatory",
+    "qa/loop.md:54-59 integration exact combined candidate, same-candidate compatible attested reuse, narrower reuse must be explained, missing full-gate blocks",
+    "qa/adapter.json:14-26 verify.commands expect exit0",
+    "qa/adapter.json:78-84 candidate/evidence identity and affected-evidence invalidation",
+    "qa/contracts/core-invariants.md C7 full pytest/Ruff/doctor mandatory"
+  ],
+  "interpretation": "Failed db4 full command remains failed. Completed green prefix plus tail and affected-node reruns may establish diagnostic coverage and valid narrow reuse, but current contract does not authorize synthesizing the required full pytest exit0 receipt across candidates. It also does not explicitly require one operating-system process: adapter references existing 6c sharded full-suite gate; any alternative must already be an authorized full-gate runner with complete candidate-bound successful aggregate, not improvised post-hoc evidence.",
+  "required_after_fixture_fix": [
+    "independent focused fixture-diff review and discriminating regression/proof as applicable",
+    "successful full configured pytest gate at corrected exact combined candidate",
+    "Ruff src/tests/scripts exit0 and actual doctor CLI exit0 at final candidate, or independently justified compatible already-successful attested reuse where truly unaffected"
+  ],
+  "can_reuse": [
+    "Unchanged provider/vision and retention proofs with exact source/environment applicability already established",
+    "Completed-prefix/tail diagnostics remain valid evidence with original identities and failed full-command status preserved"
+  ],
+  "owner_alternative": "If owner wants post-hoc prefix/tail composition to replace the required full-command receipt, obtain explicit bounded authorization/amendment to integration gate; checker cannot silently grant it.",
+  "actual_active_seconds": null,
+  "actual_total_tokens": null,
+  "cost": null,
+  "ratio": "UNVERIFIED",
+  "no_tests": true,
+  "no_pass": true
+}

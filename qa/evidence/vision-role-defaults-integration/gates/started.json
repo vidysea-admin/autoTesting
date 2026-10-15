@@ -1,0 +1,26 @@
+{
+  "pid": 7616,
+  "start": "2026-10-15T22:34:55.005940+00:00",
+  "expected_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "child_flags": {
+    "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration\\src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+    "UV_NO_SYNC": "1",
+    "PYTEST_ADDOPTS_present": false,
+    "PYTEST_ADDOPTS_nonempty": false,
+    "PYTEST_ADDOPTS_filter_free": true,
+    "global_environment_mutated": false
+  },
+  "binding": {
+    "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+    "status": "",
+    "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+    "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+    "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+  },
+  "runner": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\run-final-gates-cleanup.py"
+}

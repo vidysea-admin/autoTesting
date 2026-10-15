@@ -1,0 +1,43 @@
+{
+  "notifications": [
+    "/root",
+    "/root/integrate_vision_unit"
+  ],
+  "status": "HOLD",
+  "product_verdict": false,
+  "scope": "One bounded runner/command/preflight/receipt metadata review only",
+  "checks": {
+    "pytest": "Full testpaths=tests with normal addopts=-q; only basetemp and JUnit added; no subset/lastfailed arguments",
+    "doctor": "DEFECT: python -m autotester doctor cannot invoke console entrypoint because __main__.py absent; pyproject declares autotester:main",
+    "pending": "Only preflight receipt exists; pytest/ruff/doctor have no completed results and no PASS claimed",
+    "receipt_plan": "Each run records own command/cwd/end candidate SHA/start/end/duration/exit/complete stdout+stderr hashes",
+    "environment": "Preflight exit 0, Python 3.11.16, main .venv, candidate/src import containment, project+dev dependency compatibility and writable temp checked",
+    "fingerprints": "Independently matched current pyproject/uv.lock and preflight stdout/stderr hashes to preflight records",
+    "ruff": "python -m ruff check src tests scripts equivalent using declared compatible existing environment"
+  },
+  "candidate_sha": "60279fd0d2b77abfd582fc47b22b310746d94908",
+  "assessment_exit": 2,
+  "metrics": {
+    "cost": null,
+    "ratio_verified": false,
+    "token_metric": "actual_total",
+    "started_utc": "2026-10-15T20:08:49.2795093+00:00",
+    "role": "integrationchecker helper",
+    "target_active_s": 90,
+    "ended_utc": "2026-10-15T20:10:50.2617792+00:00",
+    "prior_history": "Retained by parent; no reset or success claim",
+    "wall_seconds": 120.9822699,
+    "wait_seconds": 0,
+    "aggregate_owner": "/root/integration_static_checker",
+    "actual_total_tokens": null,
+    "active_seconds": 120.9822699
+  },
+  "limitations": [
+    "No process polling or gate execution; no source audit",
+    "Inherited environment may include PYTEST_ADDOPTS; runner does not record or rule that out",
+    "Candidate SHA captured after each command; runner does not independently bind precommand source cleanliness or per-file fingerprint",
+    "Individual environment fingerprint is preflight dependencies+lock/config/import values; runner does not embed hash per receipt",
+    "No managed-review/1 helper dispatch packet provided; assess is helper scope only, not aggregate authorization"
+  ],
+  "schema": "gate-command-review/1"
+}

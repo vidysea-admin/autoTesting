@@ -1,0 +1,124 @@
+{
+  "schema": "integration-db4-delta-checkpoint/1",
+  "status": "STATIC_AND_RETENTION_PROOF_READY_GATES_PENDING",
+  "product_verdict": null,
+  "candidate_sha": "db4af225181663cf81730ac5b54a8eaabe30c577",
+  "previous_sha": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "sealed_packet_sha256": "b7c38a15c30169ff3a39b557b83dfaaa525280e28595a54f26f972823993e159",
+  "changed_paths": [
+    "tests/test_account_generation.py"
+  ],
+  "only_fixture_change": true,
+  "account_fixture_review": "Developer membership restores authorized POST/profile success precondition. Account-generation randomness, same-id/same-clock separation, no inherited opt-in, forged identity/generation resistance and stale preference rejection assertions remain unchanged. Existing explicit pending403/no-root-write coverage remains.",
+  "account_check": {
+    "xml_tests": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "18",
+      "time": "9.659",
+      "timestamp": "2026-10-15T21:27:50.151239+00:00",
+      "hostname": "windows-demo"
+    },
+    "receipt_log_bindings": [
+      {
+        "name": "consumer-check",
+        "exit": 0,
+        "sha_before": "db4af225181663cf81730ac5b54a8eaabe30c577",
+        "sha_after": "db4af225181663cf81730ac5b54a8eaabe30c577",
+        "stdout_match": true,
+        "stderr_match": true
+      },
+      {
+        "name": "lint",
+        "exit": 0,
+        "sha_before": "db4af225181663cf81730ac5b54a8eaabe30c577",
+        "sha_after": "db4af225181663cf81730ac5b54a8eaabe30c577",
+        "stdout_match": true,
+        "stderr_match": true
+      }
+    ],
+    "current_test_hash": "d32139a1aeeb119e1a4a8516c3f83048dff0de6e87ae81496a9cb2d33a82c34c"
+  },
+  "retention_proof": {
+    "inventory_count": 1054,
+    "complete_inventory_matches_c262_scope": true,
+    "all1054_raw_hashes_match": true,
+    "all1054_inventory_and_actual_blobs_match_c262": true,
+    "only_changed_inventory_path_at_db4": [
+      "tests/test_account_generation.py"
+    ],
+    "preflight_and_log_bindings": [
+      {
+        "phase": "preflight",
+        "stdout_match": true,
+        "stderr_match": true,
+        "exit": 0
+      },
+      {
+        "phase": "baseline",
+        "stdout_match": true,
+        "stderr_match": true,
+        "exit": 0
+      },
+      {
+        "phase": "mutation",
+        "stdout_match": true,
+        "stderr_match": true,
+        "exit": 1
+      }
+    ],
+    "baseline_xml_hash_match": true,
+    "mutation_xml_hash_match": true,
+    "baseline_summary": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "12.863",
+      "timestamp": "2026-10-15T21:28:05.752779+00:00",
+      "hostname": "windows-demo"
+    },
+    "mutation_summary": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "1",
+      "time": "12.867",
+      "timestamp": "2026-10-15T21:28:26.042448+00:00",
+      "hostname": "windows-demo"
+    },
+    "named_failure_message": "AssertionError: a PASS video must be pruned\nassert 'case_fd41b0a754fb.webm' not in ['case_91c61c47a68c.webm', 'case_fd41b0a754fb.webm', 'case_ff07508b5bab.webm']",
+    "correct_node": true,
+    "anchor_count_observed": 1,
+    "original_restored_hash_match": true,
+    "mutated_hash_reconstructed_match": true,
+    "browser_identity": "Playwright package and browser registry recorded; actual launched executable/version UNKNOWN. This proof establishes named test mutation behavior in its own bound setup; it is not substituted for final-db4 full gate browser execution.",
+    "reuse_rationale": "All production source, video node, immediate consumers, and dependency config Git blobs unchanged. Account fixture argument is unrelated. No redundant browser proof rerun warranted."
+  },
+  "remaining": "Successful complete exact-db4 full pytest/Ruff/real doctor receipts and final candidate/environment validation; canonical verdict and parser readback deferred until terminal gates.",
+  "accounting": {
+    "token_metric": "actual_total",
+    "observed_start_utc": "2026-10-15T21:30:54.429060+00:00",
+    "end_utc": "2026-10-15T21:31:34.804266+00:00",
+    "observed_wall_seconds": 40.375,
+    "actual_active_seconds": null,
+    "wait_seconds": null,
+    "actual_total_tokens": null,
+    "cost": null,
+    "prior_static_observed_wall_seconds": 114.35899999999992,
+    "prior_incremental_observed_wall_seconds": 130.3119999999999,
+    "history_reset": false,
+    "all_prior_retries_children_and_debits": "Retained under review/incremental/assess-input.json and linked helper/checker packets; no earlier overhead relabeled measured.",
+    "assess": "Existing same known refusal retained; no identical retry; existing finite human exception.",
+    "shared_suite": "Parent-owned distinct integration accounting; no duplicate launches."
+  },
+  "final_identity_readback": {
+    "main_head": "db4af225181663cf81730ac5b54a8eaabe30c577",
+    "candidate_worktree_head": "db4af225181663cf81730ac5b54a8eaabe30c577",
+    "candidate_worktree_status": ""
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "status": "FAILED_COPY_IDENTITY_BEFORE_TESTS",
+  "cause": "git archive converted canonical LF blob to CRLF via attributes; rejected hash mismatch at pyproject.toml",
+  "command_wall_seconds": 2.9369348,
+  "tests_or_browser_started": false,
+  "correction": "materialize canonical raw blobs with one git cat-file --batch invocation; verify each raw git object id",
+  "actual_total_tokens": null,
+  "cost": null
+}

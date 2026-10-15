@@ -1,0 +1,50 @@
+[
+  {
+    "phase": "failed-26",
+    "candidate_before": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "candidate_after": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "@C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\failed-26-nodeids.txt",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\failed-26-temp-parent\\pytest",
+      "--junitxml",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\failed-26.xml"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-cleanup-fixture",
+    "start": "2026-10-15T22:32:24.363852+00:00",
+    "end": "2026-10-15T22:32:52.078366+00:00",
+    "wall_seconds": 27.718000000000757,
+    "exit_code": 0,
+    "real_browser": false,
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\failed-26.stdout",
+    "stdout_sha256": "a9bbc896f98d8bf022dae4c5830f8c2780a531ed91e4089f5aed217b523ed3c3",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\failed-26.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "phase": "final-lint",
+    "candidate_before": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "candidate_after": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "tests/test_ui_runs_serial_entry_order.py",
+      "tests/test_ui_runs_serial_resilience.py"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-cleanup-fixture",
+    "start": "2026-10-15T22:32:52.091426+00:00",
+    "end": "2026-10-15T22:32:52.623070+00:00",
+    "wall_seconds": 0.5310000000008586,
+    "exit_code": 0,
+    "real_browser": false,
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\final-lint.stdout",
+    "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\final-lint.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

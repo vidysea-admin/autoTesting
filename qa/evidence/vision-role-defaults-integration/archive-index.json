@@ -1,0 +1,358 @@
+{
+  "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "archived_at": "2026-10-15T23:38:31.591632+00:00",
+  "files": [
+    {
+      "archive_path": "gates/receipts.json",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\receipts.json",
+      "sha256": "32f16d504bc422b455f6bc316133a778fd54ae6f15e8c456b5b4ebf055cc5093",
+      "bytes": 11574
+    },
+    {
+      "archive_path": "gates/completed.json",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\completed.json",
+      "sha256": "10c5cc0adc9cc75b3036106450b06492ec11d1a86142e81dab7b170b91691e89",
+      "bytes": 325
+    },
+    {
+      "archive_path": "gates/started.json",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\started.json",
+      "sha256": "91028aa0cd24a732069a8c1f4a606175a320c85712403325a4ca6f479429f3cf",
+      "bytes": 1283
+    },
+    {
+      "archive_path": "gates/environment-fingerprint.json",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\environment-fingerprint.json",
+      "sha256": "31b3a98e5a7d82b943125392c2072f0fd25783b7d39f71190b47d53da51d1d6e",
+      "bytes": 2123
+    },
+    {
+      "archive_path": "gates/preflight.stdout",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\preflight.stdout",
+      "sha256": "10b2a80fcf1a85f4fa4026047ce9949f909d3834e634f2a0c9059c28b2e4bc3c",
+      "bytes": 1503
+    },
+    {
+      "archive_path": "gates/preflight.stderr",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\preflight.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive_path": "gates/ruff.stdout",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\ruff.stdout",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "archive_path": "gates/ruff.stderr",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\ruff.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive_path": "gates/doctor.stdout",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\doctor.stdout",
+      "sha256": "b76f7f9b1c12f003acb6cc3eb783ccc3559829ce21f58229d91d1b2e9035374a",
+      "bytes": 1830
+    },
+    {
+      "archive_path": "gates/doctor.stderr",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\doctor.stderr",
+      "sha256": "e8f4054651fe0093e8b52b8cb786505d8435aa729af15569131d694f6b54b9ab",
+      "bytes": 83
+    },
+    {
+      "archive_path": "gates/pytest.stdout",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\pytest.stdout",
+      "sha256": "df8f320bb249fc0a601ba76416d77fde3004d631a84ed24c34c27f859d97ada7",
+      "bytes": 18271
+    },
+    {
+      "archive_path": "gates/pytest.stderr",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\pytest.stderr",
+      "sha256": "fb3a9e7e8f08a76da0f3dc1a138aeaa9c59614b508c8e29e2155d1371c1c0bd6",
+      "bytes": 81
+    },
+    {
+      "archive_path": "gates/pytest.xml",
+      "source": ".work\\vision-integration\\final-gates-cleanup\\pytest.xml",
+      "sha256": "d786898ff5f6faca871f9ec720ac8a3dcfee1001a85bbd673f52e9235ed968e1",
+      "bytes": 1041450
+    },
+    {
+      "archive_path": "review/assess.stderr",
+      "source": ".work\\vision-integration\\review\\assess.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive_path": "review/assess.stdout",
+      "source": ".work\\vision-integration\\review\\assess.stdout",
+      "sha256": "0a3e6e88d8a8a60fddf23719bdc23090a74a30634b51748e6459070b7b17823d",
+      "bytes": 135
+    },
+    {
+      "archive_path": "review/gate-command-budget-input.json",
+      "source": ".work\\vision-integration\\review\\gate-command-budget-input.json",
+      "sha256": "eeca0b285f7b551eb74ffbcbdc06e500f645e373a5d64145c3eceb953fcd9502",
+      "bytes": 665
+    },
+    {
+      "archive_path": "review/gate-command-budget-result.json",
+      "source": ".work\\vision-integration\\review\\gate-command-budget-result.json",
+      "sha256": "823dd688a39fc488c486c782b3cb6d34cf3983edf2517c0452ace38eb2227a75",
+      "bytes": 135
+    },
+    {
+      "archive_path": "review/gate-command-budget.stderr",
+      "source": ".work\\vision-integration\\review\\gate-command-budget.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive_path": "review/gate-command-review.json",
+      "source": ".work\\vision-integration\\review\\gate-command-review.json",
+      "sha256": "6ba81d496656cccd73ef2be8a092099b94883bd7598f84b2485b8314f9459e62",
+      "bytes": 2412
+    },
+    {
+      "archive_path": "review/phase-input.json",
+      "source": ".work\\vision-integration\\review\\phase-input.json",
+      "sha256": "361c25180f6085482efdf6eb06838c6458ed9591cf049ba7932a9cb5f9a7281a",
+      "bytes": 722
+    },
+    {
+      "archive_path": "review/phase-start.json",
+      "source": ".work\\vision-integration\\review\\phase-start.json",
+      "sha256": "fa9ad8021260c95363c5e47ccd3d99b999ea2fc0c3ceeabab57016a3a873a2b6",
+      "bytes": 153
+    },
+    {
+      "archive_path": "review/static-bindings.json",
+      "source": ".work\\vision-integration\\review\\static-bindings.json",
+      "sha256": "dcd35eb8336ac36ead69052ab4b43172293779b6611bedcaa7de303098cabfce",
+      "bytes": 27519
+    },
+    {
+      "archive_path": "review/static-review.json",
+      "source": ".work\\vision-integration\\review\\static-review.json",
+      "sha256": "40deb350c39e507c39682efa32990af2bfeca9a6022662a24d1c3b642817c339",
+      "bytes": 7338
+    },
+    {
+      "archive_path": "review/validate.stderr",
+      "source": ".work\\vision-integration\\review\\validate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive_path": "review/validate.stdout",
+      "source": ".work\\vision-integration\\review\\validate.stdout",
+      "sha256": "b17dd120d32748ab1ccfe38639f69c19838302ba0e2c08d2484f859ae58fd5c1",
+      "bytes": 153
+    },
+    {
+      "archive_path": "review/cleanup-delta/checkpoint.json",
+      "source": ".work\\vision-integration\\review\\cleanup-delta\\checkpoint.json",
+      "sha256": "7a2899407871fe52f164bf7c47e48d4dc5e7656de6531eccc2de0ba06895ff4a",
+      "bytes": 5403
+    },
+    {
+      "archive_path": "review/cleanup-delta/start.json",
+      "source": ".work\\vision-integration\\review\\cleanup-delta\\start.json",
+      "sha256": "bc5006a8e8b29932c8f478d093937eb0dbb0234e6bb4e0fb88c2e9d3a188151f",
+      "bytes": 67
+    },
+    {
+      "archive_path": "review/db4-delta/checkpoint.json",
+      "source": ".work\\vision-integration\\review\\db4-delta\\checkpoint.json",
+      "sha256": "0d3c2655aa6618b19f56c7ce9701e10c2401fa4b965aba87df3b6413c538e1f9",
+      "bytes": 5204
+    },
+    {
+      "archive_path": "review/db4-delta/contract-gate-decision.json",
+      "source": ".work\\vision-integration\\review\\db4-delta\\contract-gate-decision.json",
+      "sha256": "14611e61a415a2892438c15cf58b3e6ed5f7453014279ff8d7201bc4aa209a0f",
+      "bytes": 2251
+    },
+    {
+      "archive_path": "review/db4-delta/retention-inventory-verification.json",
+      "source": ".work\\vision-integration\\review\\db4-delta\\retention-inventory-verification.json",
+      "sha256": "e4a6f4dddc387ce3cf503da34635f941f9d72bc1eb18e9057819135aa85bb81b",
+      "bytes": 208928
+    },
+    {
+      "archive_path": "review/db4-delta/start.json",
+      "source": ".work\\vision-integration\\review\\db4-delta\\start.json",
+      "sha256": "2b75819a48f21d59c114128092fae63d377e331568b9e77218d1e523ecc8e749",
+      "bytes": 66
+    },
+    {
+      "archive_path": "review/finalization/gate-verification.json",
+      "source": ".work\\vision-integration\\review\\finalization\\gate-verification.json",
+      "sha256": "14ee5bf8a3be03c17d479b1c1b52bd406301724d0c373941d8d858f08758d5d6",
+      "bytes": 10165
+    },
+    {
+      "archive_path": "review/finalization/start.json",
+      "source": ".work\\vision-integration\\review\\finalization\\start.json",
+      "sha256": "b2b452a9e0f46c11dc95101524c94a05ab33123e0cae669cd75df6c9ddfdcfab",
+      "bytes": 67
+    },
+    {
+      "archive_path": "review/incremental/assess-input.json",
+      "source": ".work\\vision-integration\\review\\incremental\\assess-input.json",
+      "sha256": "f74825c9b23daeb40044dbdc85c19ceb14da09d71e807ce719c550ef4cd5c334",
+      "bytes": 7411
+    },
+    {
+      "archive_path": "review/incremental/assess.stderr",
+      "source": ".work\\vision-integration\\review\\incremental\\assess.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive_path": "review/incremental/assess.stdout",
+      "source": ".work\\vision-integration\\review\\incremental\\assess.stdout",
+      "sha256": "8f959fb46d183f483cbbd7686ed5e1d4c0f9cac5fc8ae2f3c8f58fff3c327697",
+      "bytes": 1226
+    },
+    {
+      "archive_path": "review/incremental/auth-probe-receipt.json",
+      "source": ".work\\vision-integration\\review\\incremental\\auth-probe-receipt.json",
+      "sha256": "07261a6ab073ff4a4ebe1665e12f8b51dfd8d89960b16198c1ea5b06d0e9f1e6",
+      "bytes": 346
+    },
+    {
+      "archive_path": "review/incremental/auth-probe.py",
+      "source": ".work\\vision-integration\\review\\incremental\\auth-probe.py",
+      "sha256": "cd734a70ba7824fdcc927a3c2814bfcdfd43a74f49b74a33c102d72d85a7074a",
+      "bytes": 1668
+    },
+    {
+      "archive_path": "review/incremental/auth-probe.stderr",
+      "source": ".work\\vision-integration\\review\\incremental\\auth-probe.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive_path": "review/incremental/auth-probe.stdout",
+      "source": ".work\\vision-integration\\review\\incremental\\auth-probe.stdout",
+      "sha256": "dc0a4a28dde4cbd9486e72335e96d8893ad0e0603adb56b1229afda968e919c7",
+      "bytes": 387
+    },
+    {
+      "archive_path": "review/incremental/bindings.json",
+      "source": ".work\\vision-integration\\review\\incremental\\bindings.json",
+      "sha256": "da6e3f6da3514a302817bd1791e6558076e6e655ad26a633cdb1da4910c79272",
+      "bytes": 7946
+    },
+    {
+      "archive_path": "review/incremental/checkpoint.json",
+      "source": ".work\\vision-integration\\review\\incremental\\checkpoint.json",
+      "sha256": "4b7cc1d16c1050e1b9c550ea8375d59fc7f53150cd65627a2e4876497ef388f0",
+      "bytes": 6462
+    },
+    {
+      "archive_path": "review/incremental/incremental.diff",
+      "source": ".work\\vision-integration\\review\\incremental\\incremental.diff",
+      "sha256": "ddc3577175ac5f264a850aaa302ac23a0a0181d30247a2b265a8154f5d819c54",
+      "bytes": 23917
+    },
+    {
+      "archive_path": "review/incremental/start.json",
+      "source": ".work\\vision-integration\\review\\incremental\\start.json",
+      "sha256": "b59f7b276bdc9fae6fc00dbf4d63a6bc072705a8e1cc06acd4f54fc57385d976",
+      "bytes": 66
+    },
+    {
+      "archive_path": "maker/final-review-packet-cleanup.json",
+      "source": ".work\\vision-integration\\final-review-packet-cleanup.json",
+      "sha256": "34c7795285f53593738b49433b3e8ae2edab3bed7acb40238adb76858ec4e6f3",
+      "bytes": 43184
+    },
+    {
+      "archive_path": "maker/cleanup-fixture-fix/packet.json",
+      "source": ".work\\vision-integration\\cleanup-fixture-fix\\packet.json",
+      "sha256": "9e6672230bc2806fed5629ed606256408ba269cc37fc5eecdbc42d066cf514d8",
+      "bytes": 5327
+    },
+    {
+      "archive_path": "maker/cleanup-fixture-fix/failed-26-receipts.json",
+      "source": ".work\\vision-integration\\cleanup-fixture-fix\\failed-26-receipts.json",
+      "sha256": "c516bfbbaa2d4ebe10a374c19699ed605cc1c581ed5a44777c2eb3dc6a166665",
+      "bytes": 2562
+    },
+    {
+      "archive_path": "maker/cleanup-fixture-fix/failed-26-inventory.json",
+      "source": ".work\\vision-integration\\cleanup-fixture-fix\\failed-26-inventory.json",
+      "sha256": "4a0576dab87d8cc6966847e2f60186718ff7bfeeead0ab0b040adce25badf834",
+      "bytes": 3830
+    },
+    {
+      "archive_path": "maker/cleanup-fixture-fix/failed-26.xml",
+      "source": ".work\\vision-integration\\cleanup-fixture-fix\\failed-26.xml",
+      "sha256": "2f716734b92060c66b437a95786cd8a6271d03907aeb542ef5266fd71baabbea",
+      "bytes": 4506
+    },
+    {
+      "archive_path": "maker/account-member-fix/packet.json",
+      "source": ".work\\vision-integration\\account-member-fix\\packet.json",
+      "sha256": "f2d4cdc7858adb18c322a24e452137c8ca4d09c8284c213d9be0c0bbce2bcfa2",
+      "bytes": 2409
+    },
+    {
+      "archive_path": "maker/account-member-fix/receipts.json",
+      "source": ".work\\vision-integration\\account-member-fix\\receipts.json",
+      "sha256": "3157f4bb4e7e2acc028d282b9fac7ddaef611e5b97bb2ed98e550c56ce9eed50",
+      "bytes": 2983
+    },
+    {
+      "archive_path": "maker/video-retention-proof/packet.json",
+      "source": ".work\\vision-integration\\video-retention-proof\\packet.json",
+      "sha256": "98802b065f770accbb6d092a653be5ebe5562fe5d08ffe211361f84952e212c4",
+      "bytes": 8525
+    },
+    {
+      "archive_path": "maker/video-retention-proof/inventory.json",
+      "source": ".work\\vision-integration\\video-retention-proof\\inventory.json",
+      "sha256": "c2aa26cc292e681230c6a7c1abc0ea061da826b93efb9c42413a0863682339c9",
+      "bytes": 215251
+    },
+    {
+      "archive_path": "maker/video-retention-proof/baseline.xml",
+      "source": ".work\\vision-integration\\video-retention-proof\\baseline.xml",
+      "sha256": "e26f7571e1777ba6053a2587d051212774338c79fbd004a3a65ccb3c3bd69807",
+      "bytes": 394
+    },
+    {
+      "archive_path": "maker/video-retention-proof/mutation.xml",
+      "source": ".work\\vision-integration\\video-retention-proof\\mutation.xml",
+      "sha256": "31dc809be89c0ad7113089d67cd8b83169ad14beb64bfd060317913d820f75cf",
+      "bytes": 3477
+    },
+    {
+      "archive_path": "maker/video-retention-proof/baseline.stdout",
+      "source": ".work\\vision-integration\\video-retention-proof\\baseline.stdout",
+      "sha256": "c8178c9d4d5145d50d8f61cc75dbb4e44ddaab1619b91f7e7c4343f8c6452dc7",
+      "bytes": 939
+    },
+    {
+      "archive_path": "maker/video-retention-proof/mutation.stdout",
+      "source": ".work\\vision-integration\\video-retention-proof\\mutation.stdout",
+      "sha256": "96b9170a7ccd0d5ca065b7219589b06a46f2ca6f14b74553fed671f84b313edd",
+      "bytes": 4903
+    },
+    {
+      "archive_path": "maker/video-retention-proof/setup-attempt.json",
+      "source": ".work\\vision-integration\\video-retention-proof\\setup-attempt.json",
+      "sha256": "288af59ad9634413e04c8b6b8b9c21913eb1812fbfb730bfe24f89c251bcc938",
+      "bytes": 422
+    }
+  ],
+  "actual_active_seconds": null,
+  "actual_total_tokens": null,
+  "cost": null,
+  "ratio": "UNVERIFIED"
+}

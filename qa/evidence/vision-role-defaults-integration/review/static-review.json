@@ -1,0 +1,163 @@
+{
+  "schema": "integration-static-review/1",
+  "status": "STATIC_READY",
+  "final_product_verdict": null,
+  "candidate_sha": "60279fd0d2b77abfd582fc47b22b310746d94908",
+  "base_sha": "fbadaf25426059ecd5c7ee753cc662461071e244",
+  "candidate_tree": "0be18bcff0086dcfde4f79f092026ce3562541a8",
+  "packet_sha256": "8e12cf01fe55538b2b68143c7da2234f33e0261d57e3aaf58d13498d625cffa1",
+  "findings": [],
+  "identity": {
+    "candidate_parent_matches_base": true,
+    "head_matches_candidate": true,
+    "clean_test_head_matches": true,
+    "clean_test_worktree_clean": true,
+    "paths_match_packet": true,
+    "accepted_source_blob_count": 23,
+    "all_23_accepted_source_blobs_equal": true
+  },
+  "deadline_closure": [
+    {
+      "path": "src/autotester/providers/attempts.py",
+      "dependency_blob": "a93890855e27b513ad11d0448a343b178bac70ed",
+      "combination_blob": "a93890855e27b513ad11d0448a343b178bac70ed",
+      "candidate_blob": "a93890855e27b513ad11d0448a343b178bac70ed"
+    },
+    {
+      "path": "src/autotester/providers/gemini.py",
+      "dependency_blob": "76a1200ab92e8055860a817ef9f4d591587b0ebf",
+      "combination_blob": "76a1200ab92e8055860a817ef9f4d591587b0ebf",
+      "candidate_blob": "76a1200ab92e8055860a817ef9f4d591587b0ebf"
+    },
+    {
+      "path": "src/autotester/providers/litellm_provider.py",
+      "dependency_blob": "18551d69a48b34d8d08c02e3cac4412429aa33e5",
+      "combination_blob": "18551d69a48b34d8d08c02e3cac4412429aa33e5",
+      "candidate_blob": "18551d69a48b34d8d08c02e3cac4412429aa33e5"
+    },
+    {
+      "path": "src/autotester/providers/vision_probe.py",
+      "dependency_blob": "32c985950e3ee17a20595f90df1d98903a3adb0b",
+      "combination_blob": "32c985950e3ee17a20595f90df1d98903a3adb0b",
+      "candidate_blob": "32c985950e3ee17a20595f90df1d98903a3adb0b"
+    },
+    {
+      "path": "tests/test_provider_attempts.py",
+      "dependency_blob": "d73e3d9f62a7970e3ae811254cb9116d456a24a0",
+      "combination_blob": "d73e3d9f62a7970e3ae811254cb9116d456a24a0",
+      "candidate_blob": "d73e3d9f62a7970e3ae811254cb9116d456a24a0"
+    },
+    {
+      "path": "tests/test_text_availability.py",
+      "dependency_blob": "9b22d1f768fed203d9fdf4946cbd9ab7a2d02e70",
+      "combination_blob": "9b22d1f768fed203d9fdf4946cbd9ab7a2d02e70",
+      "candidate_blob": "9b22d1f768fed203d9fdf4946cbd9ab7a2d02e70"
+    }
+  ],
+  "all_six_dependency_combination_candidate_equal": true,
+  "unmodified_base_blob_count": 6740,
+  "all_unmodified_base_paths_preserved": true,
+  "account_generation_preservation": [
+    {
+      "path": "src/autotester/auth/accounts.py",
+      "base_blob": "1f892ee7cfed432f312bf6f675542a7ca1049274",
+      "candidate_blob": "1f892ee7cfed432f312bf6f675542a7ca1049274"
+    },
+    {
+      "path": "src/autotester/auth/db.py",
+      "base_blob": "94055472314927303ac65fa0ba582f69db7b132d",
+      "candidate_blob": "94055472314927303ac65fa0ba582f69db7b132d"
+    },
+    {
+      "path": "src/autotester/schema/auth.py",
+      "base_blob": "36081890f06782f2bd3130864d9342f15a30c4d3",
+      "candidate_blob": "36081890f06782f2bd3130864d9342f15a30c4d3"
+    },
+    {
+      "path": "src/autotester/schema/delivery.py",
+      "base_blob": "152de9278189491a609eab32fca087cddcaddadc",
+      "candidate_blob": "152de9278189491a609eab32fca087cddcaddadc"
+    },
+    {
+      "path": "src/autotester/store/notification_prefs.py",
+      "base_blob": "0fc9011a38809ae720073beaa120f6a3dfd6394e",
+      "candidate_blob": "0fc9011a38809ae720073beaa120f6a3dfd6394e"
+    },
+    {
+      "path": "src/autotester/ui/routes_profile.py",
+      "base_blob": "09f9668632695fc12201f8e1734d68c5dd6bd6be",
+      "candidate_blob": "09f9668632695fc12201f8e1734d68c5dd6bd6be"
+    },
+    {
+      "path": "tests/test_account_generation.py",
+      "base_blob": "dd1ad337e88a1cb9a501a4217204b7887b252d7b",
+      "candidate_blob": "dd1ad337e88a1cb9a501a4217204b7887b252d7b"
+    },
+    {
+      "path": "tests/test_notification_profile.py",
+      "base_blob": "484327d00baa3ec48abd0ba1ad5ff9862791e12a",
+      "candidate_blob": "484327d00baa3ec48abd0ba1ad5ff9862791e12a"
+    }
+  ],
+  "all_10_dirty_files_preserved": true,
+  "static_logic_review": [
+    "Factory role defaults and full-tag ensemble parser match accepted unit; no integration adaptation.",
+    "ProviderConfig changes only default vision id and strict fallback flag, preserving other project configuration.",
+    "Shared filestore text path preserves text mode; bytes mode used by reversible migration.",
+    "Probe finalization checks checked dependency guards; invalidates capability on exhausted deadline.",
+    "Outside changed paths, every preexisting base blob equals candidate, including account generation and immediate account consumers."
+  ],
+  "reviewed_policy": [
+    "qa/loop.md D-100 integration paragraphs 14-35,54-70",
+    "qa/adapter.json verify.unit_policy.integration_gate",
+    "qa/contracts/core-invariants.md C1-C7 and accepted unit verdict C9/C12",
+    "docs/ARCHITECTURE.md pipeline/concept map/data model"
+  ],
+  "accepted_unit_verdict": {
+    "path": "qa/verdicts/vision-role-defaults.md",
+    "sha256": "99e57e961a5afe39742d817013f28c623c6938fa7e5dceabce2c3b36436cb412",
+    "verdict": "PASS",
+    "cycle": 2,
+    "reviewed_sha": "46f6a8089f0730c201ebe8a6dde201868ddebec4",
+    "scope": "unit only; historical fourteen proofs not reconstructed"
+  },
+  "required_gates": "EXPECTED_PENDING: exact combined candidate pytest/Ruff/real doctor CLI and attributable full receipts required before final verdict",
+  "command_helper_report": ".work/vision-integration/review/gate-command-review.json",
+  "helper_admission": {
+    "validate_exit": 2,
+    "validate_reason": "explicit managed-review/1 required; no silent migration",
+    "assess_exit": 2,
+    "assess_reason": "reviewers require unique nonempty ids; checker input mistakenly supplied empty reviewers",
+    "authority": "Standing human finite focused review/unit-only exception relayed by parent; not helper admission. No retry or policy modification."
+  },
+  "metrics": {
+    "launch_utc": null,
+    "observed_phase_start_utc": "2026-10-15T20:09:50.072989+00:00",
+    "end_utc": "2026-10-15T20:11:44.430611+00:00",
+    "observed_wall_seconds": 114.35899999999992,
+    "pre_timestamp_overhead_seconds": null,
+    "active_seconds": null,
+    "wait_seconds": null,
+    "actual_total_tokens": null,
+    "cost": null,
+    "token_metric": "actual_total",
+    "native_target_seconds": 120,
+    "native_target_status": "partial observation only; actual full launch wall unknown",
+    "efficiency_ratio": "unverified",
+    "children": [],
+    "thin_helper_accounting": "See gate-command-review.json; 120.98 wall seconds, active/wait/tokens/cost unknown; aggregate in checker ledger, never maker."
+  },
+  "evidence": [
+    "static-bindings.json",
+    "phase-input.json",
+    "phase-start.json",
+    "validate.stdout",
+    "validate.stderr",
+    "assess.stdout",
+    "assess.stderr"
+  ],
+  "limitations": [
+    "No tests, app CLI, provider/model/API/browser executions or child agents. Only budget helper and read-only Git/file inspection used.",
+    "No final PASS/HOLD issued in static phase; gate receipt evidence pending."
+  ]
+}

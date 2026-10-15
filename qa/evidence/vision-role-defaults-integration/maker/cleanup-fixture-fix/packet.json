@@ -1,0 +1,93 @@
+{
+  "base_sha": "db4af225181663cf81730ac5b54a8eaabe30c577",
+  "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-cleanup-fixture",
+  "changed_paths": [
+    "tests/test_ui_runs_serial_entry_order.py",
+    "tests/test_ui_runs_serial_resilience.py"
+  ],
+  "behavior": "Fixture patches actual _wipe_entry_profile lookup instead of removed execution.shutil attribute; all wipeevents/order assertions unchanged.",
+  "patch": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\patch.json",
+  "receipts": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\receipts.json",
+  "selected_files": [
+    "tests/test_ui_runs_serial_entry_order.py",
+    "tests/test_ui_runs_parallel_crash_recovery.py"
+  ],
+  "browser_boundary": "Both selected files stub BrowserSession start/close and pipeline; separate real-browser live-entry file unselected. db4 tail owns browser lane.",
+  "production_changed": false,
+  "all_original_user_files_preserved": {
+    "docs/SNAPSHOT.md": true,
+    "projects/pathlynks/crawl/crawl_01M4WGWNGQYD6TRFJFDA8ZVKF3/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4WWYW8KN5GJP888G37T39WX/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XRTHH96QAGSJNP954G826Z/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3/network.jsonl": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4WWYW8KN5GJP888G37T39WX.json": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3.json": true,
+    "projects/pathlynks/flowspec.json": true,
+    "qa/manifests/t-200-team-loop.md": true,
+    "qa/verdicts/t-200-team-loop.b.md": true
+  },
+  "main_and_active_tail_source_sha": "db4af225181663cf81730ac5b54a8eaabe30c577",
+  "tail_evidence": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\unexecuted-tail\\tail-inventory.json",
+  "actual_total_tokens": null,
+  "active_seconds": null,
+  "status": "all26recorded-failures-resolved-focused;integrated-main;fullgate-required",
+  "targeted_result": "24 passed,2 warnings in15.38s; command wall21.828s. Scoped Ruff passed0.297s.",
+  "tail_observed": "Still running52%;547exact-unexecuted nodes; no source changes or rerun of prefix.",
+  "fingerprints": {
+    "tests/test_ui_runs_serial_entry_order.py": "5a1e19b8020064efb880c858ffc93505ed857019d8266fea32a6022df923a160",
+    "tests/test_ui_runs_serial_resilience.py": "ba504e4a49d0832a0f340ae0f76929b1e886543e7f9326e75ccae15d895fe15e"
+  },
+  "all_tail_failures": "25/25 same obsolete execution.shutil seam;20 in sharedtierhelper,5 in fail-closed removal helper. Original firstfailure adds1same family.",
+  "failed_candidate_complete_observation": {
+    "prefix_completed": 6997,
+    "tail_completed": 547,
+    "total_configured": 7544,
+    "failed_nodes": 26,
+    "note": "Prefix+tail preserve complete recorded outcomes, not authoritative full-suite PASS."
+  },
+  "exact_failed_set": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\failed-26-inventory.json",
+  "exact_failed_receipts": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\cleanup-fixture-fix\\failed-26-receipts.json",
+  "source_production_unchanged": true,
+  "preserved_user_files": {
+    "docs/SNAPSHOT.md": true,
+    "projects/pathlynks/crawl/crawl_01M4WGWNGQYD6TRFJFDA8ZVKF3/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4WWYW8KN5GJP888G37T39WX/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XRTHH96QAGSJNP954G826Z/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3/network.jsonl": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4WWYW8KN5GJP888G37T39WX.json": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3.json": true,
+    "projects/pathlynks/flowspec.json": true,
+    "qa/manifests/t-200-team-loop.md": true,
+    "qa/verdicts/t-200-team-loop.b.md": true
+  },
+  "shared_suite_attempt_costs": [
+    {
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\gate-receipts.json",
+      "phase": "pytest",
+      "wall_seconds": 4690.718000000001,
+      "exit_code": 1
+    },
+    {
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates\\receipts.json",
+      "phase": "pytest",
+      "wall_seconds": 107.10900000000038,
+      "exit_code": 1
+    },
+    {
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-db4\\receipts.json",
+      "phase": "pytest",
+      "wall_seconds": 3101.2970000000005,
+      "exit_code": 1
+    },
+    {
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\unexecuted-tail\\receipts.json",
+      "phase": "tail-pytest",
+      "wall_seconds": 261.3119999999999,
+      "exit_code": 1
+    }
+  ],
+  "pending": "Exact26focused results then safecombine; successful full-scope required gate and independent checker remain.",
+  "exact_failed_result": "26passed,2warnings19.90s; commandwall27.718s; scopedRuff0.531sPASS",
+  "main_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a"
+}

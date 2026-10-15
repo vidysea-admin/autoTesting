@@ -1,0 +1,36 @@
+{
+  "base_sha": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "candidate_sha": "db4af225181663cf81730ac5b54a8eaabe30c577",
+  "root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration",
+  "changed_paths": [
+    "tests/test_account_generation.py"
+  ],
+  "source_hash": "d32139a1aeeb119e1a4a8516c3f83048dff0de6e87ae81496a9cb2d33a82c34c",
+  "cause": "Authorized TA2 MEMBER policy makes ungrouped replacement fixture pending; old profile-success test precondition invalid, so final fail-fast correctly returned403. Generation implementation unchanged.",
+  "fix": "Existing account helper now places replacement in developer group. Every generation, opt-in, forgedidentity and303assertion retained.",
+  "first_failure": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates\\pytest.xml",
+  "attribution": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\attribution.json",
+  "consumer_scope": "Targeted POST/profile search found five immediate files.18selected tests across those consumers passed, including explicit pending403/no-root-write and member303 assertions; scoped Ruff passed.",
+  "receipts": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\receipts.json",
+  "no_browser_or_fullsuite": true,
+  "production_unchanged": true,
+  "all_ten_root_files_preserved": {
+    "docs/SNAPSHOT.md": true,
+    "projects/pathlynks/crawl/crawl_01M4WGWNGQYD6TRFJFDA8ZVKF3/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4WWYW8KN5GJP888G37T39WX/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XRTHH96QAGSJNP954G826Z/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3/network.jsonl": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4WWYW8KN5GJP888G37T39WX.json": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3.json": true,
+    "projects/pathlynks/flowspec.json": true,
+    "qa/manifests/t-200-team-loop.md": true,
+    "qa/verdicts/t-200-team-loop.b.md": true
+  },
+  "main_sha": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "usage": {
+    "actual_total_tokens": null,
+    "active_seconds": null,
+    "cost": null
+  },
+  "next": "Parent combines after retention-proof outcome; final gate repeats only because this real test change corrects proven failure."
+}

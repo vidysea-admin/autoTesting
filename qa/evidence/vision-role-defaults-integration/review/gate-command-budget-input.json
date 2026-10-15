@@ -1,0 +1,26 @@
+{
+  "maker": {
+    "cost": null,
+    "token_metric": "actual_total",
+    "active_s": null,
+    "tokens": null
+  },
+  "escalation": null,
+  "next_phase": {
+    "tokens": 6000,
+    "cost": null,
+    "token_metric": "actual_total",
+    "active_s": 90,
+    "kind": "review"
+  },
+  "bootstrap": {
+    "cost": null,
+    "token_metric": "actual_total",
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "token_metric": "actual_total",
+  "completion_reserve": false,
+  "bootstrap_scope": "One thin integration gate command and evidence metadata helper, attributed to parent checker aggregate; aggregate ledger stays with parent",
+  "reviewers": []
+}

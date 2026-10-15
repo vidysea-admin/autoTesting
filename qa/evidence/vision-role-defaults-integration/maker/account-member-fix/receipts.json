@@ -1,0 +1,56 @@
+[
+  {
+    "name": "consumer-check",
+    "candidate_before": "db4af225181663cf81730ac5b54a8eaabe30c577",
+    "candidate_after": "db4af225181663cf81730ac5b54a8eaabe30c577",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_account_generation.py",
+      "tests/test_notification_profile.py",
+      "tests/test_ui_auth_accounts.py::test_au6_zero_permission_account_reaches_only_waiting_and_logout",
+      "tests/test_ui_auth_policy_table.py::test_au14_every_policy_row_requires_exactly_its_pinned_key",
+      "tests/acceptance/test_ta02_nothing_before_access.py::test_anonymous_pending_and_forged_origin_change_nothing",
+      "tests/acceptance/test_ta02_nothing_before_access.py::test_profile_is_readable_but_pending_cannot_save_before_placement",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\temp\\pytest",
+      "--junitxml",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\consumer-check.xml"
+    ],
+    "start": "2026-10-15T21:27:43.903705+00:00",
+    "end": "2026-10-15T21:28:00.557549+00:00",
+    "wall_seconds": 16.65599999999904,
+    "exit_code": 0,
+    "child_UV_NO_SYNC": "1",
+    "child_UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+    "pytest_options_nonempty": false,
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\consumer-check.stdout",
+    "stdout_sha256": "2c0b5bf16b101eb3f21b72a5940032658015fd34da2c0f6e094da0cdb03fc7f1",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\consumer-check.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "lint",
+    "candidate_before": "db4af225181663cf81730ac5b54a8eaabe30c577",
+    "candidate_after": "db4af225181663cf81730ac5b54a8eaabe30c577",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "tests/test_account_generation.py"
+    ],
+    "start": "2026-10-15T21:28:00.570424+00:00",
+    "end": "2026-10-15T21:28:00.856989+00:00",
+    "wall_seconds": 0.2809999999990396,
+    "exit_code": 0,
+    "child_UV_NO_SYNC": "1",
+    "child_UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+    "pytest_options_nonempty": false,
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\lint.stdout",
+    "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\account-member-fix\\lint.stderr",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

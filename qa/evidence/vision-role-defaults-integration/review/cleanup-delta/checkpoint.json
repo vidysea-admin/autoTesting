@@ -1,0 +1,104 @@
+{
+  "schema": "integration-cleanup-delta-checkpoint/1",
+  "status": "STATIC_READY_FULL_GATE_PENDING",
+  "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "base_sha": "db4af225181663cf81730ac5b54a8eaabe30c577",
+  "sealed_packet_sha256": "34c7795285f53593738b49433b3e8ae2edab3bed7acb40238adb76858ec4e6f3",
+  "expected_sealed_packet_sha256": "34c7795285f53593738b49433b3e8ae2edab3bed7acb40238adb76858ec4e6f3",
+  "changed_paths": [
+    "tests/test_ui_runs_serial_entry_order.py",
+    "tests/test_ui_runs_serial_resilience.py"
+  ],
+  "only_two_authorized_tests": true,
+  "production_source_scripts_dependency_blobs_unchanged": true,
+  "structural_probe": [
+    {
+      "path": "tests/test_ui_runs_serial_entry_order.py",
+      "all_assertions_unchanged": true,
+      "all_test_functions_unchanged": true,
+      "candidate_blob": "5bbad7a47a3431048b734fd226a00e089c21f629",
+      "candidate_raw_sha256": "5a1e19b8020064efb880c858ffc93505ed857019d8266fea32a6022df923a160"
+    },
+    {
+      "path": "tests/test_ui_runs_serial_resilience.py",
+      "all_assertions_unchanged": true,
+      "all_test_functions_unchanged": true,
+      "candidate_blob": "75bce636b950eef7446696f1e604aad6ab60111d",
+      "candidate_raw_sha256": "ba504e4a49d0832a0f340ae0f76929b1e886543e7f9326e75ccae15d895fe15e"
+    }
+  ],
+  "consumer_review": [
+    "run_execution imports browser.profiles.wipe_entry_profile as _wipe_entry_profile and invokes it before constructing entry BrowserSession. Tier-order helper patches this actual lookup; event callback unchanged.",
+    "Resilience helper patches profiles.shutil.rmtree rather than whole cleanup function, preserving real post-removal profile.exists() and fail-closed OSError checks. Original real_rmtree captured before patch, non-target paths delegate safely; no recursion.",
+    "Unchanged parameterized PermissionError/leaves-directory cases require ERRORED/non-PASS, no executed entry and no entry BrowserSession; sibling still completes. Healthy control checks real cookie deletion and completed entry.",
+    "Parallel crash-recovery imports shared tier helper; source inspected. Every test function AST and every assert AST in two changed files unchanged. Existing negative/healthy controls remain executable. No new semantic guard or rewritten test body requiring another mutation variant."
+  ],
+  "findings": [],
+  "focused_evidence": {
+    "summary": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "26",
+      "time": "19.894",
+      "timestamp": "2026-10-15T22:32:31.264769+00:00",
+      "hostname": "windows-demo"
+    },
+    "receipt_hash_bindings": [
+      {
+        "phase": "failed-26",
+        "candidate_before": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+        "candidate_after": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+        "exit": 0,
+        "stdout_match": true,
+        "stderr_match": true
+      },
+      {
+        "phase": "final-lint",
+        "candidate_before": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+        "candidate_after": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+        "exit": 0,
+        "stdout_match": true,
+        "stderr_match": true
+      }
+    ],
+    "exact26_node_inventory_matches_xml": true,
+    "all26_pass": true,
+    "fail_closed_controls": [
+      "test_an_entry_case_whose_profile_is_not_removed_is_errored_and_never_run[leaves-directory-1]",
+      "test_an_entry_case_whose_profile_is_not_removed_is_errored_and_never_run[leaves-directory-2]",
+      "test_an_entry_case_whose_profile_is_not_removed_is_errored_and_never_run[raises-permission-error-1]",
+      "test_an_entry_case_whose_profile_is_not_removed_is_errored_and_never_run[raises-permission-error-2]",
+      "test_an_entry_case_with_a_healthy_wipe_still_runs"
+    ]
+  },
+  "prior_evidence_reuse": "Prior source/security/vision/retention proofs remain bound to unchanged production and relevant test blobs. This delta changes only two unrelated fixture helpers. Earlier failed fullsuite/prefix/tail evidence remains failed diagnostic evidence, not PASS.",
+  "identity": {
+    "main": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "candidate_worktree": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+    "candidate_status": ""
+  },
+  "remaining": "Authoritative full pytest exit0, Ruff and doctor at exact3c9; final same-SHA/environment/log bindings and canonical verdict parser readback. No PASS/push.",
+  "metrics": {
+    "token_metric": "actual_total",
+    "observed_start_utc": "2026-10-15T22:34:55.938144+00:00",
+    "end_utc": "2026-10-15T22:35:41.582603+00:00",
+    "observed_wall_seconds": 45.63999999999942,
+    "active_seconds": null,
+    "wait_seconds": null,
+    "actual_total_tokens": null,
+    "cost": null,
+    "finite_phase_allocation_seconds": 90,
+    "history_reset": false,
+    "prior_checkpoints": [
+      "../static-review.json",
+      "../incremental/checkpoint.json",
+      "../db4-delta/checkpoint.json",
+      "../db4-delta/contract-gate-decision.json"
+    ],
+    "helper": "Same reserve/unknown-usage refusal already retained; no identical reassessment. Parent-relayed existing finite human exception.",
+    "ratio": "UNVERIFIED",
+    "shared_suite_costs": "Retained in cleanup-fixture-fix/packet.json; never converted to maker/checker actual usage."
+  }
+}

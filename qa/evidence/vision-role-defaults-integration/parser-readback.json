@@ -1,0 +1,12 @@
+{
+  "parser": "qa/hooks/mc-sessionstart.ps1 actual AST function definitions",
+  "parser_sha256": "e97238975b5ae802adfd84af240db248ee033216de91d9e5615f8326282940e0",
+  "verdict_status": "PASS",
+  "verdict_cycle": 1,
+  "manifest_status": "ready-for-check",
+  "manifest_cycle": 1,
+  "explicit_verdict": "PASS",
+  "reviewed_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "anchored_repo_pass": true,
+  "verdict_sha256": "196d6f56833097e0f5775e067dbc8416f1018afb006a02a6ce54ab42eba6dc35"
+}

@@ -1,0 +1,190 @@
+........................................................................ [  0%]
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+..................xx....xx..xx........xx..xx..xx..xx.................... [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+..............................................................s......... [ 28%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+......................s................................................. [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+............................................................s........... [ 44%]
+............ss.......................................................... [ 45%]
+...................................................................s.... [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+.....................................s.................................. [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 62%]
+....................................................s................... [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 67%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 72%]
+........................................................................ [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+...ss................................................................... [ 77%]
+........................................................................ [ 78%]
+...................s.................................................... [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 81%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 85%]
+........................................................................ [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+....s................................................................... [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+........................................................                 [100%]
+============================== warnings summary ===============================
+..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+<unknown>:19: 3 warnings
+tests/test_cli_advice_resolves.py: 16 warnings
+tests/test_doctor.py: 1 warning
+tests/test_env_loading.py: 4 warnings
+tests/test_regression_trigger.py: 1 warning
+tests/test_run_launcher.py: 2 warnings
+tests/test_schedule_tick.py: 8 warnings
+  <unknown>:19: DeprecationWarning: invalid escape sequence '\s'
+
+tests\test_failure_bundle_escape.py:12
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-integration\tests\test_failure_bundle_escape.py:12: DeprecationWarning: invalid escape sequence '\c'
+    _SECRETS = ["ab\ncd1234", "ab\tcd1234", 'ab"cd1234', "ab\cd1234", "p&ss<w>o'rdQ9", "ab\r\ncd1234"]
+
+tests/test_browser_use_guard.py::test_in_domain_actions_dispatch_and_are_recorded
+tests/test_browser_use_guard.py::test_in_domain_actions_dispatch_and_are_recorded
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/test_browser_use_guard.py::test_in_domain_actions_dispatch_and_are_recorded
+tests/test_browser_use_guard.py::test_in_domain_actions_dispatch_and_are_recorded
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+tests/test_browser_use_guard.py::test_in_domain_actions_dispatch_and_are_recorded
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+tests/test_explore_flows_doors.py: 2 warnings
+tests/test_orchestrate.py: 2 warnings
+tests/test_orchestrate_runners.py: 3 warnings
+tests/test_regression_trigger.py: 4 warnings
+  <string>:11: RuntimeWarning: StageContext for run 'run1' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_ingest_transcripts.py::test_orchestrated_ingest_keeps_a_narration_the_transcript_contains
+tests/test_ingest_transcripts.py::test_the_runner_logs_the_drop_without_the_narration_text
+  <string>:11: RuntimeWarning: StageContext for run 'run_t' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_issues.py::test_the_At_CELL_carries_MM_SS_not_a_number
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\openpyxl\worksheet\dimensions.py:51: RuntimeWarning: coroutine 'test_drive_binds_the_provider_deadline_to_the_invocation_wall_clock.<locals>.boom' was never awaited
+    for key in self.__fields__:
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_orchestrate.py::test_teaching_material_drives_a_learn_run
+  <string>:11: RuntimeWarning: StageContext for run 'run_learn' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_orchestrate.py::test_credentials_only_drives_an_explore_run
+  <string>:11: RuntimeWarning: StageContext for run 'run_expl' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_orchestrate.py::test_two_run_ids_keep_separate_lineages
+tests/test_run_trace.py::test_two_runs_of_a_project_get_two_distinct_nonempty_trace_files
+  <string>:11: RuntimeWarning: StageContext for run 'run_a' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_orchestrate.py::test_two_run_ids_keep_separate_lineages
+tests/test_run_trace.py::test_two_runs_of_a_project_get_two_distinct_nonempty_trace_files
+  <string>:11: RuntimeWarning: StageContext for run 'run_b' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py::test_rr1_a_done_stage_is_not_redone_when_the_checkpointer_is_the_only_record
+tests/test_regression_trigger.py::test_rr1_a_raise_is_failed_and_resume_re_enters_that_stage
+  <string>:11: RuntimeWarning: StageContext for run 'r1' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py: 6 warnings
+tests/test_release_gate.py: 4 warnings
+  <string>:11: RuntimeWarning: StageContext for run 'rel' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py::test_rr3_the_third_run_diffs_against_the_first_good_run_not_the_prior_one
+tests/test_regression_trigger.py::test_rr3_a_human_flagged_release_is_never_a_baseline
+  <string>:11: RuntimeWarning: StageContext for run 'run2' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_regression_trigger.py::test_rr3_the_third_run_diffs_against_the_first_good_run_not_the_prior_one
+  <string>:11: RuntimeWarning: StageContext for run 'run3' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_run_trace.py::test_every_span_trace_id_equals_the_runs_own_run_id
+  <string>:11: RuntimeWarning: StageContext for run 'run_tid' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_run_trace.py::test_a_run_produces_exactly_one_stage_span_per_stage_that_ran
+  <string>:11: RuntimeWarning: StageContext for run 'run_three' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+tests/test_run_trace.py::test_a_stage_that_never_ran_produces_no_span
+  <string>:11: RuntimeWarning: StageContext for run 'run_stop' was built with no `secrets=` (SecretStore) -- its auto-built TraceWriter falls back to an unredacted Redactor({}), so a real secret value fed into a span here would NOT be masked (AT-561, D-041 RT6/C5). Pass `secrets=<project's SecretStore>` for any run that might carry real credentials; this is expected only for a fixture/test context that genuinely declares none.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7518 passed, 12 skipped, 14 xfailed, 80 warnings in 3585.82s (0:59:45)

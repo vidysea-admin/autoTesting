@@ -1,0 +1,102 @@
+{
+  "schema": "integration-incremental-static-checkpoint/1",
+  "status": "STATIC_REVIEW_COMPLETE_REQUIRED_EVIDENCE_PENDING",
+  "product_verdict": null,
+  "candidate_sha": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "base_sha": "f64a8951c2d5d54f1d74063ecab424835c794159",
+  "packet_sha256": "308ed38b8c858f17018bd6f3b46592b32e6baa8052d17b379fb62c686f492622",
+  "sealed_packet_matches": true,
+  "bindings": "bindings.json",
+  "all17_paths_and_hashes_match": true,
+  "all23_accepted_blobs_unchanged": true,
+  "candidate_clean": true,
+  "unrelated10_raw_hashes_preserved": {
+    "docs/SNAPSHOT.md": true,
+    "projects/pathlynks/crawl/crawl_01M4WGWNGQYD6TRFJFDA8ZVKF3/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4WWYW8KN5GJP888G37T39WX/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XRTHH96QAGSJNP954G826Z/network.jsonl": true,
+    "projects/pathlynks/crawl/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3/network.jsonl": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4WWYW8KN5GJP888G37T39WX.json": true,
+    "projects/pathlynks/crawl_summaries/crawl_01M4XTRFGS7XJSX8Q7YPGYGCG3.json": true,
+    "projects/pathlynks/flowspec.json": true,
+    "qa/manifests/t-200-team-loop.md": true,
+    "qa/verdicts/t-200-team-loop.b.md": true
+  },
+  "static_findings": [],
+  "reviewed_logic": [
+    "Only incremental production change POST/profile SESSION->MEMBER; GET remains SESSION. Actual middleware denies empty permissions before allowing MEMBER and handler uses principal identity rather than forged form identity. TA2 pending writes blocked; placed member writes preserved.",
+    "Auth fixture supplies same db.new_account_generation primitive as production account creation; scratch-only login store unchanged.",
+    "Deadline expected exception now encloses budget finalization; unchanged used/failed attempt assertions retain physical failure guard, consistent with retained sabotage that finalizer alone cannot satisfy.",
+    "Safety tests strengthen account-destruction refusal and preserve ordinary destructive global ordering using Delete draft; no production safety code changed. Locator double answers label inventory in expected shape; press-key guard sabotage retained.",
+    "Image double emits actual PNG; judge-call assertion requires sanitized distinct image, preserved geometry/white pixels, black mask, cleanup, counts, INCONCLUSIVE. Resilient assertion explicitly demands visual-incomplete scoreboard.",
+    "Video grade seam controls verdict only; actual browser capture/finalization/retention assertions remain live. Named retention mutation still missing.",
+    "Prompt golden exact authorized AT-892 addition checked against retained PASS-WITH-FINDINGS verdict; original golden unmodified. Entry point parser asserts uvicorn command/no-access-log, rather than supervisor exec text.",
+    "Startup test uses active base interpreter and matching child-only DLL/stdlib paths; timeout/grandchild assertions remain unchanged. Production process code unchanged. .env.example adds key name/default comment only."
+  ],
+  "independent_security_probe": {
+    "receipt": "auth-probe-receipt.json",
+    "script": "auth-probe.py",
+    "stdout": "auth-probe.stdout",
+    "exit_code": 0,
+    "cases": [
+      "pending GET allowed",
+      "pending POST403",
+      "placed POST allowed",
+      "anonymous POST401"
+    ],
+    "mutation": "in-memory actual POST/profile rule MEMBER->SESSION; named pending-write assertion red; restored green",
+    "production_edits": false,
+    "scope_limit": "Middleware boundary exercised directly; end-to-end app route green and maker mutation retained separately."
+  },
+  "retained_proof_refs": [
+    ".work/vision-integration/deadline-fix/mutation-proof.json",
+    ".work/vision-integration/startup-mutation.json",
+    ".work/wt-vision-residuals/.work/auth-compat-packet.json",
+    ".work/wt-vision-residuals/.work/grade-compat-packet.json",
+    ".work/vision-integration/residuals-packet.json"
+  ],
+  "remaining_evidence": [
+    {
+      "clause": "core-invariants C7 rewritten test mutation duty",
+      "node": "tests/test_video_evidence.py::test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass",
+      "source": "src/autotester/stages/run_case_pipeline.py",
+      "anchor": "if verdict.result is Result.PASS or over_budget:",
+      "replacement": "if over_budget:",
+      "expected_named_assertion": "a PASS video must be pruned",
+      "instructions": "After terminal existing fullsuite, use same-SHA fullsuite node green as baseline; disposable byte-identical src/tests/scripts copy, same environment + import/basetemp preflight; assert anchor count1/disk changed, run ONLY named node, require its attributed assertion, restore exact bytes. No duplicate browser owner, extra variants, or redundant baseline."
+    },
+    {
+      "clause": "D-100 combined integration gate",
+      "required": "Complete successful exact-candidate full configured pytest, Ruff and real doctor CLI receipts; all fingerprint/log hashes and command applicability checked before final verdict."
+    }
+  ],
+  "helper": {
+    "assess_count_this_phase": 1,
+    "exit_code": 2,
+    "status": "NEEDS_EXTRA_REVIEW",
+    "reason": "Prior committed completion reserve, aggregate allocations and unknown usage; preserved unchanged input/result.",
+    "input": "assess-input.json",
+    "output": "assess.stdout",
+    "authority": "Parent relayed existing human finite focused same-unit exception; 180s/6000 allocation. Not helper admission."
+  },
+  "metrics": {
+    "token_metric": "actual_total",
+    "observed_start_utc": "2026-10-15T21:22:58.989240+00:00",
+    "end_utc": "2026-10-15T21:25:09.310539+00:00",
+    "observed_wall_seconds": 130.3119999999999,
+    "pre_timestamp_overhead_seconds": null,
+    "active_seconds": null,
+    "wait_seconds": null,
+    "actual_total_tokens": null,
+    "cost": null,
+    "phase_allocation_seconds": 180,
+    "phase_allocation_tokens": 6000,
+    "ratio": "UNVERIFIED",
+    "prior_static_observed_wall_seconds": 114.35899999999992,
+    "history_reset": false,
+    "prior_allocation_ledger": "assess-input.json preserves prior reviewers/children/retries; gate helper reports remain under review/",
+    "children_spawned": [],
+    "shared_fullsuite_cost": "Parent-owned; excluded from maker/checker actual usage and retained separately."
+  },
+  "no_integration_pass": true
+}

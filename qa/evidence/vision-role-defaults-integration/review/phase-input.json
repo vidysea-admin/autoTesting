@@ -1,0 +1,28 @@
+{
+  "token_metric": "actual_total",
+  "maker": {
+    "token_metric": "actual_total",
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [],
+  "next_phase": {
+    "token_metric": "actual_total",
+    "kind": "review",
+    "active_s": 90,
+    "tokens": 4500,
+    "cost": null
+  },
+  "completion_reserve": true,
+  "completion_reserve_id": "vision-integration/1/60279fd0d2b77abfd582fc47b22b310746d94908",
+  "completion_reserve_tokens": 1500,
+  "bootstrap_scope": "Static exact-path/blob/dependency integration review only; no tests",
+  "bootstrap": {
+    "token_metric": "actual_total",
+    "active_s": 120,
+    "tokens": 6000,
+    "cost": null
+  },
+  "escalation": null
+}

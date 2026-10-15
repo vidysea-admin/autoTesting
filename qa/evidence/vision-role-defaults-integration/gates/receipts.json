@@ -1,0 +1,201 @@
+[
+  {
+    "name": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-c",
+      "import hashlib,importlib.metadata as m,json,pathlib,sys,tempfile,tomllib,autotester\nfrom packaging.requirements import Requirement\nroot=pathlib.Path.cwd(); origin=pathlib.Path(autotester.__file__).resolve(); assert origin.is_relative_to(root/'src'),origin\ncfg=tomllib.loads((root/'pyproject.toml').read_text()); requirements=cfg['project']['dependencies']+cfg['dependency-groups']['dev']; versions={};bad=[]\nfor raw in requirements:\n req=Requirement(raw)\n if req.marker and not req.marker.evaluate():continue\n try:\n  v=m.version(req.name);versions[req.name]=v\n  if not req.specifier.contains(v,prereleases=True):bad.append([req.name,v,str(req.specifier)])\n except m.PackageNotFoundError:bad.append([req.name,'MISSING'])\nassert not bad,bad\nparent=pathlib.Path(sys.argv[1]);t=tempfile.TemporaryDirectory(dir=parent);pathlib.Path(t.name,'probe').write_text('ok');t.cleanup()\nprint(json.dumps({'python':sys.executable,'version':sys.version,'import':str(origin),'dependencies':versions,'pyproject_sha256':hashlib.sha256((root/'pyproject.toml').read_bytes()).hexdigest(),'lock_sha256':hashlib.sha256((root/'uv.lock').read_bytes()).hexdigest(),'temp_parent':str(parent),'writable':True},indent=2))",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\temp"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration",
+    "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "process_pid": 17528,
+    "start": "2026-10-15T22:34:55.761594+00:00",
+    "end": "2026-10-15T22:35:02.156589+00:00",
+    "wall_seconds": 6.390999999999622,
+    "exit_code": 0,
+    "timed_out": false,
+    "binding_before": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "binding_after": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "child_flags": {
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false,
+      "PYTEST_ADDOPTS_filter_free": true,
+      "global_environment_mutated": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\preflight.stdout",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\preflight.stderr",
+    "stdout_sha256": "10b2a80fcf1a85f4fa4026047ce9949f909d3834e634f2a0c9059c28b2e4bc3c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "environment_fingerprint": "c25389b8d0afcaa95dc332804ab86a9f10bd0badb83f8335a41576b1268c4c85"
+  },
+  {
+    "name": "ruff",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src",
+      "tests",
+      "scripts"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration",
+    "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "process_pid": 17880,
+    "start": "2026-10-15T22:35:02.602514+00:00",
+    "end": "2026-10-15T22:35:02.861290+00:00",
+    "wall_seconds": 0.25,
+    "exit_code": 0,
+    "timed_out": false,
+    "binding_before": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "binding_after": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "child_flags": {
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false,
+      "PYTEST_ADDOPTS_filter_free": true,
+      "global_environment_mutated": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\ruff.stdout",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\ruff.stderr",
+    "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "environment_fingerprint": "c25389b8d0afcaa95dc332804ab86a9f10bd0badb83f8335a41576b1268c4c85"
+  },
+  {
+    "name": "doctor",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-c",
+      "import faulthandler; faulthandler.dump_traceback_later(30); from autotester import main; main()",
+      "doctor"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration",
+    "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "process_pid": 24676,
+    "start": "2026-10-15T22:35:03.263053+00:00",
+    "end": "2026-10-15T22:35:33.541431+00:00",
+    "wall_seconds": 30.28099999999904,
+    "exit_code": 0,
+    "timed_out": false,
+    "binding_before": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "binding_after": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "child_flags": {
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false,
+      "PYTEST_ADDOPTS_filter_free": true,
+      "global_environment_mutated": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\doctor.stdout",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\doctor.stderr",
+    "stdout_sha256": "b76f7f9b1c12f003acb6cc3eb783ccc3559829ce21f58229d91d1b2e9035374a",
+    "stderr_sha256": "e8f4054651fe0093e8b52b8cb786505d8435aa729af15569131d694f6b54b9ab",
+    "environment_fingerprint": "c25389b8d0afcaa95dc332804ab86a9f10bd0badb83f8335a41576b1268c4c85"
+  },
+  {
+    "name": "pytest",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "--maxfail=1",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\temp\\pytest",
+      "--junitxml",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\pytest.xml"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration",
+    "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "process_pid": 18260,
+    "start": "2026-10-15T22:35:33.992219+00:00",
+    "end": "2026-10-15T23:35:35.415672+00:00",
+    "wall_seconds": 3601.437,
+    "exit_code": 0,
+    "timed_out": false,
+    "binding_before": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "binding_after": {
+      "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+      "candidate_tree": "0a6ba95e2f59db9c423499e179bb8cbdef7fb72a",
+      "status": "",
+      "pyproject_sha256": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+      "conftest_sha256": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d"
+    },
+    "child_flags": {
+      "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-integration\\src",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+      "UV_NO_SYNC": "1",
+      "PYTEST_ADDOPTS_present": false,
+      "PYTEST_ADDOPTS_nonempty": false,
+      "PYTEST_ADDOPTS_filter_free": true,
+      "global_environment_mutated": false
+    },
+    "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\pytest.stdout",
+    "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\final-gates-cleanup\\pytest.stderr",
+    "stdout_sha256": "df8f320bb249fc0a601ba76416d77fde3004d631a84ed24c34c27f859d97ada7",
+    "stderr_sha256": "fb3a9e7e8f08a76da0f3dc1a138aeaa9c59614b508c8e29e2155d1371c1c0bd6",
+    "environment_fingerprint": "c25389b8d0afcaa95dc332804ab86a9f10bd0badb83f8335a41576b1268c4c85"
+  }
+]

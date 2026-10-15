@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="12.867" timestamp="2026-10-15T21:28:26.042448+00:00" hostname="windows-demo"><testcase classname="tests.test_video_evidence" name="test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass" time="12.069"><failure message="AssertionError: a PASS video must be pruned&#10;assert 'case_fd41b0a754fb.webm' not in ['case_91c61c47a68c.webm', 'case_fd41b0a754fb.webm', 'case_ff07508b5bab.webm']">tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/vision-integration/video-retention-proof/mutation-temp/test_video_is_recorded_and_kep0')
+serve_dir = &lt;function serve_dir.&lt;locals&gt;._serve at 0x000001B010BD2660&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001B010CE5390&gt;
+
+    def test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass(
+        tmp_path: Path, serve_dir: Callable[[Path], str], monkeypatch,
+    ) -&gt; None:
+        """V1: exactly one video file per case. V2: PASS's video is pruned, FAIL's
+        and INCONCLUSIVE's survive -- the record-then-discard-on-PASS shape gate
+        answer A requires, since the verdict is not known until after the video
+        is already captured."""
+        # V2 exercises retention for each verdict independently of grading's privacy
+        # downgrade: screenshot-bearing mock PASS is now correctly INCONCLUSIVE.
+        def controlled_grade(rubric, raw, run_id, provider, **_kwargs):
+            judgment = provider.judge("controlled video-retention verdict", Judgment)
+            return Verdict(run_id=run_id, case_id=raw.case_id, rubric_hash=rubric.fingerprint,
+                           grader_provider=provider.id, **judgment.model_dump(exclude={
+                               "defect_observed", "defect_summary"}))
+    
+        monkeypatch.setattr(pipeline, "grade", controlled_grade)
+        _skip_if_no_chromium()
+        base = serve_dir(SITE)
+        session, store, _ = _session(tmp_path, base)
+        run_dir = session.state.run_dir
+        cases_and_results = {}
+        try:
+            for flow_id, verdict_result in (
+                ("flow-pass", Result.PASS),
+                ("flow-fail", Result.FAIL),
+                ("flow-inconclusive", Result.INCONCLUSIVE),
+            ):
+                case = _case(base, flow_id)
+                result, verdict = run_and_grade_case(case, session, _judge(verdict_result),
+                                                     "run_1", store)
+                cases_and_results[flow_id] = (case, result, verdict)
+        finally:
+            session.close()
+    
+        videos = sorted(p.name for p in run_dir.rglob("*.webm"))
+    
+        pass_case = cases_and_results["flow-pass"][0]
+        fail_case, fail_result, fail_verdict = cases_and_results["flow-fail"]
+        inc_case = cases_and_results["flow-inconclusive"][0]
+    
+        assert fail_verdict.result is Result.FAIL, fail_verdict.scoreboard  # sanity: judge honored
+&gt;       assert f"{pass_case.id}.webm" not in videos, "a PASS video must be pruned"
+E       AssertionError: a PASS video must be pruned
+E       assert 'case_fd41b0a754fb.webm' not in ['case_91c61c47a68c.webm', 'case_fd41b0a754fb.webm', 'case_ff07508b5bab.webm']
+
+tests\test_video_evidence.py:132: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,192 @@
+{
+  "token_metric": "actual_total",
+  "maker": {
+    "token_metric": "actual_total",
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "completion-cycle1-review",
+      "token_metric": "actual_total",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "token_metric": "actual_total",
+        "active_s": 125.625,
+        "tokens": 1000000,
+        "cost": null
+      },
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\checker\\phase1\\receipt.json"
+    },
+    {
+      "id": "completion-cycle1-host-checks",
+      "token_metric": "actual_total",
+      "active_s": 8.641,
+      "tokens": 0,
+      "cost": null,
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\checker\\host-execution.json"
+    },
+    {
+      "id": "completion-cycle1-finalization",
+      "phase_kind": "finalization",
+      "completion_reserve_id": "vision-role-defaults/1/f588dcc8a100064274b4911198eec8a807248985",
+      "token_metric": "actual_total",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "token_metric": "actual_total",
+        "active_s": 30.641,
+        "tokens": 267611,
+        "cost": null
+      },
+      "committed_allocation_tokens": 150000,
+      "partial_runtime_session_counter_growth_tokens": 267611,
+      "partial_actual_complete": false,
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\checker\\phase2\\receipt.json",
+      "note": "Retain finalization commitment and original150000 prospective allocation;267611 conservative charge includes observed same-session counter growth, never asserted as complete actual usage."
+    },
+    {
+      "id": "native-unit-cycle2",
+      "token_metric": "actual_total",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "observed_wall_s": 162.3146741,
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\qa\\evidence\\vision-role-defaults\\checker-cycle2-native\\accounting.json",
+      "budget_debit_unknown": true
+    },
+    {
+      "id": "integration-static-phase",
+      "token_metric": "actual_total",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "token_metric": "actual_total",
+        "active_s": 90,
+        "tokens": 4500,
+        "cost": null
+      },
+      "observed_partial_wall_s": 114.359,
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\review\\static-review.json"
+    },
+    {
+      "id": "integration-gate-helper-prior",
+      "token_metric": "actual_total",
+      "active_s": 120.9822699,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "token_metric": "actual_total",
+        "active_s": 120.9822699,
+        "tokens": 6000,
+        "cost": null
+      },
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\review\\gate-command-review.json"
+    },
+    {
+      "id": "integration-doctor-phase",
+      "token_metric": "actual_total",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "token_metric": "actual_total",
+        "active_s": 120,
+        "tokens": 2000,
+        "cost": null
+      },
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\gates\\doctor-corrected-20261015T2021Z\\receipt.json"
+    },
+    {
+      "id": "integration-failure-triage",
+      "token_metric": "actual_total",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "token_metric": "actual_total",
+        "active_s": 120,
+        "tokens": 4500,
+        "cost": null
+      },
+      "receipt": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\failure-triage-budget.json"
+    }
+  ],
+  "next_phase": {
+    "token_metric": "actual_total",
+    "kind": "review",
+    "active_s": 150,
+    "tokens": 4500,
+    "cost": null
+  },
+  "completion_reserve": true,
+  "completion_reserve_id": "vision-role-defaults/1/f588dcc8a100064274b4911198eec8a807248985",
+  "completion_reserve_tokens": 150000,
+  "bootstrap_scope": "Same-unit final combined integration review atc262a249fd12baefcf4074ca738c3e47c6482334; accepted static23-path review reused;17 incremental paths/security boundary and exact required-gate receipts; finite180s/6000 including30s/1500completion. Prior commitments retained; helper refusal not repaired by reset.",
+  "bootstrap": {
+    "token_metric": "actual_total",
+    "active_s": 180,
+    "tokens": 1200000,
+    "cost": null
+  },
+  "escalation": {
+    "authority": "Parent explicitly authorized exact finite finalization exception under original180s,2026-10-15",
+    "reason": "Original reviewer completed eight checks but failed to issue verdict while searching parser. Proposed minimal single-output independent adjudication, no tools or new checks. No helper bypass or policy change permitted.",
+    "limits": {
+      "token_metric": "actual_total",
+      "active_s": 180,
+      "tokens": 1327611,
+      "cost": null
+    }
+  },
+  "historical_unknown_usage": {
+    "actual_tokens": null,
+    "active_s": null,
+    "source": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\spec.json",
+    "comparison_scope": "Do not reset or relabel historical charges; new measured cycle reported separately"
+  },
+  "finalization_exception": {
+    "identity": "vision-role-defaults/1/f588dcc8a100064274b4911198eec8a807248985",
+    "active_s": 15,
+    "tokens": 60000,
+    "token_metric": "actual_total",
+    "reason": "Explicit narrow independent decision only; no renewed reserve, removed history, or enforcement change."
+  },
+  "native_cycle2_exception": {
+    "authority": "Human finite focused review authorization relayed in exact parent dispatch",
+    "scope": "one vision-role-defaults cycle2 parser delta; no policy change",
+    "max_wall_s": 180,
+    "actual_total_tokens": null,
+    "token_metric": "actual_total"
+  },
+  "historical_maker_lower_bound": {
+    "token_metric": "actual_total",
+    "active_s": null,
+    "tokens": 587481,
+    "cost": null
+  },
+  "candidate_sha": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "linked_prior_assessments": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\review\\phase-input.json",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\review\\gate-command-budget-input.json",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\gates\\doctor-corrected-20261015T2021Z\\budget-corrected-input.json",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\failure-triage-budget.json"
+  ],
+  "final_review_finite_exception": {
+    "authority": "Explicit parent dispatch relays human finite focused same-unit integration completion authority",
+    "active_s": 180,
+    "total_allocated_tokens": 6000,
+    "ratio_status": "UNVERIFIED",
+    "history_reset": false
+  },
+  "shared_suite_cost": {
+    "wall_seconds": 4690.718,
+    "tokens": null,
+    "separate_from_role_accounting": true
+  }
+}

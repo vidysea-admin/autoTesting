@@ -1,0 +1,19 @@
+{
+  "token_metric": "actual_total",
+  "phase": "finalization",
+  "candidate_sha": "3c9c3d1f6210b657c5bf70c71dc36f24f241c59a",
+  "observed_start_utc": "2026-10-15T23:37:34.179173+00:00",
+  "end_utc": "2026-10-15T23:39:48.874948+00:00",
+  "observed_wall_seconds": 134.6869999999999,
+  "actual_active_seconds": null,
+  "wait_seconds": null,
+  "actual_total_tokens": null,
+  "cost": null,
+  "ratio": "UNVERIFIED",
+  "history_reset": false,
+  "prior_phase_metrics": "review/*/checkpoint.json and archived review/incremental/assess-input.json; includes prior native/helper/retry charges, unknown tails and earlier helper refusal.",
+  "scope": "Exact terminal gate authentication, compact durable evidence archive, canonical cycle1PASS and actual repository AST parser readback. No test/browser/model/API reruns.",
+  "shared_suite": "gates/receipts.json commands remain shared integration costs distinct from unknown checker actual active usage.",
+  "authority": "Existing explicit finite human focused same-unit finalization authorization; not helper admission.",
+  "archive": "58 linked raw receipts/summaries/checkpoint/proof metadata artifacts, ~1.7MiB; no worktree copies."
+}

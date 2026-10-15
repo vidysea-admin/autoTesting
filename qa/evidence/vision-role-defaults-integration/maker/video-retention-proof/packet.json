@@ -1,0 +1,154 @@
+{
+  "candidate_sha": "c262a249fd12baefcf4074ca738c3e47c6482334",
+  "source_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy",
+  "node": "tests/test_video_evidence.py::test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass",
+  "inventory": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\inventory.json",
+  "inventory_count": 1054,
+  "copied_git_blobs_verified": true,
+  "archive_sha256": "ab28f1cb20183d9364a393f5f6ef814bf813ffa58d4203c18c1af73e7e012ce7",
+  "schema": "video-retention-mutation-proof/1",
+  "status": "PROOF_COMPLETE",
+  "actual_total_tokens": null,
+  "cost": null,
+  "start": "2026-10-15T21:27:52.359123+00:00",
+  "end": "2026-10-15T21:28:39.522524+00:00",
+  "wall_seconds": 47.15600000000086,
+  "receipts": [
+    {
+      "phase": "preflight",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+        "preflight",
+        "--root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy",
+        "--import-name",
+        "autotester",
+        "--import-root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy\\src",
+        "--temp-parent",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof"
+      ],
+      "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy",
+      "start": "2026-10-15T21:27:56.073775+00:00",
+      "end": "2026-10-15T21:27:56.391964+00:00",
+      "wall_seconds": 0.3279999999995198,
+      "exit_code": 0,
+      "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\preflight.stdout",
+      "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\preflight.stderr",
+      "stdout_sha256": "1ef5a2e4ea3016092de35a7f9012d479c3a8098c9d2959acbd64e163f98fb40d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "baseline",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_video_evidence.py::test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass",
+        "--basetemp",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\baseline-temp",
+        "--junitxml",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\baseline.xml"
+      ],
+      "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy",
+      "start": "2026-10-15T21:27:56.435578+00:00",
+      "end": "2026-10-15T21:28:19.348319+00:00",
+      "wall_seconds": 22.92200000000048,
+      "exit_code": 0,
+      "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\baseline.stdout",
+      "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\baseline.stderr",
+      "stdout_sha256": "c8178c9d4d5145d50d8f61cc75dbb4e44ddaab1619b91f7e7c4343f8c6452dc7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "mutation",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_video_evidence.py::test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass",
+        "--basetemp",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\mutation-temp",
+        "--junitxml",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\mutation.xml"
+      ],
+      "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy",
+      "start": "2026-10-15T21:28:19.393249+00:00",
+      "end": "2026-10-15T21:28:39.479245+00:00",
+      "wall_seconds": 20.07799999999952,
+      "exit_code": 1,
+      "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\mutation.stdout",
+      "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\mutation.stderr",
+      "stdout_sha256": "96b9170a7ccd0d5ca065b7219589b06a46f2ca6f14b74553fed671f84b313edd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "environment": {
+    "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "python_version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+    "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy\\src",
+    "lock_sha256": "c75ded3e0497d6d81932e2915470d337efd5c0be27a04879c5620dbc5ba935ef",
+    "pyproject_sha256": "f61c5d7ea42991c9ab41467b4b631c0a45adc1ea1d67d4d3b5fc26bc8927064f",
+    "UV_PROJECT_ENVIRONMENT": "C:\\Users\\product\\Desktop\\autoTesting\\.venv",
+    "UV_NO_SYNC": "1",
+    "browser": "playwright chromium local fixture; runtime details in receipt only",
+    "env_values_or_files_read": false,
+    "playwright_version": "1.62.0",
+    "browser_registry_sha256": "f306eed529599b1eaf2f8a85db9de2b23e1a3fe36c2b66434b7c9434fb627a99",
+    "installed_chromium_registry": [
+      {
+        "name": "chromium",
+        "revision": "1234",
+        "installByDefault": true,
+        "browserVersion": "151.0.7922.34",
+        "title": "Chrome for Testing"
+      },
+      {
+        "name": "chromium-headless-shell",
+        "revision": "1234",
+        "installByDefault": true,
+        "browserVersion": "151.0.7922.34",
+        "title": "Chrome Headless Shell"
+      },
+      {
+        "name": "chromium-tip-of-tree",
+        "revision": "1433",
+        "installByDefault": false,
+        "browserVersion": "151.0.7893.0",
+        "title": "Chrome Canary for Testing"
+      },
+      {
+        "name": "chromium-tip-of-tree-headless-shell",
+        "revision": "1433",
+        "installByDefault": false,
+        "browserVersion": "151.0.7893.0",
+        "title": "Chrome Canary Headless Shell"
+      }
+    ],
+    "browser_executable_observation": "Not independently captured; package/browser-registry binding recorded, actual executable/version unknown"
+  },
+  "mutation": {
+    "source": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\copy\\src\\autotester\\stages\\run_case_pipeline.py",
+    "anchor": "if verdict.result is Result.PASS or over_budget:",
+    "replacement": "if over_budget:",
+    "anchor_count": 1,
+    "original_sha256": "23b491acc0f0f2a3bbb2160ae4984790f3f53b418064730cf902e766382a367a",
+    "mutated_sha256": "9b2af81c012fe4e7c031f8d999b3a49392ead12056b5274ab2e8af65fe3bdba5",
+    "baseline_established": true,
+    "restored_sha256": "23b491acc0f0f2a3bbb2160ae4984790f3f53b418064730cf902e766382a367a",
+    "restored_exact_bytes": true
+  },
+  "named_assertion_failed": true,
+  "setup_attempts": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\video-retention-proof\\setup-attempt.json",
+  "proof_script": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\vision-integration\\run-video-retention-proof.py",
+  "proof_script_sha256": "31f622473727f20b0c1ee24ec3f2358bdd252e88fba81b4185b2650f6c19ea24",
+  "no_production_edits": true,
+  "browser_slot": "RELEASED after terminal mutation process",
+  "baseline_xml_sha256": "e26f7571e1777ba6053a2587d051212774338c79fbd004a3a65ccb3c3bd69807",
+  "mutation_xml_sha256": "31dc809be89c0ad7113089d67cd8b83169ad14beb64bfd060317913d820f75cf",
+  "final_all_inventory_bytes_restored": true,
+  "final_inventory_path_count": 1054,
+  "accounting_note": "47.156s successful command/copy phase; initial failed setup command 2.9369348s retained separately; earlier reasoning/setup overhead and total active/tokens/cost unknown. No duplicate restored browser run.",
+  "metadata_bound_at": "2026-10-15T21:29:21.701490+00:00"
+}
