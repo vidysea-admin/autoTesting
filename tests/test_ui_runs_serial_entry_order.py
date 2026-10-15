@@ -146,7 +146,7 @@ def _patch_tier_execution(monkeypatch, events, clock=None):
     monkeypatch.setattr(pipeline, "grade", grade)
     monkeypatch.setattr(routes, "for_role", lambda project, role: Judge())
     import autotester.ui.run_execution as execution
-    monkeypatch.setattr(execution.shutil, "rmtree",
+    monkeypatch.setattr(execution, "_wipe_entry_profile",
                         lambda path, **kw: events.append(("wipe", path)))
     return routes, Judge()
 
