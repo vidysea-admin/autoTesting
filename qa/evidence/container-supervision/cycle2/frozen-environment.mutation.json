@@ -1,0 +1,13 @@
+{
+  "name": "frozen-environment",
+  "file": "Dockerfile",
+  "old": "UV_PROJECT_ENVIRONMENT=/opt/venv",
+  "new": "UV_PROJECT_ENVIRONMENT=/app/.venv",
+  "kills": [
+    "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+  ],
+  "anchor_count": 1,
+  "before": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+  "after": "be3a49da2691e494c3d858ad36bdb153fa6bd721c24a73295f0099a9237de3fb",
+  "only_changed_file": "Dockerfile"
+}

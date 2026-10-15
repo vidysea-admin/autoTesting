@@ -1,0 +1,21 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_readiness_timeout_stops_stack_before_dependent_service _________
+
+children = [<Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020007AAF710>
+
+    def test_readiness_timeout_stops_stack_before_dependent_service(children, monkeypatch):
+        monkeypatch.setattr(supervisor, "endpoint_ready", lambda _: False)
+        assert supervisor.run_stack([("tcp:1", sleeper()), ("", sleeper())],
+                                    timeout=.1, grace=.1) == 1
+>       assert len(children) == 1 and children[0].returncode is not None
+E       AssertionError: assert (2 == 1)
+E        +  where 2 = len([<Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>])
+
+tests\test_container_supervision.py:52: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_readiness_timeout_stops_stack_before_dependent_service
+1 failed in 5.67s

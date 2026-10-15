@@ -1,0 +1,13 @@
+{
+  "name": "no-runtime-sync",
+  "file": "Dockerfile",
+  "old": "UV_NO_SYNC=1",
+  "new": "UV_NO_SYNC=0",
+  "kills": [
+    "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+  ],
+  "anchor_count": 1,
+  "before": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+  "after": "6c1ad9e149de6e7ff322de3d317c47bb644af130dd4e02ca79cae17e5d399800",
+  "only_changed_file": "Dockerfile"
+}

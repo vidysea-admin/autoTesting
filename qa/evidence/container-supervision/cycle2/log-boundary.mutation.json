@@ -1,0 +1,13 @@
+{
+  "name": "log-boundary",
+  "file": "docker/supervise.py",
+  "old": "print(\"container service could not start\", file=sys.stderr)",
+  "new": "print(services, file=sys.stderr)",
+  "kills": [
+    "tests/test_container_supervision.py::test_failed_spawn_cleans_started_services_without_logging_command"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "013ec7b3e4e31b3069abf3ba3d1b46e6e2cbb8af77164a86fc96e98ba5704b30",
+  "only_changed_file": "docker/supervise.py"
+}

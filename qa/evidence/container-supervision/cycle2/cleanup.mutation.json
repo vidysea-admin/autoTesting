@@ -1,0 +1,13 @@
+{
+  "name": "cleanup",
+  "file": "docker/supervise.py",
+  "old": "stop_children(children, grace)",
+  "new": "pass  # abandon sibling processes",
+  "kills": [
+    "tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "78dd92525dd4fe4092acce7b54625acd396a0ddb38a251b8d6970f4bce6338a8",
+  "only_changed_file": "docker/supervise.py"
+}

@@ -1,0 +1,24 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_cleanup_escalates_to_kill_and_waits_for_children ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000275A4F855D0>
+
+    def test_cleanup_escalates_to_kill_and_waits_for_children(monkeypatch):
+        calls = []
+        child = type("Child", (), {"wait": lambda _: calls.append("wait")})()
+        monkeypatch.setattr(supervisor, "os", SimpleNamespace(name="posix"))
+        monkeypatch.setattr(supervisor.signal, "SIGKILL", 9, raising=False)
+        monkeypatch.setattr(supervisor, "signal_children", lambda _, sig: calls.append(sig))
+        monkeypatch.setattr(supervisor, "reap_children", lambda _: calls.append("reap"))
+        supervisor.stop_children([child], grace=0)
+>       assert calls == [signal.SIGTERM, 9, "wait", "reap"]
+E       AssertionError: assert [<Signals.SIG...wait', 'reap'] == [<Signals.SIG...wait', 'reap']
+E         
+E         At index 1 diff: <Signals.SIGTERM: 15> != 9
+E         Use -v to get more diff
+
+tests\test_container_supervision.py:124: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_cleanup_escalates_to_kill_and_waits_for_children
+1 failed in 0.30s

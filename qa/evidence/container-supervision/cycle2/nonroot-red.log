@@ -1,0 +1,13 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_image_runs_unprivileged_with_frozen_environment_outside_source _____
+
+    def test_image_runs_unprivileged_with_frozen_environment_outside_source():
+        dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+>       assert "USER 10001:10001" in dockerfile
+E       assert 'USER 10001:10001' in '# Contract: qa/contracts/docker.md D1-D2. Playwright\'s own image ships Chromium plus every\n# Linux font/codec depen.../autotester/.cache UV_NO_SYNC=1\nUSER 0:0\n\nENV DISPLAY=:99\nEXPOSE 8000 6080 6081\n\nENTRYPOINT ["/entrypoint.sh"]\n'
+
+tests\test_container_supervision.py:96: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source
+1 failed in 0.36s

@@ -1,0 +1,13 @@
+{
+  "name": "groups",
+  "file": "docker/supervise.py",
+  "old": "os.killpg(child.pid, sig)",
+  "new": "pass  # abandon process group",
+  "kills": [
+    "tests/test_container_supervision.py::test_posix_cleanup_signals_groups_even_after_leader_exits"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "81496f18ba7df5f15a619d63736e10d569c4de0ad1e5ab1c0912efaff121eda2",
+  "only_changed_file": "docker/supervise.py"
+}

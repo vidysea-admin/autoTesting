@@ -1,0 +1,15 @@
+{
+  "name": "exit-detection",
+  "file": "docker/supervise.py",
+  "old": "return 1\n",
+  "new": "return 0\n",
+  "kills": [
+    "tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services",
+    "tests/test_container_supervision.py::test_readiness_timeout_stops_stack_before_dependent_service",
+    "tests/test_container_supervision.py::test_failed_spawn_cleans_started_services_without_logging_command"
+  ],
+  "anchor_count": 4,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "981d562a757e45b3bb76a17d93ea44525689e2014d471dec11790c3ab0b24667",
+  "only_changed_file": "docker/supervise.py"
+}

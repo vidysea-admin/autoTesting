@@ -1,0 +1,17 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_readiness_requires_a_real_listener ___________________
+
+    def test_readiness_requires_a_real_listener():
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            endpoint = f"tcp:{listener.getsockname()[1]}"
+>           assert supervisor.endpoint_ready(endpoint) is False
+E           AssertionError: assert True is False
+E            +  where True = <function endpoint_ready at 0x0000024F5653FF60>('tcp:54431')
+E            +    where <function endpoint_ready at 0x0000024F5653FF60> = supervisor.endpoint_ready
+
+tests\test_container_supervision.py:79: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_readiness_requires_a_real_listener
+1 failed in 0.43s
