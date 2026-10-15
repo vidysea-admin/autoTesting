@@ -1,6 +1,6 @@
 # Mixed teaching — registered aggregate core
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Root: C:/Users/product/Desktop/autoTesting/.work/wt-mixed-aggregate
 Base SHA: 3eddfab6add8f41e50b73a0f30fada041931a18d
