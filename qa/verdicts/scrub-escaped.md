@@ -1,10 +1,10 @@
-# Verdict: scrub-escaped (head f845fe51)
-Cycle checked: 0
-Verdict: FAIL
+# Verdict: scrub-escaped (b2e491c4, fix cycle 1)
+Cycle checked: 1
+Verdict: PASS
 
-- (a) FAIL. Redactor.scrub leaves percent-encoded, double-encoded (%2540) and `&#64;` forms of a secret unchanged. Only mask_pii gained %40 email / %2B phone patterns (single-encoded).
-- (b) Normal text mostly fine ("100%40 off" untouched). _ENC_EMAIL_RE masks any `x%40host.tld` run.
-- (c) No code overlap with real_acceptance._scrub_urls, but the URL-secret scrub is still outside core/redact; one concept lives in two places. Flag.
-- (d) AT-830 partly fixed (single-encoded email/phone). AT-928 fixed (failure_bundle files: 29 pass). ISS-t168-2 fixed in load_api. AT-939 NOT fixed (percent-encoded secret in network URL stays verbatim); the manifest does not claim it.
-- (e) Ruff clean. merge-tree vs master clean. tests/test_redact_pii.py: 133 pass in 1.1s on master, but on the branch it stalls at test ~131 (an F in the combined run). _ENC_PHONE_RE nested quantifier backtracks (3000x "%20" costs 0.57s, quadratic). Regression; not isolated within the time cap. Doctor: 1 violation (langchain_ollama undeclared), looks pre-existing. unified_report tests unconfirmed.
-Action: maker fixes the stall, adds encoded variants to Redactor.scrub for AT-939, moves the URL scrub into core/redact.
+- Cycle 0 probes: single, double, HTML-entity and +/space variants of a secret now scrub to [REDACTED]:K, including inside a URL (AT-939 fixed). %40 email and %2B phone masked (AT-830 fixed).
+- Over-scrub: "100%40 off", "sale 50% off", plain text untouched.
+- Hang gone: 100 KB adversarial inputs 0.015-0.036 s; test_redact_pii 139 pass in 1.7 s (shell timeout 300 s).
+- Duplicate: URL credential scrub lives in core/redact; real_acceptance._scrub_urls is a thin wrapper. No second regex.
+- Scoped: test_redact_escaped 21 pass; failure_bundle(+escape), unified_report(+secrets) 49 pass; ruff clean; doctor clean; merge-tree vs master no conflicts.
+- Minor residual (non-blocking): double-encoded PII shape "a%2540b.com" is not masked by mask_pii (only by Redactor for declared secrets).
