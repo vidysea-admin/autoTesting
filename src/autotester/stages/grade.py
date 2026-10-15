@@ -25,11 +25,19 @@ from autotester.stages.grade_note_guard import note_guard
 SKILL_NAME = "grade"  # src/autotester/skills/grade/SKILL.md (T-175, was grade_v1.md)
 
 
+def _untrusted(text: str) -> str:
+    """AT-892: target-controlled text as one inert line. Newlines become a literal
+    backslash-n (cannot start a forged evidence row) and `<` is escaped
+    (cannot close the `<untrusted_evidence>` block the prompt wraps this in)."""
+    flat = text.replace("\r", "").replace("\n", "\\n")
+    return flat.replace("<", "&lt;")
+
+
 def _render_evidence(result: RawResult) -> str:
     lines = [f"outcome: {result.outcome.value}"]
     for ev in result.evidence:
         loc = f" (step {ev.step_order})" if ev.step_order is not None else ""
-        lines.append(f"- [{ev.kind.value}] {ev.path}{loc}")
+        lines.append(f"- [{ev.kind.value}] {_untrusted(ev.path)}{loc}")
     return "\n".join(lines)
 
 
@@ -44,10 +52,12 @@ def _render_rubric(rubric: Rubric) -> str:
 
 def build_grade_prompt(rubric: Rubric, result: RawResult, docs: RepoDocs) -> str:
     template = load_skill_prompt(SKILL_NAME, skills_dir=docs.skills_dir)
+    # {{EVIDENCE}} is substituted last: target text containing a placeholder must
+    # not be expanded by a later replace (AT-892).
     return (
         template.replace("{{RUBRIC}}", _render_rubric(rubric))
-        .replace("{{EVIDENCE}}", _render_evidence(result))
         .replace("{{FORMAT}}", rubric.feedback_format)
+        .replace("{{EVIDENCE}}", _render_evidence(result))
     )
 
 
