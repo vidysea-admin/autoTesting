@@ -15,7 +15,7 @@ from autotester.core.image_privacy import sanitized_images
 from autotester.media.frames import extract_frame
 from autotester.media.probe import probe
 from autotester.providers.attempts import attempt_budget
-from autotester.providers.base import ProviderError, load_skill_prompt
+from autotester.providers.base import ProviderError, Unsupported, load_skill_prompt
 from autotester.schema.observation import VisionOptions
 from autotester.schema.video_frames import (
     FrameCoverage,
@@ -31,6 +31,10 @@ class FrameVisionError(ProviderError):
     def __init__(self, reason: str, coverage: FrameCoverage) -> None:
         super().__init__(f"frame vision unavailable: {reason}")
         self.coverage = coverage
+
+
+class FrameCapabilityUnavailable(FrameVisionError, Unsupported):
+    """Only a missing/invalid behavioral capability receipt permits another tier."""
 
 
 def _png_bytes(path: Path, limits: FrameLimits) -> bytes:
@@ -112,7 +116,7 @@ def see_video(provider, path, prompt, schema, options=None, *, prompt_file=None,
     if not (isinstance(capability, VisionCapability) and capability.passed
             and capability.model == provider.options.get("model")
             and capability.endpoint_sha256 == endpoint_fingerprint(provider)):
-        raise FrameVisionError("capability_unverified", coverage)
+        raise FrameCapabilityUnavailable("capability_unverified", coverage)
     limits = provider.options.get("frame_limits", FrameLimits())
     if not isinstance(limits, FrameLimits):
         raise FrameVisionError("invalid_frame_limits", coverage)

@@ -1,0 +1,126 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+__________ test_allowlisted_failure_reaches_guarded_gemini[failure0] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029480275D10>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/proof-copy/.work/pytest/test_allowlisted_failure_reach0')
+failure = StatusFailure(401)
+
+    @pytest.mark.parametrize("failure", [StatusFailure(401), StatusFailure(503),
+                                         ConnectionError("offline"), Unsupported("text")])
+    def test_allowlisted_failure_reaches_guarded_gemini(monkeypatch, tmp_path, failure):
+        response = reply('{"ok":true}')
+        response.usage = None
+        fake, chain = setup_chain(monkeypatch, tmp_path, [failure, failure, response])
+        with attempt_budget(3, wall_clock_s=4) as budget:
+            assert chain.act("prompt", TextAnswer).ok
+        assert [c["model"] for c in fake.calls] == [*DEFAULT_ORDER, TEXT_FALLBACK]
+        assert chain.served == f"litellm:{TEXT_FALLBACK}"
+        assert len(chain.fallback_reasons) == 2
+        assert budget.used == 3 and budget.attempts[-1].status == "succeeded"
+        assert chain.usage[-1].input_tokens is chain.usage[-1].output_tokens is None
+>       assert all(0 < c["timeout"] <= 4 and c["num_retries"] == 0 for c in fake.calls)
+E       assert False
+E        +  where False = all(<generator object test_allowlisted_failure_reaches_guarded_gemini.<locals>.<genexpr> at 0x0000029480295620>)
+
+tests\test_text_availability.py:48: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (authentication); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (authentication); falling through
+__________ test_allowlisted_failure_reaches_guarded_gemini[failure1] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029480282A90>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/proof-copy/.work/pytest/test_allowlisted_failure_reach1')
+failure = StatusFailure(503)
+
+    @pytest.mark.parametrize("failure", [StatusFailure(401), StatusFailure(503),
+                                         ConnectionError("offline"), Unsupported("text")])
+    def test_allowlisted_failure_reaches_guarded_gemini(monkeypatch, tmp_path, failure):
+        response = reply('{"ok":true}')
+        response.usage = None
+        fake, chain = setup_chain(monkeypatch, tmp_path, [failure, failure, response])
+        with attempt_budget(3, wall_clock_s=4) as budget:
+            assert chain.act("prompt", TextAnswer).ok
+        assert [c["model"] for c in fake.calls] == [*DEFAULT_ORDER, TEXT_FALLBACK]
+        assert chain.served == f"litellm:{TEXT_FALLBACK}"
+        assert len(chain.fallback_reasons) == 2
+        assert budget.used == 3 and budget.attempts[-1].status == "succeeded"
+        assert chain.usage[-1].input_tokens is chain.usage[-1].output_tokens is None
+>       assert all(0 < c["timeout"] <= 4 and c["num_retries"] == 0 for c in fake.calls)
+E       assert False
+E        +  where False = all(<generator object test_allowlisted_failure_reaches_guarded_gemini.<locals>.<genexpr> at 0x00000294802F7CA0>)
+
+tests\test_text_availability.py:48: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (service); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (service); falling through
+__________ test_allowlisted_failure_reaches_guarded_gemini[failure2] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029480281AD0>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/proof-copy/.work/pytest/test_allowlisted_failure_reach2')
+failure = ConnectionError('offline')
+
+    @pytest.mark.parametrize("failure", [StatusFailure(401), StatusFailure(503),
+                                         ConnectionError("offline"), Unsupported("text")])
+    def test_allowlisted_failure_reaches_guarded_gemini(monkeypatch, tmp_path, failure):
+        response = reply('{"ok":true}')
+        response.usage = None
+        fake, chain = setup_chain(monkeypatch, tmp_path, [failure, failure, response])
+        with attempt_budget(3, wall_clock_s=4) as budget:
+            assert chain.act("prompt", TextAnswer).ok
+        assert [c["model"] for c in fake.calls] == [*DEFAULT_ORDER, TEXT_FALLBACK]
+        assert chain.served == f"litellm:{TEXT_FALLBACK}"
+        assert len(chain.fallback_reasons) == 2
+        assert budget.used == 3 and budget.attempts[-1].status == "succeeded"
+        assert chain.usage[-1].input_tokens is chain.usage[-1].output_tokens is None
+>       assert all(0 < c["timeout"] <= 4 and c["num_retries"] == 0 for c in fake.calls)
+E       assert False
+E        +  where False = all(<generator object test_allowlisted_failure_reaches_guarded_gemini.<locals>.<genexpr> at 0x0000029480060740>)
+
+tests\test_text_availability.py:48: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (service); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (service); falling through
+__________ test_allowlisted_failure_reaches_guarded_gemini[failure3] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029480281A50>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/proof-copy/.work/pytest/test_allowlisted_failure_reach3')
+failure = Unsupported('text')
+
+    @pytest.mark.parametrize("failure", [StatusFailure(401), StatusFailure(503),
+                                         ConnectionError("offline"), Unsupported("text")])
+    def test_allowlisted_failure_reaches_guarded_gemini(monkeypatch, tmp_path, failure):
+        response = reply('{"ok":true}')
+        response.usage = None
+        fake, chain = setup_chain(monkeypatch, tmp_path, [failure, failure, response])
+        with attempt_budget(3, wall_clock_s=4) as budget:
+            assert chain.act("prompt", TextAnswer).ok
+        assert [c["model"] for c in fake.calls] == [*DEFAULT_ORDER, TEXT_FALLBACK]
+        assert chain.served == f"litellm:{TEXT_FALLBACK}"
+        assert len(chain.fallback_reasons) == 2
+        assert budget.used == 3 and budget.attempts[-1].status == "succeeded"
+        assert chain.usage[-1].input_tokens is chain.usage[-1].output_tokens is None
+>       assert all(0 < c["timeout"] <= 4 and c["num_retries"] == 0 for c in fake.calls)
+E       assert False
+E        +  where False = all(<generator object test_allowlisted_failure_reaches_guarded_gemini.<locals>.<genexpr> at 0x00000294803A11C0>)
+
+tests\test_text_availability.py:48: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (capability); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (capability); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-availability\.work\proof-copy\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure0]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure0]
+FAILED tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure1]
+FAILED tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure2]
+FAILED tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure3]
+4 failed, 2 warnings in 2.40s

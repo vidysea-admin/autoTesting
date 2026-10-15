@@ -1,0 +1,69 @@
+{
+  "status": "ready-for-check",
+  "fix_cycle": 2,
+  "frozen_reviewed_runtime_wrapper": "ec882aa8fb99165afa116a70cd8941c3bbdaf8a2",
+  "runtime_source": "1ecf58cef26e96b713c005e1b089363e4a7fbc18",
+  "reason": "Cycle1 omitted contemporaneous attempts.py hashes for count/deadline mutations.",
+  "delta": "Evidence and manifest only; no runtime/test/dependency/lock or contract changes.",
+  "historical_evidence": "All original18 guard receipts preserved unchanged; two unauthenticated receipts superseded only by cycle2 proof.",
+  "scope": "Only two enclosing count/deadline test nodes; fresh preflight, green baseline, unique named reds and exact-byte restored greens.",
+  "source_inventory": [
+    "src/autotester/providers/availability.py",
+    "src/autotester/providers/model_chain.py",
+    "src/autotester/providers/litellm_provider.py",
+    "src/autotester/providers/attempts.py",
+    "tests/test_text_availability.py",
+    "tests/test_model_chain.py",
+    "tests/test_provider_attempts.py"
+  ],
+  "evidence_sha256": {
+    "baseline.log": "e26a45ebcc183240feb39775b2d437b4b087a210e231f918ea515abd0c0405ad",
+    "cycle2-proof.py": "45e7a48788de3073ee7ac1e7a7ad94cc4aa025162eeee9c49a6995f91f955971",
+    "environment.json": "fcfdd425fc5b5d814ba9f5eaa808499c31d8dbcd9345dd0289f65064aa827c78",
+    "global_count-red.log": "be37fefe05c79fdb34aff6d9b56f9aedeff827f131ed37d77db50fcb54499b79",
+    "global_count-restored.log": "479e39e1f5c0f03935ebd3baefd2aabae538cc39170225c5543dd6539eb62004",
+    "global_deadline-red.log": "f1fbae88748cab3d72801831997ea9850ce779f0acd86d703ef0b7f6fdbabf21",
+    "global_deadline-restored.log": "8b40376581f179518b22e3a038faefee57b938cbc7b40c88abf66ad74889cb5f",
+    "preflight.log": "d22e7891beb515a0a59713511e4643045ed8d566e1755e483585f081ab9d9758",
+    "receipts.json": "ea856f6a2bc2530eff54ec33d638c8350f056e457a0d3d4687de463170aebf36",
+    "source-binding.json": "9e27b6caab2ac3d367f578ef64f86866bfcdc62711692c97b05ae27712ce9019"
+  },
+  "results": [
+    {
+      "label": "preflight",
+      "exit": 0,
+      "command_elapsed_s": 0.2969999999986612
+    },
+    {
+      "label": "baseline",
+      "exit": 0,
+      "command_elapsed_s": 8.890999999999622
+    },
+    {
+      "label": "global_count-red",
+      "exit": 1,
+      "command_elapsed_s": 8.09400000000096
+    },
+    {
+      "label": "global_count-restored",
+      "exit": 0,
+      "command_elapsed_s": 6.936999999998079
+    },
+    {
+      "label": "global_deadline-red",
+      "exit": 1,
+      "command_elapsed_s": 7.639999999999418
+    },
+    {
+      "label": "global_deadline-restored",
+      "exit": 0,
+      "command_elapsed_s": 8.5
+    }
+  ],
+  "duration_caveat": "Subprocess elapsed durations are not maker/reviewer whole-active durations.",
+  "maker_active_seconds": null,
+  "maker_tokens": null,
+  "maker_cost": null,
+  "checker_ratio": "unverified",
+  "deferred": "Fresh independent cycle2 review; unchanged remaining high-risk checks and mandatory combined integration gates."
+}

@@ -1,0 +1,26 @@
+{
+  "candidate": "db143be1181721b27dc72e70a7e09ab982ee9e69",
+  "cycle": 1,
+  "verdict": "HOLD",
+  "missing_contemporaneous_source_bindings": [
+    {
+      "label": "global_count-red",
+      "unbound_mutated_source": "src/autotester/providers/attempts.py"
+    },
+    {
+      "label": "global_count-restored",
+      "unbound_mutated_source": "src/autotester/providers/attempts.py"
+    },
+    {
+      "label": "global_deadline-red",
+      "unbound_mutated_source": "src/autotester/providers/attempts.py"
+    },
+    {
+      "label": "global_deadline-restored",
+      "unbound_mutated_source": "src/autotester/providers/attempts.py"
+    }
+  ],
+  "pytest_executed": false,
+  "phase_start_monotonic": 19193.562,
+  "phase_end_monotonic": 19193.625
+}

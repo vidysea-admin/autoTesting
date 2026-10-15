@@ -1,0 +1,13 @@
+qa/evidence/text-availability/cycle2/baseline.log
+qa/evidence/text-availability/cycle2/changed-files.txt
+qa/evidence/text-availability/cycle2/cycle2-proof.py
+qa/evidence/text-availability/cycle2/delta-packet.json
+qa/evidence/text-availability/cycle2/environment.json
+qa/evidence/text-availability/cycle2/global_count-red.log
+qa/evidence/text-availability/cycle2/global_count-restored.log
+qa/evidence/text-availability/cycle2/global_deadline-red.log
+qa/evidence/text-availability/cycle2/global_deadline-restored.log
+qa/evidence/text-availability/cycle2/preflight.log
+qa/evidence/text-availability/cycle2/receipts.json
+qa/evidence/text-availability/cycle2/source-binding.json
+qa/manifests/text-availability.md

@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict
 
 from autotester import providers
 from autotester.providers.base import ProviderError
-from autotester.providers.model_chain import DEFAULT_ORDER, ModelChainProvider
+from autotester.providers.model_chain import DEFAULT_ORDER, TEXT_FALLBACK, ModelChainProvider
 from autotester.schema.project import ProviderConfig
 
 pytestmark = pytest.mark.usefixtures("no_network")
@@ -36,10 +36,10 @@ def _env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-key-value-1b2c")
 
 
-def test_default_order_is_ollama_only_and_schema_default_uses_it() -> None:
+def test_default_order_is_ollama_primary_and_schema_default_uses_it() -> None:
     assert DEFAULT_ORDER == ("ollama_chat/glm-5.3-flash", "ollama_chat/deepseek-v4.1-flash")
     assert ProviderConfig().agent == ProviderConfig().judge == "model-chain"
-    assert providers.for_role(None, "judge").order() == list(DEFAULT_ORDER)
+    assert providers.for_role(None, "judge").order() == [*DEFAULT_ORDER, TEXT_FALLBACK]
 
 
 def test_first_tier_answers_with_ollama_cloud_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -65,7 +65,7 @@ def test_falls_back_in_order_on_error_and_timeout(monkeypatch: pytest.MonkeyPatc
 
 
 def test_all_tiers_failing_raises_one_provider_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    install(monkeypatch, [RuntimeError("a"), RuntimeError("b"), RuntimeError("c")])
+    install(monkeypatch, [TimeoutError("a"), TimeoutError("b"), TimeoutError("c")])
     monkeypatch.setenv("OLLAMA_API_KEY", OLLAMA_KEY)
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-key-value-1b2c")
     with pytest.raises(ProviderError, match="every tier failed"):
@@ -107,13 +107,13 @@ def test_secret_in_prompt_is_refused_once_and_never_sent(monkeypatch: pytest.Mon
 
 def test_fall_through_is_logged_without_prompt_or_key(
         monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture) -> None:
-    install(monkeypatch, [RuntimeError(f"boom {OLLAMA_KEY}"), _r("ds")])
+    install(monkeypatch, [TimeoutError(f"boom {OLLAMA_KEY}"), _r("ds")])
     monkeypatch.setenv("OLLAMA_API_KEY", OLLAMA_KEY)
     chain = ModelChainProvider()
     with caplog.at_level("INFO", logger="autotester.providers.model_chain"):
         assert chain.judge("secret-ish prompt body", Answer).verdict == "ds"
     text = caplog.text
-    assert "ollama_chat/glm-5.3-flash" in text and "ProviderError" in text
+    assert "ollama_chat/glm-5.3-flash" in text and "service" in text
     assert "falling through" in text and "deepseek-v4.1-flash" in text
     assert OLLAMA_KEY not in text and "secret-ish prompt body" not in text
     assert chain.served == "litellm:ollama_chat/deepseek-v4.1-flash" == chain.id

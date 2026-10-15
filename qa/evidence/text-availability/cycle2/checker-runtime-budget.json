@@ -1,0 +1,48 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "cycle1",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 80,
+        "tokens": 3000
+      }
+    },
+    {
+      "id": "cycle2-readiness",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 25,
+        "tokens": 1000
+      }
+    }
+  ],
+  "next_phase": {
+    "active_s": 195,
+    "tokens": 5000,
+    "cost": null
+  },
+  "bootstrap_scope": "Minimal unchanged text source review, independent risk nodes, single isolated guard mutation and canonical verdict",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": {
+    "reason": "Required independent text boundary checks",
+    "limits": {
+      "active_s": 300,
+      "tokens": 9000,
+      "cost": null
+    },
+    "authority": "parent coordinator explicit finite authorization"
+  }
+}

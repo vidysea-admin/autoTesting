@@ -1,0 +1,3 @@
+model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (service); falling through
+model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (service); falling through
+Failed usage null, two safe reasons and actual Gemini winner: passed

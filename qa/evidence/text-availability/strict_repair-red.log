@@ -1,0 +1,27 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_malformed_output_repairs_once_then_stops ________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019959E69E90>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/proof-copy/.work/pytest/test_malformed_output_repairs_0')
+
+    def test_malformed_output_repairs_once_then_stops(monkeypatch, tmp_path):
+        fake, chain = setup_chain(monkeypatch, tmp_path,
+                                  [reply('{"ok":"true"}'), reply('{"ok":"true"}')])
+>       with attempt_budget(6) as budget, pytest.raises(ProviderError, match="schema"):
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_text_availability.py:66: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-availability\.work\proof-copy\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_text_availability.py::test_malformed_output_repairs_once_then_stops
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_text_availability.py::test_malformed_output_repairs_once_then_stops
+1 failed, 2 warnings in 1.05s
