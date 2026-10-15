@@ -11,11 +11,14 @@ from __future__ import annotations
 import re
 import unicodedata
 
+from autotester.core.redact_escaped import _View  # shared escaped-spelling decoder
+
 _AT_WORD = re.compile(r"\s*[\[(\{<]\s*at\s*[\])\}>]\s*", re.IGNORECASE)
 _DOT_WORD = re.compile(r"\s*[\[(\{<]\s*dot\s*[\])\}>]\s*", re.IGNORECASE)
 _SPOKEN = re.compile(
     r"\b([\w.+-]{1,64})[ \t]+at[ \t]+([\w-]{1,63}(?:[ \t]+dot[ \t]+[\w-]{1,63})+)\b", re.IGNORECASE
 )
+_DOUBLE_ENC = re.compile(r"[\w.+-]{1,64}(?:%25)+40[\w.%-]{1,255}")  # a%2540b.com
 _SPOKEN_DOT = re.compile(r"[ \t]+dot[ \t]+", re.IGNORECASE)
 _NAME_FIELD = re.compile(
     r"\b((?:[a-z]{1,20}[_ -])?name)(\"?[ \t]*[:=][ \t]*\"?)([^\n,;\"]{1,80})", re.IGNORECASE
@@ -26,9 +29,8 @@ def normalize_email_forms(text: str) -> str:
     """Plain-ASCII `@` / `.` for obfuscated email spellings; text with none is returned as is."""
     if text.isascii() and "%" not in text and "at" not in text.lower():
         return text
-    for _ in range(2):  # %40 and double-encoded %2540
-        view = _View(text) if "%" in text or "&" in text else None
-        text = view.text if view is not None and view.decoded_any else text
+    if "%25" in text:  # double-encoded: decode only the email-shaped candidates
+        text = _DOUBLE_ENC.sub(lambda m: _View(_View(m.group()).text).text, text)
     text = unicodedata.normalize("NFKC", text)
     text = _AT_WORD.sub("@", text)
     if "@" in text:

@@ -23,7 +23,6 @@ from autotester.core.redact_escaped import (
     scrub_url_credentials,
     scrub_url_credentials_obj,
 )
-from autotester.core.redact_pii_forms import mask_name_fields, normalize_email_forms
 from autotester.core.redact_fold import (
     ASCII_CONFUSABLES,
     BIDI_OVERRIDES,

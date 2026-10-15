@@ -20,7 +20,7 @@ Result: 290 passed, ruff clean. Doctor: 1 violation (not from this change; likel
 ## Fix cycle 2
 - grade(): masking extracted to `_pii_masked` (function now under 50 lines). Rebased onto master after AT-892.
 - core/redact_pii_forms.py (new, small, called from `mask_pii`): obfuscated emails `[at]`, `(at)`, `(dot)`, `%40`, `%2540`, fullwidth at-sign (NFKC), `a at b dot c`; labelled name fields (`first_name:`, `last_name=`, `name:`, `full_name`, JSON form) via `mask_name_value`. Regexes linear. Free-text names ("Ravi Kumar") are out of scope.
-- Double-encoding: handled with a literal `%2540` replace here. `core/redact_escaped.py` (wave/scrub-escaped) was not on master yet, so it was NOT reused; when it lands, swap this for its decode helper (one concept, one place).
+- Double-encoding (`%2540`): decoded with the shared `core/redact_escaped._View` (rebased onto master with wave/scrub-escaped); single `%40` is masked by its `mask_encoded_emails`.
 - Other model paths now masked: ux_advisory.judge_case_ux, video_review._analyse, expand (provider.act). discover/classify sends counts only; reconcile already masked (AT-780); relitigation/ingest/analyze_video send repo docs or video, not target text.
 - AT-892 follow-ups: SKILL.md stray newline fixed to `
 `; rubric criteria and no-fire text go through `_untrusted`.
