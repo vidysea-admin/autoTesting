@@ -63,3 +63,25 @@ def test_report_card_lists_warnings_escaped_and_is_empty_without() -> None:
     assert warnings_card([]) == "" and warnings_card(None) == ""
     html = warnings_card(["case <b>: x"])
     assert "Preflight warnings (1)" in html and "&lt;b&gt;" in html
+
+
+_PII = ["john.doe@x.com", "550e8400-e29b-41d4-a716-446655440000", "9876543210",
+        "eyJhbGciOiJI.eyJzdWIiOiIx.SflKxwRJSM", "aB3dE5gH7jK9mN1pQ3rS5tU7", "4f9c2a7e1b8d3c6a0f5e"]
+
+
+def test_safe_path_folds_pii_and_tokens_but_keeps_slugs() -> None:
+    from autotester.core.path_pii import safe_path
+    for bad in _PII:
+        out = safe_path(f"/user/{bad}/p")
+        assert bad not in out and out == "/user/{var}/p", bad
+    assert safe_path("/career-quest/know-yourself") == "/career-quest/know-yourself"
+    assert safe_path("/courses/grade-10-maths-2024") == "/courses/grade-10-maths-2024"
+
+
+def test_stored_paths_and_warnings_and_card_never_carry_pii() -> None:
+    cases = [_case(f"c{i}", f"https://x.test/reset/{bad}") for i, bad in enumerate(_PII)]
+    out = reachability_warnings(cases, FIXTURE)
+    html = warnings_card(out)
+    for bad in _PII:
+        assert bad not in " ".join(out) and bad not in html
+    assert len(out) == len(_PII)

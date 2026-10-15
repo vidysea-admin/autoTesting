@@ -10,6 +10,7 @@ cannot be matched to a screen, so it is left unwarned rather than guessed at.
 
 from __future__ import annotations
 
+from autotester.core.path_pii import safe_path
 from autotester.core.urls import url_template
 from autotester.schema.case import Case
 from autotester.schema.crawl_summary import CrawlSummary
@@ -23,7 +24,7 @@ def _first_route(case: Case) -> str | None:
     target = case.steps[0].target
     if "{{" in target or not target.startswith(("http://", "https://", "/")):
         return None
-    return url_template(target, keep_host=False, fold_index=True)
+    return safe_path(url_template(target, keep_host=False, fold_index=True))
 
 
 def reachability_warnings(cases: list[Case], summary: CrawlSummary | None) -> list[str]:

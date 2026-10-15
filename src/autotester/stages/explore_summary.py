@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from pydantic import BaseModel
 
+from autotester.core.path_pii import safe_path
 from autotester.schema.crawl import Crawl
 from autotester.schema.crawl_summary import CrawlSummary
 from autotester.schema.enums import NodeStatus
@@ -56,8 +57,8 @@ def scrubbed(rt: ExploreRuntime, model: ModelT) -> ModelT:
 def _split_paths(rt: ExploreRuntime) -> tuple[list[str], list[str]]:
     """(visited, never visited) url templates. Path templates only: no host, query or content."""
     done = {NodeStatus.EXPLORED, NodeStatus.SKIPPED_UNCHANGED}
-    reached = {n.url_template for n in rt.nodes.values() if n.status in done}
-    rest = {n.url_template for n in rt.nodes.values() if n.status not in done}
+    reached = {safe_path(n.url_template) for n in rt.nodes.values() if n.status in done}
+    rest = {safe_path(n.url_template) for n in rt.nodes.values() if n.status not in done}
     return sorted(reached), sorted(rest - reached)
 
 

@@ -1,7 +1,7 @@
 # AT-887 clause 2: pre-run reachability warning
 
 Status: ready-for-check
-Fix cycle: 1
+Fix cycle: 2
 Branch: wave/at887-reachability
 
 ## Built
@@ -15,3 +15,6 @@ Branch: wave/at887-reachability
 ## Verify
 scoped pytest (reachability, run_launcher*, crawl-summary tests: 120 passed), ruff clean, doctor clean.
 Known limit: matches URL first steps only.
+
+## Fix cycle 2
+PII: `core/path_pii.py::safe_path` folds email/phone (via mask_pii), UUID, JWT, long digit runs and tokens to {var}; applied to stored reached/unreached paths and warnings. Tests added.
