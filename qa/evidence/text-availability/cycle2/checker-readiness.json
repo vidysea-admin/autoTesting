@@ -1,0 +1,9 @@
+{
+  "candidate": "035011aeb3c7cf868ba5ca41246c71c0627b3c7e",
+  "cycle": 2,
+  "two_repaired_chains": "bound",
+  "original16_mutated_source_reconstruction": "matched",
+  "tests_executed": false,
+  "monotonic_start": 19529.156,
+  "monotonic_end": 19529.328
+}
