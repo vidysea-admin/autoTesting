@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from autotester.core.ids import content_hash, content_id, file_sha256
 from autotester.core.paths import ProjectPaths
 from autotester.core.pricing import estimate_cost_conservative
-from autotester.core.redact import Redactor, assert_no_raw_secrets
+from autotester.core.redact import Redactor, assert_no_raw_secrets, mask_pii
 from autotester.media.probe import probe
 from autotester.media.redacted import (
     FrameSource,
@@ -161,7 +161,7 @@ def _analyse(*, batches: list[list[float]], frames: FrameSource, provider: Provi
         shown = [(t, p) for t, p in pairs if p is not None]
         if not shown:
             continue
-        prompt = prompt_for([t for t, _ in shown])
+        prompt = mask_pii(prompt_for([t for t, _ in shown]))  # AT-840
         try:
             reply = provider.judge(prompt, ReviewReply, images=[p for _, p in shown],
                                    prompt_file=PROMPT_FILE, fed_id=rid)

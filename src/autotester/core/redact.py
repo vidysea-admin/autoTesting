@@ -23,6 +23,7 @@ from autotester.core.redact_escaped import (
     scrub_url_credentials,
     scrub_url_credentials_obj,
 )
+from autotester.core.redact_pii_forms import mask_name_fields, normalize_email_forms
 from autotester.core.redact_fold import (
     ASCII_CONFUSABLES,
     BIDI_OVERRIDES,
@@ -190,6 +191,7 @@ def mask_pii(text: str) -> str:
     deterministic (RC11). A bare 10-digit run is treated as a phone number."""
     text = mask_encoded_emails(text)  # AT-830: urlencoded `%40` / `%2B`
     text = mask_encoded_phones(text)
+    text = mask_name_fields(normalize_email_forms(text), mask_name_value)
     text = _mask_emails(text)
     for pattern in _PHONE_RES:
         text = pattern.sub("<phone>", text)

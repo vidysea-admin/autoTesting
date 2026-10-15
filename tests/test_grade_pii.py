@@ -31,3 +31,15 @@ def test_email_and_phone_in_evidence_never_reach_provider():
 def test_pii_in_rubric_text_masked():
     mock, _ = _run("Page shows anu@x.org", "01.png")
     assert "anu@x.org" not in mock.prompts[0][1]
+
+
+def test_obfuscated_emails_and_name_fields_masked():
+    from autotester.core.redact import mask_pii
+    for raw in ["ravi[at]school.edu", "ravi (at) school (dot) edu", "ravi%40school.edu",
+                "ravi＠school.edu", "ravi at school dot edu"]:
+        out = mask_pii(f"contact {raw} now")
+        assert "ravi" not in out and "<email>" in out, raw
+    assert "Ravi" not in mask_pii("first_name: Ravi\nlast_name=Kumar")
+    assert "Ravi" not in mask_pii('{"full_name": "Ravi Kumar"}')
+    assert mask_pii("file_name: a.png") == "file_name: a.png"
+    assert mask_pii("meet at noon") == "meet at noon"

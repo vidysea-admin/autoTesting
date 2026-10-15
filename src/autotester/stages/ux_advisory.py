@@ -22,7 +22,7 @@ from pydantic import ValidationError
 from autotester.browser.secrets import SecretStore
 from autotester.core.excel import autosize_columns
 from autotester.core.paths import RepoDocs
-from autotester.core.redact import Redactor
+from autotester.core.redact import Redactor, mask_pii
 from autotester.providers.base import Provider, ProviderError, load_skill_prompt
 from autotester.schema.case import Case
 from autotester.schema.enums import CaseClass, EvidenceKind, Outcome
@@ -135,7 +135,7 @@ def judge_case_ux(
     """One advisory reading of one case. Raises `ValueError` BEFORE any provider call when the
     assembled prompt carries a raw credential (PU6) and `FileNotFoundError` when the skill file
     is missing (PU5). Reads `result`; never mutates it and never sees a `Verdict` (PU3)."""
-    prompt = secrets.guard_prompt(build_ux_prompt(persona, result, docs or RepoDocs()))
+    prompt = mask_pii(secrets.guard_prompt(build_ux_prompt(persona, result, docs or RepoDocs())))  # AT-840
     try:
         judgment = provider.judge(prompt, UXJudgment, images=_screenshots(result, run_dir),
                                   prompt_file=SKILL_NAME, fed_id=case.id)
