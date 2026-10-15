@@ -11,9 +11,9 @@ Nothing here is itself a FastAPI route.
 from __future__ import annotations
 
 import contextlib
-import shutil
 from pathlib import Path
 
+from autotester.browser.profiles import wipe_entry_profile as _wipe_entry_profile
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
@@ -58,21 +58,6 @@ def _run_and_grade_resilient(
         return result, verdict
 
 
-def _wipe_entry_profile(profile: Path) -> None:
-    """Remove the entry profile and positively establish it is gone (RU5, C12).
-    An already-absent directory is success. A failed removal, a directory still
-    present, or an existence check that itself raises all propagate as `OSError`
-    (never `ignore_errors`, never `os.path.lexists`, which reads an error as
-    'absent'), so the caller never starts a browser on a logged-in profile."""
-    try:
-        with contextlib.suppress(FileNotFoundError):
-            shutil.rmtree(profile)
-        present = profile.exists()
-    except OSError as exc:
-        cause = f"{type(exc).__name__}: {exc}"
-        raise OSError(f"entry profile not removed: {profile} ({cause})") from exc
-    if present:
-        raise OSError(f"entry profile not removed: {profile} (still present after removal)")
 
 
 def _run_entry_case(

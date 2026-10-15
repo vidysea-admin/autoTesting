@@ -1,0 +1,31 @@
+{
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "completion_reserve": true,
+  "reviewers": [
+    {
+      "id": "readiness-including-initial-unmetered-reads",
+      "tokens": null,
+      "active_s": null,
+      "cost": null,
+      "budget_debit": {
+        "tokens": 1000,
+        "active_s": 30
+      }
+    }
+  ],
+  "completion_reserve_id": "cli-downstream-cycle1-ed418e9",
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "bootstrap_scope": "CLI downstream exact cycle1 readiness, source/runtime and protected closure",
+  "next_phase": {
+    "kind": "review",
+    "tokens": 3500,
+    "active_s": 110
+  }
+}

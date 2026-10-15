@@ -1,0 +1,48 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\cli-downstream\.work\cli-downstream-proof-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_orchestrate_downstream.py F                                   [100%]
+
+================================== FAILURES ===================================
+___ test_downstream_interrupted_execution_reports_unfinished_without_repeat ___
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/cli-downstream/.work/cli-downstream-proof-tree2/.proof-temp-m05-red/test_downstream_interrupted_ex0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001B953140AD0>
+
+    def test_downstream_interrupted_execution_reports_unfinished_without_repeat(tmp_path, monkeypatch):
+        f = downstream_fixture(tmp_path)
+        store, _, _, _, _, _, ctx = f
+        expanded = _expand(f)
+        second = _additional_case(expanded, store, "case-interrupted")
+        original_save = execution._persist_observation
+    
+        def fail_second(ctx, batch, result, video):
+            if result.case_id == second.id:
+                raise OSError("disk")
+            original_save(ctx, batch, result, video)
+    
+        monkeypatch.setattr(execution, "_persist_observation", fail_second)
+        with pytest.raises(OSError):
+            ctx.runners[StageName.EXECUTE](ctx, expanded)
+        count = len(DownstreamSession.instances)
+        monkeypatch.setattr(execution, "_persist_observation", original_save)
+        observed = ctx.runners[StageName.EXECUTE](ctx, expanded)
+        batch = read_json(Path(observed), PipelineBatch)
+>       assert batch.interrupted and batch.results[0].outcome is Outcome.COMPLETED
+E       assert (False)
+E        +  where False = PipelineBatch(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 11, 7, 3, 497314, tzinfo=TzInfo(0)), proven... max_actions=100, max_probes=100, wall_clock_s=10000.0), execution_started=True, interrupted=False, grading_error=None).interrupted
+
+tests\test_orchestrate_downstream.py:178: AssertionError
+============================== warnings summary ===============================
+tests/test_orchestrate_downstream.py::test_downstream_interrupted_execution_reports_unfinished_without_repeat
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_orchestrate_downstream.py::test_downstream_interrupted_execution_reports_unfinished_without_repeat
+======================== 1 failed, 1 warning in 1.35s =========================

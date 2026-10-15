@@ -102,16 +102,16 @@ def _repro_steps(case: Case | None, redactor: Redactor) -> list[str]:
 
 
 def export_excel(
-    project_slug: str, run_id: str | None, out_path: Path, root: Path | None = None
+    project_slug: str, run_id: str | None, out_path: Path, root: Path | None = None,
+    *, case_overrides: dict[str, Case] | None = None,
 ) -> Path:
     """One row per case: what ran, what it was checked against, what happened."""
     store = ProjectStore(project_slug, root)
     run_id = run_id or _latest_run_id(store)
-    cases = _case_lookup(store)
+    cases = _case_lookup(store) if case_overrides is None else case_overrides
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
     redactor = _load_redactor(store)
     ux = load_ux_state(store, run_id)
-
     wb = Workbook()
     ws = wb.active
     ws.title = "Run report"
@@ -126,8 +126,6 @@ def export_excel(
             for criterion_id, reason, fix_hint in _failure_rows(verdict)
         ) if detail else ""
         steps_text = "\n".join(_repro_steps(case, redactor)) if detail else ""
-        # AT-609: `Case.title` is operator free text with no upstream guarantee against a
-        # pasted raw secret, so it gets the same last-stop scrub as every exported field.
         case_title = redactor.scrub(case.title) if case else result.case_id
         append_row(ws, [
             case_title,
@@ -256,13 +254,14 @@ def _failure_detail_html(verdict: Verdict | None, case: Case | None, redactor: R
 
 
 def export_html(
-    project_slug: str, run_id: str | None, out_path: Path, root: Path | None = None
+    project_slug: str, run_id: str | None, out_path: Path, root: Path | None = None,
+    *, case_overrides: dict[str, Case] | None = None,
 ) -> Path:
     """One section per case, in run order, each with its own screenshots
     embedded inline (base64) so the file is a single portable artifact."""
     store = ProjectStore(project_slug, root)
     run_id = run_id or _latest_run_id(store)
-    cases = _case_lookup(store)
+    cases = _case_lookup(store) if case_overrides is None else case_overrides
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
     results = store.load_results(run_id)
     redactor = _load_redactor(store)

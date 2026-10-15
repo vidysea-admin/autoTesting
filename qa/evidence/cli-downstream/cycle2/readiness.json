@@ -1,0 +1,14 @@
+{
+  "current_wrapper_candidate": "030560cf033782f50fb54c5c034b4f0fb3e0bb93",
+  "inventory_entries": 1021,
+  "maker_active_s": null,
+  "maker_cost": null,
+  "maker_tokens": null,
+  "not_independent_verification": true,
+  "proof_checkout": "030560cf033782f50fb54c5c034b4f0fb3e0bb93",
+  "receipts": 23,
+  "runtime_dependencies_lock_source_harness_spec_outputs": "validated",
+  "source_candidate": "030560cf033782f50fb54c5c034b4f0fb3e0bb93",
+  "status": "MAKER_READINESS_VALIDATED",
+  "triples": 11
+}

@@ -1,0 +1,10 @@
+{
+  "all_restored": true,
+  "binding_sha256": "9e38397054da2a21acd631ae9e58231160a186b6d365b95dde25f0b40be12d6e",
+  "finished_at": 1792062658.5098665,
+  "ledger_sha256": "af6a3f87901ea97b02dbf0a6c9730023044746c79a84c1fb97d6ca079bc73485",
+  "maker_active_s": null,
+  "maker_cost": null,
+  "maker_tokens": null,
+  "triples": 11
+}

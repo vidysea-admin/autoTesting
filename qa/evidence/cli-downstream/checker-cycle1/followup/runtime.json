@@ -1,0 +1,24 @@
+{
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\qa\\evidence\\cli-downstream\\cycle2\\invoke.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src",
+    "tests/test_orchestrate_downstream.py::test_downstream_approval_refusal_opens_no_sessions",
+    "tests/test_orchestrate_downstream.py::test_downstream_interrupted_execution_reports_unfinished_without_repeat",
+    "tests/test_orchestrate_downstream.py::test_downstream_failed_grade_resumes_without_repeating_browser",
+    "tests/test_orchestrate_downstream_privacy.py::test_downstream_rejects_secret_outputs_before_case_or_raw_persistence",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\checker-downstream-cycle1\\test_checker_probe.py",
+    "--basetemp",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\checker-downstream-cycle1\\pytest-temp",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts="
+  ],
+  "exit_code": 0,
+  "duration_s": 8.71900000000096,
+  "copy_inventory_count": 1021,
+  "environment_source": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\qa\\evidence\\cli-downstream\\cycle2\\environment.json",
+  "extra_pythonpath_tests": true
+}

@@ -1,14 +1,4 @@
-"""RUN_CASE_PIPELINE: the one function that runs a case and grades it.
-
-Contract: qa/contracts/run-case-pipeline.md RP1-RP4. Before this stage,
-grading always required a hand-written `Rubric` inline in a throwaway script
-(`scripts/regression_proof.py`, `scripts/bench_trial.py`,
-`scripts/run_pathlynks_first_cases.py`) — there was no generic "grade this
-case" path a UI button could call for an arbitrary project's case. This
-stage is that path: it lazily builds and persists a plain default rubric the
-first time a case is run without one, so any case is gradeable, forever,
-with no hand-written Python required.
-"""
+"""Observe cases and grade their persisted evidence with reusable default rubrics (RP1-RP4)."""
 
 from __future__ import annotations
 
@@ -28,7 +18,7 @@ from autotester.stages.agent_loop import AgentLoopResult, run_with_fallback
 from autotester.stages.case_expectation import expects_error
 from autotester.stages.execute import run_case
 from autotester.stages.grade import grade
-from autotester.stages.script_replay import Executor, run_scripted
+from autotester.stages.script_replay import Executor, ScriptedRun, run_scripted
 from autotester.store.project_store import ProjectStore
 
 GENERATOR = "stages.run_case_pipeline.default_rubric"
@@ -96,7 +86,7 @@ def is_stale_default(rubric: Rubric, case: Case) -> bool:
     return rubric.criteria == untouched.criteria and rubric.no_fire == untouched.no_fire
 
 
-def _rubric_for(case: Case, store: ProjectStore) -> Rubric:
+def rubric_for_case(case: Case, store: ProjectStore) -> Rubric:
     """Load `case`'s persisted rubric, or build+persist the lazy default the
     first time one doesn't exist (or the persisted one is a stale default,
     AT-059) — the single rubric-resolution seam both `run_and_grade_case` and
@@ -186,6 +176,22 @@ def _unjudged_replay(result: RawResult, run_id: str) -> Verdict:
     )
 
 
+def observe_case(case: Case, session: BrowserSession, store: ProjectStore, *,
+                 execute: Executor = run_case) -> tuple[ScriptedRun, str | None]:
+    """Observe one scripted case and finish capture without any grading."""
+    session.begin_case_video(case.id)
+    restarts = _take_session_events(session)
+    try:
+        scripted = run_scripted(case, session, store, execute)
+    finally:
+        video_rel = session.end_case_video()
+    scripted.result = _with_events(scripted.result, restarts)
+    return scripted, video_rel
+
+
+finalize_case_video = _finalize_video
+
+
 def run_and_grade_case(
     case: Case, session: BrowserSession, judge: Provider, run_id: str,
     store: ProjectStore | None = None, *, judge_replays: bool = True,
@@ -207,14 +213,9 @@ def run_and_grade_case(
     gets one bounded, guarded agent attempt. With neither (the default) nothing changes."""
     store = store or ProjectStore(case.project)
     execute = fallback_executor(agent, actuator, store) if agent is not None else run_case
-    session.begin_case_video(case.id)
-    restarts = _take_session_events(session)
-    try:
-        scripted = run_scripted(case, session, store, execute)
-    finally:
-        video_rel = session.end_case_video()
-    result = _with_events(scripted.result, restarts)
-    rubric = _rubric_for(case, store)
+    scripted, video_rel = observe_case(case, session, store, execute=execute)
+    result = scripted.result
+    rubric = rubric_for_case(case, store)
     if scripted.mode == "replay" and not judge_replays and _judgeable(result):
         verdict = _unjudged_replay(result, run_id)
     else:
@@ -257,14 +258,10 @@ def run_and_grade_case_resilient(
     grading is caught, and it produces an `INCONCLUSIVE` verdict naming the
     grader failure instead of propagating."""
     execute = fallback_executor(agent, actuator, store) if agent is not None else run_case
-    session.begin_case_video(case.id)
-    restarts = _take_session_events(session)
+    scripted, video_rel = observe_case(case, session, store, execute=execute)
+    result = scripted.result
     try:
-        result = _with_events(run_scripted(case, session, store, execute).result, restarts)
-    finally:
-        video_rel = session.end_case_video()
-    try:
-        rubric = _rubric_for(case, store)
+        rubric = rubric_for_case(case, store)
         with _judging(session):
             verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
                             secrets=session.secrets)
@@ -295,5 +292,5 @@ def grade_errored_result(
     one. Goes through the exact same rubric seam (`_rubric_for`) as a normal
     run, so an ERRORED case is still gradeable against its real rubric, not a
     placeholder."""
-    rubric = _rubric_for(case, store)
+    rubric = rubric_for_case(case, store)
     return grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id))

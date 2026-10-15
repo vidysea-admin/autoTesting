@@ -1,0 +1,36 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\cli-downstream\.work\cli-downstream-proof-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_orchestrate_downstream.py F                                   [100%]
+
+================================== FAILURES ===================================
+_______ test_downstream_execution_persists_raw_results_before_any_grade _______
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/cli-downstream/.work/cli-downstream-proof-tree2/.proof-temp-m02-red/test_downstream_execution_pers0')
+
+    def test_downstream_execution_persists_raw_results_before_any_grade(tmp_path):
+        f = downstream_fixture(tmp_path)
+        store, _, _, _, _, judge, ctx = f
+        expanded = _expand(f)
+        observed = ctx.runners[StageName.EXECUTE](ctx, expanded)
+>       assert len(store.load_results(ctx.run_id)) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = load_results('run-downstream')
+E        +      where load_results = <autotester.store.project_store.ProjectStore object at 0x0000014FDF67BA50>.load_results
+E        +      and   'run-downstream' = StageContext(store=<autotester.store.project_store.ProjectStore object at 0x0000014FDF67BA50>, run_id='run-downstream'...eWriter object at 0x0000014FDFAF3A10>, secrets=SecretStore(project='demo', keys=[]), release_scope=None, decision=None).run_id
+
+tests\test_orchestrate_downstream.py:74: AssertionError
+============================== warnings summary ===============================
+tests/test_orchestrate_downstream.py::test_downstream_execution_persists_raw_results_before_any_grade
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_orchestrate_downstream.py::test_downstream_execution_persists_raw_results_before_any_grade
+======================== 1 failed, 1 warning in 1.58s =========================

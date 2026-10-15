@@ -15,8 +15,13 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from autotester.schema.base import utc_now
+from autotester.core.ids import content_hash
+from autotester.schema.base import Artifact, utc_now
+from autotester.schema.case import Case
+from autotester.schema.flowspec import FlowSpec
 from autotester.schema.release import ReleaseDecision
+from autotester.schema.run import RawResult, RunBounds
+from autotester.schema.verdict import Verdict
 
 
 class StageName(StrEnum):
@@ -96,3 +101,35 @@ class RunState(BaseModel):
         """The checkpoint for `stage`, or None if this run has no such stage
         (e.g. INGEST on an explore run)."""
         return next((c for c in self.stages if c.stage is stage), None)
+
+
+class ExpansionAttempt(Artifact):
+    """Admission recorded before generation; uncertain same-run calls are never repeated."""
+
+    run_id: str
+    project: str
+    model_fingerprint: str
+    error: str | None = None
+
+
+class PipelineBatch(Artifact):
+    """One run's frozen model/cases and stage observations; nested outside result globs."""
+
+    run_id: str
+    project: str
+    flowspec: FlowSpec
+    cases: list[Case]
+    input_fingerprint: str
+    results: list[RawResult] = Field(default_factory=list)
+    verdicts: list[Verdict] = Field(default_factory=list)
+    video_refs: dict[str, str] = Field(default_factory=dict)
+    bounds: RunBounds | None = None
+    execution_started: bool = False
+    interrupted: bool = False
+    grading_error: str | None = None
+
+    @staticmethod
+    def fingerprint(flowspec: FlowSpec, cases: list[Case]) -> str:
+        """Bind exact model and case content, including claims outside content-addressed ids."""
+        return content_hash({"flowspec": flowspec.model_dump(mode="json"),
+                             "cases": [c.model_dump(mode="json") for c in cases]})

@@ -1,0 +1,106 @@
+{
+  "tests": ["tests/test_orchestrate_downstream.py"],
+  "consumers": [
+    "tests/test_run_case_pipeline.py::test_run_and_grade_case_builds_and_persists_a_default_rubric_when_none_exists",
+    "tests/test_run_case_pipeline.py::test_run_and_grade_case_reuses_an_existing_rubric_instead_of_overwriting_it",
+    "tests/test_run_case_pipeline.py::test_grade_errored_result_never_calls_the_judge",
+    "tests/test_report_export.py::test_export_excel_has_one_row_per_case",
+    "tests/test_report_export.py::test_export_html_embeds_the_screenshot_and_is_self_contained",
+    "tests/test_ui_runs.py::test_entry_case_gets_an_isolated_wiped_profile_not_the_shared_one",
+    "tests/test_video_evidence.py::test_video_option_and_its_prune_function_each_have_a_single_choke_point",
+    "tests/test_run_launcher.py::test_exactly_one_non_test_call_site_builds_a_run"
+  ],
+  "mutations": [
+    {
+      "name": "exact MODEL artifact, not canonical reload",
+      "file": "src/autotester/stages/orchestrate_downstream.py",
+      "old": "spec = read_json(Path(prev_ref), FlowSpec)",
+      "new": "spec = ctx.store.load_flowspec()",
+      "kills": ["test_downstream_generation_reads_exact_model_and_preserves_approved_truth"]
+    },
+    {
+      "name": "existing canonical human block",
+      "file": "src/autotester/stages/orchestrate_execute.py",
+      "old": "if canonical is not None and canonical.review.status is ReviewStatus.NEEDS_EDIT:",
+      "new": "if False:",
+      "kills": ["test_downstream_needs_edit_and_unreconciled_model_stop_before_spend"]
+    },
+    {
+      "name": "physical raw persistence before GRADE",
+      "file": "src/autotester/stages/orchestrate_execute.py",
+      "old": "    ctx.store.save_result(ctx.run_id, result)\n    batch.results.append(result)",
+      "new": "    pass  # deliberately omit durable observation\n    batch.results.append(result)",
+      "kills": ["test_downstream_execution_persists_raw_results_before_any_grade"]
+    },
+    {
+      "name": "approval checked before any browser session",
+      "file": "src/autotester/stages/orchestrate_execute.py",
+      "old": "    keys = require_declared_values(project, ctx.secrets, project.slug, batch.cases)",
+      "new": "    session_cls(project, ctx.secrets, ctx.store.paths.run_dir(ctx.run_id), ctx.store.paths).start()\n    keys = require_declared_values(project, ctx.secrets, project.slug, batch.cases)",
+      "kills": ["test_downstream_approval_refusal_opens_no_sessions"]
+    },
+    {
+      "name": "frozen case execution",
+      "file": "src/autotester/stages/orchestrate_execute.py",
+      "old": "ordered = sorted(batch.cases, key=lambda case: not is_entry_case(case, project))",
+      "new": "ordered = sorted(ctx.store.list_cases(), key=lambda case: not is_entry_case(case, project))",
+      "kills": ["test_downstream_snapshot_controls_execution_and_report_after_case_edits"]
+    },
+    {
+      "name": "frozen case report metadata",
+      "file": "src/autotester/stages/orchestrate_downstream.py",
+      "old": "html = export_html(batch.project, ctx.run_id, output / \"report.html\",\n                           ctx.store.paths.root, case_overrides=cases)",
+      "new": "html = export_html(batch.project, ctx.run_id, output / \"report.html\",\n                           ctx.store.paths.root, case_overrides=None)",
+      "kills": ["test_downstream_snapshot_controls_execution_and_report_after_case_edits"]
+    },
+    {
+      "name": "interrupted browser work never repeats",
+      "file": "src/autotester/stages/orchestrate_execute.py",
+      "old": "return _recover_interrupted(ctx, prior)",
+      "new": "progress.unlink()  # deliberately repeat uncertain browser work",
+      "kills": ["test_downstream_interrupted_execution_reports_unfinished_without_repeat"]
+    },
+    {
+      "name": "exact frozen content fingerprint",
+      "file": "src/autotester/stages/orchestrate_execute.py",
+      "old": "if batch.input_fingerprint != PipelineBatch.fingerprint(batch.flowspec, batch.cases):",
+      "new": "if False:",
+      "kills": ["test_downstream_rejects_changed_frozen_input_or_foreign_lineage"]
+    },
+    {
+      "name": "entry profile wiped before start",
+      "file": "src/autotester/stages/orchestrate_execute.py",
+      "old": "wipe_entry_profile(paths.profile_dir)",
+      "new": "pass  # deliberately retain prior login",
+      "kills": ["test_downstream_entry_case_uses_wiped_isolated_profile"]
+    },
+    {
+      "name": "pre-MODEL NEEDS_EDIT cannot be laundered",
+      "file": "src/autotester/stages/orchestrate_downstream.py",
+      "old": "if initial_blocked:",
+      "new": "if False:",
+      "kills": ["test_downstream_captured_human_block_survives_model_status_laundering"]
+    },
+    {
+      "name": "uncertain grading never spends again on resume",
+      "file": "src/autotester/stages/orchestrate_downstream.py",
+      "old": "if progress.exists():",
+      "new": "if False:",
+      "kills": ["test_downstream_failed_grade_resumes_without_repeating_browser"]
+    },
+    {
+      "name": "generation admission persists before uncertain spend",
+      "file": "src/autotester/stages/orchestrate_downstream.py",
+      "old": "before_call=lambda: _mark_generation(ctx, spec)",
+      "new": "before_call=lambda: None",
+      "kills": ["test_downstream_uncertain_generation_never_spends_again"]
+    },
+    {
+      "name": "pre-call validation refusal stays retryable",
+      "file": "src/autotester/stages/expand.py",
+      "old": "        prompt = mask_pii(  # AT-840\n            guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets))\n        if before_call is not None:\n            before_call()",
+      "new": "        if before_call is not None:\n            before_call()\n        prompt = mask_pii(  # AT-840\n            guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets))",
+      "kills": ["test_downstream_pre_call_prompt_refusal_remains_retryable"]
+    }
+  ]
+}
