@@ -223,3 +223,44 @@ def test_partial_write_is_visible_and_refuses_reuse(baseline, monkeypatch):
         prepare_baselines(root, inputs, output, plan)
     assert partial == {p: p.read_bytes() for p in output.rglob("*") if p.is_file()}
     assert before == {p: p.read_bytes() for p in store.paths.dir.rglob("*") if p.is_file()}
+
+
+@pytest.mark.parametrize("location", ["inside", "outside"])
+def test_resolved_source_project_stays_in_supplied_root(baseline, monkeypatch, location):
+    root, inputs, output, plan, store = baseline
+    container = root.parent.resolve()
+    relocated = (root if location == "inside" else container) / "relocated-product"
+    assert store.paths.dir.resolve().is_relative_to(container)
+    assert relocated.resolve().is_relative_to(container)
+    store.paths.dir.rename(relocated)
+    alias = store.paths.dir
+    if os.name == "nt":
+        script = ("New-Item -ItemType Junction -Path $env:BASELINE_ALIAS "
+                  "-Target $env:BASELINE_TARGET -ErrorAction Stop | Out-Null")
+        result = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script],
+            env=dict(os.environ, BASELINE_ALIAS=str(alias), BASELINE_TARGET=str(relocated)),
+            capture_output=True, timeout=20)
+        assert result.returncode == 0, (
+            "Environment gap: source junction creation failed: "
+            + result.stderr.decode(errors="replace"))
+    else:
+        alias.symlink_to(relocated, target_is_directory=True)
+    assert alias.resolve() == relocated.resolve()
+    assert relocated.is_relative_to(root) == (location == "inside")
+    config, read_bytes, reads = relocated / "project.json", Path.read_bytes, []
+
+    def record_config_read(path):
+        if path.resolve() == config:
+            reads.append(path)
+        return read_bytes(path)
+
+    monkeypatch.setattr(Path, "read_bytes", record_config_read)
+    if location == "inside":
+        receipt = prepare_baselines(root, inputs, output, plan)
+        assert receipt.source_config_sha256 == plan.source_config_sha256
+        assert len(reads) == 1 and (output / "baseline-receipt.json").exists()
+    else:
+        with pytest.raises(ValueError, match="source project"):
+            prepare_baselines(root, inputs, output, plan)
+        assert reads == [] and not output.exists()

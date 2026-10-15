@@ -80,11 +80,15 @@ def prepare_baselines(source_root: Path, input_root: Path, destination: Path,
     if destination.resolve() != destination or destination.exists():
         raise ValueError("baseline destination must be new and have no redirected ancestors")
     source_dir = ProjectPaths(safe_slug(plan.source_slug), source_root).dir.resolve()
+    config_path = ProjectPaths(plan.source_slug, source_root).config.resolve()
+    if (not source_dir.is_relative_to(source_root)
+            or not config_path.is_relative_to(source_root)):
+        raise ValueError("source project must remain within the supplied source root")
     if destination.is_relative_to(source_dir) or source_dir.is_relative_to(destination):
         raise ValueError("baseline destination overlaps the source project")
     if not plan.target_build.strip():
         raise ValueError("target build identity must be explicitly declared")
-    config = ProjectPaths(plan.source_slug, source_root).config.read_bytes()
+    config = config_path.read_bytes()
     if _digest(config) != plan.source_config_sha256:
         raise ValueError("source configuration changed since the plan was prepared")
     source = Project.model_validate_json(config)
