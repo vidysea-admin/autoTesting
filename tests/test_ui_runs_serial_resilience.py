@@ -222,8 +222,8 @@ def test_an_entry_case_crash_still_saves_every_case_and_the_run(
 
 def _run_entry_and_sibling(client, scratch_root, monkeypatch, width, wipe):
     """RU5: entry case + sibling at `width`; `wipe` replaces the profile's rmtree."""
+    import autotester.browser.profiles as profiles
     import autotester.stages.run_case_pipeline as pipeline
-    import autotester.ui.run_execution as execution
     from autotester.browser.session import BrowserSession
     from autotester.core.paths import ProjectPaths
     from autotester.stages.parallel_run import ParallelPlan
@@ -257,7 +257,7 @@ def _run_entry_and_sibling(client, scratch_root, monkeypatch, width, wipe):
                        grader_provider="x")
 
     for obj, name, fake in [(BrowserSession, "__init__", tracked_init),
-                            (execution.shutil, "rmtree", rmtree_stub),
+                            (profiles.shutil, "rmtree", rmtree_stub),
                             (pipeline, "run_case", fake_run_case), (pipeline, "grade", fake_grade)]:
         monkeypatch.setattr(obj, name, fake)
     _approve_demo_runs(scratch_root)
