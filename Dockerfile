@@ -18,12 +18,18 @@ RUN pip install --no-cache-dir uv
 
 WORKDIR /app
 
-# Keep the frozen environment outside the source tree (also for dev bind mounts).
-ENV UV_PROJECT_ENVIRONMENT=/opt/venv PYTHONDONTWRITEBYTECODE=1
+# Keep the frozen environment outside the source tree
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_PYTHON=3.13
 
-# Dependencies first so `uv sync` layers cache across code-only changes.
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project
+
+RUN uv python install 3.13 \
+    && uv sync --frozen --python 3.13 --no-install-project
+
+COPY . .
+RUN uv sync --frozen --python 3.13t
 
 COPY . .
 RUN uv sync --frozen
