@@ -1,0 +1,37 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\smtp-profile\.work\smtp-profile-proof
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_notification_profile.py F                                     [100%]
+
+================================== FAILURES ===================================
+________ test_profile_store_fails_closed_for_corrupt_or_wrong_identity ________
+
+profile_root = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/smtp-profile/.work/smtp-profile-proof/.temp-m11-red/test_profile_store_fails_close0/root')
+
+    def test_profile_store_fails_closed_for_corrupt_or_wrong_identity(profile_root: Path) -> None:
+        save_notification_pref(1, True)
+        path = profile_root / ".work" / "notification_prefs" / "1.json"
+        path.write_text('{"user_id":"2","email_run_reports":true}')
+        assert not load_notification_pref(1).email_run_reports
+        path.write_text("not JSON")
+        assert not load_notification_pref(1).email_run_reports
+        for bad_id in (0, -1, True, "../1"):
+            with pytest.raises(ValueError, match="positive numeric"):
+                load_notification_pref(bad_id)
+>       with pytest.raises(ValueError, match="boolean"):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_notification_profile.py:102: Failed
+============================== warnings summary ===============================
+..\..\..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity
+======================== 1 failed, 1 warning in 1.27s =========================

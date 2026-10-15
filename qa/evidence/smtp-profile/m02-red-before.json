@@ -1,0 +1,43 @@
+{
+  "base": "cec4b64e59e10019ba616fa031f550542d1350ca",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\qa\\evidence\\smtp-profile\\invoke.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src",
+    "tests/test_notification_profile.py::test_profile_session_policy_and_handler_guard",
+    "--basetemp",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\.temp-m02-red",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts="
+  ],
+  "command_sha256": "9bcd5ea0fc3ce25e00ec127e06e76eebf7d74c52a7864d83527404a5e8ffdaa1",
+  "copy_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof",
+  "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+  "environment_sha256": "88167e2ee7f7398662cc73cab0feb42fa1fba6f4a124e8fb50a20bdf7eb42a51",
+  "harness_sha256": "fc62f1190c9b49986c33ce899761d93ddf799dcf9f6ec9d7505f8f6a9c4e2c92",
+  "inventory_sha256": "ab7e08929212a2d830399a12487e50bc3375ead4561f191c6a12c4532b6c1e7c",
+  "invoke_sha256": "30c27bcf03b02e33f387e2f7b6d44f72e3e8fb881f3c13625a8d6e8a2e74ca2e",
+  "label": "m02-red",
+  "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+  "maker_active_s": null,
+  "maker_cost": null,
+  "maker_tokens": null,
+  "nodes": [
+    "tests/test_notification_profile.py::test_profile_session_policy_and_handler_guard"
+  ],
+  "overrides": {
+    "src/autotester/auth/policy.py": "816fe7039057d7fc0ffe3afa4958f75c8a8dea5501af52e843bbb548d6966ff3"
+  },
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_sha256": "1f25068aaf1e19f1672e979f4ef07449edfd7f59051f9d788c538ac64f4979f9",
+  "source": "0f65c208588e2f2d8c5d74d0cb22b140f4e56fa6",
+  "source_inventory_sha256": "8315aaf1ad0d5f312fa3d97dd37ecb266ce5b8766181927fdbddeae1c8c7c04d",
+  "spec_sha256": "6d16ecf7cf15a07cb828a05218338b30997b7698a1867c7d0288b1f08b297a81",
+  "started_at": 1792056853.1342719,
+  "started_monotonic": 20942.984,
+  "status": "running",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"
+}

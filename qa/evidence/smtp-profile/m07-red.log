@@ -1,0 +1,33 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\smtp-profile\.work\smtp-profile-proof
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_notification_profile.py F                                     [100%]
+
+================================== FAILURES ===================================
+_______ test_profile_cross_origin_and_invalid_input_preserve_preference _______
+
+profile_root = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/smtp-profile/.work/smtp-profile-proof/.temp-m07-red/test_profile_cross_origin_and_0/root')
+
+    def test_profile_cross_origin_and_invalid_input_preserve_preference(profile_root: Path) -> None:
+        user_id = account(ADMIN)
+        person = login(ADMIN)
+        refused = person.post("/profile", data={"email_run_reports": "on"},
+                              headers={"origin": "https://attacker.example"})
+>       assert refused.status_code == 403
+E       assert 303 == 403
+E        +  where 303 = <Response [303 See Other]>.status_code
+
+tests\test_notification_profile.py:82: AssertionError
+============================== warnings summary ===============================
+..\..\..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_notification_profile.py::test_profile_cross_origin_and_invalid_input_preserve_preference
+======================== 1 failed, 1 warning in 1.68s =========================
