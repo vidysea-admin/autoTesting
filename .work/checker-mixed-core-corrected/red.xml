@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.114" timestamp="2026-10-15T10:54:57.503608+00:00" hostname="windows-demo"><testcase classname="tests.test_teaching_inputs" name="test_changed_actual_input_requires_new_run_before_model[set]" time="0.248"><failure message="Failed: DID NOT RAISE TeachingInputsChanged">tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-mixed-aggregate/.work/checker-mixed-core-corrected/red-temp/test_changed_actual_input_requ0')
+change = 'set'
+
+    @pytest.mark.parametrize("change", ["set", "text", "bytes", "transcript", "receipt"])
+    def test_changed_actual_input_requires_new_run_before_model(tmp_path, change):
+        store = ProjectStore("demo", root=tmp_path)
+        store.save_project(Project(slug="demo", name="Demo", base_url="https://example.test"))
+        if change in {"bytes", "receipt"}:
+            source = add_local(store, "input", SourceKind.DOC, "source.md")
+            if change == "receipt":
+                add_pdf_receipt(store, source)
+        elif change == "transcript":
+            source = add_local(store, "input", SourceKind.AUDIO, "source.wav")
+            store.save_transcript(
+                Transcript(
+                    source_id=source.id,
+                    engine="sidecar",
+                    segments=[TranscriptSegment(start=1, end=2, text="Save")],
+                )
+            )
+        else:
+            source = store.add_source(
+                Source(id="input", project="demo", kind=SourceKind.TEXT, text="Original")
+            )
+        provider = MixedTeacherFake()
+        run_teaching(store, provider)
+        if change == "set":
+            store.add_source(Source(id="added", project="demo", kind=SourceKind.TEXT, text="Added"))
+        elif change == "text":
+            store.paths.sources_index.write_text(
+                source.model_copy(update={"text": "Changed"}).model_dump_json() + "\n"
+            )
+        elif change == "bytes":
+            from pathlib import Path
+    
+            Path(source.path).write_bytes(b"changed actual local bytes")
+        elif change == "transcript":
+            store.save_transcript(
+                Transcript(
+                    source_id=source.id,
+                    engine="sidecar",
+                    segments=[TranscriptSegment(start=1, end=2, text="Changed narration")],
+                )
+            )
+        else:
+            path = store.paths.sources_dir / source.id / "document.json"
+            receipt = read_json(path, DocumentReading)
+            receipt.pages[0].confidence = 80
+            write_json(path, receipt)
+&gt;       with pytest.raises(TeachingInputsChanged):
+E       Failed: DID NOT RAISE TeachingInputsChanged
+
+tests\test_teaching_inputs.py:61: Failed</failure></testcase></testsuite></testsuites>

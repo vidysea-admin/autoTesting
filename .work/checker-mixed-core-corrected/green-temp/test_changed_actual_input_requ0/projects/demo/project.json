@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-15T10:54:50.719248Z",
+  "slug": "demo",
+  "name": "Demo",
+  "base_url": "https://example.test",
+  "allowed_domains": [],
+  "write_policy": "read_only",
+  "production": false,
+  "max_parallel": 1,
+  "permitted_surface": [],
+  "secrets": [],
+  "providers": {
+    "vision": "gemini",
+    "agent": "model-chain",
+    "judge": "model-chain"
+  },
+  "test_id_attributes": [],
+  "headed": true,
+  "ux_policy": {
+    "enabled": false,
+    "max_calls": 20
+  }
+}

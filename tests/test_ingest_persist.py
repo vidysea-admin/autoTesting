@@ -201,7 +201,7 @@ def test_the_transcript_is_injected_verbatim_into_the_prompt(tmp_path: Path) -> 
     assert "{{NARRATION}}" not in prompt, "the placeholder survived -- nothing was injected"
 
 
-def test_a_silent_recording_says_so_instead_of_leaving_a_gap(tmp_path: Path) -> None:
+def test_absent_narration_is_unavailable_instead_of_claiming_silence(tmp_path: Path) -> None:
     """An empty narration block invites the model to fill it. Saying "no speech
     detected" is an instruction; leaving it blank is an opening."""
     store = make_store(tmp_path)
@@ -209,7 +209,8 @@ def test_a_silent_recording_says_so_instead_of_leaving_a_gap(tmp_path: Path) -> 
 
     prompt = build_ingest_prompt(source, RepoDocs(), None)
 
-    assert "no speech detected" in prompt
+    assert "no supplied transcript" in prompt
+    assert "no speech detected" not in prompt
     assert "{{NARRATION}}" not in prompt
 
 
@@ -278,3 +279,4 @@ def test_a_video_screen_and_a_crawled_screen_of_one_url_produce_one_pattern(
         title="Trainers", name="Trainers"))
 
     assert from_video.url_pattern == from_crawl.url_pattern == "/erp/trainers"
+

@@ -251,7 +251,7 @@ def test_an_unreadable_sidecar_is_never_reported_as_silence(root: Path, spy: Moc
     assert "do NOT assume the recording is silent" in prompt
 
 
-def test_a_recording_with_genuinely_no_sidecar_still_says_no_speech(
+def test_a_recording_without_a_sidecar_reports_unavailable_narration(
     root: Path, spy: MockProvider,
 ) -> None:
     """The other side of AT-134: absent is NOT the same fact as unreadable, and
@@ -260,7 +260,9 @@ def test_a_recording_with_genuinely_no_sidecar_still_says_no_speech(
 
     runner.invoke(app, ["ingest", "run", "demo", source_id, "--provider", "mock"])
 
-    assert "no speech detected" in (spy.prompts[-1][1] if spy.prompts else "")
+    prompt = spy.prompts[-1][1] if spy.prompts else ""
+    assert "no supplied transcript" in prompt
+    assert "no speech detected" not in prompt
 
 
 def test_a_source_pointing_at_a_directory_gets_a_typed_refusal(root: Path) -> None:
@@ -287,3 +289,4 @@ def test_uploading_a_missing_file_is_a_provider_error(tmp_path: Path) -> None:
 
     with pytest.raises(ProviderError, match="not a readable file"):
         upload_and_wait(object(), tmp_path / "nope.mp4")
+
