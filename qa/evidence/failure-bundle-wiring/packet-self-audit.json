@@ -1,0 +1,29 @@
+{
+  "status": "SELF_AUDIT_OK",
+  "mutations": 12,
+  "fingerprints": {
+    "src/autotester/schema/failure_bundle.py": "8ec87f1b6b86546b3dd153c01eadabc3adc05196efedfeca0c8199d34586b482",
+    "src/autotester/stages/run_artifacts.py": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "src/autotester/stages/run_launcher.py": "64898586e70bfa5f5f1a9f95f20bca926e8364db959501bee45fb3e5223275ea",
+    "src/autotester/stages/report_export.py": "5e568b6c482de1838c3f97a79bd4c7436a34678b8700003aef9a45c63ca5fdcf",
+    "src/autotester/stages/failure_bundle.py": "651638e2b1c29e80a1f3cb087c24863b06876d0211b1405cdfe952b6cbb22e2f",
+    "src/autotester/core/image_privacy.py": "3dfd77e802a5047aa6364f3e6e38d8d333dc6daafe4542869f64cb092a446ea7",
+    "tests/test_run_failure_artifacts.py": "2267445eabf84d1fca821dcc5f674c42434d599fde2a7f04f1dbc7b5492a5e52",
+    "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+    "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+  },
+  "selected_existing_nodes": [
+    "tests/test_failure_bundle.py::test_a_write_that_dies_mid_bundle_leaves_only_the_partial_and_the_loader_refuses",
+    "tests/test_failure_bundle.py::test_a_verdict_or_trace_span_from_another_run_is_refused",
+    "tests/test_failure_bundle.py::test_no_planted_secret_reaches_any_part_of_the_bundle",
+    "tests/test_report_export.py::test_export_excel_has_one_row_per_case",
+    "tests/test_report_export.py::test_export_html_embeds_the_screenshot_and_is_self_contained",
+    "tests/test_run_launcher.py::test_exactly_one_non_test_call_site_builds_a_run",
+    "tests/test_run_launcher.py::test_exactly_one_non_test_call_site_executes_the_cases"
+  ],
+  "checker_verdict": null,
+  "maker_tokens": null,
+  "maker_cost": null,
+  "maker_active_s": null
+}

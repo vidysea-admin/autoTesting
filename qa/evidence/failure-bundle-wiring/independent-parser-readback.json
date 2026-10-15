@@ -1,0 +1,11 @@
+{
+  "actual_parser": "autotester.ledger.checks._passed",
+  "result": true,
+  "authoritative_fields": {
+    "VERDICT": "PASS",
+    "Status": "PASS",
+    "Cycle checked": 1,
+    "Reviewed SHA": "902cbc3f41b6541905886e2d22382c48ec78847d"
+  },
+  "candidate_hashes_unchanged": true
+}

@@ -1,0 +1,57 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_bundle_exception_preserves_functional_records ______________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-inner-recovery-red/test_bundle_exception_preserve0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000027680165B50>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x00000276800E0690>
+
+    def test_bundle_exception_preserves_functional_records(tmp_path, monkeypatch, caplog):
+        def fail(**kwargs):
+            raise RuntimeError(SECRET)
+    
+        monkeypatch.setattr(run_artifacts, "build_failure_bundle", fail)
+        store, run, case, original = _launch(tmp_path, monkeypatch)
+        assert all((store.paths.run_dir(run.id) / n).read_bytes() == b for n, b in original.items())
+        path = store.paths.bundles_dir(run.id) / "index.json"
+>       index = BundleIndex.model_validate_json(path.read_text())
+                                                ^^^^^^^^^^^^^^^^
+
+tests\test_run_failure_artifacts.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-inner-recovery-red/test_bundle_exception_preserve0/projects/demo/runs/run-A/bundles/index.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-failure-bundles\\.work\\failure-bundle-evidence\\pytest-inner-recovery-red\\test_bundle_exception_preserve0\\projects\\demo\\runs\\run-A\\bundles\\index.json'
+
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1044: FileNotFoundError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.stages.run_artifacts:run_artifacts.py:99 failure_bundle_index_unavailable
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-failure-bundles\.work\failure-bundle-evidence\mutation-tree-4\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records
+1 failed, 2 warnings in 0.94s

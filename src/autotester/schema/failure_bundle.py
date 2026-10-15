@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 from pathlib import Path, PurePosixPath
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -71,3 +72,26 @@ class BundleManifest(Artifact):
     failing_step: int | None = None
     steps_included: list[int] = Field(default_factory=list)
     files: list[BundleFile] = Field(default_factory=list)
+
+
+class BundleAssembly(BaseModel):
+    """A case's assembly outcome; visual shortfalls never imply full image coverage."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    case_id: str
+    bundle_id: str | None = Field(default=None, pattern=r"^fb_[A-Za-z0-9]+$")
+    status: Literal["complete", "unavailable"]
+    diagnostic: Literal["assembly_failed", "image_text_unavailable"] | None = None
+    image_text_unavailable: bool = False
+    images_requested: int = Field(default=0, ge=0)
+    images_included: int = Field(default=0, ge=0)
+    images_withheld: int = Field(default=0, ge=0)
+    image_reasons: list[str] = Field(default_factory=list)
+
+
+class BundleIndex(Artifact):
+    """Typed run-local lookup, nested below bundles/ to avoid result-file discovery."""
+
+    run_id: str
+    cases: list[BundleAssembly] = Field(default_factory=list)

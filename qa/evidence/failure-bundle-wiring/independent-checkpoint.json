@@ -1,0 +1,12 @@
+{
+  "phase_started_monotonic": 17645.437,
+  "phase_started_unix": 1792053555.592619,
+  "initial_actual_s": null,
+  "initial_budget_debit_s": 45,
+  "phase_ended_monotonic": 17793.531,
+  "phase_ended_unix": 1792053703.6843166,
+  "status": "NEEDS_EXTRA_REVIEW",
+  "reason": "Runtime checks complete; canonical parser/readback/accounting/commit pending",
+  "tokens": null,
+  "cost": null
+}

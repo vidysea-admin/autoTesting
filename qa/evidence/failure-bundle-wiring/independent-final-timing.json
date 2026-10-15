@@ -1,0 +1,13 @@
+{
+  "close_start_monotonic": 17816.671,
+  "close_end_monotonic": 17874.75,
+  "close_duration_s": 58.07900000000154,
+  "initial_actual_s": null,
+  "initial_debit_s": 45,
+  "runtime_actual_s": 148.094,
+  "runtime_overrun_s": 13.094,
+  "close_tokens": null,
+  "tokens_total": null,
+  "cost": null,
+  "ratio_verified": false
+}

@@ -1,0 +1,61 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_bundle_exception_preserves_functional_records ______________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-outer-recovery-red/test_bundle_exception_preserve0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000012A001793D0>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x0000012A0015B710>
+
+    def test_bundle_exception_preserves_functional_records(tmp_path, monkeypatch, caplog):
+        def fail(**kwargs):
+            raise RuntimeError(SECRET)
+    
+        monkeypatch.setattr(run_artifacts, "build_failure_bundle", fail)
+        store, run, case, original = _launch(tmp_path, monkeypatch)
+        assert all((store.paths.run_dir(run.id) / n).read_bytes() == b for n, b in original.items())
+        path = store.paths.bundles_dir(run.id) / "index.json"
+        index = BundleIndex.model_validate_json(path.read_text())
+        assert index.cases[0].status == "unavailable" and index.cases[0].diagnostic == "assembly_failed"
+        assert SECRET not in path.read_text()
+        assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0] is None
+        assert store.load_verdicts(run.id)[0].result is Result.FAIL
+        monkeypatch.setattr(run_artifacts, "write_json", lambda *a: fail())
+>       store, run, _, original = _launch(tmp_path / "index-failure", monkeypatch)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_run_failure_artifacts.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_run_failure_artifacts.py:64: in _launch
+    run = run_launcher.launch_run("demo", run_id="run-A")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\run_launcher.py:280: in launch_run
+    run = save_tracked_run(
+src\autotester\stages\run_launcher.py:261: in save_tracked_run
+    assemble_run_bundles(store, run)
+src\autotester\stages\run_artifacts.py:96: in assemble_run_bundles
+    write_json(_inside(store.paths.bundles_dir(run.id) / "index.json", run_dir), index)
+tests\test_run_failure_artifacts.py:115: in <lambda>
+    monkeypatch.setattr(run_artifacts, "write_json", lambda *a: fail())
+                                                                ^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+kwargs = {}
+
+    def fail(**kwargs):
+>       raise RuntimeError(SECRET)
+E       RuntimeError: BundlePlantedCredential928
+
+tests\test_run_failure_artifacts.py:104: RuntimeError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-failure-bundles\.work\failure-bundle-evidence\mutation-tree-4\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records
+1 failed, 2 warnings in 1.14s
