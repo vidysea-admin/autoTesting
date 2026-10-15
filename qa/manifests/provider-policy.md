@@ -1,6 +1,6 @@
 # Manifest — provider-policy
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Unit:** Owner-authorized Ollama-primary/Gemini fallback and narration contract amendment.
 **Branch:** codex/provider-policy
