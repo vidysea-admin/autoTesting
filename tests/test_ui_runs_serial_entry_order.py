@@ -265,7 +265,7 @@ def test_real_trigger_undersized_grant_refuses_all_stored_costs_before_run(
     response = client.post("/projects/demo/run", follow_redirects=False)
     assert response.status_code == 403, response.text
     assert "--max-actions 9" in response.text
-    assert "--wall-clock 72" in response.text
+    assert "--wall-clock 477.0" in response.text  # 72 + 9x45s judge, b2d6558f (deliberate)
     assert events == []
     assert not store.paths.runs_dir.exists() or not list(store.paths.runs_dir.iterdir())
 

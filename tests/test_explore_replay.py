@@ -81,7 +81,16 @@ def test_the_crawl_really_typed_and_really_replayed(
 # --- CR7: the replay passes the SAME gate a fresh type passes ---------------
 
 
+class _Redactor:
+    def scrub_obj(self, obj):
+        return obj
+
+
 class _Secrets:
+    def redactor(self) -> _Redactor:
+        # crawl artifacts are scrubbed through the session's Redactor (b6336876, approval-prod-gate)
+        return _Redactor()
+
     def scrub_optional(self, text: str | None) -> str | None:
         return text
 

@@ -37,7 +37,9 @@ def is_account_derived(approval: RunApproval) -> bool:
     return approval.granted_by.startswith("account-derived:")
 
 
-MAX_GRANT_ACTIONS, MAX_GRANT_WALL_CLOCK_S, MAX_GRANT_DAYS = 2000, 86400.0, 30
+MAX_GRANT_ACTIONS = 2000
+MAX_GRANT_WALL_CLOCK_S = 86400.0
+MAX_GRANT_DAYS = 30
 
 
 def validate_grant_bounds(

@@ -8,6 +8,10 @@
   "Print a finished run's redacted report."
  ],
  [
+  "revoke",
+  "Revoke an approval with a signed row."
+ ],
+ [
   "catalog",
   "Which test classes can run for a project."
  ],

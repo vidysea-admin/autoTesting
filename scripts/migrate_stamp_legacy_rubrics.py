@@ -43,12 +43,15 @@ from autotester.schema.base import Provenance
 from autotester.schema.verdict import Rubric
 from autotester.stages.run_case_pipeline import GENERATOR, _rubric_for_claim
 
-# The exact template `run_case_pipeline._rubric_for_claim` writes -- see that
+# The exact template `run_case_pipeline._rubric_for_claim` writes (reworded in 54cf364a) -- see that
 # function. Matched with DOTALL so a claim containing its own newlines or
 # periods still parses; the anchors on both ends are what make this shape-only
 # rather than a guess.
 _CLAIM_RE = re.compile(
-    r"^The evidence is consistent with: (?P<claim>.*)\. If you cite this as a "
+    r"^The product behaved correctly for this case, whose stated purpose is: "
+    r"(?P<claim>.*)\. Evidence of a defect \(an error or rejection where success was "
+    r"expected, a wrong result, a missing element\) means this criterion is NOT met, "
+    r"even when the purpose above is to catch that defect\. If you cite this as a "
     r"failure, use criterion id 'c1' exactly — do not invent a different id\.$",
     re.DOTALL,
 )
