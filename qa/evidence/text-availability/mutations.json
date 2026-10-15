@@ -1,0 +1,128 @@
+[
+  [
+    "auth",
+    "src/autotester/providers/availability.py",
+    "== 401:",
+    "== 499:",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure0]"
+  ],
+  [
+    "service",
+    "src/autotester/providers/availability.py",
+    "in (502, 503, 504):",
+    "in (599,):",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure1]"
+  ],
+  [
+    "network",
+    "src/autotester/providers/availability.py",
+    "(TimeoutError, ConnectionError)",
+    "(TimeoutError,)",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure2]"
+  ],
+  [
+    "capability",
+    "src/autotester/providers/availability.py",
+    "if isinstance(exc, Unsupported):",
+    "if False:",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure3]"
+  ],
+  [
+    "fail_closed",
+    "src/autotester/providers/availability.py",
+    "    return None\n",
+    "    return \"service\"\n",
+    "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+  ],
+  [
+    "chain_gate",
+    "src/autotester/providers/model_chain.py",
+    "except (AvailabilityFailure, Unsupported) as exc:",
+    "except ProviderError as exc:",
+    "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+  ],
+  [
+    "strict_repair",
+    "src/autotester/providers/litellm_provider.py",
+    "strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False)",
+    "strict=False",
+    "tests/test_text_availability.py::test_malformed_output_repairs_once_then_stops"
+  ],
+  [
+    "global_count",
+    "src/autotester/providers/attempts.py",
+    "if scope.used >= scope.max_calls:",
+    "if False:",
+    "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[2-30]"
+  ],
+  [
+    "global_deadline",
+    "src/autotester/providers/attempts.py",
+    "if scope.deadline is not None:",
+    "if False:",
+    "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]"
+  ],
+  [
+    "text_only",
+    "src/autotester/providers/model_chain.py",
+    "self._implicit_fallback and extra.get(\"images\")",
+    "False",
+    "tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins"
+  ],
+  [
+    "explicit_order",
+    "src/autotester/providers/model_chain.py",
+    "not (options.get(\"model\") or os.environ.get(ORDER_ENV))",
+    "True",
+    "tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins"
+  ],
+  [
+    "credentials_skip",
+    "src/autotester/providers/model_chain.py",
+    "if tier.available():",
+    "if True:",
+    "tests/test_text_availability.py::test_missing_ollama_keys_and_fallback_model_override"
+  ],
+  [
+    "fallback_override",
+    "src/autotester/providers/model_chain.py",
+    "os.environ.get(FALLBACK_ENV) or TEXT_FALLBACK",
+    "TEXT_FALLBACK",
+    "tests/test_text_availability.py::test_missing_ollama_keys_and_fallback_model_override"
+  ],
+  [
+    "secret_guard",
+    "src/autotester/providers/litellm_provider.py",
+    "assert_no_raw_secrets(text, self._secret_values())",
+    "pass",
+    "tests/test_text_availability.py::test_secret_never_reaches_any_tier"
+  ],
+  [
+    "unknown_usage",
+    "src/autotester/providers/litellm_provider.py",
+    "getattr(usage, \"prompt_tokens\", None)",
+    "getattr(usage, \"prompt_tokens\", 0)",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+  ],
+  [
+    "finite_timeout",
+    "src/autotester/providers/litellm_provider.py",
+    "receipt, kwargs[\"timeout\"] = reserve_attempt(self.label, role, _TIMEOUT_S)",
+    "receipt, ignored_timeout = reserve_attempt(self.label, role, _TIMEOUT_S)",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+  ],
+  [
+    "no_hidden_retries",
+    "src/autotester/providers/litellm_provider.py",
+    "\"num_retries\": 0",
+    "\"num_retries\": 1",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+  ],
+  [
+    "visible_reason",
+    "src/autotester/providers/model_chain.py",
+    "self._call.fallback_reasons.append(errors[-1])",
+    "pass",
+    "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+  ]
+]

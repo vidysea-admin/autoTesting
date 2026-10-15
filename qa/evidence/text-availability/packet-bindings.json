@@ -1,0 +1,50 @@
+{
+  "head_before_packet": "aa7813ad20c6ead5012559d9f9961b2a15338d56",
+  "fixture_config_contract_sha256": {
+    "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+    "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+    "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+    "tests/auth_login_fixture.py": "6e809935e0daf55ac2e6b66b31f1f4e8424fc092d57e7714eb42470000d376b1",
+    "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+    "qa/contracts/core-invariants.md": "578c29ef339bfd109ad0fb5e1307c5fb0a697dcf098d5c6d09a8a2d4cb5ec1a6",
+    "qa/contracts/langchain-fallback.md": "2a358e66ea97a9103187df89c4552673041784f87f8a8521a5867389dd306ac3",
+    "qa/contracts/providers-litellm.md": "f47b82b83c492450c373f5e2ed5004a477e547077d5f41712c04113c0504e734",
+    "qa/loop.md": "b5ad8d5066e87b028661813f2b066de0f954a17e83e5eede1b164e4e754ad20f",
+    "qa/adapter.json": "fd86abee2b04415ad537fcc27080838ec05635b30e60b6e62bb02b7220ab9fb1"
+  },
+  "supplemental_receipts": [
+    {
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-c",
+        "from autotester import main; main()",
+        "doctor"
+      ],
+      "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability",
+      "output": "qa\\evidence\\text-availability\\doctor-corrected.log",
+      "sha256": "5f9ff04809ba1129cc2190817af0a06aeda31378950d4875feb78f25831d2881",
+      "exit": 1,
+      "source_commit": "1ecf58cef26e96b713c005e1b089363e4a7fbc18",
+      "policy_commit": "40f5b4b20e91d3806ee313fb8e67af109b62b0ae"
+    },
+    {
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        ".work/probe-missing-fallback.py"
+      ],
+      "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability",
+      "output": "qa\\evidence\\text-availability\\missing-fallback.log",
+      "sha256": "51a34d5ce8c52ae1efab2587519df6c937da28e4b38b3127ba773f400824742f",
+      "exit": 0,
+      "source_commit": "1ecf58cef26e96b713c005e1b089363e4a7fbc18",
+      "policy_commit": "40f5b4b20e91d3806ee313fb8e67af109b62b0ae"
+    }
+  ],
+  "model_reference": "https://ai.google.dev/gemini-api/docs/models.md",
+  "model_reference_observed_utc": "2026-10-15",
+  "maker_active_seconds": null,
+  "maker_tokens": null,
+  "maker_cost": null,
+  "checker_ratio": "unverified",
+  "scope": "text-only LiteLLM; no Gemini SDK/upload/poll/media attempt certification"
+}

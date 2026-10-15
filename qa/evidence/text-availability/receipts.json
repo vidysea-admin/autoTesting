@@ -1,0 +1,1024 @@
+[
+  {
+    "label": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy\\.work"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\preflight.log",
+    "sha256": "6d547a34267b41443be59d5ece5b3b46160d6b0ec4d14a89a5d7b688346599c6",
+    "source": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "baseline",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py",
+      "tests/test_model_chain.py",
+      "tests/test_provider_attempts.py"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\baseline.log",
+    "sha256": "a2b43483538dcf589c286dbe0cc3d2ebb4587e8810ecdf6ae7d7d88773c02c19",
+    "source": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "auth-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure0]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\auth-red.log",
+    "sha256": "9f3547598f37551c6ba0f83a051864fdb40502c1892e93884e6467e9ff46a5b4",
+    "source": {
+      "src/autotester/providers/availability.py": "4ced38abb7ac05513a0c16c995cef176034fc71da97d86a7e30135a39a9eaac9",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "auth-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure0]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\auth-restored.log",
+    "sha256": "49a5f64d0831c9e73d5597559b91d74a41ec7370025598c75cd081f77385c4e1",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "service-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure1]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\service-red.log",
+    "sha256": "0ed1de54de7ef165a06a4b229559c58537cabcbc73eb73ab39ddd890a5b1b920",
+    "source": {
+      "src/autotester/providers/availability.py": "890dea7a3eb1fc2e3091f90bccce0d8420e8b718a1ba71608e9b022d10121248",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "service-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure1]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\service-restored.log",
+    "sha256": "2c5f12949bff274500278fd7ca50e61169f341948c41ffda638be33042c1f3e6",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "network-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure2]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\network-red.log",
+    "sha256": "80f25561bcc3b692799ea74ad69398527b13fd8208763d6f615cd63d75b4a04a",
+    "source": {
+      "src/autotester/providers/availability.py": "e203ea18e218f02e6a41e1cfe184d2335db37d2edba3c3d841de688c9ddbc349",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "network-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure2]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\network-restored.log",
+    "sha256": "e44ccca9dfc2a2dad458ca441772c941ea39ddfa9433a1d164ffec8713aa481b",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "capability-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure3]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\capability-red.log",
+    "sha256": "02e1192b047a292deb2146961dcf34d5c85dd7fd866a7a6019118020984e399c",
+    "source": {
+      "src/autotester/providers/availability.py": "72caecb4fa1a92c95d742f2044804062d79beae230f40d2d83044100d88b96a5",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "capability-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure3]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\capability-restored.log",
+    "sha256": "1620599cefcc231305edd5b3837b8c4e1c1b169dda84810a70cca5b6fefd539d",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "fail_closed-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\fail_closed-red.log",
+    "sha256": "a9427e01c51e79c14f9dc8447f1d18cd1117fcd55eb890c05d80175a0a089ef1",
+    "source": {
+      "src/autotester/providers/availability.py": "512b32b6d0ead82fef83e4292b2f179b368e822121901b1d57d21e26830a1618",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "fail_closed-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\fail_closed-restored.log",
+    "sha256": "97d1404b94a5e1a8884306eea3d971c721f214c7927163627aff009556746805",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "chain_gate-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\chain_gate-red.log",
+    "sha256": "797e36503acee72c4a48eca2b0195180efc24dfe61d7db39d02265ac758427be",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "699d0edb716b82735cfca0ad4b01b0a8e365cbaf61bebd7735521a84117502bb",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "chain_gate-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\chain_gate-restored.log",
+    "sha256": "c912d403bf2b073a1c02648db08c2f1e20c08bdc126f37c5c29eb28d426abb1a",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "strict_repair-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_malformed_output_repairs_once_then_stops"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\strict_repair-red.log",
+    "sha256": "bcf696ebac783b22212595daab2dfe00f223b4cf0873345ada757cbfefc5c474",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "8300a78c013c5677a143b0dc04bf483313c2bcd6728c807d6cf679ba35745938",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "strict_repair-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_malformed_output_repairs_once_then_stops"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\strict_repair-restored.log",
+    "sha256": "cbd50ff41e75124a6ebe7984bfd4d46068b8bfe75eaa34f68095b0d30bca2b04",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "global_count-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[2-30]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\global_count-red.log",
+    "sha256": "cd3e71d1d268d5b28b3d5572b5fe4d149a62628c0b408cbd4c49440efceca3a3",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "global_count-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[2-30]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\global_count-restored.log",
+    "sha256": "2197ef3314b9817a0d338454319db94e6396e9304fa3ec16f828d930643cde6e",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "global_deadline-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\global_deadline-red.log",
+    "sha256": "bee4278a743f3df4cbe38f62bbef1b65e658ef8f770c287debe84bd6a0a6731a",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "global_deadline-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\global_deadline-restored.log",
+    "sha256": "80b8cff521496d68c6e15e330a8f1d060fc8132e0dd8a1b4df809bf32405ca67",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "text_only-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\text_only-red.log",
+    "sha256": "d31ba3549aa97b774b25036e3ecdd5b4cb52e6d99bcac7321ff6d5b214b924da",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "eefaf004ac13dfb24fcc180762802eae06a1bbe486a810db2c2230dce453b155",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "text_only-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\text_only-restored.log",
+    "sha256": "119109c35e996046a5d546e0eb8698a6457bd96f38f0acec72455aaee2701163",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "explicit_order-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\explicit_order-red.log",
+    "sha256": "c1bf725e32ec751bc6fc477a1c2efce8a90093b662bb42169da3904828b57aa5",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "42e2373849c827cc3759520c8b0d5d824b0b3d7cc7676b30c881587eff503005",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "explicit_order-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\explicit_order-restored.log",
+    "sha256": "f0fcec2157560d41a28270fa4f7f74acfd953a05d837bbaa023f23fe6b3084af",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "credentials_skip-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_missing_ollama_keys_and_fallback_model_override"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\credentials_skip-red.log",
+    "sha256": "956650e98e0ec9344289f4045cec0d88b98886313835333c269ab274a8cda1e2",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "d5b71a7bdfc79319a3428f17a9a4baab5eb44c15b285d646435fd944370c0a00",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "credentials_skip-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_missing_ollama_keys_and_fallback_model_override"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\credentials_skip-restored.log",
+    "sha256": "f0c7870e3e2c2d963d5e0e5ece7310824b1acdf5da65476e5ef648bb521fc471",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "fallback_override-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_missing_ollama_keys_and_fallback_model_override"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\fallback_override-red.log",
+    "sha256": "3cb393f92a66053e929e8d650e2867471a21a38bc7bc29d133f46ea048dfbd29",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "35fcc69530b07f2b49316c5bc93bdad64bd2ef9af6b8d323ecc33aad492b750e",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "fallback_override-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_missing_ollama_keys_and_fallback_model_override"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\fallback_override-restored.log",
+    "sha256": "d904bc1f669768e2ce275f9fea82bb46de6f576a592aa22dce52177894a60e80",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "secret_guard-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_secret_never_reaches_any_tier"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\secret_guard-red.log",
+    "sha256": "e6011d87154691f7607b6eb269aff79be929cd33f2701e7f5629941e6d4bcc98",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "22cf90d880d2037f76fb82a6e2d3ae60f41c34bb743a39741a6aa06966038179",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "secret_guard-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_secret_never_reaches_any_tier"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\secret_guard-restored.log",
+    "sha256": "0b995425f9084aaee381f406a61c020307a989b91110deea9e69586dbae422aa",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "unknown_usage-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\unknown_usage-red.log",
+    "sha256": "68bead90ccd6b1f1a218502ca04a61d02ea88a8dcd8087479ca6a841e46f99b1",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "ec0b25a2930818998286a063646fb286178b228701a631d8449487358ee17bf5",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "unknown_usage-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\unknown_usage-restored.log",
+    "sha256": "666b66df47184c4529315d4fdbd204c05f991e55c2ed32604d1e5d11d3267f5f",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "finite_timeout-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\finite_timeout-red.log",
+    "sha256": "206162eef88b1bb90ecad432e23c610dd64113adea44023e6e0b698792e9864a",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "270cb6d28d667f6258a17914857586ef59654f957c07da02716de7a5109bdb42",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "finite_timeout-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\finite_timeout-restored.log",
+    "sha256": "39637893d03f69c74f7097ca06f295ffb95061a92c504d2fdff83264eddf4571",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "no_hidden_retries-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\no_hidden_retries-red.log",
+    "sha256": "7b28c99d4c97f2a46a94fed6eb0504251fbf4980f1a7a363360b8b1a182202da",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "78cc621ccba427a44b1c26a5b63751ea2bfb7d81d2f10df703bf6a2a260424c6",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "no_hidden_retries-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\no_hidden_retries-restored.log",
+    "sha256": "04fe9998b7bd3d0176904487750b29cd829f2cd6c880b48e727681b3269ccfa8",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "visible_reason-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 1,
+    "expected": 1,
+    "output": "qa\\evidence\\text-availability\\visible_reason-red.log",
+    "sha256": "490b3c105cdc14c56d9d40fb80a854dd964f1d61ef40c1c200b92dd8c73e17c9",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "015b5206a4c67f7f1517db71f9ad9c033a8765421604011e6fc1f05146304640",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "visible_reason-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\visible_reason-restored.log",
+    "sha256": "56a04e08efdc309b2a1e0a993a425bc3c8f67b8b2c041c7852c8e4bd55ff19b5",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  },
+  {
+    "label": "restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py",
+      "tests/test_model_chain.py",
+      "tests/test_provider_attempts.py"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\proof-copy",
+    "exit": 0,
+    "expected": 0,
+    "output": "qa\\evidence\\text-availability\\restored.log",
+    "sha256": "e94489b928d276cce4c47fd38bdd56041129c86be68408a7407471efc93bcefa",
+    "source": {
+      "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "environment_sha256": "332c5792d28116d48784578610600c237cb0db1edea2945b00e41a6dba02ce0b"
+  }
+]
