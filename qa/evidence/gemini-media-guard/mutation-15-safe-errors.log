@@ -1,0 +1,31 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_sdk_retries_disabled_failure_accounted_and_safe _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002074B2B7DD0>
+
+    def test_sdk_retries_disabled_failure_accounted_and_safe(monkeypatch):
+        calls = sdk_fake(monkeypatch, [], status=503)
+        provider = GeminiProvider(api_key="fake-test-key")
+        with attempt_budget(5) as budget, pytest.raises(ProviderError) as error:
+            provider.act("count", GuardAnswer)
+        assert len(calls) == budget.used == 1
+        assert budget.attempts[0].status == "failed"
+>       assert "SECRET-ECHO" not in str(error.value)
+E       assert 'SECRET-ECHO' not in "Gemini agen...CRET-ECHO'}}"
+E         
+E         'SECRET-ECHO' is contained here:
+E           essage': 'SECRET-ECHO'}}
+
+tests\test_gemini_media_guard.py:71: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  google_genai.models:models.py:6247 Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_sdk_retries_disabled_failure_accounted_and_safe
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_sdk_retries_disabled_failure_accounted_and_safe
+1 failed, 1 warning in 2.43s

@@ -1,0 +1,36 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_gemini_truncated_response_is_not_json_repair ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000012C15607010>
+
+    def test_gemini_truncated_response_is_not_json_repair(monkeypatch):
+        import google.genai as genai
+    
+        from autotester.providers.litellm_provider import LiteLLMProvider
+    
+        monkeypatch.setattr(LiteLLMProvider, "_secret_values", lambda self: self._extra_secrets)
+        calls = []
+    
+        def generate(**kwargs):
+            calls.append(kwargs)
+            return SimpleNamespace(parsed=None, text="{", candidates=[
+                SimpleNamespace(finish_reason=SimpleNamespace(name="MAX_TOKENS"))])
+    
+        monkeypatch.setattr(genai, "Client", lambda **kw: SimpleNamespace(
+            models=SimpleNamespace(generate_content=generate)))
+>       with pytest.raises(ProviderError, match=r"max_output_tokens.*truncated"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'max_output_tokens.*truncated'
+E         Actual message: 'Gemini returned JSON that does not fit the required schema'
+
+tests\test_gemini_truncation_guard.py:26: AssertionError
+============================== warnings summary ===============================
+tests/test_gemini_truncation_guard.py::test_gemini_truncated_response_is_not_json_repair
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_truncation_guard.py::test_gemini_truncated_response_is_not_json_repair
+1 failed, 1 warning in 2.01s

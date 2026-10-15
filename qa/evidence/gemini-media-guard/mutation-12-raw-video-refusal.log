@@ -1,0 +1,35 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___ test_narration_rejects_raw_video_invalid_or_oversized_audio[raw-video] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000215356A9750>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/gemini-media-guard/.work/gemini-mutation/.work/m12/test_narration_rejects_raw_vid0')
+suffix = '.mp4', data = b'video'
+
+    @pytest.mark.parametrize("suffix,data", [(".mp4", b"video"), (".wav", b"video"),
+        (".wav", wav_bytes() + b"x" * (16 * 1024 * 1024 + 1))],
+        ids=["raw-video", "invalid-wav", "oversized"])
+    def test_narration_rejects_raw_video_invalid_or_oversized_audio(
+        monkeypatch, tmp_path, suffix, data,
+    ):
+        calls = sdk_fake(monkeypatch, [{"segments": []}])
+        path = tmp_path / ("narration" + suffix)
+        path.write_bytes(data)
+        with pytest.raises(ProviderError):
+            GeminiProvider(api_key="fake-test-key").see_video(path, "transcribe", GeminiTranscription)
+>       assert calls == []
+E       AssertionError: assert [<Request('PO...beta/files')>] == []
+E         
+E         Left contains one more item: <Request('POST', 'https://generativelanguage.googleapis.com/upload/v1beta/files')>
+E         Use -v to get more diff
+
+tests\test_gemini_media_guard.py:127: AssertionError
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio[raw-video]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio[raw-video]
+1 failed, 1 warning in 2.23s

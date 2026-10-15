@@ -1,0 +1,195 @@
+.FFFFF                                                                   [100%]
+================================== FAILURES ===================================
+______ test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[nan] _______
+
+timeout = nan
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EC259CA650>
+
+    @pytest.mark.parametrize("timeout", [float("nan"), float("inf"), 0, -1, 121])
+    def test_gemini_nonfinite_or_excessive_timeout_is_local_refusal(timeout, monkeypatch):
+        from autotester.providers.base import ProviderError
+    
+        monkeypatch.setattr(LiteLLMProvider, "_secret_values", lambda self: self._extra_secrets)
+        provider = GeminiProvider(api_key="fake-test-key", timeout_s=timeout)
+        monkeypatch.setattr(provider, "_bounded_call", lambda *a: pytest.fail("invalid timeout sent"))
+        with pytest.raises(ProviderError, match="timeout_s must be finite"):
+>           provider.act("safe", VideoObservation)
+
+tests\test_gemini_request_limits.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:76: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\gemini.py:172: in _structured
+    with attempt_budget(32, timeout):
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+src\autotester\providers\attempts.py:43: in attempt_budget
+    budget = AttemptBudget(max_calls, wall_clock_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.attempts.AttemptBudget object at 0x000001EC259CAC50>
+max_calls = 32, wall_clock_s = nan
+
+    def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:
+        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:
+            raise ValueError("max_calls must be a nonnegative integer")
+        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):
+>           raise ValueError("wall_clock_s must be finite and nonnegative")
+E           ValueError: wall_clock_s must be finite and nonnegative
+
+src\autotester\providers\attempts.py:30: ValueError
+______ test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[inf] _______
+
+timeout = inf
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EC26B2C890>
+
+    @pytest.mark.parametrize("timeout", [float("nan"), float("inf"), 0, -1, 121])
+    def test_gemini_nonfinite_or_excessive_timeout_is_local_refusal(timeout, monkeypatch):
+        from autotester.providers.base import ProviderError
+    
+        monkeypatch.setattr(LiteLLMProvider, "_secret_values", lambda self: self._extra_secrets)
+        provider = GeminiProvider(api_key="fake-test-key", timeout_s=timeout)
+        monkeypatch.setattr(provider, "_bounded_call", lambda *a: pytest.fail("invalid timeout sent"))
+        with pytest.raises(ProviderError, match="timeout_s must be finite"):
+>           provider.act("safe", VideoObservation)
+
+tests\test_gemini_request_limits.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:76: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\gemini.py:172: in _structured
+    with attempt_budget(32, timeout):
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+src\autotester\providers\attempts.py:43: in attempt_budget
+    budget = AttemptBudget(max_calls, wall_clock_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.attempts.AttemptBudget object at 0x000001EC26B2D250>
+max_calls = 32, wall_clock_s = inf
+
+    def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:
+        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:
+            raise ValueError("max_calls must be a nonnegative integer")
+        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):
+>           raise ValueError("wall_clock_s must be finite and nonnegative")
+E           ValueError: wall_clock_s must be finite and nonnegative
+
+src\autotester\providers\attempts.py:30: ValueError
+_______ test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[0] ________
+
+timeout = 0
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EC2592F310>
+
+    @pytest.mark.parametrize("timeout", [float("nan"), float("inf"), 0, -1, 121])
+    def test_gemini_nonfinite_or_excessive_timeout_is_local_refusal(timeout, monkeypatch):
+        from autotester.providers.base import ProviderError
+    
+        monkeypatch.setattr(LiteLLMProvider, "_secret_values", lambda self: self._extra_secrets)
+        provider = GeminiProvider(api_key="fake-test-key", timeout_s=timeout)
+        monkeypatch.setattr(provider, "_bounded_call", lambda *a: pytest.fail("invalid timeout sent"))
+        with pytest.raises(ProviderError, match="timeout_s must be finite"):
+>           provider.act("safe", VideoObservation)
+
+tests\test_gemini_request_limits.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:76: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\gemini.py:173: in _structured
+    return self._bounded_call(prompt, schema, role, video_path, images, options, timeout,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = ('safe', <class 'autotester.schema.observation.VideoObservation'>, 'agent', None, None, None, ...)
+
+>   monkeypatch.setattr(provider, "_bounded_call", lambda *a: pytest.fail("invalid timeout sent"))
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: invalid timeout sent
+
+tests\test_gemini_request_limits.py:31: Failed
+_______ test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[-1] _______
+
+timeout = -1
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EC2594F010>
+
+    @pytest.mark.parametrize("timeout", [float("nan"), float("inf"), 0, -1, 121])
+    def test_gemini_nonfinite_or_excessive_timeout_is_local_refusal(timeout, monkeypatch):
+        from autotester.providers.base import ProviderError
+    
+        monkeypatch.setattr(LiteLLMProvider, "_secret_values", lambda self: self._extra_secrets)
+        provider = GeminiProvider(api_key="fake-test-key", timeout_s=timeout)
+        monkeypatch.setattr(provider, "_bounded_call", lambda *a: pytest.fail("invalid timeout sent"))
+        with pytest.raises(ProviderError, match="timeout_s must be finite"):
+>           provider.act("safe", VideoObservation)
+
+tests\test_gemini_request_limits.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:76: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\gemini.py:172: in _structured
+    with attempt_budget(32, timeout):
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+src\autotester\providers\attempts.py:43: in attempt_budget
+    budget = AttemptBudget(max_calls, wall_clock_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.attempts.AttemptBudget object at 0x000001EC26BD07D0>
+max_calls = 32, wall_clock_s = -1.0
+
+    def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:
+        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:
+            raise ValueError("max_calls must be a nonnegative integer")
+        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):
+>           raise ValueError("wall_clock_s must be finite and nonnegative")
+E           ValueError: wall_clock_s must be finite and nonnegative
+
+src\autotester\providers\attempts.py:30: ValueError
+______ test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[121] _______
+
+timeout = 121
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EC26BE8050>
+
+    @pytest.mark.parametrize("timeout", [float("nan"), float("inf"), 0, -1, 121])
+    def test_gemini_nonfinite_or_excessive_timeout_is_local_refusal(timeout, monkeypatch):
+        from autotester.providers.base import ProviderError
+    
+        monkeypatch.setattr(LiteLLMProvider, "_secret_values", lambda self: self._extra_secrets)
+        provider = GeminiProvider(api_key="fake-test-key", timeout_s=timeout)
+        monkeypatch.setattr(provider, "_bounded_call", lambda *a: pytest.fail("invalid timeout sent"))
+        with pytest.raises(ProviderError, match="timeout_s must be finite"):
+>           provider.act("safe", VideoObservation)
+
+tests\test_gemini_request_limits.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:76: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\gemini.py:173: in _structured
+    return self._bounded_call(prompt, schema, role, video_path, images, options, timeout,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = ('safe', <class 'autotester.schema.observation.VideoObservation'>, 'agent', None, None, None, ...)
+
+>   monkeypatch.setattr(provider, "_bounded_call", lambda *a: pytest.fail("invalid timeout sent"))
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: invalid timeout sent
+
+tests\test_gemini_request_limits.py:31: Failed
+============================== warnings summary ===============================
+tests/test_gemini_request_limits.py::test_gemini_provider_owned_cap_exists_without_outer_cap
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_request_limits.py::test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[nan]
+FAILED tests/test_gemini_request_limits.py::test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[inf]
+FAILED tests/test_gemini_request_limits.py::test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[0]
+FAILED tests/test_gemini_request_limits.py::test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[-1]
+FAILED tests/test_gemini_request_limits.py::test_gemini_nonfinite_or_excessive_timeout_is_local_refusal[121]
+5 failed, 1 passed, 1 warning in 1.59s

@@ -1,0 +1,32 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_nested_global_deadline_rejects_late_response ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F53F6A7A90>
+
+    def test_nested_global_deadline_rejects_late_response(monkeypatch):
+        import autotester.providers.attempts as attempts_module
+    
+        now = [0.0]
+        monkeypatch.setattr(attempts_module.time, "monotonic", lambda: now[0])
+    
+        def handle(request):
+            assert request.extensions["timeout"]["read"] == 1
+            now[0] = 2
+            return httpx.Response(200, content=b"late")
+    
+        transport = GeminiDeadlineTransport(120, GeminiProvider(api_key="fake"), "vision",
+            inner=httpx.MockTransport(handle), clock=lambda: now[0])
+>       with attempt_budget(2, 1) as budget, pytest.raises(AttemptBudgetExhausted):
+E       Failed: DID NOT RAISE AttemptBudgetExhausted
+
+tests\test_gemini_media_guard.py:288: Failed
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_nested_global_deadline_rejects_late_response
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_nested_global_deadline_rejects_late_response
+1 failed, 1 warning in 1.05s

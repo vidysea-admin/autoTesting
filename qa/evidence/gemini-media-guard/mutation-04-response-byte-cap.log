@@ -1,0 +1,31 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_transport_closes_and_rejects_late_or_large_response ___________
+
+    def test_transport_closes_and_rejects_late_or_large_response():
+        class Stream(httpx.SyncByteStream):
+            closed = False
+    
+            def __iter__(self):
+                yield b"x" * (16 * 1024 * 1024 + 1)
+    
+            def close(self):
+                self.closed = True
+    
+        stream = Stream()
+        inner = httpx.MockTransport(lambda req: httpx.Response(200, stream=stream))
+        transport = GeminiDeadlineTransport(20, GeminiProvider(api_key="fake"), "vision",
+            inner=inner, clock=lambda: 0)
+>       with attempt_budget(1) as budget, pytest.raises(ProviderError, match="byte limit"):
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_gemini_media_guard.py:192: Failed
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_transport_closes_and_rejects_late_or_large_response
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_transport_closes_and_rejects_late_or_large_response
+1 failed, 1 warning in 0.98s

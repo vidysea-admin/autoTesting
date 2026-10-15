@@ -5969,3 +5969,9 @@ Built `tests/acceptance/` (rig.py, review_support.py, schedule_support.py, conft
 6. **TA2 "Group 10 routes"**: the sweep covers every POST in `app.routes` except `/auth/*`, `/onboard` and docs routes (>= 25 paths); there is no tracker, schedule, profile or review POST on master to include.
 7. **TA3 start command.** The test starts `python -m uvicorn autotester.ui.app:app` (the module path `scripts/serve_windows.ps1` runs) and reads the script to assert the module path, loopback bind and that it removes `AUTOTESTER_AUTH_DISABLED`; it does not call PowerShell. The sign-in/Host/Origin path is real HTTP; the Test press inside that process is `run=False` (it would start a real browser).
 8. **TA9 as re-scoped by D-090 item 2**: the standing no-binding limit and no-Google-egress run today; the tracker page and export are xfail. The runbook's proposals 1-6 stand.
+
+
+## Gemini media guard — I9 safe cause-chain conflict (2026-10-15)
+
+Contract ingest I9: "every SDK exception (upload, poll, generate) is re-raised as `ProviderError` **with its cause chained**."
+Current task requires safe errors/redaction, and core C5 forbids secrets in logs/artifacts. Original SDK exception causes can contain vendor payloads, credentials, uploaded paths, and prompt echoes. Maker suppresses the raw cause (`from None`) and reports only a safe exception category. Please clarify I9's cause-chain requirement against C5 and D-101/D-102 safety; do not require raw secret-bearing causes. MAX_TOKENS truncation remains explicit and bypasses malformed-JSON repair.

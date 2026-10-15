@@ -1,0 +1,9 @@
+{
+  "status": "READY",
+  "red_chains": 17,
+  "raw_byte_reconstruction": true,
+  "fingerprints": "all match",
+  "schema_blob": "afed38061c4addc440ac5a76bc77848c2fc58310",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "duration_s": 0.7030000000013388
+}

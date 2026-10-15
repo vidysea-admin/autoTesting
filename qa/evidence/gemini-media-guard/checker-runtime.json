@@ -1,0 +1,66 @@
+[
+  {
+    "label": "checker-preflight-admin",
+    "exit": 0,
+    "args": [
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\checker-sdk-copy",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\checker-sdk-copy\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\checker-sdk-copy\\.work"
+    ],
+    "duration_s": 0.2649999999994179
+  },
+  {
+    "label": "checker-selected",
+    "exit": 0,
+    "args": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_real_sdk_resumable_upload_poll_generate_each_counted",
+      "tests/test_gemini_media_guard.py::test_sdk_retries_disabled_failure_accounted_and_safe",
+      "tests/test_gemini_media_guard.py::test_nested_global_deadline_rejects_late_response",
+      "tests/test_gemini_media_guard.py::test_transport_closes_and_rejects_late_or_large_response",
+      "tests/test_gemini_media_guard.py::test_sdk_json_repair_is_strict_and_bounded",
+      "tests/test_gemini_media_guard.py::test_sdk_bad_json_stops_after_one_repair",
+      "tests/test_gemini_media_guard.py::test_narration_inline_wav_no_files_upload_or_asr",
+      "tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio",
+      "tests/test_gemini_media_guard.py::test_secret_and_system_instruction_guard_precedes_transport",
+      "tests/test_gemini_request_limits.py",
+      "tests/test_gemini_truncation_guard.py",
+      "tests/test_checker_sdk_probe.py",
+      "--basetemp",
+      ".work/checker-temp"
+    ],
+    "duration_s": 12.68800000000192
+  },
+  {
+    "label": "checker-mutant",
+    "exit": 1,
+    "args": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_sdk_global_budget_cannot_retry_or_send",
+      "--basetemp",
+      ".work/checker-restored"
+    ],
+    "duration_s": 10.734000000000378
+  },
+  {
+    "label": "checker-restored",
+    "exit": 0,
+    "args": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_sdk_global_budget_cannot_retry_or_send",
+      "--basetemp",
+      ".work/checker-restored"
+    ],
+    "duration_s": 8.296999999998661
+  }
+]

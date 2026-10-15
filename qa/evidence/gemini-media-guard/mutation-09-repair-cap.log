@@ -1,0 +1,26 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________________ test_sdk_bad_json_stops_after_one_repair ___________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002C17FE45C90>
+
+    def test_sdk_bad_json_stops_after_one_repair(monkeypatch):
+        calls = sdk_fake(monkeypatch, [{"count": "wrong", "secret": "SECRET-ECHO"}])
+        with pytest.raises(ProviderError, match="does not fit") as error:
+            GeminiProvider(api_key="fake-test-key").act("count", GuardAnswer)
+>       assert len(calls) == 2 and "SECRET-ECHO" not in str(error.value)
+E       AssertionError: assert (3 == 2)
+E        +  where 3 = len([<Request('POST', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent')>, <Reque...tent')>, <Request('POST', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent')>])
+
+tests\test_gemini_media_guard.py:61: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  google_genai.models:models.py:6247 Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_sdk_bad_json_stops_after_one_repair
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_sdk_bad_json_stops_after_one_repair
+1 failed, 1 warning in 2.37s

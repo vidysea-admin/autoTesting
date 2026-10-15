@@ -1,0 +1,28 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_secret_and_system_instruction_guard_precedes_transport _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029C0CF85990>
+
+    def test_secret_and_system_instruction_guard_precedes_transport(monkeypatch):
+        calls = sdk_fake(monkeypatch, [{"count": 1}])
+        from autotester.schema.observation import VisionOptions
+    
+        provider = GeminiProvider(api_key="fake-test-key", secrets=["secret-canary-long"])
+        with pytest.raises(ProviderError, match="withheld"):
+            provider.act("secret-canary-long", GuardAnswer)
+>       with pytest.raises(ProviderError, match="withheld"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'withheld'
+E         Actual message: 'Gemini vision request failed: FileNotFoundError'
+
+tests\test_gemini_media_guard.py:89: AssertionError
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_secret_and_system_instruction_guard_precedes_transport
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_secret_and_system_instruction_guard_precedes_transport
+1 failed, 1 warning in 2.69s

@@ -1,0 +1,32 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__ test_narration_rejects_raw_video_invalid_or_oversized_audio[invalid-wav] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002B17D3C7D90>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/gemini-media-guard/.work/gemini-mutation/.work/m14/test_narration_rejects_raw_vid0')
+suffix = '.wav', data = b'video'
+
+    @pytest.mark.parametrize("suffix,data", [(".mp4", b"video"), (".wav", b"video"),
+        (".wav", wav_bytes() + b"x" * (16 * 1024 * 1024 + 1))],
+        ids=["raw-video", "invalid-wav", "oversized"])
+    def test_narration_rejects_raw_video_invalid_or_oversized_audio(
+        monkeypatch, tmp_path, suffix, data,
+    ):
+        calls = sdk_fake(monkeypatch, [{"segments": []}])
+        path = tmp_path / ("narration" + suffix)
+        path.write_bytes(data)
+>       with pytest.raises(ProviderError):
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_gemini_media_guard.py:125: Failed
+------------------------------ Captured log call ------------------------------
+WARNING  google_genai.models:models.py:6247 Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio[invalid-wav]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio[invalid-wav]
+1 failed, 1 warning in 3.24s

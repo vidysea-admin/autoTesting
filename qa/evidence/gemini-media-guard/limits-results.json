@@ -1,0 +1,70 @@
+[
+  {
+    "label": "limits-green",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_request_limits.py",
+      "--basetemp",
+      ".work/limits-green"
+    ],
+    "exit": 0,
+    "duration_s": 9.25,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\limits-green.log",
+    "log_sha256": "9fc9ce53e41c44eda7c3998eed44a78aa8d116dd4ea7711ffb155113efd6dd17",
+    "source_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5"
+  },
+  {
+    "label": "limits-cap-red",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_request_limits.py",
+      "--basetemp",
+      ".work/limits-cap-red"
+    ],
+    "exit": 1,
+    "duration_s": 8.31300000000192,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\limits-cap-red.log",
+    "log_sha256": "6f1e8aa948645b0a6421cf74287c3cde2758e30ed6d2be10a331ce6b4dbcc690",
+    "source_sha256": "ba95d6c945673b6a5a1b8e17d364e80631e4f1bd736b528f479f2e97fa3b8cde",
+    "mutation_old": "with attempt_budget(32, timeout):",
+    "mutation_new": "with attempt_budget(33, timeout):",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "attributable": true
+  },
+  {
+    "label": "limits-timeout-red",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_request_limits.py",
+      "--basetemp",
+      ".work/limits-timeout-red"
+    ],
+    "exit": 1,
+    "duration_s": 8.75,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\limits-timeout-red.log",
+    "log_sha256": "89c94e64c9f5efe7423b9f43932d64449202c9c1d14e861b369026bdc2506be2",
+    "source_sha256": "12702b1b0cba291aef73494e80c50aae0126b997fc3e730d8574962ddf1c8efe",
+    "mutation_old": "if not math.isfinite(timeout) or not 0 < timeout <= 120:",
+    "mutation_new": "if False:",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "attributable": true
+  },
+  {
+    "label": "limits-restored-green",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_request_limits.py",
+      "--basetemp",
+      ".work/limits-restored-green"
+    ],
+    "exit": 0,
+    "duration_s": 8.26600000000326,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\limits-restored-green.log",
+    "log_sha256": "0069b95890d1fc278713948509cc76689378250295934d125833b4c76cdc4024",
+    "source_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5"
+  }
+]

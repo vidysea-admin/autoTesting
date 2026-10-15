@@ -1,0 +1,56 @@
+[
+  {
+    "name": "final-preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work"
+    ],
+    "exit": 0,
+    "duration_s": 0.26599999999962165
+  },
+  {
+    "name": "focused",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py",
+      "tests/test_gemini_request_limits.py",
+      "tests/test_gemini_truncation_guard.py",
+      "tests/test_gemini_config.py",
+      "tests/test_gemini_schema.py",
+      "tests/test_ingest_real_cli.py",
+      "tests/test_providers.py",
+      "tests/test_provider_attempts.py",
+      "--basetemp",
+      ".work/final-temp"
+    ],
+    "exit": 0,
+    "duration_s": 11.484000000000378
+  },
+  {
+    "name": "lint",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/providers/gemini.py",
+      "src/autotester/providers/gemini_files.py",
+      "tests/test_gemini_media_guard.py",
+      "tests/test_gemini_request_limits.py",
+      "tests/test_gemini_truncation_guard.py"
+    ],
+    "exit": 0,
+    "duration_s": 0.23400000000037835
+  }
+]

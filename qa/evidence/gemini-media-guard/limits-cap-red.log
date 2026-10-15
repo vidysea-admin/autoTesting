@@ -1,0 +1,45 @@
+F.....                                                                   [100%]
+================================== FAILURES ===================================
+___________ test_gemini_provider_owned_cap_exists_without_outer_cap ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000214A87F7650>
+
+    def test_gemini_provider_owned_cap_exists_without_outer_cap(monkeypatch):
+        monkeypatch.setattr(LiteLLMProvider, "_secret_values", lambda self: self._extra_secrets)
+        provider = GeminiProvider(api_key="fake-test-key")
+    
+        def reserve_requests(*args):
+            for _ in range(33):
+                reserve_attempt(provider.label, "vision", 120)
+            pytest.fail("provider-owned physical cap did not stop request 33")
+    
+        monkeypatch.setattr(provider, "_bounded_call", reserve_requests)
+        with attempt_budget(100) as budget, pytest.raises(AttemptBudgetExhausted):
+>           provider.act("safe", VideoObservation)
+
+tests\test_gemini_request_limits.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:76: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\gemini.py:173: in _structured
+    return self._bounded_call(prompt, schema, role, video_path, images, options, timeout,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = ('safe', <class 'autotester.schema.observation.VideoObservation'>, 'agent', None, None, None, ...)
+
+    def reserve_requests(*args):
+        for _ in range(33):
+            reserve_attempt(provider.label, "vision", 120)
+>       pytest.fail("provider-owned physical cap did not stop request 33")
+E       Failed: provider-owned physical cap did not stop request 33
+
+tests\test_gemini_request_limits.py:17: Failed
+============================== warnings summary ===============================
+tests/test_gemini_request_limits.py::test_gemini_provider_owned_cap_exists_without_outer_cap
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_request_limits.py::test_gemini_provider_owned_cap_exists_without_outer_cap
+1 failed, 5 passed, 1 warning in 1.23s
