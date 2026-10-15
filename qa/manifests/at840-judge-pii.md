@@ -1,6 +1,6 @@
 # Manifest - at840-judge-pii
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Unit:** AT-840 grade.py sent judge prompts with no mask_pii
 **Branch:** wave/at840-judge-pii
