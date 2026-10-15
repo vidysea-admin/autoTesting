@@ -30,6 +30,7 @@ from autotester.core.paths import repo_root
 from autotester.core.redact import assert_no_raw_secrets
 from autotester.providers import ollama_cloud
 from autotester.providers.attempts import reserve_attempt
+from autotester.providers.availability import AvailabilityFailure, availability_reason
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.images import image_url_parts
 from autotester.providers.litellm_schema import (
@@ -46,7 +47,8 @@ _PROVIDER_KEY_ENV = ("GEMINI_API_KEY", "GOOGLE_API_KEY", "ANTHROPIC_API_KEY", "O
                      "LITELLM_API_KEY", ollama_cloud.KEY_ENV)
 """Vendor-key variables read from the PROCESS environment too: an exported key never
 passes through `.env`, so the `.env` scan alone would not know it (LL5)."""
-_CONFIG_KEYS = frozenset({MODEL_ENV, "LITELLM_API_BASE", "OLLAMA_BASE_URL", "OLLAMA_MODEL"})
+_CONFIG_KEYS = frozenset({MODEL_ENV, "LITELLM_API_BASE", "OLLAMA_BASE_URL", "OLLAMA_MODEL",
+                          "AUTOTESTER_MODEL_ORDER", "AUTOTESTER_TEXT_FALLBACK_MODEL"})
 """`.env` keys that are settings, not secrets: a model name or an endpoint URL in a
 prompt must not be refused as a leaked credential."""
 
@@ -235,6 +237,9 @@ class LiteLLMProvider(Provider):
             receipt.latency_s = time.perf_counter() - started
             self.record(role, None, None, failed=True, prompt_file=prompt_file,
                         fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)
+            reason = availability_reason(exc)
+            if reason is not None:
+                raise AvailabilityFailure(reason) from None
             raise ProviderError(self._failure(role, exc, messages)) from None
         usage = getattr(response, "usage", None)
         receipt.status = "succeeded"
@@ -267,7 +272,8 @@ class LiteLLMProvider(Provider):
         message = self._complete(messages, schema, strategy, role, **meta)
         try:
             return parse_answer(message, strategy, schema,
-                                strict=ollama_cloud.is_ollama(self._model))
+                                strict=ollama_cloud.is_ollama(self._model)
+                                or self.options.get("strict", False))
         except ValueError as exc:
             problem = _why(exc)
             if strategy != "json":
@@ -279,7 +285,8 @@ class LiteLLMProvider(Provider):
         message = self._complete(messages, schema, strategy, role, retries=1, **meta)
         try:
             return parse_answer(message, strategy, schema,
-                                strict=ollama_cloud.is_ollama(self._model))
+                                strict=ollama_cloud.is_ollama(self._model)
+                                or self.options.get("strict", False))
         except ValueError as exc:
             raise ProviderError(self._unparsable(role, _why(exc))) from None
 

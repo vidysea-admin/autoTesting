@@ -29,7 +29,7 @@ class AttemptAnswer(BaseModel):
 
 
 def test_attempt_count_reserves_before_repair_and_fallback(monkeypatch, tmp_path):
-    fake = install(monkeypatch, [reply("invalid"), RuntimeError("oops"), reply('{"ok":true}')])
+    fake = install(monkeypatch, [reply("invalid"), TimeoutError("oops"), reply('{"ok":true}')])
     monkeypatch.setenv("OLLAMA_API_KEY", "fake-value")
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
     chain = ModelChainProvider()
