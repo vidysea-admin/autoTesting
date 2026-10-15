@@ -1,0 +1,62 @@
+{
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "completion_reserve": true,
+  "reviewers": [
+    {
+      "id": "readiness-including-initial-unmetered-reads",
+      "tokens": null,
+      "active_s": null,
+      "cost": null,
+      "budget_debit": {
+        "tokens": 1000,
+        "active_s": 30
+      }
+    },
+    {
+      "id": "source-runtime",
+      "tokens": null,
+      "active_s": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 110,
+        "tokens": 3500
+      }
+    },
+    {
+      "id": "closure",
+      "completion_reserve_id": "cli-downstream-cycle1-ed418e9",
+      "cost": null,
+      "active_s": null,
+      "phase_kind": "finalization",
+      "tokens": null,
+      "budget_debit": {
+        "active_s": 30,
+        "tokens": 800
+      }
+    }
+  ],
+  "completion_reserve_id": "cli-downstream-cycle1-ed418e9-followup",
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "bootstrap_scope": "CLI downstream exact cycle1 readiness, source/runtime and protected closure",
+  "next_phase": {
+    "active_s": 60,
+    "tokens": 1700,
+    "kind": "review"
+  },
+  "escalation": {
+    "approved_by": "Parent implementation_control explicit follow-up authorization",
+    "limits": {
+      "tokens": 7800,
+      "active_s": 260
+    },
+    "reason": "Independent runtime incomplete after preflight ACL denial; preserve prior HOLD/debits",
+    "authority": "Parent implementation_control explicit90s/2500 follow-up"
+  }
+}
