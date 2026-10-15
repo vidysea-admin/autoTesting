@@ -1,0 +1,42 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "cost": null,
+      "tokens": null,
+      "active_s": null,
+      "id": "account-generation-readiness",
+      "budget_debit": {
+        "tokens": 1000,
+        "active_s": 30
+      }
+    },
+    {
+      "budget_debit": {
+        "active_s": 110,
+        "tokens": 3500
+      },
+      "cost": null,
+      "id": "account-generation-source-runtime",
+      "tokens": null,
+      "active_s": null
+    }
+  ],
+  "next_phase": {
+    "kind": "review",
+    "active_s": 10,
+    "tokens": 700
+  },
+  "bootstrap_scope": "Parent authorized account-only readiness30s1000 source/runtime110s3500 closure40s1500; helper finalization30s800 within closure; no full17 or3mutants rerun",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": null,
+  "completion_reserve": true,
+  "completion_reserve_id": "account-generation-cycle0-f1b345aa"
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "label": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.28100000000267755,
+    "output_sha256": "73c73303bd92a1a6b4b7f19fec3a646971f80de7a364821f880eabc4678fffdc"
+  },
+  {
+    "label": "focused",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\qa\\evidence\\account-generation\\cycle2\\invoke.py",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src",
+      "tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in",
+      "tests/test_account_generation.py::test_legacy_database_gets_one_generation_without_rewriting_identity",
+      "tests/test_account_generation.py::test_unbound_or_invalid_preference_never_opts_in",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\checker_account_guard.py",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\.temp-checker-account",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts="
+    ],
+    "exit_code": 0,
+    "duration_s": 8.828000000001339,
+    "output_sha256": "f17baeb7ccb089c819a65c99efd00a6d11dcec123884ba11fd1fa3ec79db85c6"
+  }
+]
