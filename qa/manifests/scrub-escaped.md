@@ -13,4 +13,4 @@ Issues: ISS-t168-damage-control-report-1, ISS-t168-damage-control-report-2, AT-8
 - AT-830 finished: encoded email/phone masking is now linear scans (no regex backtracking); the quadratic _ENC_PHONE_RE is gone.
 - URL-credential scrub moved to core/redact (scrub_url_credentials); real_acceptance._scrub_urls delegates.
 - Tests: tests/test_redact_escaped.py (each encoding, 100 KB perf < 1 s). Scoped redact/failure_bundle/unified_report/real_acceptance: 343 pass; ruff and doctor clean. Branch wave/scrub-escaped-c1 (rebased on master; wave/scrub-escaped is checked out in another worktree).
-Status: ready-for-check
+Status: checked-PASS
