@@ -7,11 +7,11 @@
   "updated": "2026-10-13T06:21:00",
   "progress": {
     "total": 92,
-    "done": 88,
+    "done": 89,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 4,
-    "current": "T-136",
+    "pending": 3,
+    "current": "T-169",
     "percent": 96
   },
   "tasks": [
