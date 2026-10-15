@@ -1,6 +1,6 @@
 # Manifest â€” acceptance-isolation
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Unit:** T-169 acceptance driver authentication and contamination refusals (bounded repair)
 **Branch:** codex/acceptance-repair
