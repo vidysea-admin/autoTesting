@@ -1,0 +1,26 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_invalid_pdf_limits_cannot_disable_resource_bounds ____________
+
+    def test_invalid_pdf_limits_cannot_disable_resource_bounds():
+        from pydantic import ValidationError
+    
+        for field, value in (("max_bytes", 0), ("max_pages", 0), ("max_chars", 0),
+                             ("timeout_s", 0), ("page_timeout_s", 0), ("image_side", 1),
+                             ("max_bytes", 200_000_001), ("max_pages", 1001),
+                             ("max_chars", 2_000_001), ("timeout_s", 601),
+                             ("page_timeout_s", 61), ("image_side", 4001),
+                             ("min_confidence", -1), ("min_confidence", 101)):
+>           with pytest.raises(ValidationError):
+E           Failed: DID NOT RAISE ValidationError
+
+tests\test_pdf_teaching.py:193: Failed
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds
+1 failed, 1 warning in 1.42s

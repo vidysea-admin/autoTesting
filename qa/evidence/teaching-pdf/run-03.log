@@ -1,0 +1,25 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_pdf_registration_refuses_encoded_secret_before_persistence _______
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-e5a8os14/repo/.work/pytest-3/test_pdf_registration_refuses_0')
+
+    def test_pdf_registration_refuses_encoded_secret_before_persistence(tmp_path):
+        import base64
+    
+        store = ProjectStore("demo", tmp_path)
+        store.paths.env_file.write_text("TOKEN=supersecret-value\n", encoding="utf-8")
+        encoded = base64.b64encode(b"supersecret-value").decode()
+>       with pytest.raises(ValueError, match="refusing"):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_pdf_teaching.py:213: Failed
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence
+1 failed, 1 warning in 8.52s

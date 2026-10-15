@@ -1,0 +1,310 @@
+[
+  {
+    "name": "PDF dispatch removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "PDF secret sanitation removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_registration_scrubs_root_secrets_and_contact_details"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_registration_scrubs_root_secrets_and_contact_details"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "PDF encoded secret gate removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "encrypted refusal removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "input byte bound removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "page bound removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "character bound removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "missing OCR tools guard removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "OCR TSV line breaks removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "worker deadline ignored",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "local tool deadline ignored",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "OCR single-thread cap removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "OCR page dispatch removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "low confidence accepted",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "worker output bound removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "max_bytes validated bounds removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "max_pages validated bounds removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "max_chars validated bounds removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "timeout_s validated bounds removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "page_timeout_s validated bounds removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "image_side validated bounds removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  },
+  {
+    "name": "min_confidence validated bounds removed",
+    "killed": true,
+    "exit": 1,
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "survivors": [],
+    "no_test_results": false,
+    "timed_out": false
+  }
+]

@@ -1,0 +1,28 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_corrupt_and_encrypted_pdf_are_explicit_failures _____________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-e5a8os14/repo/.work/pytest-4/test_corrupt_and_encrypted_pdf0')
+
+    def test_corrupt_and_encrypted_pdf_are_explicit_failures(tmp_path):
+        path = tmp_path / "broken.pdf"
+        path.write_bytes(b"%PDF-1.7 broken private document")
+        broken = extract_pdf_document(path)
+        encrypted = read_pdf_pages(_pdf(tmp_path / "locked.pdf", encrypted=True), PdfLimits())
+        assert broken.error and not broken.pages
+>       assert encrypted.error.startswith("encrypted") and not encrypted.pages
+E       AssertionError: assert (False)
+E        +  where False = <built-in method startswith of str object at 0x000002213000B2D0>('encrypted')
+E        +    where <built-in method startswith of str object at 0x000002213000B2D0> = 'PDF is corrupt or could not be read'.startswith
+E        +      where 'PDF is corrupt or could not be read' = DocumentReading(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 7, 43, 45, 662064, tzinfo=datetime.timezone.utc), provenance=None, source_id=None, pages=[], error='PDF is corrupt or could not be read').error
+
+tests\test_pdf_teaching.py:69: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures
+1 failed, 1 warning in 7.70s
