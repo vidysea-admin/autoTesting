@@ -1,0 +1,38 @@
+{
+  "frozen_head": "e2765afc59bbe00234af20badc3105a79ef103fe",
+  "candidate": {
+    "src/autotester/providers/model_chain.py": "bb0685d639172aa66f9b09fb01fd56f383855d0071f377e213f37526f34613bf",
+    "src/autotester/providers/litellm_provider.py": "bbb371d6d828c196f2eac26e273ffd72000a19d7f51400ebd413631c3d4bf60b",
+    "src/autotester/providers/video_frames.py": "c2be881ecc96eb30de32bc130567bcda833d4a6d2b20b44bc7e247abf0efc3e7",
+    "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+    "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+    "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+    "src/autotester/providers/litellm_schema.py": "d594f860fb6c1868e556ddbf18c2b89c193c4c191ac35a7761b32654e6a91b45",
+    "src/autotester/providers/images.py": "4e4298c082753ca2f6c94f52da5c4d5b9a5d823f888510f78d943d4654e7e574",
+    "src/autotester/schema/video_frames.py": "83e225393a429e387162109956fcf0ad2e1210b2f464f985f23293bbad685fc1",
+    "src/autotester/schema/observation.py": "1471bfb0078cfd620807eb6c3950bfb1660cce62d712a25210639f2f36e5c5d0",
+    "src/autotester/core/image_privacy.py": "3dfd77e802a5047aa6364f3e6e38d8d333dc6daafe4542869f64cb092a446ea7",
+    "tests/test_provider_vision_integration.py": "4a99c7c87b0ecf1c06fbebb7a087bee4f37b6de296fdbe43a800420623e65fbc",
+    "tests/test_text_availability.py": "8add8080ffd9607da75a7aa8cb41d9397ca0b92623250876968f8cabb22a2220",
+    "tests/test_video_frames.py": "03dbfc3fc0be7057f21d3929e41c86eacfc6ca02791b2b88c3c0d5920cd96ce8",
+    "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+  },
+  "restored": {
+    "src/autotester/providers/model_chain.py": "bb0685d639172aa66f9b09fb01fd56f383855d0071f377e213f37526f34613bf",
+    "src/autotester/providers/litellm_provider.py": "bbb371d6d828c196f2eac26e273ffd72000a19d7f51400ebd413631c3d4bf60b",
+    "src/autotester/providers/video_frames.py": "c2be881ecc96eb30de32bc130567bcda833d4a6d2b20b44bc7e247abf0efc3e7",
+    "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+    "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+    "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+    "src/autotester/providers/litellm_schema.py": "d594f860fb6c1868e556ddbf18c2b89c193c4c191ac35a7761b32654e6a91b45",
+    "src/autotester/providers/images.py": "4e4298c082753ca2f6c94f52da5c4d5b9a5d823f888510f78d943d4654e7e574",
+    "src/autotester/schema/video_frames.py": "83e225393a429e387162109956fcf0ad2e1210b2f464f985f23293bbad685fc1",
+    "src/autotester/schema/observation.py": "1471bfb0078cfd620807eb6c3950bfb1660cce62d712a25210639f2f36e5c5d0",
+    "src/autotester/core/image_privacy.py": "3dfd77e802a5047aa6364f3e6e38d8d333dc6daafe4542869f64cb092a446ea7",
+    "tests/test_provider_vision_integration.py": "4a99c7c87b0ecf1c06fbebb7a087bee4f37b6de296fdbe43a800420623e65fbc",
+    "tests/test_text_availability.py": "8add8080ffd9607da75a7aa8cb41d9397ca0b92623250876968f8cabb22a2220",
+    "tests/test_video_frames.py": "03dbfc3fc0be7057f21d3929e41c86eacfc6ca02791b2b88c3c0d5920cd96ce8",
+    "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+  },
+  "raw_bytes_equal": true
+}

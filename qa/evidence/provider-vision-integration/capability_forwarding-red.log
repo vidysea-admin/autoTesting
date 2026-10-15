@@ -1,0 +1,81 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_tier_constructor_and_video_forwarding_preserve_limits_options ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000261127DD290>
+setup = []
+
+    def test_tier_constructor_and_video_forwarding_preserve_limits_options(monkeypatch, setup):
+        fake, chain = frame_chain(monkeypatch, [reply("{}")])
+>       result = chain.see_video(Path("synthetic.mp4"), "Observe", VideoObservation,
+                                 VisionOptions(fps=1, seed=19, max_output_tokens=123,
+                                               temperature=0.2))
+
+tests\test_provider_vision_integration.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\model_chain.py:107: in see_video
+    return self._run("see_video", prompt, schema, prompt_file, fed_id,
+src\autotester\providers\model_chain.py:132: in _run
+    return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.model_chain.ModelChainProvider object at 0x00000261127E4850>
+tiers = [<autotester.providers.litellm_provider.LiteLLMProvider object at 0x0000026112793550>, <autotester.providers.litellm_provider.LiteLLMProvider object at 0x0000026112793990>]
+method = 'see_video', prompt = 'Observe'
+schema = <class 'autotester.schema.observation.VideoObservation'>
+prompt_file = None, fed_id = None
+extra = {'path': WindowsPath('synthetic.mp4'), 'options': VisionOptions(fps=1.0, seed=19, max_output_tokens=123, media_resolution='high', thinking_level='high', temperature=0.2, system_instruction=None)}
+
+    def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):
+        errors: list[str] = []
+        coverage = None
+        for tier in tiers:
+            tier.trace = self.trace
+            try:
+                args = ((extra["path"], prompt, schema)
+                        if method == "see_video" else (prompt, schema))
+                kwargs = {key: value for key, value in extra.items() if key != "path"}
+                result = getattr(tier, method)(*args, prompt_file=prompt_file,
+                                               fed_id=fed_id, **kwargs)
+            except AttemptBudgetExhausted:
+                self._sync_usage()
+                raise
+            except (AvailabilityFailure, Unsupported) as exc:
+                self._sync_usage()
+                coverage = getattr(exc, "coverage", coverage)
+                reason = exc.reason if isinstance(exc, AvailabilityFailure) else "capability"
+                errors.append(f"{tier.label}: {reason}")
+                self._call.fallback_reasons.append(errors[-1])
+                log.warning("model-chain: tier %s failed (%s); falling through",
+                            tier.label, reason)
+                continue
+            except ProviderError:
+                self._sync_usage()
+                raise
+            self._call.served = tier.label
+            log.info("model-chain: tier %s served the %s call", tier.label, method)
+            self._sync_usage()
+            return result
+        failure = ProviderError("model-chain: every tier failed: " + " | ".join(errors))
+        failure.coverage = coverage
+>       raise failure
+E       autotester.providers.base.ProviderError: model-chain: every tier failed: litellm:ollama/glm-5.3-flash: capability | litellm:ollama/deepseek-v4.1-flash: capability
+
+src\autotester\providers\model_chain.py:166: ProviderError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:154 model-chain: tier litellm:ollama/glm-5.3-flash failed (capability); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:154 model-chain: tier litellm:ollama/deepseek-v4.1-flash failed (capability); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-vision-integration\.work\combined-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_vision_integration.py::test_tier_constructor_and_video_forwarding_preserve_limits_options
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_vision_integration.py::test_tier_constructor_and_video_forwarding_preserve_limits_options
+1 failed, 2 warnings in 1.79s

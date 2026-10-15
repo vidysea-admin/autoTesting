@@ -1,0 +1,31 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_implicit_gemini_excludes_images_and_explicit_order_wins _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001854006A9D0>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/proof-copy/.work/pytest/test_implicit_gemini_excludes_0')
+
+    def test_implicit_gemini_excludes_images_and_explicit_order_wins(monkeypatch, tmp_path):
+        fake, chain = setup_chain(monkeypatch, tmp_path, [TimeoutError(), TimeoutError()])
+>       with pytest.raises(ProviderError, match="every tier failed"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'every tier failed'
+E         Actual message: 'litellm:gemini/gemini-3.6-flash judge call failed: IndexError: pop from empty list'
+
+tests\test_text_availability.py:86: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (service); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (service); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-availability\.work\proof-copy\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_text_availability.py::test_implicit_gemini_excludes_images_and_explicit_order_wins
+1 failed, 2 warnings in 1.03s

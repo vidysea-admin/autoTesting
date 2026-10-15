@@ -1,0 +1,23 @@
+[
+  {
+    "label": "checker-preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2\\.work"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+    "exit": 2,
+    "monotonic_start": 19604.593,
+    "monotonic_end": 19604.89,
+    "output_sha256": "14ead3ff1bbee7d6d273e644f8a8589a3272004f7ac7708f6cdae85c979bedaf"
+  }
+]

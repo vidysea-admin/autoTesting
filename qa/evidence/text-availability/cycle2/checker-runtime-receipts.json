@@ -1,0 +1,95 @@
+[
+  {
+    "label": "checker-preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2\\.work"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+    "exit": 0,
+    "monotonic_start": 19625.453,
+    "monotonic_end": 19625.812,
+    "output_sha256": "88e2b9957411a75397d953657e2f642d52fe8d5f277788df83dade90bdd25c07"
+  },
+  {
+    "label": "checker-boundaries",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/checker-pytest",
+      "tests/test_text_availability.py",
+      "tests/test_model_chain.py::test_cli_provider_defaults_resolve_through_the_chain"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+    "exit": 0,
+    "monotonic_start": 19625.828,
+    "monotonic_end": 19635.234,
+    "output_sha256": "75d148b3ef7b75c8c06549543e8980b3d5c5042c2033184aebbc870707f4f985"
+  },
+  {
+    "label": "checker-refusal-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/checker-pytest",
+      "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+    "exit": 1,
+    "monotonic_start": 19635.25,
+    "monotonic_end": 19643.609,
+    "output_sha256": "306faf29b4522f0327133b8f60edf518eacc39642708745560e9bbc91f913c86"
+  },
+  {
+    "label": "checker-refusal-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/checker-pytest",
+      "tests/test_text_availability.py::test_ambiguous_and_policy_failures_stop"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+    "exit": 0,
+    "monotonic_start": 19643.625,
+    "monotonic_end": 19652.015,
+    "output_sha256": "79976987b3d2877f33346409425264c5f0a3f6507c92224d39325f6e8a6babaa"
+  },
+  {
+    "label": "checker-lint",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/providers/availability.py",
+      "src/autotester/providers/model_chain.py",
+      "src/autotester/providers/litellm_provider.py",
+      "tests/test_text_availability.py",
+      "tests/test_model_chain.py",
+      "tests/test_provider_attempts.py"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\checker-text-cycle2",
+    "exit": 0,
+    "monotonic_start": 19652.031,
+    "monotonic_end": 19652.312,
+    "output_sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+  }
+]

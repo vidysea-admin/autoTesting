@@ -1,0 +1,82 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_allowlisted_failure_reaches_guarded_gemini[failure2] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000014213A06250>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/proof-copy/.work/pytest/test_allowlisted_failure_reach0')
+failure = ConnectionError('offline')
+
+    @pytest.mark.parametrize("failure", [StatusFailure(401), StatusFailure(503),
+                                         ConnectionError("offline"), Unsupported("text")])
+    def test_allowlisted_failure_reaches_guarded_gemini(monkeypatch, tmp_path, failure):
+        response = reply('{"ok":true}')
+        response.usage = None
+        fake, chain = setup_chain(monkeypatch, tmp_path, [failure, failure, response])
+        with attempt_budget(3, wall_clock_s=4) as budget:
+>           assert chain.act("prompt", TextAnswer).ok
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_text_availability.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\model_chain.py:97: in act
+    return self._run("act", prompt, schema, prompt_file, fed_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:121: in _run
+    return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:128: in _try_tiers
+    result = getattr(tier, method)(prompt, schema, prompt_file=prompt_file,
+src\autotester\providers\litellm_provider.py:164: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\litellm_provider.py:272: in _structured
+    message = self._complete(messages, schema, strategy, role, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.litellm_provider.LiteLLMProvider object at 0x00000142139A9FD0>
+messages = [{'role': 'user', 'content': 'prompt\n\nReply with ONE JSON object only, no prose and no code fence, matching this JSO...roperties": {"ok": {"title": "Ok", "type": "boolean"}}, "required": ["ok"], "title": "TextAnswer", "type": "object"}'}]
+schema = <class 'test_text_availability.TextAnswer'>, strategy = 'json'
+role = 'agent', prompt_file = None, fed_id = None, retries = 0
+
+    def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,
+                  role: str, *, prompt_file: str | None, fed_id: str | None,
+                  retries: int = 0) -> Any:
+        """ONE physical `litellm.completion` call: guarded first, recorded after."""
+        self._guard(messages)
+        output_options = ({} if ollama_cloud.is_ollama(self._model)
+                          else request_options(strategy, self._model, schema))
+        kwargs: dict[str, Any] = {
+            "model": self._model, "messages": messages, "num_retries": 0,
+            "timeout": _TIMEOUT_S, "drop_params": True, **self._endpoint(),
+            **output_options}
+        if role == "judge":
+            kwargs["temperature"] = 0
+        receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+        started = time.perf_counter()
+        try:
+            response = _load_litellm().completion(**kwargs)
+        except Exception as exc:
+            receipt.status = "failed"
+            receipt.latency_s = time.perf_counter() - started
+            self.record(role, None, None, failed=True, prompt_file=prompt_file,
+                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)
+            reason = availability_reason(exc)
+            if reason is not None:
+                raise AvailabilityFailure(reason) from None
+>           raise ProviderError(self._failure(role, exc, messages)) from None
+E           autotester.providers.base.ProviderError: litellm:ollama_chat/glm-5.3-flash agent call failed: ConnectionError: offline
+
+src\autotester\providers\litellm_provider.py:243: ProviderError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-availability\.work\proof-copy\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure2]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_text_availability.py::test_allowlisted_failure_reaches_guarded_gemini[failure2]
+1 failed, 2 warnings in 1.21s

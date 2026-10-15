@@ -1,0 +1,9 @@
+src/autotester/providers/availability.py
+src/autotester/providers/litellm_provider.py
+src/autotester/providers/model_chain.py
+src/autotester/providers/video_frames.py
+tests/test_model_chain.py
+tests/test_provider_attempts.py
+tests/test_provider_vision_integration.py
+tests/test_text_availability.py
+tests/test_video_frames.py

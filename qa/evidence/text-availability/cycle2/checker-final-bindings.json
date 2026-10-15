@@ -1,0 +1,26 @@
+{
+  "candidate": "035011aeb3c7cf868ba5ca41246c71c0627b3c7e",
+  "source": {
+    "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+    "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+    "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+    "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+    "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+    "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+    "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+  },
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "dependencies_match_packet": true,
+  "outputs": {
+    "checker-boundaries.log": "75d148b3ef7b75c8c06549543e8980b3d5c5042c2033184aebbc870707f4f985",
+    "checker-lint.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+    "checker-parser-readback.log": "cb5e8ff9ae3f075019d75212494938203c2dbb418e6b2a65d51af4cb08d2b7e2",
+    "checker-preflight-sandbox-block.log": "14ead3ff1bbee7d6d273e644f8a8589a3272004f7ac7708f6cdae85c979bedaf",
+    "checker-preflight.log": "88e2b9957411a75397d953657e2f642d52fe8d5f277788df83dade90bdd25c07",
+    "checker-refusal-red.log": "306faf29b4522f0327133b8f60edf518eacc39642708745560e9bbc91f913c86",
+    "checker-refusal-restored.log": "79976987b3d2877f33346409425264c5f0a3f6507c92224d39325f6e8a6babaa",
+    "checker-supplemental.log": "73a7858b8f26c144a9a3371e5c57671c020ec2462e1ef171ebfee23e88569cb9",
+    "checker-usage-probe.log": "39f9d2864d0b5434d7ab4a711e6901e4f4c03642b8e34134454ceee6886c492f"
+  }
+}

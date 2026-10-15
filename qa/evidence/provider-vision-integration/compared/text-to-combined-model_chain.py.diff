@@ -1,0 +1,80 @@
+--- text/src/autotester/providers/model_chain.py
++++ combined/src/autotester/providers/model_chain.py
+@@ -28,6 +28,7 @@
+ from autotester.providers.availability import AvailabilityFailure
+ from autotester.providers.base import Provider, ProviderError, Unsupported
+ from autotester.providers.litellm_provider import LiteLLMProvider
++from autotester.schema.observation import VisionOptions
+ from autotester.schema.run import ProviderUsage
+ 
+ ModelT = TypeVar("ModelT", bound=BaseModel)
+@@ -58,7 +59,11 @@
+         if self._implicit_fallback:
+             order.append(os.environ.get(FALLBACK_ENV) or TEXT_FALLBACK)
+         secrets = options.get("secrets") or []
+-        self._tiers = [LiteLLMProvider(model=m, secrets=secrets, strict=True) for m in order]
++        capabilities = options.get("vision_capabilities") or {}
++        self._tiers = [LiteLLMProvider(model=m, secrets=secrets, strict=True,
++                                      vision_capability=capabilities.get(m),
++                                      **({"frame_limits": options["frame_limits"]}
++                                         if "frame_limits" in options else {})) for m in order]
+ 
+     @property
+     def id(self) -> str:  # type: ignore[override]
+@@ -96,6 +101,12 @@
+             prompt_file: str | None = None, fed_id: str | None = None) -> Any:
+         return self._run("act", prompt, schema, prompt_file, fed_id)
+ 
++    def see_video(self, path: Path, prompt: str, schema: type[ModelT],
++                  options: VisionOptions | None = None, *,
++                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:
++        return self._run("see_video", prompt, schema, prompt_file, fed_id,
++                         path=path, options=options)
++
+     def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,
+               prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:
+         return self._run("judge", prompt, schema, prompt_file, fed_id, images=images)
+@@ -106,7 +117,7 @@
+         self._call.fallback_reasons = []
+         if schema is None:
+             raise ProviderError(f"{self.id} requires a schema for structured output")
+-        media = self._implicit_fallback and extra.get("images")
++        media = self._implicit_fallback and (method == "see_video" or extra.get("images"))
+         candidates = self._tiers[:-1] if media else self._tiers
+         tiers = []
+         for tier in candidates:
+@@ -122,16 +133,21 @@
+ 
+     def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):
+         errors: list[str] = []
++        coverage = None
+         for tier in tiers:
+             tier.trace = self.trace
+             try:
+-                result = getattr(tier, method)(prompt, schema, prompt_file=prompt_file,
+-                                               fed_id=fed_id, **extra)
++                args = ((extra["path"], prompt, schema)
++                        if method == "see_video" else (prompt, schema))
++                kwargs = {key: value for key, value in extra.items() if key != "path"}
++                result = getattr(tier, method)(*args, prompt_file=prompt_file,
++                                               fed_id=fed_id, **kwargs)
+             except AttemptBudgetExhausted:
+                 self._sync_usage()
+                 raise
+             except (AvailabilityFailure, Unsupported) as exc:
+                 self._sync_usage()
++                coverage = getattr(exc, "coverage", coverage)
+                 reason = exc.reason if isinstance(exc, AvailabilityFailure) else "capability"
+                 errors.append(f"{tier.label}: {reason}")
+                 self._call.fallback_reasons.append(errors[-1])
+@@ -145,7 +161,9 @@
+             log.info("model-chain: tier %s served the %s call", tier.label, method)
+             self._sync_usage()
+             return result
+-        raise ProviderError("model-chain: every tier failed: " + " | ".join(errors))
++        failure = ProviderError("model-chain: every tier failed: " + " | ".join(errors))
++        failure.coverage = coverage
++        raise failure
+ 
+     def _sync_usage(self) -> None:
+         with self._usage_lock:

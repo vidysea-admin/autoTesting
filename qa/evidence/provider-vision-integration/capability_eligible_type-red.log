@@ -1,0 +1,54 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_explicit_verified_next_tier_serves_missing_capability __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000221328AF190>
+setup = []
+
+    def test_explicit_verified_next_tier_serves_missing_capability(monkeypatch, setup):
+        fake, chain = frame_chain(monkeypatch, [reply("{}")], verified=[SECOND])
+>       result = chain.see_video(Path("synthetic.mp4"), "Observe", VideoObservation)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_provider_vision_integration.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\model_chain.py:107: in see_video
+    return self._run("see_video", prompt, schema, prompt_file, fed_id,
+src\autotester\providers\model_chain.py:132: in _run
+    return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:143: in _try_tiers
+    result = getattr(tier, method)(*args, prompt_file=prompt_file,
+src\autotester\providers\litellm_provider.py:158: in see_video
+    return see_video(self, path, prompt, schema, options,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+provider = <autotester.providers.litellm_provider.LiteLLMProvider object at 0x0000022132B4CCD0>
+path = WindowsPath('synthetic.mp4'), prompt = 'Observe'
+schema = <class 'autotester.schema.observation.VideoObservation'>
+options = None, prompt_file = None, fed_id = None
+
+    def see_video(provider, path, prompt, schema, options=None, *, prompt_file=None, fed_id=None):
+        """Fail closed without behavioral evidence; transport never interprets filenames."""
+        coverage = FrameCoverage()
+        capability = provider.options.get("vision_capability")
+        if not (isinstance(capability, VisionCapability) and capability.passed
+                and capability.model == provider.options.get("model")
+                and capability.endpoint_sha256 == endpoint_fingerprint(provider)):
+>           raise FrameCapabilityUnavailable("capability_unverified", coverage)
+E           autotester.providers.video_frames.FrameCapabilityUnavailable: frame vision unavailable: capability_unverified
+
+src\autotester\providers\video_frames.py:119: FrameCapabilityUnavailable
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-vision-integration\.work\combined-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_vision_integration.py::test_explicit_verified_next_tier_serves_missing_capability
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_vision_integration.py::test_explicit_verified_next_tier_serves_missing_capability
+1 failed, 2 warnings in 1.25s

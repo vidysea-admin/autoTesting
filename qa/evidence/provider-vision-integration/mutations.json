@@ -1,0 +1,93 @@
+[
+  [
+    "strict_constructor",
+    "src/autotester/providers/model_chain.py",
+    "secrets=secrets, strict=True,",
+    "secrets=secrets, strict=False,",
+    "tests/test_provider_vision_integration.py::test_non_ollama_chain_output_keeps_strict_validation"
+  ],
+  [
+    "capability_forwarding",
+    "src/autotester/providers/model_chain.py",
+    "vision_capability=capabilities.get(m)",
+    "vision_capability=None",
+    "tests/test_provider_vision_integration.py::test_tier_constructor_and_video_forwarding_preserve_limits_options"
+  ],
+  [
+    "limits_forwarding",
+    "src/autotester/providers/model_chain.py",
+    "if \"frame_limits\" in options else {}",
+    "if False else {}",
+    "tests/test_provider_vision_integration.py::test_tier_constructor_and_video_forwarding_preserve_limits_options"
+  ],
+  [
+    "video_implicit_exclusion",
+    "src/autotester/providers/model_chain.py",
+    "method == \"see_video\" or ",
+    "",
+    "tests/test_provider_vision_integration.py::test_default_video_never_reaches_implicit_gemini_and_keeps_coverage"
+  ],
+  [
+    "coverage_propagation",
+    "src/autotester/providers/model_chain.py",
+    "coverage = getattr(exc, \"coverage\", coverage)",
+    "coverage = None",
+    "tests/test_provider_vision_integration.py::test_default_video_never_reaches_implicit_gemini_and_keeps_coverage"
+  ],
+  [
+    "safe_reason_retention",
+    "src/autotester/providers/model_chain.py",
+    "self._call.fallback_reasons.append(errors[-1])",
+    "pass",
+    "tests/test_provider_vision_integration.py::test_explicit_verified_next_tier_serves_missing_capability"
+  ],
+  [
+    "capability_eligible_type",
+    "src/autotester/providers/video_frames.py",
+    "class FrameCapabilityUnavailable(FrameVisionError, Unsupported):",
+    "class FrameCapabilityUnavailable(FrameVisionError):",
+    "tests/test_provider_vision_integration.py::test_explicit_verified_next_tier_serves_missing_capability"
+  ],
+  [
+    "privacy_terminal_type",
+    "src/autotester/providers/video_frames.py",
+    "class FrameVisionError(ProviderError):",
+    "class FrameVisionError(Unsupported):",
+    "tests/test_provider_vision_integration.py::test_frame_privacy_and_invalid_options_stop_before_next_tier"
+  ],
+  [
+    "malformed_terminal",
+    "src/autotester/providers/model_chain.py",
+    "except ProviderError:\n                self._sync_usage()\n                raise",
+    "except ProviderError:\n                self._sync_usage()\n                continue",
+    "tests/test_provider_vision_integration.py::test_malformed_visual_output_is_terminal_with_coverage"
+  ],
+  [
+    "global_terminal",
+    "src/autotester/providers/model_chain.py",
+    "except AttemptBudgetExhausted:\n                self._sync_usage()\n                raise",
+    "except AttemptBudgetExhausted:\n                self._sync_usage()\n                continue",
+    "tests/test_video_frames.py::test_repair_and_fallback_obey_shared_physical_budget"
+  ],
+  [
+    "frame_parts_transport",
+    "src/autotester/providers/litellm_provider.py",
+    "if content_parts else image_url_parts(text, images)",
+    "if False else image_url_parts(text, images)",
+    "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+  ],
+  [
+    "generation_forwarding",
+    "src/autotester/providers/litellm_provider.py",
+    "kwargs.update(generation_options or {})",
+    "pass",
+    "tests/test_provider_vision_integration.py::test_tier_constructor_and_video_forwarding_preserve_limits_options"
+  ],
+  [
+    "availability_normalization",
+    "src/autotester/providers/litellm_provider.py",
+    "reason = availability_reason(exc)",
+    "reason = None",
+    "tests/test_video_frames.py::test_fallback_serves_configured_model_only"
+  ]
+]

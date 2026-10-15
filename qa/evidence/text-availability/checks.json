@@ -1,0 +1,115 @@
+[
+  {
+    "name": "consumers",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest-consumers",
+      "tests/test_text_availability.py",
+      "tests/test_model_chain.py",
+      "tests/test_provider_attempts.py",
+      "tests/test_litellm_provider.py",
+      "tests/test_litellm_guard.py",
+      "tests/test_provider_factory.py"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability",
+    "exit": 0,
+    "output": "qa\\evidence\\text-availability\\consumers.log",
+    "sha256": "1dd5addabc6dabf9cac765015975ec3aa7e4ae24702a4271e58be86aad95ca18",
+    "source": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    }
+  },
+  {
+    "name": "lint",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/providers/availability.py",
+      "src/autotester/providers/model_chain.py",
+      "src/autotester/providers/litellm_provider.py",
+      "tests/test_text_availability.py",
+      "tests/test_model_chain.py",
+      "tests/test_provider_attempts.py"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability",
+    "exit": 0,
+    "output": "qa\\evidence\\text-availability\\lint.log",
+    "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+    "source": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    }
+  },
+  {
+    "name": "doctor",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "autotester",
+      "doctor"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability",
+    "exit": 1,
+    "output": "qa\\evidence\\text-availability\\doctor.log",
+    "sha256": "060bd3f2e5ae9376862856708f0767108d0a3a7763fd047ef6670f780bfb5800",
+    "source": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    }
+  },
+  {
+    "name": "preflight-candidate",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability",
+    "exit": 0,
+    "output": "qa\\evidence\\text-availability\\preflight-candidate.log",
+    "sha256": "d33cd62e26ff94ae0e12dde4201cdb504a6ab458a3348a5f059a100a3e9cbe0d",
+    "source": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    }
+  }
+]

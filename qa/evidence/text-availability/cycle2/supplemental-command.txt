@@ -1,0 +1,2 @@
+PYTHONPATH=<isolated checker scratch>/src PYTHONDONTWRITEBYTECODE=1 C:/Users/product/Desktop/autoTesting/.venv/Scripts/python.exe -m pytest -p no:cacheprovider --basetemp=.work/checker-text-cycle2/.work/supplemental tests/test_model_chain.py::test_fall_through_is_logged_without_prompt_or_key tests/test_model_chain.py::test_failed_call_leaves_no_stale_serving_id tests/test_litellm_guard.py::test_assert_no_raw_secrets_runs_before_every_call_including_the_repair tests/test_litellm_guard.py::test_a_vendor_error_never_echoes_the_prompt_or_the_key
+Exit: 0

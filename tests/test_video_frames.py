@@ -149,7 +149,7 @@ def test_capability_requires_behavioral_receipt_bound_to_route(monkeypatch, setu
 
 
 def test_repair_and_fallback_obey_shared_physical_budget(monkeypatch, setup):
-    _, fake = provider(monkeypatch, [reply("bad"), reply("bad"), reply("{}")])
+    _, fake = provider(monkeypatch, [reply("bad"), TimeoutError("offline"), reply("{}")])
     chain = ModelChainProvider(model=f"{MODEL},ollama/deepseek-v4.1-flash")
     for tier in chain._tiers:
         tier.options["vision_capability"] = capability(tier)
@@ -161,7 +161,7 @@ def test_repair_and_fallback_obey_shared_physical_budget(monkeypatch, setup):
 
 
 def test_fallback_serves_configured_model_only(monkeypatch, setup):
-    _, fake = provider(monkeypatch, [RuntimeError("offline"), reply("{}")])
+    _, fake = provider(monkeypatch, [TimeoutError("offline"), reply("{}")])
     chain = ModelChainProvider(model=f"{MODEL},ollama/deepseek-v4.1-flash")
     for tier in chain._tiers:
         tier.options["vision_capability"] = capability(tier)

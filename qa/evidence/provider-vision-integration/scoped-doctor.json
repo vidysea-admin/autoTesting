@@ -1,0 +1,43 @@
+{
+  "scope": "Changed source/test caps, production function caps, module docstrings and new-concept uniqueness; full doctor deferred.",
+  "files": [
+    {
+      "path": "src/autotester/providers/model_chain.py",
+      "sha256": "bb0685d639172aa66f9b09fb01fd56f383855d0071f377e213f37526f34613bf",
+      "lines": 174,
+      "module_docstring": true,
+      "functions_over_50": []
+    },
+    {
+      "path": "src/autotester/providers/litellm_provider.py",
+      "sha256": "bbb371d6d828c196f2eac26e273ffd72000a19d7f51400ebd413631c3d4bf60b",
+      "lines": 299,
+      "module_docstring": true,
+      "functions_over_50": []
+    },
+    {
+      "path": "src/autotester/providers/video_frames.py",
+      "sha256": "c2be881ecc96eb30de32bc130567bcda833d4a6d2b20b44bc7e247abf0efc3e7",
+      "lines": 151,
+      "module_docstring": true,
+      "functions_over_50": []
+    },
+    {
+      "path": "tests/test_provider_vision_integration.py",
+      "sha256": "4a99c7c87b0ecf1c06fbebb7a087bee4f37b6de296fdbe43a800420623e65fbc",
+      "lines": 116,
+      "module_docstring": true,
+      "functions_over_50": []
+    },
+    {
+      "path": "tests/test_video_frames.py",
+      "sha256": "03dbfc3fc0be7057f21d3929e41c86eacfc6ca02791b2b88c3c0d5920cd96ce8",
+      "lines": 268,
+      "module_docstring": true,
+      "functions_over_50": []
+    }
+  ],
+  "new_exception_locations": [
+    "src\\autotester\\providers\\video_frames.py"
+  ]
+}

@@ -1,0 +1,34 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_explicit_verified_next_tier_serves_missing_capability __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021BCCD5B7D0>
+setup = [(0.0, WindowsPath('C:/Users/product/AppData/Local/Temp/tmpj3zh23zw/frame-0.png'), b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIH...3\r\x1f\xbdj\x8c1W\xa5\xc6\x18sUj\x8c1W\xa5\xc6\x18s\x95>\x8f\x170\xa7\x01'\t^\xcd\xad\x00\x00\x00\x00IEND\xaeB`\x82")]
+
+    def test_explicit_verified_next_tier_serves_missing_capability(monkeypatch, setup):
+        fake, chain = frame_chain(monkeypatch, [reply("{}")], verified=[SECOND])
+        result = chain.see_video(Path("synthetic.mp4"), "Observe", VideoObservation)
+        assert [call["model"] for call in fake.calls] == [SECOND]
+        assert chain.served == f"litellm:{SECOND}"
+>       assert chain.fallback_reasons == (f"litellm:{MODEL}: capability",)
+E       AssertionError: assert () == ('litellm:oll... capability',)
+E         
+E         Right contains one more item: 'litellm:ollama/glm-5.3-flash: capability'
+E         Use -v to get more diff
+
+tests\test_provider_vision_integration.py:59: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:154 model-chain: tier litellm:ollama/glm-5.3-flash failed (capability); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-vision-integration\.work\combined-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_vision_integration.py::test_explicit_verified_next_tier_serves_missing_capability
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_vision_integration.py::test_explicit_verified_next_tier_serves_missing_capability
+1 failed, 2 warnings in 1.71s

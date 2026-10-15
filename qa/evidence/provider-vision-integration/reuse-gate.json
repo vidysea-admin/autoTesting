@@ -1,0 +1,226 @@
+{
+  "versions": {
+    "text": "5233ffb187cf8ccd4b804c4573d5ac261b125668",
+    "vision": "921a4ac5e8c8b8f77b1752bb285c82034ae2db26",
+    "combined": "e2765afc59bbe00234af20badc3105a79ef103fe"
+  },
+  "environment_compatible": true,
+  "environment": {
+    "python": true,
+    "version": true,
+    "text_dependencies": true,
+    "vision_dependencies": true,
+    "lock": true,
+    "project_config": true
+  },
+  "claims": [
+    {
+      "parent": "text",
+      "path": "src/autotester/providers/attempts.py",
+      "symbol": "reserve_attempt",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Physical cap/deadline implementation only; changed chain/transport callers proved anew."
+    },
+    {
+      "parent": "text",
+      "path": "src/autotester/providers/attempts.py",
+      "symbol": "attempt_budget",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Physical cap/deadline implementation only; changed chain/transport callers proved anew."
+    },
+    {
+      "parent": "text",
+      "path": "src/autotester/providers/attempts.py",
+      "symbol": "AttemptBudget.__init__",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Physical cap/deadline implementation only; changed chain/transport callers proved anew."
+    },
+    {
+      "parent": "text",
+      "path": "src/autotester/providers/availability.py",
+      "symbol": "availability_reason",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Payload-free taxonomy implementation only; changed transport caller proved anew."
+    },
+    {
+      "parent": "text",
+      "path": "src/autotester/providers/availability.py",
+      "symbol": "AvailabilityFailure.__init__",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Payload-free taxonomy implementation only; changed transport caller proved anew."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/video_frames.py",
+      "symbol": "_parts",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged frame sanitation/options/limits implementations; new capability subtype and caller interactions proved anew."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/video_frames.py",
+      "symbol": "_generation",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged frame sanitation/options/limits implementations; new capability subtype and caller interactions proved anew."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/video_frames.py",
+      "symbol": "_png_bytes",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged frame sanitation/options/limits implementations; new capability subtype and caller interactions proved anew."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/video_frames.py",
+      "symbol": "_sample_times",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged frame sanitation/options/limits implementations; new capability subtype and caller interactions proved anew."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/video_frames.py",
+      "symbol": "endpoint_fingerprint",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged frame sanitation/options/limits implementations; new capability subtype and caller interactions proved anew."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/video_frames.py",
+      "symbol": "FrameVisionError.__init__",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged frame sanitation/options/limits implementations; new capability subtype and caller interactions proved anew."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/litellm_provider.py",
+      "symbol": "LiteLLMProvider.see_video",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged delegation/redaction bodies only; structured and completion methods are not reused."
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/providers/litellm_provider.py",
+      "symbol": "LiteLLMProvider.guard_text",
+      "exact_ast_equal": true,
+      "environment_compatible": true,
+      "status": "COMPATIBLE_UNCHANGED_GUARD_ONLY",
+      "limitation": "Unchanged delegation/redaction bodies only; structured and completion methods are not reused."
+    }
+  ],
+  "unchanged_dependency_bindings": [
+    {
+      "parent": "vision",
+      "path": "src/autotester/core/image_privacy.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/media/frames.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/media/probe.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/schema/video_frames.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/schema/observation.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "src/autotester/skills/frame-vision/SKILL.md",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "tests/litellm_fake.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "tests/conftest.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "vision",
+      "path": "tests/tests_mutation_fixtures.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "text",
+      "path": "src/autotester/providers/base.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "text",
+      "path": "src/autotester/providers/litellm_schema.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "text",
+      "path": "tests/test_text_availability.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "text",
+      "path": "tests/litellm_fake.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "text",
+      "path": "tests/conftest.py",
+      "canonical_content_equal": true
+    },
+    {
+      "parent": "text",
+      "path": "tests/tests_mutation_fixtures.py",
+      "canonical_content_equal": true
+    }
+  ],
+  "whole_candidate_commands": "DO_NOT_REUSE: candidate/import root and changed functions differ.",
+  "new_proof_required": [
+    "ModelChainProvider.__init__",
+    "ModelChainProvider._run",
+    "ModelChainProvider._try_tiers",
+    "LiteLLMProvider._complete",
+    "LiteLLMProvider._structured",
+    "video_frames.see_video",
+    "FrameCapabilityUnavailable"
+  ],
+  "historical_scope": "No prior100/75-test run or whole-parent PASS is claimed for this candidate.",
+  "maker_active_seconds": null,
+  "maker_tokens": null,
+  "maker_cost": null
+}
