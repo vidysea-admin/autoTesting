@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 from collections import Counter
 from collections.abc import Callable
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -177,3 +178,41 @@ def drive_real(client: Any, store: ProjectStore, spec: ModeSpec, seams: ModeSeam
     result = run_mode(client, store, spec, seams, approver=approver)
     out, lines = write_evidence(store, result, approval_ids, evidence_root)
     return result, out, lines
+
+
+@contextmanager
+def acceptance_client(app: Any, email: str, password: str, slug: str):
+    """Log in normally and check existing project permissions before any live seam."""
+    from fastapi.testclient import TestClient
+
+    from autotester.auth.access import authorize, resource_for
+    from autotester.auth.sessions import resolve_session
+    from autotester.schema.auth import PermissionKey
+
+    origin = "https://127.0.0.1"
+    with TestClient(app, base_url=origin, headers={"Origin": origin}) as client:
+        response = client.post("/auth/login", data={"email": email, "password": password},
+                               follow_redirects=False)
+        if response.status_code != 303 or response.headers.get("location") != "/":
+            raise ValueError("acceptance sign-in refused; check the account and its group access")
+        token = client.cookies.get("__Host-at_session") or client.cookies.get("at_session")
+        who = resolve_session(token)
+        resource = resource_for(slug)
+        needed = (PermissionKey.PROJECT_VIEW, PermissionKey.PROJECT_EDIT,
+                  PermissionKey.PROJECT_RUN, PermissionKey.REPORT_VIEW)
+        if who is None or any(not authorize(who, key, resource) for key in needed):
+            raise ValueError("acceptance account needs view, edit, run "
+                             "and report access to this project")
+        yield client
+
+
+def require_fresh_baseline(store: ProjectStore, mode: Mode) -> None:
+    """Refuse inherited truth/cases or an entry-mode mismatch; never delete user artifacts."""
+    from autotester.stages.generic_acceptance import EXPECTED_MODE
+    from autotester.stages.orchestrate import choose_mode
+
+    if choose_mode(store.list_sources())[0] != EXPECTED_MODE[mode]:
+        raise ValueError("acceptance mode differs from stored teaching inputs; "
+                         "use an isolated baseline")
+    if store.load_flowspec() is not None or store.list_cases() or store.list_case_proposals():
+        raise ValueError("acceptance requires an isolated baseline without prior truth or cases")

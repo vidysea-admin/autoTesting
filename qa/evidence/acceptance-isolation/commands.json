@@ -1,0 +1,82 @@
+[
+  {
+    "name": "preflight",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:\\Users\\product\\.agents\\skills\\checker\\scripts\\review_budget.py",
+      "preflight",
+      "--root",
+      ".",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "src",
+      "--temp-parent",
+      ".work"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.3430000000007567
+  },
+  {
+    "name": "budget",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:\\Users\\product\\.agents\\skills\\checker\\scripts\\review_budget.py",
+      "assess",
+      "--input",
+      "qa\\evidence\\acceptance-isolation\\phase-final-input.json"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.31300000000010186
+  },
+  {
+    "name": "focused",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_isolation.py",
+      "tests/test_generic_acceptance.py::test_both_modes_end_to_end_without_cli",
+      "tests/test_real_acceptance.py::test_ui_run_trigger_refuses_production_without_approval",
+      "tests/test_real_acceptance.py::test_script_verifies_with_the_key_only_in_dotenv"
+    ],
+    "exit_code": 0,
+    "duration_s": 18.875
+  },
+  {
+    "name": "lint",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "--no-cache",
+      "src/autotester/stages/real_acceptance.py",
+      "src/autotester/stages/generic_acceptance.py",
+      "scripts/run_real_acceptance.py",
+      "tests/test_acceptance_isolation.py"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.2809999999990396
+  },
+  {
+    "name": "final-mutation",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "scripts/mutation_check.py",
+      "qa\\evidence\\acceptance-isolation\\mutations-cycle1-final.json"
+    ],
+    "exit_code": 2,
+    "duration_s": 12.375
+  },
+  {
+    "name": "final-mutation-corrected-node",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "scripts/mutation_check.py",
+      "qa\\evidence\\acceptance-isolation\\mutations-cycle1-final.json"
+    ],
+    "exit_code": 0,
+    "duration_s": 29.20300000000134
+  }
+]

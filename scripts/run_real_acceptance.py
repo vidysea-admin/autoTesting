@@ -13,6 +13,8 @@ AT-281 thresholds are never computed. Contract: qa/contracts/generic-acceptance.
 from __future__ import annotations
 
 import argparse
+import getpass
+import os
 import sys
 from pathlib import Path
 
@@ -24,9 +26,11 @@ from autotester.core.paths import repo_root
 from autotester.schema.crawl import CrawlBounds
 from autotester.stages.generic_acceptance import ModeSeams, ModeSpec
 from autotester.stages.real_acceptance import (
+    acceptance_client,
     crawl_bounds,
     drive_real,
     preflight,
+    require_fresh_baseline,
     required_kinds,
 )
 from autotester.store.project_store import ProjectStore
@@ -41,7 +45,7 @@ def _real_seams(store: ProjectStore, mode: str, bounds: CrawlBounds) -> ModeSeam
     project = store.load_project()
     assert project is not None
     if mode == "teaching":
-        return ModeSeams(ingest_provider=providers.get("gemini"))
+        return ModeSeams(ingest_provider=providers.for_role(project, "vision"))
     secrets = SecretStore.load(project, store.paths.env_file, strict=False)
     return ModeSeams(crawl_fn=_make_crawl_fn(
         project, store, store.paths, secrets, bounds, None))
@@ -58,8 +62,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--wall-clock", type=float, default=None,
                         help="url_only crawl seconds (default: fit the covering approval)")
     parser.add_argument("--root", type=Path, default=None)
+    parser.add_argument("--email",
+                        help="existing AutoTester account; password is prompted securely")
     args = parser.parse_args(argv)
-    root = args.root or repo_root()
+    root = (args.root or repo_root()).resolve()
+    os.environ["AUTOTESTER_ROOT"] = str(root)
     load_repo_env(root)  # AT-110: the approval key lives in the repo-root .env, as for the CLI
     store = ProjectStore(args.slug, root)
     project = store.load_project()
@@ -67,10 +74,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"project {args.slug!r} is not onboarded under {root}", file=sys.stderr)
         return 2
     try:
+        require_fresh_baseline(store, args.mode)
         bounds = (crawl_bounds(store, args.max_actions, args.wall_clock)
                   if args.mode == "url_only" else None)
         ids = preflight(store, args.mode, bounds)
-    except ApprovalRequired as why:
+    except (ApprovalRequired, ValueError) as why:
         print(f"REFUSED: {why}", file=sys.stderr)
         return 3
     print(f"approvals OK for {[k.value for k in required_kinds(args.mode)]}: {ids}")
@@ -79,14 +87,20 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(f"dry run: would drive {args.mode} on {project.base_url}; nothing started")
         return 0
-    from fastapi.testclient import TestClient
-
     from autotester.ui.app import app
 
     spec = ModeSpec(mode=args.mode, slug=args.slug, name=project.name, base_url=project.base_url,
                     allowed_domains=list(project.allowed_domains), onboard=False)
-    seams = _real_seams(store, args.mode, bounds or CrawlBounds())
-    _, out, lines = drive_real(TestClient(app), store, spec, seams, root, bounds=bounds)
+    email = args.email or input("AutoTester account email: ")
+    password = getpass.getpass("AutoTester account password: ")
+    try:
+        with acceptance_client(app, email, password, args.slug) as client:
+            password = ""
+            seams = _real_seams(store, args.mode, bounds or CrawlBounds())
+            _, out, lines = drive_real(client, store, spec, seams, root, bounds=bounds)
+    except ValueError as why:
+        print(f"REFUSED: {why}", file=sys.stderr)
+        return 3
     print(f"evidence: {out}")
     print("\n".join(lines))
     return 0

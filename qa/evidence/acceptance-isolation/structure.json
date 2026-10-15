@@ -1,0 +1,51 @@
+{
+  "scripts/run_real_acceptance.py": {
+    "lines": 110,
+    "function_lines": {
+      "_real_seams": 13,
+      "main": 53
+    }
+  },
+  "src/autotester/stages/generic_acceptance.py": {
+    "lines": 169,
+    "function_lines": {
+      "_check": 3,
+      "enter_pipeline": 22,
+      "_press_run": 9,
+      "_review_proposals_in_ui": 11,
+      "run_mode": 18
+    }
+  },
+  "src/autotester/stages/real_acceptance.py": {
+    "lines": 218,
+    "function_lines": {
+      "_scrub": 9,
+      "_scrub_urls": 2,
+      "required_kinds": 3,
+      "_newest_first": 3,
+      "crawl_bounds": 28,
+      "preflight": 15,
+      "verdict_counts": 9,
+      "_gr_checklist": 21,
+      "write_evidence": 27,
+      "drive_real": 13,
+      "acceptance_client": 23,
+      "require_fresh_baseline": 10
+    }
+  },
+  "tests/test_acceptance_isolation.py": {
+    "lines": 119,
+    "function_lines": {
+      "isolated_store": 10,
+      "_signup": 7,
+      "test_normal_login_retains_origin_and_reaches_protected_routes": 11,
+      "test_bad_password_refuses_without_echoing_input": 7,
+      "test_permissions_checked_before_yield": 9,
+      "test_url_only_refuses_teaching_sources_before_orchestration": 8,
+      "test_prior_truth_refused_without_modification": 6,
+      "test_baseline_mode_mismatch_refused": 3,
+      "test_real_seams_use_configured_vision_role": 12,
+      "test_cli_root_binds_ui_store_before_dry_run": 13
+    }
+  }
+}

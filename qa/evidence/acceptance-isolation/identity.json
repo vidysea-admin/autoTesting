@@ -1,0 +1,29 @@
+{
+  "base_sha": "abc4a0ef49406936dd0047b7986b449bf3771ee2",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_version": "3.11.16",
+  "import_root": "C:\\Users\\product\\.codex\\worktrees\\acceptance-repair\\autoTesting\\src",
+  "lock_sha256": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+  "source_sha256": {
+    "scripts/run_real_acceptance.py": "4f3fcfac4d951fe90f5101bedf03545138907b5b57418de833fb30b65f874169",
+    "src/autotester/stages/generic_acceptance.py": "f261069743615cc49880324a78c59d9e31e415083c4ca0154992c77da73e9c11",
+    "src/autotester/stages/real_acceptance.py": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "tests/test_acceptance_isolation.py": "ce3ac3cad81bfb5546284fb9731490e5ec576c63766b52eecaa80e4c5bc9bb2a"
+  },
+  "environment_names": [
+    "PYTHONPATH",
+    "AUTOTESTER_ROOT",
+    "AUTOTESTER_AUTH_DIR",
+    "AUTOTESTER_TEST_NO_AUTO_LOGIN",
+    "AUTOTESTER_COOKIE_SECURE",
+    "AUTOTESTER_APPROVAL_KEY"
+  ],
+  "environment_fingerprint": "c1b0eb30c1ae4458deb37f2030b2c8469036a3136955219c7474495684e268e8",
+  "browser": "none; local TestClient only",
+  "model": "none",
+  "maker_usage": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  }
+}

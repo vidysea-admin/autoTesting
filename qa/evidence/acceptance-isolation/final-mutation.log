@@ -1,0 +1,5 @@
+KILLED  same origin header omitted  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_normal_login_retains_origin_and_reaches_protected_routes
+    actually failed: tests/test_acceptance_isolation.py::test_normal_login_retains_origin_and_reaches_protected_routes
+
+1/1 mutations killed
