@@ -1,11 +1,11 @@
 # Independent provider policy review
-VERDICT: FAIL
-Status: FAIL
-Cycle checked: 1
-Reviewed SHA: 2c8496a7559f5c8a057d18119ae509dd189555d1
+VERDICT: PASS
+Status: PASS
+Cycle checked: 2
+Reviewed SHA: 2a48b3249071df2132759d84e1738a9bb9d936d7
 
-Acceptance defect: latest owner authorization supplied at independent dispatch permits configured Gemini fallback on Ollama auth/key/service/capability failure. D-101 What, OC3, the LL amendment and I4 restrict eligibility to key/auth/service unavailability. Their unsupported-capability outcome never authorizes the capability fallback. This leaves a working Ollama text endpoint without required vision capability unable to reach configured, capability-verified Gemini. Narrow repair: add unsupported required capability as an eligible trigger consistently while retaining privacy, global budget and deadline stops. Preserve historical decision/contract bytes; append a correcting decision rather than changing committed D-101 history.
+D-102 and all three provider/vision addenda consistently authorize configured, capability-verified Gemini when required Ollama capability is unavailable, including when Ollama text service works. Explicit precedence, privacy/global-budget/deadline stops, finite physical attempts and honest accounting remain intact. This resolves the cycle-1 defect; unchanged narration requirements retain cycle-1 review evidence.
 
-Independent evidence: git identity and cycle verified; exactly six expected documentation paths changed. Immutable git-show blobs for all five decision/contract paths retain the entire base prefix, including D-095 through D-100. git diff --check base candidate exited 0. Independent .work/checker-structural.py exited 0. Supplied transcript priority, finite local extraction, configured Gemini audio, no local ASR/download, sanitation/provenance/physical accounting remain expressed. No runtime, provider availability, credential or release claim is made.
+Independent checks: exact candidate and clean worktree verified; five-document delta only; immutable base blob prefixes retained for decision and three contracts. Source-adapter unchanged. No runtime tests or provider/live/release acceptance claimed. Original cycle-1 FAIL retained in provider-policy-cycle1.md and immutable commit e3b8c34402a50f9e1c5f960994fd6ace489d3e0c.
 
-Accounting: readiness allocation debit 25 active seconds / 1000 tokens; review allocation 35 seconds / 1500 tokens. Maker actuals and host token/cost measurements unavailable (null); allocations are not measurements; <=10% objectives unverified. Parent initial assessment and .work/checker-phase2.json assessment both BOOTSTRAP_REVIEW, exit 0. Prior debits preserved. No pytest/build/browser run. Source correction and fresh-cycle independent review remain required; combined release verification remains separate.
+Budget: parent authorized additional 30 active seconds/1000 tokens, cumulative allocation debits 90/3500, preserving prior 60/2500. Parent and independent cycle-2 assessments exit 0. Actual comparable maker/checker token/cost and prior active usage unavailable (null); <=10% objectives unverified. No unchanged broad checks rerun. Future runtime implementation and combined release gates remain separate.
