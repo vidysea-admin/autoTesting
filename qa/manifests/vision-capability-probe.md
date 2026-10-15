@@ -80,6 +80,13 @@ complete live/copied inventories, raw-byte mutation reconstruction, named JUnit
 failures, restored results, interpreter/dependencies/lock and log hashes. It is maker
 readiness only, not an independent verdict. All source/test bytes stayed frozen.
 
+After runtime proof, unit-specific Git attributes preserve source/manifest checkout
+newlines and disable evidence text normalization. packaging.json separately checks
+fresh index checkout byte equality; older runtime receipts are not relabeled as
+testing that later configuration. The first packaging check found a manifest newline
+gap, retained in packaging-attempt-1.*, then the exact manifest attribute repaired it.
+No runtime/source change or repeated runtime tests accompanied this packaging fix.
+
 Independent review should select a small justified set: actual sanitized-pixel receipt,
 secret-model rejection, outer budget exhaustion, decoded-payload refusal and receipt
 backward compatibility. The checker chooses its own representative sabotage and any
