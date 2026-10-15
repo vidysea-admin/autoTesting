@@ -12,17 +12,20 @@ RUN pip install --no-cache-dir uv
 WORKDIR /app
 
 ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_PYTHON_INSTALL_DIR=/opt/uv-python \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_PYTHON=3.12
 
 COPY pyproject.toml uv.lock ./
 
-RUN uv python install 3.12 \
+RUN mkdir -p /opt/uv-python \
+    && uv python install 3.12 \
     && uv sync --frozen --python 3.12 --no-install-project
 
 COPY . .
 
-RUN uv sync --frozen --python 3.12
+RUN uv sync --frozen --python 3.12 \
+    && chmod -R a+rX /opt/uv-python /opt/venv
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
