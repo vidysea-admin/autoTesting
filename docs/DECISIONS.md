@@ -2650,3 +2650,31 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (explicit system-wide checker-efficiency approval in this chat, 2026-10-15).
 
 **Links:** D-099; qa/loop.md; qa/adapter.json; qa/contracts/core-invariants.md C7; qa/manifests/checker-policy-contract.md; system-wide checker-efficiency instruction in this chat.
+
+## D-101 | 2026-10-15 | type: decision | status: ACTIVE
+
+**What:** Umesh explicitly amended the approved completion policy in this chat: Ollama remains primary, but a configured Gemini key may provide fallback when Ollama key/auth/service is unavailable. Gemini narration fallback is explicitly authorized. Supplied transcripts are preferred; when no transcript is supplied and Ollama lacks audio capability, perform bounded local audio extraction and guarded Gemini audio transcription. No automatic local ASR/model download. These are narrow amendments to D-099's Ollama-only default/fallback policy, not total supersession of D-099.
+
+**Why:** A missing or unavailable Ollama path must not discard teaching evidence when the owner already configured and authorized a usable Gemini fallback. Supplied narration avoids unnecessary calls; bounded audio extraction enables transcription without silently downloading local models. Privacy refusal and global budget exhaustion are safety stops, not provider outages.
+
+**Result:** Checker-owned provider/source/vision amendments distinguish eligible unavailability fallback from prohibited safety bypass. Every physical fallback attempt retains provider/reason/accounting and finite limits. Unknown usage stays unknown; unsupported or exhausted paths report explicit unavailable/incomplete results. D-095 opt-in agent policy, D-096 production approvals, D-097 source-derived DRAFT/provenance and D-098 destructive-control guards remain unchanged. Existing credentials are reused; no secret values are read or changed by this documentation unit.
+
+**Changes-authorized:** qa/contracts/langchain-fallback.md (OC3 Ollama-primary eligible Gemini fallback); qa/contracts/providers-litellm.md (default fallback and boundary distinction); qa/contracts/ingest.md (configured capability-verified visual fallback); qa/contracts/source-adapters.md (SA8 supplied-transcript-first narration and bounded Gemini transcription). qa/manifests/provider-policy.md records scope/evidence. No enforcement path, verification policy, dependency, architecture prose or runtime code changed by this unit; implementation and independent tests remain separate units.
+
+**Approved-by:** Umesh (explicit Ollama-primary/Gemini fallback and narration confirmation in this chat, 2026-10-15).
+
+**Links:** D-099; D-100; D-095; D-096; D-097; D-098; T-162; T-169; T-202; qa/manifests/provider-policy.md; explicit owner provider/narration amendment in this chat.
+
+## D-102 | 2026-10-15 | type: fix | status: ACTIVE
+
+**What:** Correct D-101's incomplete fallback eligibility to include unavailable required model capability, alongside Ollama key/auth/service unavailability. Umesh explicitly authorized configured Gemini capability fallback, including narration. This narrowly amends D-101 eligibility; it does not supersede the whole decision or change explicit configuration precedence.
+
+**Why:** D-101 omitted capability unavailability from its general eligibility lists even though the owner's confirmed narration fallback requires it. The cycle-1 independent checker correctly found this omission; recording capability explicitly aligns the contract with the owner's approved behavior without weakening privacy or budget boundaries.
+
+**Result:** Configured Gemini fallback is eligible when the required Ollama capability is unavailable, as well as on key/auth/service unavailability. Actual capability, provider, fallback reason and physical-attempt accounting remain observable. Unsupported/exhausted paths without a usable authorized fallback remain explicitly unavailable. Privacy refusal and global budget exhaustion never trigger fallback. All other D-101 requirements, including supplied-transcript-first narration, bounded extraction, no automatic local ASR/model download, truthful unknown usage and D-095/096/097/098 protections remain unchanged. Cycle-1 FAIL remains preserved.
+
+**Changes-authorized:** Narrow append-only eligibility addenda in qa/contracts/langchain-fallback.md OC3, qa/contracts/providers-litellm.md and qa/contracts/ingest.md; qa/manifests/provider-policy.md cycle 2. No runtime, source-adapter behavior, verification, enforcement, credential, dependency or architecture change.
+
+**Approved-by:** Umesh (explicit capability-unavailable Gemini fallback authorization in this chat, 2026-10-15).
+
+**Links:** D-101; D-099; qa/verdicts/provider-policy.md cycle 1; qa/manifests/provider-policy.md cycle 2; owner capability-fallback clarification in this chat.
