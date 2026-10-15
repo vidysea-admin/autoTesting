@@ -1,6 +1,6 @@
 # Manifest — ollama-only-defaults
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Root:** C:/Users/product/.codex/worktrees/ollama-provider/autoTesting
 **Branch:** codex/ollama-provider
