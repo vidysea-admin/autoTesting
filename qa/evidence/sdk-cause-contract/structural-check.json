@@ -1,0 +1,30 @@
+{
+  "candidate": "b665f128f4024ded282832127af5f37b28e05096",
+  "base": "921a4ac5e8c8b8f77b1752bb285c82034ae2db26",
+  "paths": [
+    "qa/contracts/ingest.md",
+    "qa/manifests/sdk-cause-contract.md"
+  ],
+  "historical_prefix_byte_preserved": true,
+  "required_addendum_clauses": [
+    "typed ProviderError",
+    "MAX_TOKENS",
+    "malformed-JSON repair",
+    "Suppress rendering",
+    "sanitized safe",
+    "never chain the original secret-bearing",
+    "ACTIVE polling",
+    "bounded timeout",
+    "upload-cache",
+    "No new fallback eligibility"
+  ],
+  "probe": "in-memory raw-cause-suppression clause removal rejected; baseline accepted; no runtime test",
+  "diff_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "ratios": "UNVERIFIED",
+  "actual_tokens": null,
+  "actual_cost": null
+}

@@ -1,0 +1,30 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "sdk-cause-docs-readiness",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 20,
+        "tokens": 800
+      }
+    }
+  ],
+  "next_phase": {
+    "active_s": 40,
+    "tokens": 1700,
+    "cost": null
+  },
+  "bootstrap_scope": "Independent two-document structural review only; no runtime certification",
+  "bootstrap": {
+    "active_s": 60,
+    "tokens": 2500
+  },
+  "escalation": null
+}
