@@ -1,0 +1,7 @@
+{
+  "Parser": "qa/hooks/mc-sessionstart.ps1 actual AST function definitions",
+  "Status": "PASS",
+  "Cycle": 1,
+  "ReviewedSHA": "2a6abe8d381427bbf72f6a1217435bf42213548b",
+  "Pass": true
+}

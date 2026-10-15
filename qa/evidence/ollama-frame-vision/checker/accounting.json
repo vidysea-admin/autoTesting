@@ -1,0 +1,23 @@
+{
+  "prior_actual_active_s": null,
+  "prior_tokens": null,
+  "cost": null,
+  "maker_actual_active_s": null,
+  "maker_tokens": null,
+  "ratio": "UNVERIFIED",
+  "prior_budget_debit": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "authorized_cumulative": {
+    "active_s": 300,
+    "tokens": 8500
+  },
+  "observable_runtime_command_s": 26.514999999999418,
+  "verdict_phase_start_utc": "2026-10-15T09:01:45.388181+00:00",
+  "verdict_evidence_end_utc": "2026-10-15T09:02:54.135199+00:00",
+  "verdict_evidence_monotonic_s": 68.75,
+  "model_active_s": null,
+  "wait_s": null,
+  "initial_acl_and_crlf_setup": "retained within prior unknown actual/debits; not excluded"
+}
