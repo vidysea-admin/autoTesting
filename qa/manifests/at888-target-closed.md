@@ -1,7 +1,7 @@
 # at888-target-closed
 
 Status: ready-for-check
-Fix cycle: 1
+Fix cycle: 2
 Issue: AT-888
 Branch: wave/at888-target-closed
 
@@ -12,3 +12,4 @@ VideoMixin._restart_session), then a named stop reason. Files: stages/browser_re
 ui/run_execution.py, browser/video.py (relaunch + cap), tests/test_ui_runs_target_closed.py, docs/MAP.md.
 Verified: scoped pytest (15 pass), ruff clean, doctor clean after `autotester map`.
 Not done: serial-loop wiring is not driven end to end by a test (fake loop mirrors it).
+Cycle 2: test now drives the real _run_cases_serially (fake session/store); _loop copy removed; cap test added.

@@ -5,10 +5,12 @@ relaunch count is bounded per run. Fake session only -- no browser."""
 from __future__ import annotations
 
 from types import SimpleNamespace
+from typing import ClassVar
 
 from autotester.schema.enums import Outcome, Result
 from autotester.schema.run import RawResult
-from autotester.stages.browser_recovery import BrowserRecovery, closed_verdict, is_browser_closed
+from autotester.schema.verdict import Verdict
+from autotester.stages.browser_recovery import closed_verdict
 
 
 class TargetClosedError(Exception):
@@ -16,52 +18,82 @@ class TargetClosedError(Exception):
 
 
 class FakeSession:
-    def __init__(self, closing: set[int]) -> None:
-        self.closing, self.ran, self.relaunched = closing, [], 0
+    """Stands in for BrowserSession inside the real `_run_cases_serially`."""
+    instances: ClassVar[list] = []
+
+    def __init__(self, *a, **k) -> None:
+        self.relaunched, self.budget = 0, None
+        FakeSession.instances.append(self)
+
+    def start(self):
+        return self
+
+    def close(self) -> None:
+        pass
 
     def relaunch(self, cause: BaseException) -> None:
         self.relaunched += 1
 
-    def run(self, i: int) -> RawResult:
-        self.ran.append(i)
-        if i in self.closing:
-            return RawResult(case_id=f"c{i}", outcome=Outcome.ERRORED,
-                             error="TargetClosedError: browser has been closed")
-        return RawResult(case_id=f"c{i}", outcome=Outcome.COMPLETED)
+
+class FakeStore:
+    def __init__(self) -> None:
+        self.results, self.verdicts = {}, {}
+
+    def save_result(self, run_id, r) -> None:
+        self.results[r.case_id] = r
+
+    def save_verdict(self, run_id, v) -> None:
+        self.verdicts[v.case_id] = v
 
 
-def _loop(session: FakeSession, n: int = 4, cap: int = 3):
-    rec, out = BrowserRecovery(session, cap), []
-    for i in range(1, n + 1):
-        if rec.stop_reason:
-            out.append((i, "stopped", rec.stop_reason))
-            continue
-        r = session.run(i)
-        if is_browser_closed(r):
-            out.append((i, closed_verdict(r, "run-x").result, "closed"))
-            rec.recover()
-        else:
-            out.append((i, r.outcome, None))
-    return out
+def _drive(monkeypatch, closing: set[str], n: int = 4):
+    import autotester.ui.run_execution as rx
+    from autotester.stages import browser_recovery as br
+
+    ran: list[str] = []
+
+    def fake_pipeline(case, session, judge, run_id, store):
+        ran.append(case.id)
+        if case.id in closing:
+            raise TargetClosedError("Target page, context or browser has been closed")
+        return (RawResult(case_id=case.id, outcome=Outcome.COMPLETED),
+                br.closed_verdict(RawResult(case_id=case.id, outcome=Outcome.COMPLETED), "r"))
+
+    def fake_grade(case, result, judge, run_id, store):
+        return Verdict(run_id=run_id, case_id=case.id, result=Result.INCONCLUSIVE,
+                       grader_provider="rule", note=result.error)
+
+    FakeSession.instances = []
+    monkeypatch.setattr(rx, "BrowserSession", FakeSession)
+    monkeypatch.setattr(rx, "run_and_grade_case_resilient", fake_pipeline)
+    monkeypatch.setattr(rx, "grade_errored_result", fake_grade)
+    cases = [SimpleNamespace(id=f"c{i}") for i in range(1, n + 1)]
+    store = FakeStore()
+    secrets = SimpleNamespace(redactor=lambda: SimpleNamespace(scrub=lambda t: t))
+    budget = SimpleNamespace(check_start=lambda: None, check=lambda: None)
+    rx._run_cases_serially(cases, [False] * n, None, secrets, None, None, "demo", None, "r",
+                           store, budget=budget)
+    return ran, store, FakeSession.instances[0]
 
 
-def test_case_2_of_4_closed_later_cases_still_run():
-    s = FakeSession({2})
-    out = _loop(s)
-    assert s.ran == [1, 2, 3, 4]
-    assert out[1][1] == Result.INCONCLUSIVE and s.relaunched == 1
-    assert out[2][1] == out[3][1] == Outcome.COMPLETED
+def test_case_2_of_4_closed_later_cases_still_run(monkeypatch):
+    ran, store, session = _drive(monkeypatch, {"c2"})
+    assert ran == ["c1", "c2", "c3", "c4"]
+    assert store.verdicts["c2"].result == Result.INCONCLUSIVE
+    assert "browser closed" in store.verdicts["c2"].note
+    assert session.relaunched == 1
+    assert store.results["c3"].outcome == store.results["c4"].outcome == Outcome.COMPLETED
 
 
-def test_relaunches_are_bounded_then_named_stop():
-    s = FakeSession({1, 2, 3})
-    out = _loop(s, n=5, cap=2)
-    assert s.relaunched == 2 and s.ran == [1, 2, 3]
-    assert "relaunch limit" in out[3][2] and out[4][1] == "stopped"
+def test_relaunches_are_capped_then_named_stop(monkeypatch):
+    ran, store, session = _drive(monkeypatch, {"c1", "c2", "c3", "c4"}, n=6)
+    assert session.relaunched == 3 and ran == ["c1", "c2", "c3", "c4"]
+    assert "relaunch limit" in store.results["c5"].error
+    assert "relaunch limit" in store.results["c6"].error
 
 
 def test_verdict_cause_is_browser_closed_never_fail():
-    r = FakeSession({1}).run(1)
+    r = RawResult(case_id='c1', outcome=Outcome.ERRORED, error='TargetClosedError: x')
     v = closed_verdict(r, "run-x")
     assert v.result == Result.INCONCLUSIVE and "browser closed" in v.note
 
