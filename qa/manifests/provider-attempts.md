@@ -1,6 +1,6 @@
 # Provider physical attempt budgets and honest usage
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Base SHA: 40299c04 (immutable full SHA and candidate SHA in linked packet)
 Root: C:/Users/product/.codex/worktrees/provider-attempts/autoTesting
