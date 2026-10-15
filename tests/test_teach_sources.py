@@ -192,3 +192,10 @@ def test_empty_registered_set_is_incomplete_without_model(teaching_store):
     provider = MixedTeacherFake()
     result = run_teaching(teaching_store, provider)
     assert not result.is_complete and not result.outcomes and not provider.requested
+
+
+def test_teaching_artifacts_do_not_enter_case_results(teaching_store):
+    store = teaching_store
+    store.add_source(Source(id="text", project="demo", kind=SourceKind.TEXT, text="Instruction"))
+    assert run_teaching(store, MixedTeacherFake()).is_complete
+    assert store.load_results("mixed") == []
