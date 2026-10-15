@@ -1,0 +1,7 @@
+{
+  "Cycle": 1,
+  "VerdictPass": true,
+  "Status": "PASS",
+  "ReviewedShaMatch": true,
+  "Parser": "qa/hooks/mc-sessionstart.ps1 actual function AST"
+}

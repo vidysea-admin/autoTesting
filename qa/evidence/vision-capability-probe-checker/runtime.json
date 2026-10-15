@@ -1,0 +1,89 @@
+{
+  "status": "COMPLETE",
+  "candidate": "495cf7ebe0b359804dfd0077350ecec10dc347f3",
+  "cycle": 1,
+  "duration_s": 23.485000000000582,
+  "prior_setup_duration_s": 13.43800000000192,
+  "tokens": null,
+  "cost": null,
+  "records": [
+    {
+      "name": "preflight",
+      "argv": [
+        "C:/Users/product/Desktop/autoTesting/.venv/Scripts/python.exe",
+        "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+        "preflight",
+        "--root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker\\subject",
+        "--import-name",
+        "autotester",
+        "--import-root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker\\subject\\src",
+        "--temp-parent",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker"
+      ],
+      "exit": 0,
+      "duration_s": 0.31300000000192085,
+      "log_sha256": "550ebbc084c4ce5c32a02fe45bd03b15113786fd34daa70d1a9cfa7a464ce8a2"
+    },
+    {
+      "name": "selected-green",
+      "argv": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/test_vision_probe.py::test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt",
+        "tests/test_vision_probe.py::test_secret_model_config_is_withheld_before_artifact_or_transport",
+        "tests/test_vision_probe.py::test_enclosing_zero_budget_stops_before_transport",
+        "tests/test_vision_probe.py::test_invalid_sanitized_payload_cannot_become_filename_only_success[jpeg]",
+        "tests/test_vision_probe_schema.py::test_probe_status_is_explicit_and_capability_extension_is_backward_compatible",
+        "tests/test_vision_probe.py::test_another_models_physical_attempt_cannot_certify_this_model",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\qa\\evidence\\vision-capability-probe-checker\\selected-green.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker\\tmp-selected-green"
+      ],
+      "exit": 0,
+      "duration_s": 7.311999999998079,
+      "log_sha256": "e2c2c266ddc4b6bf5fcabcbc65579bfd5d9b3183e349bb207e02de163549a4d1"
+    },
+    {
+      "name": "privacy-red",
+      "argv": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/test_vision_probe.py::test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\qa\\evidence\\vision-capability-probe-checker\\privacy-red.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker\\tmp-privacy-red"
+      ],
+      "exit": 1,
+      "duration_s": 8.014999999999418,
+      "log_sha256": "122d4a1983fae6375c978ead896d51b791d8779368a39ad0d6d0cf1ad56ce45c"
+    },
+    {
+      "name": "privacy-restored",
+      "argv": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/test_vision_probe.py::test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\qa\\evidence\\vision-capability-probe-checker\\privacy-restored.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker\\tmp-privacy-restored"
+      ],
+      "exit": 0,
+      "duration_s": 7.8290000000015425,
+      "log_sha256": "927d72f8a7c3c821a116084291abd8c12d0d4be8bbc698aa599eee89dd794618"
+    }
+  ],
+  "source_inventory_count": 1020,
+  "privacy_original_sha256": "ffd309fc33989ee27b70abe917354d7be001da670050fa5aeb94c4e0c5d294db",
+  "privacy_mutated_sha256": "ebd74728aeb5632cf4a8a7e876bd3e2a10e492097589c5ed4235ce7a41683900"
+}
