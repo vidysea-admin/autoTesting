@@ -19,6 +19,7 @@ def _privacy_store(tmp_path):
     store.save_project(Project(slug="demo", name="Demo", base_url="https://example.test"))
     return store
 
+
 @pytest.mark.parametrize("side", ["input", "output"])
 def test_video_prompt_and_returned_artifact_cross_privacy_guard(_privacy_store, side):
     store, provider = _privacy_store, MixedTeacherFake()
@@ -60,3 +61,25 @@ def test_video_without_supplied_narration_is_partial_without_transcription(_priv
     assert len(provider.videos) == 1 and not provider.text_prompts
     assert "no supplied transcript" in provider.videos[0][1]
     assert "no speech detected" not in provider.videos[0][1]
+
+
+@pytest.mark.parametrize("side", ["label", "model"])
+def test_encoded_teaching_secrets_fail_closed_at_their_boundary(_privacy_store, side):
+    store, provider = _privacy_store, MixedTeacherFake()
+    secret = "sensitive-fixture"
+    store.paths.env_file.write_text(f"PASSWORD={secret}\n", encoding="utf-8")
+    source = add_local(store, "video", SourceKind.VIDEO, "screen.mp4")
+    source = source.model_copy(update={"label": secret[::-1] if side == "label" else "Video"})
+    store.paths.sources_index.write_text(source.model_dump_json() + "\n")
+    store.save_transcript(
+        Transcript(
+            source_id=source.id,
+            engine="sidecar",
+            segments=[TranscriptSegment(start=1, end=2, text="Save")],
+        )
+    )
+    provider.video_target = secret[::-1] if side == "model" else "Play"
+    result = run_teaching(store, provider)
+    assert not result.is_complete and result.outcomes[0].status == "failed"
+    assert len(provider.videos) == (1 if side == "model" else 0)
+    assert secret[::-1] not in result.model_dump_json()
