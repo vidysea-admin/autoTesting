@@ -79,13 +79,26 @@ def test_downstream_execution_persists_raw_results_before_any_grade(tmp_path):
     assert read_json(Path(graded), PipelineBatch).verdicts
 
 
-def test_downstream_approval_refusal_opens_no_sessions(tmp_path):
+def test_downstream_approval_refusal_opens_no_sessions(tmp_path, monkeypatch):
     f = downstream_fixture(tmp_path, grant=False)
     ctx = f[-1]
     expanded = _expand(f)
+    root = ctx.store.paths.run_dir(ctx.run_id)
+    before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    constructors = []
+    original = DownstreamSession.__init__
+
+    def construct(self, *args, **kwargs):
+        constructors.append(True)
+        original(self, *args, **kwargs)
+
+    monkeypatch.setattr(DownstreamSession, "__init__", construct)
     with pytest.raises(LaunchRefused):
         ctx.runners[StageName.EXECUTE](ctx, expanded)
     assert DownstreamSession.instances == []
+    assert constructors == [] and ctx.store.load_run(ctx.run_id) is None
+    assert ctx.store.load_results(ctx.run_id) == ctx.store.load_verdicts(ctx.run_id) == []
+    assert {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()} == before
     assert not ctx.store.paths.pipeline_artifact(ctx.run_id, "execution-progress").exists()
 
 
