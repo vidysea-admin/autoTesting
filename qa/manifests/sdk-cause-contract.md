@@ -1,6 +1,6 @@
 # Manifest — sdk-cause-contract
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** Narrow checker-owned I9/C5 compatibility clarification for safe SDK diagnostics.
 **Branch:** codex/sdk-cause-contract
