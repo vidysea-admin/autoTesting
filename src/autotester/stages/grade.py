@@ -20,6 +20,7 @@ from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Failure, Judgment, Rubric, Verdict
+from autotester.stages.grade_images import VISUAL_PRIVACY_NOTE, judge_images
 from autotester.stages.grade_note_guard import note_guard
 
 SKILL_NAME = "grade"  # src/autotester/skills/grade/SKILL.md (T-175, was grade_v1.md)
@@ -166,8 +167,8 @@ def _withheld(
 
 def _pii_masked(prompt: str) -> str:
     """AT-840: the judge prompt (rubric, evidence labels carrying page text, any OCR) is the only
-    text channel; mask emails/phones/name fields after the secret gate. Images are sent as
-    captured -- no image-PII masking exists (manifest at840-judge-pii)."""
+    text channel; mask emails/phones/name fields after the secret gate. Images use the
+    separate local sanitation boundary in grade_images."""
     return mask_pii(prompt)
 
 
@@ -227,8 +228,8 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     seen = [path for path in requested if path.exists()]
     counts = {"images_requested": len(requested), "images_seen": len(seen)}
 
-    judgment = judge.judge(prompt, Judgment, images=seen,
-                           prompt_file=SKILL_NAME, fed_id=result.case_id)
+    judgment, counts["images_seen"] = judge_images(judge, prompt, seen,
+                                                   prompt_file=SKILL_NAME, fed_id=result.case_id)
     problem = _inconsistency(rubric, judgment)
     if problem is not None:
         return _verdict(run_id, result, rubric, verdict_result=Result.INCONCLUSIVE,
@@ -237,6 +238,9 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     shortfall = _shortfall(**counts)
     final, note = _assertion_guard(result, judgment.result, judgment.scoreboard, judgment.note)
     final, note = _defect_decision(judgment, final, note, rubric.expects_error)
+    if seen:
+        final = Result.INCONCLUSIVE if final is Result.PASS else final
+        shortfall = _joined(VISUAL_PRIVACY_NOTE, shortfall)
     return _verdict(run_id, result, rubric, verdict_result=final,
                      provider_id=judge.id,
                      scoreboard=_joined(shortfall, judgment.scoreboard) or "",
@@ -282,7 +286,7 @@ def _shortfall(*, images_requested: int, images_seen: int) -> str | None:
         return None
     return (
         f"graded on {images_seen} of {images_requested} screenshots — "
-        f"{images_requested - images_seen} evidence file(s) the run recorded were not on disk"
+        f"{images_requested - images_seen} evidence file(s) unavailable or withheld for privacy"
     )
 
 
