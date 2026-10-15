@@ -203,3 +203,21 @@ to new tests.
   AskUserQuestion answers, checker session, 2026-09-26; gate
   `qa/gates/meeting-user-persona-ux-judging.md` answered A) and goal task T-190. No prior draft
   existed; nothing amended.
+
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### PU10 — Opt-in caller, actual execution conditions and retry budget
+UX advisory runs only when explicitly enabled, after functional results persist.
+It uses the configured guarded Provider, preserving the functional verdict bytes
+and separate report section (PU3/PU7). Its per-run call/token/cost limits include
+every physical retry and fallback request; unavailable usage is not zero usage.
+Budget exhaustion or advisory errors preserve functional results and record the
+unreviewed remainder/reason. Device/locale claims cite captured actual execution
+conditions; requested persona settings alone do not establish those conditions.
+Verify through the production caller: opt-out, actual-condition mismatch, retry
+accounting, exhaustion, unavailable usage and provider errors, with unchanged
+functional verdicts and visible incomplete-advisory evidence.

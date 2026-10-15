@@ -1,5 +1,10 @@
 # Contract — failure-bundle (one atomic unit per failure, priority, and pruning before spend)
 
+**Current interpretation (D-099, 2026-10-15):** original code/status/landing notes
+below are historical observations, not current absence claims. Judge existing
+bundle machinery and new integration by FB1-FB6 and committed evidence; this
+amendment alone does not certify a prior task PASS.
+
 **Status:** **DRAFT** (authored by /checker 2026-09-29 under **D-041**, `Approved-by: Umesh` —
 Result names this file). Goes **ACTIVE** on T-178's first checker PASS.
 **Feature:** T-178 — an atomic, self-contained failure bundle with one id; case priority `p0`..`p3`;
@@ -76,6 +81,22 @@ step-generation calls; prune all 5 and the count is **0**. With no approval reco
 generated. Sabotage: generate before the approval check — the pruned-proposals count goes red.
 
 ## Landing note
+
+### FB6 — Production integration preserves functional results
+Failed/inconclusive runs expose their sanitized failure bundles through existing
+reports. Bundle assembly failure retains the original RawResult/Verdict and
+records the unavailable bundle reason; it never turns a failure into success.
+FB1/FB2 atomicity and isolation still bind. Screenshot withholding under B11 is
+represented as explicitly missing visual evidence, not a fabricated complete
+image; such a bundle makes no full-visual-completeness claim.
+FB5 applies to the reviewed proposal path. D-097's reconciled source-derived
+DRAFT generation exception retains source provenance and requires no human
+proposal approval; NEEDS_EDIT/unreconciled material remains blocked.
+Verify through the production run/report caller, including failure injection,
+privacy sanitation/withholding and run isolation. Direct bundle writer tests alone
+cannot establish the integration.
+
+## Historical landing note (preserved)
 
 None of this exists, and `Case.pinned`'s own description says T-178 "is expected to subsume `pinned`
 with `priority == p0`" — so a check that only asserts "pinned cases survive" passes today. FB4's

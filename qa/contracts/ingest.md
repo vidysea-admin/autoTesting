@@ -297,3 +297,21 @@ DRAFT assertion must go red.
   human-approval dependency for video-derived flows. I16 pins the one checkable part: ingest writes
   `DRAFT`, never approves and never calls the guard; I6 (an APPROVED spec is not clobbered) is
   unchanged. Tightening only. **Links:** D-070; `review-gate.md` R5; `reconcile.md` RC10.
+
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### I4 amendment — Provider-neutral real visual transport
+I4's Gemini upload is one implementation, not a mandatory vendor. Ollama video
+analysis sends real readable sampled image bytes with their timestamps through
+Provider. The request preserves frame-to-time correspondence; filenames, empty
+images or transcripts alone cannot satisfy video understanding. A configured model
+must pass a behavioral image-understanding capability check before serving vision;
+unsupported/unverified capability produces an explicit unavailable/inconclusive
+result, with no silent image dropping or automatic vendor substitution.
+Verify real visual payloads and timestamps using synthetic frames and fake transport;
+record a behavioral live probe separately before claiming live vision acceptance.
+Video-learning completeness and narration-ground-truth rules remain in force.

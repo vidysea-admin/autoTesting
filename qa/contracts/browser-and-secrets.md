@@ -138,3 +138,24 @@ page and mocks.
 - 2026-10-07 · routine (D-072 item 5, Approved-by Umesh) · refines the 2026-09-22 line above: the one authorized surface where a saved
   value appears is now shown only to a user holding `credentials.view` (default Admin/CEO only), not to every operator of the page;
   other users see set / not set. B1-B10 and B7 unchanged. See core-invariants.md C5 (amended 2026-10-07) and `auth.md` AU21.
+
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### B11 — Sanitize visual evidence before external delivery
+Before external model delivery, screenshots mask credentials, contact details and
+configured sensitive fields. A `masked=True` flag alone is not proof: verification
+examines the captured/sanitized image or proves the unsafe image was withheld.
+When sanitation cannot be established, withhold the image and persist an explicit
+incomplete-visual-evidence reason. Original unsafe pixels must not appear in model
+payloads or shared failure bundles. Sanitization failures must not erase the
+functional result. Existing secret-input masking and text redaction remain required.
+Verify synthetic images/DOM captures containing credentials and contact details,
+sanitizer errors, configured fields, withheld transport and sanitized bundles.
+Conservative removal of all text pixels is acceptable when selective sanitation
+cannot be established, provided text/UX coverage is explicitly incomplete. Such
+images cannot establish that text is correct, readable or present; selective
+masking remains the target. An image wholly withheld is no visual observation.

@@ -80,6 +80,14 @@ control of it. Every criterion below is a cheap rule now that was unaffordable t
 
 ### C7 — Verification is independent
 - A unit is complete only when a check that someone else can re-run passes.
+- **D-100 proportional review:** a unit PASS requires a fresh independent checker to validate an
+  immutable minimal packet, re-derive the changed claims and run a discriminating focused probe
+  or sabotage as applicable under `qa/loop.md` and `qa/adapter.json` `verify.unit_policy`.
+  Compatible bound maker/CI evidence may be reused; it cannot replace independent judgement or
+  affected auth/secrets/PII/image-privacy/production-safety checks. Full pytest, ruff and doctor
+  remain mandatory on the combined integration/release candidate; unit PASS cannot certify that gate.
+  The <=10% checker/maker active-duration/token/cost target is an efficiency target only: unknown
+  ratios stay unverified, unfinished criteria require NEEDS_EXTRA_REVIEW, never automatic PASS.
 - The executor never grades itself: `RawResult` records observation, `Verdict` records judgement,
   and they are produced by different components.
 - **A sabotage must assert that it was applied.** Where a manifest's evidence is "I broke X and N
@@ -112,10 +120,9 @@ control of it. Every criterion below is a cheap rule now that was unaffordable t
 - **A unit that ADDS or REWRITES a test must mutation-test it before the manifest is submitted.**
   For each such test, mutate the specific branch it claims to defend and require at least one
   failure, attributed as above. A zero-failure mutation is reported INCONCLUSIVE (clause 2 above),
-  never as a pass and never as "the test is vacuous". The maker runs this; the checker still re-runs
-  its own. This is a duty on the unit, not a step in `qa/adapter.json` slot-1 — slot-1 runs on every
-  unit, most of which add no test, and a step that no-ops on most runs is a step people learn to
-  skip.
+  never as a pass and never as "the test is vacuous". The maker runs this for every such test; the checker validates all proof and independently
+  re-runs a representative mutation, expanding for affected risks under D-100. This is a duty on the unit, separate from the selected tier commands and mandatory full
+  integration gate in `qa/adapter.json`; a no-op mutation step does not discharge that duty.
 - **An unreachability claim is INCONCLUSIVE, never a justification, and extraction never
   discharges the mutation duty.** "No mutation can reach this property" is an unfalsifiable
   negative; asserting it stops the search that would refute it, and it has been refuted on the
@@ -968,3 +975,8 @@ judgements and only the second was wrong.
 - 2026-10-07 · routine (D-072 item 5, Approved-by Umesh) · C5's owner-only-editor exception is narrowed to holders of the
   `credentials.view` permission (default: Admin/CEO only); everyone else sees set / not set (`auth.md` AU21). Narrows where a value may
   appear; B7 and the "never to a model, log, shared artifact or product screenshot" clauses are unchanged.
+
+- 2026-10-15 - D-100 (Approved-by Umesh): C7 gains proportional fresh independent unit review,
+  compatible evidence reuse and representative checker mutation reruns; maker per-guard proof,
+  mutation validity and mandatory combined integration/release full gates remain required.
+  Changes-authorized: C7 and this amendment log only; no other criterion weakened.
