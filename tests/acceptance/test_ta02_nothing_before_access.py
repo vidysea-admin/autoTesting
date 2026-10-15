@@ -64,6 +64,19 @@ def test_the_pending_account_sees_only_sign_in_and_waiting_screens(world: World)
     assert pending.get("/auth/waiting", headers=HTML).status_code == 200
 
 
+def test_profile_is_readable_but_pending_cannot_save_before_placement(world: World) -> None:
+    before = world.snapshot()
+    pending = world.users["pending"]
+    assert pending.get("/profile", headers=HTML).status_code == 200
+    response = pending.post("/profile", data={"email_run_reports": "on"}, headers=HTML)
+    assert response.status_code == 403
+    assert world.snapshot() == before
+    assert not (world.root / ".work" / "notification_prefs").exists()
+    assert world.users["dev"].post(
+        "/profile", data={"email_run_reports": "on"}, headers=HTML).status_code == 303
+    assert " checked" in world.users["dev"].get("/profile", headers=HTML).text
+
+
 def test_a_signed_in_dev_sweep_does_change_the_data_root(world: World) -> None:
     """Sabotage guard: the same diff goes red on the 'changed' side for a permitted user."""
     before = world.snapshot()

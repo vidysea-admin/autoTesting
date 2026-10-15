@@ -30,7 +30,8 @@ def test_profile_anonymous_cannot_read_or_write(profile_root: Path) -> None:
 
 
 def test_profile_session_policy_and_handler_guard(monkeypatch: pytest.MonkeyPatch) -> None:
-    assert all(ROUTE_POLICY[(method, "/profile")].kind == "session" for method in ("GET", "POST"))
+    assert ROUTE_POLICY[("GET", "/profile")].kind == "session"
+    assert ROUTE_POLICY[("POST", "/profile")].kind == "member"
     for principal in (None, Principal()):
         monkeypatch.setattr(routes_profile, "current_principal", lambda p=principal: p)
         with pytest.raises(HTTPException) as caught:
@@ -58,7 +59,7 @@ def test_profile_default_off_and_boolean_config_only(profile_root: Path,
 
 def test_profile_own_identity_enable_revoke_and_reload(profile_root: Path) -> None:
     admin_id = account(ADMIN)
-    other_id = account("new@team.test")  # session-only: groups are unnecessary for own preference
+    other_id = account("new@team.test", "developer")  # TA2 requires placement before any write.
     admin, other = login(ADMIN), login("new@team.test")
     forged = {"email_run_reports": "on", "user_id": str(admin_id), "email": ADMIN,
               "to": "attacker@example.test", "recipient": ADMIN, "cc": ADMIN}

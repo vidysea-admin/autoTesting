@@ -4,6 +4,7 @@ never prints request lines, and the auth settings are documented (keys only) in 
 from __future__ import annotations
 
 import re
+import shlex
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,8 +21,15 @@ def test_au23_dockerignore_excludes_the_auth_state_at_any_depth() -> None:
 
 
 def test_au22_the_container_starts_uvicorn_without_an_access_log() -> None:
-    launch = [ln for ln in _lines("docker/entrypoint.sh") if ln.startswith("exec ")]
-    assert len(launch) == 1 and "--no-access-log" in launch[0]
+    # The exec starts the supervisor; its continued arguments include uvicorn's command.
+    script = "\n".join(_lines("docker/entrypoint.sh"))
+    logical_lines = re.sub(r"\\\n\s*", " ", script).splitlines()
+    launch = [shlex.split(ln) for ln in logical_lines if ln.startswith("exec ")]
+    assert len(launch) == 1
+    commands = [shlex.split(arg) for arg in launch[0] if "uvicorn" in arg]
+    assert len(commands) == 1
+    assert commands[0][:4] == ["uv", "run", "uvicorn", "autotester.ui.app:app"]
+    assert "--no-access-log" in commands[0]
 
 
 def test_au5_env_example_documents_the_auth_settings_and_holds_no_value() -> None:

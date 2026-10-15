@@ -103,7 +103,7 @@ def test_off_domain_and_non_http_navigation_is_refused_under_every_policy(
     assert spy.sessions == 0 and spy.count("run_case") == 0
 
 
-# -- ALLOW_WRITES / TEST_ACCOUNT: nothing new is refused ----------------------------------------
+# -- ALLOW_WRITES / TEST_ACCOUNT: D-098 still refuses account destruction -----------------------
 @pytest.mark.parametrize(("action", "target", "value"), [
     (A.CLICK, "Save", None), (A.CLICK, "Delete account", None), (A.CLICK, "Place order", None),
     (A.FILL, "Name", "Eve"), (A.FILL, "Name", None), (A.FILL, "Name", ""),
@@ -113,7 +113,12 @@ def test_off_domain_and_non_http_navigation_is_refused_under_every_policy(
 def test_allow_writes_refuses_nothing_the_account_may_do(
         tmp_path: Path, spy: Spies, action: Action, target: str, value: str | None) -> None:
     _, out = _run(tmp_path, spy, AW, _one(action, target, value))
-    assert out.ok and spy.sessions == 1 and spy.count("run_case") == 1
+    if target in ("Delete account", f"{BASE}/account/delete?id=1&confirm=1"):
+        assert not out.ok and out.refusal is RefusalClass.WRITE_POLICY
+        assert "account-destroying (policy)" in out.summary
+        assert spy.sessions == 0 and spy.count("run_case") == 0
+    else:
+        assert out.ok and spy.sessions == 1 and spy.count("run_case") == 1
 
 
 def test_allow_writes_keeps_the_existing_never_click_and_test_account_keeps_its_deny_list(

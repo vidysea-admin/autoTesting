@@ -270,11 +270,16 @@ def test_the_crawl_really_tries_the_destructive_control_last(tmp_path: Path) -> 
 
 
 def test_every_destructive_press_comes_after_every_non_destructive_one_across_the_crawl(
-        tmp_path: Path) -> None:
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """PS2 [D-040 verbatim], CRAWL-GLOBAL: not per screen. The checker's reproduction is a
     multi-screen crawl under ALLOW_WRITES in which `button.del` on /settings was pressed
     before `button.edit` on a screen the crawl visits later."""
-    from crawl_fake import crawl_it, make_project
+    from crawl_fake import SITE, crawl_it, make_project
+
+    # D-098 forbids account deletion; PS2 still exercises ordinary destructive controls.
+    monkeypatch.setitem(SITE, "https://app.test/settings", [
+        {**el, "name": "Delete draft"} if el["selector"] == "button.del" else el
+        for el in SITE["https://app.test/settings"]])
 
     from autotester.schema.crawl import SafetyPolicy
     from autotester.stages.explore_safety import is_destructive

@@ -27,7 +27,8 @@ from autotester.schema.case import Case
 from autotester.schema.enums import Action, CaseClass, CaseKind, EvidenceKind, Result
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
-from autotester.schema.verdict import Failure, Judgment
+from autotester.schema.verdict import Failure, Judgment, Verdict
+from autotester.stages import run_case_pipeline as pipeline
 from autotester.stages.run_case_pipeline import run_and_grade_case
 from autotester.store.project_store import ProjectStore
 
@@ -88,12 +89,21 @@ def _session(tmp_path: Path, base_url: str) -> tuple[BrowserSession, ProjectStor
 
 
 def test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass(
-    tmp_path: Path, serve_dir: Callable[[Path], str],
+    tmp_path: Path, serve_dir: Callable[[Path], str], monkeypatch,
 ) -> None:
     """V1: exactly one video file per case. V2: PASS's video is pruned, FAIL's
     and INCONCLUSIVE's survive -- the record-then-discard-on-PASS shape gate
     answer A requires, since the verdict is not known until after the video
     is already captured."""
+    # V2 exercises retention for each verdict independently of grading's privacy
+    # downgrade: screenshot-bearing mock PASS is now correctly INCONCLUSIVE.
+    def controlled_grade(rubric, raw, run_id, provider, **_kwargs):
+        judgment = provider.judge("controlled video-retention verdict", Judgment)
+        return Verdict(run_id=run_id, case_id=raw.case_id, rubric_hash=rubric.fingerprint,
+                       grader_provider=provider.id, **judgment.model_dump(exclude={
+                           "defect_observed", "defect_summary"}))
+
+    monkeypatch.setattr(pipeline, "grade", controlled_grade)
     _skip_if_no_chromium()
     base = serve_dir(SITE)
     session, store, _ = _session(tmp_path, base)

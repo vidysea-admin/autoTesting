@@ -68,5 +68,6 @@ def test_run_and_grade_case_resilient_matches_the_plain_path_when_grading_succee
     )
 
     assert result.outcome is Outcome.COMPLETED
-    assert verdict.result is Result.PASS
+    assert verdict.result is Result.INCONCLUSIVE
+    assert "Visual evidence incomplete" in verdict.scoreboard
     assert verdict.grader_provider == "mock"

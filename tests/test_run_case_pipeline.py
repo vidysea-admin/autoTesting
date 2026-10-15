@@ -35,7 +35,7 @@ class _FakePage:
         pass
 
     def screenshot(self, path: str, full_page: bool = False) -> None:
-        Path(path).write_bytes(b"png")
+        Image.new("RGB", (100, 60), "white").save(path)
 
     def goto(self, url: str, wait_until: str = "") -> None:
         self.url = url
@@ -115,29 +115,41 @@ def test_run_and_grade_case_builds_and_persists_a_default_rubric_when_none_exist
 
 
 def test_run_and_grade_case_passes_the_runs_real_screenshots_to_the_judge(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch,
 ) -> None:
-    """AT-049: the judge must actually see the real screenshot files this
-    run produced, not just their filenames -- run_and_grade_case is the one
-    path a UI Run button or CLI script calls, so this is where the wiring
-    has to be real, not just present in grade.py's own signature."""
+    """AT-049/C5: the judge receives a sanitized copy of this run's image."""
+    from test_image_privacy import _tsv
+
+    from autotester.core import image_privacy
+
     store = ProjectStore("demo", tmp_path)
     store.save_project(_project())
     case = _case()
     judge = MockProvider(responses={"judge": [
         Judgment(result=Result.PASS, criteria_met=1, criteria_total=1, scoreboard="1/1 met")
     ]})
-    paths = ProjectPaths("demo", tmp_path)
-    run_dir = paths.run_dir("run_1")
-    secrets = SecretStore.load(_project(), paths.env_file, strict=False)
-    session = BrowserSession(_project(), secrets, run_dir, paths)
-    session._page = _FakePage("https://demo.test/")
-    session.state.run_dir.mkdir(parents=True, exist_ok=True)
+    session = _session(tmp_path)
+    run_dir = session.state.run_dir = store.paths.run_dir("run_1")
+    run_dir.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(image_privacy, "_local_ocr", lambda path: _tsv())
+    delivered, original_judge = [], judge.judge
 
-    run_and_grade_case(case, session, judge, "run_1", store)
+    def inspect_images(prompt, schema, images=None, **kwargs):
+        assert images and len(images) == 1
+        source = run_dir / "01-step01-navigate.png"
+        assert images[0] != source
+        with Image.open(source) as original, Image.open(images[0]) as safe:
+            assert safe.size == original.size == (100, 60)
+            assert original.getpixel((0, 10)) == safe.getpixel((50, 50)) == (255, 255, 255)
+            assert safe.getpixel((0, 10)) == (0, 0, 0)
+        delivered.extend(images)
+        return original_judge(prompt, schema, images=images, **kwargs)
 
-    assert judge.judge_images == [[run_dir / "01-step01-navigate.png"]]
-    assert (run_dir / "01-step01-navigate.png").exists()
+    monkeypatch.setattr(judge, "judge", inspect_images)
+    _, verdict = run_and_grade_case(case, session, judge, "run_1", store)
+    assert verdict.images_requested == verdict.images_seen == 1
+    assert delivered and all(not path.exists() for path in delivered)
+    assert verdict.result is Result.INCONCLUSIVE  # masked text cannot establish PASS
 
 
 def test_run_and_grade_case_reuses_an_existing_rubric_instead_of_overwriting_it(
@@ -160,7 +172,6 @@ def test_run_and_grade_case_reuses_an_existing_rubric_instead_of_overwriting_it(
     assert reloaded.criteria[0].text == "a hand-tuned criterion, not the default"
 
 
-# -- AT-059: a stale auto-generated rubric must not grade forever -------------
 
 def test_a_case_whose_rationale_changed_gets_a_regenerated_default_rubric(
     tmp_path: Path,
@@ -250,18 +261,12 @@ def test_a_rubric_with_no_provenance_is_treated_as_hand_authored(
     assert "a legacy claim" in store.load_rubric(f"rub_{old.id}").criteria[0].text
 
 
-# -- AT-568: grading a result that never reached run_and_grade_case -----------
 
 def test_grade_errored_result_never_calls_the_judge(tmp_path: Path) -> None:
-    """AT-568: `stages.parallel_run.run_cases` reports a `session_factory`
-    crash (or any exception before a caller captured its own verdict) as its
-    own ERRORED `RawResult`, with no `run_and_grade_case` call ever having
-    happened for that case. `grade_errored_result` must still produce a
-    coherent `Verdict` for it -- and must be safe to call unconditionally,
-    because `grade()`'s own ERRORED short-circuit never reaches the judge.
-    A `MockProvider` with NO queued "judge" response proves this: if
-    `grade_errored_result` ever called `judge.judge(...)`, `MockProvider`
-    would raise `ProviderError('no queued response')` instead of returning."""
+    """AT-568: a pre-pipeline crash receives a coherent INCONCLUSIVE verdict.
+
+    No queued response proves the ERRORED short-circuit never calls the judge:
+    MockProvider would otherwise raise ProviderError('no queued response')."""
     store = ProjectStore("demo", tmp_path)
     store.save_project(_project())
     case = _case()
@@ -281,10 +286,7 @@ def test_grade_errored_result_never_calls_the_judge(tmp_path: Path) -> None:
 def test_grade_errored_result_builds_and_persists_the_same_default_rubric(
     tmp_path: Path,
 ) -> None:
-    """It goes through the exact same rubric seam as a normal run (`_rubric_
-    for`), so an ERRORED case is gradeable against its real rubric -- and a
-    later real run of the same case reuses the rubric this call persisted,
-    rather than building a second, divergent one."""
+    """The normal rubric seam also persists the real rubric for an ERRORED case."""
     store = ProjectStore("demo", tmp_path)
     store.save_project(_project())
     case = _case()

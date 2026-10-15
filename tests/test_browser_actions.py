@@ -38,6 +38,8 @@ class FakeLocator:
         return "1" if self.page.mode == "masked" else None
 
     def evaluate(self, script, **kwargs):
+        if "getAttribute('aria-label')" in script:
+            return [None, None, None, None, None]
         if "setAttribute" in script:
             self.page.mode = "masked"
         return self.page.mode != "noninput"

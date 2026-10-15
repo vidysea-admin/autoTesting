@@ -14,6 +14,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
     **{("GET", p): ("public", None) for p in ("/auth/login", "/auth/signup", "/healthz")},
     **{("POST", p): ("public", None) for p in ("/auth/login", "/auth/signup")},
     ("POST", "/auth/logout"): ("session", None), ("GET", "/auth/waiting"): ("session", None),
+    # TT8 permits signed-in reading; TA2 refuses preference writes before group placement.
+    ("GET", "/profile"): ("session", None), ("POST", "/profile"): ("member", None),
     ("GET", "/favicon.ico"): ("member", None), ("GET", "/"): ("member", None),
     ("GET", "/onboard"): ("key", "project.create"), ("POST", "/onboard"): ("key", "project.create"),
     ("GET", "/inbox"): ("key", "report.view"),

@@ -142,7 +142,7 @@ def run_one(tmp_path: Path, actions, policy=WritePolicy.READ_ONLY, budget=None) 
 @pytest.mark.parametrize("action, needle", [
     (FallbackAction(kind=FallbackActionKind.FILL, target="Email", value="a@b.co"), "read_only"),
     (FallbackAction(kind=FallbackActionKind.PRESS_KEY, value="Enter"), "read_only"),
-    (click("Delete account"), "deny-list"),
+    (click("Delete account"), "account-destroying (policy)"),
     (click("Log out"), "never-click"),
     (FallbackAction(kind=FallbackActionKind.NAVIGATE, url="https://evil.example/x"),
      "allowed domains"),
