@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-15T10:54:57.949256Z",
+  "provenance": {
+    "produced_by": "teach_sources",
+    "inputs": [
+      "added"
+    ],
+    "note": "provider: base"
+  },
+  "source_id": "added",
+  "input_fingerprint": "teachinput_ab8ebd415e82",
+  "status": "learned",
+  "proposal": {
+    "schema_version": 1,
+    "created_at": "2026-10-15T10:54:57.951036Z",
+    "provenance": {
+      "produced_by": "teach_text",
+      "inputs": [
+        "added"
+      ]
+    },
+    "project": "demo",
+    "version": 1,
+    "screens": [
+      {
+        "id": "screen_f0949f19fb5a",
+        "name": "Home",
+        "signals": [],
+        "fields": [],
+        "source_ref": {
+          "source_id": "added",
+          "locator": "text"
+        }
+      }
+    ],
+    "flows": [
+      {
+        "id": "flow_b4e98e902cc7",
+        "name": "Save",
+        "entry_screen": "screen_f0949f19fb5a",
+        "preconditions": [],
+        "steps": [
+          {
+            "order": 1,
+            "action": "click",
+            "target": "Save",
+            "expected": {
+              "visible_text": [],
+              "absent_text": [],
+              "dom_asserts": [],
+              "network": []
+            },
+            "source_ref": {
+              "source_id": "added",
+              "locator": "text"
+            },
+            "screen_id": "screen_f0949f19fb5a"
+          }
+        ],
+        "requires_auth": false
+      }
+    ],
+    "source_ids": [
+      "added"
+    ],
+    "conflicts": [],
+    "review": {
+      "status": "draft"
+    }
+  },
+  "problems": []
+}

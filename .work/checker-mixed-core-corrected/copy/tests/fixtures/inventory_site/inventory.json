@@ -1,0 +1,19 @@
+{
+  "about": "Ground truth for coverage V8. Every screen this fixture has after login, how a human reaches it, and what an honest read_only crawl must do with it. A route is identified by its url template plus a control only that route shows (`marker`), because a page-2 list, a hash route and a drawer share their url template with another screen. `from` + `via` name the screen and control that lead there, so a miss can be traced to the reason coverage gives for that control. expect=reached: a crawl with the login case must enter it. expect=policy: it sits behind a form submit read_only refuses; the crawl must not enter it and coverage must name the refusal.",
+  "login": {"url": "/login.html", "username": "tester", "password": "fixture-pass"},
+  "base": "/app/home.html",
+  "routes": [
+    {"id": "home",             "template": "/app/home.html",              "marker": "Open help drawer",   "from": null,        "via": null,               "how": "landing after login",               "expect": "reached"},
+    {"id": "projects",         "template": "/app/projects.html",          "marker": "Next page",          "from": "home",      "via": "Projects",         "how": "nav menu",                          "expect": "reached"},
+    {"id": "projects-page-2",  "template": "/app/projects.html",          "marker": "Previous page",      "from": "projects",  "via": "Next page",        "how": "pagination link",                   "expect": "reached"},
+    {"id": "project-archived", "template": "/app/project-archived.html",  "marker": null,                 "from": "projects-page-2", "via": "Archived project", "how": "a row only on page 2",   "expect": "reached"},
+    {"id": "reports",          "template": "/app/reports.html",           "marker": "Show report guide",  "from": "home",      "via": "Reports",          "how": "nav menu",                          "expect": "reached"},
+    {"id": "reports-weekly",   "template": "/app/reports.html",           "marker": "Show weekly chart",  "from": "reports",   "via": "Weekly report",    "how": "hash route",                        "expect": "reached"},
+    {"id": "reports-monthly",  "template": "/app/reports.html",           "marker": "Show monthly trend", "from": "reports",   "via": "Monthly report",   "how": "hash route",                        "expect": "reached"},
+    {"id": "settings",         "template": "/app/settings.html",          "marker": "Security settings",  "from": "home",      "via": "Settings",         "how": "nav menu",                          "expect": "reached"},
+    {"id": "security",         "template": "/app/settings/security.html", "marker": null,                 "from": "settings",  "via": "Security settings","how": "nested page",                       "expect": "reached"},
+    {"id": "shortcuts",        "template": "/app/shortcuts.html",         "marker": null,                 "from": "home",      "via": "Keyboard shortcuts","how": "link inside a click-opened drawer","expect": "reached"},
+    {"id": "search",           "template": "/app/search.html",            "marker": "Search query",       "from": "home",      "via": "Search",           "how": "nav menu",                          "expect": "reached"},
+    {"id": "results",          "template": "/app/results.html",           "marker": null,                 "from": "search",    "via": "Search",           "how": "search form submit",                "expect": "policy"}
+  ]
+}

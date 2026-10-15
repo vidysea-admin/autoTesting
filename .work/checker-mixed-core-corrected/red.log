@@ -1,0 +1,70 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_changed_actual_input_requires_new_run_before_model[set] _________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-mixed-aggregate/.work/checker-mixed-core-corrected/red-temp/test_changed_actual_input_requ0')
+change = 'set'
+
+    @pytest.mark.parametrize("change", ["set", "text", "bytes", "transcript", "receipt"])
+    def test_changed_actual_input_requires_new_run_before_model(tmp_path, change):
+        store = ProjectStore("demo", root=tmp_path)
+        store.save_project(Project(slug="demo", name="Demo", base_url="https://example.test"))
+        if change in {"bytes", "receipt"}:
+            source = add_local(store, "input", SourceKind.DOC, "source.md")
+            if change == "receipt":
+                add_pdf_receipt(store, source)
+        elif change == "transcript":
+            source = add_local(store, "input", SourceKind.AUDIO, "source.wav")
+            store.save_transcript(
+                Transcript(
+                    source_id=source.id,
+                    engine="sidecar",
+                    segments=[TranscriptSegment(start=1, end=2, text="Save")],
+                )
+            )
+        else:
+            source = store.add_source(
+                Source(id="input", project="demo", kind=SourceKind.TEXT, text="Original")
+            )
+        provider = MixedTeacherFake()
+        run_teaching(store, provider)
+        if change == "set":
+            store.add_source(Source(id="added", project="demo", kind=SourceKind.TEXT, text="Added"))
+        elif change == "text":
+            store.paths.sources_index.write_text(
+                source.model_copy(update={"text": "Changed"}).model_dump_json() + "\n"
+            )
+        elif change == "bytes":
+            from pathlib import Path
+    
+            Path(source.path).write_bytes(b"changed actual local bytes")
+        elif change == "transcript":
+            store.save_transcript(
+                Transcript(
+                    source_id=source.id,
+                    engine="sidecar",
+                    segments=[TranscriptSegment(start=1, end=2, text="Changed narration")],
+                )
+            )
+        else:
+            path = store.paths.sources_dir / source.id / "document.json"
+            receipt = read_json(path, DocumentReading)
+            receipt.pages[0].confidence = 80
+            write_json(path, receipt)
+>       with pytest.raises(TeachingInputsChanged):
+E       Failed: DID NOT RAISE TeachingInputsChanged
+
+tests\test_teaching_inputs.py:61: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-mixed-aggregate\.work\checker-mixed-core-corrected\copy\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_teaching_inputs.py::test_changed_actual_input_requires_new_run_before_model[set]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_teaching_inputs.py::test_changed_actual_input_requires_new_run_before_model[set]
+1 failed, 2 warnings in 1.11s

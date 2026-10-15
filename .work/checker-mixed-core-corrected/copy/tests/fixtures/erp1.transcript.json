@@ -1,0 +1,35 @@
+{
+  "segments": [
+    {
+      "start": 1.42,
+      "end": 3.42,
+      "text": "Move to next stage"
+    },
+    {
+      "start": 4.92,
+      "end": 6.92,
+      "text": "Documents completed"
+    },
+    {
+      "start": 8.42,
+      "end": 10.42,
+      "text": "Today's state"
+    },
+    {
+      "start": 10.42,
+      "end": 17.9,
+      "text": "Remove not getting this error"
+    },
+    {
+      "start": 19.4,
+      "end": 23.9,
+      "text": "Say which center and job role if this nomination is for"
+    },
+    {
+      "start": 23.9,
+      "end": 27.9,
+      "text": "A nomination is always against a specific vacancy"
+    }
+  ],
+  "speech_seconds": 22.0
+}
