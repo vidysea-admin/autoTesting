@@ -1,6 +1,6 @@
 # Manifest — post-run failure bundles and report links
 
-- Status: ready-for-check
+- Status: checked-PASS
 - Fix cycle: 1
 - Base: f5da2cd9
 - Candidate: exact scoped commit SHA is recorded in the post-commit checker packet

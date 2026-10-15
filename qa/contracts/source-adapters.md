@@ -106,3 +106,21 @@ replacement statements do not compel a non-Ollama call in the default applicatio
 SA6 still holds: extraction does not autonomously decide which product checks run.
 Verify text, scanned and mixed-page PDFs, explicit extraction failures, mixed-source
 dispatch, provenance, dedupe and approved-spec protection using synthetic fixtures.
+
+## 2026-10-15 provider policy amendment (D-101)
+
+### SA8 — Supplied narration first, bounded Gemini audio fallback (D-101)
+Use a supplied transcript first. If none is supplied and Ollama has no audio
+capability, extract audio locally under explicit finite resource/time limits,
+then use guarded Gemini audio transcription with the configured existing key.
+Never auto-download a local ASR engine/model or silently invoke local ASR as this
+fallback. Supplied transcript content remains authoritative evidence; generated
+transcripts retain source/segment provenance and actual provider attribution.
+Privacy refusal or global budget exhaustion stops the path without provider
+fallback. Missing Gemini credentials, failed audio extraction, unsupported audio
+or exhausted transcription produce explicit unavailable/incomplete narration,
+never silent-content claims. Every physical request/retry is bounded and counted;
+unknown usage remains unknown. SA7 PDF/local OCR and mixed-source rules are unchanged.
+Verify supplied-transcript zero-call behavior, missing audio capability, bounded
+extraction/transcription, missing key, no download/local-ASR invocation, sanitized
+transport, provenance and prohibited privacy/global-budget fallback using fakes.
