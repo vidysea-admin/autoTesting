@@ -1,9 +1,10 @@
 # Manifest — qa-current-state-reconcile
 
 Status: ready-for-check
-Fix cycle: 0
+Fix cycle: 1
 Branch: codex/qa-current-state-reconcile
-Base: 4c7a9efd72776c5d467e73fc3098020bc63055fb
+Implementation base: 4c7a9efd72776c5d467e73fc3098020bc63055fb
+Review base: abc4a0ef49406936dd0047b7986b449bf3771ee2 (D-099/D-100 merged without conflicts)
 Role: delegated checker-owned records reconciliation; independent fresh verdict still required.
 
 ## Purpose and changes
@@ -25,3 +26,11 @@ Exact-row invariant proof PASS: 1,025 rows/order preserved; 12 ID-only mappings;
 Independently compare every row to base, allowing only 12 ID fields and the five named rows' status/date/fixed_in/checker_note metadata. Confirm row count/order/evidence unchanged, mapping hashes match base, unique IDs and grandfather shrink. Re-derive cited verdict/merge ancestry and correct partial-scope treatment. Confirm future T-206 path matches goal and no task-level T-206 PASS is claimed.
 
 Full product pytest/ruff/doctor are not run in this records-only unit; final integrated release gates remain owed under the parent goal. No publication authorized by this unit.
+
+## Cycle 1 optimized review packet
+
+D-099/D-100 merged from master; the four record inputs of the original invariant proof have unchanged bytes (git diff 39bbfddf HEAD over those paths empty). `qa/evidence/qa-current-state-reconcile/maker-receipt.json` records SHA256 hashes of those inputs and the three original status-correction verdict files; it explicitly records missing environment/runtime identity, unknown maker timing/tokens, prior failure and limits. Exact full receipt reuse cannot be claimed; independent records proof is still required. No new test run after policy merge.
+
+Budget dispatch input/result are persisted beside the receipt. assess exited 0, BOOTSTRAP_REVIEW, finite 180 active seconds / 6000 tokens including commands; efficiency ratios unverified. Reviewer must re-assess before material phases and preserve all usage/unknowns. If runtime/setup exceeds allocation, checkpoint HOLD/NEEDS_EXTRA_REVIEW instead of inventing metrics or skipping required checks.
+
+Applicable acceptance: core-invariants C7 independent scoped review/D-100, C6 human-editable files, issue-id uniqueness existing doctor rule. No domain shape, product behavior, contracts or enforcement edited by this unit. Exact records expectations remain the preceding Checker instructions. Select the six collected tests in tests/test_issue_ids.py for append refusal, duplicate detection, grandfather handling, migration preservation and real ledger uniqueness. Before pytest, preflight intended Python/import identity and writable temp parent. Then run once with a fresh --basetemp under verified parent and -p no:cacheprovider, only after a code/test slot is released. Parent coordinates temp preflight; no preflight PASS is claimed here. Full integration/release commands stay owed on the combined release SHA.

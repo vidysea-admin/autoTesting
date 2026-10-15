@@ -1,0 +1,26 @@
+{
+  "maker": {
+    "cost": null,
+    "active_s": null,
+    "tokens": null
+  },
+  "reviewers": [
+    {
+      "cost": null,
+      "active_s": 0,
+      "id": "qa-reconcile-fresh-checker",
+      "tokens": null
+    }
+  ],
+  "escalation": null,
+  "bootstrap": {
+    "tokens": 6000,
+    "active_s": 180
+  },
+  "bootstrap_scope": "Records-only qa-current-state-reconcile cycle 1: independent diff/row proof, five cited status corrections, nine queue closures, and one test_issue_ids run after preflight and slot availability. No history sweep or full suite.",
+  "next_phase": {
+    "cost": null,
+    "active_s": 180,
+    "tokens": 6000
+  }
+}
