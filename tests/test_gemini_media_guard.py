@@ -285,7 +285,8 @@ def test_nested_global_deadline_rejects_late_response(monkeypatch):
 
     transport = GeminiDeadlineTransport(120, GeminiProvider(api_key="fake"), "vision",
         inner=httpx.MockTransport(handle), clock=lambda: now[0])
-    with attempt_budget(2, 1) as budget, pytest.raises(AttemptBudgetExhausted):
+    # Rejection covers the transport and the enclosing logical-completion deadline.
+    with pytest.raises(AttemptBudgetExhausted), attempt_budget(2, 1) as budget:
         transport.handle_request(httpx.Request("GET", "https://example.test"))
     transport.close()
     assert budget.used == 1 and budget.attempts[0].status == "failed"
