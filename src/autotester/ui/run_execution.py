@@ -24,6 +24,7 @@ from autotester.schema.enums import Outcome
 from autotester.schema.project import Project
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Verdict
+from autotester.stages.browser_recovery import BrowserRecovery, closed_verdict, is_browser_closed
 from autotester.stages.parallel_run import ParallelPlan, default_session_factory, run_cases
 from autotester.stages.run_budget import RunBudget
 from autotester.stages.run_case_pipeline import (
@@ -134,9 +135,15 @@ def _run_cases_serially(
             budget.check()
         except Exception as exc:
             startup_error = secrets.redactor().scrub(f"{type(exc).__name__}: {exc}")
+        recovery = BrowserRecovery(session)
         for case in normal_cases:
+            if recovery.stop_reason is not None:
+                startup_error = recovery.stop_reason
             if startup_error is None:
                 result, verdict = _run_and_grade_resilient(case, session, judge, run_id, store)
+                if is_browser_closed(result):  # AT-888: only this case is lost; relaunch, go on
+                    verdict = closed_verdict(result, run_id)
+                    recovery.recover()
             else:
                 result = RawResult(case_id=case.id, outcome=Outcome.ERRORED, error=startup_error)
                 verdict = grade_errored_result(case, result, judge, run_id, store)

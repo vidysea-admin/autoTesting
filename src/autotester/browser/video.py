@@ -164,6 +164,12 @@ class VideoMixin:
         MERGE NOTE (T-177 slice 0): `start()` is the only launch path, so anything it does
         per launch (the DevTools publish step) is re-run by this call."""
         dead = _one_line(cause)
+        self._relaunch_count = getattr(self, "_relaunch_count", 0) + 1
+        cap = getattr(self, "max_relaunches", 3)
+        if self._relaunch_count > cap:  # AT-888: bounded per run, then a named stop
+            self._restore_error = self._scrubbed(
+                f"browser session died ({dead}); relaunch limit reached ({cap} per run)")
+            raise SessionRestoreError(self._restore_error)
         for owner, stop in ((self._context, "close"), (self._playwright, "stop")):
             if owner is not None:
                 with _ignore_close_errors():
@@ -186,6 +192,11 @@ class VideoMixin:
         events = getattr(self, "_session_events", [])
         events.append(Evidence(kind=EvidenceKind.DOM, path=note, label="session-restart"))
         self._session_events = events
+
+    def relaunch(self, cause: BaseException) -> None:
+        """Public restart for the serial runner after a case hit a closed browser (AT-888);
+        same profile, the restart is recorded as session evidence."""
+        self._restart_session(cause)
 
     def _scrubbed(self, text: str) -> str:
         return self.secrets.redactor().scrub(text)

@@ -200,6 +200,7 @@
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/bench_from_run.py` | Turn a real project's executed+graded run into the T-136 bench files. Contract: bench.md K10. |
+| `stages/browser_recovery.py` | Bounded recovery from a closed browser between serial cases (AT-888). |
 | `stages/browser_use_backend.py` | BROWSER_USE_BACKEND: browser-use (MIT) as the `ActuatorBackend` for unknown screens (T-177). |
 | `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
 | `stages/bug_run.py` | BUG RUN: turn one finished run's verdicts into bug events, and notice cases that moved (T-199b). |
