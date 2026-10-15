@@ -61,3 +61,31 @@ shape — no test in the default suite calls a real vendor API.
 ## Amendment log (append-only; git history is the version)
 
 - 2026-09-03 · init · contract created for T-055 — no contract existed before this cycle.
+
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### OC1 — Default model-chain versus explicitly selected legacy providers
+The shipped default for vision, agent and judge is `model-chain`, ordered
+`ollama_chat/glm-5.3-flash` then `ollama_chat/deepseek-v4.1-flash`. Its default
+order contains no implicit non-Ollama tier. Explicit project/server overrides
+remain supported and must be honored or rejected visibly (C9). LC2's original
+multi-vendor order describes the explicitly selected legacy `langchain-fallback`
+provider only; it does not define the application's defaults. This amends the
+Gemini-fallback default recorded in `qa/manifests/ollama-primary.md` without
+rewriting that historical evidence.
+
+### OC2 — Every physical attempt is guarded, bounded and observable
+All application model calls, including optional agent calls, use the guarded
+Provider seam. Each actual request (including a failed request, fallback and JSON
+repair) consumes the applicable call budget and has a finite deadline. Usage
+records distinguish unknown usage from measured zero. Exhaustion is a visible
+failed/inconclusive result, never a successful partial answer. Provider/model
+attribution identifies the actual attempt/winner. Ollama Cloud answers undergo
+Pydantic validation and at most one bounded JSON repair; no cloud schema-enforcement
+claim or reliance on undocumented native structured-output support is permitted.
+Verification: fake transports prove request counts, guards, deadlines, unknown
+usage, invalid JSON, failed-tier accounting and no implicit Gemini fallback.

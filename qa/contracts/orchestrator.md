@@ -78,3 +78,22 @@ with a single-hunk falsifying edit reproduced green->red-for-the-named-reason->r
   standing precedent (`AT-557`, `ISS-t162-drive-2b-1`: pre-existing staleness a unit did not cause is
   ledger debt, not a PASS blocker). No criterion text changed by this amendment — status flip only, per
   D-036's own authorization. Verdict: `qa/verdicts/t163-orchestrator.md` (Cycle checked: 1).
+
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### OR7 — Complete CLI continuation with existing eligibility and approvals
+The CLI learn/explore pipeline continues from MODEL through EXPAND, EXECUTE, GRADE
+and REPORT using existing stages and durable checkpoints. OR3's mandatory early
+stop is amended: approved truth stays intact, but D-097 permits reconciled
+source-derived DRAFT case generation with explicit provenance. Unreconciled or
+NEEDS_EDIT material remains ineligible. Required run/write/production approvals
+remain enforced independently of FlowSpec generation eligibility.
+OR2/OR4/OR5 apply to every added stage: completed artifacts are not redone, failed
+stages resume honestly, and run lineages remain isolated. A paused approval cannot
+be represented as completed execution. Existing UI paths must remain compatible.
+Verify CLI production entrypoints, eligible versus blocked material, resume after
+each stage failure, failed artifact handling and unchanged APPROVED bytes.

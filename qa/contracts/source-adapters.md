@@ -82,3 +82,27 @@ dedupe: the same file uploaded twice is ONE Source.
   cycle-1 checker-PASS of `t162-source-adapters-1a` (the adapter seam + TEXT + DOC). No wording
   changed from the draft. AUDIO/DRIVE/EMAIL remain declared-but-unbuilt phase-2 scope. Verdict:
   `qa/verdicts/t162-source-adapters-1a.md`.
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### SA7 — Complete registered-source dispatch and PDF evidence
+All registered teaching material is dispatched by source type through the existing
+Source/store seam: video, extracted document, text, local email content and existing
+audio transcripts. Mixed inputs retain source provenance and never overwrite
+APPROVED truth. Duplicate bytes remain idempotent under SA2. A registered but
+unsupported/unreadable source must be reported, never silently omitted.
+Searchable PDFs use host-side extraction; scanned pages use local OCR. Extracted
+evidence retains page number, extraction method and available confidence, with
+unknown confidence represented honestly. Corrupt/encrypted/unreadable inputs carry
+explicit extraction errors; partial extraction identifies unprocessed pages.
+The old DOC scanned-page Gemini requirement is replaced by local OCR. Existing
+audio transcript/no-API fallback remains supported; this amendment does not require
+an Ollama transcription endpoint or a replacement transcription engine. Any model
+call uses the approved Provider/default policy; the old Gemini-first/no-Whisper-
+replacement statements do not compel a non-Ollama call in the default application.
+SA6 still holds: extraction does not autonomously decide which product checks run.
+Verify text, scanned and mixed-page PDFs, explicit extraction failures, mixed-source
+dispatch, provenance, dedupe and approved-spec protection using synthetic fixtures.
