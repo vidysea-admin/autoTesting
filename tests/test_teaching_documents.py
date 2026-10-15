@@ -34,11 +34,13 @@ def test_lazy_pdf_retains_page_method_confidence_and_freezes_its_reading(tmp_pat
         run_teaching(store, provider)
 
 
-def test_corrupt_receipt_edit_requires_new_run_without_a_provider(tmp_path):
+@pytest.mark.parametrize("kind", [SourceKind.DOC, SourceKind.AUDIO])
+def test_corrupt_receipt_edit_requires_new_run_without_a_provider(tmp_path, kind):
     store = ProjectStore("demo", root=tmp_path)
     store.save_project(Project(slug="demo", name="Demo", base_url="https://example.test"))
-    source = add_local(store, "pdf", SourceKind.DOC, "broken.pdf")
-    path = store.paths.sources_dir / source.id / "document.json"
+    source = add_local(store, "broken", kind, "broken.pdf")
+    name = "document.json" if kind is SourceKind.DOC else "transcript.json"
+    path = store.paths.sources_dir / source.id / name
     path.parent.mkdir(parents=True)
     path.write_text("{", encoding="utf-8")
     provider = MixedTeacherFake()

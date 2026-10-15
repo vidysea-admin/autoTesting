@@ -92,6 +92,17 @@ def _material_content(store: ProjectStore, source: Source, sources: list[Source]
     return units, sorted(set(problems)), transcript, children, document
 
 
+def _reading_bytes(store: ProjectStore, source: Source) -> str:
+    """Bind the active registered reading files even when their contents cannot parse."""
+    paths = [store.paths.sources_dir / source.id / "document.json"]
+    if source.kind in {SourceKind.AUDIO, SourceKind.VIDEO}:
+        transcript = store.paths.sources_dir / source.id / "transcript.json"
+        if not transcript.exists() and source.path:
+            transcript = Path(source.path).with_suffix(".transcript.json")
+        paths.append(transcript)
+    return content_id("readings", [file_sha256(path) if path.exists() else None for path in paths])
+
+
 def _reading_payload(reading):
     """Compare extracted content across sources without its per-artifact envelope."""
     return (
@@ -101,7 +112,7 @@ def _reading_payload(reading):
     )
 
 
-def _input_identity(source, content, receipt_digest, problems, children):
+def _input_identity(source, content, receipt_digest, problems, children, content_key):
     """Bind registered metadata and the full extracted evidence without storing raw content."""
     identity = TeachingInput(
         source_id=source.id,
@@ -116,7 +127,7 @@ def _input_identity(source, content, receipt_digest, problems, children):
                 "children": children,
             },
         ),
-        content_fingerprint=content_id("teachcontent", content),
+        content_fingerprint=content_id("teachcontent", content_key),
     )
     return identity
 
@@ -134,8 +145,7 @@ def resolve_teaching_material(
             actual = file_sha256(Path(source.path))
             if source.sha256 and actual != source.sha256:
                 raise ValueError("registered source bytes changed")
-        receipt = store.paths.sources_dir / source.id / "document.json"
-        receipt_digest = file_sha256(receipt) if receipt.exists() else None
+        receipt_digest = _reading_bytes(store, source)
         units, problems, transcript, children, document = _material_content(store, source, sources)
         if document is not None:
             document = document.model_copy(update={"source_id": source.id})
@@ -146,10 +156,11 @@ def resolve_teaching_material(
         "kind": source.kind,
         "bytes": actual,
         "units": [u.model_dump() for u in units],
-        "transcript": _reading_payload(transcript),
+        "transcript": transcript.model_dump(mode="json") if transcript else None,
         "document": _reading_payload(document),
     }
-    identity = _input_identity(source, content, receipt_digest, problems, children)
+    content_key = {**content, "transcript": _reading_payload(transcript)}
+    identity = _input_identity(source, content, receipt_digest, problems, children, content_key)
     return TeachingMaterial(
         identity=identity,
         units=units,
