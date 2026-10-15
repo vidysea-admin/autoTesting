@@ -1,6 +1,6 @@
 # Immutable account generation — notification consent prerequisite
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 Risk: high (account identity and persisted consent; no external delivery)
 Base: ac1efde173d4dc1d5fe8259f30888655a0072f08
