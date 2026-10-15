@@ -65,6 +65,7 @@
 | `core/file_lock.py` | One job: a cross-process advisory file lock (`msvcrt.locking` on Windows, `flock` elsewhere). |
 | `core/ids.py` | Identifier generation. The ONLY place ids are minted. |
 | `core/localtime.py` | Fixed-offset time zones and local-to-UTC conversion for the scheduler. |
+| `core/path_pii.py` | One job: make a URL path template safe to store -- no email, phone, token, UUID or JWT. |
 | `core/paths.py` | Filesystem layout. The ONLY place project paths are constructed. |
 | `core/pricing.py` | Per-token cost estimates for LLM-call trace spans (D-041 phase 1, RT4). |
 | `core/redact.py` | Secret redaction. Every log line and stored artifact passes through here. |
@@ -251,6 +252,7 @@
 | `stages/portal_persona.py` | PORTAL PERSONA: promote per-crawl knowledge into the durable, cross-run |
 | `stages/portal_persona_view.py` | Render a `PortalPersona` as `knowledge.md` — a human-readable VIEW of the |
 | `stages/product_map.py` | PRODUCT MAP: fold every recording analysis into one navigable screen map. |
+| `stages/reachability.py` | One job: warn, before a run, about cases aimed at screens the latest crawl never reached. |
 | `stages/read_context.py` | Read approved Markdown as metadata only, never a vault graph or body corpus. |
 | `stages/real_acceptance.py` | REAL-TARGET ACCEPTANCE DRIVER (T-169 GR1-GR4): approvals, evidence files, human checklist. |
 | `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
@@ -321,6 +323,7 @@
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
 | `ui/intake_gate_auth.py` | The real intake gate: sign-in and `video.upload` on that project (team-intake.md TI10, TI11). |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
+| `ui/preflight_view.py` | One job: render a run's preflight warnings as a card for the run report page. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
 | `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
 | `ui/routes_access_requests.py` | Share-link opening, request-access, and the approvers' list (T-198b / G9, TP3, TP5). |
