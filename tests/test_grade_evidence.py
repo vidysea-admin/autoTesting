@@ -1,11 +1,7 @@
 """Does the judge actually SEE the evidence it grades on?
 
-Contract: qa/contracts/grade.md G1/G3. Split out of `test_grade.py` (doctor's
-file-length rule) because this is one responsibility, not a slice of the stage's
-general behaviour: AT-049 found a judge reasoning from screenshot *filenames* it
-could never verify, and AT-366 found the layer under it — a path that does not
-exist is filtered out in silence by all three providers, so a verdict graded on
-none of its images looked exactly like one graded on all of them.
+Contract: qa/contracts/grade.md G1/G3 and browser-and-secrets.md B11.
+AT-049 requires real image delivery; AT-366 requires explicit missing-image counts.
 """
 
 from __future__ import annotations
@@ -13,10 +9,12 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from PIL import Image
 from test_ai_capture import _approval, _capture, _Clock, _judge, _judgment
 
 import autotester.stages.ai_judge as module
 from autotester.browser.secrets import SecretStore
+from autotester.core import image_privacy
 from autotester.core.redact import Redactor
 from autotester.providers.mock import MockProvider
 from autotester.schema.ai_check import AiCheckKind
@@ -49,22 +47,20 @@ def make_result(outcome: Outcome, **kw) -> RawResult:
 # -- AT-049 the judge actually sees the screenshots, not just their names ----
 
 def test_judge_receives_the_real_screenshot_files_when_run_dir_is_given(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch,
 ) -> None:
-    """The judge used to be told nothing but filenames in the prompt text --
-    a plausible-sounding guess, never a real look at the evidence. When
-    grade() is given the run's real directory, the judge must receive the
-    actual image files that exist there."""
+    """Send actual safe image copies, rather than filenames or original pixels."""
     run_dir = tmp_path / "run_1"
     run_dir.mkdir()
-    (run_dir / "01-login.png").write_bytes(b"\x89PNG\r\n\x1a\n")
-    (run_dir / "02-dashboard.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    _image(run_dir / "01-login.png", monkeypatch)
+    _image(run_dir / "02-dashboard.png", monkeypatch)
     judgment = Judgment(result=Result.PASS, scoreboard="2/2 met", criteria_met=2, criteria_total=2)
     judge = MockProvider(responses={"judge": [judgment]})
 
     grade(make_rubric(), make_result(Outcome.COMPLETED), "run_1", judge, run_dir=run_dir)
 
-    assert judge.judge_images == [[run_dir / "01-login.png", run_dir / "02-dashboard.png"]]
+    assert len(judge.judge_images[0]) == 2
+    assert all(path.parent != run_dir for path in judge.judge_images[0])
 
 
 def test_judge_receives_no_images_when_run_dir_is_not_given(tmp_path: Path) -> None:
@@ -80,45 +76,46 @@ def test_judge_receives_no_images_when_run_dir_is_not_given(tmp_path: Path) -> N
 
 # -- AT-366 a screenshot that is missing is counted, never dropped in silence -
 
-def _run_dir_missing_one(tmp_path: Path) -> Path:
+def _image(path: Path, monkeypatch) -> None:
+    Image.new("RGB", (100, 60), "white").save(path)
+    header = ("level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\t"
+              "left\ttop\twidth\theight\tconf\ttext\n")
+    monkeypatch.setattr(image_privacy, "_local_ocr", lambda _: header +
+                        "5\t1\t1\t1\t1\t1\t10\t10\t20\t10\t99\tprivate\n")
+
+
+def _run_dir_missing_one(tmp_path: Path, monkeypatch) -> Path:
     """The AT-036 retry class on disk: the run recorded two screenshots and only
     one of them was actually written."""
     run_dir = tmp_path / "run_1"
     run_dir.mkdir()
-    (run_dir / "01-login.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    _image(run_dir / "01-login.png", monkeypatch)
     return run_dir
 
 
 def test_a_screenshot_the_run_recorded_but_never_wrote_is_counted_not_dropped(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch,
 ) -> None:
-    """All three providers filter a non-existent path out in silence, so before
-    these counts a verdict graded on one of two screenshots looked exactly like
-    one graded on both. The judge still only gets the real file -- sending a
-    path that is not there would just move the failure into the provider -- but
-    the Verdict now records what was asked for against what was seen."""
-    run_dir = _run_dir_missing_one(tmp_path)
+    """Count missing evidence explicitly; send only sanitized existing images."""
+    run_dir = _run_dir_missing_one(tmp_path, monkeypatch)
     judgment = Judgment(result=Result.PASS, scoreboard="2/2 met", criteria_met=2, criteria_total=2)
     judge = MockProvider(responses={"judge": [judgment]})
 
     verdict = grade(make_rubric(), make_result(Outcome.COMPLETED), "run_1", judge,
                     run_dir=run_dir)
 
-    assert judge.judge_images == [[run_dir / "01-login.png"]]
+    assert len(judge.judge_images[0]) == 1
+    assert judge.judge_images[0][0] != run_dir / "01-login.png"
     assert verdict.images_requested == 2, "both SCREENSHOT evidence rows were offered"
     assert verdict.images_seen == 1, "only one file existed"
     assert verdict.graded_on_partial_evidence is True
 
 
 def test_the_shortfall_reaches_the_field_the_report_actually_renders(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch,
 ) -> None:
-    """A structured count nothing renders is the same silence one layer up.
-    `report_export.py` puts `scoreboard` on the page — in the summary table and
-    in `_case_section` — and renders `note` nowhere at all, so the sentence has
-    to be on the scoreboard or a human never sees it. It goes on `note` too,
-    because that is the durable record the artifact carries."""
-    run_dir = _run_dir_missing_one(tmp_path)
+    """The report renders scoreboard; persist the shortfall there and in note."""
+    run_dir = _run_dir_missing_one(tmp_path, monkeypatch)
     judgment = Judgment(result=Result.PASS, scoreboard="2/2 met", criteria_met=2, criteria_total=2)
     judge = MockProvider(responses={"judge": [judgment]})
 
@@ -131,12 +128,11 @@ def test_the_shortfall_reaches_the_field_the_report_actually_renders(
 
 
 def test_a_complete_run_is_not_labelled_partial_and_keeps_its_own_note(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch,
 ) -> None:
-    """The counts must be able to say 'nothing was lost', or they are an alarm
-    that is always on. The judge's own note must survive untouched."""
-    run_dir = _run_dir_missing_one(tmp_path)
-    (run_dir / "02-dashboard.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    """Complete pixel counts still disclose missing visual text and preserve judge notes."""
+    run_dir = _run_dir_missing_one(tmp_path, monkeypatch)
+    _image(run_dir / "02-dashboard.png", monkeypatch)
     judgment = Judgment(result=Result.PASS, scoreboard="2/2 met", criteria_met=2,
                         criteria_total=2, note="clean run")
     judge = MockProvider(responses={"judge": [judgment]})
@@ -146,8 +142,10 @@ def test_a_complete_run_is_not_labelled_partial_and_keeps_its_own_note(
 
     assert (verdict.images_requested, verdict.images_seen) == (2, 2)
     assert verdict.graded_on_partial_evidence is False
-    assert verdict.note == "clean run", "the judge's note must not be rewritten"
-    assert verdict.scoreboard == "2/2 met", "nor its scoreboard"
+    assert verdict.note.endswith("clean run"), "the judge's note must survive"
+    assert verdict.scoreboard.endswith("2/2 met"), "nor its scoreboard"
+    assert "Visual evidence incomplete" in verdict.note
+    assert verdict.result is Result.INCONCLUSIVE
 
 
 def test_a_judgement_on_no_images_at_all_is_visible_as_such(tmp_path: Path) -> None:
