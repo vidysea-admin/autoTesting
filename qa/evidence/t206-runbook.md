@@ -117,7 +117,7 @@ Checker's own browser against the section 1 server; BLOCKED-CAPABILITY if no bro
 - TAI6 READY Re-check that the cited unit ids still exist at close.
 
 ### Close-out
-1. BLOCKED(all of the above) Manifest `qa/manifests/t206-g10-acceptance.md` to `ready-for-check`; checker verdict `qa/verdicts/t206-g10-acceptance.md`; `goal_cli done --task-id T-206`. The goal `done_check` names `t-206-g10-acceptance.md` (with a hyphen), a mismatch the contract already records.
+1. BLOCKED(all of the above) Manifest `qa/manifests/t-206-g10-acceptance.md` to `ready-for-check`; checker verdict `qa/verdicts/t-206-g10-acceptance.md`; `goal_cli done --task-id T-206`. These future close-out filenames match the goal `done_check`; historical `t206-rig` evidence retains its name.
 2. DEFERRED(D-090 item 3, D-091) Hosted Ubuntu check (HO34-HO36, TA3/TA15 against the URL), as its own goal row.
 
 ## 3. Feedback-inbox proposals (contract not edited; for the maker to append to `qa/feedback-inbox.md`)

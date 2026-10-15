@@ -1,0 +1,33 @@
+{
+  "pytest_result": "6 setup errors before test bodies: PermissionError [WinError 5] denied C:/Users/product/AppData/Local/Temp/pytest-of-product; cache writes also denied",
+  "maker_cost": null,
+  "runtime_identity": null,
+  "lock_hash": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+  "source_hashes": {
+    "qa/issues.jsonl": "6a9109ce0a14c5f9dcbc4378eaddd35e2e51a3f0a113c6eb71a8d1d7ba3fc8dc",
+    "qa/issues-dupes-grandfathered.json": "cfda183b533dc3a50d099ed1be95e19ca79e6a0a514ab55609929488b38dfc62",
+    "qa/evidence/t206-runbook.md": "37630eee52caf142c12a10cf76b0f1b70fe92077abd8e630377cf6575a3848e8",
+    "qa/QUEUE.md": "4e142d0f2008a675a8dc4c163188171994dc96874a5818640b0c161fdfdd85f6"
+  },
+  "import_root": "C:/Users/product/Desktop/autoTesting/.work/qa-reconcile/src",
+  "maker_tokens": null,
+  "policy_merge": "82d4d439214715c887d7a68c34528bfb6cbe021d",
+  "python": "C:/Users/product/Desktop/autoTesting/.venv/Scripts/python.exe",
+  "prior_checker_usage": null,
+  "maker_active_s": null,
+  "environment_hash": null,
+  "git_diff_check_exit": 0,
+  "pytest_command": "C:/Users/product/Desktop/autoTesting/.venv/Scripts/python.exe -m pytest tests/test_issue_ids.py",
+  "original_candidate": "39bbfddf9f37eacfb0353db45c5fee238aa1b7e8",
+  "original_verdict_hashes": {
+    "qa/verdicts/scrub-escaped.md": "f06d0788bc38c9646eb5fdaf8f9bc87efb5ef5ef2516217ef49a15600c119824",
+    "qa/verdicts/security-trio.md": "af16a97470b44fe04f158d7e645df9b160017cf5a40f8ff16c769dd1af1d46a0",
+    "qa/verdicts/infra-trio.md": "fdc67879c2647b597ad697ec66bb58f37f37608af8fb130f4e3e9c117662c9a2"
+  },
+  "python_version": null,
+  "invariant_exit": 0,
+  "invariant_result": "PASS: 1025 rows preserved; 12 id-only remaps; exactly 5 status/verification updates; all other fields unchanged; unique IDs; grandfather only shrank; uncertain rows remain open; 7 queue evidence commits are ancestors.",
+  "pytest_exit": 1,
+  "notes": "Exact full evidence-reuse identity is incomplete; checker must independently validate records and perform focused test after preflight. Ratio compliance unverified. No further test cycles run.",
+  "kind": "transcribed prior command output; not a fresh rerun"
+}
