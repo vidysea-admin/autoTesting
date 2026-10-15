@@ -1,6 +1,6 @@
 # Manifest - security-trio
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Issues addressed:** AT-900, AT-925, AT-956
 
