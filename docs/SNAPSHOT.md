@@ -35,8 +35,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-169 [high] Generic two-mode acceptance: rich teaching inputs and URL-plus-credentials only, no CLI
 - T-206 [high] G10 Group 10 acceptance: end to end on Pathlynks (docs/plan.md G10; O8-O15, O6)
 ## Last decisions (computed status)
-- D-094 2026-10-13 decision ACTIVE
-- D-095 2026-10-13 decision ACTIVE
-- D-096 2026-10-14 decision ACTIVE
-- D-097 2026-10-14 decision ACTIVE
 - D-098 2026-10-15 decision ACTIVE
+- D-099 2026-10-15 decision ACTIVE
+- D-100 2026-10-15 decision ACTIVE
+- D-101 2026-10-15 decision ACTIVE
+- D-102 2026-10-15 fix ACTIVE
