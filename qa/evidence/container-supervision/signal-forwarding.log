@@ -1,0 +1,25 @@
+...F......                                                               [100%]
+================================== FAILURES ===================================
+_______ test_signal_during_startup_drains_children_and_restores_handler _______
+
+children = [<Popen: returncode: 1 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DF07422890>
+
+    def test_signal_during_startup_drains_children_and_restores_handler(children, monkeypatch):
+        previous = signal.getsignal(signal.SIGTERM)
+    
+        def request_stop(_):
+            signal.raise_signal(signal.SIGTERM)
+            return False
+    
+        monkeypatch.setattr(supervisor, "endpoint_ready", request_stop)
+>       assert supervisor.run_stack([("tcp:1", sleeper())], grace=.1) == 128 + signal.SIGTERM
+E       AssertionError: assert 130 == (128 + <Signals.SIGTERM: 15>)
+E        +  where 130 = <function run_stack at 0x000001DF0730FEC0>([('tcp:1', ['C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(5)'])], grace=0.1)
+E        +    where <function run_stack at 0x000001DF0730FEC0> = supervisor.run_stack
+E        +  and   <Signals.SIGTERM: 15> = signal.SIGTERM
+
+tests\test_container_supervision.py:63: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_signal_during_startup_drains_children_and_restores_handler
+1 failed, 9 passed in 2.02s

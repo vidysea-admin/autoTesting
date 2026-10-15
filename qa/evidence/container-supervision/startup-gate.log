@@ -1,0 +1,44 @@
+..FF......                                                               [100%]
+================================== FAILURES ===================================
+_________ test_readiness_timeout_stops_stack_before_dependent_service _________
+
+children = [<Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002689F548090>
+
+    def test_readiness_timeout_stops_stack_before_dependent_service(children, monkeypatch):
+        monkeypatch.setattr(supervisor, "endpoint_ready", lambda _: False)
+        assert supervisor.run_stack([("tcp:1", sleeper()), ("", sleeper())],
+                                    timeout=.1, grace=.1) == 1
+>       assert len(children) == 1 and children[0].returncode is not None
+E       AssertionError: assert (2 == 1)
+E        +  where 2 = len([<Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>])
+
+tests\test_container_supervision.py:52: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+_______ test_signal_during_startup_drains_children_and_restores_handler _______
+
+children = [<Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002689F563F50>
+
+    def test_signal_during_startup_drains_children_and_restores_handler(children, monkeypatch):
+        previous = signal.getsignal(signal.SIGTERM)
+    
+        def request_stop(_):
+            signal.raise_signal(signal.SIGTERM)
+            return False
+    
+        monkeypatch.setattr(supervisor, "endpoint_ready", request_stop)
+>       assert supervisor.run_stack([("tcp:1", sleeper())], grace=.1) == 128 + signal.SIGTERM
+E       AssertionError: assert 1 == (128 + <Signals.SIGTERM: 15>)
+E        +  where 1 = <function run_stack at 0x000002689F463EC0>([('tcp:1', ['C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(5)'])], grace=0.1)
+E        +    where <function run_stack at 0x000002689F463EC0> = supervisor.run_stack
+E        +  and   <Signals.SIGTERM: 15> = signal.SIGTERM
+
+tests\test_container_supervision.py:63: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_readiness_timeout_stops_stack_before_dependent_service
+FAILED tests/test_container_supervision.py::test_signal_during_startup_drains_children_and_restores_handler
+2 failed, 8 passed in 12.14s

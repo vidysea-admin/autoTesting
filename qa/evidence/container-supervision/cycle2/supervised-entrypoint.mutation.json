@@ -1,0 +1,13 @@
+{
+  "name": "supervised-entrypoint",
+  "file": "docker/entrypoint.sh",
+  "old": "exec /opt/venv/bin/python /app/docker/supervise.py",
+  "new": "exec /opt/venv/bin/python /app/docker/absent.py",
+  "kills": [
+    "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+  ],
+  "anchor_count": 1,
+  "before": "f5a0611825aeb7d153013f8c19e1718d715f3b0155ffa16cd8e5add04be73bf2",
+  "after": "224dca85fa5e60b31abb8a0d16e5923acab17f87c5d9889b218ffc1f9b347b9f",
+  "only_changed_file": "docker/entrypoint.sh"
+}

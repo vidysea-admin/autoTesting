@@ -1,0 +1,54 @@
+{
+  "source": {
+    "Dockerfile": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+    "docker/entrypoint.sh": "f5a0611825aeb7d153013f8c19e1718d715f3b0155ffa16cd8e5add04be73bf2",
+    "docker/supervise.py": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+    "docker/DEPLOY.md": "9f39c980750083ba848b3e244fde94b0b6c25d22adff8787755c289ba8342501",
+    "tests/test_container_supervision.py": "d2f74007aacace3e25aea5b013f0526980d2d709b38b39486083e9f34855ece7",
+    "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+    "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+    ".gitattributes": "79497b412a739c9c7f50b4d78ea449efb20f6b63571a4ef2da9af5b37e0dab64",
+    "docker/compose.prod.yml": "9466504281e52145d6b51fc4a4b38100076ab15afdebd642b16233519b04f662"
+  },
+  "candidate_source": {
+    "Dockerfile": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+    "docker/entrypoint.sh": "f5a0611825aeb7d153013f8c19e1718d715f3b0155ffa16cd8e5add04be73bf2",
+    "docker/supervise.py": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+    "docker/DEPLOY.md": "9f39c980750083ba848b3e244fde94b0b6c25d22adff8787755c289ba8342501",
+    "tests/test_container_supervision.py": "d2f74007aacace3e25aea5b013f0526980d2d709b38b39486083e9f34855ece7",
+    "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+    "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+    ".gitattributes": "79497b412a739c9c7f50b4d78ea449efb20f6b63571a4ef2da9af5b37e0dab64",
+    "docker/compose.prod.yml": "9466504281e52145d6b51fc4a4b38100076ab15afdebd642b16233519b04f662"
+  },
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "dependencies": {
+    "pytest": "9.1.1",
+    "ruff": "0.16.5",
+    "pydantic": "2.13.5",
+    "PyYAML": "6.0.3",
+    "fastapi": "0.141.1"
+  },
+  "lock_sha": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+  "environment": {
+    "PYTHONPATH": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMP": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\CONTemp\\cycle2",
+    "TEMP": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\CONTemp\\cycle2"
+  },
+  "candidate_sha": "326bf0a7ffa5296a81bcbe0bc5a112903bb68787",
+  "cwd": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\cycle2-copy",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\CONTemp\\cycle2\\reaping-restored",
+    "tests/test_container_supervision.py::test_posix_reaper_preserves_exit_status_and_collects_orphans"
+  ],
+  "started_utc": 1792052887.6191385,
+  "started_monotonic": 16977.468
+}

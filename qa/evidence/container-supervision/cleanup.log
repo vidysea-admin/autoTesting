@@ -1,0 +1,94 @@
+FFFFF.....                                                               [100%]
+================================== FAILURES ===================================
+____________ test_any_exit_fails_stack_and_reaps_other_services[0] ____________
+
+children = [<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+status = 0
+
+    @pytest.mark.parametrize("status", [0, 7])
+    def test_any_exit_fails_stack_and_reaps_other_services(children, status):
+        exiting = [sys.executable, "-c", f"import time; time.sleep(.1); raise SystemExit({status})"]
+        assert supervisor.run_stack([("", sleeper()), ("", exiting)], grace=.1) == 1
+>       assert len(children) == 2 and all(child.returncode is not None for child in children)
+E       AssertionError: assert (2 == 2 and False)
+E        +  where 2 = len([<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>])
+E        +  and   False = all(<generator object test_any_exit_fails_stack_and_reaps_other_services.<locals>.<genexpr> at 0x000002A3D43AEA80>)
+
+tests\test_container_supervision.py:45: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+____________ test_any_exit_fails_stack_and_reaps_other_services[7] ____________
+
+children = [<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>, <Popen: returncode: 7 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+status = 7
+
+    @pytest.mark.parametrize("status", [0, 7])
+    def test_any_exit_fails_stack_and_reaps_other_services(children, status):
+        exiting = [sys.executable, "-c", f"import time; time.sleep(.1); raise SystemExit({status})"]
+        assert supervisor.run_stack([("", sleeper()), ("", exiting)], grace=.1) == 1
+>       assert len(children) == 2 and all(child.returncode is not None for child in children)
+E       AssertionError: assert (2 == 2 and False)
+E        +  where 2 = len([<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>, <Popen: returncode: 7 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>])
+E        +  and   False = all(<generator object test_any_exit_fails_stack_and_reaps_other_services.<locals>.<genexpr> at 0x000002A3D443D700>)
+
+tests\test_container_supervision.py:45: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+_________ test_readiness_timeout_stops_stack_before_dependent_service _________
+
+children = [<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002A3D4475690>
+
+    def test_readiness_timeout_stops_stack_before_dependent_service(children, monkeypatch):
+        monkeypatch.setattr(supervisor, "endpoint_ready", lambda _: False)
+        assert supervisor.run_stack([("tcp:1", sleeper()), ("", sleeper())],
+                                    timeout=.1, grace=.1) == 1
+>       assert len(children) == 1 and children[0].returncode is not None
+E       AssertionError: assert (1 == 1 and None is not None)
+E        +  where 1 = len([<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>])
+E        +  and   None = <Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>.returncode
+
+tests\test_container_supervision.py:52: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service startup timed out
+_______ test_signal_during_startup_drains_children_and_restores_handler _______
+
+children = [<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002A3D43B9350>
+
+    def test_signal_during_startup_drains_children_and_restores_handler(children, monkeypatch):
+        previous = signal.getsignal(signal.SIGTERM)
+    
+        def request_stop(_):
+            signal.raise_signal(signal.SIGTERM)
+            return False
+    
+        monkeypatch.setattr(supervisor, "endpoint_ready", request_stop)
+        assert supervisor.run_stack([("tcp:1", sleeper())], grace=.1) == 128 + signal.SIGTERM
+>       assert children[0].returncode is not None
+E       AssertionError: assert None is not None
+E        +  where None = <Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>.returncode
+
+tests\test_container_supervision.py:64: AssertionError
+______ test_failed_spawn_cleans_started_services_without_logging_command ______
+
+children = [<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>]
+capsys = <_pytest.capture.CaptureFixture object at 0x000002A3D44597D0>
+
+    def test_failed_spawn_cleans_started_services_without_logging_command(children, capsys):
+        services = [("", sleeper()), ("", ["unavailable-container-canary-value"])]
+        assert supervisor.run_stack(services, grace=.1) == 1
+>       assert children[0].returncode is not None
+E       AssertionError: assert None is not None
+E        +  where None = <Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>.returncode
+
+tests\test_container_supervision.py:71: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service could not start
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services[0]
+FAILED tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services[7]
+FAILED tests/test_container_supervision.py::test_readiness_timeout_stops_stack_before_dependent_service
+FAILED tests/test_container_supervision.py::test_signal_during_startup_drains_children_and_restores_handler
+FAILED tests/test_container_supervision.py::test_failed_spawn_cleans_started_services_without_logging_command
+5 failed, 5 passed in 1.38s

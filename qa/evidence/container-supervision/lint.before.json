@@ -1,0 +1,30 @@
+{
+  "name": "lint",
+  "cwd": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "source": {
+    "Dockerfile": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+    "docker/entrypoint.sh": "f5a0611825aeb7d153013f8c19e1718d715f3b0155ffa16cd8e5add04be73bf2",
+    "docker/supervise.py": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+    "docker/DEPLOY.md": "9f39c980750083ba848b3e244fde94b0b6c25d22adff8787755c289ba8342501",
+    "tests/test_container_supervision.py": "d2f74007aacace3e25aea5b013f0526980d2d709b38b39486083e9f34855ece7",
+    "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+    "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57"
+  },
+  "environment": {
+    "PYTHONPATH": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\src",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "ruff",
+    "check",
+    "tests/test_container_supervision.py",
+    "docker/supervise.py"
+  ],
+  "temp_parent": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\CONTemp",
+  "started": 1792051923.5482187
+}

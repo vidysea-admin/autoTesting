@@ -1,0 +1,22 @@
+......F...                                                               [100%]
+================================== FAILURES ===================================
+__________ test_posix_cleanup_signals_groups_even_after_leader_exits __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000024264B2EB50>
+
+    def test_posix_cleanup_signals_groups_even_after_leader_exits(monkeypatch):
+        calls = []
+        monkeypatch.setattr(supervisor, "os", SimpleNamespace(
+            name="posix", killpg=lambda *args: calls.append(args)))
+        child = type("ExitedChild", (), {"pid": 12345, "returncode": 0})()
+        supervisor.signal_children([child], signal.SIGTERM)
+>       assert calls == [(12345, signal.SIGTERM)]
+E       assert [] == [(12345, <Sig...SIGTERM: 15>)]
+E         
+E         Right contains one more item: (12345, <Signals.SIGTERM: 15>)
+E         Use -v to get more diff
+
+tests\test_container_supervision.py:91: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_posix_cleanup_signals_groups_even_after_leader_exits
+1 failed, 9 passed in 2.01s

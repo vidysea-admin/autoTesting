@@ -1,0 +1,21 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_failed_spawn_cleans_started_services_without_logging_command ______
+
+children = [<Popen: returncode: 1 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+capsys = <_pytest.capture.CaptureFixture object at 0x0000020CC369D5D0>
+
+    def test_failed_spawn_cleans_started_services_without_logging_command(children, capsys):
+        services = [("", sleeper()), ("", ["unavailable-container-canary-value"])]
+        assert supervisor.run_stack(services, grace=.1) == 1
+        assert children[0].returncode is not None
+>       assert "unavailable-container-canary-value" not in capsys.readouterr().err
+E       assert 'unavailable...canary-value' not in "[('', ['C:\...-value'])]\n"
+E         
+E         'unavailable-container-canary-value' is contained here:
+E           ), ('', ['unavailable-container-canary-value'])]
+
+tests\test_container_supervision.py:72: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_failed_spawn_cleans_started_services_without_logging_command
+1 failed in 0.43s

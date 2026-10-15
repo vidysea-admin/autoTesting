@@ -1,0 +1,71 @@
+FFF.F.....                                                               [100%]
+================================== FAILURES ===================================
+____________ test_any_exit_fails_stack_and_reaps_other_services[0] ____________
+
+children = [<Popen: returncode: 1 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+status = 0
+
+    @pytest.mark.parametrize("status", [0, 7])
+    def test_any_exit_fails_stack_and_reaps_other_services(children, status):
+        exiting = [sys.executable, "-c", f"import time; time.sleep(.1); raise SystemExit({status})"]
+>       assert supervisor.run_stack([("", sleeper()), ("", exiting)], grace=.1) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = <function run_stack at 0x00000217F41EFEC0>([('', ['C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(5)']), (...product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(.1); raise SystemExit(0)'])], grace=0.1)
+E        +    where <function run_stack at 0x00000217F41EFEC0> = supervisor.run_stack
+
+tests\test_container_supervision.py:44: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+____________ test_any_exit_fails_stack_and_reaps_other_services[7] ____________
+
+children = [<Popen: returncode: 1 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>, <Popen: returncode: 7 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+status = 7
+
+    @pytest.mark.parametrize("status", [0, 7])
+    def test_any_exit_fails_stack_and_reaps_other_services(children, status):
+        exiting = [sys.executable, "-c", f"import time; time.sleep(.1); raise SystemExit({status})"]
+>       assert supervisor.run_stack([("", sleeper()), ("", exiting)], grace=.1) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = <function run_stack at 0x00000217F41EFEC0>([('', ['C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(5)']), (...product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(.1); raise SystemExit(7)'])], grace=0.1)
+E        +    where <function run_stack at 0x00000217F41EFEC0> = supervisor.run_stack
+
+tests\test_container_supervision.py:44: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+_________ test_readiness_timeout_stops_stack_before_dependent_service _________
+
+children = [<Popen: returncode: 1 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000217F528A050>
+
+    def test_readiness_timeout_stops_stack_before_dependent_service(children, monkeypatch):
+        monkeypatch.setattr(supervisor, "endpoint_ready", lambda _: False)
+>       assert supervisor.run_stack([("tcp:1", sleeper()), ("", sleeper())],
+                                    timeout=.1, grace=.1) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = <function run_stack at 0x00000217F41EFEC0>([('tcp:1', ['C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(5)']), ('', ['C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(5)'])], timeout=0.1, grace=0.1)
+E        +    where <function run_stack at 0x00000217F41EFEC0> = supervisor.run_stack
+
+tests\test_container_supervision.py:50: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service startup timed out
+______ test_failed_spawn_cleans_started_services_without_logging_command ______
+
+children = [<Popen: returncode: 1 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+capsys = <_pytest.capture.CaptureFixture object at 0x00000217F422AC50>
+
+    def test_failed_spawn_cleans_started_services_without_logging_command(children, capsys):
+        services = [("", sleeper()), ("", ["unavailable-container-canary-value"])]
+>       assert supervisor.run_stack(services, grace=.1) == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = <function run_stack at 0x00000217F41EFEC0>([('', ['C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(5)']), ('', ['unavailable-container-canary-value'])], grace=0.1)
+E        +    where <function run_stack at 0x00000217F41EFEC0> = supervisor.run_stack
+
+tests\test_container_supervision.py:70: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service could not start
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services[0]
+FAILED tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services[7]
+FAILED tests/test_container_supervision.py::test_readiness_timeout_stops_stack_before_dependent_service
+FAILED tests/test_container_supervision.py::test_failed_spawn_cleans_started_services_without_logging_command
+4 failed, 6 passed in 2.09s

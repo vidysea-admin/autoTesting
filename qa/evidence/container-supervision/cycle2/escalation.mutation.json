@@ -1,0 +1,13 @@
+{
+  "name": "escalation",
+  "file": "docker/supervise.py",
+  "old": "signal.SIGKILL if os.name == \"posix\" else signal.SIGTERM",
+  "new": "signal.SIGTERM",
+  "kills": [
+    "tests/test_container_supervision.py::test_cleanup_escalates_to_kill_and_waits_for_children"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "13c454a7ddc259d99ac0b9df588265592ccd41af3f38c689eca828716132a7ef",
+  "only_changed_file": "docker/supervise.py"
+}

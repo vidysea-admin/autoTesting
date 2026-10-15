@@ -1,0 +1,13 @@
+{
+  "name": "readiness",
+  "file": "docker/supervise.py",
+  "old": "connection.connect(address)",
+  "new": "pass  # bypass connection",
+  "kills": [
+    "tests/test_container_supervision.py::test_readiness_requires_a_real_listener"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "7b653474e8f3ba2250eecf630a333c7e2617d2f806944245a0ba9ad1f79cdb77",
+  "only_changed_file": "docker/supervise.py"
+}

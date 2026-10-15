@@ -1,0 +1,21 @@
+{
+  "start_monotonic": 17869.906,
+  "end_monotonic": 17873.375,
+  "waits": [],
+  "active_s": 3.4690000000009604,
+  "tokens": null,
+  "cost": null,
+  "command": [
+    "C:/Users/product/Desktop/autoTesting/.venv/Scripts/python.exe",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\CONTemp\\checker-cycle2-restored",
+    "tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services[0]"
+  ],
+  "exit": 0,
+  "normalized_node": "tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services[0]",
+  "source_exact": true
+}

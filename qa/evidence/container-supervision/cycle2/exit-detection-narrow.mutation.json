@@ -1,0 +1,13 @@
+{
+  "name": "exit-detection-narrow",
+  "file": "docker/supervise.py",
+  "old": "        while not stopping:\n            reap_children(children)\n            if any(child.returncode is not None for child in children):\n                print(\"container service exited; restarting stack\", file=sys.stderr)\n                return 1",
+  "new": "        while not stopping:\n            reap_children(children)\n            if any(child.returncode is not None for child in children):\n                print(\"container service exited; restarting stack\", file=sys.stderr)\n                return 0",
+  "anchor_count": 1,
+  "kills": [
+    "tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services"
+  ],
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "d9d5506fe4f8b4f85fb8d73e79968c53692c3ecb9bfe4e447d30972c744e78d3",
+  "only_changed_file": "docker/supervise.py"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "reaping",
+  "file": "docker/supervise.py",
+  "old": "child.returncode = os.waitstatus_to_exitcode(status)",
+  "new": "child.returncode = 0",
+  "kills": [
+    "tests/test_container_supervision.py::test_posix_reaper_preserves_exit_status_and_collects_orphans"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "4ee0e99f712b2b115e27ca10101ce9e6463b4bcd356f962fbc66e57433c09b2a",
+  "only_changed_file": "docker/supervise.py"
+}

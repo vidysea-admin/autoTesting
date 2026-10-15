@@ -1,0 +1,36 @@
+{
+  "candidate": "326bf0a7ffa5296a81bcbe0bc5a112903bb68787",
+  "current_head": "58d76842d8733d0a729ba742fede0053290e7cbc",
+  "git_blobs": {
+    "Dockerfile": "c1d33d469e2168db6b173cf7170eb50e864100e9",
+    "docker/entrypoint.sh": "02d786cd648d9cc03cbbc1389e3550f2f8d0568b",
+    "docker/supervise.py": "9adee957d30adf4c820393b41f3b52cf9cd33642",
+    "docker/DEPLOY.md": "727a63df9d52295f6e147409a10768cab441e2ca",
+    "tests/test_container_supervision.py": "c7f4efbae943c6f503e37e70c2fb63e20622f6ab",
+    "uv.lock": "59c3d7bea67b48a0eae7c4c5cd8dfd84e5a60ca1",
+    "pyproject.toml": "5d0d826ec4ff58b2e9f4ad70d7a3af5895a9be62",
+    ".gitattributes": "274447511970c0044b715338bc98dc04504ee8e5",
+    "docker/compose.prod.yml": "f62fbf963b4aa0e324b7a64fd54683079f915378"
+  },
+  "frozen_source": {
+    "Dockerfile": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+    "docker/entrypoint.sh": "f5a0611825aeb7d153013f8c19e1718d715f3b0155ffa16cd8e5add04be73bf2",
+    "docker/supervise.py": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+    "docker/DEPLOY.md": "9f39c980750083ba848b3e244fde94b0b6c25d22adff8787755c289ba8342501",
+    "tests/test_container_supervision.py": "d2f74007aacace3e25aea5b013f0526980d2d709b38b39486083e9f34855ece7",
+    "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+    "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+    ".gitattributes": "79497b412a739c9c7f50b4d78ea449efb20f6b63571a4ef2da9af5b37e0dab64",
+    "docker/compose.prod.yml": "9466504281e52145d6b51fc4a4b38100076ab15afdebd642b16233519b04f662"
+  },
+  "newline_drift_proof": {
+    "docker/supervise.py": "f038efbc2d7803f6e831a70715a3733e101a910a5771c7982e39b7a00ef03dd3",
+    "docker/entrypoint.sh": "17d0bed7d27021d3a81ad900e5009aa4db8351e4fe599392573f67c634c9209a"
+  },
+  "prior_evidence": "cycle1 retained but not reused as mutation provenance",
+  "maker_usage": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  }
+}

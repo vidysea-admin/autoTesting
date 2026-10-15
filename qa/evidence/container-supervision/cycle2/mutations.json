@@ -1,0 +1,147 @@
+{
+  "tests": "tests/test_container_supervision.py",
+  "mutations": [
+    {
+      "name": "exit-detection-narrow",
+      "file": "docker/supervise.py",
+      "old": "        while not stopping:\n            reap_children(children)\n            if any(child.returncode is not None for child in children):\n                print(\"container service exited; restarting stack\", file=sys.stderr)\n                return 1",
+      "new": "        while not stopping:\n            reap_children(children)\n            if any(child.returncode is not None for child in children):\n                print(\"container service exited; restarting stack\", file=sys.stderr)\n                return 0",
+      "anchor_count": 1,
+      "kills": [
+        "tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services"
+      ]
+    },
+    {
+      "name": "signal-forwarding",
+      "file": "docker/supervise.py",
+      "old": "stopping = signum",
+      "new": "stopping = signal.SIGINT",
+      "kills": [
+        "tests/test_container_supervision.py::test_signal_during_startup_drains_children_and_restores_handler"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "readiness",
+      "file": "docker/supervise.py",
+      "old": "connection.connect(address)",
+      "new": "pass  # bypass connection",
+      "kills": [
+        "tests/test_container_supervision.py::test_readiness_requires_a_real_listener"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "groups",
+      "file": "docker/supervise.py",
+      "old": "os.killpg(child.pid, sig)",
+      "new": "pass  # abandon process group",
+      "kills": [
+        "tests/test_container_supervision.py::test_posix_cleanup_signals_groups_even_after_leader_exits"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "nonroot",
+      "file": "Dockerfile",
+      "old": "USER 10001:10001",
+      "new": "USER 0:0",
+      "kills": [
+        "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "cleanup",
+      "file": "docker/supervise.py",
+      "old": "stop_children(children, grace)",
+      "new": "pass  # abandon sibling processes",
+      "kills": [
+        "tests/test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "startup-gate",
+      "file": "docker/supervise.py",
+      "old": "if not endpoint or endpoint_ready(endpoint):",
+      "new": "if True:",
+      "kills": [
+        "tests/test_container_supervision.py::test_readiness_timeout_stops_stack_before_dependent_service"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "reaping",
+      "file": "docker/supervise.py",
+      "old": "child.returncode = os.waitstatus_to_exitcode(status)",
+      "new": "child.returncode = 0",
+      "kills": [
+        "tests/test_container_supervision.py::test_posix_reaper_preserves_exit_status_and_collects_orphans"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "escalation",
+      "file": "docker/supervise.py",
+      "old": "signal.SIGKILL if os.name == \"posix\" else signal.SIGTERM",
+      "new": "signal.SIGTERM",
+      "kills": [
+        "tests/test_container_supervision.py::test_cleanup_escalates_to_kill_and_waits_for_children"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "log-boundary",
+      "file": "docker/supervise.py",
+      "old": "print(\"container service could not start\", file=sys.stderr)",
+      "new": "print(services, file=sys.stderr)",
+      "kills": [
+        "tests/test_container_supervision.py::test_failed_spawn_cleans_started_services_without_logging_command"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "frozen-environment",
+      "file": "Dockerfile",
+      "old": "UV_PROJECT_ENVIRONMENT=/opt/venv",
+      "new": "UV_PROJECT_ENVIRONMENT=/app/.venv",
+      "kills": [
+        "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "no-runtime-sync",
+      "file": "Dockerfile",
+      "old": "UV_NO_SYNC=1",
+      "new": "UV_NO_SYNC=0",
+      "kills": [
+        "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "no-bytecode-writes",
+      "file": "Dockerfile",
+      "old": "PYTHONDONTWRITEBYTECODE=1",
+      "new": "PYTHONDONTWRITEBYTECODE=0",
+      "kills": [
+        "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+      ],
+      "anchor_count": 1
+    },
+    {
+      "name": "supervised-entrypoint",
+      "file": "docker/entrypoint.sh",
+      "old": "exec /opt/venv/bin/python /app/docker/supervise.py",
+      "new": "exec /opt/venv/bin/python /app/docker/absent.py",
+      "kills": [
+        "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+      ],
+      "anchor_count": 1
+    }
+  ],
+  "timeout_s": 30,
+  "note": "Primary exit guard now has one unique-context application; earlier four-return mutation receipts retained as supplemental historical evidence."
+}

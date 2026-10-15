@@ -1,0 +1,2 @@
+# Evidence is byte-bound: preserve raw stdout and JSON hashes across checkout platforms.
+* -text

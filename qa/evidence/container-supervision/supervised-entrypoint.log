@@ -1,0 +1,18 @@
+.......F..                                                               [100%]
+================================== FAILURES ===================================
+_____ test_image_runs_unprivileged_with_frozen_environment_outside_source _____
+
+    def test_image_runs_unprivileged_with_frozen_environment_outside_source():
+        dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+        assert "USER 10001:10001" in dockerfile
+        assert "UV_PROJECT_ENVIRONMENT=/opt/venv" in dockerfile
+        assert "UV_NO_SYNC=1" in dockerfile and "PYTHONDONTWRITEBYTECODE=1" in dockerfile
+        assert "build-essential" in dockerfile
+        entrypoint = (ROOT / "docker/entrypoint.sh").read_text(encoding="utf-8")
+>       assert "exec /opt/venv/bin/python /app/docker/supervise.py" in entrypoint
+E       assert 'exec /opt/venv/bin/python /app/docker/supervise.py' in "#!/usr/bin/env bash\n# Fail the whole stack when any service dies; Docker's restart policy restores it.\nset -euo pip...081 localhost:5901' \\\n  tcp:8000 'uv run uvicorn autotester.ui.app:app --host 0.0.0.0 --port 8000 --no-access-log'\n"
+
+tests\test_container_supervision.py:101: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source
+1 failed, 9 passed in 1.99s

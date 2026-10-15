@@ -1,0 +1,13 @@
+{
+  "name": "nonroot",
+  "file": "Dockerfile",
+  "old": "USER 10001:10001",
+  "new": "USER 0:0",
+  "kills": [
+    "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+  ],
+  "anchor_count": 1,
+  "before": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+  "after": "7e5c6bd25300b9ce36d7b7abc7d1817f1758d6661a9d55f666fd36d82c53c88c",
+  "only_changed_file": "Dockerfile"
+}

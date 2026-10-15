@@ -1,0 +1,13 @@
+{
+  "name": "signal-forwarding",
+  "file": "docker/supervise.py",
+  "old": "stopping = signum",
+  "new": "stopping = signal.SIGINT",
+  "kills": [
+    "tests/test_container_supervision.py::test_signal_during_startup_drains_children_and_restores_handler"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "f53a79509f9bc6eb1f2420727d3fe4d5e93eb015e354c67e2b94ec5c27ae7843",
+  "only_changed_file": "docker/supervise.py"
+}

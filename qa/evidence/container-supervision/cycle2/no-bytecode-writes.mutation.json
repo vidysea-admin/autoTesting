@@ -1,0 +1,13 @@
+{
+  "name": "no-bytecode-writes",
+  "file": "Dockerfile",
+  "old": "PYTHONDONTWRITEBYTECODE=1",
+  "new": "PYTHONDONTWRITEBYTECODE=0",
+  "kills": [
+    "tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source"
+  ],
+  "anchor_count": 1,
+  "before": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+  "after": "294268422330218eec6674c9a6282d8b024a2d78394b3a1df7c1a89ef13611b3",
+  "only_changed_file": "Dockerfile"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "startup-gate",
+  "file": "docker/supervise.py",
+  "old": "if not endpoint or endpoint_ready(endpoint):",
+  "new": "if True:",
+  "kills": [
+    "tests/test_container_supervision.py::test_readiness_timeout_stops_stack_before_dependent_service"
+  ],
+  "anchor_count": 1,
+  "before": "7223099a177998449eb0baff67f78a4ddc5f12094883a0806f89edd8a06e9b2c",
+  "after": "41ae300d03d55d3e976acf01b39cd0935e2b342ff69d9baa737be75d0dfd6c3e",
+  "only_changed_file": "docker/supervise.py"
+}
