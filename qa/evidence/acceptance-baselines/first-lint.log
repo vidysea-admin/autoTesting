@@ -1,0 +1,119 @@
+E501 Line too long (103 > 100)
+  --> scripts\prepare_acceptance_baselines.py:19:101
+   |
+17 |     plan = BaselinePlan.model_validate_json(args.plan.read_bytes())
+18 |     prepare_baselines(args.source_root, args.input_root, args.destination, plan)
+19 |     print("Prepared local baselines; credential provisioning and production approvals remain required")
+   |                                                                                                     ^^^
+20 |     return 0
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests\test_acceptance_baseline.py:3:1
+   |
+ 1 |   """Input-only baseline preparation must preserve scope without inheriting product truth."""
+ 2 |
+ 3 | / import hashlib
+ 4 | | import sys
+ 5 | | from pathlib import Path
+ 6 | |
+ 7 | | import pytest
+ 8 | |
+ 9 | | from autotester.schema.acceptance_baseline import BaselineInput, BaselinePlan, BaselineReceipt
+10 | | from autotester.schema.project import Project, ProviderConfig, SecretRef
+11 | | from autotester.stages.acceptance_baseline import prepare_baselines
+12 | | from autotester.store.project_store import ProjectStore
+13 | | from prepare_acceptance_baselines import main
+   | |_____________________________________________^
+help: Organize imports
+   |
+7  | import pytest
+8  + from prepare_acceptance_baselines import main
+9  |
+--------------------------------------------------------------------------------
+13 | from autotester.store.project_store import ProjectStore
+   - from prepare_acceptance_baselines import main
+14 |
+   |
+
+E501 Line too long (101 > 100)
+  --> tests\test_acceptance_baseline.py:79:101
+   |
+77 |         assert project.providers == original.load_project().providers
+78 |         assert project.secrets == [original.load_project().secrets[0]]
+79 |         assert project.login_case_id is None and project.schedule is None and project.tracker is None
+   |                                                                                                     ^
+80 |         sources = store.list_sources()
+81 |         assert len(sources) == (2 if mode == "teaching" else 0)
+   |
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> tests\test_acceptance_baseline.py:82:28
+   |
+80 |         sources = store.list_sources()
+81 |         assert len(sources) == (2 if mode == "teaching" else 0)
+82 |         for source, row in zip(sources, plan.teaching_inputs):
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+83 |             assert source.project == slug and source.sha256 == row.sha256
+84 |             assert row.approval_ref in source.provenance.note
+   |
+help: Add explicit value for parameter `strict=`
+
+E501 Line too long (102 > 100)
+  --> tests\test_acceptance_baseline.py:90:101
+   |
+88 |         assert (output / mode / "qa/evidence/t169-real" / mode).is_dir()
+89 |     assert not any(p.name == ".env" for p in output.rglob("*"))
+90 |     assert not any(p.is_relative_to(original.paths.dir) and p != original.paths.config for p in reads)
+   |                                                                                                     ^^
+91 |     assert all(read_bytes(p) == blob for p, blob in before.items())
+   |
+
+E501 Line too long (106 > 100)
+  --> tests\test_acceptance_baseline.py:94:101
+   |
+94 | @pytest.mark.parametrize("fault", ["config", "input", "existing", "overlap", "empty-build", "redirected"])
+   |                                                                                                     ^^^^^^
+95 | def test_stale_or_existing_plan_refused_without_writes(baseline, fault):
+96 |     root, inputs, output, plan, store = baseline
+   |
+
+E501 Line too long (108 > 100)
+   --> tests\test_acceptance_baseline.py:114:101
+    |
+112 |         prepare_baselines(root, inputs, output, plan)
+113 |     assert before == {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+114 |     assert sorted(p.name for p in output.rglob("*")) == (["comparison.json"] if fault == "existing" else [])
+    |                                                                                                     ^^^^^^^^
+
+E501 Line too long (107 > 100)
+   --> tests\test_acceptance_baseline.py:117:101
+    |
+117 | @pytest.mark.parametrize("fault", ["escape", "absolute", "env", "historical-json", "unapproved", "no-doc"])
+    |                                                                                                     ^^^^^^^
+118 | def test_only_explicit_approved_contained_inputs(baseline, fault):
+119 |     root, inputs, output, plan, _ = baseline
+    |
+
+E501 Line too long (117 > 100)
+   --> tests\test_acceptance_baseline.py:129:101
+    |
+127 |         row.path = ".env.txt"
+128 |         row.kind = "doc"
+129 |         plan.teaching_inputs.append(plan.teaching_inputs[0].model_copy(update={"path": "clip.mp4", "kind": "video"}))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+130 |         (inputs / row.path).write_bytes((inputs / "clip.mp4").read_bytes())
+131 |     elif fault == "historical-json":
+    |
+
+E501 Line too long (117 > 100)
+   --> tests\test_acceptance_baseline.py:143:101
+    |
+143 | @pytest.mark.parametrize("fault", ["unknown", "duplicate", "unscoped", "foreign-domain", "url-credentials", "empty"])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+144 | def test_credential_reference_scope_never_widens(baseline, fault):
+145 |     root, inputs, output, plan, store = baseline
+    |
+
+Found 10 errors.
+[*] 1 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).

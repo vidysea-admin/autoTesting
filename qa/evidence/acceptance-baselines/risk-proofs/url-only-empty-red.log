@@ -1,0 +1,59 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_same_build_scoped_refs_and_input_only_isolation _____________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-11-r/te..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x0000018D51CB4090>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018D51CF65D0>
+
+    def test_same_build_scoped_refs_and_input_only_isolation(baseline, monkeypatch):
+        root, inputs, output, plan, original = baseline
+        before = {p: p.read_bytes() for p in original.paths.dir.rglob("*") if p.is_file()}
+        read_bytes, reads = Path.read_bytes, []
+    
+        def recording_read(path):
+            reads.append(path)
+            if path.name == ".env":
+                pytest.fail("credential values must never be read")
+            return read_bytes(path)
+    
+        monkeypatch.setattr(Path, "read_bytes", recording_read)
+        manifest = inputs / "plan.json"
+        manifest.write_text(plan.model_dump_json(), encoding="utf-8")
+        monkeypatch.setattr(sys, "argv", ["prepare_acceptance_baselines", "--plan", str(manifest),
+                                         "--source-root", str(root), "--input-root", str(inputs),
+                                         "--destination", str(output)])
+        assert main() == 0
+        receipt = BaselineReceipt.model_validate_json((output / "baseline-receipt.json").read_bytes())
+        assert receipt.target_build == "build-immutable-1" and not receipt.target_build_verified
+        assert receipt.source_config_sha256 == plan.source_config_sha256
+        assert receipt.plan_sha256 == digest(plan.model_dump_json().encode())
+        for mode, slug in (("teaching", receipt.teaching_slug), ("url_only", receipt.url_only_slug)):
+            store = ProjectStore(slug, output / mode)
+            project = store.load_project()
+            assert project.base_url == "https://product.example/app" and project.production
+            assert project.allowed_domains == ["product.example"]
+            assert project.providers == original.load_project().providers
+            assert project.secrets == [original.load_project().secrets[0]]
+            assert (project.login_case_id is None and project.schedule is None
+                    and project.tracker is None)
+            sources = store.list_sources()
+>           assert len(sources) == (2 if mode == "teaching" else 0)
+E           AssertionError: assert 2 == 0
+E            +  where 2 = len([Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 11, 32, 11, 417717, tzinfo=TzInfo(0)), provenance...6f29de15', duration_s=None, label=None, notes=None, recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None)])
+
+tests\test_acceptance_baseline.py:84: AssertionError
+---------------------------- Captured stdout call -----------------------------
+Prepared local baselines; authorized credential context and production approvals remain required
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\codex-acceptance-baselines\.work\baseline-proofs\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation
+1 failed, 2 warnings in 1.30s

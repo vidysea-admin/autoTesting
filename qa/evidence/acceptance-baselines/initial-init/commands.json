@@ -1,0 +1,83 @@
+[
+  {
+    "label": "preflight-0",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs"
+    ],
+    "started_at": "2026-10-15T10:28:45.791283+00:00",
+    "ended_at": "2026-10-15T10:28:46.103026+00:00",
+    "duration_s": 0.3120000000017171,
+    "exit_code": 0,
+    "output_sha256": "66d316289d36394b9c57be1eb57aa3e5a0348f6f29cb43a5b39f36a0abb707ad",
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "c45e524f672e4f88fdf4b58bbdd78c87889bb9495064ff865642c6892c44bcd5",
+      "tests/test_acceptance_baseline.py": "e63925f48e189c40c82a9ccb91ed63d6bd2d54fc3368180a3eafb5be9c1e43c4",
+      "src/autotester/schema/acceptance_baseline.py": "070a1514a2e3936938f205d96adc9d918ef9ddb13fa376d71bbeb610861b4b81",
+      "scripts/prepare_acceptance_baselines.py": "0b7ee139dfea728678314cbe238c0ade1da67a057e9a6c9dc53e76fb942095a5"
+    },
+    "identity_sha256": "e4496ac6e66a4fc7cf17980a3e40ed2c69c0f425e365d3e102750dbf30811c4c",
+    "spec_sha256": "8d6aa3f04f64b91800f7549dece5135197ffe06cb355d0099e9ac62d58ab0643"
+  },
+  {
+    "label": "shared-green",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_baseline.py",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\temp-shared"
+    ],
+    "started_at": "2026-10-15T10:28:46.146080+00:00",
+    "ended_at": "2026-10-15T10:28:56.811762+00:00",
+    "duration_s": 10.670999999998457,
+    "exit_code": 0,
+    "output_sha256": "27fdf456e9a6cc73af40b1ee09a781332a3a48c8a5e896a88c24dc2f2732294a",
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "c45e524f672e4f88fdf4b58bbdd78c87889bb9495064ff865642c6892c44bcd5",
+      "tests/test_acceptance_baseline.py": "e63925f48e189c40c82a9ccb91ed63d6bd2d54fc3368180a3eafb5be9c1e43c4",
+      "src/autotester/schema/acceptance_baseline.py": "070a1514a2e3936938f205d96adc9d918ef9ddb13fa376d71bbeb610861b4b81",
+      "scripts/prepare_acceptance_baselines.py": "0b7ee139dfea728678314cbe238c0ade1da67a057e9a6c9dc53e76fb942095a5"
+    },
+    "identity_sha256": "e4496ac6e66a4fc7cf17980a3e40ed2c69c0f425e365d3e102750dbf30811c4c",
+    "spec_sha256": "8d6aa3f04f64b91800f7549dece5135197ffe06cb355d0099e9ac62d58ab0643"
+  },
+  {
+    "label": "scoped-lint",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/stages/acceptance_baseline.py",
+      "tests/test_acceptance_baseline.py",
+      "src/autotester/schema/acceptance_baseline.py",
+      "scripts/prepare_acceptance_baselines.py"
+    ],
+    "started_at": "2026-10-15T10:28:56.828663+00:00",
+    "ended_at": "2026-10-15T10:28:57.140068+00:00",
+    "duration_s": 0.3129999999982829,
+    "exit_code": 1,
+    "output_sha256": "6b262589f0a0e013ebf8a803ba1ef0d6921a9aa4f9527b9af26df7763a6cd854",
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "c45e524f672e4f88fdf4b58bbdd78c87889bb9495064ff865642c6892c44bcd5",
+      "tests/test_acceptance_baseline.py": "e63925f48e189c40c82a9ccb91ed63d6bd2d54fc3368180a3eafb5be9c1e43c4",
+      "src/autotester/schema/acceptance_baseline.py": "070a1514a2e3936938f205d96adc9d918ef9ddb13fa376d71bbeb610861b4b81",
+      "scripts/prepare_acceptance_baselines.py": "0b7ee139dfea728678314cbe238c0ade1da67a057e9a6c9dc53e76fb942095a5"
+    },
+    "identity_sha256": "e4496ac6e66a4fc7cf17980a3e40ed2c69c0f425e365d3e102750dbf30811c4c",
+    "spec_sha256": "8d6aa3f04f64b91800f7549dece5135197ffe06cb355d0099e9ac62d58ab0643"
+  }
+]

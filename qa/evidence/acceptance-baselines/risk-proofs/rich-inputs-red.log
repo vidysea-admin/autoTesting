@@ -1,0 +1,47 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_only_explicit_approved_contained_inputs[no-doc] _____________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-8-r/tes..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x000001E053C9C810>)
+fault = 'no-doc'
+
+    @pytest.mark.parametrize("fault", ["escape", "absolute", "env", "historical-json",
+                                      "unapproved", "no-doc"])
+    def test_only_explicit_approved_contained_inputs(baseline, fault):
+        root, inputs, output, plan, _ = baseline
+        row = plan.teaching_inputs[0]
+        if fault == "escape":
+            row.path = "../outside.mp4"
+            (inputs.parent / "outside.mp4").write_bytes((inputs / "clip.mp4").read_bytes())
+        elif fault == "absolute":
+            row.path = str((inputs / "clip.mp4").resolve())
+        elif fault == "env":
+            row.path = ".env.txt"
+            row.kind = "doc"
+            plan.teaching_inputs.append(plan.teaching_inputs[0].model_copy(
+                update={"path": "clip.mp4", "kind": "video"}))
+            (inputs / row.path).write_bytes((inputs / "clip.mp4").read_bytes())
+        elif fault == "historical-json":
+            row.path = "flowspec.json"
+            (inputs / row.path).write_bytes((inputs / "clip.mp4").read_bytes())
+        elif fault == "unapproved":
+            row.approval_ref = ""
+        else:
+            plan.teaching_inputs.pop()
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_baseline.py:151: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\codex-acceptance-baselines\.work\baseline-proofs\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[no-doc]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[no-doc]
+1 failed, 2 warnings in 1.42s

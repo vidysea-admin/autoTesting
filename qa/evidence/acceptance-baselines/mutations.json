@@ -1,0 +1,191 @@
+{
+  "tests": "tests/test_acceptance_baseline.py",
+  "mutations": [
+    {
+      "name": "stale-config",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if _digest(config) != plan.source_config_sha256:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[config]"
+      ]
+    },
+    {
+      "name": "stale-input",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if _digest(blob) != row.sha256:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[input]"
+      ]
+    },
+    {
+      "name": "existing-output",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "    if destination.resolve() != destination or destination.exists():\n        raise ValueError(\"baseline destination must be new and have no redirected ancestors\")\n    source_dir = ProjectPaths(safe_slug(plan.source_slug), source_root).dir.resolve()\n    if destination.is_relative_to(source_dir) or source_dir.is_relative_to(destination):\n        raise ValueError(\"baseline destination overlaps the source project\")\n    if not plan.target_build.strip():\n        raise ValueError(\"target build identity must be explicitly declared\")\n    config = ProjectPaths(plan.source_slug, source_root).config.read_bytes()\n    if _digest(config) != plan.source_config_sha256:\n        raise ValueError(\"source configuration changed since the plan was prepared\")\n    source = Project.model_validate_json(config)\n    projects = [_project(source, plan, mode) for mode in (\"teaching\", \"url-only\")]\n    blobs = _input_bytes(input_root, plan)\n    destination.mkdir(parents=True, exist_ok=False)\n",
+      "new": "    if destination.resolve() != destination:\n        raise ValueError(\"baseline destination must be new and have no redirected ancestors\")\n    source_dir = ProjectPaths(safe_slug(plan.source_slug), source_root).dir.resolve()\n    if destination.is_relative_to(source_dir) or source_dir.is_relative_to(destination):\n        raise ValueError(\"baseline destination overlaps the source project\")\n    if not plan.target_build.strip():\n        raise ValueError(\"target build identity must be explicitly declared\")\n    config = ProjectPaths(plan.source_slug, source_root).config.read_bytes()\n    if _digest(config) != plan.source_config_sha256:\n        raise ValueError(\"source configuration changed since the plan was prepared\")\n    source = Project.model_validate_json(config)\n    projects = [_project(source, plan, mode) for mode in (\"teaching\", \"url-only\")]\n    blobs = _input_bytes(input_root, plan)\n    destination.mkdir(parents=True, exist_ok=True)\n",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[existing]"
+      ]
+    },
+    {
+      "name": "redirected-output",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "destination.resolve() != destination",
+      "new": "False",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[redirected]"
+      ]
+    },
+    {
+      "name": "source-overlap",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if destination.is_relative_to(source_dir) or source_dir.is_relative_to(destination):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[overlap]"
+      ]
+    },
+    {
+      "name": "source-path",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "ProjectPaths(safe_slug(plan.source_slug), source_root)",
+      "new": "ProjectPaths(plan.source_slug, source_root)",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[source-escape]"
+      ]
+    },
+    {
+      "name": "build-required",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if not plan.target_build.strip():",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[empty-build]"
+      ]
+    },
+    {
+      "name": "contained-inputs",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if (relative.is_absolute() or \"..\" in relative.parts\n                or not path.is_relative_to(input_root) or not relative.parts\n                or any(part.lower().startswith(\".env\") for part in path.parts)):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[escape]",
+        "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[absolute]",
+        "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[env]"
+      ]
+    },
+    {
+      "name": "owner-input-reference",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if not row.approval_ref.strip():",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[unapproved]"
+      ]
+    },
+    {
+      "name": "input-types",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if path.suffix.lower() not in extensions:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[historical-json]"
+      ]
+    },
+    {
+      "name": "rich-inputs",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if {row.kind for row in plan.teaching_inputs} != {\"video\", \"doc\"}:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[no-doc]"
+      ]
+    },
+    {
+      "name": "credential-scope",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if (not keys or len(set(keys)) != len(keys) or len(selected) != len(keys)\n            or any(not ref.domains or any(not source.allows_domain(d) for d in ref.domains)\n                   for ref in selected)):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unknown]",
+        "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[duplicate]",
+        "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unscoped]",
+        "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[foreign-domain]",
+        "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[empty]"
+      ]
+    },
+    {
+      "name": "target-url-safety",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if (target.scheme not in {\"http\", \"https\"} or not target.hostname\n            or target.username or target.password or target.query or target.fragment\n            or not source.allows_domain(target.hostname)):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[url-credentials]"
+      ]
+    },
+    {
+      "name": "url-only-empty",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "if mode != \"teaching\":",
+      "new": "if False:",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+      ]
+    },
+    {
+      "name": "same-target",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "base_url=source.base_url,",
+      "new": "base_url=\"https://other.example/\",",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+      ]
+    },
+    {
+      "name": "scoped-refs-only",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "secrets=selected,",
+      "new": "secrets=[],",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+      ]
+    },
+    {
+      "name": "provider-config",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "providers=source.providers.model_copy(deep=True),",
+      "new": "",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+      ]
+    },
+    {
+      "name": "no-truth-copy",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "ids = _write_pair(destination, projects, plan, blobs)",
+      "new": "ids = _write_pair(destination, projects, plan, blobs)\n    __import__(\"shutil\").copytree(source_dir, ProjectPaths(projects[0].slug, destination / \"teaching\").dir, dirs_exist_ok=True)",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+      ]
+    },
+    {
+      "name": "no-env-copy",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "write_json(destination / \"baseline-plan.json\", plan)",
+      "new": "write_json(destination / \"baseline-plan.json\", plan)\n    (destination / \".env\").write_text(\"fixture-secret\")",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+      ]
+    },
+    {
+      "name": "input-provenance",
+      "file": "src/autotester/stages/acceptance_baseline.py",
+      "old": "note=f\"Owner approval reference: {row.approval_ref}\"",
+      "new": "note=\"lost\"",
+      "kills": [
+        "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_credential_reference_scope_never_widens[url-credentials] ________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-10-r/te..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x000002C22740CD10>)
+fault = 'url-credentials'
+
+    @pytest.mark.parametrize("fault", ["unknown", "duplicate", "unscoped", "foreign-domain",
+                                      "url-credentials", "empty"])
+    def test_credential_reference_scope_never_widens(baseline, fault):
+        root, inputs, output, plan, store = baseline
+        project = store.load_project()
+        if fault == "unknown":
+            plan.credential_keys = ["MISSING"]
+        elif fault == "duplicate":
+            plan.credential_keys *= 2
+        elif fault == "empty":
+            plan.credential_keys = []
+        elif fault == "unscoped":
+            project.secrets[0].domains = []
+        elif fault == "foreign-domain":
+            project.secrets[0].domains = ["foreign.example"]
+        else:
+            project.base_url = "https://user:password@product.example/"
+        store.save_project(project)
+        plan.source_config_sha256 = digest(store.paths.config.read_bytes())
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_baseline.py:175: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\codex-acceptance-baselines\.work\baseline-proofs\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[url-credentials]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[url-credentials]
+1 failed, 2 warnings in 1.30s

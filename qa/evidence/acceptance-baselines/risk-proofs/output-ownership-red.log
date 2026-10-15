@@ -1,0 +1,161 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+________ test_stale_or_existing_plan_refused_without_writes[existing] _________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-2-r/tes..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x0000028433CE2810>)
+fault = 'existing'
+
+    @pytest.mark.parametrize("fault", ["config", "input", "existing", "overlap",
+                                      "empty-build", "redirected", "source-escape"])
+    def test_stale_or_existing_plan_refused_without_writes(baseline, fault):
+        root, inputs, output, plan, store = baseline
+        if fault == "config":
+            plan.source_config_sha256 = "stale"
+        elif fault == "input":
+            plan.teaching_inputs[0].sha256 = "stale"
+        elif fault == "existing":
+            output.mkdir()
+            (output / "comparison.json").write_text("preserve", encoding="utf-8")
+        elif fault == "overlap":
+            output = store.paths.dir / "acceptance"
+        elif fault == "redirected":
+            output = output.parent / "unused" / ".." / "pair"
+        elif fault == "source-escape":
+            foreign = root / "elsewhere"
+            foreign.mkdir()
+            (foreign / "project.json").write_bytes(store.paths.config.read_bytes())
+            plan.source_slug = "../elsewhere"
+        else:
+            plan.target_build = " "
+        before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_baseline.py:121: Failed
+_______ test_stale_or_existing_plan_refused_without_writes[redirected] ________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-2-r/tes..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x0000028433A1A4D0>)
+fault = 'redirected'
+
+    @pytest.mark.parametrize("fault", ["config", "input", "existing", "overlap",
+                                      "empty-build", "redirected", "source-escape"])
+    def test_stale_or_existing_plan_refused_without_writes(baseline, fault):
+        root, inputs, output, plan, store = baseline
+        if fault == "config":
+            plan.source_config_sha256 = "stale"
+        elif fault == "input":
+            plan.teaching_inputs[0].sha256 = "stale"
+        elif fault == "existing":
+            output.mkdir()
+            (output / "comparison.json").write_text("preserve", encoding="utf-8")
+        elif fault == "overlap":
+            output = store.paths.dir / "acceptance"
+        elif fault == "redirected":
+            output = output.parent / "unused" / ".." / "pair"
+        elif fault == "source-escape":
+            foreign = root / "elsewhere"
+            foreign.mkdir()
+            (foreign / "project.json").write_bytes(store.paths.config.read_bytes())
+            plan.source_slug = "../elsewhere"
+        else:
+            plan.target_build = " "
+        before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_baseline.py:121: Failed
+_________ test_stale_or_existing_plan_refused_without_writes[overlap] _________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-2-r/tes..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x0000028433BFF550>)
+fault = 'overlap'
+
+    @pytest.mark.parametrize("fault", ["config", "input", "existing", "overlap",
+                                      "empty-build", "redirected", "source-escape"])
+    def test_stale_or_existing_plan_refused_without_writes(baseline, fault):
+        root, inputs, output, plan, store = baseline
+        if fault == "config":
+            plan.source_config_sha256 = "stale"
+        elif fault == "input":
+            plan.teaching_inputs[0].sha256 = "stale"
+        elif fault == "existing":
+            output.mkdir()
+            (output / "comparison.json").write_text("preserve", encoding="utf-8")
+        elif fault == "overlap":
+            output = store.paths.dir / "acceptance"
+        elif fault == "redirected":
+            output = output.parent / "unused" / ".." / "pair"
+        elif fault == "source-escape":
+            foreign = root / "elsewhere"
+            foreign.mkdir()
+            (foreign / "project.json").write_bytes(store.paths.config.read_bytes())
+            plan.source_slug = "../elsewhere"
+        else:
+            plan.target_build = " "
+        before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_baseline.py:121: Failed
+_______________ test_partial_write_is_visible_and_refuses_reuse _______________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-2-r/tes..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x0000028433C6A710>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000028433C6A190>
+
+    def test_partial_write_is_visible_and_refuses_reuse(baseline, monkeypatch):
+        root, inputs, output, plan, store = baseline
+        before = {p: p.read_bytes() for p in store.paths.dir.rglob("*") if p.is_file()}
+        write_bytes = Path.write_bytes
+    
+        def fail_second_input(path, blob):
+            if path.is_relative_to(output) and path.name == "input-1.md":
+                raise OSError("injected input write failure")
+            return write_bytes(path, blob)
+    
+        with monkeypatch.context() as patch:
+            patch.setattr(Path, "write_bytes", fail_second_input)
+            with pytest.raises(OSError, match="injected input write failure"):
+                prepare_baselines(root, inputs, output, plan)
+        assert output.is_dir() and (output / "baseline-plan.json").exists()
+        assert not (output / "baseline-receipt.json").exists()
+        partial = {p: p.read_bytes() for p in output.rglob("*") if p.is_file()}
+        assert any(p.name == "input-0.mp4" for p in partial)
+        with pytest.raises(ValueError, match="destination must be new"):
+>           prepare_baselines(root, inputs, output, plan)
+
+tests\test_acceptance_baseline.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\stages\acceptance_baseline.py:95: in prepare_baselines
+    ids = _write_pair(destination, projects, plan, blobs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\acceptance_baseline.py:117: in _write_pair
+    (root / "qa" / "evidence" / "t169-real" / mode).mkdir(parents=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-2-r/test_partial_write_is_visible_0/pair/teaching/qa/evidence/t169-real/teaching')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileExistsError: [WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\temp-2-r\\test_partial_write_is_visible_0\\pair\\teaching\\qa\\evidence\\t169-real\\teaching'
+
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileExistsError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\codex-acceptance-baselines\.work\baseline-proofs\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[existing]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[existing]
+FAILED tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[redirected]
+FAILED tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[overlap]
+FAILED tests/test_acceptance_baseline.py::test_partial_write_is_visible_and_refuses_reuse
+4 failed, 2 warnings in 1.49s
