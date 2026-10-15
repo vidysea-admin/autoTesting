@@ -9,3 +9,5 @@ Overall: FAIL on committed state (fixable by committing approvals.jsonl); substa
 4. Credentials/PII: PASS. Summary JSON holds only ids, counters and bounds; no secrets, cookies, tokens or emails.
 5. Acceptance wording: PASS with caveat. Crawl is bounded and stopped on max_screens; only 7 of 40 screens visited and 9% control coverage, so thin; not a defect of the done_check.
 Also note: an older untracked summary (crawl_01M4WWYW...) sits in the main tree; the script picks the newest, so ordering is OK, but keep it untracked or ensure it sorts older.
+
+Re-check after 69c6e532 (closer, 2026-10-15): done_check exit 0 in a clean worktree at master with the approval key loaded in-process from the main checkout's .env (never printed): PASS crawl_01M4XRTHH96QAGSJNP954G826Z, approval appr_a5c000b027dc, production=True, granted by Umesh, signature verified. Blocker resolved, PASS.

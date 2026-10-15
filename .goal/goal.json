@@ -714,7 +714,7 @@
     {
       "id": "T-145",
       "title": "Live bounded crawl of pathlynks.vidysea.com with the test account (ALLOW_WRITES authorized; per-run RunApproval required)",
-      "status": "pending",
+      "status": "done",
       "base_criticality": "critical",
       "deps": [
         "T-122",
