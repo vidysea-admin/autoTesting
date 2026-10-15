@@ -1,0 +1,34 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_pdf_registration_scrubs_root_secrets_and_contact_details ________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-j0bc58jw/repo/.work/temp-2/test_pdf_registration_scrubs_r0')
+
+    def test_pdf_registration_scrubs_root_secrets_and_contact_details(tmp_path):
+        store = ProjectStore("demo", tmp_path)
+        store.paths.env_file.write_text("TOKEN=supersecret-value\n", encoding="utf-8")
+        source = register_document(store, _pdf(tmp_path / "guide.pdf",
+                                   "supersecret-value member@example.com")).source
+        receipt = (store.paths.sources_dir / source.id / "document.json").read_text()
+>       assert "supersecret-value" not in receipt + source.text
+E       assert 'supersecret-value' not in '{\n  "schem...@example.com'
+E         
+E         'supersecret-value' is contained here:
+E            "text": "supersecret-value member@example.com",
+E         ?           +++++++++++++++++
+E                 "method": "text"
+E               }
+E             ]...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests\test_pdf_teaching.py:58: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_registration_scrubs_root_secrets_and_contact_details
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_registration_scrubs_root_secrets_and_contact_details
+1 failed, 1 warning in 7.13s
