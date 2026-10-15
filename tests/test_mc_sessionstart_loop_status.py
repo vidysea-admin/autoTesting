@@ -222,7 +222,7 @@ def test_the_timeout_kills_the_real_grandchild_process_not_just_uv(tmp_path: Pat
     `tests/test_flake_probe_real_process.py` is its direct precedent, and
     `_alive` is imported from `test_mutation_check_judgement` rather than
     redefined (C3)."""
-    real_python = shutil.which("python") or sys.executable
+    real_python = sys._base_executable
     assert real_python, "need a real python.exe on this machine to build the uv shim"
 
     shim_dir = tmp_path / "shim"
@@ -245,10 +245,15 @@ def test_the_timeout_kills_the_real_grandchild_process_not_just_uv(tmp_path: Pat
     qa.mkdir()
     (qa / "manifests").mkdir()
 
-    stripped_path = str(shim_dir) + os.pathsep + r"C:\Windows\System32;C:\Windows"
+    # A relocated Windows executable needs its matching DLLs and stdlib. Use the
+    # running interpreter's runtime, not an unrelated python found on PATH.
+    stripped_path = os.pathsep.join(
+        [str(shim_dir), str(Path(real_python).parent), r"C:\Windows\System32;C:\Windows"]
+    )
     env = _base_env(
         AUTOTESTER_ROOT=str(tmp_path),
         AUTOTESTER_LOOPSTATUS_TIMEOUT_MS="2000",
+        PYTHONHOME=sys.base_prefix,
         Path=stripped_path,
         PATH=stripped_path,
     )
