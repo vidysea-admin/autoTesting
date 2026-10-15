@@ -13,7 +13,7 @@ from pathlib import Path
 
 from openpyxl import Workbook
 
-from autotester.core.excel import autosize_columns
+from autotester.core.excel import append_row, autosize_columns
 from autotester.core.excel import clean_cell as _clean
 from autotester.schema.crawl import Crawl, CrawlCoverage, CrawlIssue
 from autotester.schema.enums import EdgeOutcome, IssueKind
@@ -101,10 +101,10 @@ def screens_by_reason(cov: CrawlCoverage) -> dict[str, int]:
 
 def _screens_sheet(wb: Workbook, nodes: list[ScreenNode]) -> None:
     ws = wb.create_sheet("Screens")
-    ws.append(["Screen", "URL template", "Example URL", "Depth", "Status",
+    append_row(ws, ["Screen", "URL template", "Example URL", "Depth", "Status",
                "Controls", "Console errors", "Failed requests"])
     for node in nodes:
-        ws.append([
+        append_row(ws, [
             _clean(node.name or node.title or "—"), _clean(node.url_template),
             _clean(node.url_example),
             node.depth, node.status.value, len(node.elements),
@@ -115,9 +115,9 @@ def _screens_sheet(wb: Workbook, nodes: list[ScreenNode]) -> None:
 
 def _edges_sheet(wb: Workbook, edges: list[ScreenEdge], names: dict[str, str]) -> None:
     ws = wb.create_sheet("Edges")
-    ws.append(["From", "Control", "Action", "Outcome", "To", "Reason"])
+    append_row(ws, ["From", "Control", "Action", "Outcome", "To", "Reason"])
     for edge in edges:
-        ws.append([
+        append_row(ws, [
             _clean(names.get(edge.from_node, edge.from_node)),
             _clean(edge.name or edge.target),
             edge.action.value, edge.outcome.value,
@@ -132,11 +132,11 @@ def _refused_sheet(wb: Workbook, edges: list[ScreenEdge], names: dict[str, str])
     sheet a human reads first: an icon-only button listed here as
     `skipped_unnamed` is a control that needs an `aria-label`."""
     ws = wb.create_sheet("Denied & Skipped")
-    ws.append(["Screen", "Control", "Selector", "Refusal", "Reason"])
+    append_row(ws, ["Screen", "Control", "Selector", "Refusal", "Reason"])
     for edge in edges:
         if edge.outcome not in _REFUSED:
             continue
-        ws.append([
+        append_row(ws, [
             _clean(names.get(edge.from_node, edge.from_node)),
             _clean(edge.name or "(unnamed)"),
             _clean(edge.target), edge.outcome.value, _clean(edge.reason or ""),
@@ -147,16 +147,16 @@ def _refused_sheet(wb: Workbook, edges: list[ScreenEdge], names: dict[str, str])
 def _unreached_sheet(wb: Workbook, crawl: Crawl) -> None:
     """Every control the crawl discovered and did not perform, each with its one reason (V7d)."""
     ws = wb.create_sheet("Unreached")
-    ws.append(["URL template", "Control", "Selector", "Reason"])
+    append_row(ws, ["URL template", "Control", "Selector", "Reason"])
     for hole in (crawl.coverage.holes if crawl.coverage else []):
-        ws.append([_clean(hole.url_template), _clean(hole.name or "(unnamed)"),
+        append_row(ws, [_clean(hole.url_template), _clean(hole.name or "(unnamed)"),
                    _clean(hole.selector), hole.reason])
     for hole in (crawl.coverage.permitted_holes if crawl.coverage else []):  # V9
-        ws.append([_clean(hole.url_template),
+        append_row(ws, [_clean(hole.url_template),
                    _clean(f"permitted, not exercised: {hole.name or '(unnamed)'}"),
                    _clean(hole.selector), hole.reason])
     for hole in (crawl.coverage.screens_not_entered if crawl.coverage else []):  # AT-470
-        ws.append([_clean(hole.url_template),
+        append_row(ws, [_clean(hole.url_template),
                    _clean(f"screen behind '{hole.name or hole.selector}' — not entered"),
                    _clean(hole.selector), hole.reason])
     autosize_columns(ws)
@@ -164,9 +164,9 @@ def _unreached_sheet(wb: Workbook, crawl: Crawl) -> None:
 
 def _issues_sheet(wb: Workbook, issues: list[CrawlIssue], names: dict[str, str]) -> None:
     ws = wb.create_sheet("Issues")
-    ws.append(["Screen", "Kind", "First party", "Detail"])
+    append_row(ws, ["Screen", "Kind", "First party", "Detail"])
     for issue in issues:
-        ws.append([
+        append_row(ws, [
             _clean(names.get(issue.node_id, issue.node_id)), issue.kind.value,
             "yes" if issue.first_party else "no", _clean(issue.detail),
         ])
@@ -181,9 +181,9 @@ def _tool_failures_sheet(wb: Workbook, issues: list[CrawlIssue],
     bugs in their product, and a screenshot this tool failed to take is not
     one. Reported rather than dropped so the gap in the evidence is visible."""
     ws = wb.create_sheet("Tool failures")
-    ws.append(["Screen", "What the crawler could not do"])
+    append_row(ws, ["Screen", "What the crawler could not do"])
     for issue in issues:
-        ws.append([_clean(names.get(issue.node_id or "", issue.node_id or "—")),
+        append_row(ws, [_clean(names.get(issue.node_id or "", issue.node_id or "—")),
                    _clean(issue.detail)])
     autosize_columns(ws)
 
@@ -192,9 +192,9 @@ def _noise_sheet(wb: Workbook, crawl: Crawl) -> None:
     """Third-party hosts whose failures were counted and never reported as
     product issues (X9) — recorded so "we ignored it" is auditable."""
     ws = wb.create_sheet("Noise")
-    ws.append(["Third-party host", "Dropped requests"])
+    append_row(ws, ["Third-party host", "Dropped requests"])
     for noise in crawl.noise_counts:
-        ws.append([noise.host, noise.count])
+        append_row(ws, [noise.host, noise.count])
     autosize_columns(ws)
 
 
@@ -212,9 +212,9 @@ def export_crawl_excel(
     wb = Workbook()
     ws = wb.active
     ws.title = "Summary"
-    ws.append(["Field", "Value"])
+    append_row(ws, ["Field", "Value"])
     for label, value in crawl_summary(crawl):
-        ws.append([label, value])
+        append_row(ws, [label, value])
     autosize_columns(ws)
 
     edges = store.list_edges(crawl_id)

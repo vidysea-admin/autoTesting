@@ -20,7 +20,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from autotester.browser.secrets import SecretStore
-from autotester.core.excel import autosize_columns
+from autotester.core.excel import append_row, autosize_columns
 from autotester.core.paths import RepoDocs
 from autotester.core.redact import Redactor
 from autotester.providers.base import Provider, ProviderError, load_skill_prompt
@@ -283,5 +283,5 @@ def add_ux_sheet(wb, state: tuple[UXReport | None, str | None], cases: dict[str,
     ws = wb.create_sheet("UX findings (advisory)")
     ws.append(["Case", "Persona", "UX severity / status", "UX finding", "Step", "Evidence"])
     for row in rows:
-        ws.append(row)
+        append_row(ws, row)
     autosize_columns(ws)

@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 from autotester.core.repo_docs import RepoDocs
-from autotester.core.safe_names import SLUG_PATTERN, safe_name
+from autotester.core.safe_names import SLUG_PATTERN, UnsafeName, safe_name
 
 __all__ = ["ENV_ROOT", "SLUG_PATTERN", "ProjectPaths", "RepoDocs", "repo_root", "team_path",
            "work_dir"]
@@ -139,6 +139,11 @@ class ProjectPaths:
         return self.root / "profiles" / self.slug
 
     def run_dir(self, run_id: str) -> Path:
+        """`runs/<run_id>`; the id must be one safe path segment and the result stay under
+        `runs_dir` (AT-900: `--run-id ../x` must never write outside runs/)."""
+        target = (self.runs_dir / safe_name(run_id)).resolve()
+        if not target.is_relative_to(self.runs_dir.resolve()):
+            raise UnsafeName(f"unsafe run id {run_id!r}: resolves outside the runs directory")
         return self.runs_dir / run_id
 
     @property

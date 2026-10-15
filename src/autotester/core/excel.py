@@ -16,9 +16,23 @@ from typing import Any
 _ILLEGAL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
+# AT-925: a string cell starting with one of these is evaluated by Excel as a formula
+# (spreadsheet injection; judge reasons / endpoints carry text from the tested app).
+_FORMULA_LEAD = ("=", "+", "-", "@", "\t", "\r")
+
+
 def clean_cell(value: object) -> object:
-    """`value` with control characters removed when it is a string; anything else unchanged."""
-    return _ILLEGAL.sub("", value) if isinstance(value, str) else value
+    """`value` with control characters removed and a formula-leading string neutralised
+    with a leading apostrophe (OWASP); numbers and other non-strings are unchanged."""
+    if not isinstance(value, str):
+        return value
+    text = _ILLEGAL.sub("", value)
+    return "'" + text if text.startswith(_FORMULA_LEAD) else text
+
+
+def append_row(ws: Any, row: list[object]) -> None:
+    """`ws.append(row)` with every cell passed through `clean_cell`."""
+    ws.append([clean_cell(cell) for cell in row])
 
 
 def autosize_columns(ws: Any, *, max_width: int = 60) -> None:
