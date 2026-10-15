@@ -1,6 +1,6 @@
 # Manifest - never-click-destroy
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** Umesh 2026-10-15 "Block destroy buttons" (D-098; ISS-t179b-hg1-2)
 **Branch:** wave/never-click-destroy
