@@ -1,0 +1,9 @@
+{
+  "maker_active_s": null,
+  "maker_tokens": null,
+  "maker_cost": null,
+  "completed_receipt_command_s": 431.84558970000944,
+  "completed_receipt_count": 59,
+  "incomplete_attempt_duration_s": null,
+  "note": "Includes completed setup retries and invalid proof runs; only v4 proof triples are claimed. Head-session edits/reads and terminated harness active duration unavailable, so total active time remains unknown."
+}

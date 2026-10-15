@@ -1,0 +1,40 @@
+{
+  "label": "v4-manifest-identity-restored",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage",
+    "--basetemp",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-failure-bundles\\.work\\failure-bundle-evidence\\pytest-manifest-identity-restored"
+  ],
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-failure-bundles\\.work\\failure-bundle-evidence\\mutation-tree-4\\src",
+  "dependency_sha256": "1a4bf4e36b8cc86586052c931224491374ac9eb61be866f2aa59fd3f3e4cdafb",
+  "file_sha256": {
+    "src/autotester/schema/failure_bundle.py": "8ec87f1b6b86546b3dd153c01eadabc3adc05196efedfeca0c8199d34586b482",
+    "src/autotester/stages/run_artifacts.py": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "src/autotester/stages/run_launcher.py": "64898586e70bfa5f5f1a9f95f20bca926e8364db959501bee45fb3e5223275ea",
+    "src/autotester/stages/report_export.py": "5e568b6c482de1838c3f97a79bd4c7436a34678b8700003aef9a45c63ca5fdcf",
+    "src/autotester/stages/failure_bundle.py": "651638e2b1c29e80a1f3cb087c24863b06876d0211b1405cdfe952b6cbb22e2f",
+    "src/autotester/core/image_privacy.py": "3dfd77e802a5047aa6364f3e6e38d8d333dc6daafe4542869f64cb092a446ea7",
+    "tests/test_run_failure_artifacts.py": "2267445eabf84d1fca821dcc5f674c42434d599fde2a7f04f1dbc7b5492a5e52",
+    "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+    "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+  },
+  "started_at": 1792053179.7712038,
+  "status": "finished",
+  "environment": {
+    "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-failure-bundles\\.work\\failure-bundle-evidence\\mutation-tree-4\\src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_ADDOPTS": null,
+    "OMP_THREAD_LIMIT": null
+  },
+  "environment_sha256": "d2fae7bdf71840213259f312a25aa76b22aca310a17077fbe61e39bf0a3acc21",
+  "exit_code": 0,
+  "duration_s": 8.449102499998844,
+  "output_sha256": "6cea6811f217424ce9b4ea5748215b4d29d639047a911fecb718d0b24a35cdaa",
+  "finished_at": 1792053188.2248938
+}

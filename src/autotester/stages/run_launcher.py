@@ -9,9 +9,7 @@ The gates are part of the launcher, not of any caller (none can skip them): 400 
 no provider / a credential with no value, then the D-018 live-case approval (403, AT-570; D-068
 derives it from the project's own credentials) before a run id, a directory or a browser exists.
 
-It does not queue, schedule or authenticate, and imports no web framework. Refusals are
-`LaunchRefused` carrying the HTTP status the route shows. `RunSeams` lets a caller supply the
-judge factory, width planner and shared-RAM ledger; defaults are the real ones.
+`LaunchRefused` carries the HTTP status; `RunSeams` supplies the judge and width planner.
 """
 
 from __future__ import annotations
@@ -54,6 +52,7 @@ from autotester.stages.parallel_run import (
     plan_parallel_run,
 )
 from autotester.stages.reachability import latest_warnings
+from autotester.stages.run_artifacts import assemble_run_bundles
 from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
 from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
@@ -259,6 +258,7 @@ def save_tracked_run(store: ProjectStore, **fields: Any) -> Run:
     run = Run(**fields)
     store.save_run(run)
     record_run_bugs(store, run.id)
+    assemble_run_bundles(store, run)
     return run
 
 

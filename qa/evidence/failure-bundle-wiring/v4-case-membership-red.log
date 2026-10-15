@@ -1,0 +1,54 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_containment_and_uncertain_images_are_explicit ______________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-case-membership-red/test_containment_and_uncertain0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002116E205E90>
+
+    def test_containment_and_uncertain_images_are_explicit(tmp_path, monkeypatch):
+        outside = tmp_path / "outside.png"
+        Image.new("RGB", (30, 20), "white").save(outside)
+        inspected = []
+    
+        def uncertain(path):
+            inspected.append(path)
+            return _ocr(path).replace("99\t", "30\t")
+    
+        monkeypatch.setattr(image_privacy, "_local_ocr", uncertain)
+        store, run, case, _ = _launch(tmp_path, monkeypatch, paths=[str(outside), "shot.png"],
+                                     verdict_result=Result.BLOCKED)
+        index = BundleIndex.model_validate_json(
+            (store.paths.bundles_dir(run.id) / "index.json").read_text())
+        entry = index.cases[0]
+        assert entry.status == "complete" and entry.images_included == 0
+        assert entry.images_withheld == 2 and entry.image_text_unavailable
+        assert entry.image_reasons == ["artifact_outside_run", "uncertain_ocr"]
+        assert len(inspected) == 1
+        assert "unavailable" in run_artifacts.bundle_report_detail(store, run.id, case.id)[1]
+        result = store.load_results(run.id)[0]
+        result.evidence.append(Evidence(kind=EvidenceKind.SCREENSHOT, path="shot.png",
+                                        step_order=1, masked=False))
+        store.save_result(run.id, result)
+        run_artifacts.assemble_run_bundles(store, run)
+        entry = BundleIndex.model_validate_json(
+            (store.paths.bundles_dir(run.id) / "index.json").read_text()).cases[0]
+        assert "unmasked_or_unattributed_image" in entry.image_reasons and len(inspected) == 2
+        run.case_ids = []
+        run_artifacts.assemble_run_bundles(store, run)
+>       assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0] is None
+E       AssertionError: assert 'bundles/fb_060c38f0dc7b/manifest.json' is None
+
+tests\test_run_failure_artifacts.py:151: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-failure-bundles\.work\failure-bundle-evidence\mutation-tree-4\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit
+1 failed, 2 warnings in 1.11s

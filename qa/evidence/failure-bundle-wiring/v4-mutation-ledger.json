@@ -1,0 +1,166 @@
+[
+  {
+    "mutation": "postsave-hook",
+    "file": "src/autotester/stages/run_launcher.py",
+    "anchor_count": 1,
+    "mutated_sha256": "eb3191dc5a059c52130f4205a9039582b7a4b5ed028a7b2cc280ddfff9fc9873",
+    "restored_sha256": "64898586e70bfa5f5f1a9f95f20bca926e8364db959501bee45fb3e5223275ea",
+    "tests": [
+      "test_launcher_bundles_sanitized_copies_and_reports",
+      "test_bundle_exception_preserves_functional_records",
+      "test_containment_and_uncertain_images_are_explicit",
+      "test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports",
+      "FAILED tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records",
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit",
+      "FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ]
+  },
+  {
+    "mutation": "containment",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "d637c81d31c0fe9761027d93edcf0953166a6abe612c1eefcfc28d3c7a0da8a0",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_containment_and_uncertain_images_are_explicit"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit"
+    ]
+  },
+  {
+    "mutation": "privacy-transport",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "303fcf67ecfc8e3edffe6c4168cfbf801affc835e385b8ebc6d6c7c07de98c73",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_launcher_bundles_sanitized_copies_and_reports",
+      "test_containment_and_uncertain_images_are_explicit"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports",
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit"
+    ]
+  },
+  {
+    "mutation": "unmasked-image",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "3570c5194ac7fd5c2f28468cc50aecdd8539f9585a82dca7b4a1f450febdde26",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_containment_and_uncertain_images_are_explicit"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit"
+    ]
+  },
+  {
+    "mutation": "trace-case",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "c43c017e8a07a50af6fc7f50d2d938f51bf2baa63b2d61a3a02c71b6039452af",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_launcher_bundles_sanitized_copies_and_reports"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports"
+    ]
+  },
+  {
+    "mutation": "case-membership",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "8e7ae15d94801a098d218a0a2ae4ab5737ea42da1825319cfce21946a3a8a3c0",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_containment_and_uncertain_images_are_explicit"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit"
+    ]
+  },
+  {
+    "mutation": "pass-filter",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "34b2bfe5f1cd7012e401eba4b0a729b27594a7a3ad970eecd056e93e6e20725b",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ]
+  },
+  {
+    "mutation": "inner-recovery",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "f7e0b8379a9480d2969caa0d954864066caad42b3104af58be38253f4176bd9f",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_bundle_exception_preserves_functional_records"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records"
+    ]
+  },
+  {
+    "mutation": "outer-recovery",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "e6801a4a89cc0807ae8a40d49524a28b06ef91e959b5989e40f311fe68487b8f",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_bundle_exception_preserves_functional_records"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records"
+    ]
+  },
+  {
+    "mutation": "index-run",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "067012bd1d8391f4bdf61165f115a738c5211e806a109ee13e715ab3f06a1f93",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ]
+  },
+  {
+    "mutation": "entry-state",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "1219feed25fb1e96e1c00a82074db4d51f3c2b18f2018c7c83e946cdc9a4ebaf",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ]
+  },
+  {
+    "mutation": "manifest-identity",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "b4315eb01361636128c0c9503237e1ed56c97559c885568875b7704a507d961c",
+    "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+    "tests": [
+      "test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ]
+  }
+]

@@ -1,0 +1,57 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_report_lookup_rejects_partial_corrupt_and_wrong_lineage _________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-index-run-red/test_report_lookup_rejects_par0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000025FD4B39B90>
+
+    def test_report_lookup_rejects_partial_corrupt_and_wrong_lineage(tmp_path, monkeypatch):
+        monkeypatch.setattr(image_privacy, "_local_ocr", _ocr)
+        store, run, case, _ = _launch(tmp_path, monkeypatch, verdict_result=Result.INCONCLUSIVE)
+        index_path = store.paths.bundles_dir(run.id) / "index.json"
+        index_text = index_path.read_text()
+        row = json.loads(index_text)
+        bundle = store.paths.bundles_dir(run.id) / row["cases"][0]["bundle_id"]
+        manifest_path = bundle / "manifest.json"
+        manifest_text = manifest_path.read_text()
+        assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0]
+        for key, value in [("run_id", "run-B"), ("case_id", "other"), ("bundle_id", "fb_other")]:
+            manifest = json.loads(manifest_text)
+            manifest[key] = value
+            manifest_path.write_text(json.dumps(manifest))
+            assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0] is None
+            manifest_path.write_text(manifest_text)
+        partial = bundle.with_name(bundle.name + ".partial")
+        bundle.rename(partial)
+        assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0] is None
+        partial.rename(bundle)
+        error_text = (bundle / "error.txt").read_text()
+        (bundle / "error.txt").write_text("corrupt")
+        assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0] is None
+        html = export_html("demo", run.id, tmp_path / "report.html", tmp_path).read_text()
+        assert "Failure bundle unavailable" in html and "manifest.json'" not in html
+        (bundle / "error.txt").write_text(error_text)
+        assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0]
+        row["cases"][0]["status"] = "unavailable"
+        index_path.write_text(json.dumps(row))
+        assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0] is None
+        row["cases"][0]["status"] = "complete"
+        row["run_id"] = "run-B"
+        index_path.write_text(json.dumps(row))
+>       assert run_artifacts.bundle_report_detail(store, run.id, case.id)[0] is None
+E       AssertionError: assert 'bundles/fb_060c38f0dc7b/manifest.json' is None
+
+tests\test_run_failure_artifacts.py:192: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-failure-bundles\.work\failure-bundle-evidence\mutation-tree-4\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage
+1 failed, 2 warnings in 1.09s

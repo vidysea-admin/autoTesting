@@ -1,0 +1,60 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_launcher_bundles_sanitized_copies_and_reports ______________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-privacy-transport-red/test_launcher_bundles_sanitize0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002C13C18B910>
+
+    def test_launcher_bundles_sanitized_copies_and_reports(tmp_path, monkeypatch):
+        monkeypatch.setattr(image_privacy, "_local_ocr", _ocr)
+        store, run, case, original = _launch(tmp_path, monkeypatch)
+        index = BundleIndex.model_validate_json(
+            (store.paths.bundles_dir(run.id) / "index.json").read_text())
+        entry = index.cases[0]
+        assert entry.status == "complete" and entry.images_included == 1
+>       assert entry.image_text_unavailable and entry.images_withheld == 0
+E       AssertionError: assert (False)
+E        +  where False = BundleAssembly(case_id='case_3322bf24edf3', bundle_id='fb_060c38f0dc7b', status='complete', diagnostic=None, image_text_unavailable=False, images_requested=1, images_included=1, images_withheld=0, image_reasons=[]).image_text_unavailable
+
+tests\test_run_failure_artifacts.py:80: AssertionError
+_____________ test_containment_and_uncertain_images_are_explicit ______________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-privacy-transport-red/test_containment_and_uncertain0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002C13C217850>
+
+    def test_containment_and_uncertain_images_are_explicit(tmp_path, monkeypatch):
+        outside = tmp_path / "outside.png"
+        Image.new("RGB", (30, 20), "white").save(outside)
+        inspected = []
+    
+        def uncertain(path):
+            inspected.append(path)
+            return _ocr(path).replace("99\t", "30\t")
+    
+        monkeypatch.setattr(image_privacy, "_local_ocr", uncertain)
+        store, run, case, _ = _launch(tmp_path, monkeypatch, paths=[str(outside), "shot.png"],
+                                     verdict_result=Result.BLOCKED)
+        index = BundleIndex.model_validate_json(
+            (store.paths.bundles_dir(run.id) / "index.json").read_text())
+        entry = index.cases[0]
+>       assert entry.status == "complete" and entry.images_included == 0
+E       AssertionError: assert ('complete' == 'complete'
+E         
+E           complete and 1 == 0)
+E        +  where 1 = BundleAssembly(case_id='case_3322bf24edf3', bundle_id='fb_060c38f0dc7b', status='complete', diagnostic='image_text_una...ext_unavailable=True, images_requested=2, images_included=1, images_withheld=1, image_reasons=['artifact_outside_run']).images_included
+
+tests\test_run_failure_artifacts.py:136: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-failure-bundles\.work\failure-bundle-evidence\mutation-tree-3\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports
+FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit
+2 failed, 2 warnings in 1.19s

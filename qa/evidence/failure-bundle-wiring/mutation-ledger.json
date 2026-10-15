@@ -1,0 +1,49 @@
+[
+  {
+    "mutation": "postsave-hook",
+    "file": "src/autotester/stages/run_launcher.py",
+    "anchor_count": 1,
+    "mutated_sha256": "eb3191dc5a059c52130f4205a9039582b7a4b5ed028a7b2cc280ddfff9fc9873",
+    "restored_sha256": "64898586e70bfa5f5f1a9f95f20bca926e8364db959501bee45fb3e5223275ea",
+    "tests": [
+      "test_launcher_bundles_sanitized_copies_and_reports",
+      "test_bundle_exception_preserves_functional_records",
+      "test_containment_and_uncertain_images_are_explicit",
+      "test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports",
+      "FAILED tests/test_run_failure_artifacts.py::test_bundle_exception_preserves_functional_records",
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit",
+      "FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage"
+    ]
+  },
+  {
+    "mutation": "containment",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "b25905ae2e2d2c792ca7b83c5853816a644b193e46a834585866054ce5aee674",
+    "restored_sha256": "5026a0d746804e5aab7013c42c940ebee50d41c1a7d1c47c27677413c859f8f3",
+    "tests": [
+      "test_containment_and_uncertain_images_are_explicit"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit"
+    ]
+  },
+  {
+    "mutation": "privacy-transport",
+    "file": "src/autotester/stages/run_artifacts.py",
+    "anchor_count": 1,
+    "mutated_sha256": "878cd31aded0ffefed3a3cdfc6752b09dbbcabdda23f958699dbcff0f7651782",
+    "restored_sha256": "5026a0d746804e5aab7013c42c940ebee50d41c1a7d1c47c27677413c859f8f3",
+    "tests": [
+      "test_launcher_bundles_sanitized_copies_and_reports",
+      "test_containment_and_uncertain_images_are_explicit"
+    ],
+    "attributed_failures": [
+      "FAILED tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports",
+      "FAILED tests/test_run_failure_artifacts.py::test_containment_and_uncertain_images_are_explicit"
+    ]
+  }
+]

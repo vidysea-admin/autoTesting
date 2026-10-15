@@ -1,0 +1,46 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_launcher_bundles_sanitized_copies_and_reports ______________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/wt-failure-bundles/.work/failure-bundle-evidence/pytest-trace-case-red/test_launcher_bundles_sanitize0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000027E97CD4C90>
+
+    def test_launcher_bundles_sanitized_copies_and_reports(tmp_path, monkeypatch):
+        monkeypatch.setattr(image_privacy, "_local_ocr", _ocr)
+        store, run, case, original = _launch(tmp_path, monkeypatch)
+        index = BundleIndex.model_validate_json(
+            (store.paths.bundles_dir(run.id) / "index.json").read_text())
+        entry = index.cases[0]
+        assert entry.status == "complete" and entry.images_included == 1
+        assert entry.image_text_unavailable and entry.images_withheld == 0
+        bundle = store.paths.bundles_dir(run.id) / entry.bundle_id
+        manifest = load_bundle(bundle)
+        copied = next(bundle / f.name for f in manifest.files if f.kind.value == "screenshot")
+        with Image.open(copied) as shot:
+            assert shot.getpixel((10, 7)) == (0, 0, 0)
+        with Image.open(store.paths.run_dir(run.id) / "shot.png") as shot:
+            assert shot.getpixel((10, 7)) == (255, 255, 255)
+        assert all(SECRET not in p.read_text() for p in bundle.rglob("*")
+                   if p.is_file() and p.suffix in {".json", ".txt", ".jsonl"})
+>       assert "other-case" not in (bundle / "trace.jsonl").read_text()
+E       assert 'other-case' not in '{"kind": "s....976849Z"}\n'
+E         
+E         'other-case' is contained here:
+E         ?           ^^^^^^^^^^
+E           ovider": "other-case", "role": "judge", "prompt_file": null, "input_tokens": 0, "output_tokens": 0, "latency_s": 0.0, "cost": 0.0, "retries": 0, "fallback_hops": 0, "fed_id": "other", "recorded_at": "2026-10-15T08:30:19.976849Z"}
+E         ?           ^^^^^^^^^^^^^^^^^^^^
+
+tests\test_run_failure_artifacts.py:90: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-failure-bundles\.work\failure-bundle-evidence\mutation-tree-4\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_run_failure_artifacts.py::test_launcher_bundles_sanitized_copies_and_reports
+1 failed, 2 warnings in 1.00s

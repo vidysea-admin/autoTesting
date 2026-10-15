@@ -22,6 +22,7 @@ from autotester.schema.case import Case
 from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.run import Run
 from autotester.schema.verdict import Verdict
+from autotester.stages.run_artifacts import bundle_report_detail
 from autotester.stages.ux_advisory import add_ux_sheet, load_ux_state, ux_findings_html
 from autotester.store import ProjectStore
 
@@ -66,13 +67,7 @@ def _case_lookup(store: ProjectStore) -> dict[str, Case]:
 
 
 def _load_redactor(store: ProjectStore) -> Redactor:
-    """The same Redactor/SecretStore path every other stage uses (C5) -- not a
-    new redaction mechanism. A stored `Case.steps` value should already be a
-    `{{SECRET:KEY}}` placeholder (never a raw value), but export is the last
-    stop before a human-shared file, so a repro step is scrubbed here too
-    (AT-594) in case a raw secret ever reached a stored case despite that
-    design. A project with no `.env` (or none declared) yields an empty,
-    harmless `Redactor`."""
+    """C5/AT-594: load the shared last-stop Redactor, including for repro steps."""
     project = store.load_project()
     if project is None:
         return Redactor({})
@@ -94,12 +89,7 @@ def _failure_rows(verdict: Verdict | None) -> list[tuple[str, str, str | None]]:
 
 
 def _repro_steps(case: Case | None, redactor: Redactor) -> list[str]:
-    """The case's own steps, formatted as a plain-text repro recipe.
-
-    `redactor.scrub` runs over the formatted line before either export (AT-594): a
-    `{{SECRET:KEY}}` placeholder is not a known secret VALUE, so it exports as the placeholder,
-    never a resolved value; a step that somehow held a raw declared secret is masked here, the
-    same last-stop guarantee every other artifact gets."""
+    """AT-594: format the case's own steps, preserving placeholders and scrubbing values."""
     if case is None:
         return []
     return [
@@ -126,7 +116,7 @@ def export_excel(
     ws = wb.active
     ws.title = "Run report"
     ws.append(["Case", "Kind", "Class", "Outcome", "Result", "Criteria met",
-               "Duration (s)", "Grader", "Notes", "Failures", "Repro steps"])
+               "Duration (s)", "Grader", "Notes", "Failures", "Repro steps", "Failure bundle"])
     for result in store.load_results(run_id):
         case = cases.get(result.case_id)
         verdict = verdicts.get(result.case_id)
@@ -152,6 +142,11 @@ def export_excel(
             failures_text,
             steps_text,
         ])
+        href, note = bundle_report_detail(store, run_id, result.case_id, out_path.parent)
+        cell = ws.cell(ws.max_row, 12, note)
+        if href is not None:
+            cell.hyperlink = href
+            cell.style = "Hyperlink"
     autosize_columns(ws)
     add_ux_sheet(wb, ux, cases, redactor)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -187,6 +182,7 @@ def png_base64(path: Path, allowed_root: Path, trusted_root: Path) -> str | None
 def _case_section(
     store: ProjectStore, run_id: str, case: Case | None, result, verdict, redactor: Redactor,
     ux=(None, None),
+    export_dir: Path | None = None,
 ) -> str:
     run_dir = store.paths.run_dir(run_id)
     # AT-609: `Case.title` and `Evidence.label` are operator free text: scrubbed here, then escaped.
@@ -206,13 +202,16 @@ def _case_section(
     no_shots = "<p class='meta'>no screenshots captured</p>"
     detail = _failure_detail_html(verdict, case, redactor)
     video_html = _video_link_html(result)
+    href, bundle_note = bundle_report_detail(store, run_id, result.case_id, export_dir)
+    bundle_html = (f"<a href='{escape(href, quote=True)}'>{escape(bundle_note)}</a>"
+                   if href else escape(bundle_note))
     return (
         f"<section><h2>{title} "
         f"<span class='badge' style='background:{color}'>{badge_text}</span></h2>"
         f"<p class='meta'>{scoreboard}{error}{note}</p>"
         f"{detail}{ux_findings_html(ux, result.case_id, redactor)}"
         f"<div class='shots'>{figures or no_shots}</div>"
-        f"{video_html}"
+        f"{video_html}<p class='meta'>{bundle_html}</p>"
         "</section>"
     )
 
@@ -270,7 +269,8 @@ def export_html(
     ux = load_ux_state(store, run_id)
 
     sections = "".join(
-        _case_section(store, run_id, cases.get(r.case_id), r, verdicts.get(r.case_id), redactor, ux)
+        _case_section(store, run_id, cases.get(r.case_id), r, verdicts.get(r.case_id), redactor, ux,
+                      out_path.parent)
         for r in results
     )
     style = (
