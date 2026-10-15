@@ -9,9 +9,9 @@ FROM mcr.microsoft.com/playwright/python:v1.62.0-jammy
 # then apt-get sat with rising CPU and zero progress for over an hour).
 ENV DEBIAN_FRONTEND=noninteractive TZ=UTC
 
-RUN apt-get update && apt-get install -y --no-install-recommends 
-    build-essential 
-    xvfb x11vnc novnc websockify curl ffmpeg 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    xvfb x11vnc novnc websockify curl ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir uv
