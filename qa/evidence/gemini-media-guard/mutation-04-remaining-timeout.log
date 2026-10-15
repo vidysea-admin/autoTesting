@@ -1,0 +1,39 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_per_wire_deadline_decreases_and_records_failure _____________
+
+    def test_per_wire_deadline_decreases_and_records_failure():
+        now = [0.0]
+        timeouts = []
+    
+        def handle(request):
+            timeouts.append(request.extensions["timeout"]["read"])
+            now[0] += 2
+            if len(timeouts) == 3:
+                raise httpx.ReadTimeout("SECRET-ECHO")
+            return httpx.Response(200, content=b"ok")
+    
+        provider = GeminiProvider(api_key="fake-test-key")
+        transport = GeminiDeadlineTransport(10, provider, "vision",
+            inner=httpx.MockTransport(handle), clock=lambda: now[0])
+        with attempt_budget(4) as budget, httpx.Client(transport=transport) as client:
+            client.post("https://example.test/upload")
+            client.get("https://example.test/poll")
+            with pytest.raises(httpx.ReadTimeout):
+                client.post("https://example.test/generate")
+>       assert timeouts == [10, 8, 6]
+E       assert [120.0, 120.0, 120.0] == [10, 8, 6]
+E         
+E         At index 0 diff: 120.0 != 10
+E         Use -v to get more diff
+
+tests\test_gemini_media_guard.py:149: AssertionError
+============================== warnings summary ===============================
+tests/test_gemini_media_guard.py::test_per_wire_deadline_decreases_and_records_failure
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_gemini_media_guard.py::test_per_wire_deadline_decreases_and_records_failure
+1 failed, 1 warning in 1.42s

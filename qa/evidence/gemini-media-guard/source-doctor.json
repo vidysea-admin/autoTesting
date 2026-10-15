@@ -1,0 +1,27 @@
+{
+  "src/autotester/providers/gemini.py": {
+    "lines": 235,
+    "module_docstring": true,
+    "oversized_functions": []
+  },
+  "src/autotester/providers/gemini_files.py": {
+    "lines": 193,
+    "module_docstring": true,
+    "oversized_functions": []
+  },
+  "tests/test_gemini_media_guard.py": {
+    "lines": 291,
+    "module_docstring": true,
+    "oversized_functions": []
+  },
+  "tests/test_gemini_request_limits.py": {
+    "lines": 33,
+    "module_docstring": true,
+    "oversized_functions": []
+  },
+  "tests/test_gemini_truncation_guard.py": {
+    "lines": 28,
+    "module_docstring": true,
+    "oversized_functions": []
+  }
+}

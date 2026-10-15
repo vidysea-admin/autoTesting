@@ -1,0 +1,351 @@
+[
+  {
+    "label": "preflight",
+    "command": [
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\gemini-mutation",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\gemini-mutation\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\.work\\gemini-mutation\\.work"
+    ],
+    "exit": 0,
+    "duration_s": 0.5779999999977008,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\preflight.log",
+    "log_sha256": "cf89015f190ec3fa41b7366944dbed68b5d3fd0ffba9c83e3a10d2c77354d1e6"
+  },
+  {
+    "label": "mutation-green",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py",
+      "tests/test_gemini_truncation_guard.py",
+      "--basetemp",
+      ".work/base"
+    ],
+    "exit": 0,
+    "duration_s": 10.203000000001339,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-green.log",
+    "log_sha256": "1ebb4dc9c1bff4698f69c02ced450cdb8ed53e74bfefbf73c565bba08b3385f1"
+  },
+  {
+    "label": "mutation-01-truncation-diagnostic",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_truncation_guard.py::test_gemini_truncated_response_is_not_json_repair",
+      "--basetemp",
+      ".work/m1"
+    ],
+    "exit": 1,
+    "duration_s": 8.687000000001717,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-01-truncation-diagnostic.log",
+    "log_sha256": "a7187e0d274984fa334204a79f759dd0ff0b822b1405b737555ecd399a830a33",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "88f955b15ba553c559a310739d01293f7022afa4df5bc2c1fd06fc6b374f94de",
+    "mutation_old": "== \"MAX_TOKENS\" for c in candidates):",
+    "mutation_new": "== \"NEVER\" for c in candidates):",
+    "attributable": true
+  },
+  {
+    "label": "mutation-02-global-deadline-clamp",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_nested_global_deadline_rejects_late_response",
+      "--basetemp",
+      ".work/m2"
+    ],
+    "exit": 1,
+    "duration_s": 9.593000000000757,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-02-global-deadline-clamp.log",
+    "log_sha256": "ed407cd99b763cde2f537b85299e8938474d4e116fe0a37c57af194023c9d202",
+    "source": "src/autotester/providers/gemini_files.py",
+    "original_sha256": "3f079e4754e48655f894d0aceeaed54c528130da32bc11b127ad2970ac41e002",
+    "mutated_sha256": "14c5a5a5b4b85c27bcea95cedf2ecc6b490e40e3be36366a576ce841e2d18bb6",
+    "mutation_old": "self.deadline = min(self.deadline, self.clock() + timeout)",
+    "mutation_new": "pass",
+    "attributable": true
+  },
+  {
+    "label": "mutation-03-wire-reservation",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_sdk_global_budget_cannot_retry_or_send",
+      "--basetemp",
+      ".work/m3"
+    ],
+    "exit": 1,
+    "duration_s": 9.139999999999418,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-03-wire-reservation.log",
+    "log_sha256": "1cba1c059dbdc137518ffaa1ee6ef2d6b5f879b831f5a376d0c3b0670aa7fec3",
+    "source": "src/autotester/providers/gemini_files.py",
+    "original_sha256": "3f079e4754e48655f894d0aceeaed54c528130da32bc11b127ad2970ac41e002",
+    "mutated_sha256": "eabbe9627afe1a5022ea75e8a1fe97ef9fc6aa491f7ff3cabfdc725010042591",
+    "mutation_old": "receipt, timeout = reserve_attempt(self.provider.label, self.role, self.remaining())",
+    "mutation_new": "from autotester.schema.provider_attempt import ProviderAttempt; receipt, timeout = ProviderAttempt(provider=\"gemini\", role=self.role), self.remaining()",
+    "attributable": true
+  },
+  {
+    "label": "mutation-04-remaining-timeout",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_per_wire_deadline_decreases_and_records_failure",
+      "--basetemp",
+      ".work/m4"
+    ],
+    "exit": 1,
+    "duration_s": 8.125,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-04-remaining-timeout.log",
+    "log_sha256": "3e79b050977f05f1755a290d22bb607011289931b76dbd2affe09ce26b7a485c",
+    "source": "src/autotester/providers/gemini_files.py",
+    "original_sha256": "3f079e4754e48655f894d0aceeaed54c528130da32bc11b127ad2970ac41e002",
+    "mutated_sha256": "5464bb0a81549410f196355934fe8a6c3b2e429144856497fddd833f2173564f",
+    "mutation_old": "timeout)",
+    "mutation_new": "120.0)",
+    "attributable": true
+  },
+  {
+    "label": "mutation-05-response-byte-cap",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_transport_closes_and_rejects_late_or_large_response",
+      "--basetemp",
+      ".work/m5"
+    ],
+    "exit": 1,
+    "duration_s": 8.3279999999977,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-05-response-byte-cap.log",
+    "log_sha256": "46e5ef3f2b353e401620a31d4473b193dd1e92cac65ba1380971c4d78d44f38b",
+    "source": "src/autotester/providers/gemini_files.py",
+    "original_sha256": "3f079e4754e48655f894d0aceeaed54c528130da32bc11b127ad2970ac41e002",
+    "mutated_sha256": "63e3aba1d6bb0b972be7c927dec8a803cd91b339f327f76fcb14de3944b2c876",
+    "mutation_old": "if len(body) + len(chunk) > 16 * 1024 * 1024:",
+    "mutation_new": "if False:",
+    "attributable": true
+  },
+  {
+    "label": "mutation-06-deadline-expiry",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_stream_chunk_and_terminal_deadline_close_failed_receipt",
+      "--basetemp",
+      ".work/m6"
+    ],
+    "exit": 1,
+    "duration_s": 9.71900000000096,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-06-deadline-expiry.log",
+    "log_sha256": "04dc748770c4109ab9780a13d162fd10060b91a81b87a3db493129b059189ec2",
+    "source": "src/autotester/providers/gemini_files.py",
+    "original_sha256": "3f079e4754e48655f894d0aceeaed54c528130da32bc11b127ad2970ac41e002",
+    "mutated_sha256": "148e5b0d90556ba284d8be95f55a6af81b59f1dd8915f8062d0fab84cf387585",
+    "mutation_old": "if remaining <= 0:",
+    "mutation_new": "if False:",
+    "attributable": true
+  },
+  {
+    "label": "mutation-07-sdk-retries",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_sdk_retries_disabled_failure_accounted_and_safe",
+      "--basetemp",
+      ".work/m7"
+    ],
+    "exit": 1,
+    "duration_s": 14.875,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-07-sdk-retries.log",
+    "log_sha256": "de48c3ab6eb1baae0c3927baec4d0d0f3b4285bc9719742f823130fc79d41cbe",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "d6297b859307ea5cee00690ae8333851c2c18b2a32cd3219b685684414a7bb1f",
+    "mutation_old": "HttpRetryOptions(attempts=1)",
+    "mutation_new": "HttpRetryOptions(attempts=2)",
+    "attributable": true
+  },
+  {
+    "label": "mutation-08-strict-json",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_sdk_json_repair_is_strict_and_bounded",
+      "--basetemp",
+      ".work/m8"
+    ],
+    "exit": 1,
+    "duration_s": 10.78099999999904,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-08-strict-json.log",
+    "log_sha256": "815c3777f1cd0f689dffaec00a8dfa69bd2547149a7113f3114e54f71cf95e0b",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "26ec65be780fa6913762783b69a7c83c06c80013ef488e4ae12a7743f868aebe",
+    "mutation_old": "strict=True",
+    "mutation_new": "strict=False",
+    "attributable": true
+  },
+  {
+    "label": "mutation-09-repair-cap",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_sdk_bad_json_stops_after_one_repair",
+      "--basetemp",
+      ".work/m9"
+    ],
+    "exit": 1,
+    "duration_s": 11.514999999999418,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-09-repair-cap.log",
+    "log_sha256": "16220fd55a247b30e5474ff2f7b60d702719fb73dcb92596268bc53936dcc933",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "07156561b34a01595e09cf734180cb0a4d48d948709423c3dca6aac15cf2056c",
+    "mutation_old": "for _ in range(2):",
+    "mutation_new": "for _ in range(3):",
+    "attributable": true
+  },
+  {
+    "label": "mutation-10-prompt-guard",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_secret_and_system_instruction_guard_precedes_transport",
+      "--basetemp",
+      ".work/m10"
+    ],
+    "exit": 1,
+    "duration_s": 9.437999999998283,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-10-prompt-guard.log",
+    "log_sha256": "1a4f2211255a2b91a1ac83d4a92f9db229110d9839f39aa0728ed468f191057e",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "eee782e485966e6349132aa5ca1482fca0230910759dd3b55b0b13338f69f9a4",
+    "mutation_old": "guard.guard_text(prompt)",
+    "mutation_new": "pass",
+    "attributable": true
+  },
+  {
+    "label": "mutation-11-system-guard",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_secret_and_system_instruction_guard_precedes_transport",
+      "--basetemp",
+      ".work/m11"
+    ],
+    "exit": 1,
+    "duration_s": 10.735000000000582,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-11-system-guard.log",
+    "log_sha256": "dad669b09dba5508d0b17769407254e2d085fd291f4c42813d464eb944a276cb",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "49db48b451a6833cc505e3f37f633ec862f324b7b58c76c71f356099d19a3fac",
+    "mutation_old": "guard.guard_text(options.system_instruction)",
+    "mutation_new": "pass",
+    "attributable": true
+  },
+  {
+    "label": "mutation-12-raw-video-refusal",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio[raw-video]",
+      "--basetemp",
+      ".work/m12"
+    ],
+    "exit": 1,
+    "duration_s": 9.578000000001339,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-12-raw-video-refusal.log",
+    "log_sha256": "561306c1d835a94d19814c435a378af204c2a673c0c8f1f8d075c63f38005f6a",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "dd8d84826722afdb1f2800152e626f94e0e5e1f0226908052a633e943f5f7c8d",
+    "mutation_old": "if schema is GeminiTranscription and (video_path is None or",
+    "mutation_new": "if False and (video_path is None or",
+    "attributable": true
+  },
+  {
+    "label": "mutation-13-audio-byte-cap",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio[oversized]",
+      "--basetemp",
+      ".work/m13"
+    ],
+    "exit": 1,
+    "duration_s": 10.0,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-13-audio-byte-cap.log",
+    "log_sha256": "9d6215f0777122e1057c84d4e27b864f5a1eb319f492272ea1846fd9ab159600",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "cb8cc9ce0d8c4fd78748b672126890b19c1373479cec7ba200ea4c39692bc12d",
+    "mutation_old": "if len(data) > 16 * 1024 * 1024:",
+    "mutation_new": "if False:",
+    "attributable": true
+  },
+  {
+    "label": "mutation-14-audio-format",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_narration_rejects_raw_video_invalid_or_oversized_audio[invalid-wav]",
+      "--basetemp",
+      ".work/m14"
+    ],
+    "exit": 1,
+    "duration_s": 11.8279999999977,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-14-audio-format.log",
+    "log_sha256": "5d18a5aca03aba63034257c9fa24b243ed335ca6d85e9d0e3d32bd2ca1adb076",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "37cc5ac47dbaf20d690ee9699cb253c91745bd440d5d1dfa0efc028760307cd8",
+    "mutation_old": "with wave.open(io.BytesIO(data), \"rb\") as audio:",
+    "mutation_new": "with __import__(\"contextlib\").nullcontext(type(\"FakeAudio\", (), {\"getcomptype\": lambda self: \"NONE\"})()) as audio:",
+    "attributable": true
+  },
+  {
+    "label": "mutation-15-safe-errors",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py::test_sdk_retries_disabled_failure_accounted_and_safe",
+      "--basetemp",
+      ".work/m15"
+    ],
+    "exit": 1,
+    "duration_s": 10.25,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-15-safe-errors.log",
+    "log_sha256": "901c0bd8413b559c46b8e36c1d362d984c0ae4ab1eba359b429199cbbe93b4ef",
+    "source": "src/autotester/providers/gemini.py",
+    "original_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+    "mutated_sha256": "a73b9a2d0ccd29a6b96a676f4db11f6a4ff1783e851a9cfcdc39a961d8b2aead",
+    "mutation_old": "request failed: {type(exc).__name__}",
+    "mutation_new": "request failed: {type(exc).__name__}: {exc}",
+    "attributable": true
+  },
+  {
+    "label": "mutation-restored-green",
+    "command": [
+      "-m",
+      "pytest",
+      "tests/test_gemini_media_guard.py",
+      "tests/test_gemini_truncation_guard.py",
+      "--basetemp",
+      ".work/restored"
+    ],
+    "exit": 0,
+    "duration_s": 10.203000000001339,
+    "log": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\gemini-media-guard\\qa\\evidence\\gemini-media-guard\\mutation-restored-green.log",
+    "log_sha256": "105d300f6fab20c865077e0883f4c63cdd41721977ff6bd6ee565e4c1cdee857"
+  }
+]
