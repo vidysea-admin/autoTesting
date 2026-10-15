@@ -1,6 +1,6 @@
 # Manifest - never-click-destroy-2
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** follow-up to never-click-destroy (D-098): checker-found controls still clicked
 **Branch:** wave/never-click-destroy-2
