@@ -2,7 +2,7 @@
 
 Unit: D-099 / OR7 downstream stage adapters and caller factory seam
 Fix cycle: 1
-Status: ready-for-check
+Status: checked-PASS
 Branch: codex/cli-downstream
 Source candidate: 030560cf033782f50fb54c5c034b4f0fb3e0bb93
 Integration base: 00c9e13ded3cba6cfe57bd9d0c422f5154ed6e09
