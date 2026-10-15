@@ -26,7 +26,7 @@ def test_fixed_clock_id_replacement_cannot_inherit_opt_in(tmp_path, monkeypatch)
     old_pref = load_notification_pref(old_id)
     assert old_pref.account_generation == old.generation and old_pref.email_run_reports
     accounts.delete_user(old_id)
-    new_id = account("replacement@team.test")
+    new_id = account("replacement@team.test", "developer")
     new = accounts.get_user(new_id)
     assert new_id == old_id and new.created_at == old.created_at
     assert new.generation != old.generation
