@@ -99,10 +99,20 @@ def test_ocr_uses_decoded_snapshot_not_mutable_source(screenshot, monkeypatch):
             assert image.getpixel((20, 15)) == (0, 0, 0)
 
 
+def test_active_safe_copy_still_respects_image_size_limit(screenshot, monkeypatch):
+    monkeypatch.setattr(privacy, "_local_ocr", lambda path: _tsv())
+    with privacy.sanitized_images([screenshot]) as batch:
+        monkeypatch.setattr(privacy, "MAX_IMAGE_BYTES", 1)
+        with privacy.sanitized_images(batch.paths) as nested:
+            assert nested.paths == [] and nested.withheld == 1
+
+
 def test_missing_and_oversized_images_withheld(screenshot, tmp_path, monkeypatch):
     monkeypatch.setattr(privacy, "MAX_IMAGE_BYTES", 1)
+    monkeypatch.setattr(privacy, "_local_ocr", lambda path: _tsv())
     with privacy.sanitized_images([screenshot, tmp_path / "missing.png"]) as batch:
         assert batch.paths == [] and batch.withheld == 2
+        assert batch.reasons == ["image_unavailable_or_oversized"] * 2
 
 
 def test_edge_geometry_alpha_and_metadata(screenshot, monkeypatch):

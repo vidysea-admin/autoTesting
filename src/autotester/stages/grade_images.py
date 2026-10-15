@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from autotester.core.image_privacy import sanitized_images
+from autotester.core.paths import RepoDocs
 from autotester.providers.base import Provider
 from autotester.schema.verdict import Judgment
 
@@ -17,7 +18,7 @@ def judge_images(judge: Provider, prompt: str, paths: list[Path], *,
     """Keep safe copies alive through the call and count actual delivered images."""
     with sanitized_images(paths) as batch:
         if paths:
-            prompt += "\n\n" + VISUAL_PRIVACY_NOTE
+            prompt += "\n\n" + (RepoDocs().prompts_dir / "image_privacy.md").read_text("utf-8")
         judgment = judge.judge(prompt, Judgment, images=batch.paths,
                                prompt_file=prompt_file, fed_id=fed_id)
         return judgment, len(batch.paths)

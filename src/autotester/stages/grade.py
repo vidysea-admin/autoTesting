@@ -218,12 +218,7 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
         return withheld
     prompt = _pii_masked(prompt)
 
-    # AT-366: filter HERE, once, and count what was lost. All three providers drop a
-    # non-existent path in silence, so a screenshot the executor recorded but failed to
-    # write (the AT-036 retry class) produced a shorter list with no error, no log line
-    # and no trace on the Verdict -- a judgement rendered on a subset of its evidence,
-    # indistinguishable from one rendered on all of it. The counts travel on the Verdict
-    # so the grader's output and the report can both read them.
+    # AT-366/B11: count absent and privacy-withheld images as incomplete observation.
     requested = _screenshot_paths(result, run_dir)
     seen = [path for path in requested if path.exists()]
     counts = {"images_requested": len(requested), "images_seen": len(seen)}
@@ -238,7 +233,7 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     shortfall = _shortfall(**counts)
     final, note = _assertion_guard(result, judgment.result, judgment.scoreboard, judgment.note)
     final, note = _defect_decision(judgment, final, note, rubric.expects_error)
-    if seen:
+    if requested:
         final = Result.INCONCLUSIVE if final is Result.PASS else final
         shortfall = _joined(VISUAL_PRIVACY_NOTE, shortfall)
     return _verdict(run_id, result, rubric, verdict_result=final,

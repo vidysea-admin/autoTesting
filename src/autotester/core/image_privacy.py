@@ -102,7 +102,8 @@ def _safe_copy(path: Path) -> bool:
     resolved = path.resolve()
     with _SAFE_LOCK:
         expected = _SAFE_COPIES.get(resolved)
-    return expected is not None and path.is_file() and _digest(path) == expected
+    return (expected is not None and path.is_file() and path.stat().st_size <= MAX_IMAGE_BYTES
+            and _digest(path) == expected)
 
 
 def _prepare_image(source: Path, target: Path) -> Path:
