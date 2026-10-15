@@ -218,6 +218,15 @@ def test_api_failures_are_non_ok_first_party_rows_from_run_and_crawl(root: Path)
     assert all(f.url.startswith("https://demo.test/") for f in failures)
 
 
+def test_api_without_any_network_evidence_is_unavailable_not_clean(root: Path) -> None:  # C12
+    store = _seed(root)
+    store.save_result("rel1", RawResult(case_id="c2", outcome=Outcome.COMPLETED, evidence=[]))
+    api = build_report(store, None).api
+    assert api.unavailable and "no first-party network evidence" in api.unavailable
+    html = export_unified_html("demo", None, root / "n.html", root).read_text(encoding="utf-8")
+    assert "No failing first-party response" not in _section(html, "api")
+
+
 def test_re6_a_failing_case_shows_criterion_reason_fix_hint_and_repro(root: Path) -> None:
     _seed(root)
     html = export_unified_html("demo", None, root / "w.html", root).read_text(encoding="utf-8")

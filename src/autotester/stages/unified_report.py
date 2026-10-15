@@ -146,6 +146,14 @@ def _api_rows(source: str, evidence: Iterable[Evidence]) -> list[ApiFailure]:
     return rows
 
 
+def _saw_network(store: ProjectStore, run_id: str, crawl_id: str | None,
+                 results: Iterable[RawResult]) -> bool:
+    if any(e.kind is EvidenceKind.NETWORK for r in results for e in r.evidence):
+        return True
+    return bool(crawl_id and store.paths.crawl_network(crawl_id).exists()
+                and any(True for _ in store.list_crawl_network(crawl_id)))
+
+
 def load_api(store: ProjectStore, run_id: str, crawl_id: str | None) -> ApiSection:
     failures: list[ApiFailure] = []
     read: list[str] = []
@@ -159,6 +167,9 @@ def load_api(store: ProjectStore, run_id: str, crawl_id: str | None) -> ApiSecti
         read.append(f"crawl {crawl_id}")
     if not read:
         return ApiSection(unavailable="no run results and no crawl network evidence are stored")
+    if not _saw_network(store, run_id, crawl_id, results):
+        # C12: capture never ran is not a clean result (an all-OK run stores `-> 200` rows).
+        return ApiSection(unavailable="no first-party network evidence was stored")
     return ApiSection(failures=failures, sources_read=read)
 
 

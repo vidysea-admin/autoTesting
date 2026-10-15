@@ -15,6 +15,14 @@ import re
 from collections.abc import Iterable
 from typing import Any
 
+from autotester.core.redact_escaped import (
+    escaped_spans,
+    mask_encoded_emails,
+    mask_encoded_phones,
+    mask_spans,
+    scrub_url_credentials,
+    scrub_url_credentials_obj,
+)
 from autotester.core.redact_fold import (
     ASCII_CONFUSABLES,
     BIDI_OVERRIDES,
@@ -37,6 +45,8 @@ __all__ = [
     "mask_pii",
     "mask_pii_obj",
     "placeholder_keys",
+    "scrub_url_credentials",
+    "scrub_url_credentials_obj",
 ]
 
 MASK = "[REDACTED]"
@@ -99,6 +109,7 @@ class Redactor:
         # Longest first, so a value that contains another is masked whole.
         self._values = sorted((v for v in secrets.values() if v), key=len, reverse=True)
         self._keys_by_value = {v: k for k, v in secrets.items()}
+        self._pairs = [(v, self._keys_by_value.get(v, "")) for v in self._values]
         # (raw_value, folded_value) pairs, kept together so the widened check
         # can search for the RAW value's exact encodings (AT-352 cycle 2 --
         # base64/hex output is case/punctuation-significant and must not be
@@ -116,7 +127,8 @@ class Redactor:
             if value in text:
                 key = self._keys_by_value.get(value, "")
                 text = text.replace(value, f"{MASK}:{key}" if key else MASK)
-        return text
+        # AT-939: percent (x2), HTML-entity and plus spellings, found in decoded views
+        return mask_spans(text, escaped_spans(text, self._pairs), MASK)
 
     def scrub_obj(self, obj: Any) -> Any:
         """Recursively scrub strings inside dicts, lists, and tuples."""
@@ -176,6 +188,8 @@ def mask_pii(text: str) -> str:
     Free text is never searched for names (too guessy); a person name is only masked where a
     field label says so -- see `mask_name_value`. Pure and idempotent, so output stays
     deterministic (RC11). A bare 10-digit run is treated as a phone number."""
+    text = mask_encoded_emails(text)  # AT-830: urlencoded `%40` / `%2B`
+    text = mask_encoded_phones(text)
     text = _mask_emails(text)
     for pattern in _PHONE_RES:
         text = pattern.sub("<phone>", text)

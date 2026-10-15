@@ -10,7 +10,6 @@ is filled and what only a human can fill. Nothing is scored or decided here (GR3
 from __future__ import annotations
 
 import json
-import re
 from collections import Counter
 from collections.abc import Callable
 from pathlib import Path
@@ -18,7 +17,7 @@ from typing import Any
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.consent import ApprovalRequired, require_project_approval
-from autotester.core.redact import mask_pii_obj
+from autotester.core.redact import mask_pii_obj, scrub_url_credentials_obj
 from autotester.schema.acceptance import AcceptanceComparison
 from autotester.schema.approval import RunApproval
 from autotester.schema.crawl import CrawlBounds
@@ -29,10 +28,6 @@ from autotester.store.project_store import ProjectStore
 EVIDENCE_DIR = Path("qa") / "evidence" / "t169-real"
 REASON_CHARS = 80
 CHECKLIST_JOIN = chr(10)
-_URL_SECRET = re.compile(
-    r"([?&;](?:[\w.-]*(?:token|key|secret|password|passwd|sig|session|auth|code)[\w.-]*)=)"
-    r"[^&\s\"'<>]+", re.I)
-
 
 def _scrub(obj: Any, store: ProjectStore) -> Any:
     """Known secret values -> mask, emails/phones -> masked, URL credential params -> mask."""
@@ -46,13 +41,7 @@ def _scrub(obj: Any, store: ProjectStore) -> Any:
 
 
 def _scrub_urls(obj: Any) -> Any:
-    if isinstance(obj, str):
-        return _URL_SECRET.sub(r"[REDACTED]", obj)
-    if isinstance(obj, dict):
-        return {k: _scrub_urls(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [_scrub_urls(v) for v in obj]
-    return obj
+    return scrub_url_credentials_obj(obj)
 
 
 def required_kinds(mode: Mode) -> list[ApprovalKind]:

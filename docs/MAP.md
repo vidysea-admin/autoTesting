@@ -71,6 +71,7 @@
 | `core/pricing.py` | Per-token cost estimates for LLM-call trace spans (D-041 phase 1, RT4). |
 | `core/redact.py` | Secret redaction. Every log line and stored artifact passes through here. |
 | `core/redact_encodings.py` | Exact encoded-spelling search: precompute how a declared secret would look |
+| `core/redact_escaped.py` | Escaped-spelling redaction: percent/entity/plus-encoded secrets, encoded PII, URL creds. |
 | `core/redact_fold.py` | Credential folding: normalise a string so a case, punctuation, homoglyph, |
 | `core/redact_wrap.py` | Whitespace normalisation for the exact-encoding needle search, and a |
 | `core/repo_docs.py` | Repo-level documents: the living map, the ledger, the history, the router. |
