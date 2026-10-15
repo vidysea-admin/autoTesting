@@ -19,11 +19,12 @@ from pydantic import BaseModel
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
 
-def _atomic_write(path: Path, text: str) -> None:
+def _atomic_write(path: Path, text: str | bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=".tmp-", suffix=path.suffix)
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        mode, options = ("wb", {}) if isinstance(text, bytes) else ("w", {"encoding": "utf-8"})
+        with os.fdopen(fd, mode, **options) as handle:
             handle.write(text)
         os.replace(tmp_name, path)
     except BaseException:
@@ -34,6 +35,11 @@ def _atomic_write(path: Path, text: str) -> None:
 def write_text(path: Path, text: str) -> None:
     """Whole-file, atomic text. For stores that hold something other than one model."""
     _atomic_write(path, text)
+
+
+def write_bytes(path: Path, data: bytes) -> None:
+    """Whole-file atomic bytes, preserving encoding/newlines for reversible migrations."""
+    _atomic_write(path, data)
 
 
 def write_json(path: Path, model: BaseModel) -> None:

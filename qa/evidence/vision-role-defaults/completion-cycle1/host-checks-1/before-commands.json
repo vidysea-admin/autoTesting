@@ -1,0 +1,21 @@
+[
+  {
+    "name": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp"
+    ],
+    "exit": 2,
+    "duration_s": 0.28100000000267755,
+    "output": "preflight.log"
+  }
+]

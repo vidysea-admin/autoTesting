@@ -1,0 +1,22 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___ test_vision_ensemble_defaulted_distinguishes_empty_from_explicit_gemini ___
+tests\test_schema.py:137: in test_vision_ensemble_defaulted_distinguishes_empty_from_explicit_gemini
+    assert ProviderConfig(vision="").vision_ensemble_defaulted() is True
+E   AssertionError: assert False is True
+E    +  where False = vision_ensemble_defaulted()
+E    +    where vision_ensemble_defaulted = ProviderConfig(vision='', agent='model-chain', judge='model-chain', vision_allow_gemini_fallback=True).vision_ensemble_defaulted
+E    +      where ProviderConfig(vision='', agent='model-chain', judge='model-chain', vision_allow_gemini_fallback=True) = <class 'autotester.schema.project.ProviderConfig'>(vision='')
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_schema.py::test_vision_ensemble_defaulted_distinguishes_empty_from_explicit_gemini
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_schema.py::test_vision_ensemble_defaulted_distinguishes_empty_from_explicit_gemini
+1 failed, 2 warnings in 1.25s

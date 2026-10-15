@@ -1,0 +1,41 @@
+{
+  "slug": "vision-role-defaults",
+  "fix_cycle": 2,
+  "status": "ready-for-check",
+  "root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles",
+  "base_sha": "57a010d5e4f5eebe21c605d704981a10dd2e8a5c",
+  "parent_sha": "f588dcc8a100064274b4911198eec8a807248985",
+  "candidate_sha": "SEE_POST_COMMIT_RECEIPT",
+  "post_commit_receipt": "C:/Users/product/Desktop/autoTesting/.work/measured-vision-completion/cycle2-ready-candidate.json",
+  "policy": "Existing active pinned unit policy; explicit human finite focused closure authority. C7/C9/C12 apply; full integration/release remains required.",
+  "changed_paths": [
+    "src/autotester/providers/__init__.py",
+    "tests/test_vision_roles.py",
+    "qa/manifests/vision-role-defaults.md",
+    "qa/evidence/vision-role-defaults/completion-cycle2/"
+  ],
+  "untracked_excluded": [
+    "qa/verdicts/vision-role-defaults.md (authoritative cycle1 HOLD, preserved)"
+  ],
+  "hold_closure": {
+    "six_file_inventory": "six-file-reconciliation.json: historical raw inventory hashes reconstructed exactly from old commit (Git blob/CRLF), six candidate canonical blobs exactly equal accepted deadline dependency9d4d4d40, last-changing commits identified; old full-source equality not claimed. See accepted qa/verdicts/provider-deadline-finalization.md and retained completion-cycle1/checker-packet.json.",
+    "actual_parser_consumer": "Minimal fix parses each full member independently before instantiation, preserving cloud tags/order and deduplicating full member spec; no default/model/fallback changes."
+  },
+  "consumers": [
+    "for_teaching_group video ensembles",
+    "for_role vision singleton",
+    "for_teaching singleton; agent/doc path unchanged",
+    "ProviderConfig custom settings"
+  ],
+  "checks": "checks.json (preflight + new tagged and existing untagged consumer tests2passed + scoped Ruff); parser-proof.json and red/restored XML (one named failure under reverted fix,1passed restored). No repeated historical15/eight checks.",
+  "required_fresh_check": "Independently inspect 3-line parser change, actual parser test and six-file reconciliation; discriminating member-tag probe/failure boundary. Existing unchanged source/privacy/migration evidence remains at original bound identity. Checker alone decides PASS.",
+  "fingerprints": {
+    "src/autotester/providers/__init__.py": "9146af7f7229e473eb45f5ebda25899cfd5ca2c7f6215c51c14435c9768d75e0",
+    "tests/test_vision_roles.py": "64b14dfd664427a35d8c2aa0a65fa8151e1fdc7bc6e95af65c221b8d53cab763",
+    "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+  },
+  "environment": "Same compatible Python3.11.16 mainroot/.venv, PYTHONPATH unitroot/src, PYTHONDONTWRITEBYTECODE1; preflight.log/checks.json bind import/temp identity.",
+  "maker_usage": "native-usage.json; native tokens/active/wait UNKNOWN; prior lower bounds preserved; no10%claim",
+  "limits": "No real providers, migrations, browser or secret reads. Authoritative cycle1 HOLD untouched. No maker PASS. Failed proof-harness assertion preserved and explained; red process duration unknown."
+}

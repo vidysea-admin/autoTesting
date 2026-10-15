@@ -1,0 +1,19 @@
+{
+  "before_attributes_sha256": "b0e41b3e8f3e41275139366a40839c37ea54e04d2e3b675c25a3218b70fef023",
+  "after_attributes_sha256": "8b9067c50ee7a5d36d760f4db1eb9db695d69fd19cca656fd64e193bd02143ed",
+  "explicit_paths": [
+    "src/autotester/providers/__init__.py text eol=crlf",
+    "src/autotester/providers/vision_roles.py text eol=lf",
+    "src/autotester/providers/config_migration.py text eol=lf",
+    "src/autotester/schema/project.py text eol=crlf",
+    "src/autotester/schema/vision_capabilities.py text eol=lf",
+    "src/autotester/schema/provider_migration.py text eol=lf",
+    "src/autotester/store/filestore.py text eol=crlf",
+    "src/autotester/skills/vision-probe/capabilities.json text eol=lf",
+    "scripts/migrate_provider_roles.py text eol=lf",
+    "tests/test_provider_factory.py text eol=crlf",
+    "tests/test_vision_roles.py text eol=lf",
+    "tests/test_provider_migration.py text eol=lf",
+    "qa/manifests/vision-role-defaults.md text eol=lf"
+  ]
+}

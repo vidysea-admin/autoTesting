@@ -1,0 +1,92 @@
+{
+  "policy": "existing active unit; pinned policy retained",
+  "slug": "vision-role-defaults",
+  "fix_cycle": 1,
+  "status": "HOLD_ENVIRONMENT_NOT_READY_FOR_CHECK",
+  "root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles",
+  "base_sha": "57a010d5e4f5eebe21c605d704981a10dd2e8a5c",
+  "candidate_sha": "25ca7ad05555b2a49f4c8a64a6bb4bb2bf83d5bd",
+  "candidate_state": "HEAD plus listed uncommitted/untracked bytes; no immutable completion candidate",
+  "original_sha": "fe6bb6af164099109d566d09a4cca020b9bb77a9",
+  "dependency_sha": "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58",
+  "changed_paths": [
+    "qa/manifests/vision-role-defaults.md"
+  ],
+  "untracked_paths": [
+    "qa/evidence/vision-role-defaults/completion-cycle1/HOST-FINALIZATION.txt",
+    "qa/evidence/vision-role-defaults/completion-cycle1/checker-packet.json",
+    "qa/evidence/vision-role-defaults/completion-cycle1/commands.json",
+    "qa/evidence/vision-role-defaults/completion-cycle1/fingerprints.json",
+    "qa/evidence/vision-role-defaults/completion-cycle1/immediate.diff",
+    "qa/evidence/vision-role-defaults/completion-cycle1/preflight.log",
+    "qa/evidence/vision-role-defaults/completion-cycle1/status.txt",
+    "qa/evidence/vision-role-defaults/completion-cycle1/unit.diff",
+    "tests/test_vision_role_deadline.py"
+  ],
+  "acceptance": "Existing manifest authorized-unit, exact-reversible-migration, focused-verification clauses; no contract edits. Parent explicitly permits only retained 15 cases plus one fake-clock interaction and changed-file checks.",
+  "consumers": [
+    "providers.for_role / for_teaching_group",
+    "ModelChainProvider._run/_try_tiers",
+    "LiteLLMProvider._complete",
+    "video_frames.see_video",
+    "config_migration plan/apply/restore and migration CLI",
+    "ProviderConfig / teaching analyze-route ensemble consumers"
+  ],
+  "behavior_change": "Only added offline visual-role/deadline interaction test and continuation evidence; production fixes not needed or attempted.",
+  "risk_limits": "Synthetic media/routing stub; no general vision/sanitation evidence; no live providers, real project writes, secrets, or full suite.",
+  "historical_proof": "14 chains preserved, not rerun; archived neutral geometry is not general vision proof.",
+  "checks": [
+    {
+      "name": "preflight",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+        "preflight",
+        "--root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles",
+        "--import-name",
+        "autotester",
+        "--import-root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src",
+        "--temp-parent",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp"
+      ],
+      "exit": 2,
+      "duration_s": 0.28100000000267755,
+      "output": "preflight.log"
+    }
+  ],
+  "pending_checks": [
+    "archived 15-case baseline",
+    "one fake-clock interaction",
+    "Ruff across spec python_paths plus new test",
+    "same-file AST design checks"
+  ],
+  "fingerprints": "fingerprints.json",
+  "diffs": [
+    "immediate.diff",
+    "unit.diff"
+  ],
+  "environment": "preflight failed before import/environment receipt could be retained; intended interpreter C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe; own src PYTHONPATH and writable workspace parent were specified; compatibility/import containment not certified",
+  "maker_usage": {
+    "token_metric": "actual_total",
+    "active_s": null,
+    "tokens": null,
+    "cached_input_tokens": null,
+    "cost": null,
+    "authority": "Only completion-cycle outer raw JSONL counters; cached input is subset, never added twice. Historical usage unknown. Command duration is not maker total."
+  },
+  "remaining_gates": [
+    "resolve host temp/preflight access",
+    "execute bounded runner once outside denied sandbox",
+    "capture environment/dependency identity and final source/evidence fingerprints",
+    "immutable candidate and ready-for-check cycle 1 manifest",
+    "separate fresh measured independent checker",
+    "full combined integration/release gates later"
+  ],
+  "checker": "Do not launch from this HOLD packet. Parent must assess/validate pinned review budget and refresh exact candidate packet after successful host checks.",
+  "workspace_artifacts": [
+    ".work/complete-vision-cycle1.py",
+    ".work/measured-maker-result.json"
+  ]
+}

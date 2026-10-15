@@ -119,27 +119,26 @@ def test_vision_ensemble_splits_the_config_and_deduplicates() -> None:
     assert ProviderConfig(vision=" gemini , anthropic , gemini , ").vision_ensemble() == [
         "gemini", "anthropic"]
     # single name = ensemble of one (honest, still works)
-    assert ProviderConfig().vision_ensemble() == ["gemini"]
+    assert ProviderConfig().vision_ensemble() == ["vision-chain"]
 
 
-def test_vision_ensemble_empty_config_falls_back_to_gemini() -> None:
+def test_vision_ensemble_empty_config_uses_visual_policy() -> None:
     from autotester.schema.project import ProviderConfig
 
-    assert ProviderConfig(vision=",").vision_ensemble() == ["gemini"]
+    assert ProviderConfig(vision=",").vision_ensemble() == ["vision-chain"]
 
 
 def test_vision_ensemble_defaulted_distinguishes_empty_from_explicit_gemini() -> None:
     """AT-550 (remainder): an empty config falling back to the default must
-    be observable, not silent. Both an empty config and an explicit
-    `vision="gemini"` produce the same `vision_ensemble() == ["gemini"]`, but
-    only the empty one substituted a default an operator never chose —
-    `vision_ensemble_defaulted()` is what lets a caller tell them apart."""
+    be observable. Explicit Gemini/ensembles keep their meaning, while an
+    explicit visual policy is distinct from substituting it for an empty config."""
     from autotester.schema.project import ProviderConfig
 
     assert ProviderConfig(vision="").vision_ensemble_defaulted() is True
     assert ProviderConfig(vision=",").vision_ensemble_defaulted() is True
     assert ProviderConfig(vision=" , ").vision_ensemble_defaulted() is True
     assert ProviderConfig(vision="gemini").vision_ensemble_defaulted() is False
+    assert ProviderConfig(vision="vision-chain").vision_ensemble_defaulted() is False
     assert ProviderConfig(vision="gemini,anthropic").vision_ensemble_defaulted() is False
 
 

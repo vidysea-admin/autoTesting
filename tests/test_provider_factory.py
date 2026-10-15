@@ -21,6 +21,7 @@ from autotester.cli import app as cli_app
 from autotester.providers.base import ProviderError
 from autotester.providers.litellm_provider import LiteLLMProvider
 from autotester.providers.model_chain import ModelChainProvider
+from autotester.providers.vision_roles import VisionChainProvider
 from autotester.schema.enums import ProviderRole
 from autotester.schema.flowspec import Screen
 from autotester.schema.project import Project, ProviderConfig
@@ -103,9 +104,8 @@ def test_a_bare_project_id_still_resolves_through_the_registry(
     assert providers.for_role(_project_with(agent="anthropic"), "agent").id == "anthropic"
 
 
-def test_the_factory_serves_agent_and_judge_only() -> None:
-    with pytest.raises(ProviderError, match="vision"):
-        providers.for_role(_project_with(), "vision")
+def test_the_factory_resolves_the_receipt_bound_visual_role() -> None:
+    assert isinstance(providers.for_role(_project_with(), "vision"), VisionChainProvider)
 
 
 # -- LP2: the two call sites go through the factory -------------------------

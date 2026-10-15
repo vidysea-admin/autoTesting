@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.164" timestamp="2026-10-15T12:04:38.697399+00:00" hostname="windows-demo"><testcase classname="tests.test_provider_migration" name="test_dry_run_selects_only_exact_legacy_preserving_custom_partial_and_evidence" time="0.185"><failure message="AssertionError: assert ['eligible', ...e', 'missing'] == ['eligible', ...l', 'missing']&#10;  &#10;  At index 1 diff: 'eligible' != 'custom'&#10;  Use -v to get more diff">tests\test_provider_migration.py:37: in test_dry_run_selects_only_exact_legacy_preserving_custom_partial_and_evidence
+    assert [e.status for e in plan.entries] == ["eligible", "custom", "partial", "missing"]
+E   AssertionError: assert ['eligible', ...e', 'missing'] == ['eligible', ...l', 'missing']
+E     
+E     At index 1 diff: 'eligible' != 'custom'
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

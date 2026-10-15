@@ -1,0 +1,171 @@
+{
+  "source_sha": "24f7cb93ef9ada736e616a787c93d6539fe6485d",
+  "started_at": "2026-10-15T11:24:32.958404+00:00",
+  "source_fingerprints": {
+    "src/autotester/providers/vision_probe.py": "ffd309fc33989ee27b70abe917354d7be001da670050fa5aeb94c4e0c5d294db",
+    "src/autotester/providers/litellm_provider.py": "bbb371d6d828c196f2eac26e273ffd72000a19d7f51400ebd413631c3d4bf60b",
+    "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+    "src/autotester/core/image_privacy.py": "3dfd77e802a5047aa6364f3e6e38d8d333dc6daafe4542869f64cb092a446ea7",
+    "src/autotester/schema/vision_probe.py": "06e9cd0abe0a3fc8d94a0e3447a50e81d5fdc6309247372800c0792f715f0653",
+    "src/autotester/schema/video_frames.py": "ba3206639a86e6158c07509d362c87a01368f99f519dcc433dc6827d08059621",
+    "src/autotester/skills/vision-probe/SKILL.md": "939d4b2b7ba8ce5dbbb678f5d1f97216cf1d5d8894a688f7c36dd2f97b66019b",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+  },
+  "environment_receipt": "environment.json",
+  "results": [
+    {
+      "model": "ollama_chat/glm-5.3-flash",
+      "started_at": "2026-10-15T11:24:32.962519+00:00",
+      "result": {
+        "schema_version": 1,
+        "created_at": "2026-10-15T11:24:32.974133Z",
+        "provenance": null,
+        "model": "ollama_chat/glm-5.3-flash",
+        "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+        "status": "inconclusive",
+        "reason": "visual_answer_mismatch",
+        "expected": {
+          "images": [
+            {
+              "left_shape": "square",
+              "left_color": "green",
+              "right_shape": "triangle",
+              "right_color": "red"
+            },
+            {
+              "left_shape": "square",
+              "left_color": "green",
+              "right_shape": "circle",
+              "right_color": "yellow"
+            }
+          ]
+        },
+        "observed": {
+          "images": [
+            {
+              "left_shape": "square",
+              "left_color": "green",
+              "right_shape": "circle",
+              "right_color": "yellow"
+            },
+            {
+              "left_shape": "square",
+              "left_color": "green",
+              "right_shape": "circle",
+              "right_color": "yellow"
+            }
+          ]
+        },
+        "capability": null,
+        "attempts": [
+          {
+            "provider": "litellm:ollama_chat/glm-5.3-flash",
+            "role": "judge",
+            "status": "succeeded",
+            "input_tokens": 558,
+            "output_tokens": 2288,
+            "latency_s": 45.62686449999819
+          }
+        ]
+      },
+      "status": "inconclusive",
+      "reason": "visual_answer_mismatch",
+      "fixture_sha256": null,
+      "validated_output_sha256": "c4556e8b48b00e056e06923964bf94f363a5fcad0dfb6aa34ca542fc613e0eb6",
+      "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+      "ended_at": "2026-10-15T11:25:18.953858+00:00",
+      "duration_s": 45.98400000000038
+    },
+    {
+      "model": "ollama_chat/deepseek-v4.1-flash",
+      "started_at": "2026-10-15T11:25:18.954485+00:00",
+      "result": {
+        "schema_version": 1,
+        "created_at": "2026-10-15T11:25:18.960245Z",
+        "provenance": null,
+        "model": "ollama_chat/deepseek-v4.1-flash",
+        "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+        "status": "verified",
+        "reason": "matched",
+        "expected": {
+          "images": [
+            {
+              "left_shape": "circle",
+              "left_color": "blue",
+              "right_shape": "square",
+              "right_color": "green"
+            },
+            {
+              "left_shape": "circle",
+              "left_color": "yellow",
+              "right_shape": "square",
+              "right_color": "green"
+            }
+          ]
+        },
+        "observed": {
+          "images": [
+            {
+              "left_shape": "circle",
+              "left_color": "blue",
+              "right_shape": "square",
+              "right_color": "green"
+            },
+            {
+              "left_shape": "circle",
+              "left_color": "yellow",
+              "right_shape": "square",
+              "right_color": "green"
+            }
+          ]
+        },
+        "capability": {
+          "model": "ollama_chat/deepseek-v4.1-flash",
+          "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+          "fixture_sha256": "14cda3dee03e0815e36ab83b3ba3090fa6b164f3ea9660585f7c4e250d6c5902",
+          "output_sha256": "c4675ead327a71c3fde427d8d3acde0f95991139792087ac826b58986f3cfddc",
+          "passed": true,
+          "probe_protocol": "sanitized-layout-pair-v1",
+          "prompt_sha256": "33827c3b0895e9eb7aeaf58086cfe6cb4f4c0ffb37cafb52394e71bd86919e93"
+        },
+        "attempts": [
+          {
+            "provider": "litellm:ollama_chat/deepseek-v4.1-flash",
+            "role": "judge",
+            "status": "succeeded",
+            "input_tokens": 866,
+            "output_tokens": 201,
+            "latency_s": 2.850140000002284
+          }
+        ]
+      },
+      "status": "verified",
+      "reason": "matched",
+      "fixture_sha256": "14cda3dee03e0815e36ab83b3ba3090fa6b164f3ea9660585f7c4e250d6c5902",
+      "validated_output_sha256": "c4675ead327a71c3fde427d8d3acde0f95991139792087ac826b58986f3cfddc",
+      "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+      "ended_at": "2026-10-15T11:25:22.196928+00:00",
+      "duration_s": 3.25
+    }
+  ],
+  "limits": "Neutral geometry only; two calls/45s per model and outer6calls/135s. No generation-token cap or hard cancellation guarantee. No defaults/project changes. API/SDK diagnostic streams discarded in memory; no raw vendor error/credential logging.",
+  "physical_attempts": [
+    {
+      "provider": "litellm:ollama_chat/glm-5.3-flash",
+      "role": "judge",
+      "status": "succeeded",
+      "input_tokens": 558,
+      "output_tokens": 2288,
+      "latency_s": 45.62686449999819
+    },
+    {
+      "provider": "litellm:ollama_chat/deepseek-v4.1-flash",
+      "role": "judge",
+      "status": "succeeded",
+      "input_tokens": 866,
+      "output_tokens": 201,
+      "latency_s": 2.850140000002284
+    }
+  ],
+  "ended_at": "2026-10-15T11:25:22.197245+00:00"
+}

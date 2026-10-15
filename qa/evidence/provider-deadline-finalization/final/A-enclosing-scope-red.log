@@ -1,0 +1,27 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_live_inner_scope_cannot_hide_expired_outer _______________
+
+clock = [5]
+
+    def test_live_inner_scope_cannot_hide_expired_outer(clock):
+        with pytest.raises(AttemptBudgetExhausted), attempt_budget(2, 5), attempt_budget(2, 50):
+            reserve_attempt("fake", "judge", 10)
+            clock[0] = 5
+>           with pytest.raises(AttemptBudgetExhausted):
+E           Failed: DID NOT RAISE AttemptBudgetExhausted
+
+tests\test_provider_deadlines.py:66: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadlines.py::test_live_inner_scope_cannot_hide_expired_outer
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadlines.py::test_live_inner_scope_cannot_hide_expired_outer
+1 failed, 2 warnings in 0.98s

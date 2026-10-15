@@ -1,0 +1,9 @@
+{
+  "verdict_status": "PASS",
+  "verdict_cycle": 2,
+  "manifest_status": "checked-PASS",
+  "manifest_cycle": 2,
+  "reviewed_sha": "46f6a8089f0730c201ebe8a6dde201868ddebec4",
+  "explicit_verdict": "PASS",
+  "parser_sha256": "e97238975b5ae802adfd84af240db248ee033216de91d9e5615f8326282940e0"
+}

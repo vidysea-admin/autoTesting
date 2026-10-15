@@ -245,7 +245,7 @@ def test_analyze_route_records_the_default_when_vision_config_is_empty(
         source_id=source.id,
         chunks=[MediaChunk(index=0, path=str(recording), offset_s=0, length_s=3)],
     ))
-    fakes = {"gemini": _NamedFakeProvider("gemini", has_credential=True)}
+    fakes = {"vision-chain": _NamedFakeProvider("vision-chain", has_credential=True)}
     monkeypatch.setattr("autotester.ui.routes_sources.providers.get", lambda name: fakes[name])
 
     response = client.post(
@@ -254,7 +254,7 @@ def test_analyze_route_records_the_default_when_vision_config_is_empty(
     assert response.status_code == 303
     analysis = store.load_analysis(source.id)
     assert analysis is not None
-    assert analysis.requested_providers == ["gemini"]
+    assert analysis.requested_providers == ["vision-chain"]
     assert analysis.vision_config_defaulted is True, (
         "an empty vision config that fell back to the default must be "
         "recorded as defaulted, not silently identical to an explicit choice")

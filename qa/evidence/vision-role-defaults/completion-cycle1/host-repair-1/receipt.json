@@ -1,0 +1,36 @@
+{
+  "status": "STOP_FAILURE",
+  "start_utc": "2026-10-15T18:28:47.8153791Z",
+  "end_utc": "2026-10-15T18:28:48.2083893Z",
+  "wall_s": 0.3876271,
+  "commands": [
+    {
+      "name": "sim117-fix",
+      "argv": [
+        "C:/Users/product/Desktop/autoTesting/.venv/Scripts/python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "--select",
+        "SIM117",
+        "--fix",
+        "tests/test_vision_role_deadline.py"
+      ],
+      "start_utc": "2026-10-15T18:28:47.8225357Z",
+      "end_utc": "2026-10-15T18:28:48.1864254Z",
+      "wall_s": 0.3612371,
+      "exit_code": 1,
+      "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\host-repair-1\\sim117-fix.stdout.log",
+      "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\host-repair-1\\sim117-fix.stderr.log"
+    }
+  ],
+  "failure": "Stop on failed selected command: sim117-fix",
+  "retained15": "Not rerun; prior successful source unchanged",
+  "source_edit": "Only Ruff SIM117 auto-fix on worker-created interaction test",
+  "test_sha256": "758348A34DBCE3B84CB752206E9B17DD3121F706EC946A314D6297461DFDA720",
+  "prior_host_wall_s": 21.7565407,
+  "maker_cli_wall_s": 197.703,
+  "maker_actual_total_tokens": 587481,
+  "additional_model_inference_calls": 0,
+  "native_orchestration_tokens": null
+}

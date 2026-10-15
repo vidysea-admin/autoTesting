@@ -10,7 +10,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from autotester.core.image_privacy import sanitized_images
-from autotester.providers.attempts import AttemptBudgetExhausted, attempt_budget
+from autotester.providers.attempts import AttemptBudgetExhausted, attempt_budget, check_deadline
 from autotester.providers.availability import AvailabilityFailure
 from autotester.providers.base import ProviderError, load_skill_prompt
 from autotester.providers.litellm_provider import LiteLLMProvider
@@ -83,6 +83,7 @@ def _safe_challenges(paths: list[Path], stack: ExitStack) -> tuple[list[Path], s
 
 
 def _evaluate(provider, result, expected, observed, fixture_hash, prompt_hash, budget):
+    check_deadline()
     result.observed = observed
     label = f"{provider.id}:{result.model}"
     if (provider._model != result.model
@@ -136,7 +137,9 @@ def probe_vision(provider: LiteLLMProvider) -> VisionProbeResult:
                                           prompt_file="vision-probe", fed_id=PROTOCOL)
                 _evaluate(provider, result, result.expected, observed,
                           fixture_hash, prompt_hash, budget)
+            check_deadline()
         except AttemptBudgetExhausted as exc:
+            result.status, result.capability = "inconclusive", None
             result.reason = "budget_exhausted"
             exc.probe_result = result
             raise

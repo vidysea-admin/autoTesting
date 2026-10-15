@@ -1,0 +1,24 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_selected_apply_and_restore_are_byte_exact_atomic_and_idempotent _____
+tests\test_provider_migration.py:49: in test_selected_apply_and_restore_are_byte_exact_atomic_and_idempotent
+    assert first[0].status == "applied" and b.read_bytes() == other
+E   assert ('applied' == 'applied'
+E     
+E       applied and b'{\r\n  "slu...": true}\r\n}' == b'{\r\n  "slu..."\r\n  }\r\n}'
+E     
+E     At index 110 diff: b'"' != b'\r'
+E     Use -v to get more diff)
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_migration.py::test_selected_apply_and_restore_are_byte_exact_atomic_and_idempotent
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_migration.py::test_selected_apply_and_restore_are_byte_exact_atomic_and_idempotent
+1 failed, 2 warnings in 1.13s

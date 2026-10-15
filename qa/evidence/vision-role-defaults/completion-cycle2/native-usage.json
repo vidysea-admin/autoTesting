@@ -1,0 +1,19 @@
+{
+  "token_metric": "actual_total",
+  "native_started_at": "2026-10-15T18:55:10+00:00",
+  "native_checkpoint_at": "2026-10-15T19:23:21.563302+00:00",
+  "native_wall_s": 1691.563302,
+  "native_actual_total_tokens": null,
+  "native_active_s": null,
+  "native_wait_s": null,
+  "cost": null,
+  "target_wall_s": 180,
+  "target_exceeded": true,
+  "prior_maker_cli_host_s": 277.69,
+  "prior_maker_actual_total_tokens_lower_bound": 587481,
+  "prior_checker_s": 179.751,
+  "prior_checker_actual_total_tokens_lower_bound": 843163,
+  "unknown_tails": true,
+  "approval_event": "First parser proof automatic approval review timed out; allowed retry interrupted then reactivated. All elapsed wall retained; no active-time subtraction reconstructed.",
+  "ratios": "UNVERIFIED; native tokens/active/wait unknown. Prior history never reset."
+}

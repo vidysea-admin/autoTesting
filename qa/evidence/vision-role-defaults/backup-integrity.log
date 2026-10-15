@@ -1,0 +1,22 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_stale_forged_target_and_tampered_backup_never_overwrite _________
+tests\test_provider_migration.py:86: in test_stale_forged_target_and_tampered_backup_never_overwrite
+    assert refused[0].status == "stale"
+E   AssertionError: assert 'restored' == 'stale'
+E     
+E     - stale
+E     + restored
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_migration.py::test_stale_forged_target_and_tampered_backup_never_overwrite
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_migration.py::test_stale_forged_target_and_tampered_backup_never_overwrite
+1 failed, 2 warnings in 1.01s

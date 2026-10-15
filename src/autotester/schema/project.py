@@ -15,7 +15,7 @@ from autotester.schema.schedule import ScheduleConfig
 from autotester.schema.team_enums import SourceOriginKind
 from autotester.schema.user_persona import PERSONA_ID_PATTERN, UXPolicy
 
-DEFAULT_VISION_PROVIDER = "gemini"
+DEFAULT_VISION_PROVIDER = "vision-chain"
 """AT-550: the vision provider `vision_ensemble()` substitutes when the
 configured `vision` string is empty. Named explicitly so the substitution
 is a documented constant, not a bare literal buried in the fallback — and so
@@ -69,9 +69,10 @@ class ProviderConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    vision: str = "gemini"
+    vision: str = DEFAULT_VISION_PROVIDER
     agent: str = "model-chain"
     judge: str = "model-chain"
+    vision_allow_gemini_fallback: bool = Field(default=True, strict=True)
 
     def for_role(self, role: ProviderRole) -> str:
         return getattr(self, str(role))

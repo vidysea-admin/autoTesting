@@ -1,9 +1,4 @@
-"""Guarded structured model transport, including capability-gated sanitized frames.
-
-LiteLLM retries are disabled: each physical request, including JSON repair, is
-reserved and recorded here. Credentials remain explicit endpoint arguments;
-the text guard precedes every completion. Video sampling lives in video_frames.
-"""
+"""Guard and account structured text/frame requests, refusing overdue logical results."""
 
 from __future__ import annotations
 
@@ -19,7 +14,7 @@ from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS
 from autotester.core.paths import repo_root
 from autotester.core.redact import assert_no_raw_secrets
 from autotester.providers import ollama_cloud
-from autotester.providers.attempts import reserve_attempt
+from autotester.providers.attempts import check_deadline, reserve_attempt
 from autotester.providers.availability import AvailabilityFailure, availability_reason
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.images import image_url_parts
@@ -216,7 +211,8 @@ class LiteLLMProvider(Provider):
 
     def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,
                   role: str, *, prompt_file: str | None, fed_id: str | None,
-                  retries: int = 0, generation_options: dict[str, Any] | None = None) -> Any:
+                  retries: int = 0,
+                  generation_options: dict[str, Any] | None = None) -> tuple[Any, float]:
         """ONE physical `litellm.completion` call: guarded first, recorded after."""
         self._guard(messages)
         output_options = ({} if ollama_cloud.is_ollama(self._model)
@@ -229,6 +225,7 @@ class LiteLLMProvider(Provider):
         if role == "judge":
             kwargs["temperature"] = 0
         receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+        deadline = time.monotonic() + kwargs["timeout"]
         started = time.perf_counter()
         try:
             response = _load_litellm().completion(**kwargs)
@@ -237,6 +234,7 @@ class LiteLLMProvider(Provider):
             receipt.latency_s = time.perf_counter() - started
             self.record(role, None, None, failed=True, prompt_file=prompt_file,
                         fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)
+            check_deadline(deadline)
             reason = availability_reason(exc)
             if reason is not None:
                 raise AvailabilityFailure(reason) from None
@@ -250,11 +248,11 @@ class LiteLLMProvider(Provider):
             role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,
             prompt_file=prompt_file, fed_id=fed_id,
             latency_s=time.perf_counter() - started, retries=retries)
+        check_deadline(deadline)
         try:
-            return response.choices[0].message
+            return response.choices[0].message, deadline
         except (AttributeError, IndexError, TypeError):
             raise ProviderError(f"{self.label} {role} call returned no message") from None
-
     def _structured(
         self, prompt: str, schema: type[ModelT] | None, *, role: str,
         images: list[Path] | None = None,
@@ -274,11 +272,13 @@ class LiteLLMProvider(Provider):
         meta = {"prompt_file": prompt_file, "fed_id": fed_id}
         if generation_options:
             meta["generation_options"] = generation_options
-        message = self._complete(messages, schema, strategy, role, **meta)
+        message, deadline = self._complete(messages, schema, strategy, role, **meta)
         try:
-            return parse_answer(message, strategy, schema,
+            answer = parse_answer(message, strategy, schema,
                                 strict=ollama_cloud.is_ollama(self._model)
                                 or self.options.get("strict", False))
+            check_deadline(deadline)
+            return answer
         except ValueError as exc:
             problem = _why(exc)
             if strategy != "json":
@@ -287,13 +287,14 @@ class LiteLLMProvider(Provider):
             {"role": "assistant", "content": getattr(message, "content", None) or ""},
             {"role": "user", "content": "That reply was not valid. Reply with ONE JSON object "
                                         f"only, matching the schema. Problem: {problem}"}]
-        message = self._complete(messages, schema, strategy, role, retries=1, **meta)
+        message, deadline = self._complete(messages, schema, strategy, role, retries=1, **meta)
         try:
-            return parse_answer(message, strategy, schema,
+            answer = parse_answer(message, strategy, schema,
                                 strict=ollama_cloud.is_ollama(self._model)
                                 or self.options.get("strict", False))
+            check_deadline(deadline)
+            return answer
         except ValueError as exc:
             raise ProviderError(self._unparsable(role, _why(exc))) from None
-
     def _unparsable(self, role: str, problem: str) -> str:
         return f"{self.label} {role} answer did not match the schema ({problem})"

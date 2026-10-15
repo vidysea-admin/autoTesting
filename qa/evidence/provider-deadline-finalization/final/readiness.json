@@ -1,0 +1,20 @@
+{
+  "sealed_candidate": "2bd305c6207599810268e6c54351f06b38356b57",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+    "preflight",
+    "--root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-final-proof",
+    "--import-name",
+    "autotester",
+    "--import-root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-final-proof\\src",
+    "--temp-parent",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-final-proof\\.work"
+  ],
+  "exit_code": 0,
+  "output_sha256": "baf17c7fa6e6233b8bb0cb26dbdb8febead3348ab8c968db9add662f51c63c8c",
+  "environment_sha256": "cd35519f94716695f3aaff99ac54691ba2e5ab4e8bb1abfd861c3a9e1f90a43a",
+  "tests_started": false
+}

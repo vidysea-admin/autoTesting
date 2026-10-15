@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.310" timestamp="2026-10-15T19:22:04.171447+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_roles" name="test_actual_parser_preserves_distinct_ensemble_model_tags_and_custom_settings" time="0.388"><failure message="AssertionError: assert ['litellm:oll...vision-chain'] == ['litellm:oll...vision-chain']&#10;  &#10;  At index 0 diff: 'litellm:ollama_chat/custom:cloud,litellm:gemini/custom:tag,litellm:ollama_chat/custom:cloud,vision-chain' != 'litellm:ollama_chat/custom:cloud'&#10;  Right contains 2 more items, first extra item: 'litellm:gemini/custom:tag'&#10;  Use -v to get more diff">tests\test_vision_roles.py:133: in test_actual_parser_preserves_distinct_ensemble_model_tags_and_custom_settings
+    assert [p.label for p in group] == [first, second, "vision-chain"]
+E   AssertionError: assert ['litellm:oll...vision-chain'] == ['litellm:oll...vision-chain']
+E     
+E     At index 0 diff: 'litellm:ollama_chat/custom:cloud,litellm:gemini/custom:tag,litellm:ollama_chat/custom:cloud,vision-chain' != 'litellm:ollama_chat/custom:cloud'
+E     Right contains 2 more items, first extra item: 'litellm:gemini/custom:tag'
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,19 @@
+{
+  "scope": "process only; no global environment mutation",
+  "tesseract_executable": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\tools\\tesseract-5.5.3\\tesseract.exe",
+  "executable_sha256": "c66f0f12ed76f6aa455dac97684bbc86756d6a732380bee09122454cfda3f420",
+  "english_data_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+  "original_discoverable": false,
+  "original_sanitation": {
+    "withheld": 1,
+    "reasons": [
+      "local_ocr_unavailable"
+    ]
+  },
+  "version": "tesseract v5.5.3.20260724",
+  "corrected_sanitation": {
+    "withheld": 0,
+    "reasons": [],
+    "included": 2
+  }
+}

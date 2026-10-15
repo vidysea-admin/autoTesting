@@ -1,0 +1,155 @@
+{
+  "source_test_candidate": "46c44842af2131ac9f3bae716c7d5a2270e97177",
+  "production_candidate": "deabe55a27a2baca2f2929761b245de7e16f0b61",
+  "groups": {
+    "A": {
+      "risk": "Shared absolute deadlines, physical accounting and safe terminal failures",
+      "controls": [
+        "tests/test_provider_deadlines.py::test_absolute_deadline_edge",
+        "tests/test_provider_deadlines.py::test_live_inner_scope_cannot_hide_expired_outer",
+        "tests/test_provider_deadlines.py::test_normal_scope_exit_rejects_late_success",
+        "tests/test_provider_deadlines.py::test_overdue_malformed_response_never_triggers_repair",
+        "tests/test_provider_deadlines.py::test_late_chain_response_preserves_usage_and_never_falls_back",
+        "tests/test_provider_deadlines.py::test_expired_vendor_failure_suppresses_canary_traceback",
+        "tests/test_provider_deadlines.py::test_final_allowed_call_succeeds_before_deadline",
+        "tests/test_provider_deadlines.py::test_direct_repair_keeps_its_own_physical_timeout_policy",
+        "tests/test_provider_deadlines.py::test_scope_exit_preserves_original_rejection"
+      ],
+      "mutations": [
+        {
+          "id": "deadline-edge",
+          "path": "src/autotester/providers/attempts.py",
+          "old": "if any(now >= limit for limit in limits):",
+          "new": "if any(now > limit for limit in limits):",
+          "node": "tests/test_provider_deadlines.py::test_absolute_deadline_edge",
+          "phase": "Exact deadline edge must reject; before-edge control must succeed"
+        },
+        {
+          "id": "enclosing-scope",
+          "path": "src/autotester/providers/attempts.py",
+          "old": "limits = [scope.deadline for scope in _SCOPES.get() if scope.deadline is not None]",
+          "new": "limits = [scope.deadline for scope in _SCOPES.get()[-1:] if scope.deadline is not None]",
+          "node": "tests/test_provider_deadlines.py::test_live_inner_scope_cannot_hide_expired_outer",
+          "phase": "Explicit check within live inner scope must reject expired outer before scope unwinding"
+        },
+        {
+          "id": "successful-scope-exit",
+          "path": "src/autotester/providers/attempts.py",
+          "old": "yield budget\n        check_deadline()",
+          "new": "yield budget",
+          "node": "tests/test_provider_deadlines.py::test_normal_scope_exit_rejects_late_success",
+          "phase": "Normal logical completion must be rejected at exit, without obscuring propagated original errors"
+        },
+        {
+          "id": "late-physical-success",
+          "path": "src/autotester/providers/litellm_provider.py",
+          "old": "latency_s=time.perf_counter() - started, retries=retries)\n        check_deadline(deadline)",
+          "new": "latency_s=time.perf_counter() - started, retries=retries)\n        pass",
+          "node": "tests/test_provider_deadlines.py::test_overdue_malformed_response_never_triggers_repair",
+          "phase": "An overdue successful physical response must stop before malformed-output repair can start"
+        },
+        {
+          "id": "late-physical-failure",
+          "path": "src/autotester/providers/litellm_provider.py",
+          "old": "fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            check_deadline(deadline)",
+          "new": "fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            pass",
+          "node": "tests/test_provider_deadlines.py::test_late_chain_response_preserves_usage_and_never_falls_back",
+          "phase": "Expired failed transport must remain physically failed and terminal, without an availability hop"
+        },
+        {
+          "id": "safe-exception-context",
+          "path": "src/autotester/providers/attempts.py",
+          "old": "\"provider attempt budget exhausted: wall_clock_s\") from None",
+          "new": "\"provider attempt budget exhausted: wall_clock_s\")",
+          "node": "tests/test_provider_deadlines.py::test_expired_vendor_failure_suppresses_canary_traceback",
+          "phase": "Formatted traceback checked only in memory; failure output is fixed content-free text"
+        }
+      ]
+    },
+    "B": {
+      "risk": "Initial/repair logical returns preserve their actual immutable physical anchor and outer deadlines",
+      "controls": [
+        "tests/test_provider_deadlines.py::test_slow_validation_checks_original_deadlines",
+        "tests/test_provider_deadlines.py::test_direct_repair_keeps_its_own_physical_timeout_policy",
+        "tests/test_provider_deadlines.py::test_final_allowed_call_succeeds_before_deadline",
+        "tests/test_provider_deadlines.py::test_expired_vendor_failure_suppresses_canary_traceback"
+      ],
+      "mutations": [
+        {
+          "id": "initial-parsed-return",
+          "path": "src/autotester/providers/litellm_provider.py",
+          "old": "check_deadline(deadline)\n            return answer\n        except ValueError as exc:\n            problem = _why(exc)",
+          "new": "pass\n            return answer\n        except ValueError as exc:\n            problem = _why(exc)",
+          "node": "tests/test_provider_deadlines.py::test_slow_validation_checks_original_deadlines",
+          "phase": "First strict parsed answer cannot escape before enclosing scope exits, including no-outer physical anchor"
+        },
+        {
+          "id": "repair-parsed-return",
+          "path": "src/autotester/providers/litellm_provider.py",
+          "old": "check_deadline(deadline)\n            return answer\n        except ValueError as exc:\n            raise ProviderError",
+          "new": "pass\n            return answer\n        except ValueError as exc:\n            raise ProviderError",
+          "node": "tests/test_provider_deadlines.py::test_slow_validation_checks_original_deadlines",
+          "phase": "Repaired strict answer retains its own unchanged request deadline and original outer scopes"
+        }
+      ]
+    },
+    "C": {
+      "risk": "Gemini media response/validation/failure boundaries and no overdue vision capability grant",
+      "controls": [
+        "tests/test_provider_deadline_consumers.py",
+        "tests/test_provider_deadlines.py::test_final_allowed_call_succeeds_before_deadline",
+        "tests/test_provider_deadlines.py::test_scope_exit_preserves_original_rejection"
+      ],
+      "mutations": [
+        {
+          "id": "gemini-response",
+          "path": "src/autotester/providers/gemini.py",
+          "old": "transport.remaining()\n                    check_deadline(deadline)\n                    candidates",
+          "new": "transport.remaining()\n                    pass\n                    candidates",
+          "node": "tests/test_provider_deadline_consumers.py::test_gemini_sdk_response_checks_enclosing_deadline",
+          "phase": "Expired SDK output cannot reach validation; physical success accounting is retained"
+        },
+        {
+          "id": "gemini-validation",
+          "path": "src/autotester/providers/gemini.py",
+          "old": "check_deadline(deadline)\n                        return result",
+          "new": "pass\n                        return result",
+          "node": "tests/test_provider_deadline_consumers.py::test_gemini_validated_media_is_checked_before_return",
+          "phase": "Slow validated SDK media result cannot leave the bounded response helper before caller persistence"
+        },
+        {
+          "id": "gemini-failure",
+          "path": "src/autotester/providers/gemini.py",
+          "old": "except Exception as exc:\n                check_deadline(deadline)",
+          "new": "except Exception as exc:\n                pass",
+          "node": "tests/test_provider_deadline_consumers.py::test_gemini_sdk_response_checks_enclosing_deadline",
+          "phase": "Recorded SDK transport failure after expiry propagates terminal deadline instead of generic provider failure"
+        },
+        {
+          "id": "probe-before-grant",
+          "path": "src/autotester/providers/vision_probe.py",
+          "old": "def _evaluate(provider, result, expected, observed, fixture_hash, prompt_hash, budget):\n    check_deadline()",
+          "new": "def _evaluate(provider, result, expected, observed, fixture_hash, prompt_hash, budget):\n    pass",
+          "node": "tests/test_provider_deadline_consumers.py::test_probe_cannot_grant_capability_after_deadline",
+          "phase": "An overdue observation cannot become a verified capability before scope unwinding"
+        },
+        {
+          "id": "probe-completion",
+          "path": "src/autotester/providers/vision_probe.py",
+          "old": "fixture_hash, prompt_hash, budget)\n            check_deadline()",
+          "new": "fixture_hash, prompt_hash, budget)\n            pass",
+          "node": "tests/test_provider_deadline_consumers.py::test_probe_completion_clears_capability_if_evaluation_runs_late",
+          "phase": "Late evaluation/cleanup must attach a truthful budget-exhausted probe result before outer scope exit"
+        },
+        {
+          "id": "probe-invalidation",
+          "path": "src/autotester/providers/vision_probe.py",
+          "old": "result.status, result.capability = \"inconclusive\", None",
+          "new": "pass",
+          "node": "tests/test_provider_deadline_consumers.py::test_probe_completion_clears_capability_if_evaluation_runs_late",
+          "phase": "Failure envelope cannot retain a previously constructed stale verified capability"
+        }
+      ]
+    }
+  }
+}

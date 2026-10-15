@@ -1,0 +1,49 @@
+[
+  {
+    "name": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp"
+    ],
+    "exit": 0,
+    "duration_s": 0.27898049999930663
+  },
+  {
+    "name": "consumer",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_vision_roles.py::test_actual_parser_preserves_distinct_ensemble_model_tags_and_custom_settings",
+      "tests/test_vision_roles.py::test_lazy_group_preserves_override_tags_all_ensemble_members_and_dedup",
+      "--tb=short",
+      "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp\\cycle2",
+      "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\completion-cycle2\\consumer.xml"
+    ],
+    "exit": 0,
+    "duration_s": 10.490995500003919
+  },
+  {
+    "name": "ruff",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/providers/__init__.py",
+      "tests/test_vision_roles.py"
+    ],
+    "exit": 0,
+    "duration_s": 0.32095249999838416
+  }
+]

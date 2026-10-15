@@ -1,0 +1,25 @@
+{
+  "status": "PARKED_DEPENDENCY_FIX",
+  "base": "57a010d5e4f5eebe21c605d704981a10dd2e8a5c",
+  "executed_risk_groups": 8,
+  "planned_risk_groups": 14,
+  "restored_cases": 15,
+  "pending_groups": [
+    "approved-target",
+    "backup-integrity",
+    "root-binding",
+    "atomic-byte-mode",
+    "dryrun-default",
+    "observable-default"
+  ],
+  "instrument_sha256": "eae34f6df330adbb1e7448475fa6770bb92884a2bd56c4766c61211527c619e5",
+  "spec_sha256": "8ea956e21e18206806bb1a3ce22659eb816025d60b82dac5d940498b2f02bb3e",
+  "receipt_sha256": "455a6f1105646c9ad3603d4a7f3c32e944ba9152a514107e51d2e2465070c877",
+  "reason": "Parent directed park for shared late-success deadline correction. Next indices8:12 had not been launched; no active handle. No ready-for-check or PASS claim.",
+  "usage": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "source_bytes": "Every current root source/config byte still matches frozen r2 full inventory."
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.989" timestamp="2026-10-15T12:19:24.478428+00:00" hostname="windows-demo"><testcase classname="tests.test_provider_migration" name="test_atomic_byte_extension_preserves_mixed_newlines_and_existing_text_behavior" time="0.148"><failure message="TypeError: write() argument must be str, not bytes">tests\test_provider_migration.py:109: in test_atomic_byte_extension_preserves_mixed_newlines_and_existing_text_behavior
+    write_bytes(target, raw)
+src\autotester\store\filestore.py:42: in write_bytes
+    _atomic_write(path, data)
+src\autotester\store\filestore.py:28: in _atomic_write
+    handle.write(text)
+E   TypeError: write() argument must be str, not bytes</failure></testcase></testsuite></testsuites>

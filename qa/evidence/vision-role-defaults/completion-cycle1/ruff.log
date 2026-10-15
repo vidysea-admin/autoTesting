@@ -1,0 +1,13 @@
+SIM117 Use a single `with` statement with multiple contexts instead of nested `with` statements
+  --> tests\test_vision_role_deadline.py:43:5
+   |
+42 |       monkeypatch.setattr(fake, "completion", complete)
+43 | /     with pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"):
+44 | |         with attempt_budget(4, wall_clock_s=5) as budget:
+   | |_________________________________________________________^
+45 |               chain.see_video(tmp_path / "synthetic.mp4", "neutral fixture", ProviderConfig)
+46 |       assert len(fake.calls) == len(budget.attempts) == 1
+   |
+help: Combine `with` statements
+
+Found 1 error.

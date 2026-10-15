@@ -99,12 +99,12 @@ def test_deadline_caps_transport_and_exhausts_before_next_request(monkeypatch, t
     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
     monkeypatch.setenv("OLLAMA_API_KEY", "fake-key")
     provider = LiteLLMProvider(model="ollama_chat/glm-5.3-flash")
-    with attempt_budget(2, wall_clock_s=7) as budget:
+    with (pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"),
+          attempt_budget(2, wall_clock_s=7) as budget):
         assert provider.act("prompt", AttemptAnswer).ok
         assert 0 < fake.calls[0]["timeout"] <= 7
         budget.deadline = 0
-        with pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"):
-            provider.act("prompt", AttemptAnswer)
+        provider.act("prompt", AttemptAnswer)
     assert len(fake.calls) == 1
     assert fake.calls[0]["num_retries"] == 0
     for invalid in (-1, float("inf"), float("nan")):

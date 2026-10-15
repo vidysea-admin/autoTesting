@@ -1,0 +1,69 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+__________ test_gemini_sdk_response_checks_enclosing_deadline[False] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C3A2643790>
+clock = [5]
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-deadline-finalization/.work/deadline-final-proof/.work/pytest-group-C/test_gemini_sdk_response_check0')
+failure = False
+
+    @pytest.mark.parametrize("failure", [False, True])
+    def test_gemini_sdk_response_checks_enclosing_deadline(monkeypatch, clock, tmp_path, failure):
+        calls = []
+    
+        def handle(request):
+            calls.append(request)
+            clock[0] = 5
+            if failure:
+                raise httpx.ReadTimeout("synthetic transport failure")
+            return httpx.Response(200, json={"candidates": [{"content": {"role": "model",
+                "parts": [{"text": json.dumps({"count": 1})}]}, "finishReason": "STOP"}]})
+    
+        monkeypatch.setattr(httpx, "HTTPTransport", lambda **kw: httpx.MockTransport(handle))
+        path = tmp_path / "synthetic.wav"
+        path.write_bytes(wav_bytes())
+    
+        class NeverParseAnswer(GuardAnswer):
+            @classmethod
+            def model_validate_json(cls, value, **kwargs):
+                pytest.fail("overdue SDK output reached validation")
+    
+        provider = GeminiProvider(api_key="synthetic-api-key")
+        with pytest.raises(AttemptBudgetExhausted), attempt_budget(1, 5) as budget:
+>           provider.see_video(path, "Observe", NeverParseAnswer)
+
+tests\test_provider_deadline_consumers.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:71: in see_video
+    return self._structured(prompt, schema, role="vision", video_path=path,
+src\autotester\providers\gemini.py:173: in _structured
+    return self._bounded_call(prompt, schema, role, video_path, images, options, timeout,
+src\autotester\providers\gemini.py:209: in _bounded_call
+    result = schema.model_validate_json(json.dumps(parsed), strict=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = <class 'test_provider_deadline_consumers.test_gemini_sdk_response_checks_enclosing_deadline.<locals>.NeverParseAnswer'>
+value = '{"count": 1}', kwargs = {'strict': True}
+
+    @classmethod
+    def model_validate_json(cls, value, **kwargs):
+>       pytest.fail("overdue SDK output reached validation")
+E       Failed: overdue SDK output reached validation
+
+tests\test_provider_deadline_consumers.py:95: Failed
+------------------------------ Captured log call ------------------------------
+WARNING  google_genai.models:models.py:6247 Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadline_consumers.py::test_gemini_sdk_response_checks_enclosing_deadline[False]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadline_consumers.py::test_gemini_sdk_response_checks_enclosing_deadline[False]
+1 failed, 1 passed, 2 warnings in 3.35s

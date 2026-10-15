@@ -1,0 +1,36 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__ test_migration_cli_defaults_to_plan_and_requires_explicit_selected_apply ___
+tests\test_provider_migration.py:122: in test_migration_cli_defaults_to_plan_and_requires_explicit_selected_apply
+    runpy.run_path(str(script), run_name="__main__")
+<frozen runpy>:291: in run_path
+    ???
+<frozen runpy>:98: in _run_module_code
+    ???
+<frozen runpy>:88: in _run_code
+    ???
+scripts\migrate_provider_roles.py:37: in <module>
+    main()
+scripts\migrate_provider_roles.py:22: in main
+    plan = ProviderMigrationPlan.model_validate_json(args.plan.read_bytes())
+                                                     ^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1050: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1044: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\role-proof-r2\\tmp-dryrun-default\\test_migration_cli_defaults_to0\\plan.json'
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_migration.py::test_migration_cli_defaults_to_plan_and_requires_explicit_selected_apply
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_migration.py::test_migration_cli_defaults_to_plan_and_requires_explicit_selected_apply
+1 failed, 2 warnings in 1.13s

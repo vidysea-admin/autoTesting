@@ -1,0 +1,26 @@
+{
+  "frozen_head": "8b330790d3abedbb3e631ba065f1b41b9639779e",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+    "preflight",
+    "--root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-proof",
+    "--import-name",
+    "autotester",
+    "--import-root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-proof\\src",
+    "--temp-parent",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-proof\\.work"
+  ],
+  "preflight_exit": 0,
+  "preflight_sha256": "69b5c5ecd1c699b33c6305121f00abed937640f0bae5356bf98595d0e7bcf325",
+  "environment_sha256": "92da57c3f06b9eabcf0d143cae3a5b20f8211f1c94acb672e54fceab1ed5c13c",
+  "selectors": [
+    "tests/test_provider_deadlines.py",
+    "tests/test_provider_deadline_consumers.py",
+    "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request",
+    "tests/test_text_availability.py::test_enclosing_budget_never_falls_through"
+  ],
+  "tests_started": false
+}

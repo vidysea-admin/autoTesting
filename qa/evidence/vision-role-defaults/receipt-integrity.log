@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_live_receipt_set_is_bound_and_tampering_never_becomes_capability ____
+tests\test_vision_roles.py:87: in test_live_receipt_set_is_bound_and_tampering_never_becomes_capability
+    with pytest.raises(ProviderError, match="invalid"):
+E   Failed: DID NOT RAISE ProviderError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_vision_roles.py::test_live_receipt_set_is_bound_and_tampering_never_becomes_capability
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_roles.py::test_live_receipt_set_is_bound_and_tampering_never_becomes_capability
+1 failed, 2 warnings in 2.56s

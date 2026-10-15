@@ -1,0 +1,80 @@
+{
+  "historical_sha": "fe6bb6af164099109d566d09a4cca020b9bb77a9",
+  "accepted_dependency_sha": "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58",
+  "merge_sha": "25ca7ad05555b2a49f4c8a64a6bb4bb2bf83d5bd",
+  "rows": [
+    {
+      "path": "src/autotester/providers/attempts.py",
+      "historical_inventory_sha256": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "historical_inventory_reconstruction": "CRLF_checkout",
+      "old_git_blob_sha256": "53a7579a86837481b8e7933beb3396ddd58a585f46a3c7d017de561615ba3c3d",
+      "accepted_dependency_git_blob_sha256": "5cc5f30393d2615957b692ee99d8b53d7c3a06b8b53a7b0e037c8a1f57f97960",
+      "current_raw_sha256": "b70e4f70b17a1655153cec3342f1f8710fee28a3a9c752d6a196d4a99d31351a",
+      "candidate_git_blob_equals_dependency": true,
+      "last_dependency_change": "10abf59e03e8459064508d309072f1bf05a1e4be"
+    },
+    {
+      "path": "src/autotester/providers/gemini.py",
+      "historical_inventory_sha256": "a6e8344589e578b8037261956bd4f21ff04a14215163865ec74c1e5e287f2147",
+      "historical_inventory_reconstruction": "CRLF_checkout",
+      "old_git_blob_sha256": "5f91782be2d253ad1af6d16284ac82ea3b0c2b4d71a488b80adc54dccc7151f5",
+      "accepted_dependency_git_blob_sha256": "68f96e883b99f037a9ae492c1d3110c95b4faae94f22c718348ffb65fc94c7b0",
+      "current_raw_sha256": "7faf741fc4d1c75794e3972f7f4afa959b64602131e74c0801d3e08f5b338911",
+      "candidate_git_blob_equals_dependency": true,
+      "last_dependency_change": "8b330790d3abedbb3e631ba065f1b41b9639779e"
+    },
+    {
+      "path": "src/autotester/providers/litellm_provider.py",
+      "historical_inventory_sha256": "bbb371d6d828c196f2eac26e273ffd72000a19d7f51400ebd413631c3d4bf60b",
+      "historical_inventory_reconstruction": "CRLF_checkout",
+      "old_git_blob_sha256": "7ed686b006b4b897670cda4564c818d11c1e56f4d6ffc12c51999449e0161fa3",
+      "accepted_dependency_git_blob_sha256": "eadb5bed5f926cdc7b7771fc4de2b66283ff810072c70562ba29d44c63a4a636",
+      "current_raw_sha256": "cab98b611fe378f817f09a1903f5d9816614db0d317bebc330610afaf0f8cfbe",
+      "candidate_git_blob_equals_dependency": true,
+      "last_dependency_change": "deabe55a27a2baca2f2929761b245de7e16f0b61"
+    },
+    {
+      "path": "src/autotester/providers/vision_probe.py",
+      "historical_inventory_sha256": "ffd309fc33989ee27b70abe917354d7be001da670050fa5aeb94c4e0c5d294db",
+      "historical_inventory_reconstruction": "git_blob",
+      "old_git_blob_sha256": "ffd309fc33989ee27b70abe917354d7be001da670050fa5aeb94c4e0c5d294db",
+      "accepted_dependency_git_blob_sha256": "ba284c3c05b4504f4b4eecf0e746e021b039e63a350264eab95926b6ce75a37c",
+      "current_raw_sha256": "ba284c3c05b4504f4b4eecf0e746e021b039e63a350264eab95926b6ce75a37c",
+      "candidate_git_blob_equals_dependency": true,
+      "last_dependency_change": "8b330790d3abedbb3e631ba065f1b41b9639779e"
+    },
+    {
+      "path": "tests/test_provider_attempts.py",
+      "historical_inventory_sha256": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e",
+      "historical_inventory_reconstruction": "CRLF_checkout",
+      "old_git_blob_sha256": "e5bb317f526de2a73637c839ab36161f6ab701f8c1acb63fb42114617b1f7014",
+      "accepted_dependency_git_blob_sha256": "52c392cd822d9ae52697ddf79e973777841a9c84c35d22096f5d54a80fae9da1",
+      "current_raw_sha256": "c7336dbba1c05a5d72866e023395642b97f509ae856180fc7668643292dd03d6",
+      "candidate_git_blob_equals_dependency": true,
+      "last_dependency_change": "8b330790d3abedbb3e631ba065f1b41b9639779e"
+    },
+    {
+      "path": "tests/test_text_availability.py",
+      "historical_inventory_sha256": "8add8080ffd9607da75a7aa8cb41d9397ca0b92623250876968f8cabb22a2220",
+      "historical_inventory_reconstruction": "CRLF_checkout",
+      "old_git_blob_sha256": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "accepted_dependency_git_blob_sha256": "6a7ce7832fcdc9a843a36429b7fe641a6f510ded6038c30a569cf8227bd425d3",
+      "current_raw_sha256": "617685b441ca1f311648e49f38e3ecfa137258a42dfc4b82de224c50cd2d26fc",
+      "candidate_git_blob_equals_dependency": true,
+      "last_dependency_change": "8b330790d3abedbb3e631ba065f1b41b9639779e"
+    }
+  ],
+  "reuse": "Historical14 mutation proofs retain old identities. Migration/receipt/schema guards are reusable because those source files remain unchanged; deadline-dependent completion behavior is superseded by accepted dependency tests, retained completion interaction and eight independent checks. Historical all-source equality is NOT claimed. Changed parser behavior requires new consumer evidence; prior untagged ensemble proof alone does not cover member models.",
+  "affected_guards": {
+    "attempts.py": "post-yield deadline and exhaustion behavior; dependency + interaction + checker boundary evidence",
+    "gemini.py": "deadline after transport and parse; accepted dependency evidence only, old probe establishes historic neutral geometry only",
+    "litellm_provider.py": "completion tuple plus post-parse deadline; accepted dependency + combined visual interaction",
+    "vision_probe.py": "deadline before verified publication; accepted dependency proof, no new live capability claim",
+    "test_provider_attempts.py": "scope-exit expectation updated in accepted dependency; old receipt not a current test run",
+    "test_text_availability.py": "exception context ordering updated in accepted dependency; old receipt not a current test run"
+  },
+  "evidence_links": [
+    "qa/evidence/vision-role-defaults/completion-cycle1/checker-packet.json",
+    "C:/Users/product/Desktop/autoTesting/.work/measured-vision-completion/checker/host-checks.json"
+  ]
+}

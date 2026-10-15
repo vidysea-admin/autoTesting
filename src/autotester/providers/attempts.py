@@ -44,8 +44,25 @@ def attempt_budget(max_calls: int, wall_clock_s: float | None = None) -> Iterato
     token = _SCOPES.set((*_SCOPES.get(), budget))
     try:
         yield budget
+        check_deadline()
     finally:
         _SCOPES.reset(token)
+
+
+def check_deadline(deadline: float | None = None) -> None:
+    """Reject overdue logical completion; physical receipts and count caps stay intact.
+
+    An explicit deadline is anchored by the transport before its request. Every
+    enclosing scope remains authoritative. This does not cancel an active socket.
+    """
+    with _LOCK:
+        limits = [scope.deadline for scope in _SCOPES.get() if scope.deadline is not None]
+        if deadline is not None:
+            limits.append(deadline)
+        now = time.monotonic()
+        if any(now >= limit for limit in limits):
+            raise AttemptBudgetExhausted(
+                "provider attempt budget exhausted: wall_clock_s") from None
 
 
 def reserve_attempt(provider: str, role: str, timeout_s: float) -> tuple[ProviderAttempt, float]:

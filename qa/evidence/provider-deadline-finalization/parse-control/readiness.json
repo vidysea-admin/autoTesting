@@ -1,0 +1,26 @@
+{
+  "frozen_head": "deabe55a27a2baca2f2929761b245de7e16f0b61",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+    "preflight",
+    "--root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-parse-control",
+    "--import-name",
+    "autotester",
+    "--import-root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-parse-control\\src",
+    "--temp-parent",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-parse-control\\.work"
+  ],
+  "preflight_exit": 0,
+  "preflight_sha256": "5d5e4b6e2bba9e79140736fecb3976c331a030824b3ba2151d2b3841dbecce98",
+  "environment_sha256": "fe1b25e8c15166e71c331791b36e85342f6889054fd6f2dc79ba4c4cb4c54df3",
+  "selectors": [
+    "tests/test_provider_deadlines.py::test_slow_validation_checks_original_deadlines",
+    "tests/test_provider_deadlines.py::test_direct_repair_keeps_its_own_physical_timeout_policy",
+    "tests/test_provider_deadlines.py::test_final_allowed_call_succeeds_before_deadline",
+    "tests/test_provider_deadlines.py::test_expired_vendor_failure_suppresses_canary_traceback"
+  ],
+  "tests_started": false
+}

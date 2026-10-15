@@ -1,0 +1,27 @@
+{
+  "status": "BLOCKED_ENVIRONMENT",
+  "completion_cycle": "vision-role-defaults measured resumption1",
+  "candidate": "25ca7ad05555b2a49f4c8a64a6bb4bb2bf83d5bd",
+  "invocation_count": 2,
+  "maximum_invocations_used": true,
+  "actual_cli_wall_s": 197.70300000000134,
+  "remaining_cumulative_wall_s": 102.29699999999866,
+  "input_tokens": 579937,
+  "cached_input_tokens_subset": 471040,
+  "output_tokens": 7544,
+  "actual_total_tokens": 587481,
+  "token_metric": "actual_total",
+  "active_wait_split": null,
+  "monetary_cost": null,
+  "historical_maker_usage": null,
+  "native_coordination_usage": null,
+  "prior_rejection": "Original approval rejection retained in task tool transcript; no launch occurred then",
+  "attempts": [
+    "maker-1/receipt.json",
+    "maker-2/receipt.json"
+  ],
+  "last_message": "maker-2/last-message.txt",
+  "packet": "C:/Users/product/Desktop/autoTesting/.work/wt-vision-roles/qa/evidence/vision-role-defaults/completion-cycle1/checker-packet.json",
+  "remaining_checks": "Writable preflight, retained15focusedcases, one deadlineinteraction, lint/design, final ready packet and independent measured checker",
+  "prohibition": "No native test bypass or additional CLI continuation authorized"
+}

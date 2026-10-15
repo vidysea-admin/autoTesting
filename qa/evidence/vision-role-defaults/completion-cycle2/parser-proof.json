@@ -1,0 +1,15 @@
+{
+  "anchor_count": 1,
+  "good_sha256": "9146af7f7229e473eb45f5ebda25899cfd5ca2c7f6215c51c14435c9768d75e0",
+  "mutated_sha256": "9575f343e0f7b091a7da0ab04cf56360a680edcf73f8869974d0332a8e50a1f8",
+  "restored_sha256": "9146af7f7229e473eb45f5ebda25899cfd5ca2c7f6215c51c14435c9768d75e0",
+  "red_exit": 1,
+  "restored_exit": 0,
+  "red_named_failure": "test_actual_parser_preserves_distinct_ensemble_model_tags_and_custom_settings",
+  "red_reason": "AssertionError: entire ensemble wrongly becomes first LiteLLM model tag",
+  "red_process_duration_s": null,
+  "restored_host_duration_s": 6.3986775,
+  "failed_harness": "Red test correctly failed; harness incorrectly required ProviderError text and exited1 before restored check. finally restored exact bytes; one separate restored-green test passed. No red rerun.",
+  "red_xml": "parser-red.xml",
+  "restored_xml": "parser-restored.xml"
+}

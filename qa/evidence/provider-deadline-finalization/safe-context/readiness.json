@@ -1,0 +1,29 @@
+{
+  "frozen_head": "10abf59e03e8459064508d309072f1bf05a1e4be",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+    "preflight",
+    "--root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-safe-context",
+    "--import-name",
+    "autotester",
+    "--import-root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-safe-context\\src",
+    "--temp-parent",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-deadline-finalization\\.work\\deadline-safe-context\\.work"
+  ],
+  "preflight_exit": 0,
+  "preflight_sha256": "b9901aca9eb39fd82d5d4d434aeeb0d3bb0ef5d798b242d2c67a6ead0600b18e",
+  "environment_sha256": "e620330da686d823e1f1c6c49900f9ed02f203afab048bafc555bfb54c876c20",
+  "selectors": [
+    "tests/test_provider_deadlines.py::test_expired_vendor_failure_suppresses_canary_traceback",
+    "tests/test_provider_deadlines.py::test_late_chain_response_preserves_usage_and_never_falls_back",
+    "tests/test_provider_deadlines.py::test_direct_transport_deadline_is_anchored_before_response",
+    "tests/test_provider_deadlines.py::test_final_allowed_call_succeeds_before_deadline",
+    "tests/test_provider_deadline_consumers.py::test_gemini_sdk_response_checks_enclosing_deadline",
+    "tests/test_provider_deadline_consumers.py::test_gemini_validated_media_is_checked_before_return",
+    "tests/test_provider_deadline_consumers.py::test_probe_completion_clears_capability_if_evaluation_runs_late"
+  ],
+  "tests_started": false
+}

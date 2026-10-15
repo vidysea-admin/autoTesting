@@ -1,0 +1,10 @@
+ M qa/manifests/vision-role-defaults.md
+?? qa/evidence/vision-role-defaults/completion-cycle1/HOST-FINALIZATION.txt
+?? qa/evidence/vision-role-defaults/completion-cycle1/checker-packet.json
+?? qa/evidence/vision-role-defaults/completion-cycle1/commands.json
+?? qa/evidence/vision-role-defaults/completion-cycle1/fingerprints.json
+?? qa/evidence/vision-role-defaults/completion-cycle1/immediate.diff
+?? qa/evidence/vision-role-defaults/completion-cycle1/preflight.log
+?? qa/evidence/vision-role-defaults/completion-cycle1/status.txt
+?? qa/evidence/vision-role-defaults/completion-cycle1/unit.diff
+?? tests/test_vision_role_deadline.py

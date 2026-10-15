@@ -1,0 +1,22 @@
+{
+  "status": "STOP_FAILURE",
+  "start_utc": "2026-10-15T18:25:56.9471294Z",
+  "end_utc": "2026-10-15T18:26:18.7096639Z",
+  "wall_s": 21.7565407,
+  "exit_code": 1,
+  "command": [
+    "C:/Users/product/Desktop/autoTesting/.venv/Scripts/python.exe",
+    "-B",
+    ".work/complete-vision-cycle1.py"
+  ],
+  "cwd": "C:/Users/product/Desktop/autoTesting/.work/wt-vision-roles",
+  "unchanged_worker_script": true,
+  "script_sha256": "5ED2A25B7E13A4431B0298EF0AFAB511DE8EE4449BA75F879AC2609CEA5806D6",
+  "stdout": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\host-checks-1\\stdout.log",
+  "stderr": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\host-checks-1\\stderr.log",
+  "command_durations": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\completion-cycle1\\commands.json",
+  "measurement_kind": "Host execution of unchanged worker-selected checks; separate from197.703s measured CLI wall",
+  "additional_model_inference_calls": 0,
+  "native_orchestration_tokens": null,
+  "historical_usage": null
+}

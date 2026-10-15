@@ -13,7 +13,8 @@ from autotester.providers.langchain_fallback import LangChainFallbackProvider
 from autotester.providers.litellm_provider import MODEL_ENV, LiteLLMProvider
 from autotester.providers.mock import MockProvider
 from autotester.providers.model_chain import ModelChainProvider
-from autotester.schema.enums import ProviderRole
+from autotester.providers.vision_roles import VISION_POLICY_ID, VisionChainProvider
+from autotester.schema.enums import ProviderRole, SourceKind
 from autotester.schema.project import ProviderConfig
 
 if TYPE_CHECKING:
@@ -26,6 +27,7 @@ _REGISTRY: dict[str, type[Provider]] = {
     "gemini": GeminiProvider,
     "litellm": LiteLLMProvider,
     "model-chain": ModelChainProvider,
+    VISION_POLICY_ID: VisionChainProvider,
 }
 
 _CREDENTIAL_IN_SPEC = re.compile(r"://|@|\s")
@@ -77,17 +79,19 @@ def parse_spec(spec: str) -> tuple[str, dict[str, Any]]:
 
 def for_role(project: Project | None = None,
              role: str | ProviderRole = ProviderRole.JUDGE) -> Provider:
-    """THE place that picks the provider for an `agent` or `judge` call (T-202, LL2).
+    """Resolve one configured role; visual ensembles use for_teaching_group.
 
     Precedence: a project that names something other than the schema default for
     this role (`providers.judge = "litellm:openai/gpt-4o"`) wins; else the
     `AUTOTESTER_MODEL` env var selects a LiteLLM model for everyone; else the
-    shipped default, the LangChain fallback chain. `vision` is refused: video
-    understanding is Gemini's Files API, chosen per ensemble by the video stage."""
+    shipped text chain. The vision default is a receipt-bound independent policy
+    and never inherits the text model override."""
     role = ProviderRole(role)
     if role is ProviderRole.VISION:
-        raise ProviderError("for_role serves the agent and judge roles; the vision "
-                            "role is chosen by the video stage (Gemini)")
+        members = for_teaching_group(project, SourceKind.VIDEO)
+        if len(members) != 1:
+            raise ProviderError("vision ensemble requires for_teaching_group")
+        return members[0]
     default = _DEFAULTS.for_role(role)
     spec = project.providers.for_role(role) if project is not None else default
     env_model = os.environ.get(MODEL_ENV, "").strip()
@@ -95,6 +99,34 @@ def for_role(project: Project | None = None,
         return get("litellm", model=env_model)
     provider_id, options = parse_spec(spec)
     return get(provider_id, **options)
+
+
+def for_teaching_group(project: Project | None, kind: SourceKind, *,
+                       override: str | None = None) -> list[Provider]:
+    """Lazily resolve all ordered ensemble members; fallback remains inside a member."""
+    kind = SourceKind(kind)
+    if override is None and kind is not SourceKind.VIDEO:
+        return [for_role(project, ProviderRole.AGENT)]
+    config = project.providers if project is not None else _DEFAULTS
+    spec = override if override is not None else config.vision
+    if override is None and not config._configured_vision_providers():
+        spec = config.vision_ensemble()[0]
+    members = []
+    for member in dict.fromkeys(part.strip() for part in spec.split(",")):
+        name, member_options = parse_spec(member)
+        if name == VISION_POLICY_ID:
+            member_options["allow_gemini_fallback"] = config.vision_allow_gemini_fallback
+        members.append(get(name, **member_options))
+    return members
+
+
+def for_teaching(project: Project | None, kind: SourceKind, *,
+                 override: str | None = None) -> Provider:
+    """Singleton convenience; video ensemble consumers must use the group API."""
+    members = for_teaching_group(project, kind, override=override)
+    if len(members) != 1:
+        raise ProviderError("teaching ensemble requires for_teaching_group")
+    return members[0]
 
 
 def why_unavailable(provider: Provider) -> str | None:
@@ -120,4 +152,5 @@ def available_ids() -> list[str]:
 
 
 __all__ = ["DEFAULT_SPEC", "ModelChainProvider", "Provider", "ProviderError", "Unsupported",
-           "available_ids", "for_role", "get", "parse_spec", "register", "why_unavailable"]
+           "available_ids", "for_role", "for_teaching", "for_teaching_group", "get",
+           "parse_spec", "register", "why_unavailable"]

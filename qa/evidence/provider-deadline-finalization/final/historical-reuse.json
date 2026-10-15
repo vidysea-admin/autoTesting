@@ -1,0 +1,460 @@
+{
+  "policy": "Historical runs retain their own SHA/count. Only exact unchanged ASTs/environment bindings support selective historical context; changed boundaries have final focused proofs. No synthetic same-SHA combined run.",
+  "final_seal": "2bd305c6207599810268e6c54351f06b38356b57",
+  "historical": [
+    {
+      "receipt": "qa\\evidence\\provider-deadline-finalization\\initial-receipt.json",
+      "receipt_sha256": "e235701aa2a8c6a2e1e6ca964165e8eea6abf89ef9f96896ad80986f75bd86f7",
+      "frozen_head": "8b330790d3abedbb3e631ba065f1b41b9639779e",
+      "environment_equal": {
+        "python": true,
+        "version": true,
+        "dependencies": true,
+        "fixtures_lock": true
+      },
+      "exact_unchanged_files": [
+        "src/autotester/providers/gemini.py",
+        "src/autotester/providers/gemini_files.py",
+        "src/autotester/providers/vision_probe.py",
+        "src/autotester/providers/video_frames.py",
+        "src/autotester/providers/model_chain.py",
+        "src/autotester/providers/availability.py",
+        "src/autotester/providers/base.py",
+        "tests/test_provider_deadline_consumers.py",
+        "tests/test_provider_attempts.py",
+        "tests/test_text_availability.py"
+      ],
+      "changed_files_not_reused_wholesale": [
+        "src/autotester/providers/attempts.py",
+        "src/autotester/providers/litellm_provider.py",
+        "tests/test_provider_deadlines.py"
+      ],
+      "function_comparison": [
+        {
+          "path": "src/autotester/providers/attempts.py",
+          "unchanged_functions": [
+            "attempt_budget",
+            "reserve_attempt",
+            "__init__",
+            "used"
+          ],
+          "changed_or_added_functions": [
+            "check_deadline"
+          ],
+          "before_ast_functions": {
+            "attempt_budget": "9ed4c7af03d36e4575fb758cbc1798a4f13198483824e77415f9d1cbd6d0652a",
+            "check_deadline": "5fdfb3344b7842b7902bc0a7cab6fc2ac0def1ffcca9a19f136d674db9f05f23",
+            "reserve_attempt": "a1ea1cd8ea8f61eb020a99c959bff83f4b7ede0ef4d5725fdd68f588e892d4f0",
+            "__init__": "268cc8be217faf05211322f5f002b68c86325129b3715a2e3503c32f9bddbe4d",
+            "used": "fbe80b0dcd6120d36aac6c42616050cf4f486348282f7e226f1d13732e502758"
+          },
+          "after_ast_functions": {
+            "attempt_budget": "9ed4c7af03d36e4575fb758cbc1798a4f13198483824e77415f9d1cbd6d0652a",
+            "check_deadline": "674dd7e8fd6c25f099efc235f6719fce7c048b13b410ec025afac3619f9b8c22",
+            "reserve_attempt": "a1ea1cd8ea8f61eb020a99c959bff83f4b7ede0ef4d5725fdd68f588e892d4f0",
+            "__init__": "268cc8be217faf05211322f5f002b68c86325129b3715a2e3503c32f9bddbe4d",
+            "used": "fbe80b0dcd6120d36aac6c42616050cf4f486348282f7e226f1d13732e502758"
+          }
+        },
+        {
+          "path": "src/autotester/providers/litellm_provider.py",
+          "unchanged_functions": [
+            "_load_litellm",
+            "_env_secret_values",
+            "_texts",
+            "_why",
+            "__init__",
+            "_endpoint",
+            "_missing_keys",
+            "unavailable_reason",
+            "available",
+            "_require_ready",
+            "see_video",
+            "act",
+            "judge",
+            "_strategy",
+            "_secret_values",
+            "guard_text",
+            "_guard",
+            "_failure",
+            "_unparsable"
+          ],
+          "changed_or_added_functions": [
+            "_complete",
+            "_structured"
+          ],
+          "before_ast_functions": {
+            "_load_litellm": "25e414625731f3c1e1f4743add18da5452677acb3b5ac03b341b0187b026849e",
+            "_env_secret_values": "d4c811847716fd850b8c25355bfef1e438a9da5373494c952be76cefbcf24f12",
+            "_texts": "f0027a89ed635c6cce6da8b7a9c73cddb06ff9cd1cabceb17179de58208c6222",
+            "_why": "3ab7b695a24f73dfa3dd1bb786b96674ed4dbd33364a02bc955323e8dd098e08",
+            "__init__": "c97b74761dd2393bf8c05ff6ae026b6bd72f0b1d315f5a3803899fe55a565981",
+            "_endpoint": "eb6d1d39dbc553d432717b1168ad0e75d9fc1e16029e802ef64993c7067c5f48",
+            "_missing_keys": "2e458b6f86bad3747f4a17aebbb065b30508883943f72b171313afe58f35644b",
+            "unavailable_reason": "ca880f0f3139d10691c8d056d9e86c09b466c38f82a13186221ee10be2e1b55e",
+            "available": "7131b2e64d6bc59c81c42418c89a18a574ac3142a2838d82f496a21ac42834e6",
+            "_require_ready": "0aa4bdf85ce94e97b257a18e61be2b1d768662db420788624ec81780d6ced2ab",
+            "see_video": "c91f95bc8c730dd13efddc711ad0ba3dd6c31c88048626c31742adcb38e5f8dd",
+            "act": "87dadb7271c5afe8209914d54df5e78bdb0cc556418930fece6b491659ab888a",
+            "judge": "92939496fb4887995a624c77fc48395a1422925b06d8fda18db68c7920b0e457",
+            "_strategy": "11f3e520a28b220557570b7c789b2d34f87bc1ef7b1e0e2e7bdfab3e6e239fde",
+            "_secret_values": "3fb623d1f24c8e41156c3eb4f33e297ff974eff69890ec2b89ccce25f3c3227a",
+            "guard_text": "ccddf8f0ec643bc8ca4a94e1e6dde7f37005debbb766a389a67f22772c95c62e",
+            "_guard": "55182bf3f430a60ae5a6a191254ae750664d994a30b512114bd4185572bdf821",
+            "_failure": "0a2b651d4c3188dd747b621a101efe54ca643e72b98736b5faa643db614cfb3b",
+            "_complete": "9ff00196ad1c0aa57c238f2f86a1569b77da162d7288c52f27d4d1e92d721dcb",
+            "_structured": "3f3688474e5bcb75c227e9097ed7c7644ccf09d0e8720a56579c1f34f9f48150",
+            "_unparsable": "f1e01e53677834510bd9951e533db2e7a37c96d8fc3f461e21253480ae681c89"
+          },
+          "after_ast_functions": {
+            "_load_litellm": "25e414625731f3c1e1f4743add18da5452677acb3b5ac03b341b0187b026849e",
+            "_env_secret_values": "d4c811847716fd850b8c25355bfef1e438a9da5373494c952be76cefbcf24f12",
+            "_texts": "f0027a89ed635c6cce6da8b7a9c73cddb06ff9cd1cabceb17179de58208c6222",
+            "_why": "3ab7b695a24f73dfa3dd1bb786b96674ed4dbd33364a02bc955323e8dd098e08",
+            "__init__": "c97b74761dd2393bf8c05ff6ae026b6bd72f0b1d315f5a3803899fe55a565981",
+            "_endpoint": "eb6d1d39dbc553d432717b1168ad0e75d9fc1e16029e802ef64993c7067c5f48",
+            "_missing_keys": "2e458b6f86bad3747f4a17aebbb065b30508883943f72b171313afe58f35644b",
+            "unavailable_reason": "ca880f0f3139d10691c8d056d9e86c09b466c38f82a13186221ee10be2e1b55e",
+            "available": "7131b2e64d6bc59c81c42418c89a18a574ac3142a2838d82f496a21ac42834e6",
+            "_require_ready": "0aa4bdf85ce94e97b257a18e61be2b1d768662db420788624ec81780d6ced2ab",
+            "see_video": "c91f95bc8c730dd13efddc711ad0ba3dd6c31c88048626c31742adcb38e5f8dd",
+            "act": "87dadb7271c5afe8209914d54df5e78bdb0cc556418930fece6b491659ab888a",
+            "judge": "92939496fb4887995a624c77fc48395a1422925b06d8fda18db68c7920b0e457",
+            "_strategy": "11f3e520a28b220557570b7c789b2d34f87bc1ef7b1e0e2e7bdfab3e6e239fde",
+            "_secret_values": "3fb623d1f24c8e41156c3eb4f33e297ff974eff69890ec2b89ccce25f3c3227a",
+            "guard_text": "ccddf8f0ec643bc8ca4a94e1e6dde7f37005debbb766a389a67f22772c95c62e",
+            "_guard": "55182bf3f430a60ae5a6a191254ae750664d994a30b512114bd4185572bdf821",
+            "_failure": "0a2b651d4c3188dd747b621a101efe54ca643e72b98736b5faa643db614cfb3b",
+            "_complete": "730fb5f6360a4f8388f2a9c02de3a7e87e6e2e2926a4bfbf9815b96932f0b7cc",
+            "_structured": "0f18f6f3b369f4fa00ac782b83dae1dfca2287c4e981e1c30982bee4b9c4cc07",
+            "_unparsable": "f1e01e53677834510bd9951e533db2e7a37c96d8fc3f461e21253480ae681c89"
+          }
+        },
+        {
+          "path": "tests/test_provider_deadlines.py",
+          "unchanged_functions": [
+            "clock",
+            "test_absolute_deadline_edge",
+            "test_normal_scope_exit_rejects_late_success",
+            "test_scope_exit_preserves_original_rejection",
+            "test_live_inner_scope_cannot_hide_expired_outer",
+            "completion",
+            "test_final_allowed_call_succeeds_before_deadline",
+            "test_late_chain_response_preserves_usage_and_never_falls_back",
+            "test_direct_transport_deadline_is_anchored_before_response",
+            "test_json_repair_never_restarts_enclosing_deadline",
+            "complete"
+          ],
+          "changed_or_added_functions": [
+            "test_overdue_malformed_response_never_triggers_repair",
+            "test_expired_vendor_failure_suppresses_canary_traceback",
+            "test_slow_validation_checks_original_deadlines",
+            "test_direct_repair_keeps_its_own_physical_timeout_policy",
+            "overdue",
+            "repaired",
+            "late_failure",
+            "model_validate_json"
+          ],
+          "before_ast_functions": {
+            "clock": "943a5ebe6697ee55754424f0c79134b0570ffd21238373453242d1da0b389cb6",
+            "test_absolute_deadline_edge": "a48870b20d6ac45cfae9be706fb6e5d85ccbb466b542d5d1365032264ece4de8",
+            "test_normal_scope_exit_rejects_late_success": "6e77f5fa9f74aacfdf4e3c5418ba72882fd4a4ef7f3084e381694c2254c2c60c",
+            "test_scope_exit_preserves_original_rejection": "ed4f74748dae532b30f89de26ba9c147e8ff0d5a115638f0ab5e24be009f7569",
+            "test_live_inner_scope_cannot_hide_expired_outer": "8e00429689a03447eea219bb28b3fcb447113bee9156dcaa2b0acc09226a8150",
+            "completion": "bfa6273f06fba848999ff4b4157c549f7b5c330854df163f5b01094f0c3bb697",
+            "test_final_allowed_call_succeeds_before_deadline": "7927326c8f32f2102832ca764aa0dfbac054bf1453f8f744f498f263ee31365c",
+            "test_late_chain_response_preserves_usage_and_never_falls_back": "12ae989ab064a0419ca1de7c732556a99b89e4e515dad96dafa5eacb85dba185",
+            "test_direct_transport_deadline_is_anchored_before_response": "6e5f1ab94114dad6dcd224ec270f4c0ccfc555fda51e42abf9ff27379c0376c8",
+            "test_json_repair_never_restarts_enclosing_deadline": "0ed7c8793e92e7a2aad39766214f492b5982b7622a917703f051de054a8555ea",
+            "complete": "4bd459f46ebc510e2da54966e274f88827ad414150e72c5a413018d797ec7802",
+            "repaired": "b0e4153ef5f4fc67eb6f4c40b99fc7399705bcc5a2400fcfd8195b3eff6b0f66"
+          },
+          "after_ast_functions": {
+            "clock": "943a5ebe6697ee55754424f0c79134b0570ffd21238373453242d1da0b389cb6",
+            "test_absolute_deadline_edge": "a48870b20d6ac45cfae9be706fb6e5d85ccbb466b542d5d1365032264ece4de8",
+            "test_normal_scope_exit_rejects_late_success": "6e77f5fa9f74aacfdf4e3c5418ba72882fd4a4ef7f3084e381694c2254c2c60c",
+            "test_scope_exit_preserves_original_rejection": "ed4f74748dae532b30f89de26ba9c147e8ff0d5a115638f0ab5e24be009f7569",
+            "test_live_inner_scope_cannot_hide_expired_outer": "8e00429689a03447eea219bb28b3fcb447113bee9156dcaa2b0acc09226a8150",
+            "completion": "bfa6273f06fba848999ff4b4157c549f7b5c330854df163f5b01094f0c3bb697",
+            "test_final_allowed_call_succeeds_before_deadline": "7927326c8f32f2102832ca764aa0dfbac054bf1453f8f744f498f263ee31365c",
+            "test_late_chain_response_preserves_usage_and_never_falls_back": "12ae989ab064a0419ca1de7c732556a99b89e4e515dad96dafa5eacb85dba185",
+            "test_direct_transport_deadline_is_anchored_before_response": "6e5f1ab94114dad6dcd224ec270f4c0ccfc555fda51e42abf9ff27379c0376c8",
+            "test_overdue_malformed_response_never_triggers_repair": "f113ed88b0fbda523a3412bdc4d575f4a1b5d0bd268d251c225b82b8e8703804",
+            "test_json_repair_never_restarts_enclosing_deadline": "0ed7c8793e92e7a2aad39766214f492b5982b7622a917703f051de054a8555ea",
+            "test_expired_vendor_failure_suppresses_canary_traceback": "e1fe0c6bcdcfa7e27e436990e66d4fa8c12b7400c6ca5f4032c9f0f23568a217",
+            "test_slow_validation_checks_original_deadlines": "54fc6f7bcb48dce0f2bfecf06fa5a357fb911f99dbb77663ac93ef5ed72603ae",
+            "test_direct_repair_keeps_its_own_physical_timeout_policy": "88f17ec23016ae9a051100446acdc5695ac32e8d53021951f6704e581b556ac9",
+            "complete": "4bd459f46ebc510e2da54966e274f88827ad414150e72c5a413018d797ec7802",
+            "overdue": "8b3436e7afbec619a37fff6d09a1e47b5884876d0bfe36eb04dea1882cc7deaa",
+            "repaired": "3f28966cbcfca938174ff6c0e12d04ddc23cce24d40a97aeba7b9876e87912ac",
+            "late_failure": "2dc03c5cd19a551bffd1fd062e8ebde9bf8724998f537f11da1b199987390097",
+            "model_validate_json": "e45dc0987a223fe37ebabbc487b7d7320a7f6d3e0b10c09c34db0b1b1331d6ed"
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "qa\\evidence\\provider-deadline-finalization\\safe-context\\initial-receipt.json",
+      "receipt_sha256": "88069858f6473895d1441db7e37a9b62265e3c418d366b816fe5b9ace0d3f244",
+      "frozen_head": "10abf59e03e8459064508d309072f1bf05a1e4be",
+      "environment_equal": {
+        "python": true,
+        "version": true,
+        "dependencies": true,
+        "fixtures_lock": true
+      },
+      "exact_unchanged_files": [
+        "src/autotester/providers/attempts.py",
+        "src/autotester/providers/gemini.py",
+        "src/autotester/providers/gemini_files.py",
+        "src/autotester/providers/vision_probe.py",
+        "src/autotester/providers/video_frames.py",
+        "src/autotester/providers/model_chain.py",
+        "src/autotester/providers/availability.py",
+        "src/autotester/providers/base.py",
+        "tests/test_provider_deadline_consumers.py",
+        "tests/test_provider_attempts.py",
+        "tests/test_text_availability.py"
+      ],
+      "changed_files_not_reused_wholesale": [
+        "src/autotester/providers/litellm_provider.py",
+        "tests/test_provider_deadlines.py"
+      ],
+      "function_comparison": [
+        {
+          "path": "src/autotester/providers/litellm_provider.py",
+          "unchanged_functions": [
+            "_load_litellm",
+            "_env_secret_values",
+            "_texts",
+            "_why",
+            "__init__",
+            "_endpoint",
+            "_missing_keys",
+            "unavailable_reason",
+            "available",
+            "_require_ready",
+            "see_video",
+            "act",
+            "judge",
+            "_strategy",
+            "_secret_values",
+            "guard_text",
+            "_guard",
+            "_failure",
+            "_unparsable"
+          ],
+          "changed_or_added_functions": [
+            "_complete",
+            "_structured"
+          ],
+          "before_ast_functions": {
+            "_load_litellm": "25e414625731f3c1e1f4743add18da5452677acb3b5ac03b341b0187b026849e",
+            "_env_secret_values": "d4c811847716fd850b8c25355bfef1e438a9da5373494c952be76cefbcf24f12",
+            "_texts": "f0027a89ed635c6cce6da8b7a9c73cddb06ff9cd1cabceb17179de58208c6222",
+            "_why": "3ab7b695a24f73dfa3dd1bb786b96674ed4dbd33364a02bc955323e8dd098e08",
+            "__init__": "c97b74761dd2393bf8c05ff6ae026b6bd72f0b1d315f5a3803899fe55a565981",
+            "_endpoint": "eb6d1d39dbc553d432717b1168ad0e75d9fc1e16029e802ef64993c7067c5f48",
+            "_missing_keys": "2e458b6f86bad3747f4a17aebbb065b30508883943f72b171313afe58f35644b",
+            "unavailable_reason": "ca880f0f3139d10691c8d056d9e86c09b466c38f82a13186221ee10be2e1b55e",
+            "available": "7131b2e64d6bc59c81c42418c89a18a574ac3142a2838d82f496a21ac42834e6",
+            "_require_ready": "0aa4bdf85ce94e97b257a18e61be2b1d768662db420788624ec81780d6ced2ab",
+            "see_video": "c91f95bc8c730dd13efddc711ad0ba3dd6c31c88048626c31742adcb38e5f8dd",
+            "act": "87dadb7271c5afe8209914d54df5e78bdb0cc556418930fece6b491659ab888a",
+            "judge": "92939496fb4887995a624c77fc48395a1422925b06d8fda18db68c7920b0e457",
+            "_strategy": "11f3e520a28b220557570b7c789b2d34f87bc1ef7b1e0e2e7bdfab3e6e239fde",
+            "_secret_values": "3fb623d1f24c8e41156c3eb4f33e297ff974eff69890ec2b89ccce25f3c3227a",
+            "guard_text": "ccddf8f0ec643bc8ca4a94e1e6dde7f37005debbb766a389a67f22772c95c62e",
+            "_guard": "55182bf3f430a60ae5a6a191254ae750664d994a30b512114bd4185572bdf821",
+            "_failure": "0a2b651d4c3188dd747b621a101efe54ca643e72b98736b5faa643db614cfb3b",
+            "_complete": "9ff00196ad1c0aa57c238f2f86a1569b77da162d7288c52f27d4d1e92d721dcb",
+            "_structured": "3f3688474e5bcb75c227e9097ed7c7644ccf09d0e8720a56579c1f34f9f48150",
+            "_unparsable": "f1e01e53677834510bd9951e533db2e7a37c96d8fc3f461e21253480ae681c89"
+          },
+          "after_ast_functions": {
+            "_load_litellm": "25e414625731f3c1e1f4743add18da5452677acb3b5ac03b341b0187b026849e",
+            "_env_secret_values": "d4c811847716fd850b8c25355bfef1e438a9da5373494c952be76cefbcf24f12",
+            "_texts": "f0027a89ed635c6cce6da8b7a9c73cddb06ff9cd1cabceb17179de58208c6222",
+            "_why": "3ab7b695a24f73dfa3dd1bb786b96674ed4dbd33364a02bc955323e8dd098e08",
+            "__init__": "c97b74761dd2393bf8c05ff6ae026b6bd72f0b1d315f5a3803899fe55a565981",
+            "_endpoint": "eb6d1d39dbc553d432717b1168ad0e75d9fc1e16029e802ef64993c7067c5f48",
+            "_missing_keys": "2e458b6f86bad3747f4a17aebbb065b30508883943f72b171313afe58f35644b",
+            "unavailable_reason": "ca880f0f3139d10691c8d056d9e86c09b466c38f82a13186221ee10be2e1b55e",
+            "available": "7131b2e64d6bc59c81c42418c89a18a574ac3142a2838d82f496a21ac42834e6",
+            "_require_ready": "0aa4bdf85ce94e97b257a18e61be2b1d768662db420788624ec81780d6ced2ab",
+            "see_video": "c91f95bc8c730dd13efddc711ad0ba3dd6c31c88048626c31742adcb38e5f8dd",
+            "act": "87dadb7271c5afe8209914d54df5e78bdb0cc556418930fece6b491659ab888a",
+            "judge": "92939496fb4887995a624c77fc48395a1422925b06d8fda18db68c7920b0e457",
+            "_strategy": "11f3e520a28b220557570b7c789b2d34f87bc1ef7b1e0e2e7bdfab3e6e239fde",
+            "_secret_values": "3fb623d1f24c8e41156c3eb4f33e297ff974eff69890ec2b89ccce25f3c3227a",
+            "guard_text": "ccddf8f0ec643bc8ca4a94e1e6dde7f37005debbb766a389a67f22772c95c62e",
+            "_guard": "55182bf3f430a60ae5a6a191254ae750664d994a30b512114bd4185572bdf821",
+            "_failure": "0a2b651d4c3188dd747b621a101efe54ca643e72b98736b5faa643db614cfb3b",
+            "_complete": "730fb5f6360a4f8388f2a9c02de3a7e87e6e2e2926a4bfbf9815b96932f0b7cc",
+            "_structured": "0f18f6f3b369f4fa00ac782b83dae1dfca2287c4e981e1c30982bee4b9c4cc07",
+            "_unparsable": "f1e01e53677834510bd9951e533db2e7a37c96d8fc3f461e21253480ae681c89"
+          }
+        },
+        {
+          "path": "tests/test_provider_deadlines.py",
+          "unchanged_functions": [
+            "clock",
+            "test_absolute_deadline_edge",
+            "test_normal_scope_exit_rejects_late_success",
+            "test_scope_exit_preserves_original_rejection",
+            "test_live_inner_scope_cannot_hide_expired_outer",
+            "completion",
+            "test_final_allowed_call_succeeds_before_deadline",
+            "test_late_chain_response_preserves_usage_and_never_falls_back",
+            "test_direct_transport_deadline_is_anchored_before_response",
+            "test_json_repair_never_restarts_enclosing_deadline",
+            "test_expired_vendor_failure_suppresses_canary_traceback",
+            "complete",
+            "late_failure"
+          ],
+          "changed_or_added_functions": [
+            "test_overdue_malformed_response_never_triggers_repair",
+            "test_slow_validation_checks_original_deadlines",
+            "test_direct_repair_keeps_its_own_physical_timeout_policy",
+            "overdue",
+            "repaired",
+            "model_validate_json"
+          ],
+          "before_ast_functions": {
+            "clock": "943a5ebe6697ee55754424f0c79134b0570ffd21238373453242d1da0b389cb6",
+            "test_absolute_deadline_edge": "a48870b20d6ac45cfae9be706fb6e5d85ccbb466b542d5d1365032264ece4de8",
+            "test_normal_scope_exit_rejects_late_success": "6e77f5fa9f74aacfdf4e3c5418ba72882fd4a4ef7f3084e381694c2254c2c60c",
+            "test_scope_exit_preserves_original_rejection": "ed4f74748dae532b30f89de26ba9c147e8ff0d5a115638f0ab5e24be009f7569",
+            "test_live_inner_scope_cannot_hide_expired_outer": "8e00429689a03447eea219bb28b3fcb447113bee9156dcaa2b0acc09226a8150",
+            "completion": "bfa6273f06fba848999ff4b4157c549f7b5c330854df163f5b01094f0c3bb697",
+            "test_final_allowed_call_succeeds_before_deadline": "7927326c8f32f2102832ca764aa0dfbac054bf1453f8f744f498f263ee31365c",
+            "test_late_chain_response_preserves_usage_and_never_falls_back": "12ae989ab064a0419ca1de7c732556a99b89e4e515dad96dafa5eacb85dba185",
+            "test_direct_transport_deadline_is_anchored_before_response": "6e5f1ab94114dad6dcd224ec270f4c0ccfc555fda51e42abf9ff27379c0376c8",
+            "test_json_repair_never_restarts_enclosing_deadline": "0ed7c8793e92e7a2aad39766214f492b5982b7622a917703f051de054a8555ea",
+            "test_expired_vendor_failure_suppresses_canary_traceback": "e1fe0c6bcdcfa7e27e436990e66d4fa8c12b7400c6ca5f4032c9f0f23568a217",
+            "complete": "4bd459f46ebc510e2da54966e274f88827ad414150e72c5a413018d797ec7802",
+            "repaired": "b0e4153ef5f4fc67eb6f4c40b99fc7399705bcc5a2400fcfd8195b3eff6b0f66",
+            "late_failure": "2dc03c5cd19a551bffd1fd062e8ebde9bf8724998f537f11da1b199987390097"
+          },
+          "after_ast_functions": {
+            "clock": "943a5ebe6697ee55754424f0c79134b0570ffd21238373453242d1da0b389cb6",
+            "test_absolute_deadline_edge": "a48870b20d6ac45cfae9be706fb6e5d85ccbb466b542d5d1365032264ece4de8",
+            "test_normal_scope_exit_rejects_late_success": "6e77f5fa9f74aacfdf4e3c5418ba72882fd4a4ef7f3084e381694c2254c2c60c",
+            "test_scope_exit_preserves_original_rejection": "ed4f74748dae532b30f89de26ba9c147e8ff0d5a115638f0ab5e24be009f7569",
+            "test_live_inner_scope_cannot_hide_expired_outer": "8e00429689a03447eea219bb28b3fcb447113bee9156dcaa2b0acc09226a8150",
+            "completion": "bfa6273f06fba848999ff4b4157c549f7b5c330854df163f5b01094f0c3bb697",
+            "test_final_allowed_call_succeeds_before_deadline": "7927326c8f32f2102832ca764aa0dfbac054bf1453f8f744f498f263ee31365c",
+            "test_late_chain_response_preserves_usage_and_never_falls_back": "12ae989ab064a0419ca1de7c732556a99b89e4e515dad96dafa5eacb85dba185",
+            "test_direct_transport_deadline_is_anchored_before_response": "6e5f1ab94114dad6dcd224ec270f4c0ccfc555fda51e42abf9ff27379c0376c8",
+            "test_overdue_malformed_response_never_triggers_repair": "f113ed88b0fbda523a3412bdc4d575f4a1b5d0bd268d251c225b82b8e8703804",
+            "test_json_repair_never_restarts_enclosing_deadline": "0ed7c8793e92e7a2aad39766214f492b5982b7622a917703f051de054a8555ea",
+            "test_expired_vendor_failure_suppresses_canary_traceback": "e1fe0c6bcdcfa7e27e436990e66d4fa8c12b7400c6ca5f4032c9f0f23568a217",
+            "test_slow_validation_checks_original_deadlines": "54fc6f7bcb48dce0f2bfecf06fa5a357fb911f99dbb77663ac93ef5ed72603ae",
+            "test_direct_repair_keeps_its_own_physical_timeout_policy": "88f17ec23016ae9a051100446acdc5695ac32e8d53021951f6704e581b556ac9",
+            "complete": "4bd459f46ebc510e2da54966e274f88827ad414150e72c5a413018d797ec7802",
+            "overdue": "8b3436e7afbec619a37fff6d09a1e47b5884876d0bfe36eb04dea1882cc7deaa",
+            "repaired": "3f28966cbcfca938174ff6c0e12d04ddc23cce24d40a97aeba7b9876e87912ac",
+            "late_failure": "2dc03c5cd19a551bffd1fd062e8ebde9bf8724998f537f11da1b199987390097",
+            "model_validate_json": "e45dc0987a223fe37ebabbc487b7d7320a7f6d3e0b10c09c34db0b1b1331d6ed"
+          }
+        }
+      ]
+    },
+    {
+      "receipt": "qa\\evidence\\provider-deadline-finalization\\parse-control\\initial-receipt.json",
+      "receipt_sha256": "d8edfe796ccac1beee51bcc844a4084ddcbd9d1a15fe6d350e791d319e4c0092",
+      "frozen_head": "deabe55a27a2baca2f2929761b245de7e16f0b61",
+      "environment_equal": {
+        "python": true,
+        "version": true,
+        "dependencies": true,
+        "fixtures_lock": true
+      },
+      "exact_unchanged_files": [
+        "src/autotester/providers/attempts.py",
+        "src/autotester/providers/litellm_provider.py",
+        "src/autotester/providers/gemini.py",
+        "src/autotester/providers/gemini_files.py",
+        "src/autotester/providers/vision_probe.py",
+        "src/autotester/providers/video_frames.py",
+        "src/autotester/providers/model_chain.py",
+        "src/autotester/providers/availability.py",
+        "src/autotester/providers/base.py",
+        "tests/test_provider_deadline_consumers.py",
+        "tests/test_provider_attempts.py",
+        "tests/test_text_availability.py"
+      ],
+      "changed_files_not_reused_wholesale": [
+        "tests/test_provider_deadlines.py"
+      ],
+      "function_comparison": [
+        {
+          "path": "tests/test_provider_deadlines.py",
+          "unchanged_functions": [
+            "clock",
+            "test_absolute_deadline_edge",
+            "test_normal_scope_exit_rejects_late_success",
+            "test_scope_exit_preserves_original_rejection",
+            "test_live_inner_scope_cannot_hide_expired_outer",
+            "completion",
+            "test_final_allowed_call_succeeds_before_deadline",
+            "test_late_chain_response_preserves_usage_and_never_falls_back",
+            "test_direct_transport_deadline_is_anchored_before_response",
+            "test_json_repair_never_restarts_enclosing_deadline",
+            "test_expired_vendor_failure_suppresses_canary_traceback",
+            "test_slow_validation_checks_original_deadlines",
+            "test_direct_repair_keeps_its_own_physical_timeout_policy",
+            "complete",
+            "repaired",
+            "late_failure",
+            "model_validate_json"
+          ],
+          "changed_or_added_functions": [
+            "test_overdue_malformed_response_never_triggers_repair",
+            "overdue"
+          ],
+          "before_ast_functions": {
+            "clock": "943a5ebe6697ee55754424f0c79134b0570ffd21238373453242d1da0b389cb6",
+            "test_absolute_deadline_edge": "a48870b20d6ac45cfae9be706fb6e5d85ccbb466b542d5d1365032264ece4de8",
+            "test_normal_scope_exit_rejects_late_success": "6e77f5fa9f74aacfdf4e3c5418ba72882fd4a4ef7f3084e381694c2254c2c60c",
+            "test_scope_exit_preserves_original_rejection": "ed4f74748dae532b30f89de26ba9c147e8ff0d5a115638f0ab5e24be009f7569",
+            "test_live_inner_scope_cannot_hide_expired_outer": "8e00429689a03447eea219bb28b3fcb447113bee9156dcaa2b0acc09226a8150",
+            "completion": "bfa6273f06fba848999ff4b4157c549f7b5c330854df163f5b01094f0c3bb697",
+            "test_final_allowed_call_succeeds_before_deadline": "7927326c8f32f2102832ca764aa0dfbac054bf1453f8f744f498f263ee31365c",
+            "test_late_chain_response_preserves_usage_and_never_falls_back": "12ae989ab064a0419ca1de7c732556a99b89e4e515dad96dafa5eacb85dba185",
+            "test_direct_transport_deadline_is_anchored_before_response": "6e5f1ab94114dad6dcd224ec270f4c0ccfc555fda51e42abf9ff27379c0376c8",
+            "test_json_repair_never_restarts_enclosing_deadline": "0ed7c8793e92e7a2aad39766214f492b5982b7622a917703f051de054a8555ea",
+            "test_expired_vendor_failure_suppresses_canary_traceback": "e1fe0c6bcdcfa7e27e436990e66d4fa8c12b7400c6ca5f4032c9f0f23568a217",
+            "test_slow_validation_checks_original_deadlines": "54fc6f7bcb48dce0f2bfecf06fa5a357fb911f99dbb77663ac93ef5ed72603ae",
+            "test_direct_repair_keeps_its_own_physical_timeout_policy": "88f17ec23016ae9a051100446acdc5695ac32e8d53021951f6704e581b556ac9",
+            "complete": "4bd459f46ebc510e2da54966e274f88827ad414150e72c5a413018d797ec7802",
+            "repaired": "3f28966cbcfca938174ff6c0e12d04ddc23cce24d40a97aeba7b9876e87912ac",
+            "late_failure": "2dc03c5cd19a551bffd1fd062e8ebde9bf8724998f537f11da1b199987390097",
+            "model_validate_json": "e45dc0987a223fe37ebabbc487b7d7320a7f6d3e0b10c09c34db0b1b1331d6ed"
+          },
+          "after_ast_functions": {
+            "clock": "943a5ebe6697ee55754424f0c79134b0570ffd21238373453242d1da0b389cb6",
+            "test_absolute_deadline_edge": "a48870b20d6ac45cfae9be706fb6e5d85ccbb466b542d5d1365032264ece4de8",
+            "test_normal_scope_exit_rejects_late_success": "6e77f5fa9f74aacfdf4e3c5418ba72882fd4a4ef7f3084e381694c2254c2c60c",
+            "test_scope_exit_preserves_original_rejection": "ed4f74748dae532b30f89de26ba9c147e8ff0d5a115638f0ab5e24be009f7569",
+            "test_live_inner_scope_cannot_hide_expired_outer": "8e00429689a03447eea219bb28b3fcb447113bee9156dcaa2b0acc09226a8150",
+            "completion": "bfa6273f06fba848999ff4b4157c549f7b5c330854df163f5b01094f0c3bb697",
+            "test_final_allowed_call_succeeds_before_deadline": "7927326c8f32f2102832ca764aa0dfbac054bf1453f8f744f498f263ee31365c",
+            "test_late_chain_response_preserves_usage_and_never_falls_back": "12ae989ab064a0419ca1de7c732556a99b89e4e515dad96dafa5eacb85dba185",
+            "test_direct_transport_deadline_is_anchored_before_response": "6e5f1ab94114dad6dcd224ec270f4c0ccfc555fda51e42abf9ff27379c0376c8",
+            "test_overdue_malformed_response_never_triggers_repair": "f113ed88b0fbda523a3412bdc4d575f4a1b5d0bd268d251c225b82b8e8703804",
+            "test_json_repair_never_restarts_enclosing_deadline": "0ed7c8793e92e7a2aad39766214f492b5982b7622a917703f051de054a8555ea",
+            "test_expired_vendor_failure_suppresses_canary_traceback": "e1fe0c6bcdcfa7e27e436990e66d4fa8c12b7400c6ca5f4032c9f0f23568a217",
+            "test_slow_validation_checks_original_deadlines": "54fc6f7bcb48dce0f2bfecf06fa5a357fb911f99dbb77663ac93ef5ed72603ae",
+            "test_direct_repair_keeps_its_own_physical_timeout_policy": "88f17ec23016ae9a051100446acdc5695ac32e8d53021951f6704e581b556ac9",
+            "complete": "4bd459f46ebc510e2da54966e274f88827ad414150e72c5a413018d797ec7802",
+            "overdue": "8b3436e7afbec619a37fff6d09a1e47b5884876d0bfe36eb04dea1882cc7deaa",
+            "repaired": "3f28966cbcfca938174ff6c0e12d04ddc23cce24d40a97aeba7b9876e87912ac",
+            "late_failure": "2dc03c5cd19a551bffd1fd062e8ebde9bf8724998f537f11da1b199987390097",
+            "model_validate_json": "e45dc0987a223fe37ebabbc487b7d7320a7f6d3e0b10c09c34db0b1b1331d6ed"
+          }
+        }
+      ]
+    }
+  ]
+}

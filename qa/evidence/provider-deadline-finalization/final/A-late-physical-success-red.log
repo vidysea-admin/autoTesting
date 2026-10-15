@@ -1,0 +1,35 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_overdue_malformed_response_never_triggers_repair ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020E9BA73E50>
+clock = [120]
+
+    def test_overdue_malformed_response_never_triggers_repair(monkeypatch, clock):
+        fake = install(monkeypatch, [])
+        monkeypatch.setenv("OLLAMA_API_KEY", "synthetic-deadline-key")
+    
+        def overdue(**kwargs):
+            fake.calls.append(kwargs)
+            clock[0] = 120
+            return reply("bad" if len(fake.calls) == 1 else '{"ok":true}')
+    
+        fake.completion = overdue
+        provider = LiteLLMProvider(model="ollama_chat/synthetic")
+>       with pytest.raises(AttemptBudgetExhausted):
+E       Failed: DID NOT RAISE AttemptBudgetExhausted
+
+tests\test_provider_deadlines.py:130: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadlines.py::test_overdue_malformed_response_never_triggers_repair
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadlines.py::test_overdue_malformed_response_never_triggers_repair
+1 failed, 2 warnings in 0.99s

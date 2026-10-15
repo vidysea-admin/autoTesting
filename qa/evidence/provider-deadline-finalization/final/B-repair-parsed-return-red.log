@@ -1,0 +1,74 @@
+.F.F                                                                     [100%]
+================================== FAILURES ===================================
+_________ test_slow_validation_checks_original_deadlines[False-True] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EFAC863350>
+clock = [120], repair = True, outer = False
+
+    @pytest.mark.parametrize("repair", [False, True])
+    @pytest.mark.parametrize("outer", [False, True])
+    def test_slow_validation_checks_original_deadlines(monkeypatch, clock, repair, outer):
+        replies = [reply("bad")] if repair else []
+        fake = install(monkeypatch, [*replies, reply('{"ok":true}')])
+        monkeypatch.setenv("OLLAMA_API_KEY", "synthetic-deadline-key")
+    
+        class SlowAnswer(DeadlineAnswer):
+            @classmethod
+            def model_validate_json(cls, value, **kwargs):
+                result = super().model_validate_json(value, **kwargs)
+                clock[0] = 5 if outer else 120
+                return result
+    
+        provider = LiteLLMProvider(model="ollama_chat/synthetic")
+        if outer:
+            with pytest.raises(AttemptBudgetExhausted), attempt_budget(2, 5) as budget:
+                provider.act("Decide", SlowAnswer)
+                pytest.fail("overdue validated output reached the consumer")
+            assert budget.used == len(fake.calls)
+            assert all(receipt.status == "succeeded" for receipt in budget.attempts)
+        else:
+>           with pytest.raises(AttemptBudgetExhausted):
+E           Failed: DID NOT RAISE AttemptBudgetExhausted
+
+tests\test_provider_deadlines.py:201: Failed
+__________ test_slow_validation_checks_original_deadlines[True-True] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EFAC8F7C90>
+clock = [5], repair = True, outer = True
+
+    @pytest.mark.parametrize("repair", [False, True])
+    @pytest.mark.parametrize("outer", [False, True])
+    def test_slow_validation_checks_original_deadlines(monkeypatch, clock, repair, outer):
+        replies = [reply("bad")] if repair else []
+        fake = install(monkeypatch, [*replies, reply('{"ok":true}')])
+        monkeypatch.setenv("OLLAMA_API_KEY", "synthetic-deadline-key")
+    
+        class SlowAnswer(DeadlineAnswer):
+            @classmethod
+            def model_validate_json(cls, value, **kwargs):
+                result = super().model_validate_json(value, **kwargs)
+                clock[0] = 5 if outer else 120
+                return result
+    
+        provider = LiteLLMProvider(model="ollama_chat/synthetic")
+        if outer:
+            with pytest.raises(AttemptBudgetExhausted), attempt_budget(2, 5) as budget:
+                provider.act("Decide", SlowAnswer)
+>               pytest.fail("overdue validated output reached the consumer")
+E               Failed: overdue validated output reached the consumer
+
+tests\test_provider_deadlines.py:197: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadlines.py::test_slow_validation_checks_original_deadlines[False-False]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadlines.py::test_slow_validation_checks_original_deadlines[False-True]
+FAILED tests/test_provider_deadlines.py::test_slow_validation_checks_original_deadlines[True-True]
+2 failed, 2 passed, 2 warnings in 0.96s

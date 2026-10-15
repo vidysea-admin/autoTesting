@@ -1,0 +1,38 @@
+.F                                                                       [100%]
+================================== FAILURES ===================================
+_____ test_late_chain_response_preserves_usage_and_never_falls_back[True] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026C0947DB90>
+clock = [5], failure = True
+
+    @pytest.mark.parametrize("failure", [False, True])
+    def test_late_chain_response_preserves_usage_and_never_falls_back(monkeypatch, clock, failure):
+        fake = completion(monkeypatch, clock, elapsed=5, failure=failure)
+        provider = ModelChainProvider()
+        with pytest.raises(AttemptBudgetExhausted), attempt_budget(3, 5) as budget:
+            provider.act("Decide", DeadlineAnswer)
+            pytest.fail("late logical success reached the consumer")
+        assert len(fake.calls) == budget.used == 1
+>       assert provider.served is None and provider.fallback_reasons == ()
+E       AssertionError: assert (None is None and ('litellm:oll...sh: service',) == ()
+E        +  where None = <autotester.providers.model_chain.ModelChainProvider object at 0x0000026C0947F110>.served
+E         
+E         Left contains one more item: 'litellm:ollama_chat/glm-5.3-flash: service'
+E         Use -v to get more diff)
+
+tests\test_provider_deadlines.py:104: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:154 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (service); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadlines.py::test_late_chain_response_preserves_usage_and_never_falls_back[False]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadlines.py::test_late_chain_response_preserves_usage_and_never_falls_back[True]
+1 failed, 1 passed, 2 warnings in 1.01s

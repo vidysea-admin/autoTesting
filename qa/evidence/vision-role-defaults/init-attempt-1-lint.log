@@ -1,0 +1,93 @@
+E501 Line too long (101 > 100)
+   --> src\autotester\providers\config_migration.py:104:101
+    |
+103 | def _migration_bytes(raw: bytes, entry: ProviderMigrationEntry) -> bytes:
+104 |     if entry.target != ProviderConfig() or _read_record(raw, entry.slug).get("providers") != _LEGACY:
+    |                                                                                                     ^
+105 |         raise ValueError("migration_requires_exact_original_and_approved_target")
+106 |     replacement = _replacement(raw, entry.target)
+    |
+
+E501 Line too long (102 > 100)
+   --> src\autotester\providers\config_migration.py:127:101
+    |
+127 | def _change_one(root: Path, entry: ProviderMigrationEntry, restore: bool) -> ProviderMigrationOutcome:
+    |                                                                                                     ^^
+128 |     outcome = ProviderMigrationOutcome(slug=entry.slug, status="skipped", reason="not_exact_legacy")
+129 |     if (entry.status != "eligible" or entry.target is None
+    |
+
+E501 Line too long (102 > 100)
+  --> src\autotester\providers\vision_roles.py:51:101
+   |
+49 |     def __init__(self, **options: Any) -> None:
+50 |         if options.pop("model", None) is not None or "vision_capabilities" in options:
+51 |             raise ProviderError("vision-chain model order is receipt-bound; use an explicit provider")
+   |                                                                                                     ^^
+52 |         allow = options.pop("allow_gemini_fallback", True)
+53 |         if type(allow) is not bool:
+   |
+
+E501 Line too long (104 > 100)
+  --> tests\test_provider_migration.py:61:101
+   |
+59 |     assert backup.read_bytes() == raw
+60 |     assert migration.change_legacy_roles(tmp_path, plan, ["demo"])[0].status == "unchanged"
+61 |     assert migration.change_legacy_roles(tmp_path, plan, ["demo"], restore=True)[0].status == "restored"
+   |                                                                                                     ^^^^
+62 |     assert a.read_bytes() == raw
+63 |     assert migration.change_legacy_roles(tmp_path, plan, ["demo"], restore=True)[0].status == "unchanged"
+   |
+
+E501 Line too long (105 > 100)
+  --> tests\test_provider_migration.py:63:101
+   |
+61 |     assert migration.change_legacy_roles(tmp_path, plan, ["demo"], restore=True)[0].status == "restored"
+62 |     assert a.read_bytes() == raw
+63 |     assert migration.change_legacy_roles(tmp_path, plan, ["demo"], restore=True)[0].status == "unchanged"
+   |                                                                                                     ^^^^^
+
+E501 Line too long (101 > 100)
+  --> tests\test_provider_migration.py:83:101
+   |
+81 |     applied = path.read_bytes()
+82 |     migration._backup_path(tmp_path, plan.entries[0]).write_bytes(b"corrupt")
+83 |     assert migration.change_legacy_roles(tmp_path, plan, ["demo"], restore=True)[0].status == "stale"
+   |                                                                                                     ^
+84 |     assert path.read_bytes() == applied
+   |
+
+RUF005 Consider `[*argv, "--apply"]` instead of concatenation
+   --> tests\test_provider_migration.py:121:38
+    |
+119 |     runpy.run_path(str(script), run_name="__main__")
+120 |     assert path.read_bytes() == raw and plan.is_file()
+121 |     monkeypatch.setattr(sys, "argv", argv+["--apply"])
+    |                                      ^^^^^^^^^^^^^^^^
+122 |     runpy.run_path(str(script), run_name="__main__")
+123 |     assert json.loads(path.read_bytes())["providers"] == ProviderConfig().model_dump()
+    |
+help: Replace with `[*argv, "--apply"]`
+
+E501 Line too long (105 > 100)
+  --> tests\test_vision_roles.py:91:101
+   |
+91 | def test_vision_chain_falls_back_only_on_eligible_failure_and_keeps_global_budget(tmp_path, monkeypatch):
+   |                                                                                                     ^^^^^
+92 |     monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+93 |     monkeypatch.setattr(LiteLLMProvider, "available", lambda self: True)
+   |
+
+E501 Line too long (106 > 100)
+   --> tests\test_vision_roles.py:108:101
+    |
+106 |     chain = VisionChainProvider()
+107 |     with attempt_budget(4) as budget:
+108 |         assert isinstance(chain.see_video(tmp_path/"neutral.mp4", "safe", ProviderConfig), ProviderConfig)
+    |                                                                                                     ^^^^^^
+109 |     assert calls == [DEEPSEEK, GEMINI_VISION_MODEL] and len(budget.attempts) == 2
+110 |     assert chain.served == "litellm:"+GEMINI_VISION_MODEL
+    |
+
+Found 9 errors.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

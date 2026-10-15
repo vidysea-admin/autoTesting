@@ -1,0 +1,110 @@
+.F                                                                       [100%]
+================================== FAILURES ===================================
+__________ test_gemini_sdk_response_checks_enclosing_deadline[True] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EE1CDD66D0>
+clock = [5]
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-deadline-finalization/.work/deadline-final-proof/.work/pytest-group-C/test_gemini_sdk_response_check1')
+failure = True
+
+    @pytest.mark.parametrize("failure", [False, True])
+    def test_gemini_sdk_response_checks_enclosing_deadline(monkeypatch, clock, tmp_path, failure):
+        calls = []
+    
+        def handle(request):
+            calls.append(request)
+            clock[0] = 5
+            if failure:
+                raise httpx.ReadTimeout("synthetic transport failure")
+            return httpx.Response(200, json={"candidates": [{"content": {"role": "model",
+                "parts": [{"text": json.dumps({"count": 1})}]}, "finishReason": "STOP"}]})
+    
+        monkeypatch.setattr(httpx, "HTTPTransport", lambda **kw: httpx.MockTransport(handle))
+        path = tmp_path / "synthetic.wav"
+        path.write_bytes(wav_bytes())
+    
+        class NeverParseAnswer(GuardAnswer):
+            @classmethod
+            def model_validate_json(cls, value, **kwargs):
+                pytest.fail("overdue SDK output reached validation")
+    
+        provider = GeminiProvider(api_key="synthetic-api-key")
+        with pytest.raises(AttemptBudgetExhausted), attempt_budget(1, 5) as budget:
+>           provider.see_video(path, "Observe", NeverParseAnswer)
+
+tests\test_provider_deadline_consumers.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\gemini.py:71: in see_video
+    return self._structured(prompt, schema, role="vision", video_path=path,
+src\autotester\providers\gemini.py:173: in _structured
+    return self._bounded_call(prompt, schema, role, video_path, images, options, timeout,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.gemini.GeminiProvider object at 0x000001EE1AAF3190>
+prompt = 'Observe'
+schema = <class 'test_provider_deadline_consumers.test_gemini_sdk_response_checks_enclosing_deadline.<locals>.NeverParseAnswer'>
+role = 'vision'
+video_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-deadline-finalization/.work/deadline-final-proof/.work/pytest-group-C/test_gemini_sdk_response_check1/synthetic.wav')
+images = None, options = None, timeout = 120.0, prompt_file = None
+fed_id = None
+
+    def _bounded_call(self, prompt: str, schema: type[ModelT], role: str,
+                      video_path: Path | None, images: list[Path] | None,
+                      options: VisionOptions | None, timeout: float,
+                      prompt_file: str | None, fed_id: str | None) -> ModelT:
+        from google import genai
+        from google.genai import types
+    
+        deadline = time.monotonic() + timeout
+        transport = GeminiDeadlineTransport(deadline, self, role,
+                                            prompt_file=prompt_file, fed_id=fed_id)
+        with httpx.Client(transport=transport, follow_redirects=False) as http_client:
+            client = genai.Client(api_key=self._api_key, http_options=types.HttpOptions(
+                timeout=max(1, int(timeout * 1000)), httpx_client=http_client,
+                retry_options=types.HttpRetryOptions(attempts=1)))
+            try:
+                contents = self._contents(client, prompt, video_path, images, deadline)
+                for _ in range(2):
+                    transport.remaining()
+                    response = client.models.generate_content(
+                        model=self._model, contents=contents, config=self._config(schema, options))
+                    transport.remaining()
+                    check_deadline(deadline)
+                    candidates = getattr(response, "candidates", None) or []
+                    if any(str(getattr(getattr(c, "finish_reason", None), "name", ""))
+                           == "MAX_TOKENS" for c in candidates):
+                        raise ProviderError(self._unparsed_reason(response, role))
+                    try:
+                        parsed = getattr(response, "parsed", None)
+                        if isinstance(parsed, BaseModel):
+                            parsed = parsed.model_dump(mode="json")
+                        if parsed is None:
+                            result = schema.model_validate_json(response.text, strict=True)
+                        else:
+                            result = schema.model_validate_json(json.dumps(parsed), strict=True)
+                        check_deadline(deadline)
+                        return result
+                    except (ValidationError, ValueError, TypeError, AttributeError):
+                        continue  # One bounded regeneration, without echoing rejected content.
+                raise ProviderError("Gemini returned JSON that does not fit the required schema")
+            except ProviderError:
+                raise
+            except Exception as exc:
+                pass
+>               raise ProviderError(f"Gemini {role} request failed: {type(exc).__name__}") from None
+E               autotester.providers.base.ProviderError: Gemini vision request failed: ReadTimeout
+
+src\autotester\providers\gemini.py:219: ProviderError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadline_consumers.py::test_gemini_sdk_response_checks_enclosing_deadline[False]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadline_consumers.py::test_gemini_sdk_response_checks_enclosing_deadline[True]
+1 failed, 1 passed, 2 warnings in 2.79s

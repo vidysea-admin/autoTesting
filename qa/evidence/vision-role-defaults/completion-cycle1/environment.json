@@ -1,0 +1,22 @@
+{
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "import_path": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src\\autotester"
+  ],
+  "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src",
+  "temp_parent": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp",
+  "dependencies": {
+    "pydantic": "2.13.5",
+    "pytest": "9.1.1",
+    "Pillow": "12.3.0",
+    "litellm": "1.104.0",
+    "python-dotenv": "1.2.3",
+    "ruff": "0.16.5"
+  },
+  "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+  "environment_flags": {
+    "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  }
+}

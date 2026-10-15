@@ -1,0 +1,132 @@
+{
+  "records": [
+    {
+      "source_sha": "24f7cb93ef9ada736e616a787c93d6539fe6485d",
+      "receipt_sha256": "9776950187c3d9757fc51badd4117ab22e7b896c4933c2e6a0576a395069e791",
+      "result": {
+        "schema_version": 1,
+        "created_at": "2026-10-15T11:25:18.960245Z",
+        "provenance": null,
+        "model": "ollama_chat/deepseek-v4.1-flash",
+        "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+        "status": "verified",
+        "reason": "matched",
+        "expected": {
+          "images": [
+            {
+              "left_shape": "circle",
+              "left_color": "blue",
+              "right_shape": "square",
+              "right_color": "green"
+            },
+            {
+              "left_shape": "circle",
+              "left_color": "yellow",
+              "right_shape": "square",
+              "right_color": "green"
+            }
+          ]
+        },
+        "observed": {
+          "images": [
+            {
+              "left_shape": "circle",
+              "left_color": "blue",
+              "right_shape": "square",
+              "right_color": "green"
+            },
+            {
+              "left_shape": "circle",
+              "left_color": "yellow",
+              "right_shape": "square",
+              "right_color": "green"
+            }
+          ]
+        },
+        "capability": {
+          "model": "ollama_chat/deepseek-v4.1-flash",
+          "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+          "fixture_sha256": "14cda3dee03e0815e36ab83b3ba3090fa6b164f3ea9660585f7c4e250d6c5902",
+          "output_sha256": "c4675ead327a71c3fde427d8d3acde0f95991139792087ac826b58986f3cfddc",
+          "passed": true,
+          "probe_protocol": "sanitized-layout-pair-v1",
+          "prompt_sha256": "33827c3b0895e9eb7aeaf58086cfe6cb4f4c0ffb37cafb52394e71bd86919e93"
+        },
+        "attempts": [
+          {
+            "provider": "litellm:ollama_chat/deepseek-v4.1-flash",
+            "role": "judge",
+            "status": "succeeded",
+            "input_tokens": 866,
+            "output_tokens": 201,
+            "latency_s": 2.850140000002284
+          }
+        ]
+      }
+    },
+    {
+      "source_sha": "57a010d5e4f5eebe21c605d704981a10dd2e8a5c",
+      "receipt_sha256": "508ce5a2ca4c1d296e85878fbb751ddc3c4802e73e287549c66e71158e6a11d4",
+      "result": {
+        "schema_version": 1,
+        "created_at": "2026-10-15T11:27:32.800245Z",
+        "provenance": null,
+        "model": "gemini/gemini-3.6-flash",
+        "endpoint_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "status": "verified",
+        "reason": "matched",
+        "expected": {
+          "images": [
+            {
+              "left_shape": "square",
+              "left_color": "green",
+              "right_shape": "circle",
+              "right_color": "red"
+            },
+            {
+              "left_shape": "circle",
+              "left_color": "red",
+              "right_shape": "square",
+              "right_color": "yellow"
+            }
+          ]
+        },
+        "observed": {
+          "images": [
+            {
+              "left_shape": "square",
+              "left_color": "green",
+              "right_shape": "circle",
+              "right_color": "red"
+            },
+            {
+              "left_shape": "circle",
+              "left_color": "red",
+              "right_shape": "square",
+              "right_color": "yellow"
+            }
+          ]
+        },
+        "capability": {
+          "model": "gemini/gemini-3.6-flash",
+          "endpoint_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "fixture_sha256": "e2fb4fa93aab54fac9971cac88eee00086a513be15f3fed87d6806b5a2bf8b70",
+          "output_sha256": "abc3d0fbc70db9c610db1f658eb875af24e9dfa9ea3c725ac92a51668330e53b",
+          "passed": true,
+          "probe_protocol": "sanitized-layout-pair-v1",
+          "prompt_sha256": "33827c3b0895e9eb7aeaf58086cfe6cb4f4c0ffb37cafb52394e71bd86919e93"
+        },
+        "attempts": [
+          {
+            "provider": "litellm:gemini/gemini-3.6-flash",
+            "role": "judge",
+            "status": "succeeded",
+            "input_tokens": 2316,
+            "output_tokens": 397,
+            "latency_s": 4.813094499997533
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___ test_lazy_group_preserves_override_tags_all_ensemble_members_and_dedup ____
+tests\test_vision_roles.py:53: in test_lazy_group_preserves_override_tags_all_ensemble_members_and_dedup
+    assert providers.for_teaching_group(record, SourceKind.VIDEO) == ["mock", "anthropic"]
+E   AssertionError: assert ['mock'] == ['mock', 'anthropic']
+E     
+E     Right contains one more item: 'anthropic'
+E     Use -v to get more diff
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_vision_roles.py::test_lazy_group_preserves_override_tags_all_ensemble_members_and_dedup
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_roles.py::test_lazy_group_preserves_override_tags_all_ensemble_members_and_dedup
+1 failed, 2 warnings in 0.95s

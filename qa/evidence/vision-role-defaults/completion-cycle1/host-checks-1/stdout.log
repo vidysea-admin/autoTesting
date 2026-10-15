@@ -1,0 +1,42 @@
+preflight 0 {"import_origin": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src\\autotester\\__init__.py", "observed_at": "2026-10-15T18:25:57.721188+00:00", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "python_version": "3.11.16", "root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles", "status": "PREFLIGHT_OK", "temp_writable": true}
+
+focused 0 ...............                                                          [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+15 passed, 2 warnings in 2.06s
+
+interaction 0 .                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_vision_role_deadline.py::test_receipt_selected_visual_role_refuses_overdue_success
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 0.37s
+
+ruff 1 SIM117 Use a single `with` statement with multiple contexts instead of nested `with` statements
+  --> tests\test_vision_role_deadline.py:43:5
+   |
+42 |       monkeypatch.setattr(fake, "completion", complete)
+43 | /     with pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"):
+44 | |         with attempt_budget(4, wall_clock_s=5) as budget:
+   | |_________________________________________________________^
+45 |               chain.see_video(tmp_path / "synthetic.mp4", "neutral fixture", ProviderConfig)
+46 |       assert len(fake.calls) == len(budget.attempts) == 1
+   |
+help: Combine `with` statements
+
+Found 1 error.
+

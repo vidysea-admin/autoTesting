@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.962" timestamp="2026-10-15T12:19:17.324397+00:00" hostname="windows-demo"><testcase classname="tests.test_provider_migration" name="test_root_path_duplicate_json_and_selection_ambiguity_fail_closed" time="0.153"><failure message="Failed: DID NOT RAISE ValueError">tests\test_provider_migration.py:95: in test_root_path_duplicate_json_and_selection_ambiguity_fail_closed
+    with pytest.raises(ValueError):
+E   Failed: DID NOT RAISE ValueError</failure></testcase></testsuite></testsuites>

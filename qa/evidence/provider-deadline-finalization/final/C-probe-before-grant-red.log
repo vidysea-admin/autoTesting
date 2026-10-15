@@ -1,0 +1,37 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_probe_cannot_grant_capability_after_deadline ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020680320850>
+clock = [5]
+
+    def test_probe_cannot_grant_capability_after_deadline(monkeypatch, clock):
+        fake = install(monkeypatch, [])
+        monkeypatch.setenv("OLLAMA_API_KEY", "synthetic-deadline-key")
+        provider = LiteLLMProvider(model=MODEL)
+        answer = VisualProbeAnswer(images=[dict(left_shape="circle", left_color="red",
+            right_shape="square", right_color="blue")] * 2)
+        result = VisionProbeResult(model=MODEL,
+                                   endpoint_sha256=vision_probe.endpoint_fingerprint(provider))
+        with pytest.raises(AttemptBudgetExhausted), attempt_budget(1, 5) as budget:
+            receipt, _ = reserve_attempt(provider.label, "judge", 10)
+            receipt.status = "succeeded"
+            clock[0] = 5
+            vision_probe._evaluate(provider, result, answer, answer, "a" * 64, "b" * 64, budget)
+>           pytest.fail("late output was granted a capability")
+E           Failed: late output was granted a capability
+
+tests\test_provider_deadline_consumers.py:119: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadline_consumers.py::test_probe_cannot_grant_capability_after_deadline
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadline_consumers.py::test_probe_cannot_grant_capability_after_deadline
+1 failed, 2 warnings in 1.06s

@@ -1,0 +1,34 @@
+{
+  "sealed_candidate": "2bd305c6207599810268e6c54351f06b38356b57",
+  "candidate": {
+    "src/autotester/providers/attempts.py": "b70e4f70b17a1655153cec3342f1f8710fee28a3a9c752d6a196d4a99d31351a",
+    "src/autotester/providers/litellm_provider.py": "cab98b611fe378f817f09a1903f5d9816614db0d317bebc330610afaf0f8cfbe",
+    "src/autotester/providers/gemini.py": "7faf741fc4d1c75794e3972f7f4afa959b64602131e74c0801d3e08f5b338911",
+    "src/autotester/providers/gemini_files.py": "f0a5b009d803f1744121597ef82f9559f5743140ef04c6a220332170c206963f",
+    "src/autotester/providers/vision_probe.py": "ba284c3c05b4504f4b4eecf0e746e021b039e63a350264eab95926b6ce75a37c",
+    "src/autotester/providers/video_frames.py": "c2be881ecc96eb30de32bc130567bcda833d4a6d2b20b44bc7e247abf0efc3e7",
+    "src/autotester/providers/model_chain.py": "bb0685d639172aa66f9b09fb01fd56f383855d0071f377e213f37526f34613bf",
+    "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+    "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+    "tests/test_provider_deadlines.py": "5e1063acb07b8c4e74fa76955e1273ca31795cb11bfff4280f82e2b924c00eab",
+    "tests/test_provider_deadline_consumers.py": "444ff4054608181200b48b3691caca84a3bf0164cdeb8c970ff08a4fa592e7bd",
+    "tests/test_provider_attempts.py": "c7336dbba1c05a5d72866e023395642b97f509ae856180fc7668643292dd03d6",
+    "tests/test_text_availability.py": "617685b441ca1f311648e49f38e3ecfa137258a42dfc4b82de224c50cd2d26fc"
+  },
+  "restored": {
+    "src/autotester/providers/attempts.py": "b70e4f70b17a1655153cec3342f1f8710fee28a3a9c752d6a196d4a99d31351a",
+    "src/autotester/providers/litellm_provider.py": "cab98b611fe378f817f09a1903f5d9816614db0d317bebc330610afaf0f8cfbe",
+    "src/autotester/providers/gemini.py": "7faf741fc4d1c75794e3972f7f4afa959b64602131e74c0801d3e08f5b338911",
+    "src/autotester/providers/gemini_files.py": "f0a5b009d803f1744121597ef82f9559f5743140ef04c6a220332170c206963f",
+    "src/autotester/providers/vision_probe.py": "ba284c3c05b4504f4b4eecf0e746e021b039e63a350264eab95926b6ce75a37c",
+    "src/autotester/providers/video_frames.py": "c2be881ecc96eb30de32bc130567bcda833d4a6d2b20b44bc7e247abf0efc3e7",
+    "src/autotester/providers/model_chain.py": "bb0685d639172aa66f9b09fb01fd56f383855d0071f377e213f37526f34613bf",
+    "src/autotester/providers/availability.py": "0b5b444c1c345a334ab269a9e4fc4ef267102fdebeda8b49d1ed445e8ff2de36",
+    "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+    "tests/test_provider_deadlines.py": "5e1063acb07b8c4e74fa76955e1273ca31795cb11bfff4280f82e2b924c00eab",
+    "tests/test_provider_deadline_consumers.py": "444ff4054608181200b48b3691caca84a3bf0164cdeb8c970ff08a4fa592e7bd",
+    "tests/test_provider_attempts.py": "c7336dbba1c05a5d72866e023395642b97f509ae856180fc7668643292dd03d6",
+    "tests/test_text_availability.py": "617685b441ca1f311648e49f38e3ecfa137258a42dfc4b82de224c50cd2d26fc"
+  },
+  "exact_raw_restoration": true
+}

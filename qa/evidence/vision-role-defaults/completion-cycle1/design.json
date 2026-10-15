@@ -1,0 +1,16 @@
+{
+  "src/autotester/providers/__init__.py": "module docstring; <=300 lines; functions <=50 lines",
+  "src/autotester/providers/vision_roles.py": "module docstring; <=300 lines; functions <=50 lines",
+  "src/autotester/providers/config_migration.py": "module docstring; <=300 lines; functions <=50 lines",
+  "src/autotester/schema/project.py": "module docstring; <=300 lines; functions <=50 lines",
+  "src/autotester/schema/vision_capabilities.py": "module docstring; <=300 lines; functions <=50 lines",
+  "src/autotester/schema/provider_migration.py": "module docstring; <=300 lines; functions <=50 lines",
+  "src/autotester/store/filestore.py": "module docstring; <=300 lines; functions <=50 lines",
+  "scripts/migrate_provider_roles.py": "module docstring; <=300 lines; functions <=50 lines",
+  "tests/test_vision_roles.py": "module docstring; <=300 lines; functions <=50 lines",
+  "tests/test_provider_migration.py": "module docstring; <=300 lines; functions <=50 lines",
+  "tests/test_provider_factory.py": "module docstring; <=300 lines; functions <=50 lines",
+  "tests/test_schema.py": "module docstring; <=300 lines; functions <=50 lines",
+  "tests/test_ensemble_honesty.py": "module docstring; <=300 lines; functions <=50 lines",
+  "tests/test_vision_role_deadline.py": "module docstring; <=300 lines; functions <=50 lines"
+}

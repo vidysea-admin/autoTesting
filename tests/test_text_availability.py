@@ -74,8 +74,8 @@ def test_malformed_output_repairs_once_then_stops(monkeypatch, tmp_path):
 def test_enclosing_budget_never_falls_through(monkeypatch, tmp_path, limit, seconds):
     fake, chain = setup_chain(monkeypatch, tmp_path,
                               [TimeoutError(), TimeoutError(), reply('{"ok":true}')])
-    with (attempt_budget(limit, wall_clock_s=seconds) as budget,
-          pytest.raises(AttemptBudgetExhausted)):
+    with (pytest.raises(AttemptBudgetExhausted),
+          attempt_budget(limit, wall_clock_s=seconds) as budget):
         chain.act("prompt", TextAnswer)
     assert len(fake.calls) == budget.used == (2 if seconds else 0)
     assert all(c["model"] != TEXT_FALLBACK for c in fake.calls)

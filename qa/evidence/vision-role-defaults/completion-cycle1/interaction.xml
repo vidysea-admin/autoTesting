@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="0.372" timestamp="2026-10-15T18:26:17.081336+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_role_deadline" name="test_receipt_selected_visual_role_refuses_overdue_success" time="0.148" /></testsuite></testsuites>

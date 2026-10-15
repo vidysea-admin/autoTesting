@@ -1,0 +1,247 @@
+{
+  "status": "INDEPENDENT_PROBE_GREEN",
+  "candidate": "46f6a8089f0730c201ebe8a6dde201868ddebec4",
+  "cycle": 2,
+  "reconciliation_rows": 6,
+  "green": true,
+  "red_named_reason": "member model tags/order lost",
+  "restored": true,
+  "isolation": "in-memory actual function with fake constructor; production bytes unchanged",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "commands": [
+    {
+      "name": "validate",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+        "validate",
+        "--input",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\checker-cycle2-native\\phase-input.json"
+      ],
+      "exit": 2,
+      "duration_s": 0.2659999999999627
+    },
+    {
+      "name": "assess",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+        "assess",
+        "--input",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\checker-cycle2-native\\phase-input.json"
+      ],
+      "exit": 2,
+      "duration_s": 0.25
+    },
+    {
+      "name": "head",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "duration_s": 0.04600000000004911
+    },
+    {
+      "name": "old-3",
+      "command": [
+        "git",
+        "show",
+        "fe6bb6af164099109d566d09a4cca020b9bb77a9:src/autotester/providers/attempts.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.04699999999991178
+    },
+    {
+      "name": "dep-4",
+      "command": [
+        "git",
+        "show",
+        "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58:src/autotester/providers/attempts.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.06299999999998818
+    },
+    {
+      "name": "new-5",
+      "command": [
+        "git",
+        "show",
+        "46f6a8089f0730c201ebe8a6dde201868ddebec4:src/autotester/providers/attempts.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "old-6",
+      "command": [
+        "git",
+        "show",
+        "fe6bb6af164099109d566d09a4cca020b9bb77a9:src/autotester/providers/gemini.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "dep-7",
+      "command": [
+        "git",
+        "show",
+        "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58:src/autotester/providers/gemini.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.06200000000001182
+    },
+    {
+      "name": "new-8",
+      "command": [
+        "git",
+        "show",
+        "46f6a8089f0730c201ebe8a6dde201868ddebec4:src/autotester/providers/gemini.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "old-9",
+      "command": [
+        "git",
+        "show",
+        "fe6bb6af164099109d566d09a4cca020b9bb77a9:src/autotester/providers/litellm_provider.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.06200000000001182
+    },
+    {
+      "name": "dep-10",
+      "command": [
+        "git",
+        "show",
+        "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58:src/autotester/providers/litellm_provider.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.04699999999991178
+    },
+    {
+      "name": "new-11",
+      "command": [
+        "git",
+        "show",
+        "46f6a8089f0730c201ebe8a6dde201868ddebec4:src/autotester/providers/litellm_provider.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "old-12",
+      "command": [
+        "git",
+        "show",
+        "fe6bb6af164099109d566d09a4cca020b9bb77a9:src/autotester/providers/vision_probe.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.06299999999998818
+    },
+    {
+      "name": "dep-13",
+      "command": [
+        "git",
+        "show",
+        "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58:src/autotester/providers/vision_probe.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "new-14",
+      "command": [
+        "git",
+        "show",
+        "46f6a8089f0730c201ebe8a6dde201868ddebec4:src/autotester/providers/vision_probe.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.04600000000004911
+    },
+    {
+      "name": "old-15",
+      "command": [
+        "git",
+        "show",
+        "fe6bb6af164099109d566d09a4cca020b9bb77a9:tests/test_provider_attempts.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.06299999999998818
+    },
+    {
+      "name": "dep-16",
+      "command": [
+        "git",
+        "show",
+        "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58:tests/test_provider_attempts.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.04699999999991178
+    },
+    {
+      "name": "new-17",
+      "command": [
+        "git",
+        "show",
+        "46f6a8089f0730c201ebe8a6dde201868ddebec4:tests/test_provider_attempts.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "old-18",
+      "command": [
+        "git",
+        "show",
+        "fe6bb6af164099109d566d09a4cca020b9bb77a9:tests/test_text_availability.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "dep-19",
+      "command": [
+        "git",
+        "show",
+        "9d4d4d40f79ed4f1a5369d393260f3911ee9ce58:tests/test_text_availability.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.06200000000001182
+    },
+    {
+      "name": "new-20",
+      "command": [
+        "git",
+        "show",
+        "46f6a8089f0730c201ebe8a6dde201868ddebec4:tests/test_text_availability.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.047000000000025466
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "src/autotester/providers/__init__.py",
+        "tests/test_vision_roles.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.5629999999999882
+    }
+  ],
+  "duration_s": 5.985000000000014,
+  "ended_at": "2026-10-15T19:26:36.997260+00:00",
+  "actual_total_tokens": null,
+  "active_s": null,
+  "wait_s": null,
+  "token_metric": "actual_total"
+}

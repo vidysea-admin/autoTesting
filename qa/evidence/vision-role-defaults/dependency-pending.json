@@ -1,0 +1,24 @@
+{
+  "status": "DEPENDENCY_PENDING",
+  "isolation_evidence": "VALID",
+  "source_checkpoint": "3a5098268fe54694b133dcb683fb29bb6d7145ff",
+  "base": "57a010d5e4f5eebe21c605d704981a10dd2e8a5c",
+  "risk_proofs": 14,
+  "green_cases_per_boundary": 15,
+  "source_inventory": "receipts.json files: live/copy bytes unchanged",
+  "instrument_sha256": "eae34f6df330adbb1e7448475fa6770bb92884a2bd56c4766c61211527c619e5",
+  "spec_sha256": "8ea956e21e18206806bb1a3ce22659eb816025d60b82dac5d940498b2f02bb3e",
+  "receipt_sha256": "c36a3184dc065e85ab6ebda8084e34c3959630e859189daee88881c9534ece6c",
+  "actual_probe_bindings": "Both packaged verified results match exact archived actual execution bytes/source SHA.",
+  "pending": [
+    "independently checked late-success deadline dependency",
+    "focused interaction baseline on exact combined candidate",
+    "final source/evidence/Git checkout fingerprints and checker packet"
+  ],
+  "actual_maker_usage": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "limits": "Historical proof is on unchanged parked source; no final readiness/PASS or changed dependency claim. No saved project apply/live call/source edit."
+}

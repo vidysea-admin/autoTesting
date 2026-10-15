@@ -23,7 +23,7 @@ from typing import Any, TypeVar
 import httpx
 from pydantic import BaseModel, ValidationError
 
-from autotester.providers.attempts import attempt_budget
+from autotester.providers.attempts import attempt_budget, check_deadline
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.gemini_files import GeminiDeadlineTransport, upload_and_wait
 from autotester.providers.gemini_schema import gemini_schema
@@ -194,6 +194,7 @@ class GeminiProvider(Provider):
                     response = client.models.generate_content(
                         model=self._model, contents=contents, config=self._config(schema, options))
                     transport.remaining()
+                    check_deadline(deadline)
                     candidates = getattr(response, "candidates", None) or []
                     if any(str(getattr(getattr(c, "finish_reason", None), "name", ""))
                            == "MAX_TOKENS" for c in candidates):
@@ -203,14 +204,18 @@ class GeminiProvider(Provider):
                         if isinstance(parsed, BaseModel):
                             parsed = parsed.model_dump(mode="json")
                         if parsed is None:
-                            return schema.model_validate_json(response.text, strict=True)
-                        return schema.model_validate_json(json.dumps(parsed), strict=True)
+                            result = schema.model_validate_json(response.text, strict=True)
+                        else:
+                            result = schema.model_validate_json(json.dumps(parsed), strict=True)
+                        check_deadline(deadline)
+                        return result
                     except (ValidationError, ValueError, TypeError, AttributeError):
                         continue  # One bounded regeneration, without echoing rejected content.
                 raise ProviderError("Gemini returned JSON that does not fit the required schema")
             except ProviderError:
                 raise
             except Exception as exc:
+                check_deadline(deadline)
                 raise ProviderError(f"Gemini {role} request failed: {type(exc).__name__}") from None
             finally:
                 close = getattr(type(client), "close", None)

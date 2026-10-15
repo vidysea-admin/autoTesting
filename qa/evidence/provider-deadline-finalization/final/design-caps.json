@@ -1,0 +1,74 @@
+[
+  {
+    "path": "src/autotester/providers/attempts.py",
+    "sha256": "b70e4f70b17a1655153cec3342f1f8710fee28a3a9c752d6a196d4a99d31351a",
+    "lines": 82,
+    "functions": {
+      "attempt_budget": 9,
+      "check_deadline": 14,
+      "reserve_attempt": 15,
+      "__init__": 8,
+      "used": 2
+    }
+  },
+  {
+    "path": "src/autotester/providers/litellm_provider.py",
+    "sha256": "cab98b611fe378f817f09a1903f5d9816614db0d317bebc330610afaf0f8cfbe",
+    "lines": 300,
+    "functions": {
+      "_load_litellm": 13,
+      "_env_secret_values": 8,
+      "_texts": 10,
+      "_why": 7,
+      "__init__": 6,
+      "_endpoint": 7,
+      "_missing_keys": 14,
+      "unavailable_reason": 13,
+      "available": 2,
+      "_require_ready": 4,
+      "see_video": 7,
+      "act": 4,
+      "judge": 6,
+      "_strategy": 14,
+      "_secret_values": 6,
+      "guard_text": 7,
+      "_guard": 2,
+      "_failure": 9,
+      "_complete": 44,
+      "_structured": 43,
+      "_unparsable": 2
+    }
+  },
+  {
+    "path": "src/autotester/providers/gemini.py",
+    "sha256": "7faf741fc4d1c75794e3972f7f4afa959b64602131e74c0801d3e08f5b338911",
+    "lines": 240,
+    "functions": {
+      "_is_gemini_3": 6,
+      "__init__": 8,
+      "available": 2,
+      "see_video": 5,
+      "act": 4,
+      "judge": 6,
+      "_config": 40,
+      "_contents": 23,
+      "_structured": 24,
+      "_bounded_call": 48,
+      "_unparsed_reason": 16
+    }
+  },
+  {
+    "path": "src/autotester/providers/vision_probe.py",
+    "sha256": "ba284c3c05b4504f4b4eecf0e746e021b039e63a350264eab95926b6ce75a37c",
+    "lines": 154,
+    "functions": {
+      "_draw_challenge": 16,
+      "_new_challenges": 11,
+      "_validated_bytes": 11,
+      "_safe_challenges": 11,
+      "_evaluate": 19,
+      "_require_probe_provider": 7,
+      "probe_vision": 40
+    }
+  }
+]

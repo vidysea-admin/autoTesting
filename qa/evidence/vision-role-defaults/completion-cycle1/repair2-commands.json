@@ -1,0 +1,55 @@
+[
+  {
+    "name": "interaction-repair2",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_vision_role_deadline.py::test_receipt_selected_visual_role_refuses_overdue_success",
+      "--tb=short",
+      "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\completion-cycle1\\interaction-repair2.xml",
+      "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp\\interaction-repair2"
+    ],
+    "exit": 0,
+    "duration_s": 6.6560000000026776,
+    "output": "interaction-repair2.log"
+  },
+  {
+    "name": "ruff-repair2",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/providers/__init__.py",
+      "src/autotester/providers/vision_roles.py",
+      "src/autotester/providers/config_migration.py",
+      "src/autotester/schema/project.py",
+      "src/autotester/schema/vision_capabilities.py",
+      "src/autotester/schema/provider_migration.py",
+      "src/autotester/store/filestore.py",
+      "scripts/migrate_provider_roles.py",
+      "tests/test_vision_roles.py",
+      "tests/test_provider_migration.py",
+      "tests/test_provider_factory.py",
+      "tests/test_schema.py",
+      "tests/test_ensemble_honesty.py",
+      "tests/test_vision_role_deadline.py"
+    ],
+    "exit": 0,
+    "duration_s": 0.23500000000058208,
+    "output": "ruff-repair2.log"
+  },
+  {
+    "name": "design-repair2",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "C:/Users/product/Desktop/autoTesting/.work/measured-vision-completion/host-repair-1/run-original-design.py"
+    ],
+    "exit": 0,
+    "duration_s": 0.2649999999994179,
+    "output": "design-repair2.log"
+  }
+]

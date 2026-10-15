@@ -1,0 +1,21 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_vision_chain_falls_back_only_on_eligible_failure_and_keeps_global_budget _
+tests\test_vision_roles.py:116: in test_vision_chain_falls_back_only_on_eligible_failure_and_keeps_global_budget
+    with pytest.raises(type(refused)):
+E   Failed: DID NOT RAISE AttemptBudgetExhausted
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:154 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (service); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_vision_roles.py::test_vision_chain_falls_back_only_on_eligible_failure_and_keeps_global_budget
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_roles.py::test_vision_chain_falls_back_only_on_eligible_failure_and_keeps_global_budget
+1 failed, 2 warnings in 1.06s

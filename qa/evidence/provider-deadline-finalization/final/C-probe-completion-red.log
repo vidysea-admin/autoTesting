@@ -1,0 +1,37 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_probe_completion_clears_capability_if_evaluation_runs_late _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020F8035F290>
+clock = [45]
+transport = (<autotester.providers.litellm_provider.LiteLLMProvider object at 0x0000020F803B65D0>, <module 'litellm'>, [({'images'...ges-roqx386k/image-0.png'), WindowsPath('C:/Users/product/AppData/Local/Temp/autotester-images-p0dzfc_m/image-0.png')])
+
+    def test_probe_completion_clears_capability_if_evaluation_runs_late(monkeypatch, clock, transport):
+        provider, fake, _, _ = transport
+        original = vision_probe._evaluate
+    
+        def delayed(*args):
+            original(*args)
+            clock[0] = 45
+    
+        monkeypatch.setattr(vision_probe, "_evaluate", delayed)
+        with pytest.raises(AttemptBudgetExhausted) as error:
+            vision_probe.probe_vision(provider)
+>       result = error.value.probe_result
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'AttemptBudgetExhausted' object has no attribute 'probe_result'
+
+tests\test_provider_deadline_consumers.py:134: AttributeError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-deadline-finalization\.work\deadline-final-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_deadline_consumers.py::test_probe_completion_clears_capability_if_evaluation_runs_late
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_deadline_consumers.py::test_probe_completion_clears_capability_if_evaluation_runs_late
+1 failed, 2 warnings in 1.29s

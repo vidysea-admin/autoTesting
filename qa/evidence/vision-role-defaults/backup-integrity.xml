@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.009" timestamp="2026-10-15T12:19:10.057784+00:00" hostname="windows-demo"><testcase classname="tests.test_provider_migration" name="test_stale_forged_target_and_tampered_backup_never_overwrite" time="0.172"><failure message="AssertionError: assert 'restored' == 'stale'&#10;  &#10;  - stale&#10;  + restored">tests\test_provider_migration.py:86: in test_stale_forged_target_and_tampered_backup_never_overwrite
+    assert refused[0].status == "stale"
+E   AssertionError: assert 'restored' == 'stale'
+E     
+E     - stale
+E     + restored</failure></testcase></testsuite></testsuites>

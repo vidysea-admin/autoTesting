@@ -1,0 +1,85 @@
+[
+  {
+    "name": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp"
+    ],
+    "exit": 0,
+    "duration_s": 0.28100000000267755,
+    "output": "preflight.log"
+  },
+  {
+    "name": "focused",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_vision_roles.py",
+      "tests/test_provider_migration.py",
+      "tests/test_provider_factory.py::test_the_factory_resolves_the_receipt_bound_visual_role",
+      "tests/test_schema.py::test_vision_ensemble_splits_the_config_and_deduplicates",
+      "tests/test_schema.py::test_vision_ensemble_empty_config_uses_visual_policy",
+      "tests/test_schema.py::test_vision_ensemble_defaulted_distinguishes_empty_from_explicit_gemini",
+      "tests/test_ensemble_honesty.py::test_analyze_route_records_the_default_when_vision_config_is_empty",
+      "--tb=short",
+      "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\completion-cycle1\\focused.xml",
+      "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp\\focused"
+    ],
+    "exit": 0,
+    "duration_s": 8.703000000001339,
+    "output": "focused.log"
+  },
+  {
+    "name": "interaction",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_vision_role_deadline.py",
+      "--tb=short",
+      "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\qa\\evidence\\vision-role-defaults\\completion-cycle1\\interaction.xml",
+      "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\vision-completion-temp\\interaction"
+    ],
+    "exit": 0,
+    "duration_s": 6.64100000000326,
+    "output": "interaction.log"
+  },
+  {
+    "name": "ruff",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/providers/__init__.py",
+      "src/autotester/providers/vision_roles.py",
+      "src/autotester/providers/config_migration.py",
+      "src/autotester/schema/project.py",
+      "src/autotester/schema/vision_capabilities.py",
+      "src/autotester/schema/provider_migration.py",
+      "src/autotester/store/filestore.py",
+      "scripts/migrate_provider_roles.py",
+      "tests/test_vision_roles.py",
+      "tests/test_provider_migration.py",
+      "tests/test_provider_factory.py",
+      "tests/test_schema.py",
+      "tests/test_ensemble_honesty.py",
+      "tests/test_vision_role_deadline.py"
+    ],
+    "exit": 1,
+    "duration_s": 0.2809999999954016,
+    "output": "ruff.log"
+  }
+]

@@ -1,0 +1,19 @@
+diff --git "a/C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\host-repair-2\\test-before.py" "b/C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\tests\\test_vision_role_deadline.py"
+index 2e303c87..367a6af2 100644
+--- "a/C:\\Users\\product\\Desktop\\autoTesting\\.work\\measured-vision-completion\\host-repair-2\\test-before.py"
++++ "b/C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\tests\\test_vision_role_deadline.py"
+@@ -40,9 +40,11 @@ def test_receipt_selected_visual_role_refuses_overdue_success(tmp_path, monkeypa
+         return reply(ProviderConfig().model_dump_json(), prompt_tokens=13, completion_tokens=5)
+ 
+     monkeypatch.setattr(fake, "completion", complete)
+-    with pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"):
+-        with attempt_budget(4, wall_clock_s=5) as budget:
+-            chain.see_video(tmp_path / "synthetic.mp4", "neutral fixture", ProviderConfig)
++    with (
++        pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"),
++        attempt_budget(4, wall_clock_s=5) as budget,
++    ):
++        chain.see_video(tmp_path / "synthetic.mp4", "neutral fixture", ProviderConfig)
+     assert len(fake.calls) == len(budget.attempts) == 1
+     receipt = budget.attempts[0]
+     assert receipt.provider == "litellm:" + DEEPSEEK and receipt.status == "succeeded"

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.095" timestamp="2026-10-15T12:19:02.360009+00:00" hostname="windows-demo"><testcase classname="tests.test_provider_migration" name="test_stale_forged_target_and_tampered_backup_never_overwrite" time="0.167"><failure message="AssertionError: assert 'applied' == 'stale'&#10;  &#10;  - stale&#10;  + applied">tests\test_provider_migration.py:80: in test_stale_forged_target_and_tampered_backup_never_overwrite
+    assert migration.change_legacy_roles(tmp_path, forged, ["demo"])[0].status == "stale"
+E   AssertionError: assert 'applied' == 'stale'
+E     
+E     - stale
+E     + applied</failure></testcase></testsuite></testsuites>

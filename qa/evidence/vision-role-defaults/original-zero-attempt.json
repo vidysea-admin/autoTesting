@@ -1,0 +1,63 @@
+{
+  "source_sha": "24f7cb93ef9ada736e616a787c93d6539fe6485d",
+  "started_at": "2026-10-15T11:23:12.751601+00:00",
+  "source_fingerprints": {
+    "src/autotester/providers/vision_probe.py": "ffd309fc33989ee27b70abe917354d7be001da670050fa5aeb94c4e0c5d294db",
+    "src/autotester/providers/litellm_provider.py": "bbb371d6d828c196f2eac26e273ffd72000a19d7f51400ebd413631c3d4bf60b",
+    "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+    "src/autotester/core/image_privacy.py": "3dfd77e802a5047aa6364f3e6e38d8d333dc6daafe4542869f64cb092a446ea7",
+    "src/autotester/schema/vision_probe.py": "06e9cd0abe0a3fc8d94a0e3447a50e81d5fdc6309247372800c0792f715f0653",
+    "src/autotester/schema/video_frames.py": "ba3206639a86e6158c07509d362c87a01368f99f519dcc433dc6827d08059621",
+    "src/autotester/skills/vision-probe/SKILL.md": "939d4b2b7ba8ce5dbbb678f5d1f97216cf1d5d8894a688f7c36dd2f97b66019b",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+  },
+  "results": [
+    {
+      "model": "ollama_chat/glm-5.3-flash",
+      "started_at": "2026-10-15T11:23:12.775140+00:00",
+      "result": {
+        "schema_version": 1,
+        "created_at": "2026-10-15T11:23:12.786486Z",
+        "provenance": null,
+        "model": "ollama_chat/glm-5.3-flash",
+        "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+        "status": "inconclusive",
+        "reason": "image_preparation_or_sanitation_failed",
+        "expected": {
+          "images": [
+            {
+              "left_shape": "square",
+              "left_color": "green",
+              "right_shape": "triangle",
+              "right_color": "blue"
+            },
+            {
+              "left_shape": "circle",
+              "left_color": "green",
+              "right_shape": "triangle",
+              "right_color": "blue"
+            }
+          ]
+        },
+        "observed": null,
+        "capability": null,
+        "attempts": []
+      },
+      "status": "inconclusive",
+      "reason": "image_preparation_or_sanitation_failed",
+      "fixture_sha256": null,
+      "validated_output_sha256": null,
+      "endpoint_sha256": "fac0f5c43cadef1214bfc57ffeb74a47c60de01aa79c7ca2f10b2376af56499d",
+      "ended_at": "2026-10-15T11:23:12.882355+00:00",
+      "duration_s": 0.11000000000058208
+    }
+  ],
+  "limits": "Neutral geometry only; two calls/45s per model and outer6calls/135s. No generation-token cap or hard cancellation guarantee. No defaults/project changes. API/SDK diagnostic streams discarded in memory; no raw vendor error/credential logging.",
+  "not_attempted": [
+    "ollama_chat/deepseek-v4.1-flash",
+    "gemini/gemini-3.6-flash"
+  ],
+  "stop_reason": "shared_preparation_privacy_or_budget_failure; no fallback eligible",
+  "physical_attempts": [],
+  "ended_at": "2026-10-15T11:23:12.883057+00:00"
+}

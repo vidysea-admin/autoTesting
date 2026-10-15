@@ -1,0 +1,23 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_atomic_byte_extension_preserves_mixed_newlines_and_existing_text_behavior _
+tests\test_provider_migration.py:109: in test_atomic_byte_extension_preserves_mixed_newlines_and_existing_text_behavior
+    write_bytes(target, raw)
+src\autotester\store\filestore.py:42: in write_bytes
+    _atomic_write(path, data)
+src\autotester\store\filestore.py:28: in _atomic_write
+    handle.write(text)
+E   TypeError: write() argument must be str, not bytes
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-roles\.work\role-proof-r2\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_migration.py::test_atomic_byte_extension_preserves_mixed_newlines_and_existing_text_behavior
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_migration.py::test_atomic_byte_extension_preserves_mixed_newlines_and_existing_text_behavior
+1 failed, 2 warnings in 0.99s

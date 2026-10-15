@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.134" timestamp="2026-10-15T12:22:04.713820+00:00" hostname="windows-demo"><testcase classname="tests.test_provider_migration" name="test_migration_cli_defaults_to_plan_and_requires_explicit_selected_apply" time="0.172"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\role-proof-r2\\tmp-dryrun-default\\test_migration_cli_defaults_to0\\plan.json'">tests\test_provider_migration.py:122: in test_migration_cli_defaults_to_plan_and_requires_explicit_selected_apply
+    runpy.run_path(str(script), run_name="__main__")
+&lt;frozen runpy&gt;:291: in run_path
+    ???
+&lt;frozen runpy&gt;:98: in _run_module_code
+    ???
+&lt;frozen runpy&gt;:88: in _run_code
+    ???
+scripts\migrate_provider_roles.py:37: in &lt;module&gt;
+    main()
+scripts\migrate_provider_roles.py:22: in main
+    plan = ProviderMigrationPlan.model_validate_json(args.plan.read_bytes())
+                                                     ^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1050: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1044: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-roles\\.work\\role-proof-r2\\tmp-dryrun-default\\test_migration_cli_defaults_to0\\plan.json'</failure></testcase></testsuite></testsuites>
