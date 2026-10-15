@@ -1,0 +1,7 @@
+{
+  "src/autotester/providers/model_chain.py": "5dd2fffa51bbf9e895d41243aac0c50b01e98156c45d21a02becb3d1256a1db4",
+  "src/autotester/providers/litellm_provider.py": "ea2a6a5039dacc8ebd046db8324a8fca9b4de26dd425aa040505cc296d2a7bc2",
+  "src/autotester/providers/litellm_schema.py": "d594f860fb6c1868e556ddbf18c2b89c193c4c191ac35a7761b32654e6a91b45",
+  "tests/test_model_chain.py": "c6c7109df22115559c0d587a4294b3cf8d2f21eed43694e5b772b291b24a0584",
+  "tests/test_litellm_provider.py": "09826428bb2efba2e5d69beb9d54b9020c35d083228459806e0c7e4fe56adfcd"
+}
