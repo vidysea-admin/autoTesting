@@ -1,0 +1,144 @@
+{
+  "tests": [
+    "tests/test_narration_policy.py",
+    "tests/test_source_adapters_audio.py"
+  ],
+  "timeout_s": 60,
+  "mutations": [
+    {
+      "name": "default local ASR enabled",
+      "file": "src/autotester/media/transcribe.py",
+      "old": "use_whisper: bool = False",
+      "new": "use_whisper: bool = True",
+      "kills": [
+        "test_default_transcribe_never_launches_local_asr"
+      ]
+    },
+    {
+      "name": "stored transcript ignored",
+      "file": "src/autotester/media/narration.py",
+      "old": "if prior is not None and prior.engine != \"none\":",
+      "new": "if False:",
+      "kills": [
+        "test_persisted_empty_transcript_reused_byte_for_byte"
+      ]
+    },
+    {
+      "name": "video uploaded directly",
+      "file": "src/autotester/media/narration.py",
+      "old": "outcome = transcribe_audio(audio, source_id, provider=provider, secrets=values)",
+      "new": "outcome = transcribe_audio(video, source_id, provider=provider, secrets=values)",
+      "kills": [
+        "test_video_sends_only_extracted_audio_and_cleans_scratch"
+      ]
+    },
+    {
+      "name": "duration guard bypass",
+      "file": "src/autotester/media/narration.py",
+      "old": "not executable or not math.isfinite(duration) or not 0 < duration <= MAX_AUDIO_DURATION_S",
+      "new": "not executable",
+      "kills": [
+        "test_extraction_bounds_reject_duration_and_truncated_output"
+      ]
+    },
+    {
+      "name": "audio extraction failed treated as empty complete",
+      "file": "src/autotester/media/narration.py",
+      "old": "source_id, \"bounded audio extraction failed; narration incomplete\"",
+      "new": "source_id, \"complete\"",
+      "kills": [
+        "test_extraction_failure_stays_explicit_and_cleans_scratch"
+      ]
+    },
+    {
+      "name": "prep caller omits narration policy",
+      "file": "src/autotester/stages/media_prep.py",
+      "old": "transcript = ensure_narration(store, source, secrets=secrets)",
+      "new": "transcript = transcribe_mod.transcribe(video, source.id, use_whisper=False)",
+      "kills": [
+        "test_media_prep_calls_narration_by_default"
+      ]
+    },
+    {
+      "name": "untyped media safety allowed",
+      "file": "src/autotester/sources/audio.py",
+      "old": "if not audio_delivery_ready(provider):",
+      "new": "if False:",
+      "kills": [
+        "test_real_transport_requires_typed_safety_capabilities"
+      ]
+    },
+    {
+      "name": "byte guard disabled",
+      "file": "src/autotester/sources/audio.py",
+      "old": "if not path.is_file() or path.stat().st_size > MAX_AUDIO_BYTES:",
+      "new": "if not path.is_file():",
+      "kills": [
+        "test_audio_byte_limit_and_output_secret_scrubbing"
+      ]
+    },
+    {
+      "name": "provider output secret unsanitized",
+      "file": "src/autotester/sources/audio.py",
+      "old": "text=redactor.scrub(s.text)",
+      "new": "text=s.text",
+      "kills": [
+        "test_audio_byte_limit_and_output_secret_scrubbing"
+      ]
+    },
+    {
+      "name": "CLI opts in ASR by default",
+      "file": "src/autotester/cli_video.py",
+      "old": "local_asr: bool = typer.Option(False, \"--local-asr\",",
+      "new": "local_asr: bool = typer.Option(True, \"--local-asr\",",
+      "kills": [
+        "test_cli_prep_does_not_opt_in_local_asr"
+      ]
+    },
+    {
+      "name": "missing provider reported clean",
+      "file": "src/autotester/sources/audio.py",
+      "old": "None, \"extraction_error: Gemini audio provider unavailable; narration incomplete\"",
+      "new": "None, \"complete\"",
+      "kills": [
+        "test_audio_missing_provider_never_uses_local_asr"
+      ]
+    },
+    {
+      "name": "Gemini failure reported complete",
+      "file": "src/autotester/sources/audio.py",
+      "old": "None, \"extraction_error: Gemini audio transcription failed; narration incomplete\"",
+      "new": "None, \"complete\"",
+      "kills": [
+        "test_audio_provider_failure_is_incomplete"
+      ]
+    },
+    {
+      "name": "supplied empty transcript ignored",
+      "file": "src/autotester/sources/audio.py",
+      "old": "if sidecar := find_sidecar(path):",
+      "new": "if (sidecar := find_sidecar(path)) and False:",
+      "kills": [
+        "test_audio_supplied_empty_transcript_precedes_provider"
+      ]
+    },
+    {
+      "name": "prep ignores persisted narration",
+      "file": "src/autotester/stages/media_prep.py",
+      "old": "if prior is not None and prior.engine != \"none\":",
+      "new": "if False:",
+      "kills": [
+        "test_persisted_empty_transcript_reused_byte_for_byte"
+      ]
+    },
+    {
+      "name": "audio no longer converges on source enum",
+      "file": "src/autotester/sources/adapters.py",
+      "old": "            kind=SourceKind.AUDIO,",
+      "new": "            kind=SourceKind.TEXT,",
+      "kills": [
+        "test_audio_shares_the_one_store_and_enum_with_text_and_doc"
+      ]
+    }
+  ]
+}

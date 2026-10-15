@@ -1,0 +1,111 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\narration-policy\.work\narration-cycle2-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_narration_policy.py F                                         [100%]
+
+================================== FAILURES ===================================
+_________ test_extraction_bounds_reject_duration_and_truncated_output _________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m04-red/test_extraction_bounds_reject_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000206850CDAD0>
+
+    def test_extraction_bounds_reject_duration_and_truncated_output(tmp_path, monkeypatch):
+        _, _, video = _setup(tmp_path)
+        monkeypatch.setattr(narration.shutil, "which", lambda _: "ffmpeg")
+        monkeypatch.setattr(narration, "probe", lambda _: (float("inf"), 0, 0))
+        with pytest.raises(ValueError, match="duration"):
+>           narration._extract_audio(video, tmp_path / "audio.wav")
+
+tests\test_narration_policy.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\media\narration.py:30: in _extract_audio
+    subprocess.run([executable, "-nostdin", "-v", "error", "-i", str(video.resolve()),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = False, timeout = 120.0, check = True
+popenargs = (['ffmpeg', '-nostdin', '-v', 'error', '-i', 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\.proof-temp-m04-red\\test_extraction_bounds_reject_0\\video.mp4', ...],)
+kwargs = {'stdout': -3, 'stderr': -3}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['ffmpeg', '-nostdin', '-v', 'error', '-i', 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\.proof-temp-m04-red\\test_extraction_bounds_reject_0\\video.mp4', '-map', '0:a:0', '-vn', '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', '-fs', '134217728', '-y', 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\.proof-temp-m04-red\\test_extraction_bounds_reject_0\\audio.wav']' returned non-zero exit status 3199971767.
+
+C:\Users\product\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\subprocess.py:571: CalledProcessError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output
+======================== 1 failed, 1 warning in 1.27s =========================

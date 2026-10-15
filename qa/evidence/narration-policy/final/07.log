@@ -1,0 +1,31 @@
+....F............                                                        [100%]
+================================== FAILURES ===================================
+__________ test_extraction_failure_stays_explicit_and_cleans_scratch __________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-149/test_extraction_failure_stays_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029EFA0C4C50>
+
+    def test_extraction_failure_stays_explicit_and_cleans_scratch(tmp_path, monkeypatch):
+        store, source, _ = _setup(tmp_path)
+        paths = []
+        def fail(_, output):
+            paths.append(output)
+            raise subprocess.TimeoutExpired("private input", 1)
+        monkeypatch.setattr(narration, "_extract_audio", fail)
+        result = narration.ensure_narration(store, source, provider=MockProvider())
+>       assert result.engine == "none" and "incomplete" in result.unreadable_reason
+E       AssertionError: assert ('none' == 'none'
+E         
+E           none and 'incomplete' in 'complete')
+E        +  where 'complete' = Transcript(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 3, 18, 415755, tzinfo=datetime.timezone.utc...nance=None, source_id='src_02193b0c6252', segments=[], speech_seconds=0.0, engine='none', unreadable_reason='complete').unreadable_reason
+
+tests\test_narration_policy.py:84: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch
+1 failed, 16 passed, 1 warning in 1.56s

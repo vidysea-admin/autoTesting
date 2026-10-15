@@ -1,0 +1,27 @@
+............F....                                                        [100%]
+================================== FAILURES ===================================
+__________________ test_audio_provider_failure_is_incomplete __________________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-156/test_audio_provider_failure_is0')
+
+    def test_audio_provider_failure_is_incomplete(tmp_path: Path) -> None:
+        class FailingProvider(MockProvider):
+            def see_video(self, path, prompt, schema, options=None):
+                raise ProviderError("SUPERSECRET failure")
+    
+        result = register_audio(_store(tmp_path), _write_audio(tmp_path), provider=FailingProvider())
+>       assert "failed; narration incomplete" in result.source.notes
+E       AssertionError: assert 'failed; narration incomplete' in 'complete'
+E        +  where 'complete' = Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 17, 756400, tzinfo=datetime.timezone.utc), p...554', duration_s=None, label=None, notes='complete', recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None).notes
+E        +    where Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 17, 756400, tzinfo=datetime.timezone.utc), p...554', duration_s=None, label=None, notes='complete', recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None) = Registration(source=Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 17, 756400, tzinfo=datet...s=None, label=None, notes='complete', recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None), created=True).source
+
+tests\test_source_adapters_audio.py:94: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete
+1 failed, 16 passed, 1 warning in 1.32s

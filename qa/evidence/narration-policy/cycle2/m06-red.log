@@ -1,0 +1,40 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\narration-policy\.work\narration-cycle2-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_narration_policy.py F                                         [100%]
+
+================================== FAILURES ===================================
+_________________ test_media_prep_calls_narration_by_default __________________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m06-red/test_media_prep_calls_narratio0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001B472C01510>
+
+    def test_media_prep_calls_narration_by_default(tmp_path, monkeypatch):
+        store, source, _ = _setup(tmp_path)
+        calls = []
+        def ensured(store, source, **kwargs):
+            calls.append(source.id)
+            return Transcript(source_id=source.id, engine="none")
+        monkeypatch.setattr(media_prep, "ensure_narration", ensured)
+        monkeypatch.setattr(media_prep.probe_mod, "ffmpeg_available", lambda: False)
+        media_prep.prepare(store, source)
+>       assert calls == [source.id]
+E       AssertionError: assert [] == ['src_903af0efdca9']
+E         
+E         Right contains one more item: 'src_903af0efdca9'
+E         Use -v to get more diff
+
+tests\test_narration_policy.py:98: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_media_prep_calls_narration_by_default
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_media_prep_calls_narration_by_default
+======================== 1 failed, 1 warning in 1.02s =========================

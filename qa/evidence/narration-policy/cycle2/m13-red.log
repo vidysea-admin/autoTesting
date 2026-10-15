@@ -1,0 +1,36 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\narration-policy\.work\narration-cycle2-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_source_adapters_audio.py F                                    [100%]
+
+================================== FAILURES ===================================
+___________ test_audio_supplied_empty_transcript_precedes_provider ____________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m13-red/test_audio_supplied_empty_tran0')
+
+    def test_audio_supplied_empty_transcript_precedes_provider(tmp_path: Path) -> None:
+        audio = _write_audio(tmp_path)
+        audio.with_suffix(".transcript.json").write_text('{"segments": []}', encoding="utf-8")
+        provider = _seeded_provider(GeminiSegment(start=0, end=1, text="must not be used"))
+        store = _store(tmp_path)
+        result = register_audio(store, audio, provider=provider)
+>       assert provider.prompts == []
+E       AssertionError: assert [('vision', '...nts list.\n')] == []
+E         
+E         Left contains one more item: ('vision', 'C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\.proof-t...ize, translate, invent words, or decide product behavior. When no speech is audible, return an empty segments list.\n')
+E         Use -v to get more diff
+
+tests\test_source_adapters_audio.py:104: AssertionError
+============================== warnings summary ===============================
+tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider
+======================== 1 failed, 1 warning in 1.36s =========================

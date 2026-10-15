@@ -1,0 +1,36 @@
+{
+  "observed_utc": "2026-10-15T09:08:35.344744+00:00",
+  "candidate": "a16c2a53e3ba5ff09533210aacd29ddf56d5ac56",
+  "cycle": 1,
+  "source_hash_count": 394,
+  "source_hash_mismatches": [],
+  "lock_match": true,
+  "fingerprint_keys": [
+    "python",
+    "version",
+    "import_root",
+    "lock_sha256",
+    "source_hashes",
+    "maker_active_s",
+    "maker_tokens",
+    "maker_cost"
+  ],
+  "mutation_results": 15,
+  "named_red_matches": 15,
+  "readiness": "HOLD",
+  "tests_run": false,
+  "missing": [
+    "Contemporaneous candidate/base and environment/dependency/proof-input/output bindings",
+    "Attributable restored-green receipts for every required mutation (harness restores text only)"
+  ],
+  "actual_usage": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "budget_debit": {
+    "active_s": 70,
+    "tokens": 2500
+  },
+  "timing_note": "Prospective phase monotonic intervals unavailable in initial readiness tools; command wall durations available in host outputs. Actual active time remains null."
+}

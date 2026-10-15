@@ -1,0 +1,30 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "narration-fresh-readiness",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 40,
+        "tokens": 1500
+      }
+    }
+  ],
+  "next_phase": {
+    "active_s": 30,
+    "tokens": 1000,
+    "cost": null
+  },
+  "bootstrap_scope": "Readiness HOLD persistence and repository parser readback only; no runtime verification",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": null
+}

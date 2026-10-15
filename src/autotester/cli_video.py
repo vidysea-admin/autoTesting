@@ -87,7 +87,9 @@ def media_prep_cmd(
     source_id: str = typer.Argument(..., help="a source id from `ingest list`"),
     chunk_minutes: float = typer.Option(3.0, "--chunk-minutes"),
     no_whisper: bool = typer.Option(False, "--no-whisper",
-                                    help="skip transcription even if it is available"),
+                                    help="skip transcription; reuse supplied transcripts"),
+    local_asr: bool = typer.Option(False, "--local-asr",
+                                   help="opt in to local ASR; may download weights"),
 ) -> None:
     """Probe, chunk and transcribe a recording. RUN THIS ON THE HOST — the
     container has no ffmpeg and no GPU."""
@@ -97,7 +99,8 @@ def media_prep_cmd(
     source = _require_source(store, project, source_id)
     try:
         prep = media_prep.prepare(store, source, chunk_minutes=chunk_minutes,
-                                  use_whisper=not no_whisper)
+                                  use_whisper=local_asr and not no_whisper,
+                                  transcribe_missing=not no_whisper)
     except (FileNotFoundError, ValueError, media_prep.UnreadableRecording) as exc:
         # AT-166: `UnreadableRecording` is a RuntimeError, so this clause did
         # not catch it and the shipped command answered a deliberate refusal

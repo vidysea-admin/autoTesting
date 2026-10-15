@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_narration_policy.py",
+      "tests/test_source_adapters_audio.py",
+      "tests/test_media_prep.py",
+      "--basetemp=.work/final-receipt-temp",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit": 0,
+    "duration_s": 11.639999999999418,
+    "output": "qa\\evidence\\narration-policy\\focused.log",
+    "sha256": "c363d677f890d484abe793cbadbef607a9c8cb9d2ecc1df1bae206af23fa802d"
+  },
+  {
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src",
+      "tests",
+      "scripts"
+    ],
+    "exit": 0,
+    "duration_s": 0.375,
+    "output": "qa\\evidence\\narration-policy\\ruff.log",
+    "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+  }
+]

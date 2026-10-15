@@ -1,0 +1,39 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\narration-policy\.work\narration-cycle2-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_narration_policy.py F                                         [100%]
+
+================================== FAILURES ===================================
+__________ test_extraction_failure_stays_explicit_and_cleans_scratch __________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m05-red/test_extraction_failure_stays_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C8FD3B0D10>
+
+    def test_extraction_failure_stays_explicit_and_cleans_scratch(tmp_path, monkeypatch):
+        store, source, _ = _setup(tmp_path)
+        paths = []
+        def fail(_, output):
+            paths.append(output)
+            raise subprocess.TimeoutExpired("private input", 1)
+        monkeypatch.setattr(narration, "_extract_audio", fail)
+        result = narration.ensure_narration(store, source, provider=MockProvider())
+>       assert result.engine == "none" and "incomplete" in result.unreadable_reason
+E       AssertionError: assert ('none' == 'none'
+E         
+E           none and 'incomplete' in 'complete')
+E        +  where 'complete' = Transcript(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 15, 59, 647617, tzinfo=datetime.timezone.ut...nance=None, source_id='src_05be1464add1', segments=[], speech_seconds=0.0, engine='none', unreadable_reason='complete').unreadable_reason
+
+tests\test_narration_policy.py:84: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch
+======================== 1 failed, 1 warning in 1.15s =========================

@@ -1,0 +1,44 @@
+.F...............                                                        [100%]
+================================== FAILURES ===================================
+____________ test_persisted_empty_transcript_reused_byte_for_byte _____________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-158/test_persisted_empty_transcrip0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000028BC89B0790>
+
+    def test_persisted_empty_transcript_reused_byte_for_byte(tmp_path, monkeypatch):
+        store, source, _ = _setup(tmp_path)
+        supplied = Transcript(source_id=source.id, engine="sidecar", segments=[])
+        store.save_transcript(supplied)
+        monkeypatch.setattr(narration, "_transcribe_video_audio", lambda *_: pytest.fail("provider"))
+        assert narration.ensure_narration(store, source) == supplied
+        monkeypatch.setattr(transcribe, "transcribe", lambda *_args, **_kwargs: pytest.fail("ASR"))
+        monkeypatch.setattr(media_prep.probe_mod, "ffmpeg_available", lambda: False)
+>       media_prep.prepare(store, source, use_whisper=True)
+
+tests\test_narration_policy.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\stages\media_prep.py:60: in prepare
+    transcript = _prepare_narration(store, source, video, use_whisper, transcribe_missing)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\media_prep.py:102: in _prepare_narration
+    transcript = transcribe_mod.transcribe(video, source.id, use_whisper=use_whisper)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = (WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-158/test_persisted_empty_transcrip0/video.mp4'), 'src_b5247f3fcc23')
+_kwargs = {'use_whisper': True}
+
+>   monkeypatch.setattr(transcribe, "transcribe", lambda *_args, **_kwargs: pytest.fail("ASR"))
+                                                                            ^^^^^^^^^^^^^^^^^^
+E   Failed: ASR
+
+tests\test_narration_policy.py:39: Failed
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte
+1 failed, 16 passed, 1 warning in 1.48s

@@ -1,0 +1,111 @@
+{
+  "records": [
+    {
+      "label": "selected",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr",
+        "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte",
+        "tests/test_narration_policy.py::test_video_sends_only_extracted_audio_and_cleans_scratch",
+        "tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output",
+        "tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch",
+        "tests/test_narration_policy.py::test_media_prep_calls_narration_by_default",
+        "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities",
+        "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing",
+        "tests/test_narration_policy.py::test_cli_prep_does_not_opt_in_local_asr",
+        "tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr",
+        "tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete",
+        "tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider",
+        "tests/test_source_adapters_audio.py::test_audio_gemini_call_is_gated_by_assert_no_raw_secrets",
+        "tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc",
+        "tests/test_media_prep.py::test_prep_tells_the_operator_the_narration_is_unreadable_and_why",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\checker-cycle2-copy\\.tmp",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "exit": 0,
+      "duration_s": 10.5470000000023,
+      "output_sha256": "d9ecdcacd3d2bbeaa5e3839e1866c7698f9c42052aff60876630f4397ca9d4c1"
+    },
+    {
+      "label": "guard-red",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\checker-cycle2-copy\\.tmp",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "exit": 1,
+      "duration_s": 8.375,
+      "output_sha256": "f8213533c334b47a2ba9ec062d2746fd1571cd1bc23e05a4a993a4d7227e7400"
+    },
+    {
+      "label": "guard-restored",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\checker-cycle2-copy\\.tmp",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "exit": 0,
+      "duration_s": 7.889999999999418,
+      "output_sha256": "8318fe486f92c22ed52db31da487f7d90b655646a51ea731324062d471764b0e"
+    },
+    {
+      "label": "ruff",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "ruff",
+        "check",
+        "src/autotester/media/narration.py",
+        "src/autotester/media/transcribe.py",
+        "src/autotester/sources/audio.py",
+        "src/autotester/schema/transcription.py",
+        "src/autotester/stages/media_prep.py",
+        "src/autotester/cli_video.py",
+        "tests/test_narration_policy.py",
+        "tests/test_source_adapters_audio.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.2819999999992433,
+      "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  ],
+  "nodes": [
+    "tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr",
+    "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte",
+    "tests/test_narration_policy.py::test_video_sends_only_extracted_audio_and_cleans_scratch",
+    "tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output",
+    "tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch",
+    "tests/test_narration_policy.py::test_media_prep_calls_narration_by_default",
+    "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities",
+    "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing",
+    "tests/test_narration_policy.py::test_cli_prep_does_not_opt_in_local_asr",
+    "tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr",
+    "tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete",
+    "tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider",
+    "tests/test_source_adapters_audio.py::test_audio_gemini_call_is_gated_by_assert_no_raw_secrets",
+    "tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc",
+    "tests/test_media_prep.py::test_prep_tells_the_operator_the_narration_is_unreadable_and_why"
+  ],
+  "guard": {
+    "anchor_count": 1,
+    "original_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "mutated_sha256": "ed5e84ccb5552fd2ff98728a33988c9ae8c2c5c04e4ffaa0863e701b9da1b176",
+    "restored_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828"
+  },
+  "copy": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\checker-cycle2-copy"
+}
