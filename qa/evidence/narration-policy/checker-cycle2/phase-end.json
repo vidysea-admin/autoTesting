@@ -1,0 +1,18 @@
+{
+  "start_monotonic": 20370.171,
+  "end_monotonic": 20514.953,
+  "elapsed_s": 144.78200000000288,
+  "explicit_wait_s": 0,
+  "tokens": null,
+  "cost": null,
+  "total_actual_active_s": null,
+  "budget_debit": {
+    "active_s": 180,
+    "tokens": 5500
+  },
+  "prior_debits": {
+    "active_s": 95,
+    "tokens": 3500
+  },
+  "efficiency_ratio": "UNVERIFIED"
+}

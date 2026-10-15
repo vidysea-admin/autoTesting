@@ -1,0 +1,33 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_real_transport_requires_typed_safety_capabilities ____________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/checker-cycle2-copy/.tmp/test_real_transport_requires_t0')
+
+    def test_real_transport_requires_typed_safety_capabilities(tmp_path):
+        from autotester.sources.audio import transcribe_audio
+        audio = tmp_path / "audio.wav"
+        audio.write_bytes(b"audio")
+        provider = MockProvider()
+        provider.id = "gemini"
+        provider.bounded_audio = True  # an untyped truthy promise cannot enable delivery
+        outcome = transcribe_audio(audio, "src", provider=provider)
+>       assert outcome.transcript is None and "guarded" in outcome.note
+E       AssertionError: assert (None is None and 'guarded' in 'extraction_error: Gemini audio transcription failed; narration incomplete')
+E        +  where None = TranscriptionOutcome(transcript=None, note='extraction_error: Gemini audio transcription failed; narration incomplete').transcript
+E        +  and   'extraction_error: Gemini audio transcription failed; narration incomplete' = TranscriptionOutcome(transcript=None, note='extraction_error: Gemini audio transcription failed; narration incomplete').note
+
+tests\test_narration_policy.py:109: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\narration-policy\.work\checker-cycle2-copy\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities
+1 failed, 2 warnings in 1.37s
