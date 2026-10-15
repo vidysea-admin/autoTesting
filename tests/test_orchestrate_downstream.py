@@ -9,6 +9,7 @@ from autotester.core.paths import ProjectPaths
 from autotester.schema.enums import Outcome, ReviewStatus
 from autotester.schema.flowspec import Review
 from autotester.schema.run_state import PipelineBatch, StageName
+from autotester.stages import expand as expansion
 from autotester.stages import orchestrate_downstream as stages
 from autotester.stages import orchestrate_execute as execution
 from autotester.stages.orchestrate import run_or_resume
@@ -46,6 +47,8 @@ def test_downstream_generation_reads_exact_model_and_preserves_approved_truth(tm
     assert batch.flowspec == spec and len(batch.cases) == 1
     assert "from unreviewed DRAFT flow" in batch.cases[0].provenance
     assert store.paths.flowspec.read_bytes() == before
+    calls = len(f[-3].prompts)
+    assert _expand(f) == ref and len(f[-3].prompts) == calls
 
 
 def test_downstream_needs_edit_and_unreconciled_model_stop_before_spend(tmp_path):
@@ -213,3 +216,37 @@ def test_downstream_captured_human_block_survives_model_status_laundering(tmp_pa
     with pytest.raises(ValueError, match="NEEDS_EDIT"):
         ctx.runners[StageName.EXPAND](ctx, model)
     assert generator.prompts == [] and DownstreamSession.instances == []
+
+
+def test_downstream_uncertain_generation_never_spends_again(tmp_path, monkeypatch):
+    f = downstream_fixture(tmp_path)
+    generator, ctx = f[-3], f[-1]
+    original = generator.act
+
+    def lose_response(*args, **kwargs):
+        original(*args, **kwargs)
+        raise RuntimeError("generation response lost")
+
+    monkeypatch.setattr(generator, "act", lose_response)
+    with pytest.raises(RuntimeError, match="response lost"):
+        _expand(f)
+    assert len(generator.prompts) == 1
+    monkeypatch.setattr(generator, "act", original)
+    with pytest.raises(ValueError, match="new run"):
+        _expand(f)
+    assert len(generator.prompts) == 1
+    assert not ctx.store.paths.pipeline_artifact(ctx.run_id, "expand").exists()
+
+
+def test_downstream_pre_call_prompt_refusal_remains_retryable(tmp_path, monkeypatch):
+    f = downstream_fixture(tmp_path)
+    generator, ctx = f[-3], f[-1]
+    original = expansion.guard_expand_prompt
+    monkeypatch.setattr(expansion, "guard_expand_prompt",
+                        lambda *_: (_ for _ in ()).throw(ValueError("prompt refused")))
+    with pytest.raises(ValueError, match="prompt refused"):
+        _expand(f)
+    assert generator.prompts == []
+    assert not ctx.store.paths.pipeline_artifact(ctx.run_id, "expansion-attempt").exists()
+    monkeypatch.setattr(expansion, "guard_expand_prompt", original)
+    assert Path(_expand(f)).is_file() and generator.prompts

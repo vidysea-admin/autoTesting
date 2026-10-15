@@ -4,16 +4,19 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from PIL import Image
+
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
 from autotester.providers.mock import MockProvider
 from autotester.schema.case import Case
-from autotester.schema.enums import Action, CaseClass, CaseKind, Outcome, Result
+from autotester.schema.enums import Action, CaseClass, CaseKind, EvidenceKind, Outcome, Result
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
 from autotester.schema.run import RawResult
-from autotester.schema.verdict import Judgment
+from autotester.schema.verdict import Judgment, Verdict
+from autotester.stages import run_case_pipeline as pipeline
 from autotester.stages.run_case_pipeline import (
     default_rubric,
     grade_errored_result,
@@ -70,7 +73,7 @@ def test_default_rubric_falls_back_to_title_when_no_rationale() -> None:
 
 
 def test_run_and_grade_case_builds_and_persists_a_default_rubric_when_none_exists(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch,
 ) -> None:
     store = ProjectStore("demo", tmp_path)
     store.save_project(_project())
@@ -79,13 +82,36 @@ def test_run_and_grade_case_builds_and_persists_a_default_rubric_when_none_exist
         Judgment(result=Result.PASS, criteria_met=1, criteria_total=1, scoreboard="1/1 met")
     ]})
 
-    result, verdict = run_and_grade_case(case, _session(tmp_path), judge, "run_1", store)
+    session = _session(tmp_path)
+    session.state.run_dir = store.paths.run_dir("run_1")
+    session.state.run_dir.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(session.page, "screenshot",
+                        lambda path, **_: Image.new("RGB", (8, 8), "black").save(path))
+    seen = []
+
+    def controlled_grade(rubric, raw, run_id, provider, *, run_dir, **_kwargs):
+        expected = default_rubric(case, f"rub_{case.id}")
+        actual = rubric.model_dump(exclude={"created_at"})
+        assert actual == expected.model_dump(exclude={"created_at"})
+        assert provider is judge and raw.case_id == case.id and run_id == "run_1"
+        image_ref = next(ev.path for ev in raw.evidence if ev.kind is EvidenceKind.SCREENSHOT)
+        image_path = run_dir / image_ref
+        assert image_path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+        with Image.open(image_path) as image:
+            assert image.format == "PNG" and image.size == (8, 8)
+        seen.append(raw.case_id)
+        return Verdict(run_id=run_id, case_id=raw.case_id, result=Result.PASS,
+                       rubric_hash=rubric.fingerprint, grader_provider="controlled-rubric-fixture")
+
+    monkeypatch.setattr(pipeline, "grade", controlled_grade)
+    result, verdict = run_and_grade_case(case, session, judge, "run_1", store)
 
     assert result.outcome is Outcome.COMPLETED
     assert verdict.result is Result.PASS
     persisted = store.load_rubric(f"rub_{case.id}")
     assert persisted is not None
     assert persisted.criteria[0].id == "c1"
+    assert seen == [case.id] and verdict.run_id == "run_1" and verdict.case_id == case.id
 
 
 def test_run_and_grade_case_passes_the_runs_real_screenshots_to_the_judge(

@@ -9,7 +9,7 @@ from autotester.providers.base import Provider
 from autotester.schema.enums import CaseStatus, Result, ReviewStatus, Trigger
 from autotester.schema.flowspec import FlowSpec
 from autotester.schema.project import Project
-from autotester.schema.run_state import PipelineBatch, StageName
+from autotester.schema.run_state import ExpansionAttempt, PipelineBatch, StageName
 from autotester.schema.verdict import Verdict
 from autotester.stages.expand import expand
 from autotester.stages.grade import grade
@@ -31,7 +31,7 @@ from autotester.stages.run_launcher import (
     save_tracked_run,
 )
 from autotester.stages.video_retention import prune_old_videos
-from autotester.store.filestore import read_json
+from autotester.store.filestore import read_json, write_json
 from autotester.store.project_store import ProjectStore
 
 
@@ -39,6 +39,33 @@ def _role_model(ctx, project, role, supplied):
     model = supplied if supplied is not None else for_role(project, role)
     model.trace = ctx.trace
     return model
+
+
+def _generation_reentry(ctx, spec):
+    complete = ctx.store.paths.pipeline_artifact(ctx.run_id, "expand")
+    fingerprint = PipelineBatch.fingerprint(spec, [])
+    if complete.exists():
+        prior = load_pipeline_batch(ctx, str(complete))
+        if PipelineBatch.fingerprint(prior.flowspec, []) != fingerprint:
+            raise ValueError("completed generation has a different MODEL")
+        return str(complete)
+    marker = ctx.store.paths.pipeline_artifact(ctx.run_id, "expansion-attempt")
+    attempt = read_json(marker, ExpansionAttempt)
+    if attempt is not None:
+        if (attempt.run_id != ctx.run_id or attempt.project != ctx.store.paths.slug
+                or attempt.model_fingerprint != fingerprint):
+            raise ValueError("generation attempt mixes MODEL or run lineage")
+        raise ValueError("EXPAND interrupted or failed after call admission; start a new run. "
+                         + (attempt.error or "Physical usage is unavailable."))
+    return None
+
+
+def _mark_generation(ctx, spec, *, error=None):
+    attempt = ExpansionAttempt(run_id=ctx.run_id, project=spec.project,
+                               model_fingerprint=PipelineBatch.fingerprint(spec, []), error=error)
+    if ctx.secrets is not None:
+        ctx.secrets.guard_prompt(attempt.model_dump_json())
+    write_json(ctx.store.paths.pipeline_artifact(ctx.run_id, "expansion-attempt"), attempt)
 
 
 def make_expand_stage(project: Project, *, generator: Provider | None = None,
@@ -52,8 +79,17 @@ def make_expand_stage(project: Project, *, generator: Provider | None = None,
         if initial_blocked:
             raise ValueError("existing NEEDS_EDIT review blocks generation")
         require_pipeline_eligibility(ctx, spec)
+        if prior := _generation_reentry(ctx, spec):
+            return prior
         model = _role_model(ctx, project, "agent", generator)
-        generated = expand(spec, model, store=ctx.store, secrets=ctx.secrets)
+        try:
+            generated = expand(spec, model, store=ctx.store, secrets=ctx.secrets,
+                               before_call=lambda: _mark_generation(ctx, spec))
+        except Exception as exc:
+            if ctx.store.paths.pipeline_artifact(ctx.run_id, "expansion-attempt").exists():
+                _mark_generation(ctx, spec, error=ctx.secrets.scrub_optional(
+                    f"{type(exc).__name__}: {exc}"))
+            raise
         for case in generated:
             ctx.store.add_case(case)
         cases = [c.model_copy(deep=True) for c in ctx.store.list_cases()

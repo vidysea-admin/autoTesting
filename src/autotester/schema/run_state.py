@@ -103,6 +103,15 @@ class RunState(BaseModel):
         return next((c for c in self.stages if c.stage is stage), None)
 
 
+class ExpansionAttempt(Artifact):
+    """Admission recorded before generation; uncertain same-run calls are never repeated."""
+
+    run_id: str
+    project: str
+    model_fingerprint: str
+    error: str | None = None
+
+
 class PipelineBatch(Artifact):
     """One run's frozen model/cases and stage observations; nested outside result globs."""
 

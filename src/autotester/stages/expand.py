@@ -13,6 +13,8 @@ immediately before `provider.act` -- see `guard_expand_prompt`.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import RepoDocs
 from autotester.core.redact import mask_pii
@@ -187,7 +189,8 @@ def _reviewed_batch(spec: FlowSpec, store: ProjectStore | None,
 
 def _expand_reviewed_flow(flow: Flow, project: str, provider: Provider, docs: RepoDocs,
                           proposals: list[CaseProposal], secrets: SecretStore | None,
-                          draft: bool = False) -> list[Case]:
+                          draft: bool = False,
+                          before_call: Callable[[], None] | None = None) -> list[Case]:
     prov = case_provenance(flow.source_id) if draft else None
     cases = [_happy_case(flow, project, prov)]
     for proposal in proposals:
@@ -195,6 +198,8 @@ def _expand_reviewed_flow(flow: Flow, project: str, provider: Provider, docs: Re
             continue
         prompt = mask_pii(  # AT-840
             guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets))
+        if before_call is not None:
+            before_call()
         expanded = provider.act(prompt, ExpandedSteps, prompt_file=SKILL_NAME, fed_id=flow.id)
         case = _expanded_case(flow, project, proposal.case_class, expanded, prov)
         if case is not None:
@@ -219,7 +224,8 @@ def expand_flow(
 
 def expand(spec: FlowSpec, provider: Provider, docs: RepoDocs | None = None,
            *, store: ProjectStore | None = None, proposal_ids: list[str] | None = None,
-           secrets: SecretStore | None = None) -> list[Case]:
+           secrets: SecretStore | None = None,
+           before_call: Callable[[], None] | None = None) -> list[Case]:
     """Generate only saved approved proposals; check every flow before the first model call."""
     require_generatable(spec)
     batch = _reviewed_batch(spec, store, proposal_ids)
@@ -228,5 +234,5 @@ def expand(spec: FlowSpec, provider: Provider, docs: RepoDocs | None = None,
     for flow in spec.flows:
         cases.extend(_expand_reviewed_flow(
             flow, spec.project, provider, docs or RepoDocs(), batch, guard,
-            is_unreviewed_draft(spec)))
+            is_unreviewed_draft(spec), before_call))
     return cases
