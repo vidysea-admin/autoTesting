@@ -1,6 +1,6 @@
 # at888-target-closed
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 2
 Issue: AT-888
 Branch: wave/at888-target-closed
