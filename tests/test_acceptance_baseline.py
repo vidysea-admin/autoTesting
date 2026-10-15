@@ -1,6 +1,8 @@
 """Input-only baseline preparation must preserve scope without inheriting product truth."""
 
 import hashlib
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -173,3 +175,50 @@ def test_credential_reference_scope_never_widens(baseline, fault):
     with pytest.raises(ValueError):
         prepare_baselines(root, inputs, output, plan)
     assert not output.exists()
+
+
+def test_real_resolved_alias_cannot_escape_inputs(baseline):
+    root, inputs, output, plan, _ = baseline
+    outside, alias = inputs.parent / "outside", inputs / "linked"
+    outside.mkdir()
+    (outside / "clip.mp4").write_bytes((inputs / "clip.mp4").read_bytes())
+    if os.name == "nt":
+        script = ("New-Item -ItemType Junction -Path $env:BASELINE_ALIAS "
+                  "-Target $env:BASELINE_TARGET -ErrorAction Stop | Out-Null")
+        result = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script],
+            env=dict(os.environ, BASELINE_ALIAS=str(alias), BASELINE_TARGET=str(outside)),
+            capture_output=True, timeout=20)
+        assert result.returncode == 0, (
+            "Environment gap: real junction creation failed: " + result.stderr.decode(errors="replace"))
+    else:
+        alias.symlink_to(outside, target_is_directory=True)
+    assert alias.resolve() == outside.resolve()
+    plan.teaching_inputs[0].path = "linked/clip.mp4"
+    with pytest.raises(ValueError, match="contained"):
+        prepare_baselines(root, inputs, output, plan)
+    assert not output.exists()
+
+
+def test_partial_write_is_visible_and_refuses_reuse(baseline, monkeypatch):
+    root, inputs, output, plan, store = baseline
+    before = {p: p.read_bytes() for p in store.paths.dir.rglob("*") if p.is_file()}
+    write_bytes = Path.write_bytes
+
+    def fail_second_input(path, blob):
+        if path.is_relative_to(output) and path.name == "input-1.md":
+            raise OSError("injected input write failure")
+        return write_bytes(path, blob)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Path, "write_bytes", fail_second_input)
+        with pytest.raises(OSError, match="injected input write failure"):
+            prepare_baselines(root, inputs, output, plan)
+    assert output.is_dir() and (output / "baseline-plan.json").exists()
+    assert not (output / "baseline-receipt.json").exists()
+    partial = {p: p.read_bytes() for p in output.rglob("*") if p.is_file()}
+    assert any(p.name == "input-0.mp4" for p in partial)
+    with pytest.raises(ValueError, match="destination must be new"):
+        prepare_baselines(root, inputs, output, plan)
+    assert partial == {p: p.read_bytes() for p in output.rglob("*") if p.is_file()}
+    assert before == {p: p.read_bytes() for p in store.paths.dir.rglob("*") if p.is_file()}
