@@ -15,7 +15,7 @@ from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import RepoDocs
-from autotester.core.redact import Redactor
+from autotester.core.redact import Redactor, mask_pii
 from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
@@ -43,10 +43,10 @@ def _render_evidence(result: RawResult) -> str:
 
 def _render_rubric(rubric: Rubric) -> str:
     criteria = "\n".join(
-        f"- {c.id}: {c.text}" + (" (evidence required)" if c.evidence_required else "")
+        f"- {c.id}: {_untrusted(c.text)}" + (" (evidence required)" if c.evidence_required else "")
         for c in rubric.criteria
     )
-    no_fire = "\n".join(f"- {n}" for n in rubric.no_fire) or "(none)"
+    no_fire = "\n".join(f"- {_untrusted(n)}" for n in rubric.no_fire) or "(none)"
     return f"criteria:\n{criteria}\n\nno-fire (do not flag these):\n{no_fire}"
 
 
@@ -164,6 +164,13 @@ def _withheld(
     return None
 
 
+def _pii_masked(prompt: str) -> str:
+    """AT-840: the judge prompt (rubric, evidence labels carrying page text, any OCR) is the only
+    text channel; mask emails/phones/name fields after the secret gate. Images are sent as
+    captured -- no image-PII masking exists (manifest at840-judge-pii)."""
+    return mask_pii(prompt)
+
+
 def _outcome_verdict(result: RawResult, rubric: Rubric, run_id: str) -> Verdict | None:
     """The deterministic outcomes a judge never sees. ASSERTION_FAILED is not
     one of them: the judge still reads that run (the recorded unmet assertions
@@ -208,6 +215,7 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     withheld = _withheld(run_id, result, rubric, prompt, secrets, redactor)
     if withheld is not None:
         return withheld
+    prompt = _pii_masked(prompt)
 
     # AT-366: filter HERE, once, and count what was lost. All three providers drop a
     # non-existent path in silence, so a screenshot the executor recorded but failed to

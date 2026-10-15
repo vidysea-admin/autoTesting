@@ -193,7 +193,8 @@ def _expand_reviewed_flow(flow: Flow, project: str, provider: Provider, docs: Re
     for proposal in proposals:
         if proposal.flow_id != flow.id or proposal.case_class is CaseClass.HAPPY:
             continue
-        prompt = guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets)
+        prompt = mask_pii(  # AT-840
+            guard_expand_prompt(build_expand_prompt(flow, proposal.case_class, docs), secrets))
         expanded = provider.act(prompt, ExpandedSteps, prompt_file=SKILL_NAME, fed_id=flow.id)
         case = _expanded_case(flow, project, proposal.case_class, expanded, prov)
         if case is not None:
