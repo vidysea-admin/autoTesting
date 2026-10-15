@@ -105,3 +105,20 @@ existing test file would pass on today's tree.
   stood since 2026-09-24 and the file was never written. DRAFT until T-177's first PASS.
   **Changes-authorized:** this file (named by D-041). No enforcement-path file touched.
   **Links:** D-041; D-042; T-177; T-176; AT-253; R23.
+
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### AF7 — Explicit opt-in production integration
+The production-wiring hold is released solely for an explicit opt-in fallback
+after deterministic replay fails. Default clean replay invokes no actuator; a
+disabled fallback invokes no actuator even after failure. AF1-AF6 remain binding,
+including provider routing, bounded work and recorded repair persistence. Functional
+results survive fallback errors. D-095 keeps the separate lead-agent layer off by
+default; this amendment does not enable it. D-098 account-destroying controls stay
+blocked at every write policy, in addition to domain and run-approval guards.
+Verify the real run caller, disabled/clean/failed paths, exhaustion, guarded actions
+and explicit persistence of an accepted repair; direct loop tests alone do not pass.

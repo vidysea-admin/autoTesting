@@ -136,3 +136,21 @@ decided here; it is out of scope (see below).
   also runs inside the provider, as the request asked for "before every call"), LP8 -> LL8, LP9 -> LL9, LP10 -> LL10, LP11 -> LL11 (adds the
   graceful no-credentials error on every surface), LP12 -> LL13, LP13 -> LL14, LP14 -> LL12, LP15 -> LL16, LP16 -> LL15 (gated by
   `auth.md` AU21).
+
+## 2026-10-15 completion amendment (D-099)
+
+Owner authorization: Umesh approved the complete Ollama-first plan in chat
+2026-10-15 and requested implementation through checker PASS. The clauses
+below take precedence only on the named behavior; other criteria remain.
+
+### LL amendment — Ollama defaults and visual transport
+The resolution rule's schema-default examples and LL2's unconfigured fallback
+example are replaced by the current `model-chain` schema default. Explicit
+project/server selection retains the existing resolution precedence and grammar.
+LL4's fixed Gemini ownership is removed: vision follows ProviderConfig and verified
+capability. LiteLLM may keep `see_video` unsupported when another Provider performs
+sampled-frame transport. If LiteLLM transports images, it sends actual image bytes
+and must reject unsupported capability; text-only success is insufficient.
+For Ollama Cloud, validated JSON plus at most one bounded repair is the required
+baseline; LL3 does not promise native cloud schema enforcement. LL5/LL6/LL7 apply
+to every physical request including repair, fallback and failed attempts.

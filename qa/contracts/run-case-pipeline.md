@@ -52,3 +52,14 @@ only the rubric lookup/creation step between them.
 ## Amendment log (append-only; git history is the version)
 
 - 2026-09-04 · init · contract created for the run-case-pipeline unit.
+
+## 2026-10-15 completion amendment (D-099)
+
+### RP4 amendment — Replay and post-result integrations
+RP4's unmodified `run_case` call describes the original unit, not a permanent ban
+on checked script replay. The production pipeline may use existing deterministic
+replay, fresh execution and explicit opt-in repair; grading still consumes only
+the current case/run's persisted RawResult evidence. No replay success may reuse
+a previous run's judgement or stale evidence. Failed bundle/advisory integration
+cannot erase the original functional result. Verify the real pipeline caller for
+script success/failure, run/case isolation and post-result integration errors.
