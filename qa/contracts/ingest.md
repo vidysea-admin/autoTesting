@@ -337,3 +337,27 @@ usable authorized fallback, unsupported capability remains explicitly unavailabl
 All other boundaries remain: no fallback on privacy refusal, global budget or
 deadline exhaustion; finite physical requests, actual provider/reason/accounting,
 truthful unknown usage, and explicit configuration precedence are unchanged.
+## 2026-10-15 I9 safe SDK diagnostic clarification
+
+I9's cause-chain requirement is subordinate to core C5: raw SDK exceptions may
+contain credentials, paths, request/response payloads or prompt echoes and must
+not be exposed through ProviderError cause chains, logs or persisted artifacts.
+A safe SDK exception category and sanitized diagnostic preserve the attribution
+intent; a fixed safe category-only diagnostic is acceptable when content cannot
+be sanitized reliably. Suppress rendering of raw SDK cause/context (for example,
+`raise ProviderError(safe_diagnostic) from None`) or chain only a sanitized safe
+surrogate; never chain the original secret-bearing vendor exception. Do not copy
+its payload/attributes into the public error or artifacts.
+The error remains a typed ProviderError. MAX_TOKENS/output-ceiling truncation is
+still explicitly reported as truncation and must not become generic parse failure
+or enter malformed-JSON repair. ACTIVE polling, bounded timeout, upload-cache
+miss behavior, actual provider/reason/accounting and all D-101/D-102 fallback
+privacy/budget boundaries remain unchanged. No new fallback eligibility is added.
+
+Authority: existing core-invariants C5 and the approved safe-error/privacy policy;
+clarifies compatible I9 interpretation without changing an enforcement path or
+approach. Maker feedback is preserved verbatim in the gemini-media-guard unit's
+qa/feedback-inbox.md section "Gemini media guard — I9 safe cause-chain conflict
+(2026-10-15)". Runtime verification belongs to that separate unit: planted vendor
+payloads must not appear in formatted tracebacks/artifacts; upload/poll/generate
+failures remain typed, and MAX_TOKENS retains its distinct diagnostic.
