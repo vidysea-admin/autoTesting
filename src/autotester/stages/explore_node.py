@@ -1,9 +1,8 @@
 """One node's worth of exploring: try each safe candidate action, record what
 happened, and get back to the node before trying the next one.
 
-Split from `explore.py` for the 300-line cap. Contract: qa/contracts/explore.md
-X5-X9 â€” every decision about whether an action is allowed is delegated to
-`explore_safety.py`; nothing here re-implements a safety rule.
+Split from `explore.py` for the 300-line cap (qa/contracts/explore.md X5-X9). Every safety
+decision is delegated to `explore_safety.py`; nothing here re-implements a rule.
 """
 
 from __future__ import annotations
@@ -187,7 +186,8 @@ def _mark(rt: ExploreRuntime, node: ScreenNode, status: NodeStatus) -> None:
 
 def _candidate_denial(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> bool:
     """Record and skip anything policy refuses. True = skipped."""
-    reason = deny_reason(el, rt.policy)
+    ctx = getattr(rt.session, "destroy_ctx", None)
+    reason = deny_reason(el, rt.policy, page=node.url_template + node.title, destroy_ctx=ctx)
     if reason is not None:
         outcome = (EdgeOutcome.SKIPPED_UNNAMED if reason == "unnamed control"
                    else EdgeOutcome.DENIED_POLICY)

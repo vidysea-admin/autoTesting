@@ -35,6 +35,7 @@ from autotester.schema.agent_fallback import (
 from autotester.schema.enums import EvidenceKind, WritePolicy
 from autotester.schema.run import Evidence
 from autotester.schema.screen_graph import ElementRef
+from autotester.stages.account_destroy import DestroyContext
 from autotester.stages.explore_safety import deny_reason, policy_for
 from autotester.stages.run_budget import RunBudgetExceeded
 
@@ -105,6 +106,7 @@ class ActionGuard:
         self.project = session.project
         self.budget = getattr(session, "budget", None)
         self.policy = policy_for(session.project)
+        self.destroy_ctx = DestroyContext()
         self.max_steps, self.wall_clock_s, self.clock = max_steps, wall_clock_s, clock
         self.deadline = clock() + wall_clock_s
         self.vetted: list[FallbackAction] = []
@@ -160,7 +162,8 @@ class ActionGuard:
         if action.kind in _ELEMENT_KINDS:
             element = ElementRef(role=action.role, name=action.target, selector=action.target,
                                  is_form_submit=action.is_form_submit)
-            return deny_reason(element, self.policy)
+            return deny_reason(element, self.policy, page=action.url or "",
+                               destroy_ctx=self.destroy_ctx)
         return None
 
 

@@ -18,13 +18,9 @@ from autotester.schema.crawl import CoverageHole, CrawlBounds, CrawlCoverage, Pe
 from autotester.schema.enums import Action, CrawlStatus, EdgeOutcome, NodeStatus, WritePolicy
 from autotester.schema.flowspec import FlowSpec
 from autotester.schema.screen_graph import ElementRef, ScreenEdge, ScreenNode
+from autotester.stages.account_destroy import ACCOUNT_DESTROY_REFUSED, destroys_account
 from autotester.stages.coverage import unreached_screens
-from autotester.stages.explore_safety import (
-    ACCOUNT_DESTROY_REFUSED,
-    FORM_SUBMIT_REFUSED,
-    OFF_DOMAIN_LINK_REFUSED,
-    destroys_account,
-)
+from autotester.stages.explore_safety import FORM_SUBMIT_REFUSED, OFF_DOMAIN_LINK_REFUSED
 
 if TYPE_CHECKING:
     from autotester.stages.explore_runtime import ExploreRuntime

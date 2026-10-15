@@ -17,15 +17,15 @@ import re
 from urllib.parse import urljoin
 
 from autotester.browser.secrets import host_of
-from autotester.schema.crawl import (
-    ACCOUNT_DESTROY_PATTERNS,
-    DEFAULT_NEVER_CLICK_PATTERNS,
-    DialogEvent,
-    SafetyPolicy,
-)
+from autotester.schema.crawl import DEFAULT_NEVER_CLICK_PATTERNS, DialogEvent, SafetyPolicy
 from autotester.schema.enums import WritePolicy
 from autotester.schema.project import Project
 from autotester.schema.screen_graph import ElementRef
+from autotester.stages.account_destroy import (
+    ACCOUNT_DESTROY_REFUSED,
+    DestroyContext,
+    destroys_account,
+)
 
 _UNSAFE_SCHEMES = ("javascript:", "mailto:", "tel:")
 FORM_SUBMIT_REFUSED = "form submit under read_only"
@@ -88,17 +88,8 @@ def _matches_any(name: str, patterns: list[str]) -> bool:
     return any(re.search(pattern, folded, re.IGNORECASE) for pattern in patterns)
 
 
-ACCOUNT_DESTROY_REFUSED = "not exercised: account-destroying (policy)"
-"""The one report wording for a control never clicked because it destroys the account."""
-
-
-def destroys_account(*labels: str | None) -> bool:
-    """True if any of the labels (accessible name, text, aria-label, locator) names an
-    account-destroying control. Case-insensitive; the ONE matcher every action path asks."""
-    return any(_matches_any(label, list(ACCOUNT_DESTROY_PATTERNS)) for label in labels if label)
-
-
-def deny_reason(el: ElementRef, policy: SafetyPolicy) -> str | None:
+def deny_reason(el: ElementRef, policy: SafetyPolicy, *, page: str = "",
+                destroy_ctx: DestroyContext | None = None) -> str | None:
     """Why `el` must NOT be clicked right now, or `None` if it's safe to try.
 
     Order matters: never-click applies at every policy (checked first);
@@ -115,7 +106,7 @@ def deny_reason(el: ElementRef, policy: SafetyPolicy) -> str | None:
     loosen. `policy.never_click_patterns` still widens the set (a project
     may add more patterns); it can never narrow it.
     """
-    if destroys_account(el.name):
+    if destroys_account(el.name, href=el.href, context=page, ctx=destroy_ctx):
         return ACCOUNT_DESTROY_REFUSED
     if _matches_any(el.name, list(DEFAULT_NEVER_CLICK_PATTERNS)) or _matches_any(
         el.name, list(policy.never_click_patterns)

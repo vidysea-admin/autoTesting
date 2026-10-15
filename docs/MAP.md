@@ -191,6 +191,7 @@
 | `sources/zip_intake.py` | Safe zip expansion: one video source per video member, everything else accounted for. |
 | `sources/zip_names.py` | Zip member-name vetting that behaves identically under Windows and Ubuntu path rules. |
 | `stages/acceptance_comparison.py` | Build and check the T-136 acceptance comparison from stored bench artifacts. |
+| `stages/account_destroy.py` | One job: decide whether a control would destroy the account (Umesh 2026-10-15, D-098). |
 | `stages/adjudicate.py` | ADJUDICATE: merge every model's chunked observations into one reading. |
 | `stages/adversarial.py` | ADVERSARIAL: a bounded pass of file-defined probes at one AI endpoint. It records, never judges. |
 | `stages/agent_actuator.py` | AGENT_ACTUATOR: the guards, bounds and typed boundary around an agent that drives a page. |

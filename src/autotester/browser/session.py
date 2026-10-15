@@ -231,6 +231,7 @@ class BrowserSession(DestroyGuardMixin, EvidenceMixin, LocatorMixin, VideoMixin)
             self._guard_destroy(target, locator)
             target.press(key, **self._timeout())
         else:
+            self._guard_focused(key)
             self.page.keyboard.press(key)
         return self._record(EvidenceKind.DOM, f"pressed {key}", step_order=step_order)
 
