@@ -8,6 +8,7 @@ for "first account becomes admin" serialize on the store's own lock (AU7, AU24).
 from __future__ import annotations
 
 import os
+import secrets
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS meta (name TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
     display_name TEXT NOT NULL DEFAULT '', disabled INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL);
+    created_at TEXT NOT NULL, generation TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS groups (
     id INTEGER PRIMARY KEY, name TEXT UNIQUE NOT NULL, seed TEXT UNIQUE);
 CREATE TABLE IF NOT EXISTS group_permissions (
@@ -87,6 +88,11 @@ def now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
+def new_account_generation() -> str:
+    """An opaque random account identity, independent of numeric IDs and clocks."""
+    return secrets.token_hex(16)
+
+
 def store_exists() -> bool:
     """A read that finds no store must not create one (AU16: a refused request
     changes no file under the data root)."""
@@ -112,6 +118,20 @@ def _restrict(path: Path) -> None:
         os.chmod(path, 0o600)
 
 
+def _migrate_account_generations(conn: sqlite3.Connection) -> None:
+    """Give legacy accounts one random identity, then prevent later identity mutation."""
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(users)")}
+    if "generation" not in columns:
+        conn.execute("ALTER TABLE users ADD COLUMN generation TEXT")
+        for row in conn.execute("SELECT id FROM users").fetchall():
+            conn.execute("UPDATE users SET generation = ? WHERE id = ?",
+                         (new_account_generation(), row["id"]))
+    conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS user_generation_unique ON users(generation)")
+    conn.execute("""CREATE TRIGGER IF NOT EXISTS user_generation_immutable
+        BEFORE UPDATE OF generation ON users WHEN NEW.generation IS NOT OLD.generation
+        BEGIN SELECT RAISE(ABORT, 'account generation is immutable'); END""")
+
+
 def connect() -> sqlite3.Connection:
     path = auth_db_path()
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -122,8 +142,14 @@ def connect() -> sqlite3.Connection:
     if fresh or path not in _READY:
         conn.executescript(_SCHEMA)
         conn.execute("BEGIN IMMEDIATE")
-        _seed_once(conn)
-        conn.execute("COMMIT")
+        try:
+            _migrate_account_generations(conn)
+            _seed_once(conn)
+            conn.execute("COMMIT")
+        except BaseException:
+            conn.execute("ROLLBACK")
+            conn.close()
+            raise
         _restrict(path)
         _READY.add(path)
     return conn

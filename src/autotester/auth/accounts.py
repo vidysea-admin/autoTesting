@@ -39,7 +39,7 @@ def _user(conn: sqlite3.Connection, row: sqlite3.Row) -> User:
         "SELECT g.name FROM groups g JOIN memberships m ON m.group_id = g.id "
         "WHERE m.user_id = ? ORDER BY g.name", (row["id"],))]
     return User(id=row["id"], email=row["email"], display_name=row["display_name"],
-                disabled=bool(row["disabled"]),
+                disabled=bool(row["disabled"]), generation=row["generation"],
                 created_at=datetime.fromisoformat(row["created_at"]), groups=groups)
 
 
@@ -73,8 +73,8 @@ def signup(email: str, password: str, secure_cookie: bool = False) -> User:
             raise AccountError("an account with this email already exists")
         first = _becomes_first_admin(conn, address, secure_cookie)
         user_id = conn.execute(
-            "INSERT INTO users (email, password_hash, created_at) VALUES (?, ?, ?)",
-            (address, password_hash, db.now_iso()),
+            "INSERT INTO users (email, password_hash, created_at, generation) VALUES (?, ?, ?, ?)",
+            (address, password_hash, db.now_iso(), db.new_account_generation()),
         ).lastrowid
         admin = db.admin_group_id(conn)
         if first and admin is not None:
@@ -187,8 +187,8 @@ def bootstrap_admin(email: str, password: str) -> tuple[User, bool]:
         row = conn.execute("SELECT id FROM users WHERE email = ?", (address,)).fetchone()
         if row is None:
             user_id = conn.execute(
-                "INSERT INTO users (email, password_hash, created_at) VALUES (?, ?, ?)",
-                (address, password_hash, db.now_iso()),
+                "INSERT INTO users (email, password_hash, created_at, generation) VALUES (?, ?, ?, ?)",
+                (address, password_hash, db.now_iso(), db.new_account_generation()),
             ).lastrowid
         else:
             user_id = row["id"]

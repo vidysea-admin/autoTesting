@@ -73,6 +73,7 @@ class NotificationPref(Artifact):
 
     user_id: str
     email_run_reports: bool = False
+    account_generation: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$", repr=False)
 
     check_user_id = field_validator("user_id")(safe_id)
 

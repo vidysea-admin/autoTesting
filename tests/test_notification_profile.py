@@ -90,6 +90,7 @@ def test_profile_cross_origin_and_invalid_input_preserve_preference(profile_root
 
 
 def test_profile_store_fails_closed_for_corrupt_or_wrong_identity(profile_root: Path) -> None:
+    account(ADMIN)
     save_notification_pref(1, True)
     path = profile_root / ".work" / "notification_prefs" / "1.json"
     path.write_text('{"user_id":"2","email_run_reports":true}')

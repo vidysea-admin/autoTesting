@@ -45,5 +45,8 @@ def update_notification_profile(email_run_reports: str = Form("")) -> Response:
     user_id = _profile_user_id()
     if email_run_reports not in ("", "on"):
         raise HTTPException(400, "invalid notification preference")
-    save_notification_pref(user_id, email_run_reports == "on")
+    try:
+        save_notification_pref(user_id, email_run_reports == "on")
+    except ValueError:
+        raise HTTPException(409, "account unavailable; sign in again") from None
     return RedirectResponse("/profile", status_code=303)
