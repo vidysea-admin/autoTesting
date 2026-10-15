@@ -1,0 +1,17 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_secret_model_config_is_withheld_before_artifact_or_transport ______
+tests\test_vision_probe.py:247: in test_secret_model_config_is_withheld_before_artifact_or_transport
+    with pytest.raises(ProviderError, match="configuration withheld") as error:
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'configuration withheld'
+E     Actual message: 'litellm:synthetic-secret-model-value: prompt withheld, a credential value reached it'
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_secret_model_config_is_withheld_before_artifact_or_transport
+1 failed, 1 warning in 3.81s

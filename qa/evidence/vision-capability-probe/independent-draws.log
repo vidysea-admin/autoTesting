@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_random_draws_are_independent_and_answers_are_not_in_prompt _______
+tests\test_vision_probe.py:117: in test_random_draws_are_independent_and_answers_are_not_in_prompt
+    assert result.status == "verified" and len(calls) == 4
+E   AssertionError: assert ('verified' == 'verified'
+E     
+E       verified and 0 == 4)
+E    +  where 0 = len([])
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_random_draws_are_independent_and_answers_are_not_in_prompt
+1 failed, 1 warning in 4.43s

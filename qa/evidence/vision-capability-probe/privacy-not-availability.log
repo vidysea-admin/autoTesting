@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_sdk_errors_are_safe_and_only_availability_is_unavailable ________
+tests\test_vision_probe.py:200: in test_sdk_errors_are_safe_and_only_availability_is_unavailable
+    assert result.status == expected and result.capability is None
+E   AssertionError: assert ('unavailable' == 'inconclusive'
+E     
+E     - inconclusive
+E     + unavailable)
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_sdk_errors_are_safe_and_only_availability_is_unavailable
+1 failed, 1 warning in 11.55s

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.978" timestamp="2026-10-15T10:48:56.705437+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_another_models_physical_attempt_cannot_certify_this_model" time="0.120"><failure message="AssertionError: assert ('matched' == 'physical_transport_unproven'&#10;  &#10;  - physical_transport_unproven&#10;  + matched)">tests\test_vision_probe.py:229: in test_another_models_physical_attempt_cannot_certify_this_model
+    assert result.reason == "physical_transport_unproven" and result.capability is None
+E   AssertionError: assert ('matched' == 'physical_transport_unproven'
+E     
+E     - physical_transport_unproven
+E     + matched)</failure></testcase></testsuite></testsuites>

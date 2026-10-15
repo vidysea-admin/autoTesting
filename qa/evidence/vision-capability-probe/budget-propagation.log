@@ -1,0 +1,15 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_enclosing_zero_budget_stops_before_transport ______________
+tests\test_vision_probe.py:170: in test_enclosing_zero_budget_stops_before_transport
+    with attempt_budget(0), pytest.raises(AttemptBudgetExhausted) as error:
+E   Failed: DID NOT RAISE AttemptBudgetExhausted
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_enclosing_zero_budget_stops_before_transport
+1 failed, 1 warning in 5.99s

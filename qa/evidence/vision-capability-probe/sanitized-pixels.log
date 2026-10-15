@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt _____
+tests\test_vision_probe.py:80: in test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt
+    assert result.status == "verified" and result.reason == "matched"
+E   AssertionError: assert ('inconclusive' == 'verified'
+E     
+E     - verified
+E     + inconclusive)
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt
+1 failed, 1 warning in 8.51s

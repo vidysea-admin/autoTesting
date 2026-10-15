@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.336" timestamp="2026-10-15T10:21:28.504572+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_random_draws_are_independent_and_answers_are_not_in_prompt" time="0.118"><failure message="assert '{&quot;images&quot;:[...:&quot;yellow&quot;}]}' not in 'Inspect the...&quot;: &quot;object&quot;}'&#10;  &#10;  '{&quot;images&quot;:[{&quot;left_..._color&quot;:&quot;yellow&quot;}]}' is contained here:&#10;    n images.&#10;    {&quot;images&quot;:[{&quot;left_shape&quot;:&quot;circle&quot;,&quot;left_color&quot;:&quot;red&quot;,&quot;right_shape&quot;:&quot;square&quot;,&quot;right_color&quot;:&quot;blue&quot;},{&quot;left_shape&quot;:&quot;square&quot;,&quot;left_color&quot;:&quot;green&quot;,&quot;right_shape&quot;:&quot;triangle&quot;,&quot;right_color&quot;:&quot;yellow&quot;}]}&#10;    &#10;    Reply with ONE JSON object only, no prose and no code fence, matching this JSON Schema:&#10;    {&quot;$defs&quot;: {&quot;VisualProbeReading&quot;: {&quot;additionalProperties&quot;: false, &quot;description&quot;: &quot;Only neutral geometry/colors can appear in a challenge answer.&quot;, &quot;properties&quot;: {&quot;left_shape&quot;: {&quot;enum&quot;: [&quot;circle&quot;, &quot;square&quot;, &quot;triangle&quot;],...&#10;  &#10;  ...Full output truncated (1 line hidden), use '-vv' to show">tests\test_vision_probe.py:121: in test_random_draws_are_independent_and_answers_are_not_in_prompt
+    assert result.expected.model_dump_json() not in prompt
+E   assert '{"images":[...:"yellow"}]}' not in 'Inspect the...": "object"}'
+E     
+E     '{"images":[{"left_..._color":"yellow"}]}' is contained here:
+E       n images.
+E       {"images":[{"left_shape":"circle","left_color":"red","right_shape":"square","right_color":"blue"},{"left_shape":"square","left_color":"green","right_shape":"triangle","right_color":"yellow"}]}
+E       
+E       Reply with ONE JSON object only, no prose and no code fence, matching this JSON Schema:
+E       {"$defs": {"VisualProbeReading": {"additionalProperties": false, "description": "Only neutral geometry/colors can appear in a challenge answer.", "properties": {"left_shape": {"enum": ["circle", "square", "triangle"],...
+E     
+E     ...Full output truncated (1 line hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

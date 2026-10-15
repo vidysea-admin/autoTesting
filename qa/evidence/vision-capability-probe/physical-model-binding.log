@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_another_models_physical_attempt_cannot_certify_this_model ________
+tests\test_vision_probe.py:229: in test_another_models_physical_attempt_cannot_certify_this_model
+    assert result.reason == "physical_transport_unproven" and result.capability is None
+E   AssertionError: assert ('matched' == 'physical_transport_unproven'
+E     
+E     - physical_transport_unproven
+E     + matched)
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_another_models_physical_attempt_cannot_certify_this_model
+1 failed, 1 warning in 4.97s

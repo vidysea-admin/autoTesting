@@ -1,0 +1,46 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_________ test_one_json_repair_shares_the_probe_physical_budget[True] _________
+tests\test_vision_probe.py:153: in test_one_json_repair_shares_the_probe_physical_budget
+    result = vision_probe.probe_vision(provider)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:135: in probe_vision
+    observed = provider.judge(prompt, VisualProbeAnswer, images=safe,
+src\autotester\providers\litellm_provider.py:170: in judge
+    return self._structured(prompt, schema, role="judge", images=images,
+src\autotester\providers\litellm_provider.py:290: in _structured
+    message = self._complete(messages, schema, strategy, role, retries=1, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\litellm_provider.py:231: in _complete
+    receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\attempts.py:57: in reserve_attempt
+    raise AttemptBudgetExhausted("provider attempt budget exhausted: max_calls")
+E   autotester.providers.attempts.AttemptBudgetExhausted: provider attempt budget exhausted: max_calls
+________ test_one_json_repair_shares_the_probe_physical_budget[False] _________
+tests\test_vision_probe.py:153: in test_one_json_repair_shares_the_probe_physical_budget
+    result = vision_probe.probe_vision(provider)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:135: in probe_vision
+    observed = provider.judge(prompt, VisualProbeAnswer, images=safe,
+src\autotester\providers\litellm_provider.py:170: in judge
+    return self._structured(prompt, schema, role="judge", images=images,
+src\autotester\providers\litellm_provider.py:290: in _structured
+    message = self._complete(messages, schema, strategy, role, retries=1, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\litellm_provider.py:231: in _complete
+    receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\attempts.py:57: in reserve_attempt
+    raise AttemptBudgetExhausted("provider attempt budget exhausted: max_calls")
+E   autotester.providers.attempts.AttemptBudgetExhausted: provider attempt budget exhausted: max_calls
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_one_json_repair_shares_the_probe_physical_budget[True]
+FAILED tests/test_vision_probe.py::test_one_json_repair_shares_the_probe_physical_budget[False]
+2 failed, 1 warning in 5.22s

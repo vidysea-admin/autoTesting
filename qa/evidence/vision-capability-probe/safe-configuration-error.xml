@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.813" timestamp="2026-10-15T10:59:05.642470+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_secret_model_config_is_withheld_before_artifact_or_transport" time="0.005"><failure message="AssertionError: Regex pattern did not match.&#10;  Expected regex: 'configuration withheld'&#10;  Actual message: 'litellm:synthetic-secret-model-value: prompt withheld, a credential value reached it'">tests\test_vision_probe.py:247: in test_secret_model_config_is_withheld_before_artifact_or_transport
+    with pytest.raises(ProviderError, match="configuration withheld") as error:
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'configuration withheld'
+E     Actual message: 'litellm:synthetic-secret-model-value: prompt withheld, a credential value reached it'</failure></testcase></testsuite></testsuites>

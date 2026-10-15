@@ -45,3 +45,5 @@ class VisionCapability(BaseModel):
     fixture_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     output_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     passed: bool
+    probe_protocol: Literal["sanitized-layout-pair-v1"] | None = None
+    prompt_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")

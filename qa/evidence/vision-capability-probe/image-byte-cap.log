@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_invalid_sanitized_payload_cannot_become_filename_only_success[oversized] _
+tests\test_vision_probe.py:275: in test_invalid_sanitized_payload_cannot_become_filename_only_success
+    assert result.reason == "image_preparation_or_sanitation_failed"
+E   AssertionError: assert 'provider_error' == 'image_prepar...tation_failed'
+E     
+E     - image_preparation_or_sanitation_failed
+E     + provider_error
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_invalid_sanitized_payload_cannot_become_filename_only_success[oversized]
+1 failed, 1 warning in 4.20s

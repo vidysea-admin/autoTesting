@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.429" timestamp="2026-10-15T10:21:20.710088+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_random_draws_are_independent_and_answers_are_not_in_prompt" time="0.123"><failure message="AssertionError: assert ('verified' == 'verified'&#10;  &#10;    verified and 0 == 4)&#10; +  where 0 = len([])">tests\test_vision_probe.py:117: in test_random_draws_are_independent_and_answers_are_not_in_prompt
+    assert result.status == "verified" and len(calls) == 4
+E   AssertionError: assert ('verified' == 'verified'
+E     
+E       verified and 0 == 4)
+E    +  where 0 = len([])</failure></testcase></testsuite></testsuites>
