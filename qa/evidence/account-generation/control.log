@@ -1,0 +1,37 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+__CONTROL__{"command": ["C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "-m", "ruff", "check", "src/autotester/auth/db.py", "src/autotester/auth/accounts.py", "src/autotester/schema/auth.py", "src/autotester/schema/delivery.py", "src/autotester/store/notification_prefs.py", "src/autotester/ui/routes_profile.py", "tests/test_notification_profile.py", "tests/test_account_generation.py", "--no-cache"]}
+E501 Line too long (103 > 100)
+   --> src\autotester\auth\accounts.py:190:101
+    |
+188 |         if row is None:
+189 |             user_id = conn.execute(
+190 |                 "INSERT INTO users (email, password_hash, created_at, generation) VALUES (?, ?, ?, ?)",
+    |                                                                                                     ^^^
+191 |                 (address, password_hash, db.now_iso(), db.new_account_generation()),
+192 |             ).lastrowid
+    |
+
+SIM117 [*] Use a single `with` statement with multiple contexts instead of nested `with` statements
+  --> tests\test_account_generation.py:60:5
+   |
+58 |       db._READY.discard(db.auth_db_path())
+59 |       assert accounts.get_user(first_id).generation == first.generation
+60 | /     with pytest.raises(sqlite3.IntegrityError, match="immutable"):
+61 | |         with db.transaction() as conn:
+   | |______________________________________^
+62 |               conn.execute("UPDATE users SET generation = ? WHERE id = ?", ("a" * 32, first_id))
+63 |       assert accounts.get_user(first_id).generation == first.generation
+   |
+help: Combine `with` statements
+   |
+59 |     assert accounts.get_user(first_id).generation == first.generation
+   -     with pytest.raises(sqlite3.IntegrityError, match="immutable"):
+   -         with db.transaction() as conn:
+   -             conn.execute("UPDATE users SET generation = ? WHERE id = ?", ("a" * 32, first_id))
+60 +     with pytest.raises(sqlite3.IntegrityError, match="immutable"), db.transaction() as conn:
+61 +         conn.execute("UPDATE users SET generation = ? WHERE id = ?", ("a" * 32, first_id))
+62 |     assert accounts.get_user(first_id).generation == first.generation
+   |
+
+Found 2 errors.
+[*] 1 fixable with the `--fix` option.

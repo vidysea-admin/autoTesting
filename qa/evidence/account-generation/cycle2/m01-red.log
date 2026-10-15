@@ -1,0 +1,57 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\account-generation\.work\account-generation-proof2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_account_generation.py F                                       [100%]
+
+================================== FAILURES ===================================
+____________ test_fixed_clock_id_replacement_cannot_inherit_opt_in ____________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/account-generation/.work/account-generation-proof2/.temp-m01-red/test_fixed_clock_id_replacemen0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026484253D90>
+
+    def test_fixed_clock_id_replacement_cannot_inherit_opt_in(tmp_path, monkeypatch):
+        root = gate_on(tmp_path, monkeypatch)
+        monkeypatch.setattr(db, "now_iso", lambda: FIXED_CLOCK)
+        account(ADMIN)
+>       old_id = account("old@team.test")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_account_generation.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\auth_harness.py:60: in account
+    user = accounts.signup(email, PASSWORD)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+email = 'old@team.test', password = 'correct-horse-battery'
+secure_cookie = False
+
+    def signup(email: str, password: str, secure_cookie: bool = False) -> User:
+        """Create an account; it gets a group only when it is the first admin.
+        `secure_cookie`: the request's session cookie is Secure (AU7 counts that as hosted)."""
+        address = normalize_email(email)
+        password_hash = hash_password(password)
+        with db.transaction() as conn:
+            if conn.execute("SELECT 1 FROM users WHERE email = ?", (address,)).fetchone():
+                raise AccountError("an account with this email already exists")
+            first = _becomes_first_admin(conn, address, secure_cookie)
+>           user_id = conn.execute(
+                "INSERT INTO users (email, password_hash, created_at, generation) VALUES (?, ?, ?, ?)",
+                (address, password_hash, db.now_iso(), db.new_account_generation()),
+            ).lastrowid
+E           sqlite3.IntegrityError: UNIQUE constraint failed: users.generation
+
+src\autotester\auth\accounts.py:75: IntegrityError
+============================== warnings summary ===============================
+..\..\..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in
+======================== 1 failed, 1 warning in 1.52s =========================

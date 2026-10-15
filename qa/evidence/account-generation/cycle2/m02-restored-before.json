@@ -1,0 +1,42 @@
+{
+  "base": "ac1efde173d4dc1d5fe8259f30888655a0072f08",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\qa\\evidence\\account-generation\\cycle2\\invoke.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src",
+    "tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in",
+    "--basetemp",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\.temp-m02-restored",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts="
+  ],
+  "command_sha256": "dd43ed4656eed56426df10f836e3023ce0a48caca35aea1bf9a4bdd1bf7e726c",
+  "control_sha256": "ba5134baa7f0a3a0bd93e72ce9b7d9987d04a0eb76da204aa413af6e44dcfe6c",
+  "copy_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2",
+  "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+  "environment_sha256": "b82a21cf91074d47dba20135c5916d3dde92998dc076ad041a027a134bc47485",
+  "harness_sha256": "c8d2405bef6375e6cfbf0d50c23b1e3081281d0eb3461558ddc004bf1b916469",
+  "inventory_sha256": "25c9fef8bb55b06c3d1183129e97f887df70a193e7b63c596a06720154ea45d8",
+  "invoke_sha256": "8d776d7f769545c82507f3c087cd3c5f445ab05fdccc41f2384a6878390129bd",
+  "label": "m02-restored",
+  "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+  "maker_active_s": null,
+  "maker_cost": null,
+  "maker_tokens": null,
+  "nodes": [
+    "tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in"
+  ],
+  "overrides": {},
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_sha256": "1f25068aaf1e19f1672e979f4ef07449edfd7f59051f9d788c538ac64f4979f9",
+  "source": "e75b6ccbe64ef2b3cbd9e78068fc2397610091c3",
+  "source_inventory_sha256": "25c9fef8bb55b06c3d1183129e97f887df70a193e7b63c596a06720154ea45d8",
+  "spec_sha256": "b3c903440575b2fdfdb0aa5b89162de72616ee55f5b5d69d953f7a448cadffc8",
+  "started_at": 1792068502.6988506,
+  "started_monotonic": 32592.578,
+  "status": "running",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/auth/db.py",
+    "mutated_sha256": "dc844274d9b8c60f602692de71e4ffd511d61f89a7d89d527b1384d75c470b18",
+    "name": "clock-independent-random-identity",
+    "node": "tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in",
+    "original_sha256": "de6435956ef558fc6406ad44d6eb21ea93acdafbff9a21de71c2b15155fd6168",
+    "red_receipt": "m01-red.json",
+    "restored_receipt": "m01-restored.json",
+    "restored_sha256": "de6435956ef558fc6406ad44d6eb21ea93acdafbff9a21de71c2b15155fd6168"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/store/notification_prefs.py",
+    "mutated_sha256": "362cbb4db486b9a2592e2bfc647b306cf45b4cd6eb359c8d4a35d812067f7d07",
+    "name": "stale-consent-generation-rejected",
+    "node": "tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in",
+    "original_sha256": "6094e9a24ca64f308ed0da28e36db4f630a21bd45248a900657e03c19a620ff6",
+    "red_receipt": "m02-red.json",
+    "restored_receipt": "m02-restored.json",
+    "restored_sha256": "6094e9a24ca64f308ed0da28e36db4f630a21bd45248a900657e03c19a620ff6"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/auth/db.py",
+    "mutated_sha256": "80c66bc50fd02c60125b12c918919e5d2844cacf92d617adbe21563a8b8ad4bc",
+    "name": "database-generation-immutable",
+    "node": "tests/test_account_generation.py::test_generation_is_persistent_immutable_and_not_a_password_identity",
+    "original_sha256": "de6435956ef558fc6406ad44d6eb21ea93acdafbff9a21de71c2b15155fd6168",
+    "red_receipt": "m03-red.json",
+    "restored_receipt": "m03-restored.json",
+    "restored_sha256": "de6435956ef558fc6406ad44d6eb21ea93acdafbff9a21de71c2b15155fd6168"
+  }
+]

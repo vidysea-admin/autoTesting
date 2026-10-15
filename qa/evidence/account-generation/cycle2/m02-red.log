@@ -1,0 +1,45 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\account-generation\.work\account-generation-proof2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_account_generation.py F                                       [100%]
+
+================================== FAILURES ===================================
+____________ test_fixed_clock_id_replacement_cannot_inherit_opt_in ____________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/account-generation/.work/account-generation-proof2/.temp-m02-red/test_fixed_clock_id_replacemen0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EDA7E33790>
+
+    def test_fixed_clock_id_replacement_cannot_inherit_opt_in(tmp_path, monkeypatch):
+        root = gate_on(tmp_path, monkeypatch)
+        monkeypatch.setattr(db, "now_iso", lambda: FIXED_CLOCK)
+        account(ADMIN)
+        old_id = account("old@team.test")
+        old = accounts.get_user(old_id)
+        assert re.fullmatch(r"[0-9a-f]{32}", old.generation)
+        save_notification_pref(old_id, True)
+        old_pref = load_notification_pref(old_id)
+        assert old_pref.account_generation == old.generation and old_pref.email_run_reports
+        accounts.delete_user(old_id)
+        new_id = account("replacement@team.test")
+        new = accounts.get_user(new_id)
+        assert new_id == old_id and new.created_at == old.created_at
+        assert new.generation != old.generation
+>       assert not load_notification_pref(new_id).email_run_reports
+E       AssertionError: assert not True
+E        +  where True = NotificationPref(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 12, 48, 19, 861046, tzinfo=TzInfo(0)), provenance=None, user_id='2', email_run_reports=True).email_run_reports
+E        +    where NotificationPref(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 12, 48, 19, 861046, tzinfo=TzInfo(0)), provenance=None, user_id='2', email_run_reports=True) = load_notification_pref(2)
+
+tests\test_account_generation.py:33: AssertionError
+============================== warnings summary ===============================
+..\..\..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in
+======================== 1 failed, 1 warning in 1.82s =========================
