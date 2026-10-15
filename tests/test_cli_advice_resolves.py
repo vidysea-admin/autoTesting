@@ -205,7 +205,9 @@ the startup refusal that names the break-glass command), so the count after merg
 T-204 is 25 + 1 = 26; ollama-primary adds the agent_model refusal: 27.
 The set above names every site from all sides."""
 
-EXPECTED_SITE_COUNT = 27
+# 28: b578526a (D-097, TV9 expand-over-DRAFT) added a second `flowspec approve` site in
+# stages/review.py (the DRAFT-flow refusal); the (file, command) set above is unchanged.
+EXPECTED_SITE_COUNT = 28
 
 
 def test_no_advice_site_can_vanish_unnoticed() -> None:
