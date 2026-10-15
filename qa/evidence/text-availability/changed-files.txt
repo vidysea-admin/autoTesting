@@ -2,6 +2,7 @@ qa/evidence/text-availability/auth-red.log
 qa/evidence/text-availability/auth-restored.log
 qa/evidence/text-availability/baseline.log
 qa/evidence/text-availability/bind-packet.py
+qa/evidence/text-availability/candidate.diff
 qa/evidence/text-availability/canonical-source-binding.json
 qa/evidence/text-availability/capability-red.log
 qa/evidence/text-availability/capability-restored.log
