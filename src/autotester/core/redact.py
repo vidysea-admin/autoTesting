@@ -15,6 +15,14 @@ import re
 from collections.abc import Iterable
 from typing import Any
 
+from autotester.core.redact_escaped import (
+    escaped_spans,
+    mask_encoded_emails,
+    mask_encoded_phones,
+    mask_spans,
+    scrub_url_credentials,
+    scrub_url_credentials_obj,
+)
 from autotester.core.redact_fold import (
     ASCII_CONFUSABLES,
     BIDI_OVERRIDES,
@@ -37,6 +45,8 @@ __all__ = [
     "mask_pii",
     "mask_pii_obj",
     "placeholder_keys",
+    "scrub_url_credentials",
+    "scrub_url_credentials_obj",
 ]
 
 MASK = "[REDACTED]"
@@ -57,10 +67,6 @@ _PHONE_RES = (  # intl (+CC ..), Indian mobile (grouped), 10 digits, US, Indian 
     re.compile(r"(?<![\w+])\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?!\w)"),
     re.compile(r"(?<![\w+])\(?0\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{4}(?!\w)"),
 )
-# AT-830: percent-encoded forms (a urlencode-built query string): `%40` is "@", `%2B` is "+".
-_ENC_EMAIL_RE = re.compile(r"[\w.%+-]+%40[\w-]+(?:\.[\w-]+)*\.[^\W\d_]{2,}", re.I)
-_ENC_PHONE_RE = re.compile(r"(?<![\w+])%2B\d{1,3}(?:(?:%20|%28|%29|[\s().-])*\d){7,14}(?!\w)",
-                           re.I)
 _DEV = r"ऀ-ॿ"  # Devanagari block: its vowel signs are not \w, so \b misreads them
 _ORG = (r"user|file|course|program(?:me)?|university|college|school|institution|institute|company|"
         r"organi[sz]ation|project|team|city|state|country|branch|subject|degree|board|module|"
@@ -103,6 +109,7 @@ class Redactor:
         # Longest first, so a value that contains another is masked whole.
         self._values = sorted((v for v in secrets.values() if v), key=len, reverse=True)
         self._keys_by_value = {v: k for k, v in secrets.items()}
+        self._pairs = [(v, self._keys_by_value.get(v, "")) for v in self._values]
         # (raw_value, folded_value) pairs, kept together so the widened check
         # can search for the RAW value's exact encodings (AT-352 cycle 2 --
         # base64/hex output is case/punctuation-significant and must not be
@@ -120,7 +127,8 @@ class Redactor:
             if value in text:
                 key = self._keys_by_value.get(value, "")
                 text = text.replace(value, f"{MASK}:{key}" if key else MASK)
-        return text
+        # AT-939: percent (x2), HTML-entity and plus spellings, found in decoded views
+        return mask_spans(text, escaped_spans(text, self._pairs), MASK)
 
     def scrub_obj(self, obj: Any) -> Any:
         """Recursively scrub strings inside dicts, lists, and tuples."""
@@ -180,8 +188,8 @@ def mask_pii(text: str) -> str:
     Free text is never searched for names (too guessy); a person name is only masked where a
     field label says so -- see `mask_name_value`. Pure and idempotent, so output stays
     deterministic (RC11). A bare 10-digit run is treated as a phone number."""
-    text = _ENC_EMAIL_RE.sub("<email>", text)
-    text = _ENC_PHONE_RE.sub("<phone>", text)
+    text = mask_encoded_emails(text)  # AT-830: urlencoded `%40` / `%2B`
+    text = mask_encoded_phones(text)
     text = _mask_emails(text)
     for pattern in _PHONE_RES:
         text = pattern.sub("<phone>", text)
