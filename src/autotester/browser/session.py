@@ -12,6 +12,7 @@ from typing import Any
 
 from autotester.browser import assertions
 from autotester.browser.click_recovery import ready_to_click
+from autotester.browser.destroy_guard import AccountDestroyRefused, DestroyGuardMixin
 from autotester.browser.evidence import MASK_ATTR, MASK_CSS, EvidenceMixin
 from autotester.browser.launch import (
     CdpEndpointError,
@@ -30,8 +31,8 @@ from autotester.schema.project import Project
 from autotester.schema.run import Evidence
 from autotester.stages.run_budget import RunBudget, RunBudgetExceeded
 
-__all__ = ["MASK_ATTR", "MASK_CSS", "BrowserSession", "HitlRequest", "NavigationRefused",
-           "SessionState", "check_destination", "launch_options"]
+__all__ = ["MASK_ATTR", "MASK_CSS", "AccountDestroyRefused", "BrowserSession", "HitlRequest",
+           "NavigationRefused", "SessionState", "check_destination", "launch_options"]
 
 
 class NavigationRefused(RuntimeError):
@@ -71,7 +72,7 @@ def check_destination(project: Project, url: str) -> str:
     return host
 
 
-class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
+class BrowserSession(DestroyGuardMixin, EvidenceMixin, LocatorMixin, VideoMixin):
     """Drive one project's browser. Construct, `start()`, act, `close()`."""
 
     def __init__(self, project: Project, secrets: SecretStore, run_dir: Path,
@@ -201,6 +202,7 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
 
     def click(self, locator: str, *, step_order: int | None = None) -> Evidence:
         target = self.locate(locator)
+        self._guard_destroy(target, locator)
         began = time.monotonic()
         for note in ready_to_click(self.page, target):  # never a force-click; each step recorded
             self._record(EvidenceKind.DOM, f"{note} before clicking {locator}",
@@ -225,7 +227,9 @@ class BrowserSession(EvidenceMixin, LocatorMixin, VideoMixin):
         self, key: str, locator: str | None = None, *, step_order: int | None = None
     ) -> Evidence:
         if locator:
-            self.locate(locator).press(key, **self._timeout())
+            target = self.locate(locator)
+            self._guard_destroy(target, locator)
+            target.press(key, **self._timeout())
         else:
             self.page.keyboard.press(key)
         return self._record(EvidenceKind.DOM, f"pressed {key}", step_order=step_order)

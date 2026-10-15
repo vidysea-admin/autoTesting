@@ -44,6 +44,22 @@ DEFAULT_NEVER_CLICK_PATTERNS = (
     r"\bsign ?out\b", r"\bsignout\b", r"\bsign\b[\s\w]{0,10}\bout\b",
 )
 
+# Never clicked at ANY write_policy, including ALLOW_WRITES (Umesh 2026-10-15, "Block destroy
+# buttons"): irreversible account-destroying controls. THE one list; the crawler, the case guard,
+# BrowserSession and the browser-use actuator all read it through `explore_safety`. Matched on the
+# normalised name/text/aria-label. A destroy verb, a short gap, then account/profile/data -- but
+# not a sub-object ("Delete draft", "Remove profile photo", "Close account settings") .
+_DESTROY_VERB = r"(?:close|delete|deactivate|terminate|cancel|erase|destroy|remove|deregister|wipe)"
+_NOT_SUBOBJECT = (r"(?!\s+(?:photo|picture|image|avatar|pic|icon|link|url|name|settings|menu|"
+                  r"dialog|panel|tab|switcher|dropdown|form)\b)")
+ACCOUNT_DESTROY_PATTERNS = (
+    rf"\b{_DESTROY_VERB}\b(?:\s+(?:my|your|the|this|own|entire|whole|all))*\s+"
+    rf"(?:account|profile)\b{_NOT_SUBOBJECT}",
+    rf"\b{_DESTROY_VERB}\b(?:\s+(?:my|your|the|this|own|entire|whole|all|of))*\s+"
+    r"(?:data|information)\b(?:\s+(?:permanently|forever))?$",
+    r"\bpermanently\s+delete\b", r"\bdelete\s+me\b", r"\bright to be forgotten\b",
+)
+
 # Third-party hosts whose failed requests are noise, never an issue.
 DEFAULT_THIRD_PARTY_IGNORE = (
     "google-analytics.com", "googletagmanager.com", "doubleclick.net",

@@ -19,7 +19,12 @@ from autotester.schema.enums import Action, CrawlStatus, EdgeOutcome, NodeStatus
 from autotester.schema.flowspec import FlowSpec
 from autotester.schema.screen_graph import ElementRef, ScreenEdge, ScreenNode
 from autotester.stages.coverage import unreached_screens
-from autotester.stages.explore_safety import FORM_SUBMIT_REFUSED, OFF_DOMAIN_LINK_REFUSED
+from autotester.stages.explore_safety import (
+    ACCOUNT_DESTROY_REFUSED,
+    FORM_SUBMIT_REFUSED,
+    OFF_DOMAIN_LINK_REFUSED,
+    destroys_account,
+)
 
 if TYPE_CHECKING:
     from autotester.stages.explore_runtime import ExploreRuntime
@@ -122,6 +127,8 @@ def _permitted_reason(control: PermittedControl, holes: dict[tuple[str, str], st
     recorded = holes.get(_key(control.url_template, control.selector))
     if recorded is not None:
         return recorded
+    if destroys_account(control.name):  # never clicked at ANY policy (2026-10-15)
+        return f"policy:{ACCOUNT_DESTROY_REFUSED}"
     if control.destructive and policy is not WritePolicy.ALLOW_WRITES:
         return f"policy:destructive under {policy.value}"
     return "not_reached"
