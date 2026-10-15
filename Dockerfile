@@ -20,15 +20,13 @@ WORKDIR /app
 
 # Keep the frozen environment outside the source tree (also for dev bind mounts).
 ENV UV_PROJECT_ENVIRONMENT=/opt/venv PYTHONDONTWRITEBYTECODE=1
-ENV UV_PYTHON=3.13
-ENV UV_PYTHON_DOWNLOADS=never
 
 # Dependencies first so `uv sync` layers cache across code-only changes.
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --python 3.13 --no-install-project
+RUN uv sync --frozen --no-install-project
 
 COPY . .
-RUN uv sync --frozen --python 3.13
+RUN uv sync --frozen
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
