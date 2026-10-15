@@ -146,6 +146,10 @@ class ProjectPaths:
             raise UnsafeName(f"unsafe run id {run_id!r}: resolves outside the runs directory")
         return self.runs_dir / run_id
 
+    def pipeline_artifact(self, run_id: str, name: str) -> Path:
+        """Run-local stage inputs/progress, never confused with case result JSON."""
+        return self.run_dir(run_id) / "pipeline" / f"{safe_name(name)}.json"
+
     @property
     def flow_plans(self) -> Path:
         """Persisted per-flow validation plans a release run stitches together (T-167, RR6)."""
