@@ -1,0 +1,34 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_tier_constructor_and_video_forwarding_preserve_limits_options ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013C7300CAD0>
+setup = [(0.0, WindowsPath('C:/Users/product/AppData/Local/Temp/tmphfbkcwmj/frame-0.png'), b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIH...3\r\x1f\xbdj\x8c1W\xa5\xc6\x18sUj\x8c1W\xa5\xc6\x18s\x95>\x8f\x170\xa7\x01'\t^\xcd\xad\x00\x00\x00\x00IEND\xaeB`\x82")]
+
+    def test_tier_constructor_and_video_forwarding_preserve_limits_options(monkeypatch, setup):
+        fake, chain = frame_chain(monkeypatch, [reply("{}")])
+        result = chain.see_video(Path("synthetic.mp4"), "Observe", VideoObservation,
+                                 VisionOptions(fps=1, seed=19, max_output_tokens=123,
+                                               temperature=0.2))
+        assert len(result.visual_coverage.frames) == len(setup) == 2
+        assert [frame.timestamp_s for frame in result.visual_coverage.frames] == [0, 1.5]
+        assert len(fake.calls) == 1
+>       assert (fake.calls[0]["seed"], fake.calls[0]["max_tokens"],
+                ^^^^^^^^^^^^^^^^^^^^^
+                fake.calls[0]["temperature"]) == (19, 123, 0.2)
+E       KeyError: 'seed'
+
+tests\test_provider_vision_integration.py:49: KeyError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-vision-integration\.work\combined-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_vision_integration.py::test_tier_constructor_and_video_forwarding_preserve_limits_options
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_vision_integration.py::test_tier_constructor_and_video_forwarding_preserve_limits_options
+1 failed, 2 warnings in 1.18s

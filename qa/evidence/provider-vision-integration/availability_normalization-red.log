@@ -1,0 +1,82 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_fallback_serves_configured_model_only __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C30BAD7ED0>
+setup = [(0.0, WindowsPath('C:/Users/product/AppData/Local/Temp/tmpsi9wntvp/frame-0.png'), b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIH...3\r\x1f\xbdj\x8c1W\xa5\xc6\x18sUj\x8c1W\xa5\xc6\x18s\x95>\x8f\x170\xa7\x01'\t^\xcd\xad\x00\x00\x00\x00IEND\xaeB`\x82")]
+
+    def test_fallback_serves_configured_model_only(monkeypatch, setup):
+        _, fake = provider(monkeypatch, [TimeoutError("offline"), reply("{}")])
+        chain = ModelChainProvider(model=f"{MODEL},ollama/deepseek-v4.1-flash")
+        for tier in chain._tiers:
+            tier.options["vision_capability"] = capability(tier)
+>       result = chain.see_video(Path("x.mp4"), "Observe", VideoObservation)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_video_frames.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\model_chain.py:107: in see_video
+    return self._run("see_video", prompt, schema, prompt_file, fed_id,
+src\autotester\providers\model_chain.py:132: in _run
+    return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:143: in _try_tiers
+    result = getattr(tier, method)(*args, prompt_file=prompt_file,
+src\autotester\providers\litellm_provider.py:158: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:143: in see_video
+    result = provider._structured(prompt, schema, role="vision", content_parts=parts,
+src\autotester\providers\litellm_provider.py:277: in _structured
+    message = self._complete(messages, schema, strategy, role, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.litellm_provider.LiteLLMProvider object at 0x000001C30BA81690>
+messages = [{'role': 'user', 'content': [{'type': 'text', 'text': 'Observe\nThese images are sparse timestamped samples of the su...sQxzlVL4gtvvgEVdhQ4cwAAAABJRU5ErkJggg=='}}, {'type': 'text', 'text': 'Frame 2, clip-relative seconds 1.000000'}, ...]}]
+schema = <class 'autotester.schema.observation.VideoObservation'>
+strategy = 'json', role = 'vision', prompt_file = None, fed_id = None
+retries = 0, generation_options = {'seed': 7, 'max_tokens': 65536}
+
+    def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,
+                  role: str, *, prompt_file: str | None, fed_id: str | None,
+                  retries: int = 0, generation_options: dict[str, Any] | None = None) -> Any:
+        """ONE physical `litellm.completion` call: guarded first, recorded after."""
+        self._guard(messages)
+        output_options = ({} if ollama_cloud.is_ollama(self._model)
+                          else request_options(strategy, self._model, schema))
+        kwargs: dict[str, Any] = {
+            "model": self._model, "messages": messages, "num_retries": 0,
+            "timeout": _TIMEOUT_S, "drop_params": True, **self._endpoint(),
+            **output_options}
+        kwargs.update(generation_options or {})
+        if role == "judge":
+            kwargs["temperature"] = 0
+        receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+        started = time.perf_counter()
+        try:
+            response = _load_litellm().completion(**kwargs)
+        except Exception as exc:
+            receipt.status = "failed"
+            receipt.latency_s = time.perf_counter() - started
+            self.record(role, None, None, failed=True, prompt_file=prompt_file,
+                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)
+            reason = None
+            if reason is not None:
+                raise AvailabilityFailure(reason) from None
+>           raise ProviderError(self._failure(role, exc, messages)) from None
+E           autotester.providers.base.ProviderError: litellm:ollama/glm-5.3-flash vision call failed: TimeoutError: offline
+
+src\autotester\providers\litellm_provider.py:243: ProviderError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-vision-integration\.work\combined-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_fallback_serves_configured_model_only
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_fallback_serves_configured_model_only
+1 failed, 2 warnings in 1.42s

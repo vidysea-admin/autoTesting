@@ -1,0 +1,991 @@
+{
+  "src/autotester/providers/model_chain.py": {
+    "text": {
+      "canonical_file_sha256": "98f2e227b713ee7e641658b82281fbe3f2078c0ad978012a70644e340bd06059",
+      "symbols": {
+        "configured_order": {
+          "line": 43,
+          "end_line": 47,
+          "ast_sha256": "a058cacf54f22a4a04130e247322ffe3cf55e5fb17d638392dd3ccd777d2cd6a",
+          "source": "def configured_order(model: str | None = None) -> list[str]:\n    \"\"\"The ordered model ids: explicit comma list, else the env var, else default.\"\"\"\n    raw = model or os.environ.get(ORDER_ENV) or \"\"\n    names = [m.strip() for m in raw.split(\",\") if m.strip()]\n    return names or list(DEFAULT_ORDER)"
+        },
+        "ModelChainProvider": {
+          "line": 50,
+          "end_line": 156,
+          "ast_sha256": "fdb3526d425eee46ff15295363d8745805a3fc2931c96212ac2c36f00b13873b",
+          "source": "class ModelChainProvider(Provider):\n    \"\"\"`act`/`judge` try each available tier in order until one answers.\"\"\"\n\n    def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._call = threading.local()\n        order = configured_order(options.get(\"model\"))\n        self._implicit_fallback = not (options.get(\"model\") or os.environ.get(ORDER_ENV))\n        if self._implicit_fallback:\n            order.append(os.environ.get(FALLBACK_ENV) or TEXT_FALLBACK)\n        secrets = options.get(\"secrets\") or []\n        self._tiers = [LiteLLMProvider(model=m, secrets=secrets, strict=True) for m in order]\n\n    @property\n    def id(self) -> str:  # type: ignore[override]\n        \"\"\"The tier that served THIS thread's latest call, else `model-chain`. Reset at\n        the start of every call, so a failed call never leaves a stale serving id; per\n        thread, so a judge shared by parallel graders cannot read another's tier.\"\"\"\n        return self.served or CHAIN_ID\n\n    @property\n    def served(self) -> str | None:\n        \"\"\"Label (`id:model`) of the tier that answered the latest call, None if it failed.\"\"\"\n        return getattr(self._call, \"served\", None)\n\n    @property\n    def fallback_reasons(self) -> tuple[str, ...]:\n        \"\"\"Safe per-call evidence in attempted/skipped tier order; no vendor payloads.\"\"\"\n        return tuple(getattr(self._call, \"fallback_reasons\", ()))\n\n    def order(self) -> list[str]:\n        return [t._model for t in self._tiers]\n\n    def ready_tiers(self) -> list[LiteLLMProvider]:\n        return [t for t in self._tiers if t.available()]\n\n    def available(self) -> bool:\n        return bool(self.ready_tiers())\n\n    def unavailable_reason(self) -> str | None:\n        if self.available():\n            return None\n        return (\"no configured model is available; set OLLAMA_API_KEY or GEMINI_API_KEY \"\n                \"in .env for the default text chain\")\n\n    def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._run(\"act\", prompt, schema, prompt_file, fed_id)\n\n    def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n              prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"judge\", prompt, schema, prompt_file, fed_id, images=images)\n\n    def _run(self, method: str, prompt: str, schema: type[BaseModel] | None,\n             prompt_file: str | None, fed_id: str | None, **extra: Any) -> Any:\n        self._call.served = None  # reset: a failed call must not report the previous tier\n        self._call.fallback_reasons = []\n        if schema is None:\n            raise ProviderError(f\"{self.id} requires a schema for structured output\")\n        media = self._implicit_fallback and extra.get(\"images\")\n        candidates = self._tiers[:-1] if media else self._tiers\n        tiers = []\n        for tier in candidates:\n            if tier.available():\n                tiers.append(tier)\n            else:\n                self._call.fallback_reasons.append(f\"{tier.label}: credentials_unavailable\")\n        if not tiers:\n            raise ProviderError(self.unavailable_reason() or \"no usable tier\")\n        tiers[0].guard_text(prompt)  # redaction gate: refuse once, never fall through\n        with attempt_budget(2 * len(tiers), wall_clock_s=240 * len(tiers)):\n            return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)\n\n    def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):\n        errors: list[str] = []\n        for tier in tiers:\n            tier.trace = self.trace\n            try:\n                result = getattr(tier, method)(prompt, schema, prompt_file=prompt_file,\n                                               fed_id=fed_id, **extra)\n            except AttemptBudgetExhausted:\n                self._sync_usage()\n                raise\n            except (AvailabilityFailure, Unsupported) as exc:\n                self._sync_usage()\n                reason = exc.reason if isinstance(exc, AvailabilityFailure) else \"capability\"\n                errors.append(f\"{tier.label}: {reason}\")\n                self._call.fallback_reasons.append(errors[-1])\n                log.warning(\"model-chain: tier %s failed (%s); falling through\",\n                            tier.label, reason)\n                continue\n            except ProviderError:\n                self._sync_usage()\n                raise\n            self._call.served = tier.label\n            log.info(\"model-chain: tier %s served the %s call\", tier.label, method)\n            self._sync_usage()\n            return result\n        raise ProviderError(\"model-chain: every tier failed: \" + \" | \".join(errors))\n\n    def _sync_usage(self) -> None:\n        with self._usage_lock:\n            self.usage = [ProviderUsage(provider=t.label, role=u.role, calls=u.calls,\n                                        failed_calls=u.failed_calls,\n                                        input_tokens=u.input_tokens,\n                                        output_tokens=u.output_tokens)\n                          for t in self._tiers for u in t.usage]"
+        },
+        "ModelChainProvider.__init__": {
+          "line": 53,
+          "end_line": 61,
+          "ast_sha256": "4fafd114e7bb62309f8a4b1a2f3898a781be3b5ff9a645aa8759057ea3b23f2b",
+          "source": "def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._call = threading.local()\n        order = configured_order(options.get(\"model\"))\n        self._implicit_fallback = not (options.get(\"model\") or os.environ.get(ORDER_ENV))\n        if self._implicit_fallback:\n            order.append(os.environ.get(FALLBACK_ENV) or TEXT_FALLBACK)\n        secrets = options.get(\"secrets\") or []\n        self._tiers = [LiteLLMProvider(model=m, secrets=secrets, strict=True) for m in order]"
+        },
+        "ModelChainProvider.id": {
+          "line": 64,
+          "end_line": 68,
+          "ast_sha256": "7680ba7274f1768b7ee63d17df3d5e808405a774c197140df6c64b6f6ad84be7",
+          "source": "def id(self) -> str:  # type: ignore[override]\n        \"\"\"The tier that served THIS thread's latest call, else `model-chain`. Reset at\n        the start of every call, so a failed call never leaves a stale serving id; per\n        thread, so a judge shared by parallel graders cannot read another's tier.\"\"\"\n        return self.served or CHAIN_ID"
+        },
+        "ModelChainProvider.served": {
+          "line": 71,
+          "end_line": 73,
+          "ast_sha256": "1b0a7ce4bcfc6dc968609d4da4c1ba941fb1a0e12762e9c2456ada0664f65227",
+          "source": "def served(self) -> str | None:\n        \"\"\"Label (`id:model`) of the tier that answered the latest call, None if it failed.\"\"\"\n        return getattr(self._call, \"served\", None)"
+        },
+        "ModelChainProvider.fallback_reasons": {
+          "line": 76,
+          "end_line": 78,
+          "ast_sha256": "5b4aed716323277bd53d4c34dd97afe44fc787d259d123b8a6444c9880a0491a",
+          "source": "def fallback_reasons(self) -> tuple[str, ...]:\n        \"\"\"Safe per-call evidence in attempted/skipped tier order; no vendor payloads.\"\"\"\n        return tuple(getattr(self._call, \"fallback_reasons\", ()))"
+        },
+        "ModelChainProvider.order": {
+          "line": 80,
+          "end_line": 81,
+          "ast_sha256": "7366526e68754e5334b78448a908ca3c2b2769e922a268552a2c8f7d01cca1d4",
+          "source": "def order(self) -> list[str]:\n        return [t._model for t in self._tiers]"
+        },
+        "ModelChainProvider.ready_tiers": {
+          "line": 83,
+          "end_line": 84,
+          "ast_sha256": "3a022f2f09a55d7126ca7b9de847aa06ea04dd21be6a2e760692af5a01c6775f",
+          "source": "def ready_tiers(self) -> list[LiteLLMProvider]:\n        return [t for t in self._tiers if t.available()]"
+        },
+        "ModelChainProvider.available": {
+          "line": 86,
+          "end_line": 87,
+          "ast_sha256": "23118d3806f17e7626701b8f38316f3d888c03f51ff4721bb5330ecb50269a99",
+          "source": "def available(self) -> bool:\n        return bool(self.ready_tiers())"
+        },
+        "ModelChainProvider.unavailable_reason": {
+          "line": 89,
+          "end_line": 93,
+          "ast_sha256": "736adf0f5d4eb409c2b4280fb0151d67a2656e1f639c883c8345968184d3e655",
+          "source": "def unavailable_reason(self) -> str | None:\n        if self.available():\n            return None\n        return (\"no configured model is available; set OLLAMA_API_KEY or GEMINI_API_KEY \"\n                \"in .env for the default text chain\")"
+        },
+        "ModelChainProvider.act": {
+          "line": 95,
+          "end_line": 97,
+          "ast_sha256": "994bd15ddef88c54e0e6f83b76fcd09a4ecb2f54c2b56589b8a495bb127f5f26",
+          "source": "def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._run(\"act\", prompt, schema, prompt_file, fed_id)"
+        },
+        "ModelChainProvider.judge": {
+          "line": 99,
+          "end_line": 101,
+          "ast_sha256": "6a4dc74a27e1612bb6f7f9b8a67720881bf347cd8e8d209d84c72756b7f645aa",
+          "source": "def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n              prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"judge\", prompt, schema, prompt_file, fed_id, images=images)"
+        },
+        "ModelChainProvider._run": {
+          "line": 103,
+          "end_line": 121,
+          "ast_sha256": "b2dae996594a39b257ea090d00dbadcf4b68d638f31decb98bee5cea23eeb213",
+          "source": "def _run(self, method: str, prompt: str, schema: type[BaseModel] | None,\n             prompt_file: str | None, fed_id: str | None, **extra: Any) -> Any:\n        self._call.served = None  # reset: a failed call must not report the previous tier\n        self._call.fallback_reasons = []\n        if schema is None:\n            raise ProviderError(f\"{self.id} requires a schema for structured output\")\n        media = self._implicit_fallback and extra.get(\"images\")\n        candidates = self._tiers[:-1] if media else self._tiers\n        tiers = []\n        for tier in candidates:\n            if tier.available():\n                tiers.append(tier)\n            else:\n                self._call.fallback_reasons.append(f\"{tier.label}: credentials_unavailable\")\n        if not tiers:\n            raise ProviderError(self.unavailable_reason() or \"no usable tier\")\n        tiers[0].guard_text(prompt)  # redaction gate: refuse once, never fall through\n        with attempt_budget(2 * len(tiers), wall_clock_s=240 * len(tiers)):\n            return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)"
+        },
+        "ModelChainProvider._try_tiers": {
+          "line": 123,
+          "end_line": 148,
+          "ast_sha256": "63bdce646c8ff6ba97c41f56cea6177c3d026e6f73fd9faccc9b87720adddd00",
+          "source": "def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):\n        errors: list[str] = []\n        for tier in tiers:\n            tier.trace = self.trace\n            try:\n                result = getattr(tier, method)(prompt, schema, prompt_file=prompt_file,\n                                               fed_id=fed_id, **extra)\n            except AttemptBudgetExhausted:\n                self._sync_usage()\n                raise\n            except (AvailabilityFailure, Unsupported) as exc:\n                self._sync_usage()\n                reason = exc.reason if isinstance(exc, AvailabilityFailure) else \"capability\"\n                errors.append(f\"{tier.label}: {reason}\")\n                self._call.fallback_reasons.append(errors[-1])\n                log.warning(\"model-chain: tier %s failed (%s); falling through\",\n                            tier.label, reason)\n                continue\n            except ProviderError:\n                self._sync_usage()\n                raise\n            self._call.served = tier.label\n            log.info(\"model-chain: tier %s served the %s call\", tier.label, method)\n            self._sync_usage()\n            return result\n        raise ProviderError(\"model-chain: every tier failed: \" + \" | \".join(errors))"
+        },
+        "ModelChainProvider._sync_usage": {
+          "line": 150,
+          "end_line": 156,
+          "ast_sha256": "fc1a48f76919f6fc0daa8a0dba2ce80682760f41937934d2857d077a3219be46",
+          "source": "def _sync_usage(self) -> None:\n        with self._usage_lock:\n            self.usage = [ProviderUsage(provider=t.label, role=u.role, calls=u.calls,\n                                        failed_calls=u.failed_calls,\n                                        input_tokens=u.input_tokens,\n                                        output_tokens=u.output_tokens)\n                          for t in self._tiers for u in t.usage]"
+        }
+      }
+    },
+    "vision": {
+      "canonical_file_sha256": "22244b7b16646e0604e89e300ddbad22cb58c8f47f24fe440d43d8d1d7aca81c",
+      "symbols": {
+        "configured_order": {
+          "line": 38,
+          "end_line": 42,
+          "ast_sha256": "a058cacf54f22a4a04130e247322ffe3cf55e5fb17d638392dd3ccd777d2cd6a",
+          "source": "def configured_order(model: str | None = None) -> list[str]:\n    \"\"\"The ordered model ids: explicit comma list, else the env var, else default.\"\"\"\n    raw = model or os.environ.get(ORDER_ENV) or \"\"\n    names = [m.strip() for m in raw.split(\",\") if m.strip()]\n    return names or list(DEFAULT_ORDER)"
+        },
+        "ModelChainProvider": {
+          "line": 45,
+          "end_line": 146,
+          "ast_sha256": "671a883a756a634f2c6082b9c6562da451fa61f091374282254aa88aecf07c9d",
+          "source": "class ModelChainProvider(Provider):\n    \"\"\"`act`/`judge` try each available tier in order until one answers.\"\"\"\n\n    def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._call = threading.local()\n        order = configured_order(options.get(\"model\"))\n        secrets = options.get(\"secrets\") or []\n        capabilities = options.get(\"vision_capabilities\") or {}\n        self._tiers = [LiteLLMProvider(model=m, secrets=secrets,\n                                      vision_capability=capabilities.get(m),\n                                      **({\"frame_limits\": options[\"frame_limits\"]}\n                                         if \"frame_limits\" in options else {})) for m in order]\n\n    @property\n    def id(self) -> str:  # type: ignore[override]\n        \"\"\"The tier that served THIS thread's latest call, else `model-chain`. Reset at\n        the start of every call, so a failed call never leaves a stale serving id; per\n        thread, so a judge shared by parallel graders cannot read another's tier.\"\"\"\n        return self.served or CHAIN_ID\n\n    @property\n    def served(self) -> str | None:\n        \"\"\"Label (`id:model`) of the tier that answered the latest call, None if it failed.\"\"\"\n        return getattr(self._call, \"served\", None)\n\n    def order(self) -> list[str]:\n        return [t._model for t in self._tiers]\n\n    def ready_tiers(self) -> list[LiteLLMProvider]:\n        return [t for t in self._tiers if t.available()]\n\n    def available(self) -> bool:\n        return bool(self.ready_tiers())\n\n    def unavailable_reason(self) -> str | None:\n        if self.available():\n            return None\n        return \"no configured model is available; set OLLAMA_API_KEY in .env for the default chain\"\n\n    def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._run(\"act\", prompt, schema, prompt_file, fed_id)\n\n    def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"see_video\", prompt, schema, prompt_file, fed_id,\n                         path=path, options=options)\n\n    def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n              prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"judge\", prompt, schema, prompt_file, fed_id, images=images)\n\n    def _run(self, method: str, prompt: str, schema: type[BaseModel] | None,\n             prompt_file: str | None, fed_id: str | None, **extra: Any) -> Any:\n        if schema is None:\n            raise ProviderError(f\"{self.id} requires a schema for structured output\")\n        self._call.served = None  # reset: a failed call must not report the previous tier\n        tiers = self.ready_tiers()\n        if not tiers:\n            raise ProviderError(self.unavailable_reason() or \"no usable tier\")\n        tiers[0].guard_text(prompt)  # redaction gate: refuse once, never fall through\n        with attempt_budget(2 * len(tiers), wall_clock_s=240 * len(tiers)):\n            return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)\n\n    def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):\n        errors: list[str] = []\n        coverage = None\n        for tier in tiers:\n            tier.trace = self.trace\n            try:\n                args = ((extra[\"path\"], prompt, schema)\n                        if method == \"see_video\" else (prompt, schema))\n                kwargs = {key: value for key, value in extra.items() if key != \"path\"}\n                result = getattr(tier, method)(*args, prompt_file=prompt_file,\n                                               fed_id=fed_id, **kwargs)\n            except AttemptBudgetExhausted:\n                self._sync_usage()\n                raise\n            except ProviderError as exc:\n                self._sync_usage()\n                coverage = getattr(exc, \"coverage\", coverage)\n                errors.append(str(exc))\n                log.warning(\"model-chain: tier %s failed (%s); falling through\",\n                            tier.label, type(exc).__name__)\n                continue\n            self._call.served = tier.label\n            log.info(\"model-chain: tier %s served the %s call\", tier.label, method)\n            self._sync_usage()\n            return result\n        failure = ProviderError(\"model-chain: every tier failed: \" + \" | \".join(errors))\n        failure.coverage = coverage\n        raise failure\n\n    def _sync_usage(self) -> None:\n        with self._usage_lock:\n            self.usage = [ProviderUsage(provider=t.label, role=u.role, calls=u.calls,\n                                        failed_calls=u.failed_calls,\n                                        input_tokens=u.input_tokens,\n                                        output_tokens=u.output_tokens)\n                          for t in self._tiers for u in t.usage]"
+        },
+        "ModelChainProvider.__init__": {
+          "line": 48,
+          "end_line": 57,
+          "ast_sha256": "662a0a46afc8d97b6cc1bd6209ad4b29a9d76970b49c41867e17ea5f8e109c59",
+          "source": "def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._call = threading.local()\n        order = configured_order(options.get(\"model\"))\n        secrets = options.get(\"secrets\") or []\n        capabilities = options.get(\"vision_capabilities\") or {}\n        self._tiers = [LiteLLMProvider(model=m, secrets=secrets,\n                                      vision_capability=capabilities.get(m),\n                                      **({\"frame_limits\": options[\"frame_limits\"]}\n                                         if \"frame_limits\" in options else {})) for m in order]"
+        },
+        "ModelChainProvider.id": {
+          "line": 60,
+          "end_line": 64,
+          "ast_sha256": "7680ba7274f1768b7ee63d17df3d5e808405a774c197140df6c64b6f6ad84be7",
+          "source": "def id(self) -> str:  # type: ignore[override]\n        \"\"\"The tier that served THIS thread's latest call, else `model-chain`. Reset at\n        the start of every call, so a failed call never leaves a stale serving id; per\n        thread, so a judge shared by parallel graders cannot read another's tier.\"\"\"\n        return self.served or CHAIN_ID"
+        },
+        "ModelChainProvider.served": {
+          "line": 67,
+          "end_line": 69,
+          "ast_sha256": "1b0a7ce4bcfc6dc968609d4da4c1ba941fb1a0e12762e9c2456ada0664f65227",
+          "source": "def served(self) -> str | None:\n        \"\"\"Label (`id:model`) of the tier that answered the latest call, None if it failed.\"\"\"\n        return getattr(self._call, \"served\", None)"
+        },
+        "ModelChainProvider.order": {
+          "line": 71,
+          "end_line": 72,
+          "ast_sha256": "7366526e68754e5334b78448a908ca3c2b2769e922a268552a2c8f7d01cca1d4",
+          "source": "def order(self) -> list[str]:\n        return [t._model for t in self._tiers]"
+        },
+        "ModelChainProvider.ready_tiers": {
+          "line": 74,
+          "end_line": 75,
+          "ast_sha256": "3a022f2f09a55d7126ca7b9de847aa06ea04dd21be6a2e760692af5a01c6775f",
+          "source": "def ready_tiers(self) -> list[LiteLLMProvider]:\n        return [t for t in self._tiers if t.available()]"
+        },
+        "ModelChainProvider.available": {
+          "line": 77,
+          "end_line": 78,
+          "ast_sha256": "23118d3806f17e7626701b8f38316f3d888c03f51ff4721bb5330ecb50269a99",
+          "source": "def available(self) -> bool:\n        return bool(self.ready_tiers())"
+        },
+        "ModelChainProvider.unavailable_reason": {
+          "line": 80,
+          "end_line": 83,
+          "ast_sha256": "7171b5de1a83219f431b51ac916eacfdf37dd2b5925f18b1b144534f4a965123",
+          "source": "def unavailable_reason(self) -> str | None:\n        if self.available():\n            return None\n        return \"no configured model is available; set OLLAMA_API_KEY in .env for the default chain\""
+        },
+        "ModelChainProvider.act": {
+          "line": 85,
+          "end_line": 87,
+          "ast_sha256": "994bd15ddef88c54e0e6f83b76fcd09a4ecb2f54c2b56589b8a495bb127f5f26",
+          "source": "def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._run(\"act\", prompt, schema, prompt_file, fed_id)"
+        },
+        "ModelChainProvider.see_video": {
+          "line": 89,
+          "end_line": 93,
+          "ast_sha256": "56304d01b42fe05328e48beed2d372922fca16e93c4c11307f42778ae817656a",
+          "source": "def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"see_video\", prompt, schema, prompt_file, fed_id,\n                         path=path, options=options)"
+        },
+        "ModelChainProvider.judge": {
+          "line": 95,
+          "end_line": 97,
+          "ast_sha256": "6a4dc74a27e1612bb6f7f9b8a67720881bf347cd8e8d209d84c72756b7f645aa",
+          "source": "def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n              prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"judge\", prompt, schema, prompt_file, fed_id, images=images)"
+        },
+        "ModelChainProvider._run": {
+          "line": 99,
+          "end_line": 109,
+          "ast_sha256": "d9057d0333eb924c21e660c90771f0086070052caa01ad02c956e06124cab353",
+          "source": "def _run(self, method: str, prompt: str, schema: type[BaseModel] | None,\n             prompt_file: str | None, fed_id: str | None, **extra: Any) -> Any:\n        if schema is None:\n            raise ProviderError(f\"{self.id} requires a schema for structured output\")\n        self._call.served = None  # reset: a failed call must not report the previous tier\n        tiers = self.ready_tiers()\n        if not tiers:\n            raise ProviderError(self.unavailable_reason() or \"no usable tier\")\n        tiers[0].guard_text(prompt)  # redaction gate: refuse once, never fall through\n        with attempt_budget(2 * len(tiers), wall_clock_s=240 * len(tiers)):\n            return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)"
+        },
+        "ModelChainProvider._try_tiers": {
+          "line": 111,
+          "end_line": 138,
+          "ast_sha256": "73595aa23903856314c21a35a9e7f1aad63fd81ed5eb9a4bd573bd076ea7ee5a",
+          "source": "def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):\n        errors: list[str] = []\n        coverage = None\n        for tier in tiers:\n            tier.trace = self.trace\n            try:\n                args = ((extra[\"path\"], prompt, schema)\n                        if method == \"see_video\" else (prompt, schema))\n                kwargs = {key: value for key, value in extra.items() if key != \"path\"}\n                result = getattr(tier, method)(*args, prompt_file=prompt_file,\n                                               fed_id=fed_id, **kwargs)\n            except AttemptBudgetExhausted:\n                self._sync_usage()\n                raise\n            except ProviderError as exc:\n                self._sync_usage()\n                coverage = getattr(exc, \"coverage\", coverage)\n                errors.append(str(exc))\n                log.warning(\"model-chain: tier %s failed (%s); falling through\",\n                            tier.label, type(exc).__name__)\n                continue\n            self._call.served = tier.label\n            log.info(\"model-chain: tier %s served the %s call\", tier.label, method)\n            self._sync_usage()\n            return result\n        failure = ProviderError(\"model-chain: every tier failed: \" + \" | \".join(errors))\n        failure.coverage = coverage\n        raise failure"
+        },
+        "ModelChainProvider._sync_usage": {
+          "line": 140,
+          "end_line": 146,
+          "ast_sha256": "fc1a48f76919f6fc0daa8a0dba2ce80682760f41937934d2857d077a3219be46",
+          "source": "def _sync_usage(self) -> None:\n        with self._usage_lock:\n            self.usage = [ProviderUsage(provider=t.label, role=u.role, calls=u.calls,\n                                        failed_calls=u.failed_calls,\n                                        input_tokens=u.input_tokens,\n                                        output_tokens=u.output_tokens)\n                          for t in self._tiers for u in t.usage]"
+        }
+      }
+    },
+    "combined": {
+      "canonical_file_sha256": "5dc745cca7b7c9340b57d102755bb9ae8336a750fbfd5dff4000bb918e30d724",
+      "symbols": {
+        "configured_order": {
+          "line": 44,
+          "end_line": 48,
+          "ast_sha256": "a058cacf54f22a4a04130e247322ffe3cf55e5fb17d638392dd3ccd777d2cd6a",
+          "source": "def configured_order(model: str | None = None) -> list[str]:\n    \"\"\"The ordered model ids: explicit comma list, else the env var, else default.\"\"\"\n    raw = model or os.environ.get(ORDER_ENV) or \"\"\n    names = [m.strip() for m in raw.split(\",\") if m.strip()]\n    return names or list(DEFAULT_ORDER)"
+        },
+        "ModelChainProvider": {
+          "line": 51,
+          "end_line": 174,
+          "ast_sha256": "e3638a4f692315231835a0341bb708a0d77cce63e64ae65ed72de46bdcd20778",
+          "source": "class ModelChainProvider(Provider):\n    \"\"\"`act`/`judge` try each available tier in order until one answers.\"\"\"\n\n    def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._call = threading.local()\n        order = configured_order(options.get(\"model\"))\n        self._implicit_fallback = not (options.get(\"model\") or os.environ.get(ORDER_ENV))\n        if self._implicit_fallback:\n            order.append(os.environ.get(FALLBACK_ENV) or TEXT_FALLBACK)\n        secrets = options.get(\"secrets\") or []\n        capabilities = options.get(\"vision_capabilities\") or {}\n        self._tiers = [LiteLLMProvider(model=m, secrets=secrets, strict=True,\n                                      vision_capability=capabilities.get(m),\n                                      **({\"frame_limits\": options[\"frame_limits\"]}\n                                         if \"frame_limits\" in options else {})) for m in order]\n\n    @property\n    def id(self) -> str:  # type: ignore[override]\n        \"\"\"The tier that served THIS thread's latest call, else `model-chain`. Reset at\n        the start of every call, so a failed call never leaves a stale serving id; per\n        thread, so a judge shared by parallel graders cannot read another's tier.\"\"\"\n        return self.served or CHAIN_ID\n\n    @property\n    def served(self) -> str | None:\n        \"\"\"Label (`id:model`) of the tier that answered the latest call, None if it failed.\"\"\"\n        return getattr(self._call, \"served\", None)\n\n    @property\n    def fallback_reasons(self) -> tuple[str, ...]:\n        \"\"\"Safe per-call evidence in attempted/skipped tier order; no vendor payloads.\"\"\"\n        return tuple(getattr(self._call, \"fallback_reasons\", ()))\n\n    def order(self) -> list[str]:\n        return [t._model for t in self._tiers]\n\n    def ready_tiers(self) -> list[LiteLLMProvider]:\n        return [t for t in self._tiers if t.available()]\n\n    def available(self) -> bool:\n        return bool(self.ready_tiers())\n\n    def unavailable_reason(self) -> str | None:\n        if self.available():\n            return None\n        return (\"no configured model is available; set OLLAMA_API_KEY or GEMINI_API_KEY \"\n                \"in .env for the default text chain\")\n\n    def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._run(\"act\", prompt, schema, prompt_file, fed_id)\n\n    def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"see_video\", prompt, schema, prompt_file, fed_id,\n                         path=path, options=options)\n\n    def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n              prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"judge\", prompt, schema, prompt_file, fed_id, images=images)\n\n    def _run(self, method: str, prompt: str, schema: type[BaseModel] | None,\n             prompt_file: str | None, fed_id: str | None, **extra: Any) -> Any:\n        self._call.served = None  # reset: a failed call must not report the previous tier\n        self._call.fallback_reasons = []\n        if schema is None:\n            raise ProviderError(f\"{self.id} requires a schema for structured output\")\n        media = self._implicit_fallback and (method == \"see_video\" or extra.get(\"images\"))\n        candidates = self._tiers[:-1] if media else self._tiers\n        tiers = []\n        for tier in candidates:\n            if tier.available():\n                tiers.append(tier)\n            else:\n                self._call.fallback_reasons.append(f\"{tier.label}: credentials_unavailable\")\n        if not tiers:\n            raise ProviderError(self.unavailable_reason() or \"no usable tier\")\n        tiers[0].guard_text(prompt)  # redaction gate: refuse once, never fall through\n        with attempt_budget(2 * len(tiers), wall_clock_s=240 * len(tiers)):\n            return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)\n\n    def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):\n        errors: list[str] = []\n        coverage = None\n        for tier in tiers:\n            tier.trace = self.trace\n            try:\n                args = ((extra[\"path\"], prompt, schema)\n                        if method == \"see_video\" else (prompt, schema))\n                kwargs = {key: value for key, value in extra.items() if key != \"path\"}\n                result = getattr(tier, method)(*args, prompt_file=prompt_file,\n                                               fed_id=fed_id, **kwargs)\n            except AttemptBudgetExhausted:\n                self._sync_usage()\n                raise\n            except (AvailabilityFailure, Unsupported) as exc:\n                self._sync_usage()\n                coverage = getattr(exc, \"coverage\", coverage)\n                reason = exc.reason if isinstance(exc, AvailabilityFailure) else \"capability\"\n                errors.append(f\"{tier.label}: {reason}\")\n                self._call.fallback_reasons.append(errors[-1])\n                log.warning(\"model-chain: tier %s failed (%s); falling through\",\n                            tier.label, reason)\n                continue\n            except ProviderError:\n                self._sync_usage()\n                raise\n            self._call.served = tier.label\n            log.info(\"model-chain: tier %s served the %s call\", tier.label, method)\n            self._sync_usage()\n            return result\n        failure = ProviderError(\"model-chain: every tier failed: \" + \" | \".join(errors))\n        failure.coverage = coverage\n        raise failure\n\n    def _sync_usage(self) -> None:\n        with self._usage_lock:\n            self.usage = [ProviderUsage(provider=t.label, role=u.role, calls=u.calls,\n                                        failed_calls=u.failed_calls,\n                                        input_tokens=u.input_tokens,\n                                        output_tokens=u.output_tokens)\n                          for t in self._tiers for u in t.usage]"
+        },
+        "ModelChainProvider.__init__": {
+          "line": 54,
+          "end_line": 66,
+          "ast_sha256": "e789f252ad00f6c8668231959759ab9400f3e363e94ef62e46c3ce2faa12be5c",
+          "source": "def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._call = threading.local()\n        order = configured_order(options.get(\"model\"))\n        self._implicit_fallback = not (options.get(\"model\") or os.environ.get(ORDER_ENV))\n        if self._implicit_fallback:\n            order.append(os.environ.get(FALLBACK_ENV) or TEXT_FALLBACK)\n        secrets = options.get(\"secrets\") or []\n        capabilities = options.get(\"vision_capabilities\") or {}\n        self._tiers = [LiteLLMProvider(model=m, secrets=secrets, strict=True,\n                                      vision_capability=capabilities.get(m),\n                                      **({\"frame_limits\": options[\"frame_limits\"]}\n                                         if \"frame_limits\" in options else {})) for m in order]"
+        },
+        "ModelChainProvider.id": {
+          "line": 69,
+          "end_line": 73,
+          "ast_sha256": "7680ba7274f1768b7ee63d17df3d5e808405a774c197140df6c64b6f6ad84be7",
+          "source": "def id(self) -> str:  # type: ignore[override]\n        \"\"\"The tier that served THIS thread's latest call, else `model-chain`. Reset at\n        the start of every call, so a failed call never leaves a stale serving id; per\n        thread, so a judge shared by parallel graders cannot read another's tier.\"\"\"\n        return self.served or CHAIN_ID"
+        },
+        "ModelChainProvider.served": {
+          "line": 76,
+          "end_line": 78,
+          "ast_sha256": "1b0a7ce4bcfc6dc968609d4da4c1ba941fb1a0e12762e9c2456ada0664f65227",
+          "source": "def served(self) -> str | None:\n        \"\"\"Label (`id:model`) of the tier that answered the latest call, None if it failed.\"\"\"\n        return getattr(self._call, \"served\", None)"
+        },
+        "ModelChainProvider.fallback_reasons": {
+          "line": 81,
+          "end_line": 83,
+          "ast_sha256": "5b4aed716323277bd53d4c34dd97afe44fc787d259d123b8a6444c9880a0491a",
+          "source": "def fallback_reasons(self) -> tuple[str, ...]:\n        \"\"\"Safe per-call evidence in attempted/skipped tier order; no vendor payloads.\"\"\"\n        return tuple(getattr(self._call, \"fallback_reasons\", ()))"
+        },
+        "ModelChainProvider.order": {
+          "line": 85,
+          "end_line": 86,
+          "ast_sha256": "7366526e68754e5334b78448a908ca3c2b2769e922a268552a2c8f7d01cca1d4",
+          "source": "def order(self) -> list[str]:\n        return [t._model for t in self._tiers]"
+        },
+        "ModelChainProvider.ready_tiers": {
+          "line": 88,
+          "end_line": 89,
+          "ast_sha256": "3a022f2f09a55d7126ca7b9de847aa06ea04dd21be6a2e760692af5a01c6775f",
+          "source": "def ready_tiers(self) -> list[LiteLLMProvider]:\n        return [t for t in self._tiers if t.available()]"
+        },
+        "ModelChainProvider.available": {
+          "line": 91,
+          "end_line": 92,
+          "ast_sha256": "23118d3806f17e7626701b8f38316f3d888c03f51ff4721bb5330ecb50269a99",
+          "source": "def available(self) -> bool:\n        return bool(self.ready_tiers())"
+        },
+        "ModelChainProvider.unavailable_reason": {
+          "line": 94,
+          "end_line": 98,
+          "ast_sha256": "736adf0f5d4eb409c2b4280fb0151d67a2656e1f639c883c8345968184d3e655",
+          "source": "def unavailable_reason(self) -> str | None:\n        if self.available():\n            return None\n        return (\"no configured model is available; set OLLAMA_API_KEY or GEMINI_API_KEY \"\n                \"in .env for the default text chain\")"
+        },
+        "ModelChainProvider.act": {
+          "line": 100,
+          "end_line": 102,
+          "ast_sha256": "994bd15ddef88c54e0e6f83b76fcd09a4ecb2f54c2b56589b8a495bb127f5f26",
+          "source": "def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._run(\"act\", prompt, schema, prompt_file, fed_id)"
+        },
+        "ModelChainProvider.see_video": {
+          "line": 104,
+          "end_line": 108,
+          "ast_sha256": "56304d01b42fe05328e48beed2d372922fca16e93c4c11307f42778ae817656a",
+          "source": "def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"see_video\", prompt, schema, prompt_file, fed_id,\n                         path=path, options=options)"
+        },
+        "ModelChainProvider.judge": {
+          "line": 110,
+          "end_line": 112,
+          "ast_sha256": "6a4dc74a27e1612bb6f7f9b8a67720881bf347cd8e8d209d84c72756b7f645aa",
+          "source": "def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n              prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        return self._run(\"judge\", prompt, schema, prompt_file, fed_id, images=images)"
+        },
+        "ModelChainProvider._run": {
+          "line": 114,
+          "end_line": 132,
+          "ast_sha256": "e39917106ac1895d97954c42f59cfbe63f570c0df22eeda430f19443ea22e757",
+          "source": "def _run(self, method: str, prompt: str, schema: type[BaseModel] | None,\n             prompt_file: str | None, fed_id: str | None, **extra: Any) -> Any:\n        self._call.served = None  # reset: a failed call must not report the previous tier\n        self._call.fallback_reasons = []\n        if schema is None:\n            raise ProviderError(f\"{self.id} requires a schema for structured output\")\n        media = self._implicit_fallback and (method == \"see_video\" or extra.get(\"images\"))\n        candidates = self._tiers[:-1] if media else self._tiers\n        tiers = []\n        for tier in candidates:\n            if tier.available():\n                tiers.append(tier)\n            else:\n                self._call.fallback_reasons.append(f\"{tier.label}: credentials_unavailable\")\n        if not tiers:\n            raise ProviderError(self.unavailable_reason() or \"no usable tier\")\n        tiers[0].guard_text(prompt)  # redaction gate: refuse once, never fall through\n        with attempt_budget(2 * len(tiers), wall_clock_s=240 * len(tiers)):\n            return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)"
+        },
+        "ModelChainProvider._try_tiers": {
+          "line": 134,
+          "end_line": 166,
+          "ast_sha256": "ffa62aa99482522b42f59f8a8437aac3b5b56d027d2ffdfeb5542330099ea6d1",
+          "source": "def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):\n        errors: list[str] = []\n        coverage = None\n        for tier in tiers:\n            tier.trace = self.trace\n            try:\n                args = ((extra[\"path\"], prompt, schema)\n                        if method == \"see_video\" else (prompt, schema))\n                kwargs = {key: value for key, value in extra.items() if key != \"path\"}\n                result = getattr(tier, method)(*args, prompt_file=prompt_file,\n                                               fed_id=fed_id, **kwargs)\n            except AttemptBudgetExhausted:\n                self._sync_usage()\n                raise\n            except (AvailabilityFailure, Unsupported) as exc:\n                self._sync_usage()\n                coverage = getattr(exc, \"coverage\", coverage)\n                reason = exc.reason if isinstance(exc, AvailabilityFailure) else \"capability\"\n                errors.append(f\"{tier.label}: {reason}\")\n                self._call.fallback_reasons.append(errors[-1])\n                log.warning(\"model-chain: tier %s failed (%s); falling through\",\n                            tier.label, reason)\n                continue\n            except ProviderError:\n                self._sync_usage()\n                raise\n            self._call.served = tier.label\n            log.info(\"model-chain: tier %s served the %s call\", tier.label, method)\n            self._sync_usage()\n            return result\n        failure = ProviderError(\"model-chain: every tier failed: \" + \" | \".join(errors))\n        failure.coverage = coverage\n        raise failure"
+        },
+        "ModelChainProvider._sync_usage": {
+          "line": 168,
+          "end_line": 174,
+          "ast_sha256": "fc1a48f76919f6fc0daa8a0dba2ce80682760f41937934d2857d077a3219be46",
+          "source": "def _sync_usage(self) -> None:\n        with self._usage_lock:\n            self.usage = [ProviderUsage(provider=t.label, role=u.role, calls=u.calls,\n                                        failed_calls=u.failed_calls,\n                                        input_tokens=u.input_tokens,\n                                        output_tokens=u.output_tokens)\n                          for t in self._tiers for u in t.usage]"
+        }
+      }
+    }
+  },
+  "src/autotester/providers/litellm_provider.py": {
+    "text": {
+      "canonical_file_sha256": "08db1228a00187fdfe4ae5c094270f558c70761a5896d8fb6c7e4c14e2aa33be",
+      "symbols": {
+        "_load_litellm": {
+          "line": 56,
+          "end_line": 68,
+          "ast_sha256": "25e414625731f3c1e1f4743add18da5452677acb3b5ac03b341b0187b026849e",
+          "source": "def _load_litellm() -> Any:\n    \"\"\"Import the SDK lazily, so an unused or absent LiteLLM costs nothing. Two\n    flags are set first: PRODUCTION mode stops LiteLLM running `load_dotenv()` on\n    whatever `.env` it finds walking up from the cwd (a different file than the\n    repo-root one `core/env.py` loads, and it would bypass that loader's\n    test-process refusal); the local cost map stops an import-time fetch from\n    GitHub. Neither is a credential.\"\"\"\n    os.environ.setdefault(\"LITELLM_MODE\", \"PRODUCTION\")\n    os.environ.setdefault(\"LITELLM_LOCAL_MODEL_COST_MAP\", \"True\")\n    import litellm\n\n    litellm.telemetry = False   # LL10: 1.104.0 has no such switch (checked in its source); a no-op\n    return litellm"
+        },
+        "_env_secret_values": {
+          "line": 71,
+          "end_line": 78,
+          "ast_sha256": "d4c811847716fd850b8c25355bfef1e438a9da5373494c952be76cefbcf24f12",
+          "source": "def _env_secret_values() -> list[str]:\n    \"\"\"Every non-empty value in the repo-root `.env` that is not a setting: the\n    same \"anything in .env is a secret\" rule `SecretStore` applies at the stage.\"\"\"\n    path = repo_root() / ENV_FILE\n    if not path.exists():\n        return []\n    skip = _CONFIG_KEYS | PUBLIC_ENV_KEYS\n    return [v for k, v in dotenv_values(path).items() if k and v and k not in skip]"
+        },
+        "_texts": {
+          "line": 81,
+          "end_line": 90,
+          "ast_sha256": "f0027a89ed635c6cce6da8b7a9c73cddb06ff9cd1cabceb17179de58208c6222",
+          "source": "def _texts(messages: list[dict[str, Any]]) -> list[str]:\n    \"\"\"Every text a request will carry (plain content and text parts alike).\"\"\"\n    out: list[str] = []\n    for message in messages:\n        content = message[\"content\"]\n        if isinstance(content, str):\n            out.append(content)\n        else:\n            out.extend(p[\"text\"] for p in content if p.get(\"type\") == \"text\")\n    return out"
+        },
+        "_why": {
+          "line": 93,
+          "end_line": 99,
+          "ast_sha256": "3ab7b695a24f73dfa3dd1bb786b96674ed4dbd33364a02bc955323e8dd098e08",
+          "source": "def _why(exc: ValueError) -> str:\n    \"\"\"A short, content-free reason: pydantic's field paths and messages (never the\n    offending input value), or a plain 'not valid JSON'.\"\"\"\n    if isinstance(exc, ValidationError):\n        return \"; \".join(f\"{'.'.join(str(p) for p in e['loc']) or 'answer'}: {e['msg']}\"\n                         for e in exc.errors())\n    return \"not valid JSON\""
+        },
+        "LiteLLMProvider": {
+          "line": 102,
+          "end_line": 294,
+          "ast_sha256": "d03f520ba4c86ecb1e0045e02e77f1e36759393db2d803ca90d096f10f62a5f9",
+          "source": "class LiteLLMProvider(Provider):\n    \"\"\"One explicit model, any vendor. `options`: `model` (else `AUTOTESTER_MODEL`),\n    and `secrets` (extra values the prompt guard must refuse, on top of `.env`).\"\"\"\n\n    id = \"litellm\"\n\n    def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._model = str(options.get(\"model\") or os.environ.get(MODEL_ENV) or \"\").strip()\n        if self._model:\n            self.options[\"model\"] = self._model  # so `label` reads `litellm:<model>`\n        self._extra_secrets: list[str] = [str(v) for v in options.get(\"secrets\") or []]\n\n    # -- availability ------------------------------------------------------\n    def _endpoint(self) -> dict[str, str]:\n        \"\"\"`api_base`/`api_key` kwargs from the environment, only the ones set.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return ollama_cloud.endpoint()\n        base = os.environ.get(\"LITELLM_API_BASE\")\n        key = os.environ.get(\"LITELLM_API_KEY\")\n        return {**({\"api_base\": base} if base else {}), **({\"api_key\": key} if key else {})}\n\n    def _missing_keys(self) -> list[str]:\n        \"\"\"Names of the credentials this model still needs ([] when none). An\n        explicit endpoint (self-hosted / OpenAI-compatible / Ollama) needs no key.\"\"\"\n        endpoint = self._endpoint()\n        if \"api_base\" in endpoint:\n            return []\n        try:\n            env = _load_litellm().validate_environment(\n                model=self._model, api_key=endpoint.get(\"api_key\"))\n        except Exception:\n            return [\"an API key for this model\"]\n        if env.get(\"keys_in_environment\"):\n            return []\n        return list(env.get(\"missing_keys\") or [\"an API key\"])\n\n    def unavailable_reason(self) -> str | None:\n        \"\"\"Why this provider cannot serve a call right now, naming the model and the\n        one thing to set (never a key, a prompt or an endpoint value); None when ready.\n        The website's refusal pages show it (LL11).\"\"\"\n        if not self._model:\n            return (f\"litellm has no model configured: set {MODEL_ENV} in .env (for example \"\n                    \"gemini/gemini-2.5-pro or ollama/llama3), or name it in the project as \"\n                    \"`litellm:<model>`\")\n        missing = self._missing_keys()\n        if missing:\n            return (f\"{self.label} is missing credentials: set {', '.join(missing)} in .env \"\n                    \"(or LITELLM_API_KEY / LITELLM_API_BASE for an OpenAI-compatible endpoint)\")\n        return None\n\n    def available(self) -> bool:\n        return self.unavailable_reason() is None\n\n    def _require_ready(self) -> None:\n        reason = self.unavailable_reason()\n        if reason:\n            raise ProviderError(reason)\n\n    # -- roles -------------------------------------------------------------\n    def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._structured(prompt, schema, role=\"agent\",\n                                prompt_file=prompt_file, fed_id=fed_id)\n\n    def judge(\n        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        return self._structured(prompt, schema, role=\"judge\", images=images,\n                                prompt_file=prompt_file, fed_id=fed_id)\n\n    # -- the call ----------------------------------------------------------\n    def _strategy(self) -> str:\n        \"\"\"By capability, never by vendor name: response schema, else a forced tool,\n        else JSON mode with a repair retry.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return \"json\"\n        lit = _load_litellm()\n        for name, probe in ((\"schema\", lit.supports_response_schema),\n                            (\"tool\", lit.supports_function_calling)):\n            try:\n                if probe(self._model):\n                    return name\n            except Exception:\n                continue\n        return \"json\"\n\n    def _secret_values(self) -> list[str]:\n        \"\"\"The ONE secret-value set: `.env` values, exported vendor keys and the\n        `secrets` option. The prompt guard refuses these going out and `_failure`\n        withholds them coming back (LL5, LL8).\"\"\"\n        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]\n        return [*_env_secret_values(), *exported, *self._extra_secrets]\n\n    def guard_text(self, text: str) -> None:\n        \"\"\"The redaction gate for one prompt text; raises `ProviderError`, never echoing a value.\"\"\"\n        try:\n            assert_no_raw_secrets(text, self._secret_values())\n        except ValueError:\n            raise ProviderError(\n                f\"{self.label}: prompt withheld, a credential value reached it\") from None\n\n    def _guard(self, messages: list[dict[str, Any]]) -> None:\n        self.guard_text(\"\\n\".join(_texts(messages)))\n\n    def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:\n        \"\"\"A vendor failure, with the exception text kept only when it provably\n        echoes none of the prompt, the endpoint or any secret value (LL8).\"\"\"\n        text = str(exc)\n        echoed = any(t[:30] in text for t in _texts(messages) if t)\n        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]\n        if echoed or any(v in text for v in hidden) or len(text) > 300:\n            text = \"(details withheld)\"\n        return f\"{self.label} {role} call failed: {type(exc).__name__}: {text}\"\n\n    def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,\n                  role: str, *, prompt_file: str | None, fed_id: str | None,\n                  retries: int = 0) -> Any:\n        \"\"\"ONE physical `litellm.completion` call: guarded first, recorded after.\"\"\"\n        self._guard(messages)\n        output_options = ({} if ollama_cloud.is_ollama(self._model)\n                          else request_options(strategy, self._model, schema))\n        kwargs: dict[str, Any] = {\n            \"model\": self._model, \"messages\": messages, \"num_retries\": 0,\n            \"timeout\": _TIMEOUT_S, \"drop_params\": True, **self._endpoint(),\n            **output_options}\n        if role == \"judge\":\n            kwargs[\"temperature\"] = 0\n        receipt, kwargs[\"timeout\"] = reserve_attempt(self.label, role, _TIMEOUT_S)\n        started = time.perf_counter()\n        try:\n            response = _load_litellm().completion(**kwargs)\n        except Exception as exc:\n            receipt.status = \"failed\"\n            receipt.latency_s = time.perf_counter() - started\n            self.record(role, None, None, failed=True, prompt_file=prompt_file,\n                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            reason = availability_reason(exc)\n            if reason is not None:\n                raise AvailabilityFailure(reason) from None\n            raise ProviderError(self._failure(role, exc, messages)) from None\n        usage = getattr(response, \"usage\", None)\n        receipt.status = \"succeeded\"\n        receipt.input_tokens = getattr(usage, \"prompt_tokens\", None)\n        receipt.output_tokens = getattr(usage, \"completion_tokens\", None)\n        receipt.latency_s = time.perf_counter() - started\n        self.record(\n            role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,\n            prompt_file=prompt_file, fed_id=fed_id,\n            latency_s=time.perf_counter() - started, retries=retries)\n        try:\n            return response.choices[0].message\n        except (AttributeError, IndexError, TypeError):\n            raise ProviderError(f\"{self.label} {role} call returned no message\") from None\n\n    def _structured(\n        self, prompt: str, schema: type[ModelT] | None, *, role: str,\n        images: list[Path] | None = None,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        if schema is None:\n            raise ProviderError(\n                f\"{self.label} requires a schema for structured output (role={role})\")\n        self._require_ready()\n        strategy = self._strategy()\n        text = prompt + (json_mode_instruction(schema) if strategy == \"json\" else \"\")\n        messages: list[dict[str, Any]] = [\n            {\"role\": \"user\", \"content\": image_url_parts(text, images)}]\n        meta = {\"prompt_file\": prompt_file, \"fed_id\": fed_id}\n        message = self._complete(messages, schema, strategy, role, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            problem = _why(exc)\n            if strategy != \"json\":\n                raise ProviderError(self._unparsable(role, problem)) from None\n        messages += [\n            {\"role\": \"assistant\", \"content\": getattr(message, \"content\", None) or \"\"},\n            {\"role\": \"user\", \"content\": \"That reply was not valid. Reply with ONE JSON object \"\n                                        f\"only, matching the schema. Problem: {problem}\"}]\n        message = self._complete(messages, schema, strategy, role, retries=1, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            raise ProviderError(self._unparsable(role, _why(exc))) from None\n\n    def _unparsable(self, role: str, problem: str) -> str:\n        return f\"{self.label} {role} answer did not match the schema ({problem})\""
+        },
+        "LiteLLMProvider.__init__": {
+          "line": 108,
+          "end_line": 113,
+          "ast_sha256": "c97b74761dd2393bf8c05ff6ae026b6bd72f0b1d315f5a3803899fe55a565981",
+          "source": "def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._model = str(options.get(\"model\") or os.environ.get(MODEL_ENV) or \"\").strip()\n        if self._model:\n            self.options[\"model\"] = self._model  # so `label` reads `litellm:<model>`\n        self._extra_secrets: list[str] = [str(v) for v in options.get(\"secrets\") or []]"
+        },
+        "LiteLLMProvider._endpoint": {
+          "line": 116,
+          "end_line": 122,
+          "ast_sha256": "eb6d1d39dbc553d432717b1168ad0e75d9fc1e16029e802ef64993c7067c5f48",
+          "source": "def _endpoint(self) -> dict[str, str]:\n        \"\"\"`api_base`/`api_key` kwargs from the environment, only the ones set.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return ollama_cloud.endpoint()\n        base = os.environ.get(\"LITELLM_API_BASE\")\n        key = os.environ.get(\"LITELLM_API_KEY\")\n        return {**({\"api_base\": base} if base else {}), **({\"api_key\": key} if key else {})}"
+        },
+        "LiteLLMProvider._missing_keys": {
+          "line": 124,
+          "end_line": 137,
+          "ast_sha256": "2e458b6f86bad3747f4a17aebbb065b30508883943f72b171313afe58f35644b",
+          "source": "def _missing_keys(self) -> list[str]:\n        \"\"\"Names of the credentials this model still needs ([] when none). An\n        explicit endpoint (self-hosted / OpenAI-compatible / Ollama) needs no key.\"\"\"\n        endpoint = self._endpoint()\n        if \"api_base\" in endpoint:\n            return []\n        try:\n            env = _load_litellm().validate_environment(\n                model=self._model, api_key=endpoint.get(\"api_key\"))\n        except Exception:\n            return [\"an API key for this model\"]\n        if env.get(\"keys_in_environment\"):\n            return []\n        return list(env.get(\"missing_keys\") or [\"an API key\"])"
+        },
+        "LiteLLMProvider.unavailable_reason": {
+          "line": 139,
+          "end_line": 151,
+          "ast_sha256": "ca880f0f3139d10691c8d056d9e86c09b466c38f82a13186221ee10be2e1b55e",
+          "source": "def unavailable_reason(self) -> str | None:\n        \"\"\"Why this provider cannot serve a call right now, naming the model and the\n        one thing to set (never a key, a prompt or an endpoint value); None when ready.\n        The website's refusal pages show it (LL11).\"\"\"\n        if not self._model:\n            return (f\"litellm has no model configured: set {MODEL_ENV} in .env (for example \"\n                    \"gemini/gemini-2.5-pro or ollama/llama3), or name it in the project as \"\n                    \"`litellm:<model>`\")\n        missing = self._missing_keys()\n        if missing:\n            return (f\"{self.label} is missing credentials: set {', '.join(missing)} in .env \"\n                    \"(or LITELLM_API_KEY / LITELLM_API_BASE for an OpenAI-compatible endpoint)\")\n        return None"
+        },
+        "LiteLLMProvider.available": {
+          "line": 153,
+          "end_line": 154,
+          "ast_sha256": "7131b2e64d6bc59c81c42418c89a18a574ac3142a2838d82f496a21ac42834e6",
+          "source": "def available(self) -> bool:\n        return self.unavailable_reason() is None"
+        },
+        "LiteLLMProvider._require_ready": {
+          "line": 156,
+          "end_line": 159,
+          "ast_sha256": "0aa4bdf85ce94e97b257a18e61be2b1d768662db420788624ec81780d6ced2ab",
+          "source": "def _require_ready(self) -> None:\n        reason = self.unavailable_reason()\n        if reason:\n            raise ProviderError(reason)"
+        },
+        "LiteLLMProvider.act": {
+          "line": 162,
+          "end_line": 165,
+          "ast_sha256": "87dadb7271c5afe8209914d54df5e78bdb0cc556418930fece6b491659ab888a",
+          "source": "def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._structured(prompt, schema, role=\"agent\",\n                                prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider.judge": {
+          "line": 167,
+          "end_line": 172,
+          "ast_sha256": "92939496fb4887995a624c77fc48395a1422925b06d8fda18db68c7920b0e457",
+          "source": "def judge(\n        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        return self._structured(prompt, schema, role=\"judge\", images=images,\n                                prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider._strategy": {
+          "line": 175,
+          "end_line": 188,
+          "ast_sha256": "11f3e520a28b220557570b7c789b2d34f87bc1ef7b1e0e2e7bdfab3e6e239fde",
+          "source": "def _strategy(self) -> str:\n        \"\"\"By capability, never by vendor name: response schema, else a forced tool,\n        else JSON mode with a repair retry.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return \"json\"\n        lit = _load_litellm()\n        for name, probe in ((\"schema\", lit.supports_response_schema),\n                            (\"tool\", lit.supports_function_calling)):\n            try:\n                if probe(self._model):\n                    return name\n            except Exception:\n                continue\n        return \"json\""
+        },
+        "LiteLLMProvider._secret_values": {
+          "line": 190,
+          "end_line": 195,
+          "ast_sha256": "3fb623d1f24c8e41156c3eb4f33e297ff974eff69890ec2b89ccce25f3c3227a",
+          "source": "def _secret_values(self) -> list[str]:\n        \"\"\"The ONE secret-value set: `.env` values, exported vendor keys and the\n        `secrets` option. The prompt guard refuses these going out and `_failure`\n        withholds them coming back (LL5, LL8).\"\"\"\n        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]\n        return [*_env_secret_values(), *exported, *self._extra_secrets]"
+        },
+        "LiteLLMProvider.guard_text": {
+          "line": 197,
+          "end_line": 203,
+          "ast_sha256": "ccddf8f0ec643bc8ca4a94e1e6dde7f37005debbb766a389a67f22772c95c62e",
+          "source": "def guard_text(self, text: str) -> None:\n        \"\"\"The redaction gate for one prompt text; raises `ProviderError`, never echoing a value.\"\"\"\n        try:\n            assert_no_raw_secrets(text, self._secret_values())\n        except ValueError:\n            raise ProviderError(\n                f\"{self.label}: prompt withheld, a credential value reached it\") from None"
+        },
+        "LiteLLMProvider._guard": {
+          "line": 205,
+          "end_line": 206,
+          "ast_sha256": "55182bf3f430a60ae5a6a191254ae750664d994a30b512114bd4185572bdf821",
+          "source": "def _guard(self, messages: list[dict[str, Any]]) -> None:\n        self.guard_text(\"\\n\".join(_texts(messages)))"
+        },
+        "LiteLLMProvider._failure": {
+          "line": 208,
+          "end_line": 216,
+          "ast_sha256": "0a2b651d4c3188dd747b621a101efe54ca643e72b98736b5faa643db614cfb3b",
+          "source": "def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:\n        \"\"\"A vendor failure, with the exception text kept only when it provably\n        echoes none of the prompt, the endpoint or any secret value (LL8).\"\"\"\n        text = str(exc)\n        echoed = any(t[:30] in text for t in _texts(messages) if t)\n        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]\n        if echoed or any(v in text for v in hidden) or len(text) > 300:\n            text = \"(details withheld)\"\n        return f\"{self.label} {role} call failed: {type(exc).__name__}: {text}\""
+        },
+        "LiteLLMProvider._complete": {
+          "line": 218,
+          "end_line": 256,
+          "ast_sha256": "9ecc75f32a05fa31de1f85e2801129b0389949589e81d09cf575a767523e315c",
+          "source": "def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,\n                  role: str, *, prompt_file: str | None, fed_id: str | None,\n                  retries: int = 0) -> Any:\n        \"\"\"ONE physical `litellm.completion` call: guarded first, recorded after.\"\"\"\n        self._guard(messages)\n        output_options = ({} if ollama_cloud.is_ollama(self._model)\n                          else request_options(strategy, self._model, schema))\n        kwargs: dict[str, Any] = {\n            \"model\": self._model, \"messages\": messages, \"num_retries\": 0,\n            \"timeout\": _TIMEOUT_S, \"drop_params\": True, **self._endpoint(),\n            **output_options}\n        if role == \"judge\":\n            kwargs[\"temperature\"] = 0\n        receipt, kwargs[\"timeout\"] = reserve_attempt(self.label, role, _TIMEOUT_S)\n        started = time.perf_counter()\n        try:\n            response = _load_litellm().completion(**kwargs)\n        except Exception as exc:\n            receipt.status = \"failed\"\n            receipt.latency_s = time.perf_counter() - started\n            self.record(role, None, None, failed=True, prompt_file=prompt_file,\n                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            reason = availability_reason(exc)\n            if reason is not None:\n                raise AvailabilityFailure(reason) from None\n            raise ProviderError(self._failure(role, exc, messages)) from None\n        usage = getattr(response, \"usage\", None)\n        receipt.status = \"succeeded\"\n        receipt.input_tokens = getattr(usage, \"prompt_tokens\", None)\n        receipt.output_tokens = getattr(usage, \"completion_tokens\", None)\n        receipt.latency_s = time.perf_counter() - started\n        self.record(\n            role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,\n            prompt_file=prompt_file, fed_id=fed_id,\n            latency_s=time.perf_counter() - started, retries=retries)\n        try:\n            return response.choices[0].message\n        except (AttributeError, IndexError, TypeError):\n            raise ProviderError(f\"{self.label} {role} call returned no message\") from None"
+        },
+        "LiteLLMProvider._structured": {
+          "line": 258,
+          "end_line": 291,
+          "ast_sha256": "ff7f7faac01e805f631b8c4c01ad37655c5f30e18e5b12a8ab67ed6ecdc957bc",
+          "source": "def _structured(\n        self, prompt: str, schema: type[ModelT] | None, *, role: str,\n        images: list[Path] | None = None,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        if schema is None:\n            raise ProviderError(\n                f\"{self.label} requires a schema for structured output (role={role})\")\n        self._require_ready()\n        strategy = self._strategy()\n        text = prompt + (json_mode_instruction(schema) if strategy == \"json\" else \"\")\n        messages: list[dict[str, Any]] = [\n            {\"role\": \"user\", \"content\": image_url_parts(text, images)}]\n        meta = {\"prompt_file\": prompt_file, \"fed_id\": fed_id}\n        message = self._complete(messages, schema, strategy, role, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            problem = _why(exc)\n            if strategy != \"json\":\n                raise ProviderError(self._unparsable(role, problem)) from None\n        messages += [\n            {\"role\": \"assistant\", \"content\": getattr(message, \"content\", None) or \"\"},\n            {\"role\": \"user\", \"content\": \"That reply was not valid. Reply with ONE JSON object \"\n                                        f\"only, matching the schema. Problem: {problem}\"}]\n        message = self._complete(messages, schema, strategy, role, retries=1, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            raise ProviderError(self._unparsable(role, _why(exc))) from None"
+        },
+        "LiteLLMProvider._unparsable": {
+          "line": 293,
+          "end_line": 294,
+          "ast_sha256": "f1e01e53677834510bd9951e533db2e7a37c96d8fc3f461e21253480ae681c89",
+          "source": "def _unparsable(self, role: str, problem: str) -> str:\n        return f\"{self.label} {role} answer did not match the schema ({problem})\""
+        }
+      }
+    },
+    "vision": {
+      "canonical_file_sha256": "f2e1a11c7626fce408326652e2ce6dc47d4964e33ac792eef115c4bfbc32ade9",
+      "symbols": {
+        "_load_litellm": {
+          "line": 45,
+          "end_line": 57,
+          "ast_sha256": "25e414625731f3c1e1f4743add18da5452677acb3b5ac03b341b0187b026849e",
+          "source": "def _load_litellm() -> Any:\n    \"\"\"Import the SDK lazily, so an unused or absent LiteLLM costs nothing. Two\n    flags are set first: PRODUCTION mode stops LiteLLM running `load_dotenv()` on\n    whatever `.env` it finds walking up from the cwd (a different file than the\n    repo-root one `core/env.py` loads, and it would bypass that loader's\n    test-process refusal); the local cost map stops an import-time fetch from\n    GitHub. Neither is a credential.\"\"\"\n    os.environ.setdefault(\"LITELLM_MODE\", \"PRODUCTION\")\n    os.environ.setdefault(\"LITELLM_LOCAL_MODEL_COST_MAP\", \"True\")\n    import litellm\n\n    litellm.telemetry = False   # LL10: 1.104.0 has no such switch (checked in its source); a no-op\n    return litellm"
+        },
+        "_env_secret_values": {
+          "line": 60,
+          "end_line": 67,
+          "ast_sha256": "d4c811847716fd850b8c25355bfef1e438a9da5373494c952be76cefbcf24f12",
+          "source": "def _env_secret_values() -> list[str]:\n    \"\"\"Every non-empty value in the repo-root `.env` that is not a setting: the\n    same \"anything in .env is a secret\" rule `SecretStore` applies at the stage.\"\"\"\n    path = repo_root() / ENV_FILE\n    if not path.exists():\n        return []\n    skip = _CONFIG_KEYS | PUBLIC_ENV_KEYS\n    return [v for k, v in dotenv_values(path).items() if k and v and k not in skip]"
+        },
+        "_texts": {
+          "line": 70,
+          "end_line": 79,
+          "ast_sha256": "f0027a89ed635c6cce6da8b7a9c73cddb06ff9cd1cabceb17179de58208c6222",
+          "source": "def _texts(messages: list[dict[str, Any]]) -> list[str]:\n    \"\"\"Every text a request will carry (plain content and text parts alike).\"\"\"\n    out: list[str] = []\n    for message in messages:\n        content = message[\"content\"]\n        if isinstance(content, str):\n            out.append(content)\n        else:\n            out.extend(p[\"text\"] for p in content if p.get(\"type\") == \"text\")\n    return out"
+        },
+        "_why": {
+          "line": 82,
+          "end_line": 88,
+          "ast_sha256": "3ab7b695a24f73dfa3dd1bb786b96674ed4dbd33364a02bc955323e8dd098e08",
+          "source": "def _why(exc: ValueError) -> str:\n    \"\"\"A short, content-free reason: pydantic's field paths and messages (never the\n    offending input value), or a plain 'not valid JSON'.\"\"\"\n    if isinstance(exc, ValidationError):\n        return \"; \".join(f\"{'.'.join(str(p) for p in e['loc']) or 'answer'}: {e['msg']}\"\n                         for e in exc.errors())\n    return \"not valid JSON\""
+        },
+        "LiteLLMProvider": {
+          "line": 91,
+          "end_line": 292,
+          "ast_sha256": "c1691509a3da87a84625698379527a15837939abf9536eef1a23154f28a31e64",
+          "source": "class LiteLLMProvider(Provider):\n    \"\"\"One explicit model, any vendor. `options`: `model` (else `AUTOTESTER_MODEL`),\n    and `secrets` (extra values the prompt guard must refuse, on top of `.env`).\"\"\"\n\n    id = \"litellm\"\n\n    def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._model = str(options.get(\"model\") or os.environ.get(MODEL_ENV) or \"\").strip()\n        if self._model:\n            self.options[\"model\"] = self._model  # so `label` reads `litellm:<model>`\n        self._extra_secrets: list[str] = [str(v) for v in options.get(\"secrets\") or []]\n\n    # -- availability ------------------------------------------------------\n    def _endpoint(self) -> dict[str, str]:\n        \"\"\"`api_base`/`api_key` kwargs from the environment, only the ones set.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return ollama_cloud.endpoint()\n        base = os.environ.get(\"LITELLM_API_BASE\")\n        key = os.environ.get(\"LITELLM_API_KEY\")\n        return {**({\"api_base\": base} if base else {}), **({\"api_key\": key} if key else {})}\n\n    def _missing_keys(self) -> list[str]:\n        \"\"\"Names of the credentials this model still needs ([] when none). An\n        explicit endpoint (self-hosted / OpenAI-compatible / Ollama) needs no key.\"\"\"\n        endpoint = self._endpoint()\n        if \"api_base\" in endpoint:\n            return []\n        try:\n            env = _load_litellm().validate_environment(\n                model=self._model, api_key=endpoint.get(\"api_key\"))\n        except Exception:\n            return [\"an API key for this model\"]\n        if env.get(\"keys_in_environment\"):\n            return []\n        return list(env.get(\"missing_keys\") or [\"an API key\"])\n\n    def unavailable_reason(self) -> str | None:\n        \"\"\"Why this provider cannot serve a call right now, naming the model and the\n        one thing to set (never a key, a prompt or an endpoint value); None when ready.\n        The website's refusal pages show it (LL11).\"\"\"\n        if not self._model:\n            return (f\"litellm has no model configured: set {MODEL_ENV} in .env (for example \"\n                    \"gemini/gemini-2.5-pro or ollama/llama3), or name it in the project as \"\n                    \"`litellm:<model>`\")\n        missing = self._missing_keys()\n        if missing:\n            return (f\"{self.label} is missing credentials: set {', '.join(missing)} in .env \"\n                    \"(or LITELLM_API_KEY / LITELLM_API_BASE for an OpenAI-compatible endpoint)\")\n        return None\n\n    def available(self) -> bool:\n        return self.unavailable_reason() is None\n\n    def _require_ready(self) -> None:\n        reason = self.unavailable_reason()\n        if reason:\n            raise ProviderError(reason)\n\n    # -- roles -------------------------------------------------------------\n    def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        from autotester.providers.video_frames import see_video\n\n        return see_video(self, path, prompt, schema, options,\n                         prompt_file=prompt_file, fed_id=fed_id)\n\n    def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._structured(prompt, schema, role=\"agent\",\n                                prompt_file=prompt_file, fed_id=fed_id)\n\n    def judge(\n        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        return self._structured(prompt, schema, role=\"judge\", images=images,\n                                prompt_file=prompt_file, fed_id=fed_id)\n\n    # -- the call ----------------------------------------------------------\n    def _strategy(self) -> str:\n        \"\"\"By capability, never by vendor name: response schema, else a forced tool,\n        else JSON mode with a repair retry.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return \"json\"\n        lit = _load_litellm()\n        for name, probe in ((\"schema\", lit.supports_response_schema),\n                            (\"tool\", lit.supports_function_calling)):\n            try:\n                if probe(self._model):\n                    return name\n            except Exception:\n                continue\n        return \"json\"\n\n    def _secret_values(self) -> list[str]:\n        \"\"\"The ONE secret-value set: `.env` values, exported vendor keys and the\n        `secrets` option. The prompt guard refuses these going out and `_failure`\n        withholds them coming back (LL5, LL8).\"\"\"\n        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]\n        return [*_env_secret_values(), *exported, *self._extra_secrets]\n\n    def guard_text(self, text: str) -> None:\n        \"\"\"The redaction gate for one prompt text; raises `ProviderError`, never echoing a value.\"\"\"\n        try:\n            assert_no_raw_secrets(text, self._secret_values())\n        except ValueError:\n            raise ProviderError(\n                f\"{self.label}: prompt withheld, a credential value reached it\") from None\n\n    def _guard(self, messages: list[dict[str, Any]]) -> None:\n        self.guard_text(\"\\n\".join(_texts(messages)))\n\n    def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:\n        \"\"\"A vendor failure, with the exception text kept only when it provably\n        echoes none of the prompt, the endpoint or any secret value (LL8).\"\"\"\n        text = str(exc)\n        echoed = any(t[:30] in text for t in _texts(messages) if t)\n        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]\n        if echoed or any(v in text for v in hidden) or len(text) > 300:\n            text = \"(details withheld)\"\n        return f\"{self.label} {role} call failed: {type(exc).__name__}: {text}\"\n\n    def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,\n                  role: str, *, prompt_file: str | None, fed_id: str | None,\n                  retries: int = 0, generation_options: dict[str, Any] | None = None) -> Any:\n        \"\"\"ONE physical `litellm.completion` call: guarded first, recorded after.\"\"\"\n        self._guard(messages)\n        output_options = ({} if ollama_cloud.is_ollama(self._model)\n                          else request_options(strategy, self._model, schema))\n        kwargs: dict[str, Any] = {\n            \"model\": self._model, \"messages\": messages, \"num_retries\": 0,\n            \"timeout\": _TIMEOUT_S, \"drop_params\": True, **self._endpoint(),\n            **output_options}\n        kwargs.update(generation_options or {})\n        if role == \"judge\":\n            kwargs[\"temperature\"] = 0\n        receipt, kwargs[\"timeout\"] = reserve_attempt(self.label, role, _TIMEOUT_S)\n        started = time.perf_counter()\n        try:\n            response = _load_litellm().completion(**kwargs)\n        except Exception as exc:\n            receipt.status = \"failed\"\n            receipt.latency_s = time.perf_counter() - started\n            self.record(role, None, None, failed=True, prompt_file=prompt_file,\n                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            raise ProviderError(self._failure(role, exc, messages)) from None\n        usage = getattr(response, \"usage\", None)\n        receipt.status = \"succeeded\"\n        receipt.input_tokens = getattr(usage, \"prompt_tokens\", None)\n        receipt.output_tokens = getattr(usage, \"completion_tokens\", None)\n        receipt.latency_s = time.perf_counter() - started\n        self.record(\n            role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,\n            prompt_file=prompt_file, fed_id=fed_id,\n            latency_s=time.perf_counter() - started, retries=retries)\n        try:\n            return response.choices[0].message\n        except (AttributeError, IndexError, TypeError):\n            raise ProviderError(f\"{self.label} {role} call returned no message\") from None\n\n    def _structured(\n        self, prompt: str, schema: type[ModelT] | None, *, role: str,\n        images: list[Path] | None = None,\n        content_parts: list[dict[str, Any]] | None = None,\n        generation_options: dict[str, Any] | None = None,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        if schema is None:\n            raise ProviderError(\n                f\"{self.label} requires a schema for structured output (role={role})\")\n        self._require_ready()\n        strategy = self._strategy()\n        text = prompt + (json_mode_instruction(schema) if strategy == \"json\" else \"\")\n        messages: list[dict[str, Any]] = [\n            {\"role\": \"user\", \"content\": ([{\"type\": \"text\", \"text\": text}, *content_parts]\n                                         if content_parts else image_url_parts(text, images))}]\n        meta = {\"prompt_file\": prompt_file, \"fed_id\": fed_id}\n        if generation_options:\n            meta[\"generation_options\"] = generation_options\n        message = self._complete(messages, schema, strategy, role, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model))\n        except ValueError as exc:\n            problem = _why(exc)\n            if strategy != \"json\":\n                raise ProviderError(self._unparsable(role, problem)) from None\n        messages += [\n            {\"role\": \"assistant\", \"content\": getattr(message, \"content\", None) or \"\"},\n            {\"role\": \"user\", \"content\": \"That reply was not valid. Reply with ONE JSON object \"\n                                        f\"only, matching the schema. Problem: {problem}\"}]\n        message = self._complete(messages, schema, strategy, role, retries=1, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model))\n        except ValueError as exc:\n            raise ProviderError(self._unparsable(role, _why(exc))) from None\n\n    def _unparsable(self, role: str, problem: str) -> str:\n        return f\"{self.label} {role} answer did not match the schema ({problem})\""
+        },
+        "LiteLLMProvider.__init__": {
+          "line": 97,
+          "end_line": 102,
+          "ast_sha256": "c97b74761dd2393bf8c05ff6ae026b6bd72f0b1d315f5a3803899fe55a565981",
+          "source": "def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._model = str(options.get(\"model\") or os.environ.get(MODEL_ENV) or \"\").strip()\n        if self._model:\n            self.options[\"model\"] = self._model  # so `label` reads `litellm:<model>`\n        self._extra_secrets: list[str] = [str(v) for v in options.get(\"secrets\") or []]"
+        },
+        "LiteLLMProvider._endpoint": {
+          "line": 105,
+          "end_line": 111,
+          "ast_sha256": "eb6d1d39dbc553d432717b1168ad0e75d9fc1e16029e802ef64993c7067c5f48",
+          "source": "def _endpoint(self) -> dict[str, str]:\n        \"\"\"`api_base`/`api_key` kwargs from the environment, only the ones set.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return ollama_cloud.endpoint()\n        base = os.environ.get(\"LITELLM_API_BASE\")\n        key = os.environ.get(\"LITELLM_API_KEY\")\n        return {**({\"api_base\": base} if base else {}), **({\"api_key\": key} if key else {})}"
+        },
+        "LiteLLMProvider._missing_keys": {
+          "line": 113,
+          "end_line": 126,
+          "ast_sha256": "2e458b6f86bad3747f4a17aebbb065b30508883943f72b171313afe58f35644b",
+          "source": "def _missing_keys(self) -> list[str]:\n        \"\"\"Names of the credentials this model still needs ([] when none). An\n        explicit endpoint (self-hosted / OpenAI-compatible / Ollama) needs no key.\"\"\"\n        endpoint = self._endpoint()\n        if \"api_base\" in endpoint:\n            return []\n        try:\n            env = _load_litellm().validate_environment(\n                model=self._model, api_key=endpoint.get(\"api_key\"))\n        except Exception:\n            return [\"an API key for this model\"]\n        if env.get(\"keys_in_environment\"):\n            return []\n        return list(env.get(\"missing_keys\") or [\"an API key\"])"
+        },
+        "LiteLLMProvider.unavailable_reason": {
+          "line": 128,
+          "end_line": 140,
+          "ast_sha256": "ca880f0f3139d10691c8d056d9e86c09b466c38f82a13186221ee10be2e1b55e",
+          "source": "def unavailable_reason(self) -> str | None:\n        \"\"\"Why this provider cannot serve a call right now, naming the model and the\n        one thing to set (never a key, a prompt or an endpoint value); None when ready.\n        The website's refusal pages show it (LL11).\"\"\"\n        if not self._model:\n            return (f\"litellm has no model configured: set {MODEL_ENV} in .env (for example \"\n                    \"gemini/gemini-2.5-pro or ollama/llama3), or name it in the project as \"\n                    \"`litellm:<model>`\")\n        missing = self._missing_keys()\n        if missing:\n            return (f\"{self.label} is missing credentials: set {', '.join(missing)} in .env \"\n                    \"(or LITELLM_API_KEY / LITELLM_API_BASE for an OpenAI-compatible endpoint)\")\n        return None"
+        },
+        "LiteLLMProvider.available": {
+          "line": 142,
+          "end_line": 143,
+          "ast_sha256": "7131b2e64d6bc59c81c42418c89a18a574ac3142a2838d82f496a21ac42834e6",
+          "source": "def available(self) -> bool:\n        return self.unavailable_reason() is None"
+        },
+        "LiteLLMProvider._require_ready": {
+          "line": 145,
+          "end_line": 148,
+          "ast_sha256": "0aa4bdf85ce94e97b257a18e61be2b1d768662db420788624ec81780d6ced2ab",
+          "source": "def _require_ready(self) -> None:\n        reason = self.unavailable_reason()\n        if reason:\n            raise ProviderError(reason)"
+        },
+        "LiteLLMProvider.see_video": {
+          "line": 151,
+          "end_line": 157,
+          "ast_sha256": "c91f95bc8c730dd13efddc711ad0ba3dd6c31c88048626c31742adcb38e5f8dd",
+          "source": "def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        from autotester.providers.video_frames import see_video\n\n        return see_video(self, path, prompt, schema, options,\n                         prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider.act": {
+          "line": 159,
+          "end_line": 162,
+          "ast_sha256": "87dadb7271c5afe8209914d54df5e78bdb0cc556418930fece6b491659ab888a",
+          "source": "def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._structured(prompt, schema, role=\"agent\",\n                                prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider.judge": {
+          "line": 164,
+          "end_line": 169,
+          "ast_sha256": "92939496fb4887995a624c77fc48395a1422925b06d8fda18db68c7920b0e457",
+          "source": "def judge(\n        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        return self._structured(prompt, schema, role=\"judge\", images=images,\n                                prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider._strategy": {
+          "line": 172,
+          "end_line": 185,
+          "ast_sha256": "11f3e520a28b220557570b7c789b2d34f87bc1ef7b1e0e2e7bdfab3e6e239fde",
+          "source": "def _strategy(self) -> str:\n        \"\"\"By capability, never by vendor name: response schema, else a forced tool,\n        else JSON mode with a repair retry.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return \"json\"\n        lit = _load_litellm()\n        for name, probe in ((\"schema\", lit.supports_response_schema),\n                            (\"tool\", lit.supports_function_calling)):\n            try:\n                if probe(self._model):\n                    return name\n            except Exception:\n                continue\n        return \"json\""
+        },
+        "LiteLLMProvider._secret_values": {
+          "line": 187,
+          "end_line": 192,
+          "ast_sha256": "3fb623d1f24c8e41156c3eb4f33e297ff974eff69890ec2b89ccce25f3c3227a",
+          "source": "def _secret_values(self) -> list[str]:\n        \"\"\"The ONE secret-value set: `.env` values, exported vendor keys and the\n        `secrets` option. The prompt guard refuses these going out and `_failure`\n        withholds them coming back (LL5, LL8).\"\"\"\n        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]\n        return [*_env_secret_values(), *exported, *self._extra_secrets]"
+        },
+        "LiteLLMProvider.guard_text": {
+          "line": 194,
+          "end_line": 200,
+          "ast_sha256": "ccddf8f0ec643bc8ca4a94e1e6dde7f37005debbb766a389a67f22772c95c62e",
+          "source": "def guard_text(self, text: str) -> None:\n        \"\"\"The redaction gate for one prompt text; raises `ProviderError`, never echoing a value.\"\"\"\n        try:\n            assert_no_raw_secrets(text, self._secret_values())\n        except ValueError:\n            raise ProviderError(\n                f\"{self.label}: prompt withheld, a credential value reached it\") from None"
+        },
+        "LiteLLMProvider._guard": {
+          "line": 202,
+          "end_line": 203,
+          "ast_sha256": "55182bf3f430a60ae5a6a191254ae750664d994a30b512114bd4185572bdf821",
+          "source": "def _guard(self, messages: list[dict[str, Any]]) -> None:\n        self.guard_text(\"\\n\".join(_texts(messages)))"
+        },
+        "LiteLLMProvider._failure": {
+          "line": 205,
+          "end_line": 213,
+          "ast_sha256": "0a2b651d4c3188dd747b621a101efe54ca643e72b98736b5faa643db614cfb3b",
+          "source": "def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:\n        \"\"\"A vendor failure, with the exception text kept only when it provably\n        echoes none of the prompt, the endpoint or any secret value (LL8).\"\"\"\n        text = str(exc)\n        echoed = any(t[:30] in text for t in _texts(messages) if t)\n        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]\n        if echoed or any(v in text for v in hidden) or len(text) > 300:\n            text = \"(details withheld)\"\n        return f\"{self.label} {role} call failed: {type(exc).__name__}: {text}\""
+        },
+        "LiteLLMProvider._complete": {
+          "line": 215,
+          "end_line": 251,
+          "ast_sha256": "863f88ca96d2ee0bf914d172cc25b1237457c3d013cbd37287f325481c8d67d6",
+          "source": "def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,\n                  role: str, *, prompt_file: str | None, fed_id: str | None,\n                  retries: int = 0, generation_options: dict[str, Any] | None = None) -> Any:\n        \"\"\"ONE physical `litellm.completion` call: guarded first, recorded after.\"\"\"\n        self._guard(messages)\n        output_options = ({} if ollama_cloud.is_ollama(self._model)\n                          else request_options(strategy, self._model, schema))\n        kwargs: dict[str, Any] = {\n            \"model\": self._model, \"messages\": messages, \"num_retries\": 0,\n            \"timeout\": _TIMEOUT_S, \"drop_params\": True, **self._endpoint(),\n            **output_options}\n        kwargs.update(generation_options or {})\n        if role == \"judge\":\n            kwargs[\"temperature\"] = 0\n        receipt, kwargs[\"timeout\"] = reserve_attempt(self.label, role, _TIMEOUT_S)\n        started = time.perf_counter()\n        try:\n            response = _load_litellm().completion(**kwargs)\n        except Exception as exc:\n            receipt.status = \"failed\"\n            receipt.latency_s = time.perf_counter() - started\n            self.record(role, None, None, failed=True, prompt_file=prompt_file,\n                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            raise ProviderError(self._failure(role, exc, messages)) from None\n        usage = getattr(response, \"usage\", None)\n        receipt.status = \"succeeded\"\n        receipt.input_tokens = getattr(usage, \"prompt_tokens\", None)\n        receipt.output_tokens = getattr(usage, \"completion_tokens\", None)\n        receipt.latency_s = time.perf_counter() - started\n        self.record(\n            role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,\n            prompt_file=prompt_file, fed_id=fed_id,\n            latency_s=time.perf_counter() - started, retries=retries)\n        try:\n            return response.choices[0].message\n        except (AttributeError, IndexError, TypeError):\n            raise ProviderError(f\"{self.label} {role} call returned no message\") from None"
+        },
+        "LiteLLMProvider._structured": {
+          "line": 253,
+          "end_line": 289,
+          "ast_sha256": "82f5d2c1b60c4d743ec5d4b31f2969fc284268247b8c8bbb415f913ad331d6f5",
+          "source": "def _structured(\n        self, prompt: str, schema: type[ModelT] | None, *, role: str,\n        images: list[Path] | None = None,\n        content_parts: list[dict[str, Any]] | None = None,\n        generation_options: dict[str, Any] | None = None,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        if schema is None:\n            raise ProviderError(\n                f\"{self.label} requires a schema for structured output (role={role})\")\n        self._require_ready()\n        strategy = self._strategy()\n        text = prompt + (json_mode_instruction(schema) if strategy == \"json\" else \"\")\n        messages: list[dict[str, Any]] = [\n            {\"role\": \"user\", \"content\": ([{\"type\": \"text\", \"text\": text}, *content_parts]\n                                         if content_parts else image_url_parts(text, images))}]\n        meta = {\"prompt_file\": prompt_file, \"fed_id\": fed_id}\n        if generation_options:\n            meta[\"generation_options\"] = generation_options\n        message = self._complete(messages, schema, strategy, role, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model))\n        except ValueError as exc:\n            problem = _why(exc)\n            if strategy != \"json\":\n                raise ProviderError(self._unparsable(role, problem)) from None\n        messages += [\n            {\"role\": \"assistant\", \"content\": getattr(message, \"content\", None) or \"\"},\n            {\"role\": \"user\", \"content\": \"That reply was not valid. Reply with ONE JSON object \"\n                                        f\"only, matching the schema. Problem: {problem}\"}]\n        message = self._complete(messages, schema, strategy, role, retries=1, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model))\n        except ValueError as exc:\n            raise ProviderError(self._unparsable(role, _why(exc))) from None"
+        },
+        "LiteLLMProvider._unparsable": {
+          "line": 291,
+          "end_line": 292,
+          "ast_sha256": "f1e01e53677834510bd9951e533db2e7a37c96d8fc3f461e21253480ae681c89",
+          "source": "def _unparsable(self, role: str, problem: str) -> str:\n        return f\"{self.label} {role} answer did not match the schema ({problem})\""
+        }
+      }
+    },
+    "combined": {
+      "canonical_file_sha256": "7ed686b006b4b897670cda4564c818d11c1e56f4d6ffc12c51999449e0161fa3",
+      "symbols": {
+        "_load_litellm": {
+          "line": 47,
+          "end_line": 59,
+          "ast_sha256": "25e414625731f3c1e1f4743add18da5452677acb3b5ac03b341b0187b026849e",
+          "source": "def _load_litellm() -> Any:\n    \"\"\"Import the SDK lazily, so an unused or absent LiteLLM costs nothing. Two\n    flags are set first: PRODUCTION mode stops LiteLLM running `load_dotenv()` on\n    whatever `.env` it finds walking up from the cwd (a different file than the\n    repo-root one `core/env.py` loads, and it would bypass that loader's\n    test-process refusal); the local cost map stops an import-time fetch from\n    GitHub. Neither is a credential.\"\"\"\n    os.environ.setdefault(\"LITELLM_MODE\", \"PRODUCTION\")\n    os.environ.setdefault(\"LITELLM_LOCAL_MODEL_COST_MAP\", \"True\")\n    import litellm\n\n    litellm.telemetry = False   # LL10: 1.104.0 has no such switch (checked in its source); a no-op\n    return litellm"
+        },
+        "_env_secret_values": {
+          "line": 62,
+          "end_line": 69,
+          "ast_sha256": "d4c811847716fd850b8c25355bfef1e438a9da5373494c952be76cefbcf24f12",
+          "source": "def _env_secret_values() -> list[str]:\n    \"\"\"Every non-empty value in the repo-root `.env` that is not a setting: the\n    same \"anything in .env is a secret\" rule `SecretStore` applies at the stage.\"\"\"\n    path = repo_root() / ENV_FILE\n    if not path.exists():\n        return []\n    skip = _CONFIG_KEYS | PUBLIC_ENV_KEYS\n    return [v for k, v in dotenv_values(path).items() if k and v and k not in skip]"
+        },
+        "_texts": {
+          "line": 72,
+          "end_line": 81,
+          "ast_sha256": "f0027a89ed635c6cce6da8b7a9c73cddb06ff9cd1cabceb17179de58208c6222",
+          "source": "def _texts(messages: list[dict[str, Any]]) -> list[str]:\n    \"\"\"Every text a request will carry (plain content and text parts alike).\"\"\"\n    out: list[str] = []\n    for message in messages:\n        content = message[\"content\"]\n        if isinstance(content, str):\n            out.append(content)\n        else:\n            out.extend(p[\"text\"] for p in content if p.get(\"type\") == \"text\")\n    return out"
+        },
+        "_why": {
+          "line": 84,
+          "end_line": 90,
+          "ast_sha256": "3ab7b695a24f73dfa3dd1bb786b96674ed4dbd33364a02bc955323e8dd098e08",
+          "source": "def _why(exc: ValueError) -> str:\n    \"\"\"A short, content-free reason: pydantic's field paths and messages (never the\n    offending input value), or a plain 'not valid JSON'.\"\"\"\n    if isinstance(exc, ValidationError):\n        return \"; \".join(f\"{'.'.join(str(p) for p in e['loc']) or 'answer'}: {e['msg']}\"\n                         for e in exc.errors())\n    return \"not valid JSON\""
+        },
+        "LiteLLMProvider": {
+          "line": 93,
+          "end_line": 299,
+          "ast_sha256": "b1e35ed59192f2f6541738911e324d559d5e3ba444696d7220aa827916515e7e",
+          "source": "class LiteLLMProvider(Provider):\n    \"\"\"One explicit model, any vendor. `options`: `model` (else `AUTOTESTER_MODEL`),\n    and `secrets` (extra values the prompt guard must refuse, on top of `.env`).\"\"\"\n\n    id = \"litellm\"\n\n    def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._model = str(options.get(\"model\") or os.environ.get(MODEL_ENV) or \"\").strip()\n        if self._model:\n            self.options[\"model\"] = self._model  # so `label` reads `litellm:<model>`\n        self._extra_secrets: list[str] = [str(v) for v in options.get(\"secrets\") or []]\n\n    # -- availability ------------------------------------------------------\n    def _endpoint(self) -> dict[str, str]:\n        \"\"\"`api_base`/`api_key` kwargs from the environment, only the ones set.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return ollama_cloud.endpoint()\n        base = os.environ.get(\"LITELLM_API_BASE\")\n        key = os.environ.get(\"LITELLM_API_KEY\")\n        return {**({\"api_base\": base} if base else {}), **({\"api_key\": key} if key else {})}\n\n    def _missing_keys(self) -> list[str]:\n        \"\"\"Names of the credentials this model still needs ([] when none). An\n        explicit endpoint (self-hosted / OpenAI-compatible / Ollama) needs no key.\"\"\"\n        endpoint = self._endpoint()\n        if \"api_base\" in endpoint:\n            return []\n        try:\n            env = _load_litellm().validate_environment(\n                model=self._model, api_key=endpoint.get(\"api_key\"))\n        except Exception:\n            return [\"an API key for this model\"]\n        if env.get(\"keys_in_environment\"):\n            return []\n        return list(env.get(\"missing_keys\") or [\"an API key\"])\n\n    def unavailable_reason(self) -> str | None:\n        \"\"\"Why this provider cannot serve a call right now, naming the model and the\n        one thing to set (never a key, a prompt or an endpoint value); None when ready.\n        The website's refusal pages show it (LL11).\"\"\"\n        if not self._model:\n            return (f\"litellm has no model configured: set {MODEL_ENV} in .env (for example \"\n                    \"gemini/gemini-2.5-pro or ollama/llama3), or name it in the project as \"\n                    \"`litellm:<model>`\")\n        missing = self._missing_keys()\n        if missing:\n            return (f\"{self.label} is missing credentials: set {', '.join(missing)} in .env \"\n                    \"(or LITELLM_API_KEY / LITELLM_API_BASE for an OpenAI-compatible endpoint)\")\n        return None\n\n    def available(self) -> bool:\n        return self.unavailable_reason() is None\n\n    def _require_ready(self) -> None:\n        reason = self.unavailable_reason()\n        if reason:\n            raise ProviderError(reason)\n\n    # -- roles -------------------------------------------------------------\n    def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        from autotester.providers.video_frames import see_video\n\n        return see_video(self, path, prompt, schema, options,\n                         prompt_file=prompt_file, fed_id=fed_id)\n\n    def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._structured(prompt, schema, role=\"agent\",\n                                prompt_file=prompt_file, fed_id=fed_id)\n\n    def judge(\n        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        return self._structured(prompt, schema, role=\"judge\", images=images,\n                                prompt_file=prompt_file, fed_id=fed_id)\n\n    # -- the call ----------------------------------------------------------\n    def _strategy(self) -> str:\n        \"\"\"By capability, never by vendor name: response schema, else a forced tool,\n        else JSON mode with a repair retry.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return \"json\"\n        lit = _load_litellm()\n        for name, probe in ((\"schema\", lit.supports_response_schema),\n                            (\"tool\", lit.supports_function_calling)):\n            try:\n                if probe(self._model):\n                    return name\n            except Exception:\n                continue\n        return \"json\"\n\n    def _secret_values(self) -> list[str]:\n        \"\"\"The ONE secret-value set: `.env` values, exported vendor keys and the\n        `secrets` option. The prompt guard refuses these going out and `_failure`\n        withholds them coming back (LL5, LL8).\"\"\"\n        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]\n        return [*_env_secret_values(), *exported, *self._extra_secrets]\n\n    def guard_text(self, text: str) -> None:\n        \"\"\"The redaction gate for one prompt text; raises `ProviderError`, never echoing a value.\"\"\"\n        try:\n            assert_no_raw_secrets(text, self._secret_values())\n        except ValueError:\n            raise ProviderError(\n                f\"{self.label}: prompt withheld, a credential value reached it\") from None\n\n    def _guard(self, messages: list[dict[str, Any]]) -> None:\n        self.guard_text(\"\\n\".join(_texts(messages)))\n\n    def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:\n        \"\"\"A vendor failure, with the exception text kept only when it provably\n        echoes none of the prompt, the endpoint or any secret value (LL8).\"\"\"\n        text = str(exc)\n        echoed = any(t[:30] in text for t in _texts(messages) if t)\n        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]\n        if echoed or any(v in text for v in hidden) or len(text) > 300:\n            text = \"(details withheld)\"\n        return f\"{self.label} {role} call failed: {type(exc).__name__}: {text}\"\n\n    def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,\n                  role: str, *, prompt_file: str | None, fed_id: str | None,\n                  retries: int = 0, generation_options: dict[str, Any] | None = None) -> Any:\n        \"\"\"ONE physical `litellm.completion` call: guarded first, recorded after.\"\"\"\n        self._guard(messages)\n        output_options = ({} if ollama_cloud.is_ollama(self._model)\n                          else request_options(strategy, self._model, schema))\n        kwargs: dict[str, Any] = {\n            \"model\": self._model, \"messages\": messages, \"num_retries\": 0,\n            \"timeout\": _TIMEOUT_S, \"drop_params\": True, **self._endpoint(),\n            **output_options}\n        kwargs.update(generation_options or {})\n        if role == \"judge\":\n            kwargs[\"temperature\"] = 0\n        receipt, kwargs[\"timeout\"] = reserve_attempt(self.label, role, _TIMEOUT_S)\n        started = time.perf_counter()\n        try:\n            response = _load_litellm().completion(**kwargs)\n        except Exception as exc:\n            receipt.status = \"failed\"\n            receipt.latency_s = time.perf_counter() - started\n            self.record(role, None, None, failed=True, prompt_file=prompt_file,\n                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            reason = availability_reason(exc)\n            if reason is not None:\n                raise AvailabilityFailure(reason) from None\n            raise ProviderError(self._failure(role, exc, messages)) from None\n        usage = getattr(response, \"usage\", None)\n        receipt.status = \"succeeded\"\n        receipt.input_tokens = getattr(usage, \"prompt_tokens\", None)\n        receipt.output_tokens = getattr(usage, \"completion_tokens\", None)\n        receipt.latency_s = time.perf_counter() - started\n        self.record(\n            role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,\n            prompt_file=prompt_file, fed_id=fed_id,\n            latency_s=time.perf_counter() - started, retries=retries)\n        try:\n            return response.choices[0].message\n        except (AttributeError, IndexError, TypeError):\n            raise ProviderError(f\"{self.label} {role} call returned no message\") from None\n\n    def _structured(\n        self, prompt: str, schema: type[ModelT] | None, *, role: str,\n        images: list[Path] | None = None,\n        content_parts: list[dict[str, Any]] | None = None,\n        generation_options: dict[str, Any] | None = None,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        if schema is None:\n            raise ProviderError(\n                f\"{self.label} requires a schema for structured output (role={role})\")\n        self._require_ready()\n        strategy = self._strategy()\n        text = prompt + (json_mode_instruction(schema) if strategy == \"json\" else \"\")\n        messages: list[dict[str, Any]] = [\n            {\"role\": \"user\", \"content\": ([{\"type\": \"text\", \"text\": text}, *content_parts]\n                                         if content_parts else image_url_parts(text, images))}]\n        meta = {\"prompt_file\": prompt_file, \"fed_id\": fed_id}\n        if generation_options:\n            meta[\"generation_options\"] = generation_options\n        message = self._complete(messages, schema, strategy, role, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            problem = _why(exc)\n            if strategy != \"json\":\n                raise ProviderError(self._unparsable(role, problem)) from None\n        messages += [\n            {\"role\": \"assistant\", \"content\": getattr(message, \"content\", None) or \"\"},\n            {\"role\": \"user\", \"content\": \"That reply was not valid. Reply with ONE JSON object \"\n                                        f\"only, matching the schema. Problem: {problem}\"}]\n        message = self._complete(messages, schema, strategy, role, retries=1, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            raise ProviderError(self._unparsable(role, _why(exc))) from None\n\n    def _unparsable(self, role: str, problem: str) -> str:\n        return f\"{self.label} {role} answer did not match the schema ({problem})\""
+        },
+        "LiteLLMProvider.__init__": {
+          "line": 99,
+          "end_line": 104,
+          "ast_sha256": "c97b74761dd2393bf8c05ff6ae026b6bd72f0b1d315f5a3803899fe55a565981",
+          "source": "def __init__(self, **options: Any) -> None:\n        super().__init__(**options)\n        self._model = str(options.get(\"model\") or os.environ.get(MODEL_ENV) or \"\").strip()\n        if self._model:\n            self.options[\"model\"] = self._model  # so `label` reads `litellm:<model>`\n        self._extra_secrets: list[str] = [str(v) for v in options.get(\"secrets\") or []]"
+        },
+        "LiteLLMProvider._endpoint": {
+          "line": 107,
+          "end_line": 113,
+          "ast_sha256": "eb6d1d39dbc553d432717b1168ad0e75d9fc1e16029e802ef64993c7067c5f48",
+          "source": "def _endpoint(self) -> dict[str, str]:\n        \"\"\"`api_base`/`api_key` kwargs from the environment, only the ones set.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return ollama_cloud.endpoint()\n        base = os.environ.get(\"LITELLM_API_BASE\")\n        key = os.environ.get(\"LITELLM_API_KEY\")\n        return {**({\"api_base\": base} if base else {}), **({\"api_key\": key} if key else {})}"
+        },
+        "LiteLLMProvider._missing_keys": {
+          "line": 115,
+          "end_line": 128,
+          "ast_sha256": "2e458b6f86bad3747f4a17aebbb065b30508883943f72b171313afe58f35644b",
+          "source": "def _missing_keys(self) -> list[str]:\n        \"\"\"Names of the credentials this model still needs ([] when none). An\n        explicit endpoint (self-hosted / OpenAI-compatible / Ollama) needs no key.\"\"\"\n        endpoint = self._endpoint()\n        if \"api_base\" in endpoint:\n            return []\n        try:\n            env = _load_litellm().validate_environment(\n                model=self._model, api_key=endpoint.get(\"api_key\"))\n        except Exception:\n            return [\"an API key for this model\"]\n        if env.get(\"keys_in_environment\"):\n            return []\n        return list(env.get(\"missing_keys\") or [\"an API key\"])"
+        },
+        "LiteLLMProvider.unavailable_reason": {
+          "line": 130,
+          "end_line": 142,
+          "ast_sha256": "ca880f0f3139d10691c8d056d9e86c09b466c38f82a13186221ee10be2e1b55e",
+          "source": "def unavailable_reason(self) -> str | None:\n        \"\"\"Why this provider cannot serve a call right now, naming the model and the\n        one thing to set (never a key, a prompt or an endpoint value); None when ready.\n        The website's refusal pages show it (LL11).\"\"\"\n        if not self._model:\n            return (f\"litellm has no model configured: set {MODEL_ENV} in .env (for example \"\n                    \"gemini/gemini-2.5-pro or ollama/llama3), or name it in the project as \"\n                    \"`litellm:<model>`\")\n        missing = self._missing_keys()\n        if missing:\n            return (f\"{self.label} is missing credentials: set {', '.join(missing)} in .env \"\n                    \"(or LITELLM_API_KEY / LITELLM_API_BASE for an OpenAI-compatible endpoint)\")\n        return None"
+        },
+        "LiteLLMProvider.available": {
+          "line": 144,
+          "end_line": 145,
+          "ast_sha256": "7131b2e64d6bc59c81c42418c89a18a574ac3142a2838d82f496a21ac42834e6",
+          "source": "def available(self) -> bool:\n        return self.unavailable_reason() is None"
+        },
+        "LiteLLMProvider._require_ready": {
+          "line": 147,
+          "end_line": 150,
+          "ast_sha256": "0aa4bdf85ce94e97b257a18e61be2b1d768662db420788624ec81780d6ced2ab",
+          "source": "def _require_ready(self) -> None:\n        reason = self.unavailable_reason()\n        if reason:\n            raise ProviderError(reason)"
+        },
+        "LiteLLMProvider.see_video": {
+          "line": 153,
+          "end_line": 159,
+          "ast_sha256": "c91f95bc8c730dd13efddc711ad0ba3dd6c31c88048626c31742adcb38e5f8dd",
+          "source": "def see_video(self, path: Path, prompt: str, schema: type[ModelT],\n                  options: VisionOptions | None = None, *,\n                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:\n        from autotester.providers.video_frames import see_video\n\n        return see_video(self, path, prompt, schema, options,\n                         prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider.act": {
+          "line": 161,
+          "end_line": 164,
+          "ast_sha256": "87dadb7271c5afe8209914d54df5e78bdb0cc556418930fece6b491659ab888a",
+          "source": "def act(self, prompt: str, schema: type[ModelT] | None = None, *,\n            prompt_file: str | None = None, fed_id: str | None = None) -> Any:\n        return self._structured(prompt, schema, role=\"agent\",\n                                prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider.judge": {
+          "line": 166,
+          "end_line": 171,
+          "ast_sha256": "92939496fb4887995a624c77fc48395a1422925b06d8fda18db68c7920b0e457",
+          "source": "def judge(\n        self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        return self._structured(prompt, schema, role=\"judge\", images=images,\n                                prompt_file=prompt_file, fed_id=fed_id)"
+        },
+        "LiteLLMProvider._strategy": {
+          "line": 174,
+          "end_line": 187,
+          "ast_sha256": "11f3e520a28b220557570b7c789b2d34f87bc1ef7b1e0e2e7bdfab3e6e239fde",
+          "source": "def _strategy(self) -> str:\n        \"\"\"By capability, never by vendor name: response schema, else a forced tool,\n        else JSON mode with a repair retry.\"\"\"\n        if ollama_cloud.is_ollama(self._model):\n            return \"json\"\n        lit = _load_litellm()\n        for name, probe in ((\"schema\", lit.supports_response_schema),\n                            (\"tool\", lit.supports_function_calling)):\n            try:\n                if probe(self._model):\n                    return name\n            except Exception:\n                continue\n        return \"json\""
+        },
+        "LiteLLMProvider._secret_values": {
+          "line": 189,
+          "end_line": 194,
+          "ast_sha256": "3fb623d1f24c8e41156c3eb4f33e297ff974eff69890ec2b89ccce25f3c3227a",
+          "source": "def _secret_values(self) -> list[str]:\n        \"\"\"The ONE secret-value set: `.env` values, exported vendor keys and the\n        `secrets` option. The prompt guard refuses these going out and `_failure`\n        withholds them coming back (LL5, LL8).\"\"\"\n        exported = [os.environ[k] for k in _PROVIDER_KEY_ENV if os.environ.get(k)]\n        return [*_env_secret_values(), *exported, *self._extra_secrets]"
+        },
+        "LiteLLMProvider.guard_text": {
+          "line": 196,
+          "end_line": 202,
+          "ast_sha256": "ccddf8f0ec643bc8ca4a94e1e6dde7f37005debbb766a389a67f22772c95c62e",
+          "source": "def guard_text(self, text: str) -> None:\n        \"\"\"The redaction gate for one prompt text; raises `ProviderError`, never echoing a value.\"\"\"\n        try:\n            assert_no_raw_secrets(text, self._secret_values())\n        except ValueError:\n            raise ProviderError(\n                f\"{self.label}: prompt withheld, a credential value reached it\") from None"
+        },
+        "LiteLLMProvider._guard": {
+          "line": 204,
+          "end_line": 205,
+          "ast_sha256": "55182bf3f430a60ae5a6a191254ae750664d994a30b512114bd4185572bdf821",
+          "source": "def _guard(self, messages: list[dict[str, Any]]) -> None:\n        self.guard_text(\"\\n\".join(_texts(messages)))"
+        },
+        "LiteLLMProvider._failure": {
+          "line": 207,
+          "end_line": 215,
+          "ast_sha256": "0a2b651d4c3188dd747b621a101efe54ca643e72b98736b5faa643db614cfb3b",
+          "source": "def _failure(self, role: str, exc: Exception, messages: list[dict[str, Any]]) -> str:\n        \"\"\"A vendor failure, with the exception text kept only when it provably\n        echoes none of the prompt, the endpoint or any secret value (LL8).\"\"\"\n        text = str(exc)\n        echoed = any(t[:30] in text for t in _texts(messages) if t)\n        hidden = [v for v in (*self._endpoint().values(), *self._secret_values()) if v]\n        if echoed or any(v in text for v in hidden) or len(text) > 300:\n            text = \"(details withheld)\"\n        return f\"{self.label} {role} call failed: {type(exc).__name__}: {text}\""
+        },
+        "LiteLLMProvider._complete": {
+          "line": 217,
+          "end_line": 256,
+          "ast_sha256": "82199c7bc9f0ad0884fda47ab70c3df69a8d4fed7953aed15dea937a97a03e84",
+          "source": "def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,\n                  role: str, *, prompt_file: str | None, fed_id: str | None,\n                  retries: int = 0, generation_options: dict[str, Any] | None = None) -> Any:\n        \"\"\"ONE physical `litellm.completion` call: guarded first, recorded after.\"\"\"\n        self._guard(messages)\n        output_options = ({} if ollama_cloud.is_ollama(self._model)\n                          else request_options(strategy, self._model, schema))\n        kwargs: dict[str, Any] = {\n            \"model\": self._model, \"messages\": messages, \"num_retries\": 0,\n            \"timeout\": _TIMEOUT_S, \"drop_params\": True, **self._endpoint(),\n            **output_options}\n        kwargs.update(generation_options or {})\n        if role == \"judge\":\n            kwargs[\"temperature\"] = 0\n        receipt, kwargs[\"timeout\"] = reserve_attempt(self.label, role, _TIMEOUT_S)\n        started = time.perf_counter()\n        try:\n            response = _load_litellm().completion(**kwargs)\n        except Exception as exc:\n            receipt.status = \"failed\"\n            receipt.latency_s = time.perf_counter() - started\n            self.record(role, None, None, failed=True, prompt_file=prompt_file,\n                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)\n            reason = availability_reason(exc)\n            if reason is not None:\n                raise AvailabilityFailure(reason) from None\n            raise ProviderError(self._failure(role, exc, messages)) from None\n        usage = getattr(response, \"usage\", None)\n        receipt.status = \"succeeded\"\n        receipt.input_tokens = getattr(usage, \"prompt_tokens\", None)\n        receipt.output_tokens = getattr(usage, \"completion_tokens\", None)\n        receipt.latency_s = time.perf_counter() - started\n        self.record(\n            role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,\n            prompt_file=prompt_file, fed_id=fed_id,\n            latency_s=time.perf_counter() - started, retries=retries)\n        try:\n            return response.choices[0].message\n        except (AttributeError, IndexError, TypeError):\n            raise ProviderError(f\"{self.label} {role} call returned no message\") from None"
+        },
+        "LiteLLMProvider._structured": {
+          "line": 258,
+          "end_line": 296,
+          "ast_sha256": "3f3688474e5bcb75c227e9097ed7c7644ccf09d0e8720a56579c1f34f9f48150",
+          "source": "def _structured(\n        self, prompt: str, schema: type[ModelT] | None, *, role: str,\n        images: list[Path] | None = None,\n        content_parts: list[dict[str, Any]] | None = None,\n        generation_options: dict[str, Any] | None = None,\n        prompt_file: str | None = None, fed_id: str | None = None,\n    ) -> ModelT:\n        if schema is None:\n            raise ProviderError(\n                f\"{self.label} requires a schema for structured output (role={role})\")\n        self._require_ready()\n        strategy = self._strategy()\n        text = prompt + (json_mode_instruction(schema) if strategy == \"json\" else \"\")\n        messages: list[dict[str, Any]] = [\n            {\"role\": \"user\", \"content\": ([{\"type\": \"text\", \"text\": text}, *content_parts]\n                                         if content_parts else image_url_parts(text, images))}]\n        meta = {\"prompt_file\": prompt_file, \"fed_id\": fed_id}\n        if generation_options:\n            meta[\"generation_options\"] = generation_options\n        message = self._complete(messages, schema, strategy, role, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            problem = _why(exc)\n            if strategy != \"json\":\n                raise ProviderError(self._unparsable(role, problem)) from None\n        messages += [\n            {\"role\": \"assistant\", \"content\": getattr(message, \"content\", None) or \"\"},\n            {\"role\": \"user\", \"content\": \"That reply was not valid. Reply with ONE JSON object \"\n                                        f\"only, matching the schema. Problem: {problem}\"}]\n        message = self._complete(messages, schema, strategy, role, retries=1, **meta)\n        try:\n            return parse_answer(message, strategy, schema,\n                                strict=ollama_cloud.is_ollama(self._model)\n                                or self.options.get(\"strict\", False))\n        except ValueError as exc:\n            raise ProviderError(self._unparsable(role, _why(exc))) from None"
+        },
+        "LiteLLMProvider._unparsable": {
+          "line": 298,
+          "end_line": 299,
+          "ast_sha256": "f1e01e53677834510bd9951e533db2e7a37c96d8fc3f461e21253480ae681c89",
+          "source": "def _unparsable(self, role: str, problem: str) -> str:\n        return f\"{self.label} {role} answer did not match the schema ({problem})\""
+        }
+      }
+    }
+  },
+  "src/autotester/providers/video_frames.py": {
+    "text": null,
+    "vision": {
+      "canonical_file_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "symbols": {
+        "FrameVisionError": {
+          "line": 28,
+          "end_line": 33,
+          "ast_sha256": "d8afbe382e5e367c3cf75a4d49fe0ad6645d44c7ea6f86623873d65f37f9cdb7",
+          "source": "class FrameVisionError(ProviderError):\n    \"\"\"A content-free failure retaining the evidence shortfall for persistence.\"\"\"\n\n    def __init__(self, reason: str, coverage: FrameCoverage) -> None:\n        super().__init__(f\"frame vision unavailable: {reason}\")\n        self.coverage = coverage"
+        },
+        "FrameVisionError.__init__": {
+          "line": 31,
+          "end_line": 33,
+          "ast_sha256": "c9f3e036481958eba213f72e6eaa0d46b37a900396b4353d8c46de862b199620",
+          "source": "def __init__(self, reason: str, coverage: FrameCoverage) -> None:\n        super().__init__(f\"frame vision unavailable: {reason}\")\n        self.coverage = coverage"
+        },
+        "_png_bytes": {
+          "line": 36,
+          "end_line": 45,
+          "ast_sha256": "669cb50c4adefdae1ea6eef719a8fab6ec45a80428c93fd1fda4a30131ec7ef6",
+          "source": "def _png_bytes(path: Path, limits: FrameLimits) -> bytes:\n    from PIL import Image\n\n    if not path.is_file() or not 0 < path.stat().st_size <= limits.max_frame_bytes:\n        raise ValueError(\"frame_byte_limit\")\n    with Image.open(path) as image:\n        if image.format != \"PNG\" or image.width * image.height > limits.max_pixels:\n            raise ValueError(\"frame_format_or_pixel_limit\")\n        image.load()\n    return path.read_bytes()"
+        },
+        "_sample_times": {
+          "line": 48,
+          "end_line": 54,
+          "ast_sha256": "f079ee86ade30d6b51bf1b56e9e25d4a44caa7c27d9ff69f60ca12f0567336cb",
+          "source": "def _sample_times(duration: float, fps: float, cap: int) -> tuple[list[float], bool]:\n    if not math.isfinite(fps) or not 0 < fps <= 10:\n        raise ValueError(\"invalid_fps\")\n    limited = duration > cap / fps\n    count = cap if limited else max(1, math.ceil(duration * fps))\n    # Spread a bounded selection over the entire clip, never just its first seconds.\n    return [index * (duration / count) for index in range(count)], limited"
+        },
+        "endpoint_fingerprint": {
+          "line": 57,
+          "end_line": 60,
+          "ast_sha256": "446e36d66317b94765ff725d671391c266f5659dc31b8cc5b8a2645aeecc5a90",
+          "source": "def endpoint_fingerprint(provider) -> str:\n    \"\"\"Bind capability to routing identity, excluding the credential itself.\"\"\"\n    route = {key: value for key, value in provider._endpoint().items() if key != \"api_key\"}\n    return hashlib.sha256(json.dumps(route, sort_keys=True).encode()).hexdigest()"
+        },
+        "_generation": {
+          "line": 63,
+          "end_line": 71,
+          "ast_sha256": "6da57459602145c57be1a0f3a1d6a6088e3e283cc4bc8c1769a595fb67c584d3",
+          "source": "def _generation(options: VisionOptions | None, coverage: FrameCoverage) -> dict[str, Any]:\n    options = options or VisionOptions()\n    if (options.system_instruction is not None or options.thinking_level != \"high\"\n            or options.media_resolution != \"high\" or not 0 < options.max_output_tokens <= 65536\n            or (options.temperature is not None\n                and (not math.isfinite(options.temperature) or not 0 <= options.temperature <= 2))):\n        raise FrameVisionError(\"unsupported_generation_options\", coverage)\n    return {\"seed\": options.seed, \"max_tokens\": options.max_output_tokens,\n            **({\"temperature\": options.temperature} if options.temperature is not None else {})}"
+        },
+        "_parts": {
+          "line": 74,
+          "end_line": 105,
+          "ast_sha256": "12db846823a7837b9baa135e6c395c2e67861b35862563ba2eb7e2cb4ede377a",
+          "source": "def _parts(path: Path, scratch: Path, coverage: FrameCoverage, limits: FrameLimits,\n           times: list[float], stack: ExitStack) -> list[dict[str, Any]]:\n    parts: list[dict[str, Any]] = []\n    total = 0\n    for index, timestamp in enumerate(times):\n        evidence = FrameEvidence(index=index, timestamp_s=timestamp, status=\"withheld\")\n        coverage.frames.append(evidence)\n        frame = scratch / f\"frame-{index}.png\"\n        if not extract_frame(path, timestamp, frame):\n            evidence.reason = \"frame_decode_failed\"\n            continue\n        try:\n            _png_bytes(frame, limits)\n            safe = stack.enter_context(sanitized_images([frame]))\n            if not safe.paths:\n                evidence.reason = \"image_sanitation_withheld\"\n                continue\n            data = _png_bytes(safe.paths[0], limits)\n            if total + len(data) > limits.max_total_bytes:\n                evidence.reason = \"total_byte_limit\"\n                continue\n        except Exception:\n            evidence.reason = \"frame_validation_failed\"\n            continue\n        total += len(data)\n        evidence.status = \"included\"\n        encoded = base64.b64encode(data).decode(\"ascii\")\n        parts.extend([\n            {\"type\": \"text\", \"text\": f\"Frame {index}, clip-relative seconds {timestamp:.6f}\"},\n            {\"type\": \"image_url\", \"image_url\": {\"url\": f\"data:image/png;base64,{encoded}\"}},\n        ])\n    return parts"
+        },
+        "see_video": {
+          "line": 108,
+          "end_line": 147,
+          "ast_sha256": "15bff94166c220fc214adeeb485f363736e560564f1f1d929ef2b76f5f0232bc",
+          "source": "def see_video(provider, path, prompt, schema, options=None, *, prompt_file=None, fed_id=None):\n    \"\"\"Fail closed without behavioral evidence; transport never interprets filenames.\"\"\"\n    coverage = FrameCoverage()\n    capability = provider.options.get(\"vision_capability\")\n    if not (isinstance(capability, VisionCapability) and capability.passed\n            and capability.model == provider.options.get(\"model\")\n            and capability.endpoint_sha256 == endpoint_fingerprint(provider)):\n        raise FrameVisionError(\"capability_unverified\", coverage)\n    limits = provider.options.get(\"frame_limits\", FrameLimits())\n    if not isinstance(limits, FrameLimits):\n        raise FrameVisionError(\"invalid_frame_limits\", coverage)\n    provider.guard_text(prompt)\n    generation = _generation(options, coverage)\n    duration, width, height = probe(Path(path))\n    if not math.isfinite(duration) or duration <= 0 or width <= 0 or height <= 0:\n        raise FrameVisionError(\"unsupported_or_audio_only_media\", coverage)\n    if width * height > limits.max_pixels:\n        raise FrameVisionError(\"source_pixel_limit\", coverage)\n    coverage.duration_s = duration\n    try:\n        times, coverage.sampling_limited = _sample_times(\n            duration, options.fps if options else 2.0, limits.max_frames)\n    except ValueError:\n        raise FrameVisionError(\"invalid_fps\", coverage) from None\n    with attempt_budget(2, wall_clock_s=240), TemporaryDirectory() as scratch, ExitStack() as stack:\n        parts = _parts(Path(path), Path(scratch), coverage, limits, times, stack)\n        if not any(part[\"type\"] == \"image_url\" for part in parts):\n            raise FrameVisionError(\"all_frames_withheld\", coverage)\n        prompt += \"\\n\" + load_skill_prompt(\"frame-vision\")\n        prompt += \"\\n\" + coverage.model_dump_json()\n        try:\n            result = provider._structured(prompt, schema, role=\"vision\", content_parts=parts,\n                                          generation_options=generation,\n                                          prompt_file=prompt_file, fed_id=fed_id)\n        except ProviderError as exc:\n            exc.coverage = coverage\n            raise\n    if hasattr(result, \"visual_coverage\"):\n        result.visual_coverage = coverage\n    return result"
+        }
+      }
+    },
+    "combined": {
+      "canonical_file_sha256": "e388543e452d1e5ae8e95abad77fd4a47af8078164f47e6a0d586db2e94b70f8",
+      "symbols": {
+        "FrameVisionError": {
+          "line": 28,
+          "end_line": 33,
+          "ast_sha256": "d8afbe382e5e367c3cf75a4d49fe0ad6645d44c7ea6f86623873d65f37f9cdb7",
+          "source": "class FrameVisionError(ProviderError):\n    \"\"\"A content-free failure retaining the evidence shortfall for persistence.\"\"\"\n\n    def __init__(self, reason: str, coverage: FrameCoverage) -> None:\n        super().__init__(f\"frame vision unavailable: {reason}\")\n        self.coverage = coverage"
+        },
+        "FrameVisionError.__init__": {
+          "line": 31,
+          "end_line": 33,
+          "ast_sha256": "c9f3e036481958eba213f72e6eaa0d46b37a900396b4353d8c46de862b199620",
+          "source": "def __init__(self, reason: str, coverage: FrameCoverage) -> None:\n        super().__init__(f\"frame vision unavailable: {reason}\")\n        self.coverage = coverage"
+        },
+        "FrameCapabilityUnavailable": {
+          "line": 36,
+          "end_line": 37,
+          "ast_sha256": "8dcc0e175176cf04b9ca4710efb1337b24b464b56da10771367620b12ae5a408",
+          "source": "class FrameCapabilityUnavailable(FrameVisionError, Unsupported):\n    \"\"\"Only a missing/invalid behavioral capability receipt permits another tier.\"\"\""
+        },
+        "_png_bytes": {
+          "line": 40,
+          "end_line": 49,
+          "ast_sha256": "669cb50c4adefdae1ea6eef719a8fab6ec45a80428c93fd1fda4a30131ec7ef6",
+          "source": "def _png_bytes(path: Path, limits: FrameLimits) -> bytes:\n    from PIL import Image\n\n    if not path.is_file() or not 0 < path.stat().st_size <= limits.max_frame_bytes:\n        raise ValueError(\"frame_byte_limit\")\n    with Image.open(path) as image:\n        if image.format != \"PNG\" or image.width * image.height > limits.max_pixels:\n            raise ValueError(\"frame_format_or_pixel_limit\")\n        image.load()\n    return path.read_bytes()"
+        },
+        "_sample_times": {
+          "line": 52,
+          "end_line": 58,
+          "ast_sha256": "f079ee86ade30d6b51bf1b56e9e25d4a44caa7c27d9ff69f60ca12f0567336cb",
+          "source": "def _sample_times(duration: float, fps: float, cap: int) -> tuple[list[float], bool]:\n    if not math.isfinite(fps) or not 0 < fps <= 10:\n        raise ValueError(\"invalid_fps\")\n    limited = duration > cap / fps\n    count = cap if limited else max(1, math.ceil(duration * fps))\n    # Spread a bounded selection over the entire clip, never just its first seconds.\n    return [index * (duration / count) for index in range(count)], limited"
+        },
+        "endpoint_fingerprint": {
+          "line": 61,
+          "end_line": 64,
+          "ast_sha256": "446e36d66317b94765ff725d671391c266f5659dc31b8cc5b8a2645aeecc5a90",
+          "source": "def endpoint_fingerprint(provider) -> str:\n    \"\"\"Bind capability to routing identity, excluding the credential itself.\"\"\"\n    route = {key: value for key, value in provider._endpoint().items() if key != \"api_key\"}\n    return hashlib.sha256(json.dumps(route, sort_keys=True).encode()).hexdigest()"
+        },
+        "_generation": {
+          "line": 67,
+          "end_line": 75,
+          "ast_sha256": "6da57459602145c57be1a0f3a1d6a6088e3e283cc4bc8c1769a595fb67c584d3",
+          "source": "def _generation(options: VisionOptions | None, coverage: FrameCoverage) -> dict[str, Any]:\n    options = options or VisionOptions()\n    if (options.system_instruction is not None or options.thinking_level != \"high\"\n            or options.media_resolution != \"high\" or not 0 < options.max_output_tokens <= 65536\n            or (options.temperature is not None\n                and (not math.isfinite(options.temperature) or not 0 <= options.temperature <= 2))):\n        raise FrameVisionError(\"unsupported_generation_options\", coverage)\n    return {\"seed\": options.seed, \"max_tokens\": options.max_output_tokens,\n            **({\"temperature\": options.temperature} if options.temperature is not None else {})}"
+        },
+        "_parts": {
+          "line": 78,
+          "end_line": 109,
+          "ast_sha256": "12db846823a7837b9baa135e6c395c2e67861b35862563ba2eb7e2cb4ede377a",
+          "source": "def _parts(path: Path, scratch: Path, coverage: FrameCoverage, limits: FrameLimits,\n           times: list[float], stack: ExitStack) -> list[dict[str, Any]]:\n    parts: list[dict[str, Any]] = []\n    total = 0\n    for index, timestamp in enumerate(times):\n        evidence = FrameEvidence(index=index, timestamp_s=timestamp, status=\"withheld\")\n        coverage.frames.append(evidence)\n        frame = scratch / f\"frame-{index}.png\"\n        if not extract_frame(path, timestamp, frame):\n            evidence.reason = \"frame_decode_failed\"\n            continue\n        try:\n            _png_bytes(frame, limits)\n            safe = stack.enter_context(sanitized_images([frame]))\n            if not safe.paths:\n                evidence.reason = \"image_sanitation_withheld\"\n                continue\n            data = _png_bytes(safe.paths[0], limits)\n            if total + len(data) > limits.max_total_bytes:\n                evidence.reason = \"total_byte_limit\"\n                continue\n        except Exception:\n            evidence.reason = \"frame_validation_failed\"\n            continue\n        total += len(data)\n        evidence.status = \"included\"\n        encoded = base64.b64encode(data).decode(\"ascii\")\n        parts.extend([\n            {\"type\": \"text\", \"text\": f\"Frame {index}, clip-relative seconds {timestamp:.6f}\"},\n            {\"type\": \"image_url\", \"image_url\": {\"url\": f\"data:image/png;base64,{encoded}\"}},\n        ])\n    return parts"
+        },
+        "see_video": {
+          "line": 112,
+          "end_line": 151,
+          "ast_sha256": "b5f1ba569327cec92eae3ee205870334cd956970658665ecc981c5fe3554e95b",
+          "source": "def see_video(provider, path, prompt, schema, options=None, *, prompt_file=None, fed_id=None):\n    \"\"\"Fail closed without behavioral evidence; transport never interprets filenames.\"\"\"\n    coverage = FrameCoverage()\n    capability = provider.options.get(\"vision_capability\")\n    if not (isinstance(capability, VisionCapability) and capability.passed\n            and capability.model == provider.options.get(\"model\")\n            and capability.endpoint_sha256 == endpoint_fingerprint(provider)):\n        raise FrameCapabilityUnavailable(\"capability_unverified\", coverage)\n    limits = provider.options.get(\"frame_limits\", FrameLimits())\n    if not isinstance(limits, FrameLimits):\n        raise FrameVisionError(\"invalid_frame_limits\", coverage)\n    provider.guard_text(prompt)\n    generation = _generation(options, coverage)\n    duration, width, height = probe(Path(path))\n    if not math.isfinite(duration) or duration <= 0 or width <= 0 or height <= 0:\n        raise FrameVisionError(\"unsupported_or_audio_only_media\", coverage)\n    if width * height > limits.max_pixels:\n        raise FrameVisionError(\"source_pixel_limit\", coverage)\n    coverage.duration_s = duration\n    try:\n        times, coverage.sampling_limited = _sample_times(\n            duration, options.fps if options else 2.0, limits.max_frames)\n    except ValueError:\n        raise FrameVisionError(\"invalid_fps\", coverage) from None\n    with attempt_budget(2, wall_clock_s=240), TemporaryDirectory() as scratch, ExitStack() as stack:\n        parts = _parts(Path(path), Path(scratch), coverage, limits, times, stack)\n        if not any(part[\"type\"] == \"image_url\" for part in parts):\n            raise FrameVisionError(\"all_frames_withheld\", coverage)\n        prompt += \"\\n\" + load_skill_prompt(\"frame-vision\")\n        prompt += \"\\n\" + coverage.model_dump_json()\n        try:\n            result = provider._structured(prompt, schema, role=\"vision\", content_parts=parts,\n                                          generation_options=generation,\n                                          prompt_file=prompt_file, fed_id=fed_id)\n        except ProviderError as exc:\n            exc.coverage = coverage\n            raise\n    if hasattr(result, \"visual_coverage\"):\n        result.visual_coverage = coverage\n    return result"
+        }
+      }
+    }
+  },
+  "src/autotester/providers/attempts.py": {
+    "text": {
+      "canonical_file_sha256": "53a7579a86837481b8e7933beb3396ddd58a585f46a3c7d017de561615ba3c3d",
+      "symbols": {
+        "AttemptBudgetExhausted": {
+          "line": 15,
+          "end_line": 16,
+          "ast_sha256": "5d0204c4c75d9d514e54b098bf793a0f077c7a39329d12f5a3c95adf1f5ac9a7",
+          "source": "class AttemptBudgetExhausted(ProviderError):\n    \"\"\"The shared physical-call count or elapsed deadline was exhausted.\"\"\""
+        },
+        "AttemptBudget": {
+          "line": 23,
+          "end_line": 37,
+          "ast_sha256": "e7eb79be65615cc077678a84d68e1c979a26005eba02f456289a82b447ffd82e",
+          "source": "class AttemptBudget:\n    \"\"\"A shared budget; copy_context propagates its identity to worker threads.\"\"\"\n\n    def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:\n        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:\n            raise ValueError(\"max_calls must be a nonnegative integer\")\n        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):\n            raise ValueError(\"wall_clock_s must be finite and nonnegative\")\n        self.max_calls = max_calls\n        self.deadline = None if wall_clock_s is None else time.monotonic() + wall_clock_s\n        self.attempts: list[ProviderAttempt] = []\n\n    @property\n    def used(self) -> int:\n        return len(self.attempts)"
+        },
+        "AttemptBudget.__init__": {
+          "line": 26,
+          "end_line": 33,
+          "ast_sha256": "268cc8be217faf05211322f5f002b68c86325129b3715a2e3503c32f9bddbe4d",
+          "source": "def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:\n        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:\n            raise ValueError(\"max_calls must be a nonnegative integer\")\n        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):\n            raise ValueError(\"wall_clock_s must be finite and nonnegative\")\n        self.max_calls = max_calls\n        self.deadline = None if wall_clock_s is None else time.monotonic() + wall_clock_s\n        self.attempts: list[ProviderAttempt] = []"
+        },
+        "AttemptBudget.used": {
+          "line": 36,
+          "end_line": 37,
+          "ast_sha256": "fbe80b0dcd6120d36aac6c42616050cf4f486348282f7e226f1d13732e502758",
+          "source": "def used(self) -> int:\n        return len(self.attempts)"
+        },
+        "attempt_budget": {
+          "line": 41,
+          "end_line": 48,
+          "ast_sha256": "0b760a64a2d2bbcace2a7c82e475d5dfb9c229f142ec7066c1a5153165d26a2c",
+          "source": "def attempt_budget(max_calls: int, wall_clock_s: float | None = None) -> Iterator[AttemptBudget]:\n    \"\"\"Nested budgets obey every enclosing cap; scope exit restores the caller.\"\"\"\n    budget = AttemptBudget(max_calls, wall_clock_s)\n    token = _SCOPES.set((*_SCOPES.get(), budget))\n    try:\n        yield budget\n    finally:\n        _SCOPES.reset(token)"
+        },
+        "reserve_attempt": {
+          "line": 51,
+          "end_line": 65,
+          "ast_sha256": "a1ea1cd8ea8f61eb020a99c959bff83f4b7ede0ef4d5725fdd68f588e892d4f0",
+          "source": "def reserve_attempt(provider: str, role: str, timeout_s: float) -> tuple[ProviderAttempt, float]:\n    \"\"\"Check every cap atomically BEFORE transport, sharing one safe receipt.\"\"\"\n    with _LOCK:\n        scopes = _SCOPES.get()\n        for scope in scopes:\n            if scope.used >= scope.max_calls:\n                raise AttemptBudgetExhausted(\"provider attempt budget exhausted: max_calls\")\n            if scope.deadline is not None:\n                timeout_s = min(timeout_s, scope.deadline - time.monotonic())\n        if timeout_s <= 0:\n            raise AttemptBudgetExhausted(\"provider attempt budget exhausted: wall_clock_s\")\n        receipt = ProviderAttempt(provider=provider, role=role)\n        for scope in scopes:\n            scope.attempts.append(receipt)\n        return receipt, timeout_s"
+        }
+      }
+    },
+    "vision": {
+      "canonical_file_sha256": "53a7579a86837481b8e7933beb3396ddd58a585f46a3c7d017de561615ba3c3d",
+      "symbols": {
+        "AttemptBudgetExhausted": {
+          "line": 15,
+          "end_line": 16,
+          "ast_sha256": "5d0204c4c75d9d514e54b098bf793a0f077c7a39329d12f5a3c95adf1f5ac9a7",
+          "source": "class AttemptBudgetExhausted(ProviderError):\n    \"\"\"The shared physical-call count or elapsed deadline was exhausted.\"\"\""
+        },
+        "AttemptBudget": {
+          "line": 23,
+          "end_line": 37,
+          "ast_sha256": "e7eb79be65615cc077678a84d68e1c979a26005eba02f456289a82b447ffd82e",
+          "source": "class AttemptBudget:\n    \"\"\"A shared budget; copy_context propagates its identity to worker threads.\"\"\"\n\n    def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:\n        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:\n            raise ValueError(\"max_calls must be a nonnegative integer\")\n        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):\n            raise ValueError(\"wall_clock_s must be finite and nonnegative\")\n        self.max_calls = max_calls\n        self.deadline = None if wall_clock_s is None else time.monotonic() + wall_clock_s\n        self.attempts: list[ProviderAttempt] = []\n\n    @property\n    def used(self) -> int:\n        return len(self.attempts)"
+        },
+        "AttemptBudget.__init__": {
+          "line": 26,
+          "end_line": 33,
+          "ast_sha256": "268cc8be217faf05211322f5f002b68c86325129b3715a2e3503c32f9bddbe4d",
+          "source": "def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:\n        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:\n            raise ValueError(\"max_calls must be a nonnegative integer\")\n        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):\n            raise ValueError(\"wall_clock_s must be finite and nonnegative\")\n        self.max_calls = max_calls\n        self.deadline = None if wall_clock_s is None else time.monotonic() + wall_clock_s\n        self.attempts: list[ProviderAttempt] = []"
+        },
+        "AttemptBudget.used": {
+          "line": 36,
+          "end_line": 37,
+          "ast_sha256": "fbe80b0dcd6120d36aac6c42616050cf4f486348282f7e226f1d13732e502758",
+          "source": "def used(self) -> int:\n        return len(self.attempts)"
+        },
+        "attempt_budget": {
+          "line": 41,
+          "end_line": 48,
+          "ast_sha256": "0b760a64a2d2bbcace2a7c82e475d5dfb9c229f142ec7066c1a5153165d26a2c",
+          "source": "def attempt_budget(max_calls: int, wall_clock_s: float | None = None) -> Iterator[AttemptBudget]:\n    \"\"\"Nested budgets obey every enclosing cap; scope exit restores the caller.\"\"\"\n    budget = AttemptBudget(max_calls, wall_clock_s)\n    token = _SCOPES.set((*_SCOPES.get(), budget))\n    try:\n        yield budget\n    finally:\n        _SCOPES.reset(token)"
+        },
+        "reserve_attempt": {
+          "line": 51,
+          "end_line": 65,
+          "ast_sha256": "a1ea1cd8ea8f61eb020a99c959bff83f4b7ede0ef4d5725fdd68f588e892d4f0",
+          "source": "def reserve_attempt(provider: str, role: str, timeout_s: float) -> tuple[ProviderAttempt, float]:\n    \"\"\"Check every cap atomically BEFORE transport, sharing one safe receipt.\"\"\"\n    with _LOCK:\n        scopes = _SCOPES.get()\n        for scope in scopes:\n            if scope.used >= scope.max_calls:\n                raise AttemptBudgetExhausted(\"provider attempt budget exhausted: max_calls\")\n            if scope.deadline is not None:\n                timeout_s = min(timeout_s, scope.deadline - time.monotonic())\n        if timeout_s <= 0:\n            raise AttemptBudgetExhausted(\"provider attempt budget exhausted: wall_clock_s\")\n        receipt = ProviderAttempt(provider=provider, role=role)\n        for scope in scopes:\n            scope.attempts.append(receipt)\n        return receipt, timeout_s"
+        }
+      }
+    },
+    "combined": {
+      "canonical_file_sha256": "53a7579a86837481b8e7933beb3396ddd58a585f46a3c7d017de561615ba3c3d",
+      "symbols": {
+        "AttemptBudgetExhausted": {
+          "line": 15,
+          "end_line": 16,
+          "ast_sha256": "5d0204c4c75d9d514e54b098bf793a0f077c7a39329d12f5a3c95adf1f5ac9a7",
+          "source": "class AttemptBudgetExhausted(ProviderError):\n    \"\"\"The shared physical-call count or elapsed deadline was exhausted.\"\"\""
+        },
+        "AttemptBudget": {
+          "line": 23,
+          "end_line": 37,
+          "ast_sha256": "e7eb79be65615cc077678a84d68e1c979a26005eba02f456289a82b447ffd82e",
+          "source": "class AttemptBudget:\n    \"\"\"A shared budget; copy_context propagates its identity to worker threads.\"\"\"\n\n    def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:\n        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:\n            raise ValueError(\"max_calls must be a nonnegative integer\")\n        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):\n            raise ValueError(\"wall_clock_s must be finite and nonnegative\")\n        self.max_calls = max_calls\n        self.deadline = None if wall_clock_s is None else time.monotonic() + wall_clock_s\n        self.attempts: list[ProviderAttempt] = []\n\n    @property\n    def used(self) -> int:\n        return len(self.attempts)"
+        },
+        "AttemptBudget.__init__": {
+          "line": 26,
+          "end_line": 33,
+          "ast_sha256": "268cc8be217faf05211322f5f002b68c86325129b3715a2e3503c32f9bddbe4d",
+          "source": "def __init__(self, max_calls: int, wall_clock_s: float | None = None) -> None:\n        if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:\n            raise ValueError(\"max_calls must be a nonnegative integer\")\n        if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):\n            raise ValueError(\"wall_clock_s must be finite and nonnegative\")\n        self.max_calls = max_calls\n        self.deadline = None if wall_clock_s is None else time.monotonic() + wall_clock_s\n        self.attempts: list[ProviderAttempt] = []"
+        },
+        "AttemptBudget.used": {
+          "line": 36,
+          "end_line": 37,
+          "ast_sha256": "fbe80b0dcd6120d36aac6c42616050cf4f486348282f7e226f1d13732e502758",
+          "source": "def used(self) -> int:\n        return len(self.attempts)"
+        },
+        "attempt_budget": {
+          "line": 41,
+          "end_line": 48,
+          "ast_sha256": "0b760a64a2d2bbcace2a7c82e475d5dfb9c229f142ec7066c1a5153165d26a2c",
+          "source": "def attempt_budget(max_calls: int, wall_clock_s: float | None = None) -> Iterator[AttemptBudget]:\n    \"\"\"Nested budgets obey every enclosing cap; scope exit restores the caller.\"\"\"\n    budget = AttemptBudget(max_calls, wall_clock_s)\n    token = _SCOPES.set((*_SCOPES.get(), budget))\n    try:\n        yield budget\n    finally:\n        _SCOPES.reset(token)"
+        },
+        "reserve_attempt": {
+          "line": 51,
+          "end_line": 65,
+          "ast_sha256": "a1ea1cd8ea8f61eb020a99c959bff83f4b7ede0ef4d5725fdd68f588e892d4f0",
+          "source": "def reserve_attempt(provider: str, role: str, timeout_s: float) -> tuple[ProviderAttempt, float]:\n    \"\"\"Check every cap atomically BEFORE transport, sharing one safe receipt.\"\"\"\n    with _LOCK:\n        scopes = _SCOPES.get()\n        for scope in scopes:\n            if scope.used >= scope.max_calls:\n                raise AttemptBudgetExhausted(\"provider attempt budget exhausted: max_calls\")\n            if scope.deadline is not None:\n                timeout_s = min(timeout_s, scope.deadline - time.monotonic())\n        if timeout_s <= 0:\n            raise AttemptBudgetExhausted(\"provider attempt budget exhausted: wall_clock_s\")\n        receipt = ProviderAttempt(provider=provider, role=role)\n        for scope in scopes:\n            scope.attempts.append(receipt)\n        return receipt, timeout_s"
+        }
+      }
+    }
+  },
+  "src/autotester/providers/availability.py": {
+    "text": {
+      "canonical_file_sha256": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "symbols": {
+        "AvailabilityFailure": {
+          "line": 7,
+          "end_line": 12,
+          "ast_sha256": "28a686cdd60bca1dabc06cdd5e9b759184d2389a2cd8808b6b8d140ac9f08f7a",
+          "source": "class AvailabilityFailure(ProviderError):\n    \"\"\"An allowlisted transport failure; safe reason doubles as fallback evidence.\"\"\"\n\n    def __init__(self, reason: str) -> None:\n        self.reason = reason\n        super().__init__(f\"provider availability failure: {reason}\")"
+        },
+        "AvailabilityFailure.__init__": {
+          "line": 10,
+          "end_line": 12,
+          "ast_sha256": "32f3cbf8d1f13e05040dde3cc73bb2c776c1d267ee5caf540dee2aef44cb5391",
+          "source": "def __init__(self, reason: str) -> None:\n        self.reason = reason\n        super().__init__(f\"provider availability failure: {reason}\")"
+        },
+        "availability_reason": {
+          "line": 15,
+          "end_line": 35,
+          "ast_sha256": "90da29029f2ad59bddaad4c55d1f496ad23f57f33c5a2153abe21fd3e0a209de",
+          "source": "def availability_reason(exc: Exception) -> str | None:\n    \"\"\"Fail closed: privacy/schema/policy/generic errors never imply availability.\n\n    403 is deliberately excluded: a permission or safety refusal is ambiguous.\n    Unsupported is the Provider seam's explicit capability declaration.\n    \"\"\"\n    if isinstance(exc, Unsupported):\n        return \"capability\"\n    if isinstance(exc, (TimeoutError, ConnectionError)):\n        return \"service\"\n    # LiteLLM normalizes vendor exceptions to these SDK exception types.\n    names = {cls.__name__ for cls in type(exc).__mro__}\n    if names & {\"AuthenticationError\"}:\n        return \"authentication\"\n    if names & {\"APIConnectionError\", \"ServiceUnavailableError\", \"Timeout\"}:\n        return \"service\"\n    if getattr(exc, \"status_code\", None) == 401:\n        return \"authentication\"\n    if getattr(exc, \"status_code\", None) in (502, 503, 504):\n        return \"service\"\n    return None"
+        }
+      }
+    },
+    "vision": null,
+    "combined": {
+      "canonical_file_sha256": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "symbols": {
+        "AvailabilityFailure": {
+          "line": 7,
+          "end_line": 12,
+          "ast_sha256": "28a686cdd60bca1dabc06cdd5e9b759184d2389a2cd8808b6b8d140ac9f08f7a",
+          "source": "class AvailabilityFailure(ProviderError):\n    \"\"\"An allowlisted transport failure; safe reason doubles as fallback evidence.\"\"\"\n\n    def __init__(self, reason: str) -> None:\n        self.reason = reason\n        super().__init__(f\"provider availability failure: {reason}\")"
+        },
+        "AvailabilityFailure.__init__": {
+          "line": 10,
+          "end_line": 12,
+          "ast_sha256": "32f3cbf8d1f13e05040dde3cc73bb2c776c1d267ee5caf540dee2aef44cb5391",
+          "source": "def __init__(self, reason: str) -> None:\n        self.reason = reason\n        super().__init__(f\"provider availability failure: {reason}\")"
+        },
+        "availability_reason": {
+          "line": 15,
+          "end_line": 35,
+          "ast_sha256": "90da29029f2ad59bddaad4c55d1f496ad23f57f33c5a2153abe21fd3e0a209de",
+          "source": "def availability_reason(exc: Exception) -> str | None:\n    \"\"\"Fail closed: privacy/schema/policy/generic errors never imply availability.\n\n    403 is deliberately excluded: a permission or safety refusal is ambiguous.\n    Unsupported is the Provider seam's explicit capability declaration.\n    \"\"\"\n    if isinstance(exc, Unsupported):\n        return \"capability\"\n    if isinstance(exc, (TimeoutError, ConnectionError)):\n        return \"service\"\n    # LiteLLM normalizes vendor exceptions to these SDK exception types.\n    names = {cls.__name__ for cls in type(exc).__mro__}\n    if names & {\"AuthenticationError\"}:\n        return \"authentication\"\n    if names & {\"APIConnectionError\", \"ServiceUnavailableError\", \"Timeout\"}:\n        return \"service\"\n    if getattr(exc, \"status_code\", None) == 401:\n        return \"authentication\"\n    if getattr(exc, \"status_code\", None) in (502, 503, 504):\n        return \"service\"\n    return None"
+        }
+      }
+    }
+  }
+}

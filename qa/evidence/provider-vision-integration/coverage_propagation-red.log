@@ -1,0 +1,43 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_default_video_never_reaches_implicit_gemini_and_keeps_coverage _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002238F324810>
+setup = [(0.0, WindowsPath('C:/Users/product/AppData/Local/Temp/tmpvm24409n/frame-0.png'), b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIH...3\r\x1f\xbdj\x8c1W\xa5\xc6\x18sUj\x8c1W\xa5\xc6\x18s\x95>\x8f\x170\xa7\x01'\t^\xcd\xad\x00\x00\x00\x00IEND\xaeB`\x82")]
+
+    def test_default_video_never_reaches_implicit_gemini_and_keeps_coverage(monkeypatch, setup):
+        fake = install(monkeypatch, [TimeoutError("private details"), TimeoutError("private details"),
+                                   reply("{}")])
+        monkeypatch.setenv("OLLAMA_API_KEY", "synthetic-combined-key")
+        monkeypatch.setenv("GEMINI_API_KEY", "synthetic-gemini-key")
+        monkeypatch.delenv("AUTOTESTER_MODEL_ORDER", raising=False)
+        monkeypatch.delenv("AUTOTESTER_TEXT_FALLBACK_MODEL", raising=False)
+        chain = ModelChainProvider(frame_limits=FrameLimits(max_frames=1))
+        for tier in chain._tiers:
+            tier.options["vision_capability"] = capability(tier)
+        with attempt_budget(3) as budget, pytest.raises(ProviderError) as error:
+            chain.see_video(Path("synthetic.mp4"), "Observe", VideoObservation)
+        assert [call["model"] for call in fake.calls] == list(DEFAULT_ORDER)
+        assert budget.used == 2 and chain.served is None
+        assert chain.fallback_reasons == tuple(f"litellm:{model}: service" for model in DEFAULT_ORDER)
+>       assert error.value.coverage.frames[0].status == "included"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'frames'
+
+tests\test_provider_vision_integration.py:95: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:154 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (service); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:154 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (service); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-vision-integration\.work\combined-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_vision_integration.py::test_default_video_never_reaches_implicit_gemini_and_keeps_coverage
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_vision_integration.py::test_default_video_never_reaches_implicit_gemini_and_keeps_coverage
+1 failed, 2 warnings in 1.17s

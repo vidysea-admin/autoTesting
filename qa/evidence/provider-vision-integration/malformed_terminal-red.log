@@ -1,0 +1,26 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_malformed_visual_output_is_terminal_with_coverage ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E37437E010>
+setup = [(0.0, WindowsPath('C:/Users/product/AppData/Local/Temp/tmpngxhttz1/frame-0.png'), b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIH...3\r\x1f\xbdj\x8c1W\xa5\xc6\x18sUj\x8c1W\xa5\xc6\x18s\x95>\x8f\x170\xa7\x01'\t^\xcd\xad\x00\x00\x00\x00IEND\xaeB`\x82")]
+
+    def test_malformed_visual_output_is_terminal_with_coverage(monkeypatch, setup):
+        fake, chain = frame_chain(monkeypatch, [reply("bad"), reply("bad"), reply("{}")])
+>       with attempt_budget(6) as budget, pytest.raises(ProviderError, match="schema") as error:
+E       Failed: DID NOT RAISE ProviderError
+
+tests\test_provider_vision_integration.py:103: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-vision-integration\.work\combined-proof\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_vision_integration.py::test_malformed_visual_output_is_terminal_with_coverage
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_vision_integration.py::test_malformed_visual_output_is_terminal_with_coverage
+1 failed, 2 warnings in 1.42s

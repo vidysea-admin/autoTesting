@@ -1,0 +1,10 @@
+src/autotester/providers/litellm_provider.py
+src/autotester/providers/model_chain.py
+src/autotester/providers/video_frames.py
+src/autotester/schema/observation.py
+src/autotester/schema/video_frames.py
+src/autotester/skills/frame-vision/SKILL.md
+tests/test_litellm_provider.py
+tests/test_provider_vision_integration.py
+tests/test_video_frame_schema.py
+tests/test_video_frames.py
