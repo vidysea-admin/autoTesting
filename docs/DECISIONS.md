@@ -2664,3 +2664,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (explicit Ollama-primary/Gemini fallback and narration confirmation in this chat, 2026-10-15).
 
 **Links:** D-099; D-100; D-095; D-096; D-097; D-098; T-162; T-169; T-202; qa/manifests/provider-policy.md; explicit owner provider/narration amendment in this chat.
+
+## D-102 | 2026-10-15 | type: fix | status: ACTIVE
+
+**What:** Correct D-101's incomplete fallback eligibility to include unavailable required model capability, alongside Ollama key/auth/service unavailability. Umesh explicitly authorized configured Gemini capability fallback, including narration. This narrowly amends D-101 eligibility; it does not supersede the whole decision or change explicit configuration precedence.
+
+**Why:** D-101 omitted capability unavailability from its general eligibility lists even though the owner's confirmed narration fallback requires it. The cycle-1 independent checker correctly found this omission; recording capability explicitly aligns the contract with the owner's approved behavior without weakening privacy or budget boundaries.
+
+**Result:** Configured Gemini fallback is eligible when the required Ollama capability is unavailable, as well as on key/auth/service unavailability. Actual capability, provider, fallback reason and physical-attempt accounting remain observable. Unsupported/exhausted paths without a usable authorized fallback remain explicitly unavailable. Privacy refusal and global budget exhaustion never trigger fallback. All other D-101 requirements, including supplied-transcript-first narration, bounded extraction, no automatic local ASR/model download, truthful unknown usage and D-095/096/097/098 protections remain unchanged. Cycle-1 FAIL remains preserved.
+
+**Changes-authorized:** Narrow append-only eligibility addenda in qa/contracts/langchain-fallback.md OC3, qa/contracts/providers-litellm.md and qa/contracts/ingest.md; qa/manifests/provider-policy.md cycle 2. No runtime, source-adapter behavior, verification, enforcement, credential, dependency or architecture change.
+
+**Approved-by:** Umesh (explicit capability-unavailable Gemini fallback authorization in this chat, 2026-10-15).
+
+**Links:** D-101; D-099; qa/verdicts/provider-policy.md cycle 1; qa/manifests/provider-policy.md cycle 2; owner capability-fallback clarification in this chat.

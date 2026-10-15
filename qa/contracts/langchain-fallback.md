@@ -103,3 +103,13 @@ and fallback attempts, keeps the provider, fallback reason, finite limits and
 applicable accounting; unknown usage is not recorded as zero. OC2 otherwise holds.
 Verify eligible key/auth/service failures, missing fallback credentials, prohibited
 privacy/budget fallback, exact request counts and actual-provider attribution.
+
+## 2026-10-15 capability eligibility correction (D-102)
+
+The D-101 eligibility lists also include unavailable required Ollama capability.
+A configured, capability-verified Gemini fallback may therefore serve that required
+modality/capability even when Ollama text service itself is available. Without a
+usable authorized fallback, unsupported capability remains explicitly unavailable.
+All other boundaries remain: no fallback on privacy refusal, global budget or
+deadline exhaustion; finite physical requests, actual provider/reason/accounting,
+truthful unknown usage, and explicit configuration precedence are unchanged.

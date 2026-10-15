@@ -1,7 +1,7 @@
 # Manifest — provider-policy
 
 **Status:** ready-for-check
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Unit:** Owner-authorized Ollama-primary/Gemini fallback and narration contract amendment.
 **Branch:** codex/provider-policy
 **Base commit:** b2b175da
@@ -25,3 +25,9 @@ No runtime/release correctness, provider availability, credentials or audio capa
 ## Compact checker packet
 Read exact candidate/base diff and these five amendments only, applicable D-100 docs-only policy and authoritative manifest identity. Verify no runtime/enforcement/credential paths; previous decision/contract prefixes preserved; fallback eligibility and prohibited boundaries align; no supplied-transcript overwrite or automatic local ASR; no claim of live acceptance. Write `qa/verdicts/provider-policy.md`, Cycle checked 1, Reviewed SHA exact candidate; no intended verdict supplied. Fresh context required.
 Maker elapsed/token/cost measurements before phase instrumentation are unavailable (null); command count is 3 tool-command phases through initial verification. No efficiency-success claim. Use bounded bootstrap reviewer scope (180 seconds/6000 allocated tokens) with skill assessment before phases; required checks are scoped diff/structural only. Future runtime implementation and combined release gates remain separate.
+
+## Cycle 2 narrow repair
+Cycle 1 independent FAIL is preserved at commit e3b8c34402a50f9e1c5f960994fd6ace489d3e0c, with original reviewed candidate 2c8496a7559f5c8a057d18119ae509dd189555d1. No old decision/contract bytes were rewritten.
+D-102 was appended through append_decision.ps1; it corrects only missing capability-unavailable eligibility alongside key/auth/service unavailability. Three provider/vision contract addenda express the same correction. Source-adapter SA8 already covered absent audio capability and is unchanged.
+Cycle-2 scope: docs/DECISIONS.md; qa/contracts/langchain-fallback.md; qa/contracts/providers-litellm.md; qa/contracts/ingest.md; this manifest. No runtime/tests, no expanded policy.
+Checks: append script exit 0; git diff --check exit 0; structural prefix/unique D-102 check exit 0. Reviewer should independently verify only this delta and canonical identity, preserving prior cycle-1 evidence and accounting. Allocation authorized by parent: additional 30 seconds/1000 tokens, cumulative 90 seconds/3500 tokens. Actual usage remains null where unavailable. Write canonical verdict Cycle checked 2 with exact candidate SHA; retain cycle-1 FAIL history.

@@ -166,3 +166,13 @@ Preserve guards, per-physical-attempt accounting, finite limits and honest unkno
 usage for fallback. No unconfigured Gemini tier is treated as available; exhausted
 paths remain explicitly unavailable. Verification uses fake transport to exercise
 eligible unavailability and both prohibited safety-boundary fallbacks.
+
+## 2026-10-15 capability eligibility correction (D-102)
+
+The D-101 eligibility lists also include unavailable required Ollama capability.
+A configured, capability-verified Gemini fallback may therefore serve that required
+modality/capability even when Ollama text service itself is available. Without a
+usable authorized fallback, unsupported capability remains explicitly unavailable.
+All other boundaries remain: no fallback on privacy refusal, global budget or
+deadline exhaustion; finite physical requests, actual provider/reason/accounting,
+truthful unknown usage, and explicit configuration precedence are unchanged.

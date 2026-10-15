@@ -327,3 +327,13 @@ Only capability-verified models serve visual interpretation. Unsupported visual
 capability is explicit; it never becomes text-only pretend success. Provider,
 reason and accounting identify the physical attempts actually made. This clause
 changes provider eligibility only, not sanitation, provenance or completeness.
+
+## 2026-10-15 capability eligibility correction (D-102)
+
+The D-101 eligibility lists also include unavailable required Ollama capability.
+A configured, capability-verified Gemini fallback may therefore serve that required
+modality/capability even when Ollama text service itself is available. Without a
+usable authorized fallback, unsupported capability remains explicitly unavailable.
+All other boundaries remain: no fallback on privacy refusal, global budget or
+deadline exhaustion; finite physical requests, actual provider/reason/accounting,
+truthful unknown usage, and explicit configuration precedence are unchanged.
