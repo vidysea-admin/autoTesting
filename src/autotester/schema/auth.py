@@ -94,6 +94,7 @@ class User(BaseModel):
     display_name: str = ""
     disabled: bool = False
     created_at: datetime
+    generation: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$", repr=False)
     groups: list[str] = Field(default_factory=list, description="group names")
 
 

@@ -1,0 +1,20 @@
+{
+  "tests": [
+    "tests/test_account_generation.py",
+    "tests/test_notification_profile.py",
+    "tests/test_ui_auth_accounts.py::test_au7_two_simultaneous_first_signups_make_one_admin",
+    "tests/test_ui_auth_accounts.py::test_au8_password_reset_revokes_sessions",
+    "tests/test_ui_auth_accounts.py::test_cli_bootstrap_admin_creates_then_resets"
+  ],
+  "files": [
+    "src/autotester/auth/db.py", "src/autotester/auth/accounts.py",
+    "src/autotester/schema/auth.py", "src/autotester/schema/delivery.py",
+    "src/autotester/store/notification_prefs.py", "src/autotester/ui/routes_profile.py",
+    "tests/test_notification_profile.py", "tests/test_account_generation.py"
+  ],
+  "mutations": [
+    {"name": "clock-independent-random-identity", "file": "src/autotester/auth/db.py", "old": "return secrets.token_hex(16)", "new": "return 'a' * 32", "node": "tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in"},
+    {"name": "stale-consent-generation-rejected", "file": "src/autotester/store/notification_prefs.py", "old": "or pref.account_generation != generation):", "new": "or False):", "node": "tests/test_account_generation.py::test_fixed_clock_id_replacement_cannot_inherit_opt_in"},
+    {"name": "database-generation-immutable", "file": "src/autotester/auth/db.py", "old": "WHEN NEW.generation IS NOT OLD.generation", "new": "WHEN 0", "node": "tests/test_account_generation.py::test_generation_is_persistent_immutable_and_not_a_password_identity"}
+  ]
+}

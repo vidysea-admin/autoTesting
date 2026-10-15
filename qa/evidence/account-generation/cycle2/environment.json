@@ -1,0 +1,18 @@
+{
+  "APPDATA": "C:\\Users\\product\\AppData\\Roaming",
+  "COMSPEC": "C:\\Windows\\system32\\cmd.exe",
+  "LOCALAPPDATA": "C:\\Users\\product\\AppData\\Local",
+  "OMP_THREAD_LIMIT": "1",
+  "PATH": "C:\\Program Files\\PowerShell\\7;C:\\Users\\product\\.codex\\tmp\\arg0\\codex-arg0lEhgEn;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\jxrlib\\jxrlib\\bin;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\override;C:\\Program Files\\Python312\\Scripts\\;C:\\Program Files\\Python312\\;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\ProgramData\\GooGet;C:\\Program Files\\Google\\Compute Engine\\metadata_scripts;C:\\Program Files (x86)\\Google\\Cloud SDK\\google-cloud-sdk\\bin;C:\\Program Files\\PowerShell\\7\\;C:\\Program Files\\Google\\Compute Engine\\sysprep;C:\\Program Files\\Git\\cmd;C:\\Program Files\\GitHub CLI\\;C:\\Program Files\\nodejs\\;C:\\Users\\product\\AppData\\Local\\Programs\\OpenAI\\Codex\\bin;C:\\Users\\product\\.local\\bin;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell;C:\\Users\\product\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\product\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\product\\AppData\\Local\\Programs\\Ollama;C:\\Users\\product\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.0.2-full_build\\bin;C:\\Users\\product\\AppData\\Roaming\\npm;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin;C:\\Users\\product\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd;C:\\Users\\product\\AppData\\Local\\OpenAI\\Codex\\bin\\77fbd4d52e601e0a;C:\\Users\\product\\AppData\\Local\\OpenAI\\Codex\\bin\\9614f1d9b40d9c4f",
+  "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+  "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+  "PYTHONDONTWRITEBYTECODE": "1",
+  "PYTHONHASHSEED": "0",
+  "PYTHONPATH": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2\\src",
+  "PYTHONUTF8": "1",
+  "SYSTEMROOT": "C:\\Windows",
+  "TEMP": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2",
+  "TMP": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\account-generation\\.work\\account-generation-proof2",
+  "USERPROFILE": "C:\\Users\\product",
+  "WINDIR": "C:\\Windows"
+}

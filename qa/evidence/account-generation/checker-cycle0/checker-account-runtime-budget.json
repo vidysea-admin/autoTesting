@@ -1,0 +1,32 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "cost": null,
+      "tokens": null,
+      "active_s": null,
+      "id": "account-generation-readiness",
+      "budget_debit": {
+        "tokens": 1000,
+        "active_s": 30
+      }
+    }
+  ],
+  "next_phase": {
+    "tokens": 3500,
+    "active_s": 110,
+    "kind": "review"
+  },
+  "bootstrap_scope": "Parent authorized account-only readiness30s1000 source/runtime110s3500 closure40s1500; helper finalization30s800 within closure; no full17 or3mutants rerun",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": null,
+  "completion_reserve": true,
+  "completion_reserve_id": "account-generation-cycle0-f1b345aa"
+}
