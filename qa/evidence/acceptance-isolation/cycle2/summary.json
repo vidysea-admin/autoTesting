@@ -1,0 +1,12 @@
+{
+  "proofs": 7,
+  "baseline_commands": 7,
+  "mutated_commands": 7,
+  "preflight_commands": 1,
+  "all_command_seconds": 104.00000000000364,
+  "actual_maker_active_seconds": null,
+  "actual_maker_tokens": null,
+  "cost": null,
+  "code_sha": "7cda16f66dc96514edb3776efd32af64ca5e1791",
+  "source_unchanged": true
+}

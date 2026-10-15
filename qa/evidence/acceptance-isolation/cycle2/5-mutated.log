@@ -1,0 +1,24 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________________ test_baseline_mode_mismatch_refused _____________________
+
+isolated_store = <autotester.store.project_store.ProjectStore object at 0x0000028B804843D0>
+
+    def test_baseline_mode_mismatch_refused(isolated_store):
+>       with pytest.raises(ValueError, match="mode differs"):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_isolation.py:89: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\acceptance-repair\autoTesting\.work\acceptance-cycle2-sandbox\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\..\..\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_isolation.py::test_baseline_mode_mismatch_refused
+1 failed, 2 warnings in 1.38s

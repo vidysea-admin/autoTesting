@@ -1,0 +1,35 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_real_seams_use_configured_vision_role __________________
+
+isolated_store = <autotester.store.project_store.ProjectStore object at 0x0000022533CBAD50>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000022533CBA1D0>
+
+    def test_real_seams_use_configured_vision_role(isolated_store, monkeypatch):
+        import run_real_acceptance as driver
+    
+        from autotester import providers
+        from autotester.schema.crawl import CrawlBounds
+        selected = object()
+        calls = []
+        monkeypatch.setattr(providers, "for_role", lambda project, role:
+                            calls.append((project.slug, role)) or selected)
+        seams = driver._real_seams(isolated_store, "teaching", CrawlBounds())
+>       assert seams.ingest_provider is selected
+E       assert <autotester.providers.gemini.GeminiProvider object at 0x0000022533CBA190> is <object object at 0x0000022530E89B50>
+E        +  where <autotester.providers.gemini.GeminiProvider object at 0x0000022533CBA190> = ModeSeams(ingest_provider=<autotester.providers.gemini.GeminiProvider object at 0x0000022533CBA190>, crawl_fn=None, before_run=None, case_bug_map={}).ingest_provider
+
+tests\test_acceptance_isolation.py:103: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\acceptance-repair\autoTesting\.work\acceptance-cycle2-sandbox\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\..\..\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_isolation.py::test_real_seams_use_configured_vision_role
+1 failed, 2 warnings in 1.13s

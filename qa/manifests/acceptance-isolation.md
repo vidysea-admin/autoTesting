@@ -1,10 +1,10 @@
-# Manifest — acceptance-isolation
+# Manifest â€” acceptance-isolation
 
 **Status:** ready-for-check
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Unit:** T-169 acceptance driver authentication and contamination refusals (bounded repair)
 **Branch:** codex/acceptance-repair
-**Base commit:** abc4a0ef
+**Base commit:** abc4a0ef (runtime change); cycle-2 evidence base 14bb3782
 **Candidate:** immutable commit containing this manifest; dispatch packet `.work/acceptance-checker-packet.md` records exact SHA after commit.
 **Risk tier:** high-risk: authentication/permissions and baseline isolation; no auth guard changes.
 **Authorization:** Umesh approved Ollama-first completion goal; parent assigned this bounded acceptance unit.
@@ -38,3 +38,13 @@ Isolated baseline preparation is a follow-on: refusing a polluted existing proje
 
 ## Usage
 Maker actual active time/tokens/cost unavailable (null), never zero. Historical mutation duration approximately six minutes, not exact telemetry. Final command durations recorded independently in commands.json. Budget helper result BOOTSTRAP_REVIEW; 10% ratios unverified. Fresh checker receives finite 180s/6000-token bootstrap scope, with high-risk boundary expansion requiring recorded allocation if necessary.
+
+## Fix cycle 2 — provenance-only repair after checker HOLD
+
+No runtime or test source changes after reviewed code7cda16f66dc96514edb3776efd32af64ca5e1791; cycle-1 independent12-test result and permission sabotage remain recorded in qa/verdicts/acceptance-isolation.md (cycle1 HOLD). Original unbound maker result remains unknown, never retroactively relabelled.
+
+Fresh exact-bound evidence replaces all seven previously unbound historical claims. `qa/evidence/acceptance-isolation/cycle2/probe.py` copied complete src/tests/scripts without caches, verified the shared tests_mutation_fixtures upfront, asserted original four runtime/test files equal immutable7cda Git blobs, and ran import/temp preflight into the scratch source root. `identity.json` binds Python/version, dependency versions, lock hash, environment fingerprint and all original/scratch source hashes before tests. Each of seven named defenders received its own green baseline, exact-once applied mutation, changed-byte assertion, pytest exit1 with its exact node in plugin-produced failed list, then byte-identical restoration. `proofs.json`, `commands.json` and per-command complete logs preserve all evidence; final source hashes rechecked unchanged. No unrelated test suites repeated.
+
+`reuse-audit.json` records that prior independent permission-probe restored hashes matched current files automatically, but lacked contemporaneous env/lock/per-run source receipts; therefore it was not used to waive the seventh rerun. Final Origin-cookie claim already has its cycle1 fresh maker proof and independently passing reviewer checks.
+
+Results: 7/7 exact-bound named defenders killed; seven green single-defender baselines, seven attributed red runs, one preflight. Exact command time sum in cycle2/summary.json. Maker actual active seconds/tokens remain null; queue/wait time never added to maker denominators. No feature work, model calls, live browser/API or baseline creation performed. Full combined integration gates remain parent-owned.

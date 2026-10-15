@@ -1,0 +1,121 @@
+[
+  {
+    "name": "login success guard omitted",
+    "nodeid": "tests/test_acceptance_isolation.py::test_bad_password_refuses_without_echoing_input",
+    "baseline_exit": 0,
+    "mutated_exit": 1,
+    "failed": [
+      "tests/test_acceptance_isolation.py::test_bad_password_refuses_without_echoing_input"
+    ],
+    "file": "src/autotester/stages/real_acceptance.py",
+    "old": "if response.status_code != 303 or response.headers.get(\"location\") != \"/\":",
+    "new": "if False:",
+    "original_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "mutated_sha256": "506e29692fc451dc14e5ac3d8d3c4b274679fb6b50ada256339a73c744eb19b7",
+    "restored_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "anchor_count": 1,
+    "identity": "identity.json"
+  },
+  {
+    "name": "project run permission omitted",
+    "nodeid": "tests/test_acceptance_isolation.py::test_permissions_checked_before_yield",
+    "baseline_exit": 0,
+    "mutated_exit": 1,
+    "failed": [
+      "tests/test_acceptance_isolation.py::test_permissions_checked_before_yield"
+    ],
+    "file": "src/autotester/stages/real_acceptance.py",
+    "old": "PermissionKey.PROJECT_RUN, PermissionKey.REPORT_VIEW",
+    "new": "PermissionKey.PROJECT_VIEW, PermissionKey.REPORT_VIEW",
+    "original_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "mutated_sha256": "8efb1a8ffba9e3d1c4f72df60566b6c82a3af1b3098c850e16aea68faf3b8079",
+    "restored_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "anchor_count": 1,
+    "identity": "identity.json"
+  },
+  {
+    "name": "stored teaching ignored",
+    "nodeid": "tests/test_acceptance_isolation.py::test_url_only_refuses_teaching_sources_before_orchestration",
+    "baseline_exit": 0,
+    "mutated_exit": 1,
+    "failed": [
+      "tests/test_acceptance_isolation.py::test_url_only_refuses_teaching_sources_before_orchestration"
+    ],
+    "file": "src/autotester/stages/generic_acceptance.py",
+    "old": "if choose_mode(store.list_sources())[0] != EXPECTED_MODE[spec.mode]:",
+    "new": "if False:",
+    "original_sha256": "f261069743615cc49880324a78c59d9e31e415083c4ca0154992c77da73e9c11",
+    "mutated_sha256": "663f93df604ebc5dfe69f7140308c6b11f14a638530eebfda8e59728a845e3b1",
+    "restored_sha256": "f261069743615cc49880324a78c59d9e31e415083c4ca0154992c77da73e9c11",
+    "anchor_count": 1,
+    "identity": "identity.json"
+  },
+  {
+    "name": "inherited truth accepted",
+    "nodeid": "tests/test_acceptance_isolation.py::test_prior_truth_refused_without_modification",
+    "baseline_exit": 0,
+    "mutated_exit": 1,
+    "failed": [
+      "tests/test_acceptance_isolation.py::test_prior_truth_refused_without_modification"
+    ],
+    "file": "src/autotester/stages/real_acceptance.py",
+    "old": "if store.load_flowspec() is not None or store.list_cases() or store.list_case_proposals():",
+    "new": "if False:",
+    "original_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "mutated_sha256": "152a085a9aec836a5ec7a0e37d7aa3d53e206b04a75ab9d32f87c225a564811d",
+    "restored_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "anchor_count": 1,
+    "identity": "identity.json"
+  },
+  {
+    "name": "baseline mode ignored",
+    "nodeid": "tests/test_acceptance_isolation.py::test_baseline_mode_mismatch_refused",
+    "baseline_exit": 0,
+    "mutated_exit": 1,
+    "failed": [
+      "tests/test_acceptance_isolation.py::test_baseline_mode_mismatch_refused"
+    ],
+    "file": "src/autotester/stages/real_acceptance.py",
+    "old": "if choose_mode(store.list_sources())[0] != EXPECTED_MODE[mode]:",
+    "new": "if False:",
+    "original_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "mutated_sha256": "1026c2cd5f335583905106e06692f5a0e0a6d1b2de2777129f6c8c5ae5243a2a",
+    "restored_sha256": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "anchor_count": 1,
+    "identity": "identity.json"
+  },
+  {
+    "name": "provider config ignored",
+    "nodeid": "tests/test_acceptance_isolation.py::test_real_seams_use_configured_vision_role",
+    "baseline_exit": 0,
+    "mutated_exit": 1,
+    "failed": [
+      "tests/test_acceptance_isolation.py::test_real_seams_use_configured_vision_role"
+    ],
+    "file": "scripts/run_real_acceptance.py",
+    "old": "providers.for_role(project, \"vision\")",
+    "new": "providers.get(\"gemini\")",
+    "original_sha256": "4f3fcfac4d951fe90f5101bedf03545138907b5b57418de833fb30b65f874169",
+    "mutated_sha256": "174366f89ab118110a4551516c1846969bf44116bc4ceef61ec2db6b1548e109",
+    "restored_sha256": "4f3fcfac4d951fe90f5101bedf03545138907b5b57418de833fb30b65f874169",
+    "anchor_count": 1,
+    "identity": "identity.json"
+  },
+  {
+    "name": "root binding ignored",
+    "nodeid": "tests/test_acceptance_isolation.py::test_cli_root_binds_ui_store_before_dry_run",
+    "baseline_exit": 0,
+    "mutated_exit": 1,
+    "failed": [
+      "tests/test_acceptance_isolation.py::test_cli_root_binds_ui_store_before_dry_run"
+    ],
+    "file": "scripts/run_real_acceptance.py",
+    "old": "os.environ[\"AUTOTESTER_ROOT\"] = str(root)",
+    "new": "pass  # root not bound",
+    "original_sha256": "4f3fcfac4d951fe90f5101bedf03545138907b5b57418de833fb30b65f874169",
+    "mutated_sha256": "8558f04e24424c1031a74a7ca02fce7a45f33d136bdd1866c520450bbdae7bcc",
+    "restored_sha256": "4f3fcfac4d951fe90f5101bedf03545138907b5b57418de833fb30b65f874169",
+    "anchor_count": 1,
+    "identity": "identity.json"
+  }
+]

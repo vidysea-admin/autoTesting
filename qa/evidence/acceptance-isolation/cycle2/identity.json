@@ -1,0 +1,29 @@
+{
+  "code_sha": "7cda16f66dc96514edb3776efd32af64ca5e1791",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_version": "3.11.16",
+  "lock_sha256": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+  "source_sha256": {
+    "src/autotester/stages/real_acceptance.py": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "src/autotester/stages/generic_acceptance.py": "f261069743615cc49880324a78c59d9e31e415083c4ca0154992c77da73e9c11",
+    "scripts/run_real_acceptance.py": "4f3fcfac4d951fe90f5101bedf03545138907b5b57418de833fb30b65f874169",
+    "tests/test_acceptance_isolation.py": "ce3ac3cad81bfb5546284fb9731490e5ec576c63766b52eecaa80e4c5bc9bb2a"
+  },
+  "sandbox_source_sha256": {
+    "src/autotester/stages/real_acceptance.py": "48e39fe79f89da6b1a7ab45fdd775d7aca6ee3052a0420ef7983aa215be06bfc",
+    "src/autotester/stages/generic_acceptance.py": "f261069743615cc49880324a78c59d9e31e415083c4ca0154992c77da73e9c11",
+    "scripts/run_real_acceptance.py": "4f3fcfac4d951fe90f5101bedf03545138907b5b57418de833fb30b65f874169",
+    "tests/test_acceptance_isolation.py": "ce3ac3cad81bfb5546284fb9731490e5ec576c63766b52eecaa80e4c5bc9bb2a"
+  },
+  "import_root": "C:\\Users\\product\\.codex\\worktrees\\acceptance-repair\\autoTesting\\.work\\acceptance-cycle2-sandbox\\src",
+  "sandbox": "C:\\Users\\product\\.codex\\worktrees\\acceptance-repair\\autoTesting\\.work\\acceptance-cycle2-sandbox",
+  "versions": {
+    "pytest": "9.1.1",
+    "pydantic": "2.13.5",
+    "fastapi": "0.141.1",
+    "starlette": "1.6.0"
+  },
+  "env_fingerprint": "2a025f0c2337a9503b788c6ba79b975048bc5b0d132cf990213b7b76c3b29478",
+  "token_usage": null,
+  "active_seconds": null
+}
