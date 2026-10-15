@@ -1,6 +1,6 @@
 # Manifest — supplied-first bounded narration policy core
 
-- Status: ready-for-check
+- Status: checked-PASS
 - Fix cycle: 2
 - Base: 40f5b4b20e91d3806ee313fb8e67af109b62b0ae (checked D-101/D-102 policy)
 - Candidate: exact evidence-wrapper SHA in .work/narration-policy-cycle2-packet.md; immutable source SHA a16c2a53
