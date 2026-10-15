@@ -1,6 +1,6 @@
 # Manifest - full-suite-fixes
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** the 17 failures in the last full suite on master (94da0c82)
 **Branch:** wave/full-suite-fixes
