@@ -18,6 +18,7 @@ from autotester.stages.orchestrate_execute import (
     INTERRUPTION,
     PipelineStore,
     execute_pipeline_batch,
+    guard_pipeline_artifacts,
     load_pipeline_batch,
     require_pipeline_eligibility,
     save_pipeline_batch,
@@ -85,6 +86,7 @@ def make_expand_stage(project: Project, *, generator: Provider | None = None,
         try:
             generated = expand(spec, model, store=ctx.store, secrets=ctx.secrets,
                                before_call=lambda: _mark_generation(ctx, spec))
+            guard_pipeline_artifacts(ctx, *generated)
         except Exception as exc:
             if ctx.store.paths.pipeline_artifact(ctx.run_id, "expansion-attempt").exists():
                 _mark_generation(ctx, spec, error=ctx.secrets.scrub_optional(
@@ -131,6 +133,7 @@ def _recover_grading(ctx, batch):
             "judgments "
             "were not repeated. Start a new run to retry; physical usage is unavailable."
             + (f" Original failure: {batch.grading_error}" if batch.grading_error else ""))
+        guard_pipeline_artifacts(ctx, verdict)
         ctx.store.save_verdict(ctx.run_id, verdict)
         batch.verdicts.append(verdict)
     return save_pipeline_batch(ctx, batch, "grade")
@@ -160,6 +163,7 @@ def make_grade_stage(project: Project, *, judge: Provider | None = None):
                 batch.grading_error = ctx.secrets.scrub_optional(f"{type(exc).__name__}: {exc}")
                 save_pipeline_batch(ctx, batch, "grading-progress")
                 raise
+            guard_pipeline_artifacts(ctx, result, verdict)
             finalize_case_video(result, verdict, batch.video_refs.get(result.case_id),
                                 ctx.store.paths.run_dir(ctx.run_id))
             ctx.store.save_result(ctx.run_id, result)

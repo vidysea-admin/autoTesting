@@ -78,11 +78,17 @@ def validate_pipeline_batch(ctx: StageContext, batch: PipelineBatch) -> None:
 
 def save_pipeline_batch(ctx: StageContext, batch: PipelineBatch, name: str) -> str:
     validate_pipeline_batch(ctx, batch)
-    if ctx.secrets is not None:
-        ctx.secrets.guard_prompt(batch.model_dump_json())
+    guard_pipeline_artifacts(ctx, batch)
     path = ctx.store.paths.pipeline_artifact(ctx.run_id, name)
     write_json(path, batch)
     return str(path)
+
+
+def guard_pipeline_artifacts(ctx: StageContext, *artifacts) -> None:
+    """Use the canonical secret matcher before any adapter-owned artifact is persisted."""
+    if ctx.secrets is not None:
+        for artifact in artifacts:
+            ctx.secrets.guard_prompt(artifact.model_dump_json())
 
 
 def require_pipeline_eligibility(ctx: StageContext, spec: FlowSpec) -> None:
@@ -122,6 +128,7 @@ def _start_session(ctx, project, budget, case, session_cls, *, entry=False):
 
 
 def _persist_observation(ctx, batch, result, video):
+    guard_pipeline_artifacts(ctx, result)
     ctx.store.save_result(ctx.run_id, result)
     batch.results.append(result)
     if video is not None:
@@ -139,6 +146,7 @@ def _recover_interrupted(ctx: StageContext, batch: PipelineBatch) -> str:
     for case in batch.cases:
         result = observed.get(case.id) or RawResult(
             case_id=case.id, outcome=Outcome.NOT_RUN, not_run_reason=INTERRUPTION)
+        guard_pipeline_artifacts(ctx, result)
         ctx.store.save_result(ctx.run_id, result)
         batch.results.append(result)
     return save_pipeline_batch(ctx, batch, "execute")
