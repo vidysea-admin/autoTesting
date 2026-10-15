@@ -1,6 +1,6 @@
 {
   "adapter": "coding",
-  "_note": "Commands here are allowlisted at the START gate (2026-09-03). The maker must never add free-form shell mid-run; an un-allowlisted command is CONTRACT_MISMATCH. Widened 2026-09-24 under D-018 + Umesh's feedback-inbox 'allow krr dee' (T-126) to also name the read-only inspection commands checkers already legitimately run — see verify.read_only_allowlist below; the three required gates in verify.commands are unchanged. Re-shaped 2026-10-10 to the proportional-verification .9 adapter (parallel.lanes added; every verify and isolation key unchanged, the quick lane stays off because lane.enabled is absent).",
+  "_note": "Commands here are allowlisted at the START gate (2026-09-03). The maker must never add free-form shell mid-run; an un-allowlisted command is CONTRACT_MISMATCH. Widened 2026-09-24 under D-018 + Umesh's feedback-inbox 'allow krr dee' (T-126) to also name the read-only inspection commands checkers already legitimately run — see verify.read_only_allowlist below; the three required gates in verify.commands are unchanged. Re-shaped 2026-10-10 to the proportional-verification .9 adapter (parallel.lanes added; every verify and isolation key unchanged, the quick lane stays off because lane.enabled is absent). D-100: verify.commands are the mandatory combined integration/release gate; verify.unit_policy is the enabled risk-tier unit-review policy. Legacy lane.enabled remains absent and does not disable verify.unit_policy.",
   "unit_vocab": {
     "id_prefix": "AT",
     "severity": [
@@ -65,6 +65,35 @@
           "note": "checker-authored one-off probe scripts, scoped to the project's scratch dir (never the repo root); each is read-only toward the bound tree by the capability-coverage falsification rule (maker/SKILL.md), which requires perturbation to happen in a throwaway copy outside it"
         }
       ]
+    },
+    "unit_policy": {
+      "enabled": true,
+      "decision": "D-100",
+      "scope": "unit review; does not certify integration/release",
+      "tiers": {
+        "docs_config": "No executable/runtime effect: complete diff/criteria review, syntax/schema/reference consistency and independent discriminating structural probe.",
+        "bounded_code": "Affected tests/callers, scoped lint and applicable doctor; independent focused probe or representative valid sabotage; validate every maker guard proof.",
+        "high_risk": "Auth/permissions, secrets, PII/image privacy, production/write approvals, destructive controls, shared schema/provider/enforcement: independent focused checks of each affected boundary and rejection paths; mandatory integration gate."
+      },
+      "evidence_reuse": "Validate immutable base/head, all changed files, commands/results/output hashes, clean-tree binding and environment/dependency/fixture/config identity; stale/incompatible/missing evidence cannot satisfy a claim.",
+      "fresh_context_packet": "qa/loop.md D-100 minimal packet; checker helper preflight or explicit equivalent checks required.",
+      "integration_gate": {
+        "commands_ref": "verify.commands",
+        "required": true,
+        "candidate": "exact combined immutable candidate",
+        "reuse": "Compatible attested candidate evidence may be reused; changed candidate invalidates affected evidence."
+      },
+      "efficiency": {
+        "max_checker_maker_ratio": 0.1,
+        "metrics": [
+          "active_duration",
+          "tokens",
+          "cost"
+        ],
+        "missing": "unknown; ratio unverified; fixed small bootstrap scope in qa/loop.md",
+        "overrun": "NEEDS_EXTRA_REVIEW with reason, scope and estimate; recorded allocation before extra review; HUMAN_GATE only when owner decision required; never autoPASS."
+      },
+      "proof": "C7 maker proof for all introduced guards/rewritten tests retained; checker independent representative rerun plus risk-driven checks."
     }
   },
   "artifact": {
@@ -77,7 +106,7 @@
     "sandbox": "worktree-copy",
     "done": {
       "kind": "audit-pass",
-      "_note": "No production deploy exists for this project yet. Done = slot-1 verify green + the unit's own contract criteria judged PASS by /checker. When a deployable surface appears, this becomes kind=deploy with a confirm_url."
+      "_note": "D-100: Done = selected unit-policy evidence plus all unit contract criteria judged PASS by independent /checker. Combined integration/release additionally requires verify.commands on the exact candidate. No production deploy exists; deploy remains separately gated."
     }
   },
   "parallel": {
@@ -102,7 +131,7 @@
   },
   "_notes": {
     "parallel": "code: test/build slots, at most 4 and at most floor((free GB - 1.5) / 2); browser: one headed browser at a time, 1.1 GB per browser (measured in D:/hei-sweep on this machine, not re-measured here). No mongo_read, mongo_write or search lane: this project has no Mongo and no single-IP search run.",
-    "quick_lane": "Off. lane.enabled is deliberately absent; only the owner sets it. Before it is ever enabled, lane.public_api, lane.schema, lane.shared and lane.quick_lane_exclude must be written for src/autotester (redact, secrets, consent, approval, browser, schema, providers) or every small diff outside the built-in keyword list becomes eligible.",
+    "quick_lane": "Legacy kernel quick lane remains off (lane.enabled absent); it is distinct from enabled verify.unit_policy risk-tier unit review (D-100), which governs this workflow now. Enabling the legacy lane later still needs explicit sensitive-path exclusions.",
     "data_class": "Deliberately not declared: AT-365 is an accepted wontfix (Umesh 2026-09-24, qa/gates/at365-data-class-declaration.md, recorded in qa/contracts/core-invariants.md). Do not add it here without that owner decision being reopened."
   }
 }

@@ -2636,3 +2636,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (explicit plan approval in this chat, 2026-10-15).
 
 **Links:** T-136; T-169; T-206; T-162; T-163; T-177; T-178; T-190; T-202; D-035; D-036; D-041; D-071; D-075; D-095; D-096; D-097; D-098; qa/manifests/completion-contracts.md; approved Ollama-first completion plan in this chat.
+
+## D-100 | 2026-10-15 | type: decision | status: ACTIVE
+
+**What:** Umesh explicitly approved a system-wide optimized checker workflow in this chat: fresh-context minimal packets, risk-tiered unit verification, compatible bound evidence reuse and focused independent probes/sabotage. Target checker active duration, tokens and cost each <=10% of comparable maker measurements where available. Unknown measurements stay unknown; no quota grants PASS. Executable config is code risk, and auth/secrets/PII/image-privacy/production boundaries retain independent focused checks. Full pytest, ruff and doctor remain mandatory on the combined integration/release candidate; the same compatible attested result need not be rerun for every unit/checker.
+
+**Why:** Repeating broad histories and full suites independently on every unit wastes scarce CPU, time and tokens without replacing a discriminating check of the changed property. Reuse needs explicit commit/environment/command provenance, and savings must never suppress safety or mutation proof. This narrowly amends the former unconditional per-unit full-suite rerun duty and checker rerun breadth; maker per-guard failing-first proof remains required.
+
+**Result:** Enabled verify.unit_policy is distinct from the still-unconfigured legacy kernel quick lane. qa/loop.md defines minimal packet/preflight, three tiers, unchanged full integration gate and bounded review escalation. Unknown denominators use a fixed small bootstrap scope with ratio unverified. Unresolved criteria require NEEDS_EXTRA_REVIEW with reason/scope/estimate and recorded allocation before extra work; HUMAN_GATE only when Umesh must decide. Known defects fail. No runtime behavior or production approval changes.
+
+**Changes-authorized:** qa/loop.md proportional verification instructions; qa/adapter.json additive verify.unit_policy and aligned notes/done semantics (full verify.commands unchanged); qa/contracts/core-invariants.md C7 proportional independent review/checker representative mutation wording and amendment log. The corresponding global checker skill/instructions may implement this approved policy separately. No hooks, settings, append script, credentials or application code changed here.
+
+**Approved-by:** Umesh (explicit system-wide checker-efficiency approval in this chat, 2026-10-15).
+
+**Links:** D-099; qa/loop.md; qa/adapter.json; qa/contracts/core-invariants.md C7; qa/manifests/checker-policy-contract.md; system-wide checker-efficiency instruction in this chat.
