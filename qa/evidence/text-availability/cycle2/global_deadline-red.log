@@ -1,0 +1,33 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_enclosing_budget_never_falls_through[6-0] ________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000225743BEF10>
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/provider-availability/.work/text-availability-cycle2/.work/pytest/test_enclosing_budget_never_fa0')
+limit = 6, seconds = 0
+
+    @pytest.mark.parametrize("limit,seconds", [(2, 30), (6, 0)])
+    def test_enclosing_budget_never_falls_through(monkeypatch, tmp_path, limit, seconds):
+        fake, chain = setup_chain(monkeypatch, tmp_path,
+                                  [TimeoutError(), TimeoutError(), reply('{"ok":true}')])
+>       with (attempt_budget(limit, wall_clock_s=seconds) as budget,
+              pytest.raises(AttemptBudgetExhausted)):
+E             Failed: DID NOT RAISE AttemptBudgetExhausted
+
+tests\test_text_availability.py:77: Failed
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (service); falling through
+WARNING  autotester.providers.model_chain:model_chain.py:138 model-chain: tier litellm:ollama_chat/deepseek-v4.1-flash failed (service); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\provider-availability\.work\text-availability-cycle2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]
+1 failed, 2 warnings in 0.92s

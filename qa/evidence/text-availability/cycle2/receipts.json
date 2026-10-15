@@ -1,0 +1,311 @@
+[
+  {
+    "label": "preflight",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2\\.work"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "source_before": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "source_after": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "fixture_config_lock": {
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "tests/auth_login_fixture.py": "6e809935e0daf55ac2e6b66b31f1f4e8424fc092d57e7714eb42470000d376b1",
+      "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "environment_sha256": "fcfdd425fc5b5d814ba9f5eaa808499c31d8dbcd9345dd0289f65064aa827c78",
+    "output": "qa\\evidence\\text-availability\\cycle2\\preflight.log",
+    "output_sha256": "d22e7891beb515a0a59713511e4643045ed8d566e1755e483585f081ab9d9758",
+    "frozen_head": "ec882aa8fb99165afa116a70cd8941c3bbdaf8a2",
+    "mutation": null,
+    "command_elapsed_s": 0.2969999999986612
+  },
+  {
+    "label": "baseline",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[2-30]",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "source_before": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "source_after": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "fixture_config_lock": {
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "tests/auth_login_fixture.py": "6e809935e0daf55ac2e6b66b31f1f4e8424fc092d57e7714eb42470000d376b1",
+      "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "environment_sha256": "fcfdd425fc5b5d814ba9f5eaa808499c31d8dbcd9345dd0289f65064aa827c78",
+    "output": "qa\\evidence\\text-availability\\cycle2\\baseline.log",
+    "output_sha256": "e26a45ebcc183240feb39775b2d437b4b087a210e231f918ea515abd0c0405ad",
+    "frozen_head": "ec882aa8fb99165afa116a70cd8941c3bbdaf8a2",
+    "mutation": null,
+    "command_elapsed_s": 8.890999999999622
+  },
+  {
+    "label": "global_count-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[2-30]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "source_before": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "cfc305bbf01617bfd78ae98cdbbbf379fc577634ce1aa4379d821127ce0baa27",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "source_after": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "cfc305bbf01617bfd78ae98cdbbbf379fc577634ce1aa4379d821127ce0baa27",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "fixture_config_lock": {
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "tests/auth_login_fixture.py": "6e809935e0daf55ac2e6b66b31f1f4e8424fc092d57e7714eb42470000d376b1",
+      "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "environment_sha256": "fcfdd425fc5b5d814ba9f5eaa808499c31d8dbcd9345dd0289f65064aa827c78",
+    "output": "qa\\evidence\\text-availability\\cycle2\\global_count-red.log",
+    "output_sha256": "be37fefe05c79fdb34aff6d9b56f9aedeff827f131ed37d77db50fcb54499b79",
+    "frozen_head": "ec882aa8fb99165afa116a70cd8941c3bbdaf8a2",
+    "mutation": {
+      "path": "src/autotester/providers/attempts.py",
+      "before": "if scope.used >= scope.max_calls:",
+      "after": "if False:",
+      "occurrences": 1,
+      "original_sha256": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "applied_sha256": "cfc305bbf01617bfd78ae98cdbbbf379fc577634ce1aa4379d821127ce0baa27",
+      "node": "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[2-30]"
+    },
+    "command_elapsed_s": 8.09400000000096
+  },
+  {
+    "label": "global_count-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[2-30]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "source_before": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "source_after": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "fixture_config_lock": {
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "tests/auth_login_fixture.py": "6e809935e0daf55ac2e6b66b31f1f4e8424fc092d57e7714eb42470000d376b1",
+      "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "environment_sha256": "fcfdd425fc5b5d814ba9f5eaa808499c31d8dbcd9345dd0289f65064aa827c78",
+    "output": "qa\\evidence\\text-availability\\cycle2\\global_count-restored.log",
+    "output_sha256": "479e39e1f5c0f03935ebd3baefd2aabae538cc39170225c5543dd6539eb62004",
+    "frozen_head": "ec882aa8fb99165afa116a70cd8941c3bbdaf8a2",
+    "mutation": null,
+    "command_elapsed_s": 6.936999999998079
+  },
+  {
+    "label": "global_deadline-red",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "source_before": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ae9c5c5c4b0f684d2f1ab27c932914b474351f2e414ac8e88141894818658b31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "source_after": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ae9c5c5c4b0f684d2f1ab27c932914b474351f2e414ac8e88141894818658b31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "fixture_config_lock": {
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "tests/auth_login_fixture.py": "6e809935e0daf55ac2e6b66b31f1f4e8424fc092d57e7714eb42470000d376b1",
+      "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "environment_sha256": "fcfdd425fc5b5d814ba9f5eaa808499c31d8dbcd9345dd0289f65064aa827c78",
+    "output": "qa\\evidence\\text-availability\\cycle2\\global_deadline-red.log",
+    "output_sha256": "f1fbae88748cab3d72801831997ea9850ce779f0acd86d703ef0b7f6fdbabf21",
+    "frozen_head": "ec882aa8fb99165afa116a70cd8941c3bbdaf8a2",
+    "mutation": {
+      "path": "src/autotester/providers/attempts.py",
+      "before": "if scope.deadline is not None:",
+      "after": "if False:",
+      "occurrences": 1,
+      "original_sha256": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "applied_sha256": "ae9c5c5c4b0f684d2f1ab27c932914b474351f2e414ac8e88141894818658b31",
+      "node": "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]"
+    },
+    "command_elapsed_s": 7.639999999999418
+  },
+  {
+    "label": "global_deadline-restored",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=.work/pytest",
+      "tests/test_text_availability.py::test_enclosing_budget_never_falls_through[6-0]"
+    ],
+    "cwd": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\provider-availability\\.work\\text-availability-cycle2",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "source_before": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "source_after": {
+      "src/autotester/providers/availability.py": "06b769410e6978266144351efad01bbf60d79bb2cbf960104dc367bf20f48574",
+      "src/autotester/providers/model_chain.py": "a5bc9571da2c8828b932a1d6207ac13366eec311328a5c59267bdeff7e4d566b",
+      "src/autotester/providers/litellm_provider.py": "57dbd6c6b5d57d5ed115d38cf991a2b95c9b0ff6e0a572267dcaf62ea818aa43",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "tests/test_text_availability.py": "752e29f3f6d316df7646525fa65a8a7222ba1ecd1d48c59d7de818a280a7e58b",
+      "tests/test_model_chain.py": "cf4885f855bbb6fba3f953d427de8ef234c0761edc80ac69d15b3082242d7e16",
+      "tests/test_provider_attempts.py": "76780f0dadbc85a7784a953a8ab857dba069e28be517ccc9dca01159bea1f36e"
+    },
+    "fixture_config_lock": {
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "tests/auth_login_fixture.py": "6e809935e0daf55ac2e6b66b31f1f4e8424fc092d57e7714eb42470000d376b1",
+      "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+      "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673",
+      "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1"
+    },
+    "environment_sha256": "fcfdd425fc5b5d814ba9f5eaa808499c31d8dbcd9345dd0289f65064aa827c78",
+    "output": "qa\\evidence\\text-availability\\cycle2\\global_deadline-restored.log",
+    "output_sha256": "8b40376581f179518b22e3a038faefee57b938cbc7b40c88abf66ad74889cb5f",
+    "frozen_head": "ec882aa8fb99165afa116a70cd8941c3bbdaf8a2",
+    "mutation": null,
+    "command_elapsed_s": 8.5
+  }
+]

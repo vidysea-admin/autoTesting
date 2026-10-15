@@ -1,11 +1,12 @@
 # Availability-only Gemini text fallback
 
 Status: ready-for-check
-Fix cycle: 1
+Fix cycle: 2
 Risk tier: high-risk (shared Provider boundary, secrets and attempt caps)
 Base SHA: 40f5b4b20e91d3806ee313fb8e67af109b62b0ae
 Immutable runtime/test SHA: 1ecf58cef26e96b713c005e1b089363e4a7fbc18
 Policy-synchronized candidate SHA: aa7813ad20c6ead5012559d9f9961b2a15338d56
+Cycle 2 frozen provenance head: ec882aa8fb99165afa116a70cd8941c3bbdaf8a2
 Root: C:/Users/product/Desktop/autoTesting/.work/provider-availability
 
 ## Scope and authorization
@@ -96,3 +97,29 @@ Maker active seconds/tokens/cost: unknown (null). Checker ratios: unverified.
 Use D-100 fixed bootstrap with the high-risk checks; do not infer a denominator.
 Candidate diff/complete file inventory derive from `git diff BaseSHA..HEAD`;
 packet artifacts are evidence only. Historical checked-PASS units remain historical.
+
+## Cycle 2 provenance repair only
+
+Cycle1 canonical HOLD at ec882aa8 identified that the global_count/global_deadline
+receipts omitted their mutated source, `providers/attempts.py`. Those historical
+receipts remain unchanged and are not offered as authenticated guard proof.
+
+`qa/evidence/text-availability/cycle2/` replaces ONLY those two guard proofs.
+The frozen head above contains exactly the reviewed runtime; no runtime, test,
+dependency or lock change and no latest-master source merge occurred. A fresh
+complete cache-free src/tests/scripts copy includes tests_mutation_fixtures.py.
+Its contemporaneous environment/source inventory adds attempts.py alongside all
+six prior runtime/test paths; fixture/config/lock hashes are checked each phase.
+
+`receipts.json` records own-source preflight, the two-node green baseline, each
+unique applied mutation (one exact byte replacement in attempts.py only), named
+red failure, exact-byte restoration and focused green. Every phase fingerprints
+all seven sources before and after its command, records the environment/lock and
+output hashes, command, exit code and frozen head. `source-binding.json` verifies
+candidate and restored raw bytes match for every inventoried source. No broad
+100-test or other16-mutation rerun occurred; their prior scope/limits remain.
+
+`delta-packet.json` is the compact fresh-context handoff. Its measured subprocess
+durations are command elapsed time only. Whole-maker active time/tokens/cost stay
+unknown; no efficiency claim. The cycle1 verdict remains historical HOLD pending
+an independent cycle2 verdict; this manifest does not self-certify PASS.
