@@ -32,8 +32,9 @@ def ensure_session() -> str:
     now = datetime.now(UTC)
     digest = hashlib.sha256(TOKEN.encode("utf-8")).hexdigest()
     with db.transaction() as conn:
-        conn.execute("INSERT OR IGNORE INTO users (email, password_hash, created_at) "
-                     "VALUES (?, ?, ?)", (TEST_ADMIN_EMAIL, _HASH, now.isoformat()))
+        conn.execute("INSERT OR IGNORE INTO users (email, password_hash, created_at, generation) "
+                     "VALUES (?, ?, ?, ?)",
+                     (TEST_ADMIN_EMAIL, _HASH, now.isoformat(), db.new_account_generation()))
         user_id = conn.execute("SELECT id FROM users WHERE email = ?",
                                (TEST_ADMIN_EMAIL,)).fetchone()[0]
         admin = db.admin_group_id(conn)
