@@ -1,0 +1,19 @@
+...F                                                                     [100%]
+================================== FAILURES ===================================
+_ test_decode_audio_and_source_pixel_limits[probe_result3-source_pixel_limit] _
+tests\test_video_frames.py:129: in test_decode_audio_and_source_pixel_limits
+    with pytest.raises(video_frames.FrameVisionError, match=reason):
+E   Failed: DID NOT RAISE FrameVisionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits[probe_result0-unsupported_or_audio_only_media]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits[probe_result3-source_pixel_limit]
+1 failed, 3 passed, 2 warnings in 1.15s

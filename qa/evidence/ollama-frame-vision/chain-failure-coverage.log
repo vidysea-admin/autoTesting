@@ -1,0 +1,22 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_chain_failure_retains_visual_shortfall _________________
+tests\test_video_frames.py:258: in test_chain_failure_retains_visual_shortfall
+    assert error.value.coverage.text_unavailable
+           ^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'ProviderError' object has no attribute 'coverage'
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:129 model-chain: tier litellm:ollama/glm-5.3-flash failed (FrameVisionError); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_chain_failure_retains_visual_shortfall
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_chain_failure_retains_visual_shortfall
+1 failed, 2 warnings in 1.00s

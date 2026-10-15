@@ -1,0 +1,147 @@
+"""Transport bounded, timestamped sanitized video frames through structured Provider calls."""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import json
+import math
+from contextlib import ExitStack
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Any
+
+from autotester.core.image_privacy import sanitized_images
+from autotester.media.frames import extract_frame
+from autotester.media.probe import probe
+from autotester.providers.attempts import attempt_budget
+from autotester.providers.base import ProviderError, load_skill_prompt
+from autotester.schema.observation import VisionOptions
+from autotester.schema.video_frames import (
+    FrameCoverage,
+    FrameEvidence,
+    FrameLimits,
+    VisionCapability,
+)
+
+
+class FrameVisionError(ProviderError):
+    """A content-free failure retaining the evidence shortfall for persistence."""
+
+    def __init__(self, reason: str, coverage: FrameCoverage) -> None:
+        super().__init__(f"frame vision unavailable: {reason}")
+        self.coverage = coverage
+
+
+def _png_bytes(path: Path, limits: FrameLimits) -> bytes:
+    from PIL import Image
+
+    if not path.is_file() or not 0 < path.stat().st_size <= limits.max_frame_bytes:
+        raise ValueError("frame_byte_limit")
+    with Image.open(path) as image:
+        if image.format != "PNG" or image.width * image.height > limits.max_pixels:
+            raise ValueError("frame_format_or_pixel_limit")
+        image.load()
+    return path.read_bytes()
+
+
+def _sample_times(duration: float, fps: float, cap: int) -> tuple[list[float], bool]:
+    if not math.isfinite(fps) or not 0 < fps <= 10:
+        raise ValueError("invalid_fps")
+    limited = duration > cap / fps
+    count = cap if limited else max(1, math.ceil(duration * fps))
+    # Spread a bounded selection over the entire clip, never just its first seconds.
+    return [index * (duration / count) for index in range(count)], limited
+
+
+def endpoint_fingerprint(provider) -> str:
+    """Bind capability to routing identity, excluding the credential itself."""
+    route = {key: value for key, value in provider._endpoint().items() if key != "api_key"}
+    return hashlib.sha256(json.dumps(route, sort_keys=True).encode()).hexdigest()
+
+
+def _generation(options: VisionOptions | None, coverage: FrameCoverage) -> dict[str, Any]:
+    options = options or VisionOptions()
+    if (options.system_instruction is not None or options.thinking_level != "high"
+            or options.media_resolution != "high" or not 0 < options.max_output_tokens <= 65536
+            or (options.temperature is not None
+                and (not math.isfinite(options.temperature) or not 0 <= options.temperature <= 2))):
+        raise FrameVisionError("unsupported_generation_options", coverage)
+    return {"seed": options.seed, "max_tokens": options.max_output_tokens,
+            **({"temperature": options.temperature} if options.temperature is not None else {})}
+
+
+def _parts(path: Path, scratch: Path, coverage: FrameCoverage, limits: FrameLimits,
+           times: list[float], stack: ExitStack) -> list[dict[str, Any]]:
+    parts: list[dict[str, Any]] = []
+    total = 0
+    for index, timestamp in enumerate(times):
+        evidence = FrameEvidence(index=index, timestamp_s=timestamp, status="withheld")
+        coverage.frames.append(evidence)
+        frame = scratch / f"frame-{index}.png"
+        if not extract_frame(path, timestamp, frame):
+            evidence.reason = "frame_decode_failed"
+            continue
+        try:
+            _png_bytes(frame, limits)
+            safe = stack.enter_context(sanitized_images([frame]))
+            if not safe.paths:
+                evidence.reason = "image_sanitation_withheld"
+                continue
+            data = _png_bytes(safe.paths[0], limits)
+            if total + len(data) > limits.max_total_bytes:
+                evidence.reason = "total_byte_limit"
+                continue
+        except Exception:
+            evidence.reason = "frame_validation_failed"
+            continue
+        total += len(data)
+        evidence.status = "included"
+        encoded = base64.b64encode(data).decode("ascii")
+        parts.extend([
+            {"type": "text", "text": f"Frame {index}, clip-relative seconds {timestamp:.6f}"},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{encoded}"}},
+        ])
+    return parts
+
+
+def see_video(provider, path, prompt, schema, options=None, *, prompt_file=None, fed_id=None):
+    """Fail closed without behavioral evidence; transport never interprets filenames."""
+    coverage = FrameCoverage()
+    capability = provider.options.get("vision_capability")
+    if not (isinstance(capability, VisionCapability) and capability.passed
+            and capability.model == provider.options.get("model")
+            and capability.endpoint_sha256 == endpoint_fingerprint(provider)):
+        raise FrameVisionError("capability_unverified", coverage)
+    limits = provider.options.get("frame_limits", FrameLimits())
+    if not isinstance(limits, FrameLimits):
+        raise FrameVisionError("invalid_frame_limits", coverage)
+    provider.guard_text(prompt)
+    generation = _generation(options, coverage)
+    duration, width, height = probe(Path(path))
+    if not math.isfinite(duration) or duration <= 0 or width <= 0 or height <= 0:
+        raise FrameVisionError("unsupported_or_audio_only_media", coverage)
+    if width * height > limits.max_pixels:
+        raise FrameVisionError("source_pixel_limit", coverage)
+    coverage.duration_s = duration
+    try:
+        times, coverage.sampling_limited = _sample_times(
+            duration, options.fps if options else 2.0, limits.max_frames)
+    except ValueError:
+        raise FrameVisionError("invalid_fps", coverage) from None
+    with attempt_budget(2, wall_clock_s=240), TemporaryDirectory() as scratch, ExitStack() as stack:
+        parts = _parts(Path(path), Path(scratch), coverage, limits, times, stack)
+        if not any(part["type"] == "image_url" for part in parts):
+            raise FrameVisionError("all_frames_withheld", coverage)
+        prompt += "\n" + load_skill_prompt("frame-vision")
+        prompt += "\n" + coverage.model_dump_json()
+        try:
+            result = provider._structured(prompt, schema, role="vision", content_parts=parts,
+                                          generation_options=generation,
+                                          prompt_file=prompt_file, fed_id=fed_id)
+        except ProviderError as exc:
+            exc.coverage = coverage
+            raise
+    if hasattr(result, "visual_coverage"):
+        result.visual_coverage = coverage
+    return result

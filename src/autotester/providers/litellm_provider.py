@@ -1,18 +1,8 @@
-"""LiteLLM provider: the `act` and `judge` roles for any model LiteLLM can reach.
+"""Guarded structured model transport, including capability-gated sanitized frames.
 
-T-202 / D-071 (4): Gemini, Claude, OpenAI, a local Ollama or any OpenAI-compatible
-endpoint, chosen by a model string -- `AUTOTESTER_MODEL=ollama/llama3`, or
-`litellm:<model>` in a project's `providers` -- with no per-vendor SDK code here.
-
-What it deliberately is NOT: `see_video` stays Gemini's (its Files API has no
-equivalent elsewhere); there is no `fallbacks=`/Router (the LangChain provider owns
-fallback chains); LiteLLM's own retries are off (`num_retries=0`) so every physical
-call is visible to `RunBudget`; the SDK only, never the LiteLLM proxy server.
-
-Keys live in the repo-root `.env` (loaded into `os.environ` by `core/env.py`) and
-reach LiteLLM as explicit `api_key=`/`api_base=` kwargs -- this module never writes a
-credential to `os.environ`. `assert_no_raw_secrets` runs before EVERY completion
-(the repair call included), over every `.env` value, on top of the stage-level guard.
+LiteLLM retries are disabled: each physical request, including JSON repair, is
+reserved and recorded here. Credentials remain explicit endpoint arguments;
+the text guard precedes every completion. Video sampling lives in video_frames.
 """
 
 from __future__ import annotations
@@ -37,6 +27,7 @@ from autotester.providers.litellm_schema import (
     parse_answer,
     request_options,
 )
+from autotester.schema.observation import VisionOptions
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
@@ -157,6 +148,14 @@ class LiteLLMProvider(Provider):
             raise ProviderError(reason)
 
     # -- roles -------------------------------------------------------------
+    def see_video(self, path: Path, prompt: str, schema: type[ModelT],
+                  options: VisionOptions | None = None, *,
+                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:
+        from autotester.providers.video_frames import see_video
+
+        return see_video(self, path, prompt, schema, options,
+                         prompt_file=prompt_file, fed_id=fed_id)
+
     def act(self, prompt: str, schema: type[ModelT] | None = None, *,
             prompt_file: str | None = None, fed_id: str | None = None) -> Any:
         return self._structured(prompt, schema, role="agent",
@@ -215,7 +214,7 @@ class LiteLLMProvider(Provider):
 
     def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,
                   role: str, *, prompt_file: str | None, fed_id: str | None,
-                  retries: int = 0) -> Any:
+                  retries: int = 0, generation_options: dict[str, Any] | None = None) -> Any:
         """ONE physical `litellm.completion` call: guarded first, recorded after."""
         self._guard(messages)
         output_options = ({} if ollama_cloud.is_ollama(self._model)
@@ -224,6 +223,7 @@ class LiteLLMProvider(Provider):
             "model": self._model, "messages": messages, "num_retries": 0,
             "timeout": _TIMEOUT_S, "drop_params": True, **self._endpoint(),
             **output_options}
+        kwargs.update(generation_options or {})
         if role == "judge":
             kwargs["temperature"] = 0
         receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
@@ -253,6 +253,8 @@ class LiteLLMProvider(Provider):
     def _structured(
         self, prompt: str, schema: type[ModelT] | None, *, role: str,
         images: list[Path] | None = None,
+        content_parts: list[dict[str, Any]] | None = None,
+        generation_options: dict[str, Any] | None = None,
         prompt_file: str | None = None, fed_id: str | None = None,
     ) -> ModelT:
         if schema is None:
@@ -262,8 +264,11 @@ class LiteLLMProvider(Provider):
         strategy = self._strategy()
         text = prompt + (json_mode_instruction(schema) if strategy == "json" else "")
         messages: list[dict[str, Any]] = [
-            {"role": "user", "content": image_url_parts(text, images)}]
+            {"role": "user", "content": ([{"type": "text", "text": text}, *content_parts]
+                                         if content_parts else image_url_parts(text, images))}]
         meta = {"prompt_file": prompt_file, "fed_id": fed_id}
+        if generation_options:
+            meta["generation_options"] = generation_options
         message = self._complete(messages, schema, strategy, role, **meta)
         try:
             return parse_answer(message, strategy, schema,

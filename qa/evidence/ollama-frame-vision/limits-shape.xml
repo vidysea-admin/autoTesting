@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.974" timestamp="2026-10-15T08:50:20.639227+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_invalid_limit_shape_and_transport_failures_retain_evidence" time="0.151"><failure message="AttributeError: 'dict' object has no attribute 'max_pixels'">tests\test_video_frames.py:244: in test_invalid_limit_shape_and_transport_failures_retain_evidence
+    instance.see_video(Path("x.mp4"), "Observe", VideoObservation)
+src\autotester\providers\litellm_provider.py:156: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:124: in see_video
+    if width * height &gt; limits.max_pixels:
+                        ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'dict' object has no attribute 'max_pixels'</failure></testcase></testsuite></testsuites>

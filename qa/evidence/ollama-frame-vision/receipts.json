@@ -1,0 +1,1195 @@
+{
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "files": {
+    "src/autotester/providers/video_frames.py": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+    "src/autotester/providers/litellm_provider.py": "5c22dce6cba0a59862fb19697717ec1c9d2eeb34a6638d473ffa4940af2d0865",
+    "src/autotester/providers/model_chain.py": "07fc5cae8e642f1ed086481a6bfc5c9d377389000715f6d01c87bf9741c4d22c",
+    "src/autotester/schema/video_frames.py": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+    "src/autotester/schema/observation.py": "1471bfb0078cfd620807eb6c3950bfb1660cce62d712a25210639f2f36e5c5d0",
+    "tests/test_video_frames.py": "b90af7425829f53a9b18fc074dd58c3b88ab8e5f7cf3da0f77a80456e53cc759",
+    "tests/test_video_frame_schema.py": "23012c52dd379716771dbe154efa85a4412c2d506165185de36ddc3398e844c0",
+    "tests/test_litellm_provider.py": "c7494665181d2e9827197d1df832022356c0ef870cf781da0cbd5998a7efd745",
+    "src/autotester/skills/frame-vision/SKILL.md": "5d291ccbe4a459512c3f68410689c60e777c32827811918cadef60bd5e9f75a8",
+    "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+    "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+    "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+    "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673"
+  },
+  "proof_sha256": "5f93ca75791b029a29d3345dde1119fe49f5a7e07d7fa190eb81273ac6c2d759",
+  "preflight_sha256": "ef178cdf3cbb9a45b090afcde8852952059fe223cdf96f26bc74d3164f33ba4a",
+  "dependencies": {
+    "pytest": "9.1.1",
+    "pydantic": "2.13.5",
+    "Pillow": "12.3.0",
+    "litellm": "1.104.0",
+    "python-dotenv": "1.2.3"
+  },
+  "mutations": [
+    {
+      "name": "privacy",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+      "old": "safe = stack.enter_context(sanitized_images([frame]))",
+      "new": "safe = type('Unsafe', (), {'paths': [frame]})()",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "6f1609d74f479d7559fcd59b62403e1460aba119f7c4b647411f51c40db1bd4f",
+      "failures": [
+        "test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ],
+      "exit": 1,
+      "duration_s": 8.953000000001339,
+      "started_at": "2026-10-15T08:47:34.771478+00:00",
+      "ended_at": "2026-10-15T08:47:43.732217+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\privacy.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-privacy"
+      ],
+      "log_sha256": "6acab89a083496b555dc32f46200c58bdcd432be654a48074ef2052900d15948"
+    },
+    {
+      "name": "timestamps",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+      "old": "{timestamp:.6f}",
+      "new": "{0:.6f}",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "fe5c8699569127b89d8a3718fd80e92370f0cb0d189b6f17431442312f637898",
+      "failures": [
+        "test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ],
+      "exit": 1,
+      "duration_s": 10.75,
+      "started_at": "2026-10-15T08:47:43.776927+00:00",
+      "ended_at": "2026-10-15T08:47:54.526422+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\timestamps.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-timestamps"
+      ],
+      "log_sha256": "4f3a41dbfff49cebf560d650f831c7f2ae1ee7b4b0314de2c80e8e55de497945"
+    },
+    {
+      "name": "frame-cap",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+      "old": "count = cap if limited else max(1, math.ceil(duration * fps))",
+      "new": "count = max(1, math.ceil(duration * fps))",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "cd12b2fc87c474824bae791ab38cde1ba3574740d07399da676b9f97aad9a492",
+      "failures": [
+        "test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ],
+      "exit": 1,
+      "duration_s": 10.860000000000582,
+      "started_at": "2026-10-15T08:47:54.572259+00:00",
+      "ended_at": "2026-10-15T08:48:05.424631+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\frame-cap.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-frame-cap"
+      ],
+      "log_sha256": "dcebbf1e0882851e698c372cfd5c9fda0daef30a4926e6e980866a73085da1a1"
+    },
+    {
+      "name": "partial-index",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_partial_withholding_retains_original_index_and_time",
+      "old": "index=index, timestamp_s=timestamp",
+      "new": "index=0, timestamp_s=0",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "1eb281f47fd876910b7a61d1e15e4e8770f9a694e04d31b9936dada21a8c98bb",
+      "failures": [
+        "test_partial_withholding_retains_original_index_and_time"
+      ],
+      "exit": 1,
+      "duration_s": 7.842999999997119,
+      "started_at": "2026-10-15T08:48:05.481482+00:00",
+      "ended_at": "2026-10-15T08:48:13.317036+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_partial_withholding_retains_original_index_and_time",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\partial-index.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-partial-index"
+      ],
+      "log_sha256": "fc1a962d4d04dfdfe2a38f45dc5ff091f6ceea46090df5c02c49567f4abf9d0f"
+    },
+    {
+      "name": "empty-payload",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_all_withheld_never_sends_text_only_success",
+      "old": "if not any(part[\"type\"] == \"image_url\" for part in parts):",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "7769e51bbd247d4ed823e22b99459901bc1cf6baca228efd00dec951cd6f65bf",
+      "failures": [
+        "test_all_withheld_never_sends_text_only_success"
+      ],
+      "exit": 1,
+      "duration_s": 13.140999999999622,
+      "started_at": "2026-10-15T08:48:13.361757+00:00",
+      "ended_at": "2026-10-15T08:48:26.512022+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_all_withheld_never_sends_text_only_success",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\empty-payload.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-empty-payload"
+      ],
+      "log_sha256": "9032202dcceaeac3de216006ad6602e9b2761035519b7ba8ff0e2be93ed81014"
+    },
+    {
+      "name": "fps",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_invalid_sampling_fails_before_decode",
+      "old": "if not math.isfinite(fps) or not 0 < fps <= 10:",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "b0036e18efaa93243508f599a076241cea810d8986d06bcee4ce7daa4a94707b",
+      "failures": [
+        "test_invalid_sampling_fails_before_decode[0]",
+        "test_invalid_sampling_fails_before_decode[-1]",
+        "test_invalid_sampling_fails_before_decode[inf]",
+        "test_invalid_sampling_fails_before_decode[11]"
+      ],
+      "exit": 1,
+      "duration_s": 9.34400000000096,
+      "started_at": "2026-10-15T08:48:26.567386+00:00",
+      "ended_at": "2026-10-15T08:48:35.918275+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_invalid_sampling_fails_before_decode",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\fps.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-fps"
+      ],
+      "log_sha256": "f6f08a70e2544b5ae687e60a021b576cae9cbea559abc976162ae0eafc732af5"
+    },
+    {
+      "name": "media",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits",
+      "old": "if not math.isfinite(duration) or duration <= 0 or width <= 0 or height <= 0:",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "34049e704f575e4aab7298a470316642f8d0bed02596a51436a601ad75fba5ac",
+      "failures": [
+        "test_decode_audio_and_source_pixel_limits[probe_result0-unsupported_or_audio_only_media]",
+        "test_decode_audio_and_source_pixel_limits[probe_result1-unsupported_or_audio_only_media]",
+        "test_decode_audio_and_source_pixel_limits[probe_result2-unsupported_or_audio_only_media]"
+      ],
+      "exit": 1,
+      "duration_s": 7.671999999998661,
+      "started_at": "2026-10-15T08:48:35.959304+00:00",
+      "ended_at": "2026-10-15T08:48:43.638970+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\media.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-media"
+      ],
+      "log_sha256": "78e8587779d4a109e67725386d77a517c652749361d5e73c2df9254ef06640ab"
+    },
+    {
+      "name": "source-pixels",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits",
+      "old": "if width * height > limits.max_pixels:",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "840a85a6bf14c07cae6f23471181cda59ded2bf272a5acaedad81df9840a781c",
+      "failures": [
+        "test_decode_audio_and_source_pixel_limits[probe_result3-source_pixel_limit]"
+      ],
+      "exit": 1,
+      "duration_s": 7.672000000002299,
+      "started_at": "2026-10-15T08:48:43.691494+00:00",
+      "ended_at": "2026-10-15T08:48:51.373957+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\source-pixels.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-source-pixels"
+      ],
+      "log_sha256": "02fd29c1a5f3ff8e641940a4b6cf3a4ab7353c9c843ce79ad1811c195475c2ae"
+    },
+    {
+      "name": "capability",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route",
+      "old": "if not (isinstance(capability, VisionCapability) and capability.passed\n            and capability.model == provider.options.get(\"model\")\n            and capability.endpoint_sha256 == endpoint_fingerprint(provider)):",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "36ef8343fc69afaee4c274bb92f08db77cf73f3d09a26ddfd97377932ca97aff",
+      "failures": [
+        "test_capability_requires_behavioral_receipt_bound_to_route[missing]",
+        "test_capability_requires_behavioral_receipt_bound_to_route[failed]",
+        "test_capability_requires_behavioral_receipt_bound_to_route[model]",
+        "test_capability_requires_behavioral_receipt_bound_to_route[endpoint]"
+      ],
+      "exit": 1,
+      "duration_s": 9.125,
+      "started_at": "2026-10-15T08:48:51.418911+00:00",
+      "ended_at": "2026-10-15T08:49:00.533943+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\capability.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-capability"
+      ],
+      "log_sha256": "3dafda9e1583c2c168e5d820d574b6c2f4ee691c3d42062286790a2cea98d257"
+    },
+    {
+      "name": "attempt-budget",
+      "source": "src/autotester/providers/model_chain.py",
+      "test": "tests/test_video_frames.py::test_repair_and_fallback_obey_shared_physical_budget",
+      "old": "except AttemptBudgetExhausted:\r\n                self._sync_usage()\r\n                raise",
+      "new": "except AttemptBudgetExhausted:\r\n                self._sync_usage()\r\n                break",
+      "source_sha256": "07fc5cae8e642f1ed086481a6bfc5c9d377389000715f6d01c87bf9741c4d22c",
+      "mutated_sha256": "186b39b051d6816f10f50a70bb9cb3ec525be0c79705d01aea767ced0d04a550",
+      "failures": [
+        "test_repair_and_fallback_obey_shared_physical_budget"
+      ],
+      "exit": 1,
+      "duration_s": 7.062999999998283,
+      "started_at": "2026-10-15T08:49:00.584529+00:00",
+      "ended_at": "2026-10-15T08:49:07.654944+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_repair_and_fallback_obey_shared_physical_budget",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\attempt-budget.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-attempt-budget"
+      ],
+      "log_sha256": "4a275ea07aaec11e54b849f14f06b8a4a9d671bc4c71aae8443ec1dc1d4b980d"
+    },
+    {
+      "name": "fallback",
+      "source": "src/autotester/providers/model_chain.py",
+      "test": "tests/test_video_frames.py::test_fallback_serves_configured_model_only",
+      "old": "except ProviderError as exc:\r\n                self._sync_usage()",
+      "new": "except ProviderError as exc:\r\n                raise\r\n                self._sync_usage()",
+      "source_sha256": "07fc5cae8e642f1ed086481a6bfc5c9d377389000715f6d01c87bf9741c4d22c",
+      "mutated_sha256": "26138c5c212f41807a03bad3152fc134ba09625894d3ee706fdc9d6d96d5d930",
+      "failures": [
+        "test_fallback_serves_configured_model_only"
+      ],
+      "exit": 1,
+      "duration_s": 7.1560000000026776,
+      "started_at": "2026-10-15T08:49:07.688045+00:00",
+      "ended_at": "2026-10-15T08:49:14.837253+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_fallback_serves_configured_model_only",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\fallback.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-fallback"
+      ],
+      "log_sha256": "5ef18479f86e4583ed4956bd42db0d04d8a3eb101caa4d21bcda79677ca7b919"
+    },
+    {
+      "name": "secret-guard",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_prompt_secret_guard_precedes_media_processing",
+      "old": "provider.guard_text(prompt)",
+      "new": "prompt = 'Observe'",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "ec4e7962ce8c2c867cb0de3123686c9b7937c5b92b2e6e563ae6f7f2c0f1a463",
+      "failures": [
+        "test_prompt_secret_guard_precedes_media_processing"
+      ],
+      "exit": 1,
+      "duration_s": 7.125,
+      "started_at": "2026-10-15T08:49:14.882976+00:00",
+      "ended_at": "2026-10-15T08:49:22.013133+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_prompt_secret_guard_precedes_media_processing",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\secret-guard.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-secret-guard"
+      ],
+      "log_sha256": "24722e739303ca8141ed2c3c965ec1c88c01e825289f1f485dca1b57e1a7674f"
+    },
+    {
+      "name": "png-bytes",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[oversized]",
+      "old": "if not path.is_file() or not 0 < path.stat().st_size <= limits.max_frame_bytes:",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "897dbf9c7297da35d6cf7772ce6ed6fb1d6a4e302956744ac70b7657af9b3ce9",
+      "failures": [
+        "test_invalid_extracted_payload_cannot_reach_transport[oversized]"
+      ],
+      "exit": 1,
+      "duration_s": 7.484000000000378,
+      "started_at": "2026-10-15T08:49:22.057309+00:00",
+      "ended_at": "2026-10-15T08:49:29.544819+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[oversized]",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\png-bytes.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-png-bytes"
+      ],
+      "log_sha256": "970c329ccfbb7b74d0e35024c610ada5852abd25360a27fefc3854356e46df5e"
+    },
+    {
+      "name": "png-format",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[jpeg]",
+      "old": "image.format != \"PNG\" or image.width * image.height > limits.max_pixels",
+      "new": "image.width * image.height > limits.max_pixels",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "de413e8fe7e5945be044a70a42ccf4ffb544893689f9779d221acd1eb7b0aa28",
+      "failures": [
+        "test_invalid_extracted_payload_cannot_reach_transport[jpeg]"
+      ],
+      "exit": 1,
+      "duration_s": 7.15599999999904,
+      "started_at": "2026-10-15T08:49:29.591805+00:00",
+      "ended_at": "2026-10-15T08:49:36.746659+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[jpeg]",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\png-format.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-png-format"
+      ],
+      "log_sha256": "297bcfffa86028f215679ffbc3576b697bf6baa50d61e77f3985036492d5c88f"
+    },
+    {
+      "name": "png-pixels",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[pixels]",
+      "old": "image.format != \"PNG\" or image.width * image.height > limits.max_pixels",
+      "new": "image.format != \"PNG\"",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "df0be21981b6f6fb0eaa21fbc36814d6b8c54452c283d19a61ebe69861078387",
+      "failures": [
+        "test_invalid_extracted_payload_cannot_reach_transport[pixels]"
+      ],
+      "exit": 1,
+      "duration_s": 6.890999999999622,
+      "started_at": "2026-10-15T08:49:36.787986+00:00",
+      "ended_at": "2026-10-15T08:49:43.686033+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[pixels]",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\png-pixels.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-png-pixels"
+      ],
+      "log_sha256": "03559958cb31e4a0c197f7f239201d21ce1685afcc1e25193d5c9135732f08e5"
+    },
+    {
+      "name": "total-bytes",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_total_bytes_bound_preserves_partial_coverage",
+      "old": "if total + len(data) > limits.max_total_bytes:",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "b381dabb6a2a559b41ec797e88a423f672adc86b93d5038c0ec5433f06632e75",
+      "failures": [
+        "test_total_bytes_bound_preserves_partial_coverage"
+      ],
+      "exit": 1,
+      "duration_s": 7.109000000000378,
+      "started_at": "2026-10-15T08:49:43.731659+00:00",
+      "ended_at": "2026-10-15T08:49:50.839813+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_total_bytes_bound_preserves_partial_coverage",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\total-bytes.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-total-bytes"
+      ],
+      "log_sha256": "9a352591cd16029a19a79c39871b4659a27c92542fa983983aacb2fbd666b890"
+    },
+    {
+      "name": "decode-status",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_failed_frame_decode_is_explicitly_withheld",
+      "old": "evidence.reason = \"frame_decode_failed\"",
+      "new": "evidence.reason = \"ignored\"",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "78b53eae29b55ef38ce6976ea9ee26da35738ba97234e948c55e921968eeb821",
+      "failures": [
+        "test_failed_frame_decode_is_explicitly_withheld"
+      ],
+      "exit": 1,
+      "duration_s": 7.21900000000096,
+      "started_at": "2026-10-15T08:49:50.885671+00:00",
+      "ended_at": "2026-10-15T08:49:58.108436+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_failed_frame_decode_is_explicitly_withheld",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\decode-status.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-decode-status"
+      ],
+      "log_sha256": "f9b013f981ca5707349b3559db1fd57f035822c159c4f01483ac53bb116cebb1"
+    },
+    {
+      "name": "generation",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly",
+      "old": "if (options.system_instruction is not None or options.thinking_level != \"high\"\n            or options.media_resolution != \"high\" or not 0 < options.max_output_tokens <= 65536\n            or (options.temperature is not None\n                and (not math.isfinite(options.temperature) or not 0 <= options.temperature <= 2))):",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "038f34ebc53f06183e148162692a5c80d8e9a976f04f7bf66f470555cb97415b",
+      "failures": [
+        "test_unsupported_generation_controls_reject_explicitly[values0]",
+        "test_unsupported_generation_controls_reject_explicitly[values1]",
+        "test_unsupported_generation_controls_reject_explicitly[values2]",
+        "test_unsupported_generation_controls_reject_explicitly[values3]",
+        "test_unsupported_generation_controls_reject_explicitly[values4]",
+        "test_unsupported_generation_controls_reject_explicitly[values5]"
+      ],
+      "exit": 1,
+      "duration_s": 8.593000000000757,
+      "started_at": "2026-10-15T08:49:58.151394+00:00",
+      "ended_at": "2026-10-15T08:50:06.750759+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\generation.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-generation"
+      ],
+      "log_sha256": "51f3b44342ba344cc63b04811e02906d62492482cad0b3f7b17c8d72c08845f7"
+    },
+    {
+      "name": "generation-forward",
+      "source": "src/autotester/providers/litellm_provider.py",
+      "test": "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+      "old": "kwargs.update(generation_options or {})",
+      "new": "pass",
+      "source_sha256": "5c22dce6cba0a59862fb19697717ec1c9d2eeb34a6638d473ffa4940af2d0865",
+      "mutated_sha256": "f4f19719988017a9df29adf9f4861f1f4991019fbd528274a6ac0508ba70473a",
+      "failures": [
+        "test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ],
+      "exit": 1,
+      "duration_s": 8.109000000000378,
+      "started_at": "2026-10-15T08:50:06.799844+00:00",
+      "ended_at": "2026-10-15T08:50:14.913013+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\generation-forward.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-generation-forward"
+      ],
+      "log_sha256": "28a17d898bba361eff363c90229f7f90055f07ad75d254e1f802a52b10712f6d"
+    },
+    {
+      "name": "limits-shape",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_invalid_limit_shape_and_transport_failures_retain_evidence",
+      "old": "if not isinstance(limits, FrameLimits):",
+      "new": "if False:",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "4fe8e5843cc9aa6b2bcd2683a8f33fc7a1e326701e5435c7f967a73003726606",
+      "failures": [
+        "test_invalid_limit_shape_and_transport_failures_retain_evidence"
+      ],
+      "exit": 1,
+      "duration_s": 7.327999999997701,
+      "started_at": "2026-10-15T08:50:14.968226+00:00",
+      "ended_at": "2026-10-15T08:50:22.286191+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_invalid_limit_shape_and_transport_failures_retain_evidence",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\limits-shape.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-limits-shape"
+      ],
+      "log_sha256": "ff150041a54760292b6e14b9d403d9d085dd358ae8c0f00612e761bca6a4e833"
+    },
+    {
+      "name": "failure-coverage",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_video_frames.py::test_invalid_limit_shape_and_transport_failures_retain_evidence",
+      "old": "exc.coverage = coverage",
+      "new": "pass",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "c5b1d985c237cf1ab9284afacdf802850ea6b4086e1467f93e9c4199121e361f",
+      "failures": [
+        "test_invalid_limit_shape_and_transport_failures_retain_evidence"
+      ],
+      "exit": 1,
+      "duration_s": 7.312999999998283,
+      "started_at": "2026-10-15T08:50:22.330148+00:00",
+      "ended_at": "2026-10-15T08:50:29.651815+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_invalid_limit_shape_and_transport_failures_retain_evidence",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\failure-coverage.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-failure-coverage"
+      ],
+      "log_sha256": "89ffdb207b9dab518b5d58293e717dbc77b969dd027274fec91d8af444b776f5"
+    },
+    {
+      "name": "chain-failure-coverage",
+      "source": "src/autotester/providers/model_chain.py",
+      "test": "tests/test_video_frames.py::test_chain_failure_retains_visual_shortfall",
+      "old": "failure.coverage = coverage",
+      "new": "pass",
+      "source_sha256": "07fc5cae8e642f1ed086481a6bfc5c9d377389000715f6d01c87bf9741c4d22c",
+      "mutated_sha256": "4a6c8ea9fa8d0200b7007f7f5019240b76946dbccf20479b7d0307fcccf39dce",
+      "failures": [
+        "test_chain_failure_retains_visual_shortfall"
+      ],
+      "exit": 1,
+      "duration_s": 7.14100000000326,
+      "started_at": "2026-10-15T08:50:29.697598+00:00",
+      "ended_at": "2026-10-15T08:50:36.831064+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_chain_failure_retains_visual_shortfall",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\chain-failure-coverage.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-chain-failure-coverage"
+      ],
+      "log_sha256": "1e0b169674105b35896fdb29fbe2015e5313002265c9959d7308e36adabe2091"
+    },
+    {
+      "name": "blocked-before-delivery",
+      "source": "src/autotester/providers/litellm_provider.py",
+      "test": "tests/test_video_frames.py::test_budget_refusal_preserves_inclusion_without_claiming_delivery",
+      "old": "self._require_ready()",
+      "new": "return schema()",
+      "source_sha256": "5c22dce6cba0a59862fb19697717ec1c9d2eeb34a6638d473ffa4940af2d0865",
+      "mutated_sha256": "af54b37ec57bd2562d54587944eeb46e78b83886bae1de4c297ce4951a91ec3d",
+      "failures": [
+        "test_budget_refusal_preserves_inclusion_without_claiming_delivery"
+      ],
+      "exit": 1,
+      "duration_s": 8.546999999998661,
+      "started_at": "2026-10-15T08:50:36.874594+00:00",
+      "ended_at": "2026-10-15T08:50:45.408718+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frames.py::test_budget_refusal_preserves_inclusion_without_claiming_delivery",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\blocked-before-delivery.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-blocked-before-delivery"
+      ],
+      "log_sha256": "a0d51f9710347980792c21ce153c408e3bc51017ae68f8f081361d2dd2bc14c5"
+    },
+    {
+      "name": "unverified-regression",
+      "source": "src/autotester/providers/video_frames.py",
+      "test": "tests/test_litellm_provider.py::test_see_video_without_behavioral_capability_is_unavailable",
+      "old": "raise FrameVisionError(\"capability_unverified\", coverage)",
+      "new": "raise FrameVisionError(\"wrong_reason\", coverage)",
+      "source_sha256": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+      "mutated_sha256": "c80517a6f25f39d1fb6616385ec93e7e69768878e8eb7645118a9c4fa413b368",
+      "failures": [
+        "test_see_video_without_behavioral_capability_is_unavailable"
+      ],
+      "exit": 1,
+      "duration_s": 8.03099999999904,
+      "started_at": "2026-10-15T08:50:45.462300+00:00",
+      "ended_at": "2026-10-15T08:50:53.500388+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_litellm_provider.py::test_see_video_without_behavioral_capability_is_unavailable",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\unverified-regression.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-unverified-regression"
+      ],
+      "log_sha256": "19790956a86e9cc28eb2c9d79d3c9a76540665bb7d19782e8d3eeffa5ace2e12"
+    },
+    {
+      "name": "schema-max_frames",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+      "old": "    max_frames: int = Field(default=16, ge=1, le=64)",
+      "new": "    max_frames: int = 16",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "7fda0a3816be195b4b3ea91dabbd74a0e8e989d7b2ddcda64ae7df0dd370d605",
+      "failures": [
+        "test_frame_limits_are_finite_bounded[max_frames-1-64]"
+      ],
+      "exit": 1,
+      "duration_s": 7.96900000000096,
+      "started_at": "2026-10-15T08:50:53.542797+00:00",
+      "ended_at": "2026-10-15T08:51:01.505461+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-max_frames.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-max_frames"
+      ],
+      "log_sha256": "fd55788f2d2fb92d86cd33ee1d9a8cd43317ff3f3e0ca894f7f056f11f9c6d92"
+    },
+    {
+      "name": "schema-max_pixels",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+      "old": "    max_pixels: int = Field(default=4_000_000, ge=1, le=16_000_000)",
+      "new": "    max_pixels: int = 4000000",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "1c132037270686344a76322f21777d70c5f7e92ece8e3479b3a2ca6ea630b826",
+      "failures": [
+        "test_frame_limits_are_finite_bounded[max_pixels-1-16000000]"
+      ],
+      "exit": 1,
+      "duration_s": 8.764999999999418,
+      "started_at": "2026-10-15T08:51:01.555191+00:00",
+      "ended_at": "2026-10-15T08:51:10.317576+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-max_pixels.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-max_pixels"
+      ],
+      "log_sha256": "adb49da5faee6c8bdd58b7513dc011d211051004253b0fba71f0580a6c49966d"
+    },
+    {
+      "name": "schema-max_frame_bytes",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+      "old": "    max_frame_bytes: int = Field(default=2_000_000, ge=1, le=20_000_000)",
+      "new": "    max_frame_bytes: int = 2000000",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "d5e8fb708a151eea60f45f8fa5803e0b2aa77eee8dc4af5d1c61041183c0cbcb",
+      "failures": [
+        "test_frame_limits_are_finite_bounded[max_frame_bytes-1-20000000]"
+      ],
+      "exit": 1,
+      "duration_s": 7.906999999999243,
+      "started_at": "2026-10-15T08:51:10.363805+00:00",
+      "ended_at": "2026-10-15T08:51:18.279510+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-max_frame_bytes.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-max_frame_bytes"
+      ],
+      "log_sha256": "363be1f240176ac524a093742c676053659af6e084005fc970a779acde25e80f"
+    },
+    {
+      "name": "schema-max_total_bytes",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+      "old": "    max_total_bytes: int = Field(default=16_000_000, ge=1, le=64_000_000)",
+      "new": "    max_total_bytes: int = 16000000",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "49c76fac101c1a29ad6b5959460677a8c81210a50bf20603ed5990e87a52911e",
+      "failures": [
+        "test_frame_limits_are_finite_bounded[max_total_bytes-1-64000000]"
+      ],
+      "exit": 1,
+      "duration_s": 8.110000000000582,
+      "started_at": "2026-10-15T08:51:18.327699+00:00",
+      "ended_at": "2026-10-15T08:51:26.423999+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-max_total_bytes.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-max_total_bytes"
+      ],
+      "log_sha256": "c095866cd0f3cb70ee0d4204b7ddcf526a183cb0dd01a516395cac0c2b0086cd"
+    },
+    {
+      "name": "schema-index",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+      "old": "    index: int = Field(ge=0)",
+      "new": "    index: int = Field()",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "037f85da0b02cfa2c4d6abd19c97070c340792f6d68be1e63db8aa31b5d48212",
+      "failures": [
+        "test_frame_evidence_rejects_invalid_index_time_and_status"
+      ],
+      "exit": 1,
+      "duration_s": 9.234000000000378,
+      "started_at": "2026-10-15T08:51:26.485315+00:00",
+      "ended_at": "2026-10-15T08:51:35.706862+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-index.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-index"
+      ],
+      "log_sha256": "38c18825e9cc0c0fef7afbc3c5054b89224ee300e3ffb1c5b48c6cfa1d618d1a"
+    },
+    {
+      "name": "schema-timestamp_s",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+      "old": "    timestamp_s: float = Field(ge=0)",
+      "new": "    timestamp_s: float = Field()",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "f900681bffef662a3e5b8690bffa2a464f4fb67068eae4dc8930e5bf14827d18",
+      "failures": [
+        "test_frame_evidence_rejects_invalid_index_time_and_status"
+      ],
+      "exit": 1,
+      "duration_s": 8.125,
+      "started_at": "2026-10-15T08:51:35.750207+00:00",
+      "ended_at": "2026-10-15T08:51:43.869002+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-timestamp_s.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-timestamp_s"
+      ],
+      "log_sha256": "cdc3a0065c13279873587372ab0033c76781c93883937dacfb73f1e337794e9c"
+    },
+    {
+      "name": "schema-duration_s",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_coverage_rejects_invalid_duration",
+      "old": "    duration_s: float = Field(default=0, ge=0)",
+      "new": "    duration_s: float = Field(default=0)",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "c0b18bb774f1241305fe5202697b0697138037c108b137b09af98ba69bee58cf",
+      "failures": [
+        "test_coverage_rejects_invalid_duration"
+      ],
+      "exit": 1,
+      "duration_s": 7.953000000001339,
+      "started_at": "2026-10-15T08:51:43.908673+00:00",
+      "ended_at": "2026-10-15T08:51:51.868746+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_coverage_rejects_invalid_duration",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-duration_s.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-duration_s"
+      ],
+      "log_sha256": "5aa957347696116fbd5dd3c32c7fff4ef8048fe534628ebf1101a1c56ecc2f0b"
+    },
+    {
+      "name": "schema-status",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+      "old": "status: Literal[\"included\", \"withheld\"]",
+      "new": "status: str",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "292841102043fc00e8d6f08bdc23bce1de71804b8bdb041ec21644410043d1db",
+      "failures": [
+        "test_frame_evidence_rejects_invalid_index_time_and_status"
+      ],
+      "exit": 1,
+      "duration_s": 7.359000000000378,
+      "started_at": "2026-10-15T08:51:51.928952+00:00",
+      "ended_at": "2026-10-15T08:51:59.287044+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-status.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-status"
+      ],
+      "log_sha256": "1f71f3acb868c5f78db5300867d255837560fb8929d78e4dad2b9212e20b2365"
+    },
+    {
+      "name": "schema-endpoint_sha256",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+      "old": "endpoint_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")",
+      "new": "endpoint_sha256: str",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "ea2fdf7e9bb47bcdb976287bcadd31142ccdb71ecdccbcdef1c288c025b8323b",
+      "failures": [
+        "test_capability_requires_hashes_and_rejects_unknown_fields"
+      ],
+      "exit": 1,
+      "duration_s": 8.312999999998283,
+      "started_at": "2026-10-15T08:51:59.330393+00:00",
+      "ended_at": "2026-10-15T08:52:07.653009+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-endpoint_sha256.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-endpoint_sha256"
+      ],
+      "log_sha256": "d31e6b61978b94daaebbd582e8513bfcb18655f86f3463c6ea1a11458b468ece"
+    },
+    {
+      "name": "schema-fixture_sha256",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+      "old": "fixture_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")",
+      "new": "fixture_sha256: str",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "0b92360adb63e467b5e2fda1c7a17b5575f8b169711db71f9ec2d711cf8115cd",
+      "failures": [
+        "test_capability_requires_hashes_and_rejects_unknown_fields"
+      ],
+      "exit": 1,
+      "duration_s": 7.407000000002881,
+      "started_at": "2026-10-15T08:52:07.691732+00:00",
+      "ended_at": "2026-10-15T08:52:15.095854+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-fixture_sha256.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-fixture_sha256"
+      ],
+      "log_sha256": "186a319990b60cdc547176630b8936fcf3f79859f2fbed74e3fc339f7e9f1f74"
+    },
+    {
+      "name": "schema-output_sha256",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+      "old": "output_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")",
+      "new": "output_sha256: str",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "14aa5cfaa99a58e871e074ddfeacd217458952e3d1b8734d5adb021a8a36f6b7",
+      "failures": [
+        "test_capability_requires_hashes_and_rejects_unknown_fields"
+      ],
+      "exit": 1,
+      "duration_s": 7.640999999999622,
+      "started_at": "2026-10-15T08:52:15.139589+00:00",
+      "ended_at": "2026-10-15T08:52:22.778018+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-output_sha256.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-output_sha256"
+      ],
+      "log_sha256": "bb12ac446921d5e9a9bbcc91396af410c1cedebd7a4accdd69918d4afffad232"
+    },
+    {
+      "name": "schema-extra-FrameLimits",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+      "old": "class FrameLimits(BaseModel):\n    \"\"\"Finite host decode and outbound-payload limits, independent of model tags.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    max_frames: int = Field(default=16, ge=1, le=64)\n    max_pixels: int = Field(default=4_000_000, ge=1, le=16_000_000)\n    max_frame_bytes: int = Field(default=2_000_000, ge=1, le=20_000_000)\n    max_total_bytes: int = Field(default=16_000_000, ge=1, le=64_000_000)",
+      "new": "class FrameLimits(BaseModel):\n    \"\"\"Finite host decode and outbound-payload limits, independent of model tags.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\", allow_inf_nan=False)\n    max_frames: int = Field(default=16, ge=1, le=64)\n    max_pixels: int = Field(default=4_000_000, ge=1, le=16_000_000)\n    max_frame_bytes: int = Field(default=2_000_000, ge=1, le=20_000_000)\n    max_total_bytes: int = Field(default=16_000_000, ge=1, le=64_000_000)",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "9ca25a356566876aa5234f7fbff17d7d83812d84a32c13731a161b685302baa7",
+      "failures": [
+        "test_capability_requires_hashes_and_rejects_unknown_fields"
+      ],
+      "exit": 1,
+      "duration_s": 8.329000000001543,
+      "started_at": "2026-10-15T08:52:22.823782+00:00",
+      "ended_at": "2026-10-15T08:52:31.156302+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-extra-FrameLimits.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-extra-FrameLimits"
+      ],
+      "log_sha256": "4b843d493e33822088379f22f36227397335eae593ed09d3993ea965c9d1350e"
+    },
+    {
+      "name": "schema-extra-FrameEvidence",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+      "old": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "new": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\", allow_inf_nan=False)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "669fb1dd3c28a4a67b890fd419d9ada04fd7341432da5342c7334b8abaa3e47d",
+      "failures": [
+        "test_capability_requires_hashes_and_rejects_unknown_fields"
+      ],
+      "exit": 1,
+      "duration_s": 7.860000000000582,
+      "started_at": "2026-10-15T08:52:31.201868+00:00",
+      "ended_at": "2026-10-15T08:52:39.062008+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-extra-FrameEvidence.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-extra-FrameEvidence"
+      ],
+      "log_sha256": "7c26bf3ccabcaedd32eaa08ec24b5bb1ef5ddc120ef27cc936adc6c5eaeeee02"
+    },
+    {
+      "name": "schema-finite-FrameEvidence",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+      "old": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "new": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=True)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "f16b28ae81978c15f0d2326513a5aff153feedd6726f08c45c674b8c091bfc02",
+      "failures": [
+        "test_frame_evidence_rejects_invalid_index_time_and_status"
+      ],
+      "exit": 1,
+      "duration_s": 8.014999999999418,
+      "started_at": "2026-10-15T08:52:39.105069+00:00",
+      "ended_at": "2026-10-15T08:52:47.123200+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-finite-FrameEvidence.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-finite-FrameEvidence"
+      ],
+      "log_sha256": "fa12f5a647970beac466d7565c75b6d0a4c652455b9741d3e61c43413b5fe69a"
+    },
+    {
+      "name": "schema-extra-FrameCoverage",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+      "old": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "new": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\", allow_inf_nan=False)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "2723613a14f89e735e2ca62447eac089852cfc9566a4557f81bfb4d7a166e73e",
+      "failures": [
+        "test_capability_requires_hashes_and_rejects_unknown_fields"
+      ],
+      "exit": 1,
+      "duration_s": 7.765999999999622,
+      "started_at": "2026-10-15T08:52:47.167889+00:00",
+      "ended_at": "2026-10-15T08:52:54.929193+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-extra-FrameCoverage.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-extra-FrameCoverage"
+      ],
+      "log_sha256": "ac58690d3b26b108e4bbc3693d42e2d8af9d7283ec1528f64d8f3ca0ee468a71"
+    },
+    {
+      "name": "schema-finite-FrameCoverage",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_coverage_rejects_invalid_duration",
+      "old": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "new": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=True)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "756625b8a922f0713c2d67ae8a9100d242a67d06e5f12c259e33908ec3b25f03",
+      "failures": [
+        "test_coverage_rejects_invalid_duration"
+      ],
+      "exit": 1,
+      "duration_s": 7.217999999997119,
+      "started_at": "2026-10-15T08:52:54.976601+00:00",
+      "ended_at": "2026-10-15T08:53:02.200838+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_coverage_rejects_invalid_duration",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-finite-FrameCoverage.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-finite-FrameCoverage"
+      ],
+      "log_sha256": "1117db42ebaaf917b9bf19de56af19bac83940dea8f9ee41b8efa467dd769c6e"
+    },
+    {
+      "name": "schema-extra-VisionCapability",
+      "source": "src/autotester/schema/video_frames.py",
+      "test": "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+      "old": "class VisionCapability(BaseModel):\n    \"\"\"Model-bound behavioral probe receipt; model metadata is never evidence.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\")\n    model: str\n    endpoint_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    fixture_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    output_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    passed: bool",
+      "new": "class VisionCapability(BaseModel):\n    \"\"\"Model-bound behavioral probe receipt; model metadata is never evidence.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\")\n    model: str\n    endpoint_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    fixture_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    output_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    passed: bool",
+      "source_sha256": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+      "mutated_sha256": "7fe6fd3ac2661525ac60e4e47bade3aa57eb43c647d891d909cffdcee6d58ee9",
+      "failures": [
+        "test_capability_requires_hashes_and_rejects_unknown_fields"
+      ],
+      "exit": 1,
+      "duration_s": 7.702999999997701,
+      "started_at": "2026-10-15T08:53:02.250833+00:00",
+      "ended_at": "2026-10-15T08:53:09.950790+00:00",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields",
+        "--tb=short",
+        "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\schema-extra-VisionCapability.xml",
+        "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-schema-extra-VisionCapability"
+      ],
+      "log_sha256": "8c93dae9f7d0ac36d2867e9c78a61e6f87c0e4536e764306bd3a80a08666a76a"
+    }
+  ],
+  "green": {
+    "exit": 0,
+    "duration_s": 18.51599999999962,
+    "started_at": "2026-10-15T08:47:16.214581+00:00",
+    "ended_at": "2026-10-15T08:47:34.732661+00:00",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_video_frames.py",
+      "tests/test_video_frame_schema.py",
+      "tests/test_litellm_provider.py",
+      "tests/test_model_chain.py",
+      "tests/test_provider_attempts.py",
+      "--tb=short",
+      "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\green.xml",
+      "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-green"
+    ],
+    "log_sha256": "de2d9475500f54a0e178067359d4e032b6d4b04a8e83b23a9b8a6d254b3f708e"
+  },
+  "restored": {
+    "exit": 0,
+    "duration_s": 10.40599999999904,
+    "started_at": "2026-10-15T08:53:09.985519+00:00",
+    "ended_at": "2026-10-15T08:53:20.382315+00:00",
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "tests/test_video_frames.py",
+      "tests/test_video_frame_schema.py",
+      "tests/test_litellm_provider.py",
+      "tests/test_model_chain.py",
+      "tests/test_provider_attempts.py",
+      "--tb=short",
+      "--junitxml=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\restored.xml",
+      "--basetemp=C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\tmp-restored"
+    ],
+    "log_sha256": "75b582756b388b761ba2ed32ca07a1a6154fc3b7b479482a80b3c0eb46387ff1"
+  },
+  "readiness": "all source identities and named green-red-restored receipts verified",
+  "full_fingerprints": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\vision-proof-r4\\receipts.json"
+}

@@ -1,0 +1,40 @@
+FFF.                                                                     [100%]
+================================== FAILURES ===================================
+_ test_decode_audio_and_source_pixel_limits[probe_result0-unsupported_or_audio_only_media] _
+tests\test_video_frames.py:129: in test_decode_audio_and_source_pixel_limits
+    with pytest.raises(video_frames.FrameVisionError, match=reason):
+E   Failed: DID NOT RAISE FrameVisionError
+_ test_decode_audio_and_source_pixel_limits[probe_result1-unsupported_or_audio_only_media] _
+tests\test_video_frames.py:129: in test_decode_audio_and_source_pixel_limits
+    with pytest.raises(video_frames.FrameVisionError, match=reason):
+E   Failed: DID NOT RAISE FrameVisionError
+_ test_decode_audio_and_source_pixel_limits[probe_result2-unsupported_or_audio_only_media] _
+tests\test_video_frames.py:130: in test_decode_audio_and_source_pixel_limits
+    instance.see_video(Path("x.mp3"), "Observe", VideoObservation)
+src\autotester\providers\litellm_provider.py:156: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:133: in see_video
+    parts = _parts(Path(path), Path(scratch), coverage, limits, times, stack)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\video_frames.py:79: in _parts
+    evidence = FrameEvidence(index=index, timestamp_s=timestamp, status="withheld")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for FrameEvidence
+E   timestamp_s
+E     Input should be a finite number [type=finite_number, input_value=nan, input_type=float]
+E       For further information visit https://errors.pydantic.dev/2.13/v/finite_number
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits[probe_result0-unsupported_or_audio_only_media]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits[probe_result0-unsupported_or_audio_only_media]
+FAILED tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits[probe_result1-unsupported_or_audio_only_media]
+FAILED tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits[probe_result2-unsupported_or_audio_only_media]
+3 failed, 1 passed, 2 warnings in 1.20s

@@ -14,7 +14,7 @@ import pytest
 from litellm_fake import install, no_network, reply  # noqa: F401
 from pydantic import BaseModel, ConfigDict
 
-from autotester.providers.base import ProviderError, Unsupported
+from autotester.providers.base import ProviderError
 from autotester.providers.litellm_provider import LiteLLMProvider
 
 pytestmark = pytest.mark.usefixtures("no_network")
@@ -110,8 +110,8 @@ def test_json_mode_that_stays_broken_after_the_repair_raises(
 
 # -- LP4 / LP5 / LP6 ---------------------------------------------------------
 
-def test_see_video_is_unsupported() -> None:
-    with pytest.raises(Unsupported):
+def test_see_video_without_behavioral_capability_is_unavailable() -> None:
+    with pytest.raises(ProviderError, match="capability_unverified"):
         _provider().see_video(Path("x.mp4"), "p", Answer)
 
 

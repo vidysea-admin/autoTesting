@@ -1,0 +1,41 @@
+FFF.F                                                                    [100%]
+================================== FAILURES ===================================
+________________ test_invalid_sampling_fails_before_decode[0] _________________
+tests\test_video_frames.py:116: in test_invalid_sampling_fails_before_decode
+    instance.see_video(Path("x.mp4"), "Observe", VideoObservation, VisionOptions(fps=fps))
+src\autotester\providers\litellm_provider.py:156: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:128: in see_video
+    times, coverage.sampling_limited = _sample_times(
+src\autotester\providers\video_frames.py:51: in _sample_times
+    limited = duration > cap / fps
+                         ^^^^^^^^^
+E   ZeroDivisionError: float division by zero
+________________ test_invalid_sampling_fails_before_decode[-1] ________________
+tests\test_video_frames.py:115: in test_invalid_sampling_fails_before_decode
+    with pytest.raises(video_frames.FrameVisionError, match="invalid_fps"):
+E   Failed: DID NOT RAISE FrameVisionError
+_______________ test_invalid_sampling_fails_before_decode[inf] ________________
+tests\test_video_frames.py:115: in test_invalid_sampling_fails_before_decode
+    with pytest.raises(video_frames.FrameVisionError, match="invalid_fps"):
+E   Failed: DID NOT RAISE FrameVisionError
+________________ test_invalid_sampling_fails_before_decode[11] ________________
+tests\test_video_frames.py:115: in test_invalid_sampling_fails_before_decode
+    with pytest.raises(video_frames.FrameVisionError, match="invalid_fps"):
+E   Failed: DID NOT RAISE FrameVisionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_invalid_sampling_fails_before_decode[0]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_invalid_sampling_fails_before_decode[0]
+FAILED tests/test_video_frames.py::test_invalid_sampling_fails_before_decode[-1]
+FAILED tests/test_video_frames.py::test_invalid_sampling_fails_before_decode[inf]
+FAILED tests/test_video_frames.py::test_invalid_sampling_fails_before_decode[11]
+4 failed, 1 passed, 2 warnings in 1.75s

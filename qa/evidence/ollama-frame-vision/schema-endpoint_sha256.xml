@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.960" timestamp="2026-10-15T08:52:06.044569+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frame_schema" name="test_capability_requires_hashes_and_rejects_unknown_fields" time="0.142"><failure message="Failed: DID NOT RAISE ValidationError">tests\test_video_frame_schema.py:41: in test_capability_requires_hashes_and_rejects_unknown_fields
+    with pytest.raises(ValidationError):
+E   Failed: DID NOT RAISE ValidationError</failure></testcase></testsuite></testsuites>

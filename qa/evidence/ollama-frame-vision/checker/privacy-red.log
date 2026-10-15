@@ -1,0 +1,23 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________________________ test_distinct_colors _____________________________
+tests\test_checker_distinct.py:24: in test_distinct_colors
+    assert [x['text'] for x in parts if x['type']=='text'][1:]==['Frame 0, clip-relative seconds 0.000000','Frame 2, clip-relative seconds 2.000000']
+E   AssertionError: assert ['Frame 0, cl...nds 2.000000'] == ['Frame 0, cl...nds 2.000000']
+E     
+E     At index 1 diff: 'Frame 1, clip-relative seconds 1.000000' != 'Frame 2, clip-relative seconds 2.000000'
+E     Left contains one more item: 'Frame 2, clip-relative seconds 2.000000'
+E     Use -v to get more diff
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\checker-vision-subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_checker_distinct.py::test_distinct_colors
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_checker_distinct.py::test_distinct_colors - AssertionError:...
+1 failed, 2 warnings in 1.06s

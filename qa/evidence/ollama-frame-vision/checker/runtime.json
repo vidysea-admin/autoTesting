@@ -1,0 +1,22 @@
+[
+  {
+    "name": "preflight",
+    "exit": 0,
+    "duration_s": 0.2649999999994179
+  },
+  {
+    "name": "focused",
+    "exit": 0,
+    "duration_s": 10.15599999999904
+  },
+  {
+    "name": "privacy-red",
+    "exit": 1,
+    "duration_s": 7.51600000000326
+  },
+  {
+    "name": "restored",
+    "exit": 0,
+    "duration_s": 8.5779999999977
+  }
+]

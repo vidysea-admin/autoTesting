@@ -1,0 +1,20 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_real_sanitized_bytes_and_clip_relative_timestamp_payload ________
+tests\test_video_frames.py:76: in test_real_sanitized_bytes_and_clip_relative_timestamp_payload
+    assert fake.calls[0]["seed"] == 7
+           ^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'seed'
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload
+1 failed, 2 warnings in 1.26s

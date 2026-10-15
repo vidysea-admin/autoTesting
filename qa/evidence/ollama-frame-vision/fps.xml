@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="5" time="1.744" timestamp="2026-10-15T08:48:33.580394+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_invalid_sampling_fails_before_decode[0]" time="0.139"><failure message="ZeroDivisionError: float division by zero">tests\test_video_frames.py:116: in test_invalid_sampling_fails_before_decode
+    instance.see_video(Path("x.mp4"), "Observe", VideoObservation, VisionOptions(fps=fps))
+src\autotester\providers\litellm_provider.py:156: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:128: in see_video
+    times, coverage.sampling_limited = _sample_times(
+src\autotester\providers\video_frames.py:51: in _sample_times
+    limited = duration &gt; cap / fps
+                         ^^^^^^^^^
+E   ZeroDivisionError: float division by zero</failure></testcase><testcase classname="tests.test_video_frames" name="test_invalid_sampling_fails_before_decode[-1]" time="0.345"><failure message="Failed: DID NOT RAISE FrameVisionError">tests\test_video_frames.py:115: in test_invalid_sampling_fails_before_decode
+    with pytest.raises(video_frames.FrameVisionError, match="invalid_fps"):
+E   Failed: DID NOT RAISE FrameVisionError</failure></testcase><testcase classname="tests.test_video_frames" name="test_invalid_sampling_fails_before_decode[inf]" time="0.218"><failure message="Failed: DID NOT RAISE FrameVisionError">tests\test_video_frames.py:115: in test_invalid_sampling_fails_before_decode
+    with pytest.raises(video_frames.FrameVisionError, match="invalid_fps"):
+E   Failed: DID NOT RAISE FrameVisionError</failure></testcase><testcase classname="tests.test_video_frames" name="test_invalid_sampling_fails_before_decode[nan]" time="0.006" /><testcase classname="tests.test_video_frames" name="test_invalid_sampling_fails_before_decode[11]" time="0.237"><failure message="Failed: DID NOT RAISE FrameVisionError">tests\test_video_frames.py:115: in test_invalid_sampling_fails_before_decode
+    with pytest.raises(video_frames.FrameVisionError, match="invalid_fps"):
+E   Failed: DID NOT RAISE FrameVisionError</failure></testcase></testsuite></testsuites>

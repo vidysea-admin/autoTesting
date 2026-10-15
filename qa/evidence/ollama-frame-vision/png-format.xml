@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.021" timestamp="2026-10-15T08:49:35.163404+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_invalid_extracted_payload_cannot_reach_transport[jpeg]" time="0.253"><failure message="Failed: DID NOT RAISE FrameVisionError">tests\test_video_frames.py:199: in test_invalid_extracted_payload_cannot_reach_transport
+    with pytest.raises(video_frames.FrameVisionError, match="all_frames_withheld") as error:
+E   Failed: DID NOT RAISE FrameVisionError</failure></testcase></testsuite></testsuites>

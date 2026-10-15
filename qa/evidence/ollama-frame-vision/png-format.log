@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_invalid_extracted_payload_cannot_reach_transport[jpeg] _________
+tests\test_video_frames.py:199: in test_invalid_extracted_payload_cannot_reach_transport
+    with pytest.raises(video_frames.FrameVisionError, match="all_frames_withheld") as error:
+E   Failed: DID NOT RAISE FrameVisionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[jpeg]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[jpeg]
+1 failed, 2 warnings in 1.02s

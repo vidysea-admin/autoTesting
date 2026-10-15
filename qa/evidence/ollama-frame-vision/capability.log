@@ -1,0 +1,34 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+_____ test_capability_requires_behavioral_receipt_bound_to_route[missing] _____
+tests\test_video_frames.py:146: in test_capability_requires_behavioral_receipt_bound_to_route
+    with pytest.raises(video_frames.FrameVisionError, match="capability_unverified"):
+E   Failed: DID NOT RAISE FrameVisionError
+_____ test_capability_requires_behavioral_receipt_bound_to_route[failed] ______
+tests\test_video_frames.py:146: in test_capability_requires_behavioral_receipt_bound_to_route
+    with pytest.raises(video_frames.FrameVisionError, match="capability_unverified"):
+E   Failed: DID NOT RAISE FrameVisionError
+______ test_capability_requires_behavioral_receipt_bound_to_route[model] ______
+tests\test_video_frames.py:146: in test_capability_requires_behavioral_receipt_bound_to_route
+    with pytest.raises(video_frames.FrameVisionError, match="capability_unverified"):
+E   Failed: DID NOT RAISE FrameVisionError
+____ test_capability_requires_behavioral_receipt_bound_to_route[endpoint] _____
+tests\test_video_frames.py:146: in test_capability_requires_behavioral_receipt_bound_to_route
+    with pytest.raises(video_frames.FrameVisionError, match="capability_unverified"):
+E   Failed: DID NOT RAISE FrameVisionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route[missing]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route[missing]
+FAILED tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route[failed]
+FAILED tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route[model]
+FAILED tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route[endpoint]
+4 failed, 2 warnings in 2.09s

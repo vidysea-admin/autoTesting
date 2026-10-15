@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.151" timestamp="2026-10-15T08:47:41.900932+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_real_sanitized_bytes_and_clip_relative_timestamp_payload" time="0.254"><failure message="assert (255, 0, 0) == (0, 0, 0)&#10;  &#10;  At index 0 diff: 255 != 0&#10;  Use -v to get more diff">tests\test_video_frames.py:68: in test_real_sanitized_bytes_and_clip_relative_timestamp_payload
+    assert safe.getpixel((2, 2)) == (0, 0, 0)
+E   assert (255, 0, 0) == (0, 0, 0)
+E     
+E     At index 0 diff: 255 != 0
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>
