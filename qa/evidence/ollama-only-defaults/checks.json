@@ -1,0 +1,36 @@
+{
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "root": "C:\\Users\\product\\.codex\\worktrees\\ollama-provider\\autoTesting",
+  "lock_sha256": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+  "results": [
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "tests/test_model_chain.py",
+        "tests/test_litellm_provider.py",
+        "tests/test_litellm_guard.py",
+        "-k",
+        "not real_sdk",
+        "--tb=short"
+      ],
+      "exit": 0,
+      "duration_s": 39.015
+    },
+    {
+      "command": [
+        "-m",
+        "ruff",
+        "check",
+        "src/autotester/providers/model_chain.py",
+        "src/autotester/providers/litellm_provider.py",
+        "src/autotester/providers/litellm_schema.py",
+        "tests/test_model_chain.py",
+        "tests/test_litellm_provider.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.25
+    }
+  ]
+}

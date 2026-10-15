@@ -1,7 +1,7 @@
-"""Ordered model chain over LiteLLM: Ollama GLM -> Ollama DeepSeek -> Gemini.
+"""Ordered model chain over LiteLLM: Ollama GLM -> Ollama DeepSeek.
 
 Umesh, 2026-10-13: GLM 5.3 Flash and DeepSeek 4.1 Flash (Ollama API) are primary,
-Gemini is fallback only. Each tier is a `LiteLLMProvider`, so the redaction gate,
+Other vendors require explicit configuration. Each tier is a `LiteLLMProvider`; the redaction gate,
 `RunBudget` visibility and key handling are LiteLLM's; this class only orders them
 and falls through on any `ProviderError` (vendor error, timeout, unparsable answer).
 A credential in the prompt is refused ONCE, up front, and never falls through.
@@ -30,7 +30,7 @@ ModelT = TypeVar("ModelT", bound=BaseModel)
 log = logging.getLogger(__name__)
 CHAIN_ID = "model-chain"
 ORDER_ENV = "AUTOTESTER_MODEL_ORDER"
-DEFAULT_ORDER = (ollama_cloud.GLM, ollama_cloud.DEEPSEEK, "gemini/gemini-3.6-flash")
+DEFAULT_ORDER = (ollama_cloud.GLM, ollama_cloud.DEEPSEEK)
 
 
 def configured_order(model: str | None = None) -> list[str]:
@@ -74,8 +74,7 @@ class ModelChainProvider(Provider):
     def unavailable_reason(self) -> str | None:
         if self.available():
             return None
-        return ("no AI provider is configured: set OLLAMA_API_KEY (primary) or "
-                "GEMINI_API_KEY (fallback) in .env")
+        return "no configured model is available; set OLLAMA_API_KEY in .env for the default chain"
 
     def act(self, prompt: str, schema: type[ModelT] | None = None, *,
             prompt_file: str | None = None, fed_id: str | None = None) -> Any:

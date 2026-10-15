@@ -218,3 +218,22 @@ def test_the_prompt_guard_and_the_failure_scrub_share_one_secret_set(
     with pytest.raises(ProviderError):
         provider.judge("g", Answer)
     assert len(reads) == 2
+
+
+def test_ollama_cloud_uses_json_even_when_sdk_advertises_schema(monkeypatch):
+    fake = install(monkeypatch, [reply("broken"), reply(json.dumps(GOOD))])
+    monkeypatch.setenv("OLLAMA_API_KEY", "test-cloud-key")
+    provider = _provider("ollama_chat/glm-5.3-flash")
+    assert provider.judge("grade", Answer) == Answer.model_validate(GOOD)
+    assert len(fake.calls) == 2
+    assert all("response_format" not in c and "tools" not in c for c in fake.calls)
+    assert provider.usage[0].calls == 2
+
+
+def test_ollama_answer_rejects_coerced_types(monkeypatch):
+    wrong = {**GOOD, "score": "3"}
+    fake = install(monkeypatch, [reply(json.dumps(wrong)), reply(json.dumps(wrong))])
+    monkeypatch.setenv("OLLAMA_API_KEY", "test-cloud-key")
+    with pytest.raises(ProviderError, match="schema"):
+        _provider("ollama_chat/glm-5.3-flash").judge("grade", Answer)
+    assert len(fake.calls) == 2

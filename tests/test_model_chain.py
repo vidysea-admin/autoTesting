@@ -36,9 +36,8 @@ def _env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-key-value-1b2c")
 
 
-def test_default_order_is_glm_deepseek_gemini_and_schema_default_uses_it() -> None:
-    assert DEFAULT_ORDER == ("ollama_chat/glm-5.3-flash", "ollama_chat/deepseek-v4.1-flash",
-                             "gemini/gemini-3.6-flash")
+def test_default_order_is_ollama_only_and_schema_default_uses_it() -> None:
+    assert DEFAULT_ORDER == ("ollama_chat/glm-5.3-flash", "ollama_chat/deepseek-v4.1-flash")
     assert ProviderConfig().agent == ProviderConfig().judge == "model-chain"
     assert providers.for_role(None, "judge").order() == list(DEFAULT_ORDER)
 
@@ -56,14 +55,13 @@ def test_first_tier_answers_with_ollama_cloud_endpoint(monkeypatch: pytest.Monke
 
 
 def test_falls_back_in_order_on_error_and_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake = install(monkeypatch, [TimeoutError("slow"), RuntimeError("503"),
-                                 _r("gem")])
+    fake = install(monkeypatch, [TimeoutError("slow"), _r("ds")])
     monkeypatch.setenv("OLLAMA_API_KEY", OLLAMA_KEY)
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-key-value-1b2c")
     chain = ModelChainProvider()
-    assert chain.act("do it", Answer).verdict == "gem"
+    assert chain.act("do it", Answer).verdict == "ds"
     assert [c["model"] for c in fake.calls] == list(DEFAULT_ORDER)
-    assert chain.id == "litellm:gemini/gemini-3.6-flash"
+    assert chain.id == "litellm:ollama_chat/deepseek-v4.1-flash"
 
 
 def test_all_tiers_failing_raises_one_provider_error(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -82,7 +80,7 @@ def test_unconfigured_tier_is_skipped(monkeypatch: pytest.MonkeyPatch) -> None:
         if kw.get("api_key") is None and model.startswith("ollama") else real(model, **kw))
     monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-key-value-1b2c")
-    chain = ModelChainProvider()
+    chain = ModelChainProvider(model="ollama_chat/glm-5.3-flash,gemini/gemini-3.6-flash")
     assert chain.act("x", Answer).verdict == "g"
     assert [c["model"] for c in fake.calls] == ["gemini/gemini-3.6-flash"]
 
