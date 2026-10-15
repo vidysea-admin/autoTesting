@@ -1,6 +1,6 @@
 # Manifest — completion-contracts
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** Checker-owned foundational contract amendments for the approved Ollama-first completion plan.
 **Branch:** codex/completion-contracts

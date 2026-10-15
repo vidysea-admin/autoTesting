@@ -1,6 +1,6 @@
 # Manifest - checker-policy-contract
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** D-100 proportional independent checker policy (checker-owned contract authoring)
 **Branch:** codex/checker-policy-contract
