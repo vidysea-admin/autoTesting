@@ -31,6 +31,7 @@ from autotester.core.redact_fold import (
     _contains_folded_secret,
     fold_credential,
 )
+from autotester.core.redact_pii_forms import mask_name_fields, normalize_email_forms
 
 __all__ = [
     "ASCII_CONFUSABLES",

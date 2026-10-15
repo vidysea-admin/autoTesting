@@ -1,6 +1,6 @@
 """Extra PII spellings for `redact.mask_pii`: obfuscated emails and labelled name fields (AT-840).
 
-One job: rewrite `a [at] b (dot) c`, `a%40b.c`, fullwidth `＠` and `a at b dot c` into a plain
+One job: rewrite `a [at] b (dot) c`, `a%40b.c`, a fullwidth at-sign and `a at b dot c` into a plain
 `a@b.c` so the existing email masker sees it, and mask the value of explicit `first_name:` /
 `name=` style fields. Free-text names ("Ravi Kumar") are NOT detected -- too guessy.
 All patterns are linear: no nested quantifiers over overlapping classes.

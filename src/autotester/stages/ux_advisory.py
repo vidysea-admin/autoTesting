@@ -135,7 +135,8 @@ def judge_case_ux(
     """One advisory reading of one case. Raises `ValueError` BEFORE any provider call when the
     assembled prompt carries a raw credential (PU6) and `FileNotFoundError` when the skill file
     is missing (PU5). Reads `result`; never mutates it and never sees a `Verdict` (PU3)."""
-    prompt = mask_pii(secrets.guard_prompt(build_ux_prompt(persona, result, docs or RepoDocs())))  # AT-840
+    prompt = mask_pii(  # AT-840
+        secrets.guard_prompt(build_ux_prompt(persona, result, docs or RepoDocs())))
     try:
         judgment = provider.judge(prompt, UXJudgment, images=_screenshots(result, run_dir),
                                   prompt_file=SKILL_NAME, fed_id=case.id)

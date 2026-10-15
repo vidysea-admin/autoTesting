@@ -73,6 +73,7 @@
 | `core/redact_encodings.py` | Exact encoded-spelling search: precompute how a declared secret would look |
 | `core/redact_escaped.py` | Escaped-spelling redaction: percent/entity/plus-encoded secrets, encoded PII, URL creds. |
 | `core/redact_fold.py` | Credential folding: normalise a string so a case, punctuation, homoglyph, |
+| `core/redact_pii_forms.py` | Extra PII spellings for `redact.mask_pii`: obfuscated emails and labelled name fields (AT-840). |
 | `core/redact_wrap.py` | Whitespace normalisation for the exact-encoding needle search, and a |
 | `core/repo_docs.py` | Repo-level documents: the living map, the ledger, the history, the router. |
 | `core/safe_names.py` | Refuse any name that could leave its directory or break on Windows (R65, TF7). |
