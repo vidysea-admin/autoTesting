@@ -1,0 +1,15 @@
+F...                                                                     [100%]
+================================== FAILURES ===================================
+____________ test_neutral_answer_vocabulary_is_closed[left_shape] _____________
+tests\test_vision_probe_schema.py:15: in test_neutral_answer_vocabulary_is_closed
+    with pytest.raises(ValidationError):
+E   Failed: DID NOT RAISE ValidationError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe_schema.py::test_neutral_answer_vocabulary_is_closed[left_shape]
+1 failed, 3 passed, 1 warning in 4.55s

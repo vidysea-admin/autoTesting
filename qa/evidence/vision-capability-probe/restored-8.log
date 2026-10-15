@@ -1,0 +1,8 @@
+........................                                                 [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+24 passed, 1 warning in 6.01s

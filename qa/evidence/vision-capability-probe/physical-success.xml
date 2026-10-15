@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="5.377" timestamp="2026-10-15T10:48:47.158163+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_receipt_requires_physical_success_and_stable_route" time="0.174"><failure message="AssertionError: assert ('visual_answer_mismatch' == 'physical_transport_unproven'&#10;  &#10;  - physical_transport_unproven&#10;  + visual_answer_mismatch)">tests\test_vision_probe.py:220: in test_receipt_requires_physical_success_and_stable_route
+    assert result.reason == "physical_transport_unproven" and result.capability is None
+E   AssertionError: assert ('visual_answer_mismatch' == 'physical_transport_unproven'
+E     
+E     - physical_transport_unproven
+E     + visual_answer_mismatch)</failure></testcase></testsuite></testsuites>

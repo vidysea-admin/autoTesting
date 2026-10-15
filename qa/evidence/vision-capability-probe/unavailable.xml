@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.945" timestamp="2026-10-15T10:49:06.718432+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_unavailable_or_non_explicit_provider_cannot_start_probe" time="0.121"><failure message="AssertionError: assert ('verified' == 'unavailable'&#10;  &#10;  - unavailable&#10;  + verified)">tests\test_vision_probe.py:237: in test_unavailable_or_non_explicit_provider_cannot_start_probe
+    assert result.status == "unavailable" and result.expected is None
+E   AssertionError: assert ('verified' == 'unavailable'
+E     
+E     - unavailable
+E     + verified)</failure></testcase></testsuite></testsuites>

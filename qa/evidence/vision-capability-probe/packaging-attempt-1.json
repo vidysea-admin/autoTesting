@@ -1,0 +1,7 @@
+{
+  "exit": 1,
+  "failure": "fresh index checkout manifest newline differed",
+  "path": "qa/manifests/vision-capability-probe.md",
+  "runtime_tests_run": false,
+  "status": "packaging prerequisite gap; no product failure"
+}

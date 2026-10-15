@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.625" timestamp="2026-10-15T10:29:35.546824+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_visual_mismatch_is_inconclusive_never_a_capability" time="0.122"><failure message="AssertionError: assert ('verified' == 'inconclusive'&#10;  &#10;  - inconclusive&#10;  + verified)">tests\test_vision_probe.py:137: in test_visual_mismatch_is_inconclusive_never_a_capability
+    assert result.status == "inconclusive" and result.reason == "visual_answer_mismatch"
+E   AssertionError: assert ('verified' == 'inconclusive'
+E     
+E     - inconclusive
+E     + verified)</failure></testcase></testsuite></testsuites>

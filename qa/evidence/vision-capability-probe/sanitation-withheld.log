@@ -1,0 +1,22 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_sanitation_failure_withholds_every_request _______________
+tests\test_vision_probe.py:162: in test_sanitation_failure_withholds_every_request
+    result = vision_probe.probe_vision(provider)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:134: in probe_vision
+    safe, fixture_hash = _safe_challenges(paths, stack)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:78: in _safe_challenges
+    data = _validated_bytes(batch.paths[0])
+                            ^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_sanitation_failure_withholds_every_request
+1 failed, 1 warning in 6.38s

@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_visual_mismatch_is_inconclusive_never_a_capability ___________
+tests\test_vision_probe.py:137: in test_visual_mismatch_is_inconclusive_never_a_capability
+    assert result.status == "inconclusive" and result.reason == "visual_answer_mismatch"
+E   AssertionError: assert ('verified' == 'inconclusive'
+E     
+E     - inconclusive
+E     + verified)
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_visual_mismatch_is_inconclusive_never_a_capability
+1 failed, 1 warning in 4.62s

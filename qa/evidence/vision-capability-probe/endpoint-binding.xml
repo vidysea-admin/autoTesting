@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="12.887" timestamp="2026-10-15T10:36:05.268759+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_receipt_requires_physical_success_and_stable_route" time="0.208"><failure message="AssertionError: assert ('matched' == 'endpoint_or_model_changed'&#10;  &#10;  - endpoint_or_model_changed&#10;  + matched)">tests\test_vision_probe.py:216: in test_receipt_requires_physical_success_and_stable_route
+    assert result.reason == "endpoint_or_model_changed" and result.capability is None
+E   AssertionError: assert ('matched' == 'endpoint_or_model_changed'
+E     
+E     - endpoint_or_model_changed
+E     + matched)</failure></testcase></testsuite></testsuites>

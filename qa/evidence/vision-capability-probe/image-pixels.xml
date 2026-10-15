@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.913" timestamp="2026-10-15T10:59:28.218358+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_invalid_sanitized_payload_cannot_become_filename_only_success[dimensions]" time="0.081"><failure message="AssertionError: assert 'provider_error' == 'image_prepar...tation_failed'&#10;  &#10;  - image_preparation_or_sanitation_failed&#10;  + provider_error">tests\test_vision_probe.py:275: in test_invalid_sanitized_payload_cannot_become_filename_only_success
+    assert result.reason == "image_preparation_or_sanitation_failed"
+E   AssertionError: assert 'provider_error' == 'image_prepar...tation_failed'
+E     
+E     - image_preparation_or_sanitation_failed
+E     + provider_error</failure></testcase></testsuite></testsuites>

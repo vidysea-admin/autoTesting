@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_receipt_requires_physical_success_and_stable_route ___________
+tests\test_vision_probe.py:220: in test_receipt_requires_physical_success_and_stable_route
+    assert result.reason == "physical_transport_unproven" and result.capability is None
+E   AssertionError: assert ('visual_answer_mismatch' == 'physical_transport_unproven'
+E     
+E     - physical_transport_unproven
+E     + visual_answer_mismatch)
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_receipt_requires_physical_success_and_stable_route
+1 failed, 1 warning in 5.36s

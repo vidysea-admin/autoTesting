@@ -1,3 +1,11 @@
 qa/issues.jsonl merge=union
 # Shell scripts run inside the Linux container: a CRLF checkout on Windows breaks their shebang.
 *.sh text eol=lf
+# Preserve this unit's byte-bound source and proof identities on fresh checkouts.
+src/autotester/providers/vision_probe.py text eol=lf
+src/autotester/schema/vision_probe.py text eol=lf
+src/autotester/schema/video_frames.py text eol=crlf
+src/autotester/skills/vision-probe/SKILL.md text eol=lf
+tests/test_vision_probe.py text eol=lf
+tests/test_vision_probe_schema.py text eol=lf
+qa/manifests/vision-capability-probe.md text eol=lf

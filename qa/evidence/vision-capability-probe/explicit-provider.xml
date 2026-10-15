@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.841" timestamp="2026-10-15T10:49:18.285298+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_unavailable_or_non_explicit_provider_cannot_start_probe" time="0.010"><failure message="AttributeError: 'object' object has no attribute 'guard_text'">tests\test_vision_probe.py:240: in test_unavailable_or_non_explicit_provider_cannot_start_probe
+    vision_probe.probe_vision(object())
+src\autotester\providers\vision_probe.py:121: in probe_vision
+    _require_probe_provider(provider)
+src\autotester\providers\vision_probe.py:109: in _require_probe_provider
+    provider.guard_text(provider._model)
+    ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'object' object has no attribute 'guard_text'</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,32 @@
+{
+  "status": "AssertionError",
+  "candidate": "495cf7ebe0b359804dfd0077350ecec10dc347f3",
+  "cycle": 1,
+  "duration_s": 13.43800000000192,
+  "tokens": null,
+  "cost": null,
+  "records": [
+    {
+      "name": "preflight",
+      "argv": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+        "preflight",
+        "--root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker\\subject",
+        "--import-name",
+        "autotester",
+        "--import-root",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker\\subject\\src",
+        "--temp-parent",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision-probe\\.work\\probe-checker"
+      ],
+      "exit": 2,
+      "duration_s": 0.2820000000028813,
+      "log_sha256": "0394db773e08b2b7018946b3ee5b60db469721603025eaf052b6cef762c6e70d"
+    }
+  ],
+  "source_inventory_count": 1020,
+  "privacy_original_sha256": null,
+  "privacy_mutated_sha256": null
+}

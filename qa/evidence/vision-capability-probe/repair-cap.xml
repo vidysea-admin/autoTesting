@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="5.213" timestamp="2026-10-15T10:29:43.847033+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_one_json_repair_shares_the_probe_physical_budget[True]" time="0.125"><failure message="autotester.providers.attempts.AttemptBudgetExhausted: provider attempt budget exhausted: max_calls">tests\test_vision_probe.py:153: in test_one_json_repair_shares_the_probe_physical_budget
+    result = vision_probe.probe_vision(provider)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:135: in probe_vision
+    observed = provider.judge(prompt, VisualProbeAnswer, images=safe,
+src\autotester\providers\litellm_provider.py:170: in judge
+    return self._structured(prompt, schema, role="judge", images=images,
+src\autotester\providers\litellm_provider.py:290: in _structured
+    message = self._complete(messages, schema, strategy, role, retries=1, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\litellm_provider.py:231: in _complete
+    receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\attempts.py:57: in reserve_attempt
+    raise AttemptBudgetExhausted("provider attempt budget exhausted: max_calls")
+E   autotester.providers.attempts.AttemptBudgetExhausted: provider attempt budget exhausted: max_calls</failure></testcase><testcase classname="tests.test_vision_probe" name="test_one_json_repair_shares_the_probe_physical_budget[False]" time="0.079"><failure message="autotester.providers.attempts.AttemptBudgetExhausted: provider attempt budget exhausted: max_calls">tests\test_vision_probe.py:153: in test_one_json_repair_shares_the_probe_physical_budget
+    result = vision_probe.probe_vision(provider)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:135: in probe_vision
+    observed = provider.judge(prompt, VisualProbeAnswer, images=safe,
+src\autotester\providers\litellm_provider.py:170: in judge
+    return self._structured(prompt, schema, role="judge", images=images,
+src\autotester\providers\litellm_provider.py:290: in _structured
+    message = self._complete(messages, schema, strategy, role, retries=1, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\litellm_provider.py:231: in _complete
+    receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\attempts.py:57: in reserve_attempt
+    raise AttemptBudgetExhausted("provider attempt budget exhausted: max_calls")
+E   autotester.providers.attempts.AttemptBudgetExhausted: provider attempt budget exhausted: max_calls</failure></testcase></testsuite></testsuites>

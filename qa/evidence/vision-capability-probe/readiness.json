@@ -1,0 +1,33 @@
+{
+  "status": "MAKER_READINESS_VALID",
+  "base": "00c9e13ded3cba6cfe57bd9d0c422f5154ed6e09",
+  "selected_executed": 30,
+  "deferred_unexecuted": 8,
+  "positive_cases": 24,
+  "receipt_sha256": "271ad47f6ac42293a52fe9f8b0bfddeffb077d1376cddc17d5859832785e20c2",
+  "selection_sha256": "6b49f1ad7c3f604fb11e11d84803ff0870de8e334ff5b42c5b4e0a08d419141f",
+  "instrument_sha256": "036d5ef740243ae5a6152a2a7c89595c00fb8e9f9b14ef6b9103f52ebac7f736",
+  "scoped_lint": {
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/providers/vision_probe.py",
+      "src/autotester/schema/vision_probe.py",
+      "src/autotester/schema/video_frames.py",
+      "tests/test_vision_probe.py",
+      "tests/test_vision_probe_schema.py"
+    ],
+    "exit": 0,
+    "duration_s": 0.375,
+    "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  "design": "five changed Python modules: <=300 lines/file and <=50 lines/function",
+  "actual_maker_usage": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "limits": "No independent verdict; no live capability; eight variants not executed; full combined integration pending."
+}

@@ -1,0 +1,24 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_random_draws_are_independent_and_answers_are_not_in_prompt _______
+tests\test_vision_probe.py:121: in test_random_draws_are_independent_and_answers_are_not_in_prompt
+    assert result.expected.model_dump_json() not in prompt
+E   assert '{"images":[...:"yellow"}]}' not in 'Inspect the...": "object"}'
+E     
+E     '{"images":[{"left_..._color":"yellow"}]}' is contained here:
+E       n images.
+E       {"images":[{"left_shape":"circle","left_color":"red","right_shape":"square","right_color":"blue"},{"left_shape":"square","left_color":"green","right_shape":"triangle","right_color":"yellow"}]}
+E       
+E       Reply with ONE JSON object only, no prose and no code fence, matching this JSON Schema:
+E       {"$defs": {"VisualProbeReading": {"additionalProperties": false, "description": "Only neutral geometry/colors can appear in a challenge answer.", "properties": {"left_shape": {"enum": ["circle", "square", "triangle"],...
+E     
+E     ...Full output truncated (1 line hidden), use '-vv' to show
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision-probe\.work\probe-proof\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_vision_probe.py::test_random_draws_are_independent_and_answers_are_not_in_prompt
+1 failed, 1 warning in 4.33s

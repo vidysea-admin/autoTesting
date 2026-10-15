@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.260" timestamp="2026-10-15T10:13:35.941884+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt" time="0.141"><failure message="AssertionError: assert '000000000000...0000000000000' == '2f123402d6b5...de523fc4842ef'&#10;  &#10;  - 2f123402d6b543d825d1a036097105e29b65880cacb48412a06de523fc4842ef&#10;  + 0000000000000000000000000000000000000000000000000000000000000000">tests\test_vision_probe.py:90: in test_probe_bootstraps_from_actual_sanitized_pixels_and_binds_receipt
+    assert receipt.fixture_sha256 == digest.hexdigest()
+E   AssertionError: assert '000000000000...0000000000000' == '2f123402d6b5...de523fc4842ef'
+E     
+E     - 2f123402d6b543d825d1a036097105e29b65880cacb48412a06de523fc4842ef
+E     + 0000000000000000000000000000000000000000000000000000000000000000</failure></testcase></testsuite></testsuites>

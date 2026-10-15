@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="6.378" timestamp="2026-10-15T10:29:53.167472+00:00" hostname="windows-demo"><testcase classname="tests.test_vision_probe" name="test_sanitation_failure_withholds_every_request" time="0.109"><failure message="IndexError: list index out of range">tests\test_vision_probe.py:162: in test_sanitation_failure_withholds_every_request
+    result = vision_probe.probe_vision(provider)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:134: in probe_vision
+    safe, fixture_hash = _safe_challenges(paths, stack)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\vision_probe.py:78: in _safe_challenges
+    data = _validated_bytes(batch.paths[0])
+                            ^^^^^^^^^^^^^^
+E   IndexError: list index out of range</failure></testcase></testsuite></testsuites>
