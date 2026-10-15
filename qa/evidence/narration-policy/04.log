@@ -1,0 +1,38 @@
+.F...............                                                        [100%]
+================================== FAILURES ===================================
+____________ test_persisted_empty_transcript_reused_byte_for_byte _____________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-117/test_persisted_empty_transcrip0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000177D4A34210>
+
+    def test_persisted_empty_transcript_reused_byte_for_byte(tmp_path, monkeypatch):
+        store, source, _ = _setup(tmp_path)
+        supplied = Transcript(source_id=source.id, engine="sidecar", segments=[])
+        store.save_transcript(supplied)
+        monkeypatch.setattr(narration, "_transcribe_video_audio", lambda *_: pytest.fail("provider"))
+>       assert narration.ensure_narration(store, source) == supplied
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_narration_policy.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\media\narration.py:56: in ensure_narration
+    transcript = _transcribe_video_audio(video, source.id, provider, secrets)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_ = (WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-117/test_persisted_empty_transcrip0/video.mp4'), 'src_2ec184a60de3', None, None)
+
+>   monkeypatch.setattr(narration, "_transcribe_video_audio", lambda *_: pytest.fail("provider"))
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: provider
+
+tests\test_narration_policy.py:37: Failed
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte
+1 failed, 16 passed, 1 warning in 4.07s

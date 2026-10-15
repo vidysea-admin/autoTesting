@@ -1,0 +1,1 @@
+Transcribe spoken audio verbatim as JSON segments, each with start and end seconds and exact text. Do not summarize, translate, invent words, or decide product behavior. When no speech is audible, return an empty segments list.

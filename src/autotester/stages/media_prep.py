@@ -6,22 +6,21 @@ mounted into it. The chunks land under `projects/<slug>/sources/<id>/` which the
 container sees through the existing bind mount, so the two halves meet on disk
 and nowhere else.
 
-VL1's rule is that this stage DEGRADES, never crashes. Without ffmpeg it emits a
-single chunk pointing at the original file — one long video a model can still
-watch whole. Without whisper it emits an empty `Transcript`, which the ingest
-prompt renders as "no speech detected" rather than as silence it has verified
-(AT-134). Both are honest, smaller results; neither is an exception thrown at an
-operator holding a 40-minute recording.
+VL1 degrades explicitly. Supplied narration is reused before optional guarded Gemini
+audio transcription. Unavailable narration is recorded as missing, never inferred silence.
+Local ASR requires explicit opt-in; default preparation never downloads model weights.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
+from autotester.browser.secrets import SecretStore
 from autotester.media import chunks as chunk_mod
 from autotester.media import frames as frame_mod
 from autotester.media import probe as probe_mod
 from autotester.media import transcribe as transcribe_mod
+from autotester.media.narration import ensure_narration
 from autotester.schema.analysis import VideoAnalysis
 from autotester.schema.media import MediaChunk, MediaPrep
 from autotester.schema.project import Source
@@ -46,7 +45,7 @@ class UnreadableRecording(RuntimeError):
 
 def prepare(store: ProjectStore, source: Source, *,
             chunk_minutes: float = 3.0, overlap_s: float = chunk_mod.DEFAULT_OVERLAP_S,
-            use_whisper: bool = True) -> MediaPrep:
+            use_whisper: bool = False, transcribe_missing: bool = True) -> MediaPrep:
     """Probe, chunk and transcribe `source`, persisting all three.
 
     Idempotent on the transcript: `transcribe` reuses an existing sidecar
@@ -58,8 +57,7 @@ def prepare(store: ProjectStore, source: Source, *,
     if not video.is_file():
         raise FileNotFoundError(f"{source.id} points at {video}, which is not a readable file")
 
-    transcript = transcribe_mod.transcribe(video, source.id, use_whisper=use_whisper)
-    store.save_transcript(transcript)
+    transcript = _prepare_narration(store, source, video, use_whisper, transcribe_missing)
 
     if not probe_mod.ffmpeg_available():
         prep = _unchunked(source, video, transcript.source_id)
@@ -92,6 +90,23 @@ def prepare(store: ProjectStore, source: Source, *,
         )
     store.save_media_prep(prep)
     return prep
+
+
+def _prepare_narration(store, source, video, use_whisper, transcribe_missing):
+    """Reuse supplied evidence; local ASR stays explicit and Gemini stays capability-gated."""
+    if use_whisper or not transcribe_missing:
+        transcript = transcribe_mod.transcribe(video, source.id, use_whisper=use_whisper)
+        prior = store.load_transcript(source.id)
+        if prior is not None and prior.engine != "none":
+            transcript = prior
+        else:
+            store.save_transcript(transcript)
+    else:
+        project = store.load_project()
+        secrets = SecretStore.load(project, store.paths.env_file, strict=False) if project else None
+        transcript = ensure_narration(store, source, secrets=secrets)
+
+    return transcript
 
 
 def _unchunked(source: Source, video: Path, transcript_ref: str) -> MediaPrep:

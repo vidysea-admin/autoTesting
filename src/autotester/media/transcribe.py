@@ -8,7 +8,8 @@ whisper over them would spend GPU minutes to produce a *different* transcript,
 and the narration is injected into the ingest prompt as ground truth — so a
 regenerated line is a changed quote from a real person (I8).
 
-**Whisper runs in a subprocess or not at all.** ctranslate2's teardown can take
+**Local ASR is explicit opt-in, never a default or automatic fallback.**
+Whisper runs in a subprocess or not at all. ctranslate2's teardown can take
 the parent process down with it, and a media-prep crash that loses the whole
 run because the *optional* half failed is the wrong trade.
 
@@ -50,8 +51,8 @@ def whisper_available() -> bool:
     return True
 
 
-def transcribe(video: Path, source_id: str, *, use_whisper: bool = True) -> Transcript:
-    """Narration for `video`. Sidecar first, then whisper, then silence.
+def transcribe(video: Path, source_id: str, *, use_whisper: bool = False) -> Transcript:
+    """Narration for `video`. Sidecar first; local ASR only with explicit opt-in.
 
     "Then silence" is a real outcome, not a failure: `Transcript(engine="none")`
     is a recording with no narration on record, and `stages/ingest.py` renders
