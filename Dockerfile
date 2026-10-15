@@ -18,6 +18,9 @@ RUN pip install --no-cache-dir uv
 
 WORKDIR /app
 
+# Keep the frozen environment outside the source tree (also for dev bind mounts).
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv PYTHONDONTWRITEBYTECODE=1
+
 # Dependencies first so `uv sync` layers cache across code-only changes.
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project
@@ -27,6 +30,14 @@ RUN uv sync --frozen
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Source and dependencies remain root-owned. Only home/cache and /data are writable.
+RUN groupadd --gid 10001 autotester \
+    && useradd --uid 10001 --gid 10001 --create-home autotester \
+    && mkdir -p /data /home/autotester/.cache \
+    && chown 10001:10001 /data /home/autotester/.cache
+ENV HOME=/home/autotester XDG_CACHE_HOME=/home/autotester/.cache UV_NO_SYNC=1
+USER 10001:10001
 
 ENV DISPLAY=:99
 EXPOSE 8000 6080 6081

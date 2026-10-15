@@ -50,7 +50,7 @@ treats an empty environment value as unset. Still, keep only server settings in 
 sudo mkdir -p /etc/autotester /srv/autotester/data/projects /srv/autotester/data/profiles
 sudo cp .env.example /etc/autotester/server.env && sudo chmod 600 /etc/autotester/server.env
 sudo cp .env.example /srv/autotester/data/.env   && sudo chmod 600 /srv/autotester/data/.env
-sudo chown -R 1000:1000 /srv/autotester/data      # adjust if your container user differs
+sudo chown -R 10001:10001 /srv/autotester/data   # image runtime UID/GID; preserve private modes
 ```
 
 Edit `/etc/autotester/server.env` and set at least:
@@ -113,6 +113,18 @@ curl -fsS http://127.0.0.1:8000/healthz
 ```
 
 ### 7. HTTPS
+
+The image runs as UID/GID 10001. Its source and frozen environment stay root-owned;
+only `/data`, the runtime home/cache and temporary display sockets need writes. Prepare
+the bind-mounted data directory above before starting; startup never repairs permissions
+as root. Existing private files (including `.env`) must be readable by that UID.
+
+The entrypoint supervises Xvfb, both x11vnc servers, both websockify servers and uvicorn.
+Socket readiness gates each dependency. Any child exit (including exit 0) or a five-second
+startup timeout terminates the entire stack; after a two-second grace, remaining process
+groups are killed and reaped. Compose's `restart: unless-stopped` restores the stack.
+Validate the 15-second recovery bound on Ubuntu by killing each service in turn and
+checking `/healthz` and both viewers; Windows synthetic tests do not certify HO5 or D1-D3.
 
 With a DNS name pointing at the server, set `AUTOTESTER_DOMAIN=<your-domain>` in the shell (or a
 `.env` next to the compose file) and use the `https` profile above. Caddy gets and renews the

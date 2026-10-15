@@ -1,0 +1,35 @@
+{
+  "name": "restored-extra",
+  "cwd": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\mutation-copy",
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+  "source": {
+    "Dockerfile": "0fb2baf7d8f6f70815753029f443c5d0ed8dbeea0c341a4ab2d64fdaf4530d30",
+    "docker/entrypoint.sh": "17d0bed7d27021d3a81ad900e5009aa4db8351e4fe599392573f67c634c9209a",
+    "docker/supervise.py": "f038efbc2d7803f6e831a70715a3733e101a910a5771c7982e39b7a00ef03dd3",
+    "docker/DEPLOY.md": "9f39c980750083ba848b3e244fde94b0b6c25d22adff8787755c289ba8342501",
+    "tests/test_container_supervision.py": "d2f74007aacace3e25aea5b013f0526980d2d709b38b39486083e9f34855ece7",
+    "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+    "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57"
+  },
+  "environment": {
+    "PYTHONPATH": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\src",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\CONTemp\\restored-extra",
+    "tests/test_container_supervision.py"
+  ],
+  "temp_parent": "C:\\Users\\product\\.codex\\worktrees\\container-supervision\\autoTesting\\.work\\container-supervision\\CONTemp",
+  "started": 1792052106.3877547,
+  "exit": 0,
+  "duration_s": 4.5,
+  "log_sha": "2de4799c79a4ccb2299865e9c7a5795d9005488a86d7cf50357ba7d9f1e5592d"
+}

@@ -1,0 +1,21 @@
+........F.                                                               [100%]
+================================== FAILURES ===================================
+________ test_posix_reaper_preserves_exit_status_and_collects_orphans _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001B99B18F850>
+
+    def test_posix_reaper_preserves_exit_status_and_collects_orphans(monkeypatch):
+        statuses = iter([(999, 0), (12345, 7 << 8), (0, 0)])
+        monkeypatch.setattr(supervisor, "os", SimpleNamespace(
+            name="posix", waitpid=lambda *_: next(statuses), WNOHANG=1,
+            waitstatus_to_exitcode=lambda status: status >> 8))
+        child = type("Child", (), {"pid": 12345, "returncode": None})()
+        supervisor.reap_children([child])
+>       assert child.returncode == 7
+E       assert 0 == 7
+E        +  where 0 = <test_container_supervision.Child object at 0x000001B99B18C650>.returncode
+
+tests\test_container_supervision.py:112: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_container_supervision.py::test_posix_reaper_preserves_exit_status_and_collects_orphans
+1 failed, 9 passed in 1.97s
