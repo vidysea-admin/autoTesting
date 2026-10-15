@@ -57,19 +57,18 @@ def build_ingest_prompt(source: Source, docs: RepoDocs,
 
 
 def narration_block(transcript: Transcript | None) -> str:
-    """What the prompt says about speech — three states, never conflated (AT-134).
+    """Describe supplied narration honestly: absent, quoted, unreadable, or empty.
 
-    Telling a model "no speech detected" about a recording that HAS speech is
-    not a missing feature, it is a false statement in a block the prompt itself
-    labels ground truth. An unreadable sidecar is a different fact from silence
-    and has to read as one, or the model confidently reports a silent video."""
-    if transcript is not None and transcript.segments:
+    A missing sidecar cannot establish silence. No branch invents dialogue.
+    """
+    if transcript is None:
+        return "(no supplied transcript — narration unavailable; do NOT infer silence)"
+    if transcript.segments:
         return transcript.slice(0.0, transcript.segments[-1].end)
-    if transcript is not None and transcript.engine == UNREADABLE:
+    if transcript.engine == UNREADABLE:
         return ("(a transcript file exists beside this recording but could not be read — "
                 "do NOT assume the recording is silent, and do not invent dialogue)")
     return "(no speech detected — do not invent dialogue)"
-
 
 RECORDING_SUFFIXES = frozenset({".avi", ".mkv", ".mov", ".mp4", ".webm"})
 """What a recording source may be. The ONE definition: the upload route and this
