@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "check_file_sizes",
+    "check_function_sizes",
+    "check_file_names",
+    "check_root_clean",
+    "check_duplicate_definitions"
+  ],
+  "violations": []
+}

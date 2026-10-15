@@ -1,0 +1,30 @@
+.......F.........                                                        [100%]
+================================== FAILURES ===================================
+______________ test_audio_byte_limit_and_output_secret_scrubbing ______________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-152/test_audio_byte_limit_and_outp0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C5ED8361D0>
+
+    def test_audio_byte_limit_and_output_secret_scrubbing(tmp_path, monkeypatch):
+        from autotester.sources import audio as module
+        audio = tmp_path / "audio.wav"
+        audio.write_bytes(b"audio")
+        provider = MockProvider(responses={"vision": [GeminiTranscription(
+            segments=[GeminiSegment(start=0, end=1, text="SECRET-123")])]})
+        monkeypatch.setattr(module, "MAX_AUDIO_BYTES", 2)
+>       assert module.transcribe_audio(audio, "src", provider=provider).transcript is None
+E       AssertionError: assert Transcript(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 3, 43, 822301, tzinfo=datetime.timezone.utc...criptSegment(start=0.0, end=1.0, text='SECRET-123')], speech_seconds=1.0, engine='gemini:mock', unreadable_reason=None) is None
+E        +  where Transcript(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 3, 43, 822301, tzinfo=datetime.timezone.utc...criptSegment(start=0.0, end=1.0, text='SECRET-123')], speech_seconds=1.0, engine='gemini:mock', unreadable_reason=None) = TranscriptionOutcome(transcript=Transcript(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 3, 43, 8223...(start=0.0, end=1.0, text='SECRET-123')], speech_seconds=1.0, engine='gemini:mock', unreadable_reason=None), note=None).transcript
+E        +    where TranscriptionOutcome(transcript=Transcript(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 3, 43, 8223...(start=0.0, end=1.0, text='SECRET-123')], speech_seconds=1.0, engine='gemini:mock', unreadable_reason=None), note=None) = <function transcribe_audio at 0x000001C5ECA916C0>(WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-152/test_audio_byte_limit_and_outp0/audio.wav'), 'src', provider=<autotester.providers.mock.MockProvider object at 0x000001C5ED837510>)
+E        +      where <function transcribe_audio at 0x000001C5ECA916C0> = <module 'autotester.sources.audio' from 'C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-rn8huek9\\repo\\src\\autotester\\sources\\audio.py'>.transcribe_audio
+
+tests\test_narration_policy.py:120: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing
+1 failed, 16 passed, 1 warning in 1.53s

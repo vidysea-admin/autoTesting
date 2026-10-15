@@ -36,6 +36,10 @@ def test_persisted_empty_transcript_reused_byte_for_byte(tmp_path, monkeypatch):
     store.save_transcript(supplied)
     monkeypatch.setattr(narration, "_transcribe_video_audio", lambda *_: pytest.fail("provider"))
     assert narration.ensure_narration(store, source) == supplied
+    monkeypatch.setattr(transcribe, "transcribe", lambda *_args, **_kwargs: pytest.fail("ASR"))
+    monkeypatch.setattr(media_prep.probe_mod, "ffmpeg_available", lambda: False)
+    media_prep.prepare(store, source, use_whisper=True)
+    assert store.load_transcript(source.id) == supplied
 
 
 def test_video_sends_only_extracted_audio_and_cleans_scratch(tmp_path, monkeypatch):

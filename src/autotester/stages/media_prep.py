@@ -92,15 +92,15 @@ def prepare(store: ProjectStore, source: Source, *,
     return prep
 
 
-def _prepare_narration(store, source, video, use_whisper, transcribe_missing):
+def _prepare_narration(store: ProjectStore, source: Source, video: Path,
+                       use_whisper: bool, transcribe_missing: bool):
     """Reuse supplied evidence; local ASR stays explicit and Gemini stays capability-gated."""
+    prior = store.load_transcript(source.id)
+    if prior is not None and prior.engine != "none":
+        return prior
     if use_whisper or not transcribe_missing:
         transcript = transcribe_mod.transcribe(video, source.id, use_whisper=use_whisper)
-        prior = store.load_transcript(source.id)
-        if prior is not None and prior.engine != "none":
-            transcript = prior
-        else:
-            store.save_transcript(transcript)
+        store.save_transcript(transcript)
     else:
         project = store.load_project()
         secrets = SecretStore.load(project, store.paths.env_file, strict=False) if project else None

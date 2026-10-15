@@ -1,0 +1,218 @@
+{
+  "elapsed_s": 148.67002487182617,
+  "results": [
+    {
+      "name": "default local ASR enabled",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "stored transcript ignored",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "video uploaded directly",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_video_sends_only_extracted_audio_and_cleans_scratch"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_video_sends_only_extracted_audio_and_cleans_scratch"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "duration guard bypass",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "audio extraction failed treated as empty complete",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "prep caller omits narration policy",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_media_prep_calls_narration_by_default"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_media_prep_calls_narration_by_default"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "untyped media safety allowed",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "byte guard disabled",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "provider output secret unsanitized",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "CLI opts in ASR by default",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_cli_prep_does_not_opt_in_local_asr"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_cli_prep_does_not_opt_in_local_asr"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "missing provider reported clean",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr"
+      ],
+      "failed": [
+        "tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "Gemini failure reported complete",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete"
+      ],
+      "failed": [
+        "tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "supplied empty transcript ignored",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider"
+      ],
+      "failed": [
+        "tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "prep ignores persisted narration",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+      ],
+      "failed": [
+        "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    },
+    {
+      "name": "audio no longer converges on source enum",
+      "killed": true,
+      "exit": 1,
+      "expected": [
+        "tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc"
+      ],
+      "failed": [
+        "tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc",
+        "tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider",
+        "tests/test_source_adapters_audio.py::test_audio_transcribes_via_gemini_provider",
+        "tests/test_source_adapters_audio.py::test_audio_transcript_cites_source_id_and_segments"
+      ],
+      "survivors": [],
+      "no_test_results": false,
+      "timed_out": false
+    }
+  ]
+}

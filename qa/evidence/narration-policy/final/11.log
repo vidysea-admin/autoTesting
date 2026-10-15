@@ -1,0 +1,35 @@
+.......F.........                                                        [100%]
+================================== FAILURES ===================================
+______________ test_audio_byte_limit_and_output_secret_scrubbing ______________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-153/test_audio_byte_limit_and_outp0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E2303C5DD0>
+
+    def test_audio_byte_limit_and_output_secret_scrubbing(tmp_path, monkeypatch):
+        from autotester.sources import audio as module
+        audio = tmp_path / "audio.wav"
+        audio.write_bytes(b"audio")
+        provider = MockProvider(responses={"vision": [GeminiTranscription(
+            segments=[GeminiSegment(start=0, end=1, text="SECRET-123")])]})
+        monkeypatch.setattr(module, "MAX_AUDIO_BYTES", 2)
+        assert module.transcribe_audio(audio, "src", provider=provider).transcript is None
+        assert provider.prompts == []
+        monkeypatch.setattr(module, "MAX_AUDIO_BYTES", 128)
+        outcome = module.transcribe_audio(audio, "src", provider=provider, secrets=["SECRET-123"])
+>       assert "SECRET-123" not in outcome.transcript.model_dump_json()
+E       assert 'SECRET-123' not in '{"schema_ve...eason":null}'
+E         
+E         'SECRET-123' is contained here:
+E           0,"text":"SECRET-123"}],"speech_seconds":1.0,"engine":"gemini:mock","unreadable_reason":null}
+E         ?           ++++++++++
+
+tests\test_narration_policy.py:124: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing
+1 failed, 16 passed, 1 warning in 1.44s

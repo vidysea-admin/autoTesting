@@ -1,0 +1,25 @@
+...........F.....                                                        [100%]
+================================== FAILURES ===================================
+______________ test_audio_missing_provider_never_uses_local_asr _______________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-155/test_audio_missing_provider_ne0')
+
+    def test_audio_missing_provider_never_uses_local_asr(tmp_path: Path) -> None:
+        result = register_audio(_store(tmp_path), _write_audio(tmp_path), provider=None)
+>       assert result.source.notes.startswith("extraction_error:")
+E       AssertionError: assert False
+E        +  where False = <built-in method startswith of str object at 0x00000231DA385070>('extraction_error:')
+E        +    where <built-in method startswith of str object at 0x00000231DA385070> = 'complete'.startswith
+E        +      where 'complete' = Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 9, 198261, tzinfo=datetime.timezone.utc), pr...554', duration_s=None, label=None, notes='complete', recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None).notes
+E        +        where Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 9, 198261, tzinfo=datetime.timezone.utc), pr...554', duration_s=None, label=None, notes='complete', recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None) = Registration(source=Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 9, 198261, tzinfo=dateti...s=None, label=None, notes='complete', recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None), created=True).source
+
+tests\test_source_adapters_audio.py:84: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr
+1 failed, 16 passed, 1 warning in 1.41s

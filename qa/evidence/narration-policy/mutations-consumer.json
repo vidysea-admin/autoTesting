@@ -1,0 +1,15 @@
+{
+  "tests": "tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc",
+  "timeout_s": 60,
+  "mutations": [
+    {
+      "name": "audio no longer converges on source enum",
+      "file": "src/autotester/sources/adapters.py",
+      "old": "            kind=SourceKind.AUDIO,",
+      "new": "            kind=SourceKind.TEXT,",
+      "kills": [
+        "test_audio_shares_the_one_store_and_enum_with_text_and_doc"
+      ]
+    }
+  ]
+}

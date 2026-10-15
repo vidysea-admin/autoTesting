@@ -1,0 +1,95 @@
+.........F...FF.F                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_audio_transcribes_via_gemini_provider __________________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-159/test_audio_transcribes_via_gem0')
+
+    def test_audio_transcribes_via_gemini_provider(tmp_path: Path) -> None:
+        store = _store(tmp_path)
+        audio = _write_audio(tmp_path)
+        provider = _seeded_provider(
+            GeminiSegment(start=0.0, end=2.5, text="the submit button is broken")
+        )
+    
+        result = register_audio(store, audio, provider=provider)
+    
+        assert result.created is True
+>       assert result.source.kind is SourceKind.AUDIO
+E       AssertionError: assert <SourceKind.TEXT: 'text'> is <SourceKind.AUDIO: 'audio'>
+E        +  where <SourceKind.TEXT: 'text'> = Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 41, 933977, tzinfo=datetime.timezone.utc), p...8de1de554', duration_s=None, label=None, notes=None, recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None).kind
+E        +    where Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 41, 933977, tzinfo=datetime.timezone.utc), p...8de1de554', duration_s=None, label=None, notes=None, recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None) = Registration(source=Source(schema_version=1, created_at=datetime.datetime(2026, 10, 15, 9, 4, 41, 933977, tzinfo=datet...ation_s=None, label=None, notes=None, recorded_on=None, uploaded_by=None, uploaded_at=None, origin=None), created=True).source
+E        +  and   <SourceKind.AUDIO: 'audio'> = SourceKind.AUDIO
+
+tests\test_source_adapters_audio.py:54: AssertionError
+___________ test_audio_supplied_empty_transcript_precedes_provider ____________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-159/test_audio_supplied_empty_tran0')
+
+    def test_audio_supplied_empty_transcript_precedes_provider(tmp_path: Path) -> None:
+        audio = _write_audio(tmp_path)
+        audio.with_suffix(".transcript.json").write_text('{"segments": []}', encoding="utf-8")
+        provider = _seeded_provider(GeminiSegment(start=0, end=1, text="must not be used"))
+        store = _store(tmp_path)
+        result = register_audio(store, audio, provider=provider)
+        assert provider.prompts == []
+>       assert store.load_transcript(result.source.id).engine == "sidecar"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'engine'
+
+tests\test_source_adapters_audio.py:105: AttributeError
+_____________ test_audio_transcript_cites_source_id_and_segments ______________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-159/test_audio_transcript_cites_so0')
+
+    def test_audio_transcript_cites_source_id_and_segments(tmp_path: Path) -> None:
+        store = _store(tmp_path)
+        audio = _write_audio(tmp_path)
+        provider = _seeded_provider(
+            GeminiSegment(start=0.0, end=3.0, text="segment one"),
+            GeminiSegment(start=3.0, end=5.0, text="segment two"),
+        )
+    
+        result = register_audio(store, audio, provider=provider)
+    
+        transcript = store.load_transcript(result.source.id)
+>       assert transcript is not None
+E       assert None is not None
+
+tests\test_source_adapters_audio.py:121: AssertionError
+_________ test_audio_shares_the_one_store_and_enum_with_text_and_doc __________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-159/test_audio_shares_the_one_stor0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002D14AAF9850>
+
+    def test_audio_shares_the_one_store_and_enum_with_text_and_doc(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        store = _store(tmp_path)
+        audio = _write_audio(tmp_path)
+    
+        register_text(store, "a note")
+        register_document(store, FIXTURES / "sample_doc.md")
+        register_audio(store, audio, provider=None)
+    
+        sources = store.list_sources()
+        assert len(sources) == 3  # all landed in the SAME sources.jsonl (SA1)
+>       assert {s.kind for s in sources} == {SourceKind.TEXT, SourceKind.DOC, SourceKind.AUDIO}
+E       AssertionError: assert {<SourceKind....TEXT: 'text'>} == {<SourceKind....TEXT: 'text'>}
+E         
+E         Extra items in the right set:
+E         <SourceKind.AUDIO: 'audio'>
+E         Use -v to get more diff
+
+tests\test_source_adapters_audio.py:158: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_source_adapters_audio.py::test_audio_transcribes_via_gemini_provider
+FAILED tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider
+FAILED tests/test_source_adapters_audio.py::test_audio_transcript_cites_source_id_and_segments
+FAILED tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc
+4 failed, 13 passed, 1 warning in 1.32s

@@ -1,0 +1,32 @@
+.....F...........                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_media_prep_calls_narration_by_default __________________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/pytest-of-product/pytest-150/test_media_prep_calls_narratio0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000022A969B63D0>
+
+    def test_media_prep_calls_narration_by_default(tmp_path, monkeypatch):
+        store, source, _ = _setup(tmp_path)
+        calls = []
+        def ensured(store, source, **kwargs):
+            calls.append(source.id)
+            return Transcript(source_id=source.id, engine="none")
+        monkeypatch.setattr(media_prep, "ensure_narration", ensured)
+        monkeypatch.setattr(media_prep.probe_mod, "ffmpeg_available", lambda: False)
+        media_prep.prepare(store, source)
+>       assert calls == [source.id]
+E       AssertionError: assert [] == ['src_a8fa2de3151c']
+E         
+E         Right contains one more item: 'src_a8fa2de3151c'
+E         Use -v to get more diff
+
+tests\test_narration_policy.py:98: AssertionError
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_media_prep_calls_narration_by_default
+1 failed, 16 passed, 1 warning in 1.55s

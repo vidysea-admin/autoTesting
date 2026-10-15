@@ -1,0 +1,25 @@
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte
+tests/test_narration_policy.py::test_video_sends_only_extracted_audio_and_cleans_scratch
+tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output
+tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch
+tests/test_narration_policy.py::test_media_prep_calls_narration_by_default
+tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities
+tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing
+tests/test_narration_policy.py::test_cli_prep_does_not_opt_in_local_asr
+tests/test_source_adapters_audio.py::test_audio_transcribes_via_gemini_provider
+tests/test_source_adapters_audio.py::test_audio_dedupes_same_bytes_without_re_transcribing
+tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr
+tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete
+tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider
+tests/test_source_adapters_audio.py::test_audio_transcript_cites_source_id_and_segments
+tests/test_source_adapters_audio.py::test_audio_gemini_call_is_gated_by_assert_no_raw_secrets
+tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc
+
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\AppData\Local\Temp\mutation-check-rn8huek9\repo\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+17 tests collected in 0.50s

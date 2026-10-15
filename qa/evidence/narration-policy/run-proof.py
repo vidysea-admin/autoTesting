@@ -19,6 +19,6 @@ def run(cwd,tests,*args,**kwargs):
   else:os.environ["PYTHONPATH"]=old
 m._run_pytest=run
 started=time.time()
-results=m.check(json.loads(Path("qa/evidence/narration-policy/mutations.json").read_text()),Path.cwd())
+results=m.check(json.loads(Path("qa/evidence/narration-policy/mutations-final.json").read_text()),Path.cwd())
 (out/"results.json").write_text(json.dumps(dict(elapsed_s=time.time()-started,results=results),indent=2))
 raise SystemExit(m.report(results))
