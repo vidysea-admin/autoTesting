@@ -112,7 +112,7 @@ def _reading_payload(reading):
     )
 
 
-def _input_identity(source, content, receipt_digest, problems, children, content_key):
+def _input_identity(source, content, receipt_digest, problems, children):
     """Bind registered metadata and the full extracted evidence without storing raw content."""
     identity = TeachingInput(
         source_id=source.id,
@@ -127,7 +127,7 @@ def _input_identity(source, content, receipt_digest, problems, children, content
                 "children": children,
             },
         ),
-        content_fingerprint=content_id("teachcontent", content_key),
+        content_fingerprint=content_id("teachcontent", content),
     )
     return identity
 
@@ -156,11 +156,10 @@ def resolve_teaching_material(
         "kind": source.kind,
         "bytes": actual,
         "units": [u.model_dump() for u in units],
-        "transcript": transcript.model_dump(mode="json") if transcript else None,
+        "transcript": _reading_payload(transcript),
         "document": _reading_payload(document),
     }
-    content_key = {**content, "transcript": _reading_payload(transcript)}
-    identity = _input_identity(source, content, receipt_digest, problems, children, content_key)
+    identity = _input_identity(source, content, receipt_digest, problems, children)
     return TeachingMaterial(
         identity=identity,
         units=units,

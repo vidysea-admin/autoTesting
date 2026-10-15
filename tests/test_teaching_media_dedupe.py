@@ -22,3 +22,26 @@ def test_duplicate_media_uses_transcript_content_not_its_envelope(tmp_path, kind
     assert len(provider.text_prompts) + len(provider.videos) == 1
     assert result.outcomes[1].status == "duplicate" and result.outcomes[1].duplicate_of == "a"
     assert {flow.source_id for flow in result.proposal.flows} == {"a"}
+
+
+@pytest.mark.parametrize("kind", [SourceKind.AUDIO, SourceKind.VIDEO])
+def test_supplied_sidecar_resume_is_stable_but_changed_bytes_require_new_run(tmp_path, kind):
+    import json
+    from pathlib import Path
+
+    from autotester.stages.teach_sources import TeachingInputsChanged
+
+    store = ProjectStore("demo", root=tmp_path)
+    store.save_project(Project(slug="demo", name="Demo", base_url="https://example.test"))
+    suffix = ".wav" if kind is SourceKind.AUDIO else ".mp4"
+    source = add_local(store, "input", kind, "source" + suffix)
+    sidecar = Path(source.path).with_suffix(".transcript.json")
+    payload = {"segments": [{"start": 1, "end": 2, "text": "Supplied narration"}]}
+    sidecar.write_text(json.dumps(payload), encoding="utf-8")
+    provider = MixedTeacherFake()
+    assert run_teaching(store, provider).is_complete
+    assert run_teaching(store, provider).is_complete
+    assert len(provider.text_prompts) + len(provider.videos) == 1
+    sidecar.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    with pytest.raises(TeachingInputsChanged):
+        run_teaching(store, provider)
