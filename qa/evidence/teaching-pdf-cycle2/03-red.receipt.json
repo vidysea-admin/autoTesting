@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "03-red",
+  "started_utc": "2026-10-15T08:01:09.687976+00:00",
+  "ended_utc": "2026-10-15T08:01:23.429298+00:00",
+  "elapsed_s": 13.421999999998661,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\03-red"
+  ],
+  "before_tree_sha256": "13088001ba056bdb82828c26a7561f7e8a530bb16c9a5cf2e960a8b5765e7c41",
+  "after_tree_sha256": "13088001ba056bdb82828c26a7561f7e8a530bb16c9a5cf2e960a8b5765e7c41",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures"
+  ],
+  "output": "03-red.log",
+  "output_sha256": "ba7fb421af37d587ebbd4f84a7d8241c739d6573c3212b22377efa95bbd48541"
+}

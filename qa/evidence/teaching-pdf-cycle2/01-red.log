@@ -1,0 +1,23 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance _
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-0w8mwjn8/repo/.work/01-red/test_text_pdf_is_extracted_by_0')
+
+    def test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance(tmp_path):
+        path = _pdf(tmp_path / "guide.pdf")
+        result = extract_document_text(path)
+>       assert result.error is None
+E       assert "unsupported document type '.pdf'" is None
+E        +  where "unsupported document type '.pdf'" = Extraction(text=None, error="unsupported document type '.pdf'", reading=None).error
+
+tests\test_pdf_teaching.py:40: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance
+1 failed, 1 warning in 1.23s

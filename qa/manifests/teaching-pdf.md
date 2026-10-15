@@ -1,7 +1,7 @@
 # Manifest — bounded local PDF teaching extraction
 
 - Status: ready-for-check
-- Fix cycle: 1
+- Fix cycle: 2
 - Base: abc4a0ef
 - Candidate: exact SHA supplied by the parent checker packet after scoped commit
 - Authorization: user-approved Ollama-first completion plan; D-099; SA7.
@@ -58,3 +58,31 @@ by the host and remain unknown. Do not infer compliance with checker/maker effic
 Explicit re-extraction of existing deferred PDFs, nonvideo learning, all-source dispatch,
 source-set checkpoints and FlowSpec merge/review acceptance are separate subsequent units.
 English-only OCR and lack of a fixed child memory quota are disclosed runtime limits.
+
+## Cycle 2 — authenticate previously unbound proof receipts
+
+Cycle-1 checker HOLD (`qa/verdicts/teaching-pdf.md`, commit `1e6d9276`) found no runtime defect:
+its own 62 focused checks, scoped lint and independent sanitation-removal mutation passed.
+The gap was missing immutable source/environment binding on the other 21 maker mutation rows.
+The original ephemeral copies were already removed by the repository harness, so their old
+outputs remain historical evidence and are not retroactively certified.
+
+Feature source, tests, scripts, pyproject and lock remain byte-identical to `c1f67d93`.
+Cycle 2 changes only this manifest and supplementary `qa/evidence/teaching-pdf-cycle2/`.
+One complete sandbox is fingerprinted and compared to the source before its first command;
+no caches enter the copy. Its context binds source/test/fixture hashes, exact candidate,
+Python executable/version/hash, lock, dependency versions, tool executable hashes/versions,
+and relevant environment. Every command receipt binds before/after source-tree hashes,
+exact node IDs, real UTC/monotonic timing, exit, named failures and raw-output SHA256.
+
+Only missing defenders run: one green union baseline, 21 individually scoped red mutations,
+and the same restored-green union. Each mutation asserts its unique anchor, changed bytes,
+expected failure, restoration bytes and restored complete source manifest. The already
+independently proven sanitation mutation is excluded. No 62-test suite or feature rework.
+Final completion receipt and readiness validation must exist before checker dispatch.
+
+Cycle-2 completion: all 21 missing mutations killed with authenticated named failures; green
+union 12 passed and restored-green union 12 passed. Measured subprocess command time totals
+289.799 seconds; this is command elapsed time, not invented maker active time or token usage.
+`readiness.json` is READY_FOR_INDEPENDENT_CHECK with code tree SHA256
+`1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b`.

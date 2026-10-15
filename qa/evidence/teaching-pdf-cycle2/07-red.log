@@ -1,0 +1,26 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence _______
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-0w8mwjn8/repo/.work/07-red/test_blank_page_runs_local_ocr0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001A8EC3B4ED0>
+
+    def test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence(tmp_path, monkeypatch):
+        monkeypatch.setattr("autotester.sources.pdf_ocr.shutil.which", lambda _: None)
+        result = read_pdf_pages(_pdf(tmp_path / "scanned.pdf", ""), PdfLimits())
+        assert result.error and len(result.pages) == 1
+        assert result.pages[0].method == "unreadable"
+>       assert "requires" in result.pages[0].error
+E       AssertionError: assert 'requires' in 'page could not be read'
+E        +  where 'page could not be read' = DocumentPage(number=1, text='', method='unreadable', confidence=None, error='page could not be read').error
+
+tests\test_pdf_teaching.py:90: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence
+1 failed, 1 warning in 1.49s

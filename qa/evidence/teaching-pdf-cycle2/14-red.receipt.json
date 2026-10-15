@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "14-red",
+  "started_utc": "2026-10-15T08:03:15.304012+00:00",
+  "ended_utc": "2026-10-15T08:03:29.271460+00:00",
+  "elapsed_s": 13.5,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\14-red"
+  ],
+  "before_tree_sha256": "01306e9b8e5bdc50129af961d6c2279faabcde936551d959f2edf7a95f3f3f5e",
+  "after_tree_sha256": "01306e9b8e5bdc50129af961d6c2279faabcde936551d959f2edf7a95f3f3f5e",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output"
+  ],
+  "output": "14-red.log",
+  "output_sha256": "7bbc5067883d0926d4a1fa2b883913e3ab62a3fc9ead92f5b483deceb4f3bbc6"
+}

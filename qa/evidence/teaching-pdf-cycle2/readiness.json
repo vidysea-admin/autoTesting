@@ -1,0 +1,11 @@
+{
+  "status": "READY_FOR_INDEPENDENT_CHECK",
+  "proofs": 21,
+  "feature_candidate": "c1f67d93b9ae1c9cab0c0cdbffdb5adadf68fcee",
+  "cycle": 2,
+  "source_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+  "measured_command_elapsed_s": 289.79899999999907,
+  "maker_active_s": null,
+  "tokens": null,
+  "cost": null
+}

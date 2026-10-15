@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "09-red",
+  "started_utc": "2026-10-15T08:02:20.124620+00:00",
+  "ended_utc": "2026-10-15T08:02:29.073442+00:00",
+  "elapsed_s": 8.609999999998763,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\09-red"
+  ],
+  "before_tree_sha256": "8881488867a2551353e4d4f139b841608e5e9889d1313d6f9053a6b4f43e4972",
+  "after_tree_sha256": "8881488867a2551353e4d4f139b841608e5e9889d1313d6f9053a6b4f43e4972",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed"
+  ],
+  "output": "09-red.log",
+  "output_sha256": "8ddb1a23834917e2c34dac3c7e945c6cfb98c885dc3636a46dc38213a20fd15a"
+}

@@ -1,0 +1,24 @@
+00-green: exit=0, elapsed=46.360s
+01-red: exit=1, elapsed=7.984s
+02-red: exit=1, elapsed=13.360s
+03-red: exit=1, elapsed=13.422s
+04-red: exit=1, elapsed=14.578s
+05-red: exit=1, elapsed=9.281s
+06-red: exit=1, elapsed=7.703s
+07-red: exit=1, elapsed=7.906s
+08-red: exit=1, elapsed=7.875s
+09-red: exit=1, elapsed=8.610s
+10-red: exit=1, elapsed=8.047s
+11-red: exit=1, elapsed=7.313s
+12-red: exit=1, elapsed=14.125s
+13-red: exit=1, elapsed=7.907s
+14-red: exit=1, elapsed=13.500s
+15-red: exit=1, elapsed=11.718s
+16-red: exit=1, elapsed=7.469s
+17-red: exit=1, elapsed=7.750s
+18-red: exit=1, elapsed=8.859s
+19-red: exit=1, elapsed=7.172s
+20-red: exit=1, elapsed=7.406s
+21-red: exit=1, elapsed=7.797s
+99-restored-green: exit=0, elapsed=43.657s
+Authenticated 21/21 proofs; green and restored-green baseline passed

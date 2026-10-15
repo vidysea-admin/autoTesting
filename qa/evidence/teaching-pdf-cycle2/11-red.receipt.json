@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "11-red",
+  "started_utc": "2026-10-15T08:02:40.212854+00:00",
+  "ended_utc": "2026-10-15T08:02:47.805153+00:00",
+  "elapsed_s": 7.313000000000102,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\11-red"
+  ],
+  "before_tree_sha256": "fb7774f2b5d10a89eb58a8fd8e033d5f4dd03725f1efedf49b059cc7051db6b2",
+  "after_tree_sha256": "fb7774f2b5d10a89eb58a8fd8e033d5f4dd03725f1efedf49b059cc7051db6b2",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+  ],
+  "output": "11-red.log",
+  "output_sha256": "1af61daf3d6903e68439932969373d8e2644c7fe6933f78dbb6d37650f8d90e2"
+}

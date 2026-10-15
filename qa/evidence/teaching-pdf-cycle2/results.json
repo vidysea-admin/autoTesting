@@ -1,0 +1,422 @@
+[
+  {
+    "name": "PDF dispatch removed",
+    "file": "src/autotester/sources/extract.py",
+    "old": "if suffix == PDF_SUFFIX:",
+    "new": "if False:",
+    "anchor_matches": 1,
+    "before_sha256": "30ab88ef37ac4f2c3a974f9d4adbf99740499d0de374ec77a034c985331900d9",
+    "mutated_sha256": "77ab5fcb601ace13e9f59b05965b930529491ec8b44d124a3cb3e837f18a93f4",
+    "restored_sha256": "30ab88ef37ac4f2c3a974f9d4adbf99740499d0de374ec77a034c985331900d9",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_text_pdf_is_extracted_by_worker_and_registration_keeps_page_provenance"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "01-red.receipt.json"
+  },
+  {
+    "name": "PDF encoded secret gate removed",
+    "file": "src/autotester/sources/adapters.py",
+    "old": "redactor.assert_clean(reading.model_dump_json())",
+    "new": "pass",
+    "anchor_matches": 1,
+    "before_sha256": "9b2cf5db5af9d8c96d444cf47243620c41a98bce94fb3c9bd13285de2ab07f8b",
+    "mutated_sha256": "97dcf04704a4136848e4446511a07bb1105acf1efe340babac5b82ba04a33fbb",
+    "restored_sha256": "9b2cf5db5af9d8c96d444cf47243620c41a98bce94fb3c9bd13285de2ab07f8b",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_registration_refuses_encoded_secret_before_persistence"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "02-red.receipt.json"
+  },
+  {
+    "name": "encrypted refusal removed",
+    "file": "src/autotester/sources/pdf_worker.py",
+    "old": "if reader.is_encrypted:",
+    "new": "if False:",
+    "anchor_matches": 1,
+    "before_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "mutated_sha256": "bf506e5d40fc6c7e7a699ff99a7be71daad47c9064fa680c831a739da7464435",
+    "restored_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_corrupt_and_encrypted_pdf_are_explicit_failures"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "03-red.receipt.json"
+  },
+  {
+    "name": "input byte bound removed",
+    "file": "src/autotester/sources/pdf_extract.py",
+    "old": "if path.stat().st_size > limits.max_bytes:",
+    "new": "if False:",
+    "anchor_matches": 1,
+    "before_sha256": "74d8cd8bc95bb327b96ff560ff8935bc99492be7acdc6fe691ed3534d8568f80",
+    "mutated_sha256": "bef6bc50627051780da6c6eafaff6be6e1df41e49e8993b349b32f11bae8b3be",
+    "restored_sha256": "74d8cd8bc95bb327b96ff560ff8935bc99492be7acdc6fe691ed3534d8568f80",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "04-red.receipt.json"
+  },
+  {
+    "name": "page bound removed",
+    "file": "src/autotester/sources/pdf_worker.py",
+    "old": "if not 0 < len(reader.pages) <= limits.max_pages:",
+    "new": "if False:",
+    "anchor_matches": 1,
+    "before_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "mutated_sha256": "3d920e4f987506a2293dbf16409f89cb4f3f980df04e2e2a9a41eb3af1c4fd08",
+    "restored_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "05-red.receipt.json"
+  },
+  {
+    "name": "character bound removed",
+    "file": "src/autotester/sources/pdf_worker.py",
+    "old": "if chars > limits.max_chars:",
+    "new": "if False:",
+    "anchor_matches": 1,
+    "before_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "mutated_sha256": "2b39a19c52831c20b78725dd8977b54b55577b9661c9b6d45702d35a897b715a",
+    "restored_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "06-red.receipt.json"
+  },
+  {
+    "name": "missing OCR tools guard removed",
+    "file": "src/autotester/sources/pdf_ocr.py",
+    "old": "if not poppler or not tesseract:",
+    "new": "if False:",
+    "anchor_matches": 1,
+    "before_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "mutated_sha256": "036e469c6a612d8cc7c04619d5fb0d8c3f710cd14fd77ee7da92453fef56424a",
+    "restored_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_blank_page_runs_local_ocr_and_missing_engine_is_not_silence"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "07-red.receipt.json"
+  },
+  {
+    "name": "OCR TSV line breaks removed",
+    "file": "src/autotester/sources/pdf_ocr.py",
+    "old": "\"\\n\".join(\" \".join(words) for words in lines.values())",
+    "new": "\" \".join(\" \".join(words) for words in lines.values())",
+    "anchor_matches": 1,
+    "before_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "mutated_sha256": "a27535040c1e5ad015345a6ded74076ec52c20f93f044b3b42687cbbc382f4bd",
+    "restored_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "08-red.receipt.json"
+  },
+  {
+    "name": "worker deadline ignored",
+    "file": "src/autotester/sources/pdf_extract.py",
+    "old": "timeout=limits.timeout_s",
+    "new": "timeout=600",
+    "anchor_matches": 1,
+    "before_sha256": "74d8cd8bc95bb327b96ff560ff8935bc99492be7acdc6fe691ed3534d8568f80",
+    "mutated_sha256": "44f51612aec93956d816b96c04c98fff0146970703e2666ab87415250b8be19a",
+    "restored_sha256": "74d8cd8bc95bb327b96ff560ff8935bc99492be7acdc6fe691ed3534d8568f80",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_worker_deadline_is_explicit_and_no_document_text_is_echoed"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "09-red.receipt.json"
+  },
+  {
+    "name": "local tool deadline ignored",
+    "file": "src/autotester/sources/pdf_ocr.py",
+    "old": "timeout=timeout,",
+    "new": "timeout=60,",
+    "anchor_matches": 1,
+    "before_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "mutated_sha256": "c8805f666b72fa007ec9e1a40c3edf7c73d2b1cf80cd67a2c0d2a9bd6a371bf0",
+    "restored_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "10-red.receipt.json"
+  },
+  {
+    "name": "OCR single-thread cap removed",
+    "file": "src/autotester/sources/pdf_ocr.py",
+    "old": "env={**os.environ, \"OMP_THREAD_LIMIT\": \"1\"},",
+    "new": "env={},",
+    "anchor_matches": 1,
+    "before_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "mutated_sha256": "316f6a74041c937c7d36d050294c64166518db09a2ed72e33c607c56180e6988",
+    "restored_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "11-red.receipt.json"
+  },
+  {
+    "name": "OCR page dispatch removed",
+    "file": "src/autotester/sources/pdf_worker.py",
+    "old": "else ocr_pdf_page(path, number, limits))",
+    "new": "else DocumentPage(number=number, method=\"unreadable\", error=\"skipped\"))",
+    "anchor_matches": 1,
+    "before_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "mutated_sha256": "1ba63594d2fc25a3342709f366cde893a183c68d39b731ec447a51e285e7444b",
+    "restored_sha256": "da618b0a2e038d79f430f59560cd8086db6c358929d94458b5d0da1602f5afd5",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_scanned_pdf_real_local_ocr_keeps_page_and_method"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "12-red.receipt.json"
+  },
+  {
+    "name": "low confidence accepted",
+    "file": "src/autotester/sources/pdf_ocr.py",
+    "old": "if confidence is None or confidence < limits.min_confidence",
+    "new": "if False",
+    "anchor_matches": 1,
+    "before_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "mutated_sha256": "1381b1b3a887f1c3764ce298e5ca34057df64d3f913d5578223468a50b6d2847",
+    "restored_sha256": "fa4bf8fab4ada2ea2fe188650de1364470ea64686c8d0bea61b78b8f5616d106",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_low_confidence_ocr_is_explicit_review_requirement"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "13-red.receipt.json"
+  },
+  {
+    "name": "worker output bound removed",
+    "file": "src/autotester/sources/pdf_extract.py",
+    "old": "if result.stat().st_size > limits.max_chars * 8 + limits.max_pages * 1000:",
+    "new": "if False:",
+    "anchor_matches": 1,
+    "before_sha256": "74d8cd8bc95bb327b96ff560ff8935bc99492be7acdc6fe691ed3534d8568f80",
+    "mutated_sha256": "2b0b172af5ac2bd5a7aa42abe9b1139237f20a8a346390c66b11800ad5ae028d",
+    "restored_sha256": "74d8cd8bc95bb327b96ff560ff8935bc99492be7acdc6fe691ed3534d8568f80",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_pdf_supervisor_refuses_oversized_and_invalid_worker_output"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "14-red.receipt.json"
+  },
+  {
+    "name": "max_bytes validated bounds removed",
+    "file": "src/autotester/schema/document.py",
+    "old": "    max_bytes: int = Field(default=50_000_000, ge=1, le=200_000_000)",
+    "new": "    max_bytes: int = 50_000_000",
+    "anchor_matches": 1,
+    "before_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "mutated_sha256": "ea19b7f06347b57cbab27c4bab03018950b7b11327cf8b783a31533664c77ea8",
+    "restored_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "15-red.receipt.json"
+  },
+  {
+    "name": "max_pages validated bounds removed",
+    "file": "src/autotester/schema/document.py",
+    "old": "    max_pages: int = Field(default=100, ge=1, le=1000)",
+    "new": "    max_pages: int = 100",
+    "anchor_matches": 1,
+    "before_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "mutated_sha256": "97800983841bbae2b435e619ce001bfda822b089da4203cdf8e1b6a1b0a10298",
+    "restored_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "16-red.receipt.json"
+  },
+  {
+    "name": "max_chars validated bounds removed",
+    "file": "src/autotester/schema/document.py",
+    "old": "    max_chars: int = Field(default=500_000, ge=1, le=2_000_000)",
+    "new": "    max_chars: int = 500_000",
+    "anchor_matches": 1,
+    "before_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "mutated_sha256": "c6eff301876c28a013e74558ece90cd666ad5316063f9594242114699dbf6c63",
+    "restored_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "17-red.receipt.json"
+  },
+  {
+    "name": "timeout_s validated bounds removed",
+    "file": "src/autotester/schema/document.py",
+    "old": "    timeout_s: float = Field(default=120, gt=0, le=600)",
+    "new": "    timeout_s: float = 120",
+    "anchor_matches": 1,
+    "before_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "mutated_sha256": "9f776f6d009a3f54fe97d187e592b7459675aef44e4ed45529dd644126b25128",
+    "restored_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "18-red.receipt.json"
+  },
+  {
+    "name": "page_timeout_s validated bounds removed",
+    "file": "src/autotester/schema/document.py",
+    "old": "    page_timeout_s: float = Field(default=15, gt=0, le=60)",
+    "new": "    page_timeout_s: float = 15",
+    "anchor_matches": 1,
+    "before_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "mutated_sha256": "c1992aa1ff71ad2d842de3b0a18a3685d7678f8b94c350fbb99fa75190c222b8",
+    "restored_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "19-red.receipt.json"
+  },
+  {
+    "name": "image_side validated bounds removed",
+    "file": "src/autotester/schema/document.py",
+    "old": "    image_side: int = Field(default=2000, ge=256, le=4000)",
+    "new": "    image_side: int = 2000",
+    "anchor_matches": 1,
+    "before_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "mutated_sha256": "a243442087a61139870bea74663dc7e5fc40491c10c265360cbcc81a594288a6",
+    "restored_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "20-red.receipt.json"
+  },
+  {
+    "name": "min_confidence validated bounds removed",
+    "file": "src/autotester/schema/document.py",
+    "old": "    min_confidence: float = Field(default=70, ge=0, le=100)",
+    "new": "    min_confidence: float = 70",
+    "anchor_matches": 1,
+    "before_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "mutated_sha256": "2583e094e200bb1479f08bc32bf104214a11e2ef142e44d7114e306435480850",
+    "restored_sha256": "a6747ce277f1441fc5b89cdd8ba6a763120960afc4957b88caeb36d28b8c7fae",
+    "restored_tree_sha256": "1ffa3f237a630892dfca97ed3b146d4a226fd498a505286fe419d4b4f9d9860b",
+    "expected": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "actual_failed": [
+      "tests/test_pdf_teaching.py::test_invalid_pdf_limits_cannot_disable_resource_bounds"
+    ],
+    "killed": true,
+    "exit": 1,
+    "command_receipt": "21-red.receipt.json"
+  }
+]

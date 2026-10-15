@@ -1,0 +1,36 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_pdf_local_ocr_commands_are_bounded_and_fail_closed ___________
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-0w8mwjn8/repo/.work/10-red/test_pdf_local_ocr_commands_ar0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D74B011050>
+
+    def test_pdf_local_ocr_commands_are_bounded_and_fail_closed(tmp_path, monkeypatch):
+        import subprocess
+    
+        monkeypatch.setattr("autotester.sources.pdf_ocr.shutil.which", lambda name: name)
+        calls = []
+    
+        def failed(arguments, **kwargs):
+            calls.append((arguments, kwargs))
+            raise subprocess.TimeoutExpired("private OCR page", 1)
+    
+        monkeypatch.setattr("autotester.sources.pdf_ocr.subprocess.run", failed)
+        result = ocr_pdf_page(tmp_path / "scan.pdf", 2, PdfLimits(page_timeout_s=1))
+        assert result.error and result.method == "unreadable"
+        args, options = calls[0]
+        assert args[args.index("-f") + 1] == "2"
+        assert args[args.index("-scale-to") + 1] == "2000"
+>       assert options["timeout"] == 1 and options["check"] is True
+E       assert (60 == 1)
+
+tests\test_pdf_teaching.py:134: AssertionError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_local_ocr_commands_are_bounded_and_fail_closed
+1 failed, 1 warning in 1.33s

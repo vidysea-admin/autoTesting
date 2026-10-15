@@ -1,0 +1,31 @@
+{
+  "context": "context.json",
+  "label": "08-red",
+  "started_utc": "2026-10-15T08:02:10.450962+00:00",
+  "ended_utc": "2026-10-15T08:02:18.709167+00:00",
+  "elapsed_s": 7.875,
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence",
+    "-o",
+    "addopts=",
+    "-q",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "_mutation_report",
+    "--basetemp",
+    "C:\\Users\\product\\AppData\\Local\\Temp\\mutation-check-0w8mwjn8\\repo\\.work\\08-red"
+  ],
+  "before_tree_sha256": "7ba0f6b88a02cfbf95090d0dbb3be1742dbcdd0c77353f1c56a546f8cb334dd6",
+  "after_tree_sha256": "7ba0f6b88a02cfbf95090d0dbb3be1742dbcdd0c77353f1c56a546f8cb334dd6",
+  "exit_code": 1,
+  "failed_nodeids": [
+    "tests/test_pdf_teaching.py::test_pdf_ocr_tsv_preserves_lines_and_confidence"
+  ],
+  "output": "08-red.log",
+  "output_sha256": "ce3a60bac90053fa02250f07c0b036aeca88851c7abd988729287d867e4e3765"
+}

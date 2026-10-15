@@ -1,0 +1,24 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_pdf_file_page_and_character_limits_refuse_incomplete_readings ______
+
+tmp_path = WindowsPath('C:/Users/product/AppData/Local/Temp/mutation-check-0w8mwjn8/repo/.work/06-red/test_pdf_file_page_and_charact0')
+
+    def test_pdf_file_page_and_character_limits_refuse_incomplete_readings(tmp_path):
+        path = _pdf(tmp_path / "guide.pdf")
+        assert "file size" in extract_pdf_document(path, PdfLimits(max_bytes=1)).error
+        limited = read_pdf_pages(path, PdfLimits(max_chars=1))
+>       assert "character" in limited.error
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: argument of type 'NoneType' is not iterable
+
+tests\test_pdf_teaching.py:76: TypeError
+============================== warnings summary ===============================
+tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_pdf_teaching.py::test_pdf_file_page_and_character_limits_refuse_incomplete_readings
+1 failed, 1 warning in 1.30s
