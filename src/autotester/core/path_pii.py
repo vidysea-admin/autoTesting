@@ -26,7 +26,7 @@ def _is_secretish(seg: str) -> bool:
         return False
     words = [p for p in re.split(r"[-_]", seg) if p.isalpha()]
     mixed = any(c.isdigit() for c in seg) and any(c.isalpha() for c in seg)
-    return mixed and len(words) < 2 or (len(seg) >= 24 and "-" not in seg and "_" not in seg)
+    return (mixed and len(words) < 2) or (len(seg) >= 24 and "-" not in seg and "_" not in seg)
 
 
 def safe_path(path: str) -> str:
