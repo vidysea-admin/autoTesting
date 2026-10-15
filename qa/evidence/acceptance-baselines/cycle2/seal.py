@@ -4,7 +4,7 @@ import json
 import subprocess
 from pathlib import Path
 
-root = Path(__file__).resolve().parents[1]
+root = Path(__file__).resolve().parents[4]
 out = root / "qa/evidence/acceptance-baselines/cycle2"
 sha = lambda blob: hashlib.sha256(blob).hexdigest()
 identity = json.loads((out / "identity.json").read_bytes())
