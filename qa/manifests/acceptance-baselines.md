@@ -1,6 +1,6 @@
 # Manifest — acceptance-baselines
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 2
 Unit: T-169 isolated input-only baseline preparation (does not close T-169/T-206/T-136)
 Base SHA: bd2b465ff8cf2b67f6aa162068c77d3f82f2499c
