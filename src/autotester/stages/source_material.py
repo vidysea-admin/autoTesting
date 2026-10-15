@@ -92,6 +92,15 @@ def _material_content(store: ProjectStore, source: Source, sources: list[Source]
     return units, sorted(set(problems)), transcript, children, document
 
 
+def _reading_payload(reading):
+    """Compare extracted content across sources without its per-artifact envelope."""
+    return (
+        reading.model_dump(mode="json", exclude={"created_at", "provenance", "source_id"})
+        if reading
+        else None
+    )
+
+
 def _input_identity(source, content, receipt_digest, problems, children):
     """Bind registered metadata and the full extracted evidence without storing raw content."""
     identity = TeachingInput(
@@ -137,12 +146,8 @@ def resolve_teaching_material(
         "kind": source.kind,
         "bytes": actual,
         "units": [u.model_dump() for u in units],
-        "transcript": transcript.model_dump(mode="json") if transcript else None,
-        "document": document.model_dump(
-            mode="json", exclude={"created_at", "provenance", "source_id"}
-        )
-        if document
-        else None,
+        "transcript": _reading_payload(transcript),
+        "document": _reading_payload(document),
     }
     identity = _input_identity(source, content, receipt_digest, problems, children)
     return TeachingMaterial(
