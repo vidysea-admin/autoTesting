@@ -1,0 +1,82 @@
+[
+  {
+    "label": "preflight",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.2969999999986612,
+    "log_sha256": "20ef0fef0c8f73f3973abfa9b5cf3e49fa9678c461ea21a73ad1ea5ecec7b7d0"
+  },
+  {
+    "label": "green",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation",
+      "tests/test_acceptance_baseline.py::test_partial_write_is_visible_and_refuses_reuse",
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[config]",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\checker-green"
+    ],
+    "exit_code": 0,
+    "duration_s": 7.203000000001339,
+    "log_sha256": "290f72d6d7b2d5d011922b9c2d988dd80777834fe8c77f907a58942c57ce8f7c"
+  },
+  {
+    "label": "red",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[config]",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\checker-red"
+    ],
+    "exit_code": 1,
+    "duration_s": 7.640999999999622,
+    "log_sha256": "40739a6192ecf1b30c066444494f82c123f21bb8d5f87d1e8d61435be2947c36"
+  },
+  {
+    "label": "restored",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[config]",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\checker-restored"
+    ],
+    "exit_code": 0,
+    "duration_s": 7.077999999997701,
+    "log_sha256": "9194e4a17316c0b3b58958682e5e3a076d2f6b3b933606de5361b9e4970807ab"
+  },
+  {
+    "label": "source-junction-probe",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-c",
+      "import json,subprocess,tempfile,os\nfrom pathlib import Path\nfrom test_acceptance_baseline import baseline\nfrom autotester.stages.acceptance_baseline import prepare_baselines\nbase=Path(tempfile.mkdtemp(prefix=\"checker-source-junction-\",dir=\".\" )).resolve()\nroot,inputs,output,plan,store=baseline.__wrapped__(base)\nreal=base/\"outside-project\";store.paths.dir.rename(real)\nalias=store.paths.dir\np=subprocess.run([\"powershell.exe\",\"-NoProfile\",\"-NonInteractive\",\"-Command\",\"New-Item -ItemType Junction -Path $env:CHECK_ALIAS -Target $env:CHECK_TARGET -ErrorAction Stop | Out-Null\"],env=dict(os.environ,CHECK_ALIAS=str(alias),CHECK_TARGET=str(real)),capture_output=True,timeout=20)\nassert p.returncode==0,p.stderr\nassert alias.resolve()==real.resolve() and not real.is_relative_to(root)\ntry:prepare_baselines(root,inputs,output,plan)\nexcept ValueError as e: print(json.dumps(dict(source_escaped=True,refused=True,error=str(e))))\nelse: print(json.dumps(dict(source_escaped=True,refused=False,receipt=(output/\"baseline-receipt.json\").exists())));raise SystemExit(1)\n"
+    ],
+    "exit_code": 1,
+    "duration_s": 5.938000000001921,
+    "log_sha256": "2076b57cc98f53e322b3b984688232a4c75d559a2ba0561edb097b282eda355d"
+  }
+]

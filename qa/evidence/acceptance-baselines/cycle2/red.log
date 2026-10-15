@@ -1,0 +1,61 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_resolved_source_project_stays_in_supplied_root[outside] _________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs-cycle2/temp-..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x000001A032D6F510>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001A032D9FD10>
+location = 'outside'
+
+    @pytest.mark.parametrize("location", ["inside", "outside"])
+    def test_resolved_source_project_stays_in_supplied_root(baseline, monkeypatch, location):
+        root, inputs, output, plan, store = baseline
+        container = root.parent.resolve()
+        relocated = (root if location == "inside" else container) / "relocated-product"
+        assert store.paths.dir.resolve().is_relative_to(container)
+        assert relocated.resolve().is_relative_to(container)
+        store.paths.dir.rename(relocated)
+        alias = store.paths.dir
+        if os.name == "nt":
+            script = ("New-Item -ItemType Junction -Path $env:BASELINE_ALIAS "
+                      "-Target $env:BASELINE_TARGET -ErrorAction Stop | Out-Null")
+            result = subprocess.run(
+                ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script],
+                env=dict(os.environ, BASELINE_ALIAS=str(alias), BASELINE_TARGET=str(relocated)),
+                capture_output=True, timeout=20)
+            assert result.returncode == 0, (
+                "Environment gap: source junction creation failed: "
+                + result.stderr.decode(errors="replace"))
+        else:
+            alias.symlink_to(relocated, target_is_directory=True)
+        assert alias.resolve() == relocated.resolve()
+        assert relocated.is_relative_to(root) == (location == "inside")
+        config, read_bytes, reads = relocated / "project.json", Path.read_bytes, []
+    
+        def record_config_read(path):
+            if path.resolve() == config:
+                reads.append(path)
+            return read_bytes(path)
+    
+        monkeypatch.setattr(Path, "read_bytes", record_config_read)
+        if location == "inside":
+            receipt = prepare_baselines(root, inputs, output, plan)
+            assert receipt.source_config_sha256 == plan.source_config_sha256
+            assert len(reads) == 1 and (output / "baseline-receipt.json").exists()
+        else:
+>           with pytest.raises(ValueError, match="source project"):
+E           Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_baseline.py:264: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\codex-acceptance-baselines\.work\baseline-proofs-cycle2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[outside]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[outside]
+1 failed, 2 warnings in 1.50s

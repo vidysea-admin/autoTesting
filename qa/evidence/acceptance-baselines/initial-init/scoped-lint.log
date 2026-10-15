@@ -1,0 +1,12 @@
+E501 Line too long (101 > 100)
+   --> src\autotester\stages\acceptance_baseline.py:101:101
+    |
+ 99 |         teaching_slug=projects[0].slug, url_only_slug=projects[1].slug,
+100 |         teaching_source_ids=ids, credential_keys=list(plan.credential_keys),
+101 |         next_steps=["Bind the authorized existing credential environment explicitly; copy no values",
+    |                                                                                                     ^
+102 |                     "Obtain human-signed production approvals for each new project/run",
+103 |                     "Confirm the same target build before serial live acceptance"],
+    |
+
+Found 1 error.

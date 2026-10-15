@@ -1,0 +1,295 @@
+[
+  {
+    "name": "stale-config",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[config]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "42ecc0ac9f73960def5bf6dcd248a0437013b6d285f4f0cac02604be3da136c3",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[config]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      5,
+      6,
+      7
+    ]
+  },
+  {
+    "name": "stale-input",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[input]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "7fdc428a47165229cde5e9a184b12401d570777bb97ef9add14a2887129db0bd",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[input]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      8,
+      9,
+      10
+    ]
+  },
+  {
+    "name": "output-ownership",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[existing]",
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[redirected]",
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[overlap]",
+      "tests/test_acceptance_baseline.py::test_partial_write_is_visible_and_refuses_reuse"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "0a224a0c39b5d93b7fc699b421cece16f3187b7e0c886839f1f0df6cd2d0ebd4",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[existing]",
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[redirected]",
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[overlap]",
+      "tests/test_acceptance_baseline.py::test_partial_write_is_visible_and_refuses_reuse"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      11,
+      12,
+      13
+    ]
+  },
+  {
+    "name": "source-path",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[source-escape]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "e3e159a5d5e2a2ed7957563af9bb900f717b1a2ed1d6ca6f7fcadb5e3e57aabf",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[source-escape]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      14,
+      15,
+      16
+    ]
+  },
+  {
+    "name": "build-required",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[empty-build]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "6cca7ff9f6d971ecd43e8979f89abcf500b2150bd6bbb0f8edc545464d363cfa",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[empty-build]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      18,
+      19,
+      20
+    ]
+  },
+  {
+    "name": "contained-inputs",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[escape]",
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[absolute]",
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[env]",
+      "tests/test_acceptance_baseline.py::test_real_resolved_alias_cannot_escape_inputs"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "a798ae4ce3e8b5d2d2db184abf3c9e8fb39043c8b376875358cff7e8cc45110a",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[escape]",
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[absolute]",
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[env]",
+      "tests/test_acceptance_baseline.py::test_real_resolved_alias_cannot_escape_inputs"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      21,
+      22,
+      23
+    ]
+  },
+  {
+    "name": "owner-input-reference",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[unapproved]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "53bf7118933de8fb4ea9e25e0bdd142705bae17c6a29c9192720ef6f1070d0a4",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[unapproved]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      24,
+      25,
+      26
+    ]
+  },
+  {
+    "name": "input-types",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[historical-json]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "561bca830dad4a8791b78d9fd4d47c9f092c8f4b0509b6cee2fbb5179ec1be5e",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[historical-json]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      27,
+      28,
+      29
+    ]
+  },
+  {
+    "name": "rich-inputs",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[no-doc]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "a8e33a353d5b3e5ff3ad3e5d6e16b5a25c7094be40f982c6bf2b2957492f268f",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[no-doc]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      31,
+      32,
+      33
+    ]
+  },
+  {
+    "name": "credential-scope",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unknown]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[duplicate]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unscoped]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[foreign-domain]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[empty]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "81cb975286bef3c3328403ff5f9c63fab6b04dd76b6f422f3bc235d44c3c862a",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unknown]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[duplicate]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unscoped]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[foreign-domain]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[empty]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      34,
+      35,
+      36
+    ]
+  },
+  {
+    "name": "target-url-safety",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[url-credentials]"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "5a25bdd9fd97a574c16e5a5bdb753b911d0f2dd627d11f5e4d5cbbf83c212441",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[url-credentials]"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      37,
+      38,
+      39
+    ]
+  },
+  {
+    "name": "url-only-empty",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "a312615a331a0c8b9c7b0b3818906d86cb1e3625303b717479e853ee52a5600a",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      40,
+      41,
+      42
+    ]
+  },
+  {
+    "name": "no-truth-copy",
+    "nodes": [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ],
+    "original_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "mutated_sha256": "a7db842d183505b3622d1106faf092549235895ea74672c8f3a1699f962d00a2",
+    "restored_sha256": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "anchor_count": 1,
+    "green": 0,
+    "red": 1,
+    "failed": [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ],
+    "restored": 0,
+    "command_indexes": [
+      43,
+      44,
+      45
+    ]
+  }
+]

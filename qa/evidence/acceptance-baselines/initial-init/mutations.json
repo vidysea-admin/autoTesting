@@ -1,0 +1,168 @@
+[
+  [
+    "stale-config",
+    "if _digest(config) != plan.source_config_sha256:",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[config]"
+    ]
+  ],
+  [
+    "stale-input",
+    "if _digest(blob) != row.sha256:",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[input]"
+    ]
+  ],
+  [
+    "existing-output",
+    "    if destination.resolve() != destination or destination.exists():\n        raise ValueError(\"baseline destination must be new and have no redirected ancestors\")\n    source_dir = ProjectPaths(safe_slug(plan.source_slug), source_root).dir.resolve()\n    if destination.is_relative_to(source_dir) or source_dir.is_relative_to(destination):\n        raise ValueError(\"baseline destination overlaps the source project\")\n    if not plan.target_build.strip():\n        raise ValueError(\"target build identity must be explicitly declared\")\n    config = ProjectPaths(plan.source_slug, source_root).config.read_bytes()\n    if _digest(config) != plan.source_config_sha256:\n        raise ValueError(\"source configuration changed since the plan was prepared\")\n    source = Project.model_validate_json(config)\n    projects = [_project(source, plan, mode) for mode in (\"teaching\", \"url-only\")]\n    blobs = _input_bytes(input_root, plan)\n    destination.mkdir(parents=True, exist_ok=False)\n",
+    "    if destination.resolve() != destination:\n        raise ValueError(\"baseline destination must be new and have no redirected ancestors\")\n    source_dir = ProjectPaths(safe_slug(plan.source_slug), source_root).dir.resolve()\n    if destination.is_relative_to(source_dir) or source_dir.is_relative_to(destination):\n        raise ValueError(\"baseline destination overlaps the source project\")\n    if not plan.target_build.strip():\n        raise ValueError(\"target build identity must be explicitly declared\")\n    config = ProjectPaths(plan.source_slug, source_root).config.read_bytes()\n    if _digest(config) != plan.source_config_sha256:\n        raise ValueError(\"source configuration changed since the plan was prepared\")\n    source = Project.model_validate_json(config)\n    projects = [_project(source, plan, mode) for mode in (\"teaching\", \"url-only\")]\n    blobs = _input_bytes(input_root, plan)\n    destination.mkdir(parents=True, exist_ok=True)\n",
+    [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[existing]"
+    ]
+  ],
+  [
+    "redirected-output",
+    "destination.resolve() != destination",
+    "False",
+    [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[redirected]"
+    ]
+  ],
+  [
+    "source-overlap",
+    "if destination.is_relative_to(source_dir) or source_dir.is_relative_to(destination):",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[overlap]"
+    ]
+  ],
+  [
+    "source-path",
+    "ProjectPaths(safe_slug(plan.source_slug), source_root)",
+    "ProjectPaths(plan.source_slug, source_root)",
+    [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[source-escape]"
+    ]
+  ],
+  [
+    "build-required",
+    "if not plan.target_build.strip():",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[empty-build]"
+    ]
+  ],
+  [
+    "contained-inputs",
+    "if (relative.is_absolute() or \"..\" in relative.parts\n                or not path.is_relative_to(input_root) or not relative.parts\n                or any(part.lower().startswith(\".env\") for part in path.parts)):",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[escape]",
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[absolute]",
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[env]"
+    ]
+  ],
+  [
+    "owner-input-reference",
+    "if not row.approval_ref.strip():",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[unapproved]"
+    ]
+  ],
+  [
+    "input-types",
+    "if path.suffix.lower() not in extensions:",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[historical-json]"
+    ]
+  ],
+  [
+    "rich-inputs",
+    "if {row.kind for row in plan.teaching_inputs} != {\"video\", \"doc\"}:",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_only_explicit_approved_contained_inputs[no-doc]"
+    ]
+  ],
+  [
+    "credential-scope",
+    "if (not keys or len(set(keys)) != len(keys) or len(selected) != len(keys)\n            or any(not ref.domains or any(not source.allows_domain(d) for d in ref.domains)\n                   for ref in selected)):",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unknown]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[duplicate]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[unscoped]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[foreign-domain]",
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[empty]"
+    ]
+  ],
+  [
+    "target-url-safety",
+    "if (target.scheme not in {\"http\", \"https\"} or not target.hostname\n            or target.username or target.password or target.query or target.fragment\n            or not source.allows_domain(target.hostname)):",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_credential_reference_scope_never_widens[url-credentials]"
+    ]
+  ],
+  [
+    "url-only-empty",
+    "if mode != \"teaching\":",
+    "if False:",
+    [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ]
+  ],
+  [
+    "same-target",
+    "base_url=source.base_url,",
+    "base_url=\"https://other.example/\",",
+    [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ]
+  ],
+  [
+    "scoped-refs-only",
+    "secrets=selected,",
+    "secrets=[],",
+    [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ]
+  ],
+  [
+    "provider-config",
+    "providers=source.providers.model_copy(deep=True),",
+    "",
+    [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ]
+  ],
+  [
+    "no-truth-copy",
+    "ids = _write_pair(destination, projects, plan, blobs)",
+    "ids = _write_pair(destination, projects, plan, blobs)\n    __import__(\"shutil\").copytree(source_dir, ProjectPaths(projects[0].slug, destination / \"teaching\").dir, dirs_exist_ok=True)",
+    [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ]
+  ],
+  [
+    "no-env-copy",
+    "write_json(destination / \"baseline-plan.json\", plan)",
+    "write_json(destination / \"baseline-plan.json\", plan)\n    (destination / \".env\").write_text(\"fixture-secret\")",
+    [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ]
+  ],
+  [
+    "input-provenance",
+    "note=f\"Owner approval reference: {row.approval_ref}\"",
+    "note=\"lost\"",
+    [
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation"
+    ]
+  ]
+]

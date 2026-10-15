@@ -1,0 +1,12 @@
+{
+  "kind": "maker-readiness-only",
+  "code_sha": "35624de61e94b6b94286b0fe679141566892304d",
+  "complete_source_entries": 1020,
+  "bound_commands": 6,
+  "named_guard_proofs": 1,
+  "historical_proofs_reused": 13,
+  "command_seconds": 27.32800000000134,
+  "active_seconds": null,
+  "tokens": null,
+  "cost": null
+}

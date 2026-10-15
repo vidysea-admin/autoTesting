@@ -1,0 +1,21 @@
+[
+  {
+    "label": "preflight",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs"
+    ],
+    "exit_code": 2,
+    "duration_s": 0.2970000000022992,
+    "log_sha256": "90561cbd208aca0b914dd6aed2b06627fc21fc8ee05cbd81fd58866d88f8aa84"
+  }
+]

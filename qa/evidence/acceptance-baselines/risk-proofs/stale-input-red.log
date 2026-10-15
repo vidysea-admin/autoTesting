@@ -1,0 +1,47 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_stale_or_existing_plan_refused_without_writes[input] __________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-1-r/tes..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x000001F842383210>)
+fault = 'input'
+
+    @pytest.mark.parametrize("fault", ["config", "input", "existing", "overlap",
+                                      "empty-build", "redirected", "source-escape"])
+    def test_stale_or_existing_plan_refused_without_writes(baseline, fault):
+        root, inputs, output, plan, store = baseline
+        if fault == "config":
+            plan.source_config_sha256 = "stale"
+        elif fault == "input":
+            plan.teaching_inputs[0].sha256 = "stale"
+        elif fault == "existing":
+            output.mkdir()
+            (output / "comparison.json").write_text("preserve", encoding="utf-8")
+        elif fault == "overlap":
+            output = store.paths.dir / "acceptance"
+        elif fault == "redirected":
+            output = output.parent / "unused" / ".." / "pair"
+        elif fault == "source-escape":
+            foreign = root / "elsewhere"
+            foreign.mkdir()
+            (foreign / "project.json").write_bytes(store.paths.config.read_bytes())
+            plan.source_slug = "../elsewhere"
+        else:
+            plan.target_build = " "
+        before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_baseline.py:121: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\codex-acceptance-baselines\.work\baseline-proofs\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[input]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_baseline.py::test_stale_or_existing_plan_refused_without_writes[input]
+1 failed, 2 warnings in 1.41s

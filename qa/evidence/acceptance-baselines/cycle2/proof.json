@@ -1,0 +1,18 @@
+{
+  "anchor_count": 1,
+  "original_sha256": "efb06ede06969b30637fc15ee6df45819c4874a8fd8b9dd35300edf7a06826f6",
+  "mutated_sha256": "3ac520ca7c05591b33372b39ecfaf34186d587763e830d77e80377d60ed52488",
+  "restored_sha256": "efb06ede06969b30637fc15ee6df45819c4874a8fd8b9dd35300edf7a06826f6",
+  "failed": [
+    "tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[outside]"
+  ],
+  "green": 0,
+  "red": 1,
+  "restored": 0,
+  "guard_proofs": 1,
+  "focused_cases": 3,
+  "command_seconds": 27.32800000000134,
+  "maker_active_seconds": null,
+  "tokens": null,
+  "cost": null
+}

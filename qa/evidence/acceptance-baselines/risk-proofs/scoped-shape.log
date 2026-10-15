@@ -1,0 +1,25 @@
+{
+  "src/autotester/stages/acceptance_baseline.py": {
+    "_digest": 2,
+    "_input_bytes": 23,
+    "_project": 21,
+    "prepare_baselines": 37,
+    "_write_pair": 22
+  },
+  "tests/test_acceptance_baseline.py": {
+    "digest": 2,
+    "baseline": 27,
+    "test_same_build_scoped_refs_and_input_only_isolation": 44,
+    "test_stale_or_existing_plan_refused_without_writes": 26,
+    "test_only_explicit_approved_contained_inputs": 24,
+    "test_credential_reference_scope_never_widens": 20,
+    "test_real_resolved_alias_cannot_escape_inputs": 22,
+    "test_partial_write_is_visible_and_refuses_reuse": 22,
+    "recording_read": 5,
+    "fail_second_input": 4
+  },
+  "src/autotester/schema/acceptance_baseline.py": {},
+  "scripts/prepare_acceptance_baselines.py": {
+    "main": 12
+  }
+}

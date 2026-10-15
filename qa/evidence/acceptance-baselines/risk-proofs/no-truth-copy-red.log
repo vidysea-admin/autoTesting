@@ -1,0 +1,57 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_same_build_scoped_refs_and_input_only_isolation _____________
+
+baseline = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines/.work/baseline-proofs/temp-12-r/te..., approval_ref='owner-input-approval-1')]), <autotester.store.project_store.ProjectStore object at 0x0000012CE6DC2B90>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000012CE6E04F10>
+
+    def test_same_build_scoped_refs_and_input_only_isolation(baseline, monkeypatch):
+        root, inputs, output, plan, original = baseline
+        before = {p: p.read_bytes() for p in original.paths.dir.rglob("*") if p.is_file()}
+        read_bytes, reads = Path.read_bytes, []
+    
+        def recording_read(path):
+            reads.append(path)
+            if path.name == ".env":
+                pytest.fail("credential values must never be read")
+            return read_bytes(path)
+    
+        monkeypatch.setattr(Path, "read_bytes", recording_read)
+        manifest = inputs / "plan.json"
+        manifest.write_text(plan.model_dump_json(), encoding="utf-8")
+        monkeypatch.setattr(sys, "argv", ["prepare_acceptance_baselines", "--plan", str(manifest),
+                                         "--source-root", str(root), "--input-root", str(inputs),
+                                         "--destination", str(output)])
+        assert main() == 0
+        receipt = BaselineReceipt.model_validate_json((output / "baseline-receipt.json").read_bytes())
+        assert receipt.target_build == "build-immutable-1" and not receipt.target_build_verified
+        assert receipt.source_config_sha256 == plan.source_config_sha256
+        assert receipt.plan_sha256 == digest(plan.model_dump_json().encode())
+        for mode, slug in (("teaching", receipt.teaching_slug), ("url_only", receipt.url_only_slug)):
+            store = ProjectStore(slug, output / mode)
+            project = store.load_project()
+            assert project.base_url == "https://product.example/app" and project.production
+            assert project.allowed_domains == ["product.example"]
+            assert project.providers == original.load_project().providers
+>           assert project.secrets == [original.load_project().secrets[0]]
+E           AssertionError: assert [SecretRef(ke...eenshot=True)] == [SecretRef(ke...eenshot=True)]
+E             
+E             Left contains one more item: SecretRef(key='OTHER_KEY', description=None, domains=['product.example'], include_subdomains=True, mask_in_screenshot=True)
+E             Use -v to get more diff
+
+tests\test_acceptance_baseline.py:80: AssertionError
+---------------------------- Captured stdout call -----------------------------
+Prepared local baselines; authorized credential context and production approvals remain required
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\codex-acceptance-baselines\.work\baseline-proofs\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation
+1 failed, 2 warnings in 1.22s
