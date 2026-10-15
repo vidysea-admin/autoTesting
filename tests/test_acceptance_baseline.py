@@ -190,7 +190,8 @@ def test_real_resolved_alias_cannot_escape_inputs(baseline):
             env=dict(os.environ, BASELINE_ALIAS=str(alias), BASELINE_TARGET=str(outside)),
             capture_output=True, timeout=20)
         assert result.returncode == 0, (
-            "Environment gap: real junction creation failed: " + result.stderr.decode(errors="replace"))
+            "Environment gap: junction creation failed: "
+            + result.stderr.decode(errors="replace"))
     else:
         alias.symlink_to(outside, target_is_directory=True)
     assert alias.resolve() == outside.resolve()
