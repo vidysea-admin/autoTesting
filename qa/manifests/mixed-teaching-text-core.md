@@ -1,6 +1,6 @@
 # Mixed teaching — guarded text proposal core
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Root: C:/Users/product/Desktop/autoTesting/.work/wt-mixed
 Base SHA: f5da2cd9d81f530e47a209654e448294c79734c8
