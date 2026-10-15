@@ -172,6 +172,8 @@ class LiteLLMProvider(Provider):
     def _strategy(self) -> str:
         """By capability, never by vendor name: response schema, else a forced tool,
         else JSON mode with a repair retry."""
+        if ollama_cloud.is_ollama(self._model):
+            return "json"
         lit = _load_litellm()
         for name, probe in (("schema", lit.supports_response_schema),
                             ("tool", lit.supports_function_calling)):
@@ -215,10 +217,12 @@ class LiteLLMProvider(Provider):
                   retries: int = 0) -> Any:
         """ONE physical `litellm.completion` call: guarded first, recorded after."""
         self._guard(messages)
+        output_options = ({} if ollama_cloud.is_ollama(self._model)
+                          else request_options(strategy, self._model, schema))
         kwargs: dict[str, Any] = {
             "model": self._model, "messages": messages, "num_retries": 0,
             "timeout": _TIMEOUT_S, "drop_params": True, **self._endpoint(),
-            **request_options(strategy, self._model, schema)}
+            **output_options}
         if role == "judge":
             kwargs["temperature"] = 0
         started = time.perf_counter()
@@ -253,7 +257,8 @@ class LiteLLMProvider(Provider):
         meta = {"prompt_file": prompt_file, "fed_id": fed_id}
         message = self._complete(messages, schema, strategy, role, **meta)
         try:
-            return parse_answer(message, strategy, schema)
+            return parse_answer(message, strategy, schema,
+                                strict=ollama_cloud.is_ollama(self._model))
         except ValueError as exc:
             problem = _why(exc)
             if strategy != "json":
@@ -264,7 +269,8 @@ class LiteLLMProvider(Provider):
                                         f"only, matching the schema. Problem: {problem}"}]
         message = self._complete(messages, schema, strategy, role, retries=1, **meta)
         try:
-            return parse_answer(message, strategy, schema)
+            return parse_answer(message, strategy, schema,
+                                strict=ollama_cloud.is_ollama(self._model))
         except ValueError as exc:
             raise ProviderError(self._unparsable(role, _why(exc))) from None
 

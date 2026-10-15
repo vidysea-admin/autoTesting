@@ -82,7 +82,9 @@ def answer_text(message: Any, strategy: str) -> str:
     return content
 
 
-def parse_answer(message: Any, strategy: str, schema: type[ModelT]) -> ModelT:
+def parse_answer(message: Any, strategy: str, schema: type[ModelT], *,
+                 strict: bool = False) -> ModelT:
     """Validate the model's answer against `schema`; ValueError (incl. pydantic's)
     on anything that is not exactly that shape."""
-    return schema.model_validate(loads_json(answer_text(message, strategy)))
+    data = loads_json(answer_text(message, strategy))
+    return schema.model_validate_json(json.dumps(data), strict=strict)

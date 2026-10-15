@@ -1,0 +1,26 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "ollama-defaults-checker-cycle1",
+      "active_s": 0,
+      "tokens": null,
+      "cost": null
+    }
+  ],
+  "next_phase": {
+    "active_s": 180,
+    "tokens": 6000,
+    "cost": null
+  },
+  "bootstrap_scope": "Ollama-only default agent/judge chain, strict cloud JSON and bounded repair; five changed source/test files; six isolated named guard mutations; shared provider safety checks",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": null
+}

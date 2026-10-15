@@ -1,0 +1,31 @@
+{
+  "prior_attempts": [
+    {
+      "result": "SETUP_ERROR",
+      "reason": "throwaway copy omitted tests_mutation_fixtures.py; no mutations ran"
+    },
+    {
+      "result": "SETUP_ERROR",
+      "reason": "throwaway copy omitted auth_login_fixture.py; no mutations ran"
+    },
+    {
+      "result": "INCONCLUSIVE",
+      "mutation": "ready_tiers returns all tiers",
+      "test": "test_unconfigured_tier_is_skipped",
+      "reason": "secondary _require_ready gate independently refused unavailable tier; zero test failures; replaced with explicit-order mutation"
+    }
+  ],
+  "maker_active_s": null,
+  "maker_tokens": null,
+  "earlier_targeted_run": {
+    "tests": 49,
+    "pytest_elapsed_s": 164.6
+  },
+  "preflight": {
+    "observed_at": "2026-10-15T07:36:45.540914+00:00",
+    "status": "PREFLIGHT_OK",
+    "python_version": "3.11.16",
+    "import_origin": "C:\\Users\\product\\.codex\\worktrees\\ollama-provider\\autoTesting\\src\\autotester\\__init__.py",
+    "temp_writable": true
+  }
+}
