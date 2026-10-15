@@ -88,7 +88,7 @@ def _declared_credential(value: str | None, project: Project) -> bool:
 def _click_denied(name: str, project: Project) -> str | None:
     """The crawler's own name deny-function, asked about a name (the one deny concept)."""
     element = ElementRef(role="button", name=name, selector=name)
-    return explore_safety.deny_reason(element, explore_safety.policy_for(project))
+    return explore_safety.deny_reason(element, explore_safety.policy_for(project))  # incl. destroy
 
 
 # Cyrillic/Greek lookalikes of Latin letters, folded after NFKC (small, cheap; not a full table).

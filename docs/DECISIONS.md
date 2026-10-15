@@ -2610,3 +2610,15 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approver:** Answered in-session 2026-10-14 by the session user (git account umesh); identity not independently verified
 
 **Links:** TV9; T-206; T-169; D-070; D-073; D-074; D-096
+
+## D-098 | 2026-10-15 | type: decision | status: ACTIVE
+
+**What:** Umesh 2026-10-15 ("Block destroy buttons"): under allow_writes, account-destroying controls (close/delete/deactivate/terminate account, delete my profile, erase my data and close variants) are never clicked, at any write policy, on every action path: crawl, case guard, BrowserSession click and submit, and the browser-use actuator. Supersedes nothing; amends the D-053 write-policy scope narrowly. Every other control stays allowed under allow_writes (forms, saving, booking, payments, non-account deletes such as "Delete draft").
+
+**Why:** Live runs use the real test account; closing or deleting it is irreversible and ends all later testing. Logout was already a never-click at every policy, so the same mechanism is reused: one list (ACCOUNT_DESTROY_PATTERNS in schema/crawl.py), one matcher (explore_safety.destroys_account). ISS-t179b-hg1-2 showed "Close account" slipping past the commit-name list.
+
+**Result:** A blocked control is reported as "not exercised: account-destroying (policy)". Tests in tests/test_never_click_destroy.py cover each path. No enforcement path (hooks, settings) touched.
+
+**Decided-by:** Umesh (in-session, 2026-10-15).
+
+**Links:** ISS-t179b-hg1-2; D-053

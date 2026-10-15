@@ -218,7 +218,7 @@ def test_real_depth_refusal_stops_before_queued_and_deferred_actions(tmp_path, m
         return {"role": "link", "name": name, "selector": "a." + name, "href": path}
 
     monkeypatch.setitem(SITE, BASE, [
-        {"role": "button", "name": "Delete account", "selector": "button.del"},
+        {"role": "button", "name": "Delete invoice", "selector": "button.del"},
         link("branch", "/branch"), link("sibling", "/sibling")])
     monkeypatch.setitem(SITE, BASE + "branch", [link("deep", "/deep"), link("later", "/later")])
     for path in ("deep", "sibling", "later"):

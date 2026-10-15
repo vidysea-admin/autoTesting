@@ -53,7 +53,7 @@ CONTROLS = {
     (WritePolicy.TEST_ACCOUNT, "delete", True),
     (WritePolicy.TEST_ACCOUNT, "save_submit", False),
     (WritePolicy.TEST_ACCOUNT, "log_out", True),
-    (WritePolicy.ALLOW_WRITES, "delete", False),
+    (WritePolicy.ALLOW_WRITES, "delete", True),  # account-destroying: never-click (2026-10-15)
     (WritePolicy.ALLOW_WRITES, "save_submit", False),
     (WritePolicy.ALLOW_WRITES, "log_out", True),  # never-click applies at EVERY policy
 ])
