@@ -82,6 +82,8 @@ class PointerErrors(ValueError):
 
 def provider_cost(provider: Provider) -> float:
     """Spend so far. An unpriced label is charged the dearest known rate, never zero (TV7.4)."""
+    if any(u.input_tokens is None or u.output_tokens is None for u in provider.usage):
+        raise ReviewRefused("provider token usage is unknown; spend cap cannot be verified")
     return sum(estimate_cost_conservative(provider.label, u.input_tokens, u.output_tokens)
                for u in provider.usage)
 

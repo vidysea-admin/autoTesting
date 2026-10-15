@@ -1,0 +1,1596 @@
+[
+  {
+    "phase": "baseline",
+    "started": "2026-10-15T08:11:29.673174+00:00",
+    "duration_s": 8.720156000001225,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\baseline"
+    ],
+    "exit": 0,
+    "output_sha256": "287d4fa1739d39f3a099752d16b8edab9548e66fc2d27d805d954ab6753b70eb",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "count-red",
+    "started": "2026-10-15T08:11:38.429909+00:00",
+    "duration_s": 7.169592499998544,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\count-red"
+    ],
+    "exit": 1,
+    "output_sha256": "4dc7d9c2e0a33b9a4c8ae8910ea1f0429c23aa94ceb85ba9755e283c72d05ece",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "cfc305bbf01617bfd78ae98cdbbbf379fc577634ce1aa4379d821127ce0baa27",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "cfc305bbf01617bfd78ae98cdbbbf379fc577634ce1aa4379d821127ce0baa27",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback"
+    ]
+  },
+  {
+    "phase": "count-restored",
+    "started": "2026-10-15T08:11:45.637528+00:00",
+    "duration_s": 6.779665500000192,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\count-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "e30779b15efd3452471b98e22d9aee44259aaabab7cf005a8c36d645d177798c",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "deadline-red",
+    "started": "2026-10-15T08:11:52.451262+00:00",
+    "duration_s": 8.005942399999185,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\deadline-red"
+    ],
+    "exit": 1,
+    "output_sha256": "4783de8cf16e5ea623b7f3eb71fbaca62ee24d00d3f6ce6bcf66c8cba6b84f31",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "f76904b2418f7e041921b9737b58639d971de3d6c238766a6f4e21ee1274ef22",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "f76904b2418f7e041921b9737b58639d971de3d6c238766a6f4e21ee1274ef22",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request"
+    ]
+  },
+  {
+    "phase": "deadline-restored",
+    "started": "2026-10-15T08:12:00.503791+00:00",
+    "duration_s": 7.748163000000204,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\deadline-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "5142b5cbbe640ddfe403ea47151b40c1171f27c39e84fb3d15889bc76a983e72",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "remaining-red",
+    "started": "2026-10-15T08:12:08.301437+00:00",
+    "duration_s": 8.305509799998617,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\remaining-red"
+    ],
+    "exit": 1,
+    "output_sha256": "9aea73766418561d13a758150b9bf85e95e109623c18fc3cbb3b136e0aa7d7aa",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "51e8b053a16fb7d6d130ea28f1eec0adfbc716bd7334680428bed797b5ec76ff",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "51e8b053a16fb7d6d130ea28f1eec0adfbc716bd7334680428bed797b5ec76ff",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request"
+    ]
+  },
+  {
+    "phase": "remaining-restored",
+    "started": "2026-10-15T08:12:16.633934+00:00",
+    "duration_s": 7.296065599999565,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\remaining-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "b3c8b7c0bbf0087b0fa90f9ba27d9ca9e5e5f446eb866e8ed09643150be880c2",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "nested-red",
+    "started": "2026-10-15T08:12:23.965540+00:00",
+    "duration_s": 7.439259400000083,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\nested-red"
+    ],
+    "exit": 1,
+    "output_sha256": "9338873419603f72de8e189a71d5be00fd6afb0f9e2826d06100a88c56be5f03",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "4d6e0d6893fb4758255331a2725392fa360c937cf713aff47d4968da70056cb5",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "4d6e0d6893fb4758255331a2725392fa360c937cf713aff47d4968da70056cb5",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback"
+    ]
+  },
+  {
+    "phase": "nested-restored",
+    "started": "2026-10-15T08:12:31.436246+00:00",
+    "duration_s": 6.742342800000188,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\nested-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "a0ea604609e7452f1414799041de0412020ead80567dec4c9d12534147a3c3bf",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "restore-red",
+    "started": "2026-10-15T08:12:38.214284+00:00",
+    "duration_s": 7.038474599999972,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\restore-red"
+    ],
+    "exit": 1,
+    "output_sha256": "065e1233c04effc8d1563efed158d6e7b8b3e84abeae1489e6be7d51cda5694a",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "df5882cd288b0e59d39c68879ff2f7565900abe65ab33c2e9bf259c128c3fc41",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "df5882cd288b0e59d39c68879ff2f7565900abe65ab33c2e9bf259c128c3fc41",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores"
+    ]
+  },
+  {
+    "phase": "restore-restored",
+    "started": "2026-10-15T08:12:45.288159+00:00",
+    "duration_s": 7.193829900001219,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\restore-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "7c35f1d71f799205edcd0b6ab780a35fbf015bcf33eddefc8fd4c3032d7ae0b3",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "max-validation-red",
+    "started": "2026-10-15T08:12:52.521647+00:00",
+    "duration_s": 9.861775499999567,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\max-validation-red"
+    ],
+    "exit": 1,
+    "output_sha256": "2bbbe6b374d8a19297a0836900e3841182ba1c7235bafbaa19c315d20332638d",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "124945f0445a63996ce794a279934aac41fc3ec7b668f8619eb282a946aaa7ef",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "124945f0445a63996ce794a279934aac41fc3ec7b668f8619eb282a946aaa7ef",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores"
+    ]
+  },
+  {
+    "phase": "max-validation-restored",
+    "started": "2026-10-15T08:13:02.413941+00:00",
+    "duration_s": 6.640542099999948,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\max-validation-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "45283650462ef9032320fe5926b601d25177a7465581580f02a89bec4d2349f9",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "time-validation-red",
+    "started": "2026-10-15T08:13:09.091684+00:00",
+    "duration_s": 7.463807199999792,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\time-validation-red"
+    ],
+    "exit": 1,
+    "output_sha256": "1b58f1a0826bd7c9f3b14ecaf0671e2b759b2067efd22013cee829973fdc3337",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "f0583de2d700ad5a23729af66349d283f79133421c39efb1e6bebfa31494293e",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "f0583de2d700ad5a23729af66349d283f79133421c39efb1e6bebfa31494293e",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request"
+    ]
+  },
+  {
+    "phase": "time-validation-restored",
+    "started": "2026-10-15T08:13:16.586083+00:00",
+    "duration_s": 7.27600159999929,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\time-validation-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "49266c9c45cf1a4bdccde91e126b995440a646185d5772bc9e2463bae25cf0c9",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "failed-account-red",
+    "started": "2026-10-15T08:13:23.900467+00:00",
+    "duration_s": 8.295345099999395,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\failed-account-red"
+    ],
+    "exit": 1,
+    "output_sha256": "6f3f82df41fe9ac2b1891cfaa7f2eb96e5eec9d87bb94ce8fb8867dabfaed28c",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "bababb630eb8744a401e57811dfb94959a6790ad8504ed5f0a9ab4a7106fae35",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "bababb630eb8744a401e57811dfb94959a6790ad8504ed5f0a9ab4a7106fae35",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+    ]
+  },
+  {
+    "phase": "failed-account-restored",
+    "started": "2026-10-15T08:13:32.250424+00:00",
+    "duration_s": 7.386814999999842,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\failed-account-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "32ebf0b9a229c9a3abf27aa8856ce59e289de42fb1b88b95a92c3387bb73fb2b",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "usage-unknown-red",
+    "started": "2026-10-15T08:13:39.686834+00:00",
+    "duration_s": 7.107335499998953,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\usage-unknown-red"
+    ],
+    "exit": 1,
+    "output_sha256": "332fc09851bdba7ef39210e9eaf2532e790663a9b2b8d390e34185f87864cbb5",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "4563c9ab687942723e185a74869cc7b1e6ab95aa4422ad3840a66a3d5a960e2b",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "4563c9ab687942723e185a74869cc7b1e6ab95aa4422ad3840a66a3d5a960e2b",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+    ]
+  },
+  {
+    "phase": "usage-unknown-restored",
+    "started": "2026-10-15T08:13:46.837302+00:00",
+    "duration_s": 6.446276800001215,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\usage-unknown-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "e3f1125668d818bf4adc45523d03d11975da0d94c98d10e3f9b25bbb6201c0cb",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "unknown-total-red",
+    "started": "2026-10-15T08:13:53.322323+00:00",
+    "duration_s": 7.107516799998848,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\unknown-total-red"
+    ],
+    "exit": 1,
+    "output_sha256": "d4da737922dcce2dc1b6a141d8a3fcec39aacbf700d3b8da4baa1338a36e5821",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "748d586548ba7b8d83d6fe9cc6a1f525e36c9ad50268ee755673a166c1626e0c",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "748d586548ba7b8d83d6fe9cc6a1f525e36c9ad50268ee755673a166c1626e0c",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback"
+    ]
+  },
+  {
+    "phase": "unknown-total-restored",
+    "started": "2026-10-15T08:14:00.470471+00:00",
+    "duration_s": 6.553423600000315,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\unknown-total-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "70d55872fcaecce6b5382bb7bf7baa01ab519e07e54c3f4b8df9743970cb189b",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "unknown-cap-red",
+    "started": "2026-10-15T08:14:07.064188+00:00",
+    "duration_s": 7.401507599999604,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\unknown-cap-red"
+    ],
+    "exit": 1,
+    "output_sha256": "2d9d03b8dfbcbbc87e2eba9a295ca3c84ce27c2e852f8219d29faaacdffbd9bc",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "5a72f3312a8d431d8198598c5ca5ccf76b93df05bd4120908fc2fba4ce50f2aa",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "5a72f3312a8d431d8198598c5ca5ccf76b93df05bd4120908fc2fba4ce50f2aa",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+    ]
+  },
+  {
+    "phase": "unknown-cap-restored",
+    "started": "2026-10-15T08:14:14.512004+00:00",
+    "duration_s": 6.579846099999486,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\unknown-cap-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "a8171447c47cb57b86b90b7a2a907a754c54bd84966440de89cb2f76bffaf5d3",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "unknown-display-red",
+    "started": "2026-10-15T08:14:21.133568+00:00",
+    "duration_s": 7.223982100000285,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\unknown-display-red"
+    ],
+    "exit": 1,
+    "output_sha256": "e340dccd56bc178e8103080dd0706458b8514b495bc577faf69fe87d999a5d28",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "ff01df2eec121e08e55866e176f519ee04f9b314ea913578fb4540af1c20d861",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "ff01df2eec121e08e55866e176f519ee04f9b314ea913578fb4540af1c20d861",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+    ]
+  },
+  {
+    "phase": "unknown-display-restored",
+    "started": "2026-10-15T08:14:28.402439+00:00",
+    "duration_s": 6.495026200000211,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\unknown-display-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "a8171447c47cb57b86b90b7a2a907a754c54bd84966440de89cb2f76bffaf5d3",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "isolation-red",
+    "started": "2026-10-15T08:14:34.936231+00:00",
+    "duration_s": 7.663597499999014,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\isolation-red"
+    ],
+    "exit": 1,
+    "output_sha256": "57f78e55ef539ee1685bc2e8476140e9f273cf78f2421bd4a37fb56b29ed185a",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "b96ee98ed8f6ae351b20a431ad0a46c5967214d6ecbeb80af1575fdcbecfa16a",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "b96ee98ed8f6ae351b20a431ad0a46c5967214d6ecbeb80af1575fdcbecfa16a",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+    ]
+  },
+  {
+    "phase": "isolation-restored",
+    "started": "2026-10-15T08:14:42.627373+00:00",
+    "duration_s": 6.761329099999784,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\isolation-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "32ebf0b9a229c9a3abf27aa8856ce59e289de42fb1b88b95a92c3387bb73fb2b",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  },
+  {
+    "phase": "strict-shape-red",
+    "started": "2026-10-15T08:14:49.416541+00:00",
+    "duration_s": 7.301552699998865,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\strict-shape-red"
+    ],
+    "exit": 1,
+    "output_sha256": "178f86280b24fda5544981e155c7be5a78275cd4be18dd48d88336c233a9482e",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "9525a6f350fcd9b51662c259e96ac1e7950c255a52451a25e1a0097214e13c2f",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "9525a6f350fcd9b51662c259e96ac1e7950c255a52451a25e1a0097214e13c2f",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": [
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores"
+    ]
+  },
+  {
+    "phase": "strict-shape-restored",
+    "started": "2026-10-15T08:14:56.759033+00:00",
+    "duration_s": 6.8761454000014055,
+    "command": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores",
+      "-p",
+      "_attempt_report",
+      "--basetemp",
+      "C:\\Users\\product\\.codex\\worktrees\\provider-attempts\\autoTesting\\.work\\provider-attempts\\proof-copy-2\\.work\\strict-shape-restored"
+    ],
+    "exit": 0,
+    "output_sha256": "445ecdb16c3a41c39b8639452743f6b91f5e62cb9e610d32f319c3aaf19a022e",
+    "source_before": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "source_after": {
+      "pyproject.toml": "9361f420d64ce1a45f9b5b07d344c235f0e0dbc28a6bb8f25666f6328ea87d57",
+      "src/autotester/providers/attempts.py": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+      "src/autotester/providers/base.py": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+      "src/autotester/providers/isolated.py": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+      "src/autotester/providers/litellm_provider.py": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+      "src/autotester/schema/provider_attempt.py": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+      "src/autotester/stages/video_review.py": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+      "src/autotester/ui/routes_report.py": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+      "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+      "tests/litellm_fake.py": "26de171c93a9bb26f197346546abed439f45a162c2ab6408fbb932a831282e39",
+      "tests/test_provider_attempts.py": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+      "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+      "uv.lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "environment": {
+      "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]",
+      "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+      "lock": "5676ae06e4d06b741d27704d3e4d0d42da0ebc1af1cdf647c532f5be232a670a"
+    },
+    "failed": []
+  }
+]

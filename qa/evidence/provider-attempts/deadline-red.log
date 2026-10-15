@@ -1,0 +1,72 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_deadline_caps_transport_and_exhausts_before_next_request ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001943A461AD0>
+tmp_path = WindowsPath('C:/Users/product/.codex/worktrees/provider-attempts/autoTesting/.work/provider-attempts/proof-copy-2/.work/deadline-red/test_deadline_caps_transport_a0')
+
+    def test_deadline_caps_transport_and_exhausts_before_next_request(monkeypatch, tmp_path):
+        fake = install(monkeypatch, [reply('{"ok":true}')])
+        monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+        monkeypatch.setenv("OLLAMA_API_KEY", "fake-key")
+        provider = LiteLLMProvider(model="ollama_chat/glm-5.3-flash")
+        with attempt_budget(2, wall_clock_s=7) as budget:
+            assert provider.act("prompt", AttemptAnswer).ok
+            assert 0 < fake.calls[0]["timeout"] <= 7
+            budget.deadline = 0
+            with pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"):
+>               provider.act("prompt", AttemptAnswer)
+
+tests\test_provider_attempts.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\providers\litellm_provider.py:162: in act
+    return self._structured(prompt, schema, role="agent",
+src\autotester\providers\litellm_provider.py:267: in _structured
+    message = self._complete(messages, schema, strategy, role, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autotester.providers.litellm_provider.LiteLLMProvider object at 0x000001943A482590>
+messages = [{'role': 'user', 'content': 'prompt\n\nReply with ONE JSON object only, no prose and no code fence, matching this JSO...erties": {"ok": {"title": "Ok", "type": "boolean"}}, "required": ["ok"], "title": "AttemptAnswer", "type": "object"}'}]
+schema = <class 'test_provider_attempts.AttemptAnswer'>, strategy = 'json'
+role = 'agent', prompt_file = None, fed_id = None, retries = 0
+
+    def _complete(self, messages: list[dict[str, Any]], schema: type[BaseModel], strategy: str,
+                  role: str, *, prompt_file: str | None, fed_id: str | None,
+                  retries: int = 0) -> Any:
+        """ONE physical `litellm.completion` call: guarded first, recorded after."""
+        self._guard(messages)
+        output_options = ({} if ollama_cloud.is_ollama(self._model)
+                          else request_options(strategy, self._model, schema))
+        kwargs: dict[str, Any] = {
+            "model": self._model, "messages": messages, "num_retries": 0,
+            "timeout": _TIMEOUT_S, "drop_params": True, **self._endpoint(),
+            **output_options}
+        if role == "judge":
+            kwargs["temperature"] = 0
+        receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
+        started = time.perf_counter()
+        try:
+            response = _load_litellm().completion(**kwargs)
+        except Exception as exc:
+            receipt.status = "failed"
+            receipt.latency_s = time.perf_counter() - started
+            self.record(role, None, None, failed=True, prompt_file=prompt_file,
+                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)
+>           raise ProviderError(self._failure(role, exc, messages)) from None
+E           autotester.providers.base.ProviderError: litellm:ollama_chat/glm-5.3-flash agent call failed: IndexError: pop from empty list
+
+src\autotester\providers\litellm_provider.py:238: ProviderError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\provider-attempts\autoTesting\.work\provider-attempts\proof-copy-2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request
+1 failed, 2 warnings in 1.01s

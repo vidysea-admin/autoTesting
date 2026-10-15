@@ -1,0 +1,1 @@
+["tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores"]

@@ -1,0 +1,38 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_deadline_caps_transport_and_exhausts_before_next_request ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021F2679D310>
+tmp_path = WindowsPath('C:/Users/product/.codex/worktrees/provider-attempts/autoTesting/.work/provider-attempts/proof-copy-2/.work/time-validation-red/test_deadline_caps_transport_a0')
+
+    def test_deadline_caps_transport_and_exhausts_before_next_request(monkeypatch, tmp_path):
+        fake = install(monkeypatch, [reply('{"ok":true}')])
+        monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+        monkeypatch.setenv("OLLAMA_API_KEY", "fake-key")
+        provider = LiteLLMProvider(model="ollama_chat/glm-5.3-flash")
+        with attempt_budget(2, wall_clock_s=7) as budget:
+            assert provider.act("prompt", AttemptAnswer).ok
+            assert 0 < fake.calls[0]["timeout"] <= 7
+            budget.deadline = 0
+            with pytest.raises(AttemptBudgetExhausted, match="wall_clock_s"):
+                provider.act("prompt", AttemptAnswer)
+        assert len(fake.calls) == 1
+        assert fake.calls[0]["num_retries"] == 0
+        for invalid in (-1, float("inf"), float("nan")):
+>           with pytest.raises(ValueError), attempt_budget(1, invalid):
+E           Failed: DID NOT RAISE ValueError
+
+tests\test_provider_attempts.py:111: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\provider-attempts\autoTesting\.work\provider-attempts\proof-copy-2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request
+1 failed, 2 warnings in 0.90s

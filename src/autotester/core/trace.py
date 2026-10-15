@@ -48,16 +48,17 @@ class TraceWriter:
 
     def record_llm(
         self, *, provider: str, role: str, prompt_file: str | None,
-        input_tokens: int, output_tokens: int, latency_s: float,
-        retries: int, fallback_hops: int, fed_id: str | None,
+        input_tokens: int | None, output_tokens: int | None, latency_s: float,
+        retries: int, fallback_hops: int, fed_id: str | None, failed: bool = False,
     ) -> None:
         """RT4/RT5: the only site an LLM-call span is appended -- called
         exclusively from `Provider.record()`, never by a stage directly."""
         span = LLMSpan(
             trace_id=self.trace_id, provider=provider, role=role, prompt_file=prompt_file,
             input_tokens=input_tokens, output_tokens=output_tokens, latency_s=latency_s,
-            cost=estimate_cost(provider, input_tokens, output_tokens),
-            retries=retries, fallback_hops=fallback_hops, fed_id=fed_id,
+            cost=(None if input_tokens is None or output_tokens is None
+                  else estimate_cost(provider, input_tokens, output_tokens)),
+            retries=retries, fallback_hops=fallback_hops, fed_id=fed_id, failed=failed,
         )
         self._append(span.model_dump_json())
 

@@ -1,0 +1,32 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_nested_budget_rejects_atomically_and_context_restores __________
+
+    def test_nested_budget_rejects_atomically_and_context_restores():
+        with attempt_budget(2) as outer:
+            with attempt_budget(0), pytest.raises(AttemptBudgetExhausted):
+                reserve_attempt("fake", "judge", 120)
+            assert outer.used == 0
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                pool.submit(copy_context().run, reserve_attempt, "fake", "judge", 120).result()
+            assert outer.used == 1
+        with attempt_budget(1) as fresh:
+            reserve_attempt("fake", "judge", 120)
+            assert fresh.used == 1
+>       with pytest.raises(ValidationError):
+E       Failed: DID NOT RAISE ValidationError
+
+tests\test_provider_attempts.py:90: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\provider-attempts\autoTesting\.work\provider-attempts\proof-copy-2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores
+1 failed, 2 warnings in 0.96s

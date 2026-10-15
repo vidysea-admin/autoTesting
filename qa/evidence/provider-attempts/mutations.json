@@ -1,0 +1,131 @@
+{
+  "tests": "tests/test_provider_attempts.py",
+  "mutations": [
+    {
+      "name": "count",
+      "file": "src/autotester/providers/attempts.py",
+      "old": "if scope.used >= scope.max_calls:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback"
+      ]
+    },
+    {
+      "name": "deadline",
+      "file": "src/autotester/providers/attempts.py",
+      "old": "if timeout_s <= 0:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request"
+      ]
+    },
+    {
+      "name": "remaining",
+      "file": "src/autotester/providers/attempts.py",
+      "old": "timeout_s = min(timeout_s, scope.deadline - time.monotonic())",
+      "new": "timeout_s = timeout_s",
+      "kills": [
+        "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request"
+      ]
+    },
+    {
+      "name": "nested",
+      "file": "src/autotester/providers/attempts.py",
+      "old": "(*_SCOPES.get(), budget)",
+      "new": "(budget,)",
+      "kills": [
+        "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback"
+      ]
+    },
+    {
+      "name": "restore",
+      "file": "src/autotester/providers/attempts.py",
+      "old": "_SCOPES.reset(token)",
+      "new": "_SCOPES.set(())",
+      "kills": [
+        "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores"
+      ]
+    },
+    {
+      "name": "max-validation",
+      "file": "src/autotester/providers/attempts.py",
+      "old": "if isinstance(max_calls, bool) or not isinstance(max_calls, int) or max_calls < 0:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores"
+      ]
+    },
+    {
+      "name": "time-validation",
+      "file": "src/autotester/providers/attempts.py",
+      "old": "if wall_clock_s is not None and (not math.isfinite(wall_clock_s) or wall_clock_s < 0):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_provider_attempts.py::test_deadline_caps_transport_and_exhausts_before_next_request"
+      ]
+    },
+    {
+      "name": "failed-account",
+      "file": "src/autotester/providers/litellm_provider.py",
+      "old": "self.record(role, None, None, failed=True, prompt_file=prompt_file,",
+      "new": "self.record(role, 0, 0, failed=False, prompt_file=prompt_file,",
+      "kills": [
+        "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+      ]
+    },
+    {
+      "name": "usage-unknown",
+      "file": "src/autotester/providers/litellm_provider.py",
+      "old": "getattr(usage, \"prompt_tokens\", None)",
+      "new": "getattr(usage, \"prompt_tokens\", 0) or 0",
+      "kills": [
+        "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+      ]
+    },
+    {
+      "name": "unknown-total",
+      "file": "src/autotester/providers/base.py",
+      "old": "None if entry.input_tokens is None or input_tokens is None",
+      "new": "0 if entry.input_tokens is None or input_tokens is None",
+      "kills": [
+        "tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback"
+      ]
+    },
+    {
+      "name": "unknown-cap",
+      "file": "src/autotester/stages/video_review.py",
+      "old": "if any(u.input_tokens is None or u.output_tokens is None for u in provider.usage):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+      ]
+    },
+    {
+      "name": "unknown-display",
+      "file": "src/autotester/ui/routes_report.py",
+      "old": "\"unknown\" if s.cost is None",
+      "new": "\"$0.0000\" if s.cost is None",
+      "kills": [
+        "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+      ]
+    },
+    {
+      "name": "isolation",
+      "file": "src/autotester/providers/isolated.py",
+      "old": "entry.failed_calls += usage.failed_calls",
+      "new": "entry.failed_calls += 0",
+      "kills": [
+        "tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner"
+      ]
+    },
+    {
+      "name": "strict-shape",
+      "file": "src/autotester/schema/provider_attempt.py",
+      "old": "ConfigDict(extra=\"forbid\")",
+      "new": "ConfigDict(extra=\"ignore\")",
+      "kills": [
+        "tests/test_provider_attempts.py::test_nested_budget_rejects_atomically_and_context_restores"
+      ]
+    }
+  ]
+}

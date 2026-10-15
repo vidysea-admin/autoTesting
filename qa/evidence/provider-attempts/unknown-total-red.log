@@ -1,0 +1,38 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_attempt_count_reserves_before_repair_and_fallback ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001B6EF199290>
+tmp_path = WindowsPath('C:/Users/product/.codex/worktrees/provider-attempts/autoTesting/.work/provider-attempts/proof-copy-2/.work/unknown-total-red/test_attempt_count_reserves_be0')
+
+    def test_attempt_count_reserves_before_repair_and_fallback(monkeypatch, tmp_path):
+        fake = install(monkeypatch, [reply("invalid"), RuntimeError("oops"), reply('{"ok":true}')])
+        monkeypatch.setenv("OLLAMA_API_KEY", "fake-value")
+        monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+        chain = ModelChainProvider()
+        with attempt_budget(2) as budget, pytest.raises(AttemptBudgetExhausted, match="max_calls"):
+            chain.act("prompt", AttemptAnswer)
+        assert len(fake.calls) == budget.used == 2
+        assert [r.status for r in budget.attempts] == ["succeeded", "failed"]
+        assert chain.served is None
+        assert chain.usage[0].calls == 2 and chain.usage[0].failed_calls == 1
+>       assert chain.usage[0].input_tokens is None
+E       AssertionError: assert 0 is None
+E        +  where 0 = ProviderUsage(provider='litellm:ollama_chat/glm-5.3-flash', role='agent', calls=2, input_tokens=0, output_tokens=None, failed_calls=1).input_tokens
+
+tests\test_provider_attempts.py:42: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:113 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (ProviderError); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\provider-attempts\autoTesting\.work\provider-attempts\proof-copy-2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_attempts.py::test_attempt_count_reserves_before_repair_and_fallback
+1 failed, 2 warnings in 0.88s

@@ -29,6 +29,7 @@ from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS
 from autotester.core.paths import repo_root
 from autotester.core.redact import assert_no_raw_secrets
 from autotester.providers import ollama_cloud
+from autotester.providers.attempts import reserve_attempt
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.images import image_url_parts
 from autotester.providers.litellm_schema import (
@@ -225,15 +226,23 @@ class LiteLLMProvider(Provider):
             **output_options}
         if role == "judge":
             kwargs["temperature"] = 0
+        receipt, kwargs["timeout"] = reserve_attempt(self.label, role, _TIMEOUT_S)
         started = time.perf_counter()
         try:
             response = _load_litellm().completion(**kwargs)
         except Exception as exc:
+            receipt.status = "failed"
+            receipt.latency_s = time.perf_counter() - started
+            self.record(role, None, None, failed=True, prompt_file=prompt_file,
+                        fed_id=fed_id, latency_s=receipt.latency_s, retries=retries)
             raise ProviderError(self._failure(role, exc, messages)) from None
         usage = getattr(response, "usage", None)
+        receipt.status = "succeeded"
+        receipt.input_tokens = getattr(usage, "prompt_tokens", None)
+        receipt.output_tokens = getattr(usage, "completion_tokens", None)
+        receipt.latency_s = time.perf_counter() - started
         self.record(
-            role, input_tokens=getattr(usage, "prompt_tokens", 0) or 0,
-            output_tokens=getattr(usage, "completion_tokens", 0) or 0,
+            role, input_tokens=receipt.input_tokens, output_tokens=receipt.output_tokens,
             prompt_file=prompt_file, fed_id=fed_id,
             latency_s=time.perf_counter() - started, retries=retries)
         try:

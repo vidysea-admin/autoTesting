@@ -1,0 +1,50 @@
+{
+  "src/autotester/core/trace.py": {
+    "candidate": "670067e342e4400054a8d2011b11f202714eb9b9691da8a83db870a3b080b964",
+    "proof_copy_restored": "670067e342e4400054a8d2011b11f202714eb9b9691da8a83db870a3b080b964"
+  },
+  "src/autotester/providers/base.py": {
+    "candidate": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891",
+    "proof_copy_restored": "5a732c788172223da39d6ba15b74cc6d655157f4541c0036203b223b85407891"
+  },
+  "src/autotester/providers/isolated.py": {
+    "candidate": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1",
+    "proof_copy_restored": "a7df946816a67b043a0ee01d69d73a0c43633f9d2817de75111b290370b16ae1"
+  },
+  "src/autotester/providers/litellm_provider.py": {
+    "candidate": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c",
+    "proof_copy_restored": "3b7158dc8932b0b5a71d92c52aeb6196d38c49d97db518947676fd89dde13a3c"
+  },
+  "src/autotester/providers/model_chain.py": {
+    "candidate": "e68a18ff1ee2a1693e9f1bbc63e46d57c67e69b44827967ee31553678c37f57f",
+    "proof_copy_restored": "e68a18ff1ee2a1693e9f1bbc63e46d57c67e69b44827967ee31553678c37f57f"
+  },
+  "src/autotester/schema/run.py": {
+    "candidate": "76935bbe730268d838692e9c5d26e8f16f99e7624304b08e2a918097903d50d0",
+    "proof_copy_restored": "76935bbe730268d838692e9c5d26e8f16f99e7624304b08e2a918097903d50d0"
+  },
+  "src/autotester/schema/trace.py": {
+    "candidate": "6220a525d7ac0e54b8ae815e61827a408e90845bc0ef8997aa36721c489d2708",
+    "proof_copy_restored": "6220a525d7ac0e54b8ae815e61827a408e90845bc0ef8997aa36721c489d2708"
+  },
+  "src/autotester/stages/video_review.py": {
+    "candidate": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e",
+    "proof_copy_restored": "281fc20e825f81a06e4f412d1fa0e592719d7d77b70f2320e32eff2c85fb342e"
+  },
+  "src/autotester/ui/routes_report.py": {
+    "candidate": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2",
+    "proof_copy_restored": "6bdf7c152c47ac144ab0003b0d0aa757bd9b02520a538ae178e630de931cf9d2"
+  },
+  "src/autotester/providers/attempts.py": {
+    "candidate": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31",
+    "proof_copy_restored": "ad4d10ca2bc07659907ad478d52bda50622863cd5213de6e5591aea610629a31"
+  },
+  "src/autotester/schema/provider_attempt.py": {
+    "candidate": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b",
+    "proof_copy_restored": "aa919fdf13627bd69af6bcb8452ca588327285beb0e675892c6ef1d95cc0d26b"
+  },
+  "tests/test_provider_attempts.py": {
+    "candidate": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260",
+    "proof_copy_restored": "1911b81324b156abfd9fc4615c6ec839c77241839bea1ca9dc237f5eb781c260"
+  }
+}
