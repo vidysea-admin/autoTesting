@@ -1,0 +1,32 @@
+{
+  "status": "NEEDS_EXTRA_REVIEW",
+  "phase": "readiness",
+  "observed_at": "2026-10-15T09:31:56.573058+00:00",
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "gemini-sdk-fresh",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 180,
+        "tokens": 6000
+      }
+    }
+  ],
+  "next_phase": {
+    "active_s": 240,
+    "tokens": 6000
+  },
+  "bootstrap_scope": "Exact wrapper readiness, selected independent nodes, one isolated guard probe and canonical verdict",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": null
+}

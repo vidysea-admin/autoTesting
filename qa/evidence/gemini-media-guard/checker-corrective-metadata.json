@@ -1,0 +1,12 @@
+{
+  "original_preserved": "checker-runtime.json",
+  "defect": "Mutable args list changed historical checker-mutant basetemp to checker-restored after execution",
+  "disclosed_reconstruction": "Tool invocation 32a6c1 sets checker-mutant then changes list after run returns; this is executed-code reconstruction, not independent raw-log invocation/source binding",
+  "raw_log_limit": "Raw pytest output alone does not establish actual argv, candidate SHA, mutated source hash or phase identity. No fresh execution claimed.",
+  "setup_failures": [
+    "Initial read_text mutation reconstruction normalized newlines; fixed using read_bytes without maker defect",
+    "Initial assessment invalid escalation keys; corrected before tests, earlier readiness ran after invalid gate",
+    "Isolated preflight temp ACL failure, then escalated relative-root typo, then exact absolute preflight passed"
+  ],
+  "status": "HOLD: representative independent mutation receipt binding incomplete"
+}
