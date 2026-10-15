@@ -1,0 +1,255 @@
+[
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "4f56469e133615ad9bea3f22928fde8bb0397e9f525df416769b2c7cfce0d01e",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_generation_reads_exact_model_and_preserves_approved_truth"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_generation_reads_exact_model_and_preserves_approved_truth"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 1,
+    "mutated_sha256": "ebdd15b2f5dcf32c99575eccc582557d21a85952050c49af7486f8dfe22e992f",
+    "name": "exact MODEL artifact, not canonical reload",
+    "original_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "original_spec_index": 1,
+    "red_binding_sha256": "d66413c24663782362b33f859b3f030d142ccc77640064ede2b7ffdac8a2d602",
+    "red_receipt": "m01-red.json",
+    "restored_binding_sha256": "8b218d158ff6bf026f349a1ec798f9a85da4c1420c9cd0d57f24edfda1485951",
+    "restored_receipt": "m01-restored.json",
+    "restored_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "source_file": "src/autotester/stages/orchestrate_downstream.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "d098e123891c79c6e3397326498d1665caacf6474c5a0c0344e37af8344b2d03",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_execution_persists_raw_results_before_any_grade"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_execution_persists_raw_results_before_any_grade"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 2,
+    "mutated_sha256": "566b10ec1c8f348afae5674fa501527020ab434d4835e2bcd7c6c331bd80b68a",
+    "name": "physical raw persistence before GRADE",
+    "original_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "original_spec_index": 3,
+    "red_binding_sha256": "750f42bdc512aee7561902b9808bf1706277525657ab004207f614839d194fd8",
+    "red_receipt": "m02-red.json",
+    "restored_binding_sha256": "d1f684476064afe79d6668e2fb20d1eb594dc6363a5b5f4f3be0b20e654969d5",
+    "restored_receipt": "m02-restored.json",
+    "restored_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "source_file": "src/autotester/stages/orchestrate_execute.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "029f79b4ac0987756bdf5cab81cf7f20094ee3b75100e2884e41c77d3ad36b37",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_approval_refusal_opens_no_sessions"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_approval_refusal_opens_no_sessions"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 3,
+    "mutated_sha256": "13d12582bd4577a720f6c5a5742bb35be3ff90b21212b9536d9909aae517124c",
+    "name": "approval checked before any browser session",
+    "original_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "original_spec_index": 4,
+    "red_binding_sha256": "4bc4f19a6afd06c6ec11a5c6ae60d205a83448215df7e5a37031fc65f21e5c90",
+    "red_receipt": "m03-red.json",
+    "restored_binding_sha256": "f9b6688150a10a13422a00a026eecce04cd85975bbf7161dd4821b3e05eb49dc",
+    "restored_receipt": "m03-restored.json",
+    "restored_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "source_file": "src/autotester/stages/orchestrate_execute.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "b0f870dc0ebd62fe9418a2beac36af9e21b100f7d5fd17a63097e11198898fb4",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_snapshot_controls_execution_and_report_after_case_edits"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_snapshot_controls_execution_and_report_after_case_edits"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 4,
+    "mutated_sha256": "a2b571d4700f3a8909b8de99daf15a8ef373cc253e13f06ea41f55028bd5dc72",
+    "name": "frozen case execution",
+    "original_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "original_spec_index": 5,
+    "red_binding_sha256": "0a2c1ed0c909d0fe9dc90cd643cd26a68ec881be9fb72d20d5d0406c30f5d716",
+    "red_receipt": "m04-red.json",
+    "restored_binding_sha256": "9d9da00c9173c3a7b3e96a905d9f1c20369a7817bf065e70ede6c4ff2ac75a84",
+    "restored_receipt": "m04-restored.json",
+    "restored_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "source_file": "src/autotester/stages/orchestrate_execute.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "3f7f82caa41f76c072d1b1758cd649a9f4d119ffb00948285092fcbe11cf739b",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_interrupted_execution_reports_unfinished_without_repeat"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_interrupted_execution_reports_unfinished_without_repeat"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 5,
+    "mutated_sha256": "c02b1796495546997e89f1b97097e03b2ac49f271101942d19a984b8ae91fd7a",
+    "name": "interrupted browser work never repeats",
+    "original_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "original_spec_index": 7,
+    "red_binding_sha256": "20d084501451de63687a831495348986c9f29581dfd5d3458eb9b7447b9233d6",
+    "red_receipt": "m05-red.json",
+    "restored_binding_sha256": "d0b17f4072984f9a0bca799713660312837416f8701aee0bc4d2efd8541c1c6f",
+    "restored_receipt": "m05-restored.json",
+    "restored_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "source_file": "src/autotester/stages/orchestrate_execute.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "ff79241834a69d7a2b52b1d70316e5312fbc345ea9a56fb387d3b2f93a7fb005",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_rejects_changed_frozen_input_or_foreign_lineage"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_rejects_changed_frozen_input_or_foreign_lineage"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 6,
+    "mutated_sha256": "71b16c34d0bc68386bdb47500796a895d70c2c33f844b0e7e79d7686b22a927f",
+    "name": "exact frozen content fingerprint",
+    "original_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "original_spec_index": 8,
+    "red_binding_sha256": "cf6e4da0faef411738051e11ddf2b6f5430463f9762c9fddeadda77dc699f134",
+    "red_receipt": "m06-red.json",
+    "restored_binding_sha256": "cc717073b293f651831a94bf244ea79252758b8f1cf97eecdabbf27ae1149da9",
+    "restored_receipt": "m06-restored.json",
+    "restored_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "source_file": "src/autotester/stages/orchestrate_execute.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "b902e0b787e5f326c9eeeed69a2d31d648241035fc3ed7daeac7ac27935c3b81",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_captured_human_block_survives_model_status_laundering"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_captured_human_block_survives_model_status_laundering"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 7,
+    "mutated_sha256": "0b0262e3bd7fa17136401e108afb06cb66076090be2e8566713c76f347218e3c",
+    "name": "pre-MODEL NEEDS_EDIT cannot be laundered",
+    "original_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "original_spec_index": 10,
+    "red_binding_sha256": "3d391d6f319339c8788a7d4d803efc21db5cc2334eee35185d43cc4b8a763ed8",
+    "red_receipt": "m07-red.json",
+    "restored_binding_sha256": "5e24a16119852539f1abb200fb4a57ad793f2e382a5acce0302b93f2423c98f0",
+    "restored_receipt": "m07-restored.json",
+    "restored_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "source_file": "src/autotester/stages/orchestrate_downstream.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "30a79f8cf3b940ba459fcf6e327c7b68c6a8b855dfef38a54eea90937e7b9912",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_failed_grade_resumes_without_repeating_browser"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_failed_grade_resumes_without_repeating_browser"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 8,
+    "mutated_sha256": "42f4c40900a165e2f2557dfa4ae9f4aee9b5fa65da5d0dc309d6bb347ad1cd49",
+    "name": "uncertain grading never spends again on resume",
+    "original_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "original_spec_index": 11,
+    "red_binding_sha256": "22606621c76cc9807c84b36128742b1fe0cc2d07cc3ed7982830455825209fe7",
+    "red_receipt": "m08-red.json",
+    "restored_binding_sha256": "a12c64b2915b41c0d0e32d122b08dd7419a8b75be95d03a1f29eae515579245d",
+    "restored_receipt": "m08-restored.json",
+    "restored_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "source_file": "src/autotester/stages/orchestrate_downstream.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "2c45db538748b51cf934847a60bb13b692321fb6f4faae2326ba15abffd81ad0",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream.py::test_downstream_uncertain_generation_never_spends_again"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream.py::test_downstream_uncertain_generation_never_spends_again"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 9,
+    "mutated_sha256": "158e2f5399378eb7584766344ef6d4827ac57e918f1164363b0d0074f5f02181",
+    "name": "generation admission persists before uncertain spend",
+    "original_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "original_spec_index": 12,
+    "red_binding_sha256": "8874487230c5510df544c564929563b28a37464204de4ecfc135723f8d787fcc",
+    "red_receipt": "m09-red.json",
+    "restored_binding_sha256": "2f583813434fd6f23c5037076074ca17ab6d59b515911363e40d436957be6ead",
+    "restored_receipt": "m09-restored.json",
+    "restored_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "source_file": "src/autotester/stages/orchestrate_downstream.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "5e6a3eb2b9a606c94444554daa603df7b1e833b22db95b5049f4d18be0565a90",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream_privacy.py::test_downstream_rejects_secret_outputs_before_case_or_raw_persistence"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream_privacy.py::test_downstream_rejects_secret_outputs_before_case_or_raw_persistence"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 10,
+    "mutated_sha256": "60465616273e8f94b2021a91a3a06ab25f92c14db8b334dd6102c9f4df680708",
+    "name": "entire generated set guarded before first store write",
+    "original_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "original_spec_index": 14,
+    "red_binding_sha256": "5ad58bf184fe2a340632e5add31ae86b20696b3fba42bfc04746cb7706a6c52d",
+    "red_receipt": "m10-red.json",
+    "restored_binding_sha256": "8f978118e52628d13a6154e8baea19a5d8110b717822d9aca9dd73ee08aa5a81",
+    "restored_receipt": "m10-restored.json",
+    "restored_sha256": "418d06285421226378929930a00156e91d6d317202269baa3b154a32cbae836e",
+    "source_file": "src/autotester/stages/orchestrate_downstream.py"
+  },
+  {
+    "anchor_count": 1,
+    "anchor_old_sha256": "b5d2d7e471a43ed4e53ae4efb6210d3952a4f8f63ea7c4b88172b5c2a9913b78",
+    "attributed_failures": [
+      "tests/test_orchestrate_downstream_privacy.py::test_downstream_rejects_secret_outputs_before_case_or_raw_persistence"
+    ],
+    "defenders": [
+      "tests/test_orchestrate_downstream_privacy.py::test_downstream_rejects_secret_outputs_before_case_or_raw_persistence"
+    ],
+    "green_binding_sha256": "41c4386d005d5cf6c57d9e0bfaaa1bdcfd40cabefa484fc3657a4492abd90774",
+    "green_receipt": "shared-green.json",
+    "index": 11,
+    "mutated_sha256": "fb53a5fdc40d8a53ae97766944b7896559a1ca4471dfe388c5eeaeddaa3ff6cc",
+    "name": "raw observation guarded before physical store write",
+    "original_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "original_spec_index": 15,
+    "red_binding_sha256": "27feeaf8df5804b1516df05e84aba5ddbd198d3553dce3bfc78ec67658663807",
+    "red_receipt": "m11-red.json",
+    "restored_binding_sha256": "486fab402f76cc44c86c2214d0ccfd5efd6df191dedbde58b204478ac2ba0aeb",
+    "restored_receipt": "m11-restored.json",
+    "restored_sha256": "436bedbdf6a7153c6534052a0b6f7b723293501951a1af4ca80f8a94c87646f1",
+    "source_file": "src/autotester/stages/orchestrate_execute.py"
+  }
+]

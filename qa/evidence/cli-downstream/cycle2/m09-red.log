@@ -1,0 +1,42 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\cli-downstream\.work\cli-downstream-proof-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_orchestrate_downstream.py F                                   [100%]
+
+================================== FAILURES ===================================
+___________ test_downstream_uncertain_generation_never_spends_again ___________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/cli-downstream/.work/cli-downstream-proof-tree2/.proof-temp-m09-red/test_downstream_uncertain_gene0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026C55A70850>
+
+    def test_downstream_uncertain_generation_never_spends_again(tmp_path, monkeypatch):
+        f = downstream_fixture(tmp_path)
+        generator, ctx = f[-3], f[-1]
+        original = generator.act
+    
+        def lose_response(*args, **kwargs):
+            original(*args, **kwargs)
+            raise RuntimeError("generation response lost")
+    
+        monkeypatch.setattr(generator, "act", lose_response)
+        with pytest.raises(RuntimeError, match="response lost"):
+            _expand(f)
+        assert len(generator.prompts) == 1
+        monkeypatch.setattr(generator, "act", original)
+>       with pytest.raises(ValueError, match="new run"):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_orchestrate_downstream.py:248: Failed
+============================== warnings summary ===============================
+tests/test_orchestrate_downstream.py::test_downstream_uncertain_generation_never_spends_again
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_orchestrate_downstream.py::test_downstream_uncertain_generation_never_spends_again
+======================== 1 failed, 1 warning in 1.06s =========================

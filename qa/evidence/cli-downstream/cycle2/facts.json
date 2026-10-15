@@ -1,0 +1,15 @@
+{
+  "baseline_expected_failure_wall_s": 12.75,
+  "full_spec_rows": 15,
+  "maker_active_s": null,
+  "maker_cost": null,
+  "maker_tokens": null,
+  "not_executed_mutations": 4,
+  "pytest_receipts": 23,
+  "pytest_subprocess_wall_s": 176.95199999999386,
+  "scoped_static_wall_s": 11.234999999996944,
+  "selected_proofs": 11,
+  "shared_green_wall_s": 15.71900000000096,
+  "source_candidate": "030560cf033782f50fb54c5c034b4f0fb3e0bb93",
+  "source_inventory_entries": 1021
+}

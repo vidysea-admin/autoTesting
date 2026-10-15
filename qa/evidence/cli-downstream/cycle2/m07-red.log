@@ -1,0 +1,33 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\cli-downstream\\.work\\cli-downstream-proof-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\cli-downstream\.work\cli-downstream-proof-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_orchestrate_downstream.py F                                   [100%]
+
+================================== FAILURES ===================================
+____ test_downstream_captured_human_block_survives_model_status_laundering ____
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/cli-downstream/.work/cli-downstream-proof-tree2/.proof-temp-m07-red/test_downstream_captured_human0')
+
+    def test_downstream_captured_human_block_survives_model_status_laundering(tmp_path):
+        f = downstream_fixture(tmp_path)
+        store, project, spec, model, generator, judge, ctx = f
+        store.save_flowspec(spec.model_copy(update={"review": Review(status=ReviewStatus.NEEDS_EDIT)}))
+        ctx.runners = stages.downstream_runners(project, store, generator=generator, judge=judge)
+        store.save_flowspec(spec)
+>       with pytest.raises(ValueError, match="NEEDS_EDIT"):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_orchestrate_downstream.py:229: Failed
+============================== warnings summary ===============================
+tests/test_orchestrate_downstream.py::test_downstream_captured_human_block_survives_model_status_laundering
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_orchestrate_downstream.py::test_downstream_captured_human_block_survives_model_status_laundering
+======================== 1 failed, 1 warning in 1.09s =========================
