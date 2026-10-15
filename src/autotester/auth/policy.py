@@ -68,6 +68,7 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     ("GET", "/healthz"): PUBLIC_RULE,
     # signed in, even with zero permissions (AU6)
     ("POST", "/auth/logout"): SESSION, ("GET", "/auth/waiting"): SESSION,
+    ("GET", "/profile"): SESSION, ("POST", "/profile"): SESSION,
     ("GET", "/favicon.ico"): MEMBER,
     ("GET", "/"): MEMBER,
     ("GET", "/onboard"): _key(K.PROJECT_CREATE), ("POST", "/onboard"): _key(K.PROJECT_CREATE),

@@ -29,6 +29,7 @@ from autotester.ui import (
     routes_learn,
     routes_live,
     routes_product_map,
+    routes_profile,
     routes_project_access,
     routes_project_edit,
     routes_proposals,
@@ -56,6 +57,7 @@ STUBS: dict[str, APIRouter] = {
 
 ROUTERS: tuple[APIRouter, ...] = (
     routes_auth.router,
+    routes_profile.router,  # TT8: own preference, session-only; profile stub remains empty
     routes_admin.router,
     routes_cases.router,
     routes_project_edit.router,

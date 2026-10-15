@@ -29,6 +29,7 @@ from autotester.ui.theme_style import PAGE_STYLE
 # (permission, href, label, extra class): shown only to an account that holds the key (AU25)
 _NAV_LINKS = (
     (None, "/", "Projects", ""),
+    (None, "/profile", "My profile", ""),
     (PermissionKey.PROJECT_CREATE, "/onboard", "+ New project", ""),
     (PermissionKey.REPORT_VIEW, "/inbox", "My reports", ""),
     (PermissionKey.VIDEO_VIEW, "/shared", "Videos", ""),
