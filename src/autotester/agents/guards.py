@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib.parse import unquote, urlsplit
 
 from autotester.browser.secrets import SecretStore
@@ -34,6 +34,11 @@ from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
 from autotester.schema.screen_graph import ElementRef
 from autotester.stages import explore_safety
+from autotester.stages.account_destroy import (
+    ACCOUNT_DESTROY_REFUSED,
+    DestroyContext,
+    destroying_href,
+)
 from autotester.store.project_store import ProjectStore
 
 _READS = frozenset({Action.WAIT, Action.ASSERT, Action.BACK, Action.HOVER, Action.SCROLL})
@@ -53,6 +58,7 @@ class _Walk:
 
     login: bool
     credential_pending: bool = False
+    ctx: DestroyContext = field(default_factory=DestroyContext)
 
 
 def guard_model_bound(secrets: SecretStore, text: str) -> str:
@@ -85,10 +91,13 @@ def _declared_credential(value: str | None, project: Project) -> bool:
     return all(key in declared for key in keys)
 
 
-def _click_denied(name: str, project: Project) -> str | None:
+def _click_denied(name: str, project: Project,
+                  ctx: DestroyContext | None = None) -> str | None:
     """The crawler's own name deny-function, asked about a name (the one deny concept)."""
-    element = ElementRef(role="button", name=name, selector=name)
-    return explore_safety.deny_reason(element, explore_safety.policy_for(project))  # incl. destroy
+    element = ElementRef(role="button", name=name, selector=name,
+                         href=name if name.startswith("/") else None)
+    return explore_safety.deny_reason(element, explore_safety.policy_for(project),
+                                      destroy_ctx=ctx)  # incl. destroy
 
 
 # Cyrillic/Greek lookalikes of Latin letters, folded after NFKC (small, cheap; not a full table).
@@ -113,12 +122,13 @@ def _click_names(name: str) -> tuple[str, ...]:
     return tuple(dict.fromkeys(out))
 
 
-def _click_refusal(name: str, project: Project) -> str | None:
+def _click_refusal(name: str, project: Project,
+                   ctx: DestroyContext | None = None) -> str | None:
     """Deny-list, never-click and unnamed (blank after cleaning) checks for a click target."""
     names = _click_names(name)
     if not any(names):
         return _UNNAMED
-    return next((why for n in names if (why := _click_denied(n, project))), None)
+    return next((why for n in names if (why := _click_denied(n, project, ctx))), None)
 
 
 def _check_refuses(target: str, project: Project) -> bool:
@@ -184,9 +194,9 @@ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
     enter = action is Action.PRESS_KEY and step.value in (None, "Enter")
     if (action is Action.CLICK or enter) and walk.login and walk.credential_pending:
         walk.credential_pending = False  # one submit per credential entry
-        return _click_refusal(step.target, project) if action is Action.CLICK else None
+        return _click_refusal(step.target, project, walk.ctx) if action is Action.CLICK else None
     if action is Action.CLICK:  # D-086 HG-1: benign clicks run; deny-list/never-click still hold
-        return _click_refusal(step.target, project) or (
+        return _click_refusal(step.target, project, walk.ctx) or (
             "click on a control named like a commit can change state"
             if any(_COMMIT_NAME.search(n) for n in _click_names(step.target)) else None)
     if action is Action.FILL:
@@ -195,13 +205,16 @@ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
 
 
 def _step_refusal(step: Step, project: Project, walk: _Walk) -> tuple[str | None, RefusalClass]:
+    if step.action is Action.NAVIGATE and destroying_href(step.target):
+        walk.ctx.note()
+        return ACCOUNT_DESTROY_REFUSED, RefusalClass.WRITE_POLICY
     if step.action is Action.NAVIGATE:
         why, is_destination = _navigate_refusal(step, project, walk)
         return why, RefusalClass.DESTINATION if is_destination else RefusalClass.WRITE_POLICY
     if project.write_policy is WritePolicy.READ_ONLY:
         return _read_only_refusal(step, project, walk), RefusalClass.WRITE_POLICY
     if step.action is Action.CLICK:
-        return _click_refusal(step.target, project), RefusalClass.WRITE_POLICY
+        return _click_refusal(step.target, project, walk.ctx), RefusalClass.WRITE_POLICY
     return None, RefusalClass.WRITE_POLICY
 
 

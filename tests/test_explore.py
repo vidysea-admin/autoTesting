@@ -100,13 +100,13 @@ def test_unnamed_control_is_skipped_and_recorded(tmp_path: Path) -> None:
     assert skipped and skipped[0].target == "button.icon"
 
 
-def test_allow_writes_lets_delete_through_but_never_logout(tmp_path: Path) -> None:
-    """The same fixture under ALLOW_WRITES: the deny-list is off (Delete is
-    clicked), but the never-click guard still refuses Log out (D-016)."""
+def test_allow_writes_never_clicks_account_destroy_or_logout(tmp_path: Path) -> None:
+    """The same fixture under ALLOW_WRITES: the deny-list is off, but the
+    never-click guard still refuses Log out (D-016) and Delete account (D-098)."""
     project = make_project(WritePolicy.ALLOW_WRITES)
     policy = SafetyPolicy(write_policy=WritePolicy.ALLOW_WRITES)
     _crawl, _store, page = crawl_it(tmp_path, project=project, policy=policy)
-    assert "button.del" in page.clicks
+    assert "button.del" not in page.clicks
     assert "a.out" not in page.clicks
     assert not any("/logged-out" in url for url in page.history)
 
