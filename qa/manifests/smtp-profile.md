@@ -1,6 +1,6 @@
 # SMTP M1 — authenticated report-email preference
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 Risk: high (authenticated own-user write; no delivery or external requests)
 Base: cec4b64e59e10019ba616fa031f550542d1350ca
