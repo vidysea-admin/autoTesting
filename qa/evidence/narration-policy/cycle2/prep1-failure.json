@@ -1,0 +1,6 @@
+{
+  "stage": "pre-runtime source identity setup",
+  "failure": "Old Windows fingerprint keys used backslashes; inventory used POSIX keys; comparison stopped before any test ran",
+  "status": "invalid preparation; no proof claimed",
+  "source_changed": false
+}

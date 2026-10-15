@@ -1,0 +1,9 @@
+{
+  "command_wall_sum_s": 236.78300000001764,
+  "commands": 31,
+  "maker_active_s": null,
+  "maker_cost": null,
+  "maker_tokens": null,
+  "not_checker_usage": true,
+  "role": "maker-readiness-only"
+}

@@ -1,0 +1,317 @@
+[
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 1,
+    "mutated_sha256": "571233a1bd9268958aa515797b5f291af57b524b2b34b268e4e842eb52ffb5e5",
+    "name": "default local ASR enabled",
+    "original_sha256": "0c73ce2405054d1d60a33ad38c4b55a0805ece3778ce56c551cc228185b16692",
+    "red_binding_sha256": "0a508044ac0b3b3445b166722dbe3d20948234d944b50d1b77010a5d16db3ced",
+    "red_receipt": "m01-red.json",
+    "restored_binding_sha256": "9d3de1323eb2b25640e4328f78d33e259667dff82d6f067a9193a5f7db31d5b2",
+    "restored_receipt": "m01-restored.json",
+    "restored_sha256": "0c73ce2405054d1d60a33ad38c4b55a0805ece3778ce56c551cc228185b16692",
+    "source_file": "src/autotester/media/transcribe.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 2,
+    "mutated_sha256": "8082fd8baa02ad3d354ab367a7fd5df5fd41cf342855173e6df0a5c27e2871a1",
+    "name": "stored transcript ignored",
+    "original_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "red_binding_sha256": "af6551529456aab70c91f2d08eaf14ee86c6e1a886ebc91a664ae919341d3592",
+    "red_receipt": "m02-red.json",
+    "restored_binding_sha256": "9bfb681b3e9021fe4167457175ea978b9482aef3060d8bc9b1202f5c1357c071",
+    "restored_receipt": "m02-restored.json",
+    "restored_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "source_file": "src/autotester/media/narration.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_video_sends_only_extracted_audio_and_cleans_scratch"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_video_sends_only_extracted_audio_and_cleans_scratch"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 3,
+    "mutated_sha256": "6d79ced1d246863fec8a878f1e29ce009980eb3d47aed23d6a4ec2b0f9785aef",
+    "name": "video uploaded directly",
+    "original_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "red_binding_sha256": "89b685fffb36d360939fa62e887154b21fdb145b2cbc0e363d286595f39e3118",
+    "red_receipt": "m03-red.json",
+    "restored_binding_sha256": "227a675c50bd3150de3ca3351a9320889ce5220294a6283442929926f1ee4f6e",
+    "restored_receipt": "m03-restored.json",
+    "restored_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "source_file": "src/autotester/media/narration.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_extraction_bounds_reject_duration_and_truncated_output"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 4,
+    "mutated_sha256": "0bb6d7cff5addddc00a0816c157ad12a574d5770cfe2caa63a4fed02b20d8981",
+    "name": "duration guard bypass",
+    "original_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "red_binding_sha256": "44f8ed50d63f5b9de023de6456a0f64bf918b85ebbe5cae73932d035f8364958",
+    "red_receipt": "m04-red.json",
+    "restored_binding_sha256": "16fca15050422a6d817499ae5d9e3293f77a59b38458cc5a8072fa9c9bda23c0",
+    "restored_receipt": "m04-restored.json",
+    "restored_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "source_file": "src/autotester/media/narration.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_extraction_failure_stays_explicit_and_cleans_scratch"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 5,
+    "mutated_sha256": "887ed3068ca80bbde17ef46128d43bc8be235ce3462e5ad589d17c6f10120c85",
+    "name": "audio extraction failed treated as empty complete",
+    "original_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "red_binding_sha256": "198f54867146848d43a3cc5d38c1f863a3ac411dd78d70cf49607600aa53e9b9",
+    "red_receipt": "m05-red.json",
+    "restored_binding_sha256": "7b4b37a94d0d564d9f0e1664692d3e53719fc1a3081afce5e84549b070d0662e",
+    "restored_receipt": "m05-restored.json",
+    "restored_sha256": "aa0bdaa6b51b693f72e4b75acda137153532143eee92820aee90060d316ae2d1",
+    "source_file": "src/autotester/media/narration.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_media_prep_calls_narration_by_default"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_media_prep_calls_narration_by_default"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 6,
+    "mutated_sha256": "9d70e7283857ded11856d4fdc130e884b281ea77077503c2a834a33319490d07",
+    "name": "prep caller omits narration policy",
+    "original_sha256": "0b2a586088b676ebc826e893992fe81732bdeee01697eb8b7d5e266cc564a1de",
+    "red_binding_sha256": "915bfd4d5c2fa7e445df4d888f392b97d7df0433f75984f19cac7cb9766ea845",
+    "red_receipt": "m06-red.json",
+    "restored_binding_sha256": "2511a0e2c775087a0405f3804bdb99b65628fb737469ab5451eb9bce867d246b",
+    "restored_receipt": "m06-restored.json",
+    "restored_sha256": "0b2a586088b676ebc826e893992fe81732bdeee01697eb8b7d5e266cc564a1de",
+    "source_file": "src/autotester/stages/media_prep.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_real_transport_requires_typed_safety_capabilities"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 7,
+    "mutated_sha256": "ed5e84ccb5552fd2ff98728a33988c9ae8c2c5c04e4ffaa0863e701b9da1b176",
+    "name": "untyped media safety allowed",
+    "original_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "red_binding_sha256": "e512fd8bfc10c6183689626e0e3ff9a2b2a5c75bd3228c2bfe932668cdc08210",
+    "red_receipt": "m07-red.json",
+    "restored_binding_sha256": "3a161d9f00381fe404acdebb3a5317ab36bc99bc723addad52e55fa5c274893c",
+    "restored_receipt": "m07-restored.json",
+    "restored_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "source_file": "src/autotester/sources/audio.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 8,
+    "mutated_sha256": "ba093622b8883ad7dd46088ad40d4abc65bc86f3d22bc7c6efd40b9fb42991d0",
+    "name": "byte guard disabled",
+    "original_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "red_binding_sha256": "26b5a4141c9e03ff10ce81bb3e64f22925733252acd4ec1c2c48f4f0c2b95e5c",
+    "red_receipt": "m08-red.json",
+    "restored_binding_sha256": "c2f991aea205671bdd751017acba66403b1eb8aa97e4de47da9ee19245eee51b",
+    "restored_receipt": "m08-restored.json",
+    "restored_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "source_file": "src/autotester/sources/audio.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_audio_byte_limit_and_output_secret_scrubbing"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 9,
+    "mutated_sha256": "030247a55451ccc4ac80c595e8efebc9be9a5e4ae9313106cb343f83a4d47cee",
+    "name": "provider output secret unsanitized",
+    "original_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "red_binding_sha256": "c17313ba53f5f46c3142a8ffddcd450eb69e12797b42d04d5d3bdd25d7b6db7c",
+    "red_receipt": "m09-red.json",
+    "restored_binding_sha256": "06d2933df32570311988da4330c8710650c398fbae1c8f1827132740194822fd",
+    "restored_receipt": "m09-restored.json",
+    "restored_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "source_file": "src/autotester/sources/audio.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_cli_prep_does_not_opt_in_local_asr"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_cli_prep_does_not_opt_in_local_asr"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 10,
+    "mutated_sha256": "af5a4077495cd9d113b5c16062835cbff6d20adfcd2e80f11024222e68640ab0",
+    "name": "CLI opts in ASR by default",
+    "original_sha256": "00fb3c7355baac98dabb4b751aaafca729a3113235030d05408d9d7110b518db",
+    "red_binding_sha256": "2ae3d263925cbf9c4852cbb62438b44d32b64b8f845864f0a0f6e45d7fa35851",
+    "red_receipt": "m10-red.json",
+    "restored_binding_sha256": "e61ce02bada0627421642b432318469dc48eef5a0d6dcd4e46934168f8b7ef8b",
+    "restored_receipt": "m10-restored.json",
+    "restored_sha256": "00fb3c7355baac98dabb4b751aaafca729a3113235030d05408d9d7110b518db",
+    "source_file": "src/autotester/cli_video.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr"
+    ],
+    "defenders": [
+      "tests/test_source_adapters_audio.py::test_audio_missing_provider_never_uses_local_asr"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 11,
+    "mutated_sha256": "229e43e6a067d803f9a65a8501b1547355b999bf215a4696661665ec98c0b359",
+    "name": "missing provider reported clean",
+    "original_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "red_binding_sha256": "95f84743f2bbb9d395a34d57e91700c4030cec493e39b31fd243ba935722fbfb",
+    "red_receipt": "m11-red.json",
+    "restored_binding_sha256": "9291001f2d9642d52535608386b33836b46d63f3f49047d617e0ae0b29247184",
+    "restored_receipt": "m11-restored.json",
+    "restored_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "source_file": "src/autotester/sources/audio.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete"
+    ],
+    "defenders": [
+      "tests/test_source_adapters_audio.py::test_audio_provider_failure_is_incomplete"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 12,
+    "mutated_sha256": "332159ede25748d22e144d99d8368712ab24e1787081099f6aca7178786d663f",
+    "name": "Gemini failure reported complete",
+    "original_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "red_binding_sha256": "1442f703644a12033543f9a833389ad7aaba986a362d4bc74a6401d137368857",
+    "red_receipt": "m12-red.json",
+    "restored_binding_sha256": "5b207b54a15f3d522e60558d1bd11ec315cdc45d5299e0722ca123f1c5a6c436",
+    "restored_receipt": "m12-restored.json",
+    "restored_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "source_file": "src/autotester/sources/audio.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider"
+    ],
+    "defenders": [
+      "tests/test_source_adapters_audio.py::test_audio_supplied_empty_transcript_precedes_provider"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 13,
+    "mutated_sha256": "8dbefdd2cab6cd4080c179996974987ca9ebf2313216b9266db45e8930ccf401",
+    "name": "supplied empty transcript ignored",
+    "original_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "red_binding_sha256": "2910247080d1005eeec1363dbdd5100b3b2503982028aebf40b3f9ba72ee54c1",
+    "red_receipt": "m13-red.json",
+    "restored_binding_sha256": "2e37519ddc2dd7ac346ee3fa1621ff9d575871538dc062c0749c583cee6a263b",
+    "restored_receipt": "m13-restored.json",
+    "restored_sha256": "1aa04036f090eae29b7ffc31d3fc90ba853918b4678d9d6e5f9b6bbedafc6828",
+    "source_file": "src/autotester/sources/audio.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+    ],
+    "defenders": [
+      "tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 14,
+    "mutated_sha256": "b3350d8eb2606533ca0d51a17fc8b89709b301549a14333ff207d9a2a7c09eca",
+    "name": "prep ignores persisted narration",
+    "original_sha256": "0b2a586088b676ebc826e893992fe81732bdeee01697eb8b7d5e266cc564a1de",
+    "red_binding_sha256": "c9f39e69cd93f3c7f389f42cabfe49e3b13dc72516325819062d4cbdb2d166ad",
+    "red_receipt": "m14-red.json",
+    "restored_binding_sha256": "817084fe2950f0ccd3cf1a57708fb3312bc37f56a5be9aac5dff03270cec5566",
+    "restored_receipt": "m14-restored.json",
+    "restored_sha256": "0b2a586088b676ebc826e893992fe81732bdeee01697eb8b7d5e266cc564a1de",
+    "source_file": "src/autotester/stages/media_prep.py"
+  },
+  {
+    "anchor_count": 1,
+    "attributed_failures": [
+      "tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc"
+    ],
+    "defenders": [
+      "tests/test_source_adapters_audio.py::test_audio_shares_the_one_store_and_enum_with_text_and_doc"
+    ],
+    "green_binding_sha256": "d6a83ae406d6ac97d3699b51c24f906eca3e1e7b67bf7854f5e90966391aba95",
+    "green_receipt": "shared-green.json",
+    "index": 15,
+    "mutated_sha256": "e40a84f9d223372bc8cfe23171d62d5cccb81eaa184ac5a83732293eeec0d56f",
+    "name": "audio no longer converges on source enum",
+    "original_sha256": "9b2cf5db5af9d8c96d444cf47243620c41a98bce94fb3c9bd13285de2ab07f8b",
+    "red_binding_sha256": "0bf950ac4c582d5f61b6068879ab8675d460f005aeb872b92aee55620ef2fdf1",
+    "red_receipt": "m15-red.json",
+    "restored_binding_sha256": "1e8979c5f8ae7b2333a36c93893135fa60743fad7c95217eb42b3067f89268b1",
+    "restored_receipt": "m15-restored.json",
+    "restored_sha256": "9b2cf5db5af9d8c96d444cf47243620c41a98bce94fb3c9bd13285de2ab07f8b",
+    "source_file": "src/autotester/sources/adapters.py"
+  }
+]

@@ -1,0 +1,46 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\narration-policy\.work\narration-cycle2-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_narration_policy.py F                                         [100%]
+
+================================== FAILURES ===================================
+____________ test_persisted_empty_transcript_reused_byte_for_byte _____________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m02-red/test_persisted_empty_transcrip0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020AB17AD450>
+
+    def test_persisted_empty_transcript_reused_byte_for_byte(tmp_path, monkeypatch):
+        store, source, _ = _setup(tmp_path)
+        supplied = Transcript(source_id=source.id, engine="sidecar", segments=[])
+        store.save_transcript(supplied)
+        monkeypatch.setattr(narration, "_transcribe_video_audio", lambda *_: pytest.fail("provider"))
+>       assert narration.ensure_narration(store, source) == supplied
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_narration_policy.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\media\narration.py:56: in ensure_narration
+    transcript = _transcribe_video_audio(video, source.id, provider, secrets)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_ = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m02-red/test_persisted_empty_transcrip0/video.mp4'), 'src_034078c3fe18', None, None)
+
+>   monkeypatch.setattr(narration, "_transcribe_video_audio", lambda *_: pytest.fail("provider"))
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: provider
+
+tests\test_narration_policy.py:37: Failed
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_persisted_empty_transcript_reused_byte_for_byte
+======================== 1 failed, 1 warning in 1.59s =========================

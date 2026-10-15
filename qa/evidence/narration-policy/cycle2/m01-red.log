@@ -1,0 +1,44 @@
+__RUNTIME__{"dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a", "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src\\autotester\\__init__.py", "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\narration-policy\\.work\\narration-cycle2-tree2\\src", "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe", "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"}
+============================= test session starts =============================
+platform win32 -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\product\Desktop\autoTesting\.work\narration-policy\.work\narration-cycle2-tree2
+configfile: pyproject.toml
+collected 1 item
+
+tests\test_narration_policy.py F                                         [100%]
+
+================================== FAILURES ===================================
+______________ test_default_transcribe_never_launches_local_asr _______________
+
+tmp_path = WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m01-red/test_default_transcribe_never_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002298DEBFA50>
+
+    def test_default_transcribe_never_launches_local_asr(tmp_path, monkeypatch):
+        monkeypatch.setattr(transcribe, "whisper_available", lambda: True)
+        monkeypatch.setattr(transcribe, "transcribe_subprocess", lambda *_: pytest.fail("local ASR"))
+>       assert transcribe.transcribe(tmp_path / "video.mp4", "src").engine == "none"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_narration_policy.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\media\transcribe.py:68: in transcribe
+    return transcribe_subprocess(video, source_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_ = (WindowsPath('C:/Users/product/Desktop/autoTesting/.work/narration-policy/.work/narration-cycle2-tree2/.proof-temp-m01-red/test_default_transcribe_never_0/video.mp4'), 'src')
+
+>   monkeypatch.setattr(transcribe, "transcribe_subprocess", lambda *_: pytest.fail("local ASR"))
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: local ASR
+
+tests\test_narration_policy.py:29: Failed
+============================== warnings summary ===============================
+tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_narration_policy.py::test_default_transcribe_never_launches_local_asr
+======================== 1 failed, 1 warning in 1.21s =========================
