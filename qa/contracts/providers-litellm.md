@@ -154,3 +154,15 @@ and must reject unsupported capability; text-only success is insufficient.
 For Ollama Cloud, validated JSON plus at most one bounded repair is the required
 baseline; LL3 does not promise native cloud schema enforcement. LL5/LL6/LL7 apply
 to every physical request including repair, fallback and failed attempts.
+
+## 2026-10-15 provider policy amendment (D-101)
+
+### LL amendment — Configured Gemini fallback eligibility (D-101)
+The current default remains Ollama primary, with configured Gemini fallback on
+Ollama key/auth/service unavailability, replacing the D-099 Ollama-only default
+clause only. Explicit provider selection and resolution precedence remain intact.
+Never classify privacy refusals or global budget exhaustion as eligible outages.
+Preserve guards, per-physical-attempt accounting, finite limits and honest unknown
+usage for fallback. No unconfigured Gemini tier is treated as available; exhausted
+paths remain explicitly unavailable. Verification uses fake transport to exercise
+eligible unavailability and both prohibited safety-boundary fallbacks.

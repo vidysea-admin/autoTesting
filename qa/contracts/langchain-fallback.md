@@ -89,3 +89,17 @@ Pydantic validation and at most one bounded JSON repair; no cloud schema-enforce
 claim or reliance on undocumented native structured-output support is permitted.
 Verification: fake transports prove request counts, guards, deadlines, unknown
 usage, invalid JSON, failed-tier accounting and no implicit Gemini fallback.
+
+## 2026-10-15 provider policy amendment (D-101)
+
+### OC3 — Ollama primary, eligible configured Gemini fallback
+D-101 narrowly replaces OC1's no-implicit-Gemini requirement: retain the primary
+Ollama GLM then DeepSeek order, with a configured Gemini-key fallback when the
+Ollama key/auth/service is unavailable. Explicit project/server overrides remain
+honored. A privacy refusal or global budget exhaustion never triggers another
+provider; fallback cannot evade either boundary. Unsupported/exhausted paths report
+explicit unavailable/incomplete outcomes. Every physical request, including failed
+and fallback attempts, keeps the provider, fallback reason, finite limits and
+applicable accounting; unknown usage is not recorded as zero. OC2 otherwise holds.
+Verify eligible key/auth/service failures, missing fallback credentials, prohibited
+privacy/budget fallback, exact request counts and actual-provider attribution.

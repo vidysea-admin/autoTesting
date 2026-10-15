@@ -315,3 +315,15 @@ result, with no silent image dropping or automatic vendor substitution.
 Verify real visual payloads and timestamps using synthetic frames and fake transport;
 record a behavioral live probe separately before claiming live vision acceptance.
 Video-learning completeness and narration-ground-truth rules remain in force.
+
+## 2026-10-15 provider policy amendment (D-101)
+
+### I4 amendment — Eligible visual fallback (D-101)
+The D-099 visual requirements remain: actual readable visual payloads with source
+time correspondence and behavioral capability verification. A configured Gemini
+provider may serve visual fallback when Ollama key/auth/service is unavailable;
+no privacy refusal or global budget exhaustion may cross to another provider.
+Only capability-verified models serve visual interpretation. Unsupported visual
+capability is explicit; it never becomes text-only pretend success. Provider,
+reason and accounting identify the physical attempts actually made. This clause
+changes provider eligibility only, not sanitation, provenance or completeness.
