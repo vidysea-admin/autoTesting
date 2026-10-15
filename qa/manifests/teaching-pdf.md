@@ -1,6 +1,6 @@
 # Manifest — bounded local PDF teaching extraction
 
-- Status: ready-for-check
+- Status: checked-PASS
 - Fix cycle: 2
 - Base: abc4a0ef
 - Candidate: exact SHA supplied by the parent checker packet after scoped commit

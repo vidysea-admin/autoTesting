@@ -1,6 +1,6 @@
 # Conservative screenshot privacy and grading boundary
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Branch: codex/image-privacy
 Baseline: abc4a0ef49406936dd0047b7986b449bf3771ee2
