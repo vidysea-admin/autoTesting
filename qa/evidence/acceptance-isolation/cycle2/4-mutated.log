@@ -1,0 +1,26 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_prior_truth_refused_without_modification ________________
+
+isolated_store = <autotester.store.project_store.ProjectStore object at 0x000001C2A5895610>
+
+    def test_prior_truth_refused_without_modification(isolated_store):
+        isolated_store.save_flowspec(FlowSpec(project="fixture"))
+        before = isolated_store.paths.flowspec.read_bytes()
+>       with pytest.raises(ValueError, match="without prior truth"):
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_acceptance_isolation.py:83: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\acceptance-repair\autoTesting\.work\acceptance-cycle2-sandbox\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\..\..\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_isolation.py::test_prior_truth_refused_without_modification
+1 failed, 2 warnings in 1.09s

@@ -27,7 +27,7 @@ from autotester.schema.run_state import RunState, StageName
 from autotester.schema.screen_graph import ScreenNode
 from autotester.stages.acceptance_comparison import build_comparison, completeness_problems
 from autotester.stages.bench_from_run import bench_from_run
-from autotester.stages.orchestrate import StageContext, run_or_resume
+from autotester.stages.orchestrate import StageContext, choose_mode, run_or_resume
 from autotester.stages.orchestrate_runners import (
     make_discover_runner,
     make_ingest_runner,
@@ -105,6 +105,9 @@ def enter_pipeline(store: ProjectStore, spec: ModeSpec, seams: ModeSeams) -> Run
     then MODEL, and stops at the review gate (EXPAND has no runner by design)."""
     project = store.load_project()
     assert project is not None, f"project {spec.slug!r} is not onboarded"
+    if choose_mode(store.list_sources())[0] != EXPECTED_MODE[spec.mode]:
+        raise ValueError("acceptance mode differs from stored teaching inputs; "
+                         "use an isolated baseline")
     runners: dict[StageName, Any] = {StageName.MODEL: make_model_runner()}
     teaching = next((s for s in store.list_sources() if s.kind is SourceKind.VIDEO), None)
     if spec.mode == "teaching":

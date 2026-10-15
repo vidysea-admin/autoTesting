@@ -1,0 +1,30 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_url_only_refuses_teaching_sources_before_orchestration _________
+
+isolated_store = <autotester.store.project_store.ProjectStore object at 0x000001D4C38BAF10>
+
+    def test_url_only_refuses_teaching_sources_before_orchestration(isolated_store):
+        isolated_store.add_source(Source(project="fixture", kind=SourceKind.TEXT,
+                                        text="private teaching notes"))
+        spec = ModeSpec(mode="url_only", slug="fixture", name="Fixture",
+                        base_url="https://fixture.test", allowed_domains=["fixture.test"])
+>       with pytest.raises(ValueError, match="mode differs"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'mode differs'
+E         Actual message: 'url_only mode needs a crawl_fn'
+
+tests\test_acceptance_isolation.py:75: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\acceptance-repair\autoTesting\.work\acceptance-cycle2-sandbox\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\..\..\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_isolation.py::test_url_only_refuses_teaching_sources_before_orchestration
+1 failed, 2 warnings in 1.14s

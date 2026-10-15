@@ -1,0 +1,29 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_bad_password_refuses_without_echoing_input _______________
+
+isolated_store = <autotester.store.project_store.ProjectStore object at 0x000002105A402C50>
+
+    def test_bad_password_refuses_without_echoing_input(isolated_store):
+        _signup()
+>       with (pytest.raises(ValueError, match="sign-in refused") as exc,
+              acceptance_client(app, "acceptance@fixture.test", "wrong-private-password",
+                                isolated_store.paths.slug)):
+E                               AssertionError: Regex pattern did not match.
+E                                 Expected regex: 'sign-in refused'
+E                                 Actual message: 'acceptance account needs view, edit, run and report access to this project'
+
+tests\test_acceptance_isolation.py:52: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\acceptance-repair\autoTesting\.work\acceptance-cycle2-sandbox\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\..\..\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_isolation.py::test_bad_password_refuses_without_echoing_input
+1 failed, 2 warnings in 1.87s

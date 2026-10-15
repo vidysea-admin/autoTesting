@@ -1,0 +1,26 @@
+KILLED  same origin header omitted  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_normal_login_retains_origin_and_reaches_protected_routes
+    actually failed: tests/test_acceptance_isolation.py::test_normal_login_retains_origin_and_reaches_protected_routes
+KILLED  login success guard omitted  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_bad_password_refuses_without_echoing_input
+    actually failed: tests/test_acceptance_isolation.py::test_bad_password_refuses_without_echoing_input
+KILLED  project run permission omitted  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_permissions_checked_before_yield
+    actually failed: tests/test_acceptance_isolation.py::test_permissions_checked_before_yield
+KILLED  stored teaching ignored  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_url_only_refuses_teaching_sources_before_orchestration
+    actually failed: tests/test_acceptance_isolation.py::test_url_only_refuses_teaching_sources_before_orchestration
+KILLED  inherited truth accepted  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_prior_truth_refused_without_modification
+    actually failed: tests/test_acceptance_isolation.py::test_prior_truth_refused_without_modification
+KILLED  baseline mode ignored  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_baseline_mode_mismatch_refused
+    actually failed: tests/test_acceptance_isolation.py::test_baseline_mode_mismatch_refused
+KILLED  provider config ignored  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_real_seams_use_configured_vision_role
+    actually failed: tests/test_acceptance_isolation.py::test_real_seams_use_configured_vision_role
+KILLED  root binding ignored  (pytest exit 1)
+    claims to kill : tests/test_acceptance_isolation.py::test_cli_root_binds_ui_store_before_dry_run
+    actually failed: tests/test_acceptance_isolation.py::test_cli_root_binds_ui_store_before_dry_run
+
+8/8 mutations killed

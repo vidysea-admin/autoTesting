@@ -1,0 +1,8 @@
+{
+  "previous_permission_probe_hashes_match": {
+    "src/autotester/stages/real_acceptance.py": true,
+    "tests/test_acceptance_isolation.py": true
+  },
+  "reused": false,
+  "reason": "Prior independent permission proof lacks contemporaneous environment fingerprint, dependency/lock identity and immutable per-run source hashes. Restored copy bytes agree, but this does not retroactively prove run-time identity. Seven named reruns required."
+}

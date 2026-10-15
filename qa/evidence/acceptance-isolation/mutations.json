@@ -1,0 +1,77 @@
+{
+  "tests": "tests/test_acceptance_isolation.py",
+  "mutations": [
+    {
+      "name": "same origin header omitted",
+      "file": "src/autotester/stages/real_acceptance.py",
+      "old": "headers={\"Origin\": origin}",
+      "new": "headers={}",
+      "kills": [
+        "test_normal_login_retains_origin_and_reaches_protected_routes"
+      ]
+    },
+    {
+      "name": "login success guard omitted",
+      "file": "src/autotester/stages/real_acceptance.py",
+      "old": "if response.status_code != 303 or response.headers.get(\"location\") != \"/\":",
+      "new": "if False:",
+      "kills": [
+        "test_bad_password_refuses_without_echoing_input"
+      ]
+    },
+    {
+      "name": "project run permission omitted",
+      "file": "src/autotester/stages/real_acceptance.py",
+      "old": "PermissionKey.PROJECT_RUN, PermissionKey.REPORT_VIEW",
+      "new": "PermissionKey.PROJECT_VIEW, PermissionKey.REPORT_VIEW",
+      "kills": [
+        "test_permissions_checked_before_yield"
+      ]
+    },
+    {
+      "name": "stored teaching ignored",
+      "file": "src/autotester/stages/generic_acceptance.py",
+      "old": "if choose_mode(store.list_sources())[0] != EXPECTED_MODE[spec.mode]:",
+      "new": "if False:",
+      "kills": [
+        "test_url_only_refuses_teaching_sources_before_orchestration"
+      ]
+    },
+    {
+      "name": "inherited truth accepted",
+      "file": "src/autotester/stages/real_acceptance.py",
+      "old": "if store.load_flowspec() is not None or store.list_cases() or store.list_case_proposals():",
+      "new": "if False:",
+      "kills": [
+        "test_prior_truth_refused_without_modification"
+      ]
+    },
+    {
+      "name": "baseline mode ignored",
+      "file": "src/autotester/stages/real_acceptance.py",
+      "old": "if choose_mode(store.list_sources())[0] != EXPECTED_MODE[mode]:",
+      "new": "if False:",
+      "kills": [
+        "test_baseline_mode_mismatch_refused"
+      ]
+    },
+    {
+      "name": "provider config ignored",
+      "file": "scripts/run_real_acceptance.py",
+      "old": "providers.for_role(project, \"vision\")",
+      "new": "providers.get(\"gemini\")",
+      "kills": [
+        "test_real_seams_use_configured_vision_role"
+      ]
+    },
+    {
+      "name": "root binding ignored",
+      "file": "scripts/run_real_acceptance.py",
+      "old": "os.environ[\"AUTOTESTER_ROOT\"] = str(root)",
+      "new": "pass  # root not bound",
+      "kills": [
+        "test_cli_root_binds_ui_store_before_dry_run"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "tests": "tests/test_acceptance_isolation.py::test_normal_login_retains_origin_and_reaches_protected_routes",
+  "mutations": [
+    {
+      "name": "same origin header omitted",
+      "file": "src/autotester/stages/real_acceptance.py",
+      "old": "headers={\"Origin\": origin}",
+      "new": "headers={}",
+      "kills": [
+        "test_normal_login_retains_origin_and_reaches_protected_routes"
+      ]
+    }
+  ]
+}

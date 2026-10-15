@@ -1,0 +1,45 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_cli_root_binds_ui_store_before_dry_run _________________
+
+isolated_store = <autotester.store.project_store.ProjectStore object at 0x0000013C954EACD0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013C954EA250>
+
+    def test_cli_root_binds_ui_store_before_dry_run(isolated_store, monkeypatch):
+        import run_real_acceptance as driver
+        from run_approval_fixture import grant_live_case_approval
+    
+        from autotester.core.paths import repo_root
+        from autotester.schema.enums import ApprovalKind
+        grant_live_case_approval(isolated_store, project="fixture", target="https://fixture.test",
+                                 run_kind=ApprovalKind.CRAWL)
+        grant_live_case_approval(isolated_store, project="fixture", target="https://fixture.test")
+        monkeypatch.delenv("AUTOTESTER_ROOT")
+        assert driver.main(["fixture", "--mode", "url_only", "--dry-run", "--root",
+                            str(isolated_store.paths.root)]) == 0
+>       assert repo_root() == isolated_store.paths.root.resolve()
+E       AssertionError: assert WindowsPath('C:/Users/product/.codex/worktrees/acceptance-repair/autoTesting/.work/acceptance-cycle2-sandbox') == WindowsPath('C:/Users/product/.codex/worktrees/acceptance-repair/autoTesting/.work/acceptance-cycle2-sandbox/temp-7-mutated/test_cli_root_binds_ui_store_b0')
+E        +  where WindowsPath('C:/Users/product/.codex/worktrees/acceptance-repair/autoTesting/.work/acceptance-cycle2-sandbox') = <function repo_root at 0x0000013C922925C0>()
+E        +  and   WindowsPath('C:/Users/product/.codex/worktrees/acceptance-repair/autoTesting/.work/acceptance-cycle2-sandbox/temp-7-mutated/test_cli_root_binds_ui_store_b0') = resolve()
+E        +    where resolve = WindowsPath('C:/Users/product/.codex/worktrees/acceptance-repair/autoTesting/.work/acceptance-cycle2-sandbox/temp-7-mutated/test_cli_root_binds_ui_store_b0').resolve
+E        +      where WindowsPath('C:/Users/product/.codex/worktrees/acceptance-repair/autoTesting/.work/acceptance-cycle2-sandbox/temp-7-mutated/test_cli_root_binds_ui_store_b0') = <autotester.core.paths.ProjectPaths object at 0x0000013C954EA190>.root
+E        +        where <autotester.core.paths.ProjectPaths object at 0x0000013C954EA190> = <autotester.store.project_store.ProjectStore object at 0x0000013C954EACD0>.paths
+
+tests\test_acceptance_isolation.py:119: AssertionError
+---------------------------- Captured stdout call -----------------------------
+approvals OK for ['crawl', 'live_case']: ['appr_c4d727be74c6', 'appr_373f3766feab']
+crawl bounds: max_actions=200 wall_clock_s=600.0
+dry run: would drive url_only on https://fixture.test; nothing started
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\acceptance-repair\autoTesting\.work\acceptance-cycle2-sandbox\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\..\..\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_isolation.py::test_cli_root_binds_ui_store_before_dry_run
+1 failed, 2 warnings in 1.20s

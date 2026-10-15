@@ -1,0 +1,25 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "future-checker-cycle1",
+      "active_s": 0,
+      "tokens": null,
+      "cost": null
+    }
+  ],
+  "next_phase": {
+    "active_s": 150,
+    "tokens": 1500,
+    "cost": null
+  },
+  "bootstrap_scope": "Maker focused final acceptance authentication regression and immediate consumers; no live seams",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  }
+}

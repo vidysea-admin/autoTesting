@@ -1,0 +1,1 @@
+MUTATION RUN INVALID: mutation 'same origin header omitted' names test(s) that are not collected: ['test_normal_login_retains_origin_and_reaches_protected_routes']. A 'kills' label is a claim, not a comment.

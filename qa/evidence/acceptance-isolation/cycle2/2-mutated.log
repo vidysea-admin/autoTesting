@@ -1,0 +1,31 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________________ test_permissions_checked_before_yield ____________________
+
+isolated_store = <autotester.store.project_store.ProjectStore object at 0x0000017937608310>
+
+    def test_permissions_checked_before_yield(isolated_store):
+        from autotester.auth import db
+        _signup()
+        with db.transaction() as conn:
+            conn.execute("DELETE FROM group_permissions WHERE permission LIKE 'project.run%'")
+        with (pytest.raises(ValueError, match="needs view, edit, run"),
+              acceptance_client(app, "acceptance@fixture.test", "Acceptance-only-strong-pass-329",
+                                isolated_store.paths.slug)):
+>           pytest.fail("missing run permission reached execution")
+E           Failed: missing run permission reached execution
+
+tests\test_acceptance_isolation.py:67: Failed
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\acceptance-repair\autoTesting\.work\acceptance-cycle2-sandbox\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\..\..\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_acceptance_isolation.py::test_permissions_checked_before_yield
+1 failed, 2 warnings in 1.54s
