@@ -98,7 +98,7 @@ def prepare_baselines(source_root: Path, input_root: Path, destination: Path,
         source_config_sha256=_digest(config), target_build=plan.target_build,
         teaching_slug=projects[0].slug, url_only_slug=projects[1].slug,
         teaching_source_ids=ids, credential_keys=list(plan.credential_keys),
-        next_steps=["Bind the authorized existing credential environment explicitly; copy no values",
+        next_steps=["Bind the authorized credential environment explicitly; copy no values",
                     "Obtain human-signed production approvals for each new project/run",
                     "Confirm the same target build before serial live acceptance"],
     )
