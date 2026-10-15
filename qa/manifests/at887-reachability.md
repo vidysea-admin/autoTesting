@@ -1,6 +1,6 @@
 # AT-887 clause 2: pre-run reachability warning
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 2
 Branch: wave/at887-reachability
 
