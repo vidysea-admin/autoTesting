@@ -25,7 +25,14 @@ RUN mkdir -p /opt/uv-python \
 COPY . .
 
 RUN uv sync --frozen --python 3.12 \
-    && chmod -R a+rX /opt/uv-python /opt/venv
+    && chmod -R a+rX /opt/uv-python /opt/venv \
+    && echo "=== Python executable ===" \
+    && ls -l /opt/venv/bin/python \
+    && readlink -f /opt/venv/bin/python \
+    && echo "=== Python target permissions ===" \
+    && namei -l /opt/venv/bin/python \
+    && echo "=== Python installation directories ===" \
+    && ls -ld /opt/uv-python /opt/venv
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
