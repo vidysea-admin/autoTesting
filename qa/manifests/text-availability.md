@@ -1,6 +1,6 @@
 # Availability-only Gemini text fallback
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 2
 Risk tier: high-risk (shared Provider boundary, secrets and attempt caps)
 Base SHA: 40f5b4b20e91d3806ee313fb8e67af109b62b0ae

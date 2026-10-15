@@ -1,6 +1,6 @@
 # Text availability and offline frame transport reconciliation
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Risk tier: high-risk (shared Provider, privacy and physical-attempt boundaries)
 Immutable runtime/test SHA: e2765afc59bbe00234af20badc3105a79ef103fe

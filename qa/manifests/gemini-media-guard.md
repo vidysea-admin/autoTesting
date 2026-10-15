@@ -1,5 +1,5 @@
 # Gemini media guard maker packet
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Unit: gemini-media-guard
 Root: C:\Users\product\Desktop\autoTesting\.work\gemini-media-guard
