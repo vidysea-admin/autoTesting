@@ -1,6 +1,6 @@
 # infra-trio (AT-820, AT-676, AT-692)
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Branch: wave/infra-trio
 
