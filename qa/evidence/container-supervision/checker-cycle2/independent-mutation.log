@@ -1,0 +1,22 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_any_exit_fails_stack_and_reaps_other_services[0] ____________
+
+children = [<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>]
+status = 0
+
+    @pytest.mark.parametrize("status", [0, 7])
+    def test_any_exit_fails_stack_and_reaps_other_services(children, status):
+        exiting = [sys.executable, "-c", f"import time; time.sleep(.1); raise SystemExit({status})"]
+        assert supervisor.run_stack([("", sleeper()), ("", exiting)], grace=.1) == 1
+>       assert len(children) == 2 and all(child.returncode is not None for child in children)
+E       AssertionError: assert (2 == 2 and False)
+E        +  where 2 = len([<Popen: returncode: None args: ['C:\\Users\\product\\Desktop\\autoTesting\\....>, <Popen: returncode: 0 args: ['C:\\Users\\product\\Desktop\\autoTesting\\.ven...>])
+E        +  and   False = all(<generator object test_any_exit_fails_stack_and_reaps_other_services.<locals>.<genexpr> at 0x00000201508DCE10>)
+
+tests\test_container_supervision.py:45: AssertionError
+---------------------------- Captured stderr call -----------------------------
+container service exited; restarting stack
+=========================== short test summary info ===========================
+FAILED tests\test_container_supervision.py::test_any_exit_fails_stack_and_reaps_other_services[0]
+1 failed in 0.70s
