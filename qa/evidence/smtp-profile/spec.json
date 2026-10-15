@@ -1,0 +1,16 @@
+{
+  "tests": ["tests/test_notification_profile.py", "tests/test_ui_auth_accounts.py", "tests/test_routers_list.py"],
+  "mutations": [
+    {"name":"default-off", "file":"src/autotester/store/notification_prefs.py", "old":"return NotificationPref(user_id=str(user_id))", "new":"return NotificationPref(user_id=str(user_id), email_run_reports=True)", "node":"tests/test_notification_profile.py::test_profile_default_off_and_boolean_config_only"},
+    {"name":"session-only-route-policy", "file":"src/autotester/auth/policy.py", "old":"(\"GET\", \"/profile\"): SESSION, (\"POST\", \"/profile\"): SESSION,", "new":"(\"GET\", \"/profile\"): PUBLIC_RULE, (\"POST\", \"/profile\"): PUBLIC_RULE,", "node":"tests/test_notification_profile.py::test_profile_session_policy_and_handler_guard"},
+    {"name":"handler-authentication", "file":"src/autotester/ui/routes_profile.py", "old":"if who is None or not who.authenticated:", "new":"if False:", "node":"tests/test_notification_profile.py::test_profile_session_policy_and_handler_guard"},
+    {"name":"authenticated-own-identity", "file":"src/autotester/ui/routes_profile.py", "old":"user_id = _profile_user_id()", "new":"user_id = 1", "node":"tests/test_notification_profile.py::test_profile_own_identity_enable_revoke_and_reload"},
+    {"name":"revocation-persists", "file":"src/autotester/ui/routes_profile.py", "old":"save_notification_pref(user_id, email_run_reports == \"on\")", "new":"save_notification_pref(user_id, True)", "node":"tests/test_notification_profile.py::test_profile_own_identity_enable_revoke_and_reload"},
+    {"name":"invalid-input-rejected", "file":"src/autotester/ui/routes_profile.py", "old":"if email_run_reports not in (\"\", \"on\"):", "new":"if False:", "node":"tests/test_notification_profile.py::test_profile_cross_origin_and_invalid_input_preserve_preference"},
+    {"name":"cross-origin-before-mutation", "file":"src/autotester/ui/helpers.py", "old":"if refusal:", "new":"if False:", "node":"tests/test_notification_profile.py::test_profile_cross_origin_and_invalid_input_preserve_preference"},
+    {"name":"mismatched-stored-identity", "file":"src/autotester/store/notification_prefs.py", "old":"if pref is None or pref.user_id != str(user_id):", "new":"if pref is None:", "node":"tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity"},
+    {"name":"corrupt-record-default-off", "file":"src/autotester/store/notification_prefs.py", "old":"except (OSError, ValueError):", "new":"except FileNotFoundError:", "node":"tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity"},
+    {"name":"numeric-path-boundary", "file":"src/autotester/store/notification_prefs.py", "old":"if type(user_id) is not int or user_id < 1:", "new":"if False:", "node":"tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity"},
+    {"name":"strict-boolean-store", "file":"src/autotester/store/notification_prefs.py", "old":"if type(enabled) is not bool:", "new":"if False:", "node":"tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity"}
+  ]
+}

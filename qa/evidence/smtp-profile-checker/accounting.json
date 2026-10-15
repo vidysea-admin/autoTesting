@@ -1,0 +1,17 @@
+{
+  "maker_active_s": null,
+  "maker_tokens": null,
+  "maker_cost": null,
+  "checker_active_s": null,
+  "checker_tokens": null,
+  "checker_cost": null,
+  "allocation_debit": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "ratios": "unverified",
+  "retry": "Windows temp ACL denial; explicit approved escalation reran same bounded script. Failed attempt included in 110-second runtime allocation.",
+  "runtime_success_duration_s": 50.03199999999924,
+  "completion_monotonic_start": 21423.781,
+  "prior_readiness_and_runtime_monotonic_boundaries": "unavailable; actuals retained null"
+}

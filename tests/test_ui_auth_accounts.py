@@ -29,7 +29,7 @@ from autotester.cli import app as cli_app
 JSON = {"accept": "application/json"}
 _OPEN = {("GET", "/auth/login"), ("POST", "/auth/login"), ("GET", "/auth/signup"),
          ("POST", "/auth/signup"), ("GET", "/healthz"), ("POST", "/auth/logout"),
-         ("GET", "/auth/waiting")}
+         ("GET", "/auth/waiting"), ("GET", "/profile"), ("POST", "/profile")}
 
 
 @pytest.fixture()

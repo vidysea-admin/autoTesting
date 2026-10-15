@@ -1,0 +1,56 @@
+{
+  "after_source_inventory_sha256": "8d977a7234869c4acb751d9636bec23b4c05b26fe36f8e1d6d98153674746b4e",
+  "base": "cec4b64e59e10019ba616fa031f550542d1350ca",
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\qa\\evidence\\smtp-profile\\invoke.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src",
+    "tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity",
+    "--basetemp",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\.temp-m11-red",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts="
+  ],
+  "command_sha256": "3490f130dea7c12e28b8f02262d811eaf0841e0227426581bffa9d11ad1151b1",
+  "copy_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof",
+  "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+  "duration_s": 7.34400000000096,
+  "environment_sha256": "88167e2ee7f7398662cc73cab0feb42fa1fba6f4a124e8fb50a20bdf7eb42a51",
+  "exit_code": 1,
+  "finished_at": 1792057027.758748,
+  "finished_monotonic": 21117.609,
+  "harness_sha256": "fc62f1190c9b49986c33ce899761d93ddf799dcf9f6ec9d7505f8f6a9c4e2c92",
+  "inventory_sha256": "ab7e08929212a2d830399a12487e50bc3375ead4561f191c6a12c4532b6c1e7c",
+  "invoke_sha256": "30c27bcf03b02e33f387e2f7b6d44f72e3e8fb881f3c13625a8d6e8a2e74ca2e",
+  "label": "m11-red",
+  "lock_sha256": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+  "maker_active_s": null,
+  "maker_cost": null,
+  "maker_tokens": null,
+  "nodes": [
+    "tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity"
+  ],
+  "output_sha256": "12bc0ff2ef951c193a74cd7380790d638f4bdf319c01d720ae5414b3098e6b80",
+  "overrides": {
+    "src/autotester/store/notification_prefs.py": "f38274816a1bfcefc6edc1acc6effd8265146dbc2ab84e5c2d613487b3be21a4"
+  },
+  "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+  "python_sha256": "1f25068aaf1e19f1672e979f4ef07449edfd7f59051f9d788c538ac64f4979f9",
+  "runtime_identity": {
+    "dependencies_sha256": "37492a837e4f62c0830543f4932fdcc7d38deda45e2c01022897edaf391acc6a",
+    "import_file": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src\\autotester\\__init__.py",
+    "import_root": "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-profile-proof\\src",
+    "python": "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "source": "0f65c208588e2f2d8c5d74d0cb22b140f4e56fa6",
+  "source_inventory_sha256": "8d977a7234869c4acb751d9636bec23b4c05b26fe36f8e1d6d98153674746b4e",
+  "spec_sha256": "6d16ecf7cf15a07cb828a05218338b30997b7698a1867c7d0288b1f08b297a81",
+  "started_at": 1792057020.4130259,
+  "started_monotonic": 21110.265,
+  "status": "finished",
+  "version": "3.11.16 (main, Sep 24 2026, 17:55:08) [MSC v.1944 64 bit (AMD64)]"
+}

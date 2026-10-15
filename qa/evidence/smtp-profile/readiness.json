@@ -1,0 +1,11 @@
+{
+  "status": "MAKER_READINESS_VALIDATED",
+  "source": "0f65c208588e2f2d8c5d74d0cb22b140f4e56fa6",
+  "triples": 11,
+  "receipts": 23,
+  "inventory_count": 1012,
+  "maker_active_s": null,
+  "maker_tokens": null,
+  "maker_cost": null,
+  "checker_ratios": "unverified"
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\qa\\evidence\\smtp-profile\\invoke.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\src",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\tests\\test_notification_profile.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\tests\\test_ui_auth_accounts.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\tests\\test_routers_list.py",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\temp-green"
+  ],
+  "exit_code": 0,
+  "duration_s": 21.67199999999866,
+  "output_sha256": "b06f538db94a204b496f6be87e8360a84955f845af0dc90998b755bb26fb77aa"
+}

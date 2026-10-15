@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+    "preflight",
+    "--root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent",
+    "--import-name",
+    "autotester",
+    "--import-root",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\src",
+    "--temp-parent",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent"
+  ],
+  "exit_code": 0,
+  "duration_s": 0.31300000000192085,
+  "output_sha256": "c4b2dc7facd21d1dac4a306b5f64f5f6cab724c37f211059ea0c8bd48002e52e"
+}

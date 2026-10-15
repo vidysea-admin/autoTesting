@@ -1,0 +1,12 @@
+{
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+    "assess",
+    "--input",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\qa\\evidence\\smtp-profile-checker\\runtime-budget.json"
+  ],
+  "exit_code": 0,
+  "duration_s": 0.3279999999977008,
+  "output_sha256": "1288e96cb4b2bb0da45c48a0aeb45163de3f1f76bc9e4608c9ee5d4e2b70f24f"
+}

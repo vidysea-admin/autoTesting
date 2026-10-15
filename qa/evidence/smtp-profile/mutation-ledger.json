@@ -1,0 +1,123 @@
+[
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/store/notification_prefs.py",
+    "mutated_sha256": "250ec54bb4d72ac414efaf67cf0cc58d1cc60150ef16e583fa93cabc341e446e",
+    "name": "default-off",
+    "node": "tests/test_notification_profile.py::test_profile_default_off_and_boolean_config_only",
+    "original_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455",
+    "red_receipt": "m01-red.json",
+    "restored_receipt": "m01-restored.json",
+    "restored_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/auth/policy.py",
+    "mutated_sha256": "816fe7039057d7fc0ffe3afa4958f75c8a8dea5501af52e843bbb548d6966ff3",
+    "name": "session-only-route-policy",
+    "node": "tests/test_notification_profile.py::test_profile_session_policy_and_handler_guard",
+    "original_sha256": "c29cc9b0eaf0d3e15cd17a392c3b45c970cda8a8d0a510e9d15652dcdc763eab",
+    "red_receipt": "m02-red.json",
+    "restored_receipt": "m02-restored.json",
+    "restored_sha256": "c29cc9b0eaf0d3e15cd17a392c3b45c970cda8a8d0a510e9d15652dcdc763eab"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/ui/routes_profile.py",
+    "mutated_sha256": "6977962e77381c85cb03a179bb4d25cd0b17a89f82c14477bd39f7ec1e90044c",
+    "name": "handler-authentication",
+    "node": "tests/test_notification_profile.py::test_profile_session_policy_and_handler_guard",
+    "original_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301",
+    "red_receipt": "m03-red.json",
+    "restored_receipt": "m03-restored.json",
+    "restored_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/ui/routes_profile.py",
+    "mutated_sha256": "8a2ac2dad0f20d7e89029bac241963511c214fb29b522fa9b6fd7e3a20f575e3",
+    "name": "authenticated-own-identity",
+    "node": "tests/test_notification_profile.py::test_profile_own_identity_enable_revoke_and_reload",
+    "original_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301",
+    "red_receipt": "m04-red.json",
+    "restored_receipt": "m04-restored.json",
+    "restored_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/ui/routes_profile.py",
+    "mutated_sha256": "e0f0690e24bf55445b05af24239c5ca29ed9873bb51e80297d4b8fd1290d1615",
+    "name": "revocation-persists",
+    "node": "tests/test_notification_profile.py::test_profile_own_identity_enable_revoke_and_reload",
+    "original_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301",
+    "red_receipt": "m05-red.json",
+    "restored_receipt": "m05-restored.json",
+    "restored_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/ui/routes_profile.py",
+    "mutated_sha256": "125869e09cc05a3173a12450dc11cdf63d4f3834a08fd517664d609f6f979fcc",
+    "name": "invalid-input-rejected",
+    "node": "tests/test_notification_profile.py::test_profile_cross_origin_and_invalid_input_preserve_preference",
+    "original_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301",
+    "red_receipt": "m06-red.json",
+    "restored_receipt": "m06-restored.json",
+    "restored_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/ui/helpers.py",
+    "mutated_sha256": "a4001c691c47ffb101b1883dec220581426f0c9b50f4121cfd32b7e167302aa8",
+    "name": "cross-origin-before-mutation",
+    "node": "tests/test_notification_profile.py::test_profile_cross_origin_and_invalid_input_preserve_preference",
+    "original_sha256": "48a786cb96b66e4b38f55c39e0cc730a4fa222ed11bc897ac407c0c22c946426",
+    "red_receipt": "m07-red.json",
+    "restored_receipt": "m07-restored.json",
+    "restored_sha256": "48a786cb96b66e4b38f55c39e0cc730a4fa222ed11bc897ac407c0c22c946426"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/store/notification_prefs.py",
+    "mutated_sha256": "3b6fcb2e0cca4bdbadb96bc1fa0fc2894864d40161df7e6131cf0ab90c9f2523",
+    "name": "mismatched-stored-identity",
+    "node": "tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity",
+    "original_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455",
+    "red_receipt": "m08-red.json",
+    "restored_receipt": "m08-restored.json",
+    "restored_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/store/notification_prefs.py",
+    "mutated_sha256": "d02d25f3f4a7a6d37dc8c6ecf8442985dfb29eba202be8253f5eebf9074d72aa",
+    "name": "corrupt-record-default-off",
+    "node": "tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity",
+    "original_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455",
+    "red_receipt": "m09-red.json",
+    "restored_receipt": "m09-restored.json",
+    "restored_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/store/notification_prefs.py",
+    "mutated_sha256": "ef301d3728e07b32bf05fb37273a855d5b63b8f350397110e9d5970eca3c5ee9",
+    "name": "numeric-path-boundary",
+    "node": "tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity",
+    "original_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455",
+    "red_receipt": "m10-red.json",
+    "restored_receipt": "m10-restored.json",
+    "restored_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455"
+  },
+  {
+    "anchor_count": 1,
+    "file": "src/autotester/store/notification_prefs.py",
+    "mutated_sha256": "f38274816a1bfcefc6edc1acc6effd8265146dbc2ab84e5c2d613487b3be21a4",
+    "name": "strict-boolean-store",
+    "node": "tests/test_notification_profile.py::test_profile_store_fails_closed_for_corrupt_or_wrong_identity",
+    "original_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455",
+    "red_receipt": "m11-red.json",
+    "restored_receipt": "m11-restored.json",
+    "restored_sha256": "fa477e3aae1e62b0b36b136067eb02dd04fa77ffa3b4a923a4b810ef4025b455"
+  }
+]

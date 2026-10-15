@@ -1,0 +1,39 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "readiness",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 30,
+        "tokens": 1000
+      }
+    },
+    {
+      "id": "source-runtime-including-ACL-retry",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "active_s": 110,
+        "tokens": 3500
+      }
+    }
+  ],
+  "next_phase": {
+    "active_s": 40,
+    "tokens": 1500
+  },
+  "bootstrap_scope": "SMTPM1 preferences/profile only readiness30s1000, source/runtime110s3500 including preflight, RESERVEDclosure40s1500; no sendworker",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": null
+}

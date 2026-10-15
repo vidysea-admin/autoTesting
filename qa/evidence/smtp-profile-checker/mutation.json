@@ -1,0 +1,16 @@
+{
+  "node": "tests/test_notification_profile.py::test_profile_own_identity_enable_revoke_and_reload",
+  "argv": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\qa\\evidence\\smtp-profile\\invoke.py",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\src",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\tests\\test_notification_profile.py::test_profile_own_identity_enable_revoke_and_reload",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "C:\\Users\\product\\Desktop\\autoTesting\\.work\\smtp-profile\\.work\\smtp-m1-independent\\temp-probe"
+  ],
+  "original_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301",
+  "mutation_sha256": "8a2ac2dad0f20d7e89029bac241963511c214fb29b522fa9b6fd7e3a20f575e3",
+  "restored_sha256": "cc0f06d2c87310765ad2003af2d2e245911e91602138bc488e17273bd5f1c301"
+}

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+    "-m",
+    "ruff",
+    "check",
+    "--no-cache",
+    "src/autotester/store/notification_prefs.py",
+    "src/autotester/ui/routes_profile.py",
+    "src/autotester/auth/policy.py",
+    "src/autotester/ui/routers.py",
+    "src/autotester/ui/theme.py",
+    "tests/test_notification_profile.py",
+    "tests/test_ui_auth_accounts.py"
+  ],
+  "exit_code": 0,
+  "duration_s": 0.25,
+  "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+}
