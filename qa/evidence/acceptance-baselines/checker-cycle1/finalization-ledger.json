@@ -1,0 +1,21 @@
+{
+  "phase_kind": "finalization",
+  "completion_reserve_id": "acceptance-baselines-cycle1-417b3c01",
+  "budget_debit": {
+    "active_s": 30,
+    "tokens": 800
+  },
+  "actual_active_s": null,
+  "tokens": null,
+  "cost": null,
+  "ended_at": "2026-10-15T11:44:18.424056+00:00",
+  "reviewed_sha": "417b3c011ec92308812a1436eb98a47b0bfb489a",
+  "final_hashes": {
+    "src/autotester/stages/acceptance_baseline.py": "006a80c5805fdcd95e09f2a2744a0f62fc462a0b157b11a35805db0a39e916c6",
+    "tests/test_acceptance_baseline.py": "c585dced1f44e94bda4cb7516693a537714510d5f4a40c50a84a9ab6d7ccae17",
+    "src/autotester/schema/acceptance_baseline.py": "070a1514a2e3936938f205d96adc9d918ef9ddb13fa376d71bbeb610861b4b81",
+    "scripts/prepare_acceptance_baselines.py": "0b7ee139dfea728678314cbe238c0ade1da67a057e9a6c9dc53e76fb942095a5"
+  },
+  "verdict": "FAIL",
+  "cycle": 1
+}

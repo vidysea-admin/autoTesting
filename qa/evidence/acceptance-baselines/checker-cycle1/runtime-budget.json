@@ -1,0 +1,33 @@
+{
+  "maker": {
+    "active_s": null,
+    "tokens": null,
+    "cost": null
+  },
+  "reviewers": [
+    {
+      "id": "acceptance-baseline-fresh",
+      "active_s": null,
+      "tokens": null,
+      "cost": null,
+      "budget_debit": {
+        "tokens": 1000,
+        "active_s": 30
+      }
+    }
+  ],
+  "next_phase": {
+    "active_s": 110,
+    "tokens": 3500,
+    "cost": null,
+    "kind": "review"
+  },
+  "bootstrap_scope": "Acceptance input-only baseline preparer readiness30s1000 source/runtime110s3500 protectedclosure40s1500; no real target contact; runtime waits serial lease",
+  "bootstrap": {
+    "active_s": 180,
+    "tokens": 6000
+  },
+  "escalation": null,
+  "completion_reserve": true,
+  "completion_reserve_id": "acceptance-baselines-cycle1-417b3c01"
+}
