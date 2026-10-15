@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.161" timestamp="2026-10-15T08:47:52.748987+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_real_sanitized_bytes_and_clip_relative_timestamp_payload" time="0.296"><failure message="AssertionError: assert ['Frame 0, cl...nds 0.000000'] == ['Frame 0, cl...nds 2.000000']&#10;  &#10;  At index 1 diff: 'Frame 1, clip-relative seconds 0.000000' != 'Frame 1, clip-relative seconds 1.000000'&#10;  Use -v to get more diff">tests\test_video_frames.py:61: in test_real_sanitized_bytes_and_clip_relative_timestamp_payload
+    assert stamps == [f"Frame {i}, clip-relative seconds {i:.6f}" for i in range(3)]
+E   AssertionError: assert ['Frame 0, cl...nds 0.000000'] == ['Frame 0, cl...nds 2.000000']
+E     
+E     At index 1 diff: 'Frame 1, clip-relative seconds 0.000000' != 'Frame 1, clip-relative seconds 1.000000'
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

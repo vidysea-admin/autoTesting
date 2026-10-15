@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.118" timestamp="2026-10-15T08:48:11.573358+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_partial_withholding_retains_original_index_and_time" time="0.266"><failure message="AssertionError: assert [(0, 0.0, 'in..., 'included')] == [(0, 0, 'incl..., 'included')]&#10;  &#10;  At index 1 diff: (0, 0.0, 'withheld') != (1, 1, 'withheld')&#10;  Use -v to get more diff">tests\test_video_frames.py:94: in test_partial_withholding_retains_original_index_and_time
+    assert [(f.index, f.timestamp_s, f.status) for f in evidence] == [
+E   AssertionError: assert [(0, 0.0, 'in..., 'included')] == [(0, 0, 'incl..., 'included')]
+E     
+E     At index 1 diff: (0, 0.0, 'withheld') != (1, 1, 'withheld')
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

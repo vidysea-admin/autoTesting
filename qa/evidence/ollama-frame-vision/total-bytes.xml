@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.122" timestamp="2026-10-15T08:49:49.175304+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_total_bytes_bound_preserves_partial_coverage" time="0.292"><failure message="AssertionError: assert ['included', ...', 'included'] == ['included', ...', 'withheld']&#10;  &#10;  At index 1 diff: 'included' != 'withheld'&#10;  Use -v to get more diff">tests\test_video_frames.py:212: in test_total_bytes_bound_preserves_partial_coverage
+    assert [frame.status for frame in result.visual_coverage.frames] == [
+E   AssertionError: assert ['included', ...', 'included'] == ['included', ...', 'withheld']
+E     
+E     At index 1 diff: 'included' != 'withheld'
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

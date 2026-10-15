@@ -1,0 +1,378 @@
+{
+  "tests": [
+    "tests/test_litellm_provider.py",
+    "tests/test_video_frame_schema.py",
+    "tests/test_video_frames.py"
+  ],
+  "mutations": [
+    {
+      "name": "privacy",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "safe = stack.enter_context(sanitized_images([frame]))",
+      "new": "safe = type('Unsafe', (), {'paths': [frame]})()",
+      "kills": [
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ]
+    },
+    {
+      "name": "timestamps",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "{timestamp:.6f}",
+      "new": "{0:.6f}",
+      "kills": [
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ]
+    },
+    {
+      "name": "frame-cap",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "count = cap if limited else max(1, math.ceil(duration * fps))",
+      "new": "count = max(1, math.ceil(duration * fps))",
+      "kills": [
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ]
+    },
+    {
+      "name": "partial-index",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "index=index, timestamp_s=timestamp",
+      "new": "index=0, timestamp_s=0",
+      "kills": [
+        "tests/test_video_frames.py::test_partial_withholding_retains_original_index_and_time"
+      ]
+    },
+    {
+      "name": "empty-payload",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if not any(part[\"type\"] == \"image_url\" for part in parts):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_all_withheld_never_sends_text_only_success"
+      ]
+    },
+    {
+      "name": "fps",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if not math.isfinite(fps) or not 0 < fps <= 10:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_invalid_sampling_fails_before_decode"
+      ]
+    },
+    {
+      "name": "media",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if not math.isfinite(duration) or duration <= 0 or width <= 0 or height <= 0:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits"
+      ]
+    },
+    {
+      "name": "source-pixels",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if width * height > limits.max_pixels:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_decode_audio_and_source_pixel_limits"
+      ]
+    },
+    {
+      "name": "capability",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if not (isinstance(capability, VisionCapability) and capability.passed\n            and capability.model == provider.options.get(\"model\")\n            and capability.endpoint_sha256 == endpoint_fingerprint(provider)):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_capability_requires_behavioral_receipt_bound_to_route"
+      ]
+    },
+    {
+      "name": "attempt-budget",
+      "file": "src/autotester/providers/model_chain.py",
+      "old": "except AttemptBudgetExhausted:\r\n                self._sync_usage()\r\n                raise",
+      "new": "except AttemptBudgetExhausted:\r\n                self._sync_usage()\r\n                break",
+      "kills": [
+        "tests/test_video_frames.py::test_repair_and_fallback_obey_shared_physical_budget"
+      ]
+    },
+    {
+      "name": "fallback",
+      "file": "src/autotester/providers/model_chain.py",
+      "old": "except ProviderError as exc:\r\n                self._sync_usage()",
+      "new": "except ProviderError as exc:\r\n                raise\r\n                self._sync_usage()",
+      "kills": [
+        "tests/test_video_frames.py::test_fallback_serves_configured_model_only"
+      ]
+    },
+    {
+      "name": "secret-guard",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "provider.guard_text(prompt)",
+      "new": "prompt = 'Observe'",
+      "kills": [
+        "tests/test_video_frames.py::test_prompt_secret_guard_precedes_media_processing"
+      ]
+    },
+    {
+      "name": "png-bytes",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if not path.is_file() or not 0 < path.stat().st_size <= limits.max_frame_bytes:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[oversized]"
+      ]
+    },
+    {
+      "name": "png-format",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "image.format != \"PNG\" or image.width * image.height > limits.max_pixels",
+      "new": "image.width * image.height > limits.max_pixels",
+      "kills": [
+        "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[jpeg]"
+      ]
+    },
+    {
+      "name": "png-pixels",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "image.format != \"PNG\" or image.width * image.height > limits.max_pixels",
+      "new": "image.format != \"PNG\"",
+      "kills": [
+        "tests/test_video_frames.py::test_invalid_extracted_payload_cannot_reach_transport[pixels]"
+      ]
+    },
+    {
+      "name": "total-bytes",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if total + len(data) > limits.max_total_bytes:",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_total_bytes_bound_preserves_partial_coverage"
+      ]
+    },
+    {
+      "name": "decode-status",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "evidence.reason = \"frame_decode_failed\"",
+      "new": "evidence.reason = \"ignored\"",
+      "kills": [
+        "tests/test_video_frames.py::test_failed_frame_decode_is_explicitly_withheld"
+      ]
+    },
+    {
+      "name": "generation",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if (options.system_instruction is not None or options.thinking_level != \"high\"\n            or options.media_resolution != \"high\" or not 0 < options.max_output_tokens <= 65536\n            or (options.temperature is not None\n                and (not math.isfinite(options.temperature) or not 0 <= options.temperature <= 2))):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly"
+      ]
+    },
+    {
+      "name": "generation-forward",
+      "file": "src/autotester/providers/litellm_provider.py",
+      "old": "kwargs.update(generation_options or {})",
+      "new": "pass",
+      "kills": [
+        "tests/test_video_frames.py::test_real_sanitized_bytes_and_clip_relative_timestamp_payload"
+      ]
+    },
+    {
+      "name": "limits-shape",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "if not isinstance(limits, FrameLimits):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_video_frames.py::test_invalid_limit_shape_and_transport_failures_retain_evidence"
+      ]
+    },
+    {
+      "name": "failure-coverage",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "exc.coverage = coverage",
+      "new": "pass",
+      "kills": [
+        "tests/test_video_frames.py::test_invalid_limit_shape_and_transport_failures_retain_evidence"
+      ]
+    },
+    {
+      "name": "chain-failure-coverage",
+      "file": "src/autotester/providers/model_chain.py",
+      "old": "failure.coverage = coverage",
+      "new": "pass",
+      "kills": [
+        "tests/test_video_frames.py::test_chain_failure_retains_visual_shortfall"
+      ]
+    },
+    {
+      "name": "blocked-before-delivery",
+      "file": "src/autotester/providers/litellm_provider.py",
+      "old": "self._require_ready()",
+      "new": "return schema()",
+      "kills": [
+        "tests/test_video_frames.py::test_budget_refusal_preserves_inclusion_without_claiming_delivery"
+      ]
+    },
+    {
+      "name": "unverified-regression",
+      "file": "src/autotester/providers/video_frames.py",
+      "old": "raise FrameVisionError(\"capability_unverified\", coverage)",
+      "new": "raise FrameVisionError(\"wrong_reason\", coverage)",
+      "kills": [
+        "tests/test_litellm_provider.py::test_see_video_without_behavioral_capability_is_unavailable"
+      ]
+    },
+    {
+      "name": "schema-max_frames",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "    max_frames: int = Field(default=16, ge=1, le=64)",
+      "new": "    max_frames: int = 16",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded"
+      ]
+    },
+    {
+      "name": "schema-max_pixels",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "    max_pixels: int = Field(default=4_000_000, ge=1, le=16_000_000)",
+      "new": "    max_pixels: int = 4000000",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded"
+      ]
+    },
+    {
+      "name": "schema-max_frame_bytes",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "    max_frame_bytes: int = Field(default=2_000_000, ge=1, le=20_000_000)",
+      "new": "    max_frame_bytes: int = 2000000",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded"
+      ]
+    },
+    {
+      "name": "schema-max_total_bytes",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "    max_total_bytes: int = Field(default=16_000_000, ge=1, le=64_000_000)",
+      "new": "    max_total_bytes: int = 16000000",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_limits_are_finite_bounded"
+      ]
+    },
+    {
+      "name": "schema-index",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "    index: int = Field(ge=0)",
+      "new": "    index: int = Field()",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status"
+      ]
+    },
+    {
+      "name": "schema-timestamp_s",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "    timestamp_s: float = Field(ge=0)",
+      "new": "    timestamp_s: float = Field()",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status"
+      ]
+    },
+    {
+      "name": "schema-duration_s",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "    duration_s: float = Field(default=0, ge=0)",
+      "new": "    duration_s: float = Field(default=0)",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_coverage_rejects_invalid_duration"
+      ]
+    },
+    {
+      "name": "schema-status",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "status: Literal[\"included\", \"withheld\"]",
+      "new": "status: str",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status"
+      ]
+    },
+    {
+      "name": "schema-endpoint_sha256",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "endpoint_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")",
+      "new": "endpoint_sha256: str",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields"
+      ]
+    },
+    {
+      "name": "schema-fixture_sha256",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "fixture_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")",
+      "new": "fixture_sha256: str",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields"
+      ]
+    },
+    {
+      "name": "schema-output_sha256",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "output_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")",
+      "new": "output_sha256: str",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields"
+      ]
+    },
+    {
+      "name": "schema-extra-FrameLimits",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "class FrameLimits(BaseModel):\n    \"\"\"Finite host decode and outbound-payload limits, independent of model tags.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    max_frames: int = Field(default=16, ge=1, le=64)\n    max_pixels: int = Field(default=4_000_000, ge=1, le=16_000_000)\n    max_frame_bytes: int = Field(default=2_000_000, ge=1, le=20_000_000)\n    max_total_bytes: int = Field(default=16_000_000, ge=1, le=64_000_000)",
+      "new": "class FrameLimits(BaseModel):\n    \"\"\"Finite host decode and outbound-payload limits, independent of model tags.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\", allow_inf_nan=False)\n    max_frames: int = Field(default=16, ge=1, le=64)\n    max_pixels: int = Field(default=4_000_000, ge=1, le=16_000_000)\n    max_frame_bytes: int = Field(default=2_000_000, ge=1, le=20_000_000)\n    max_total_bytes: int = Field(default=16_000_000, ge=1, le=64_000_000)",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields"
+      ]
+    },
+    {
+      "name": "schema-extra-FrameEvidence",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "new": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\", allow_inf_nan=False)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields"
+      ]
+    },
+    {
+      "name": "schema-finite-FrameEvidence",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "new": "class FrameEvidence(BaseModel):\n    \"\"\"Payload inclusion, not delivery/understanding; retains original index/time.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=True)\n    index: int = Field(ge=0)\n    timestamp_s: float = Field(ge=0)\n    status: Literal[\"included\", \"withheld\"]\n    reason: str | None = None",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_frame_evidence_rejects_invalid_index_time_and_status"
+      ]
+    },
+    {
+      "name": "schema-extra-FrameCoverage",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "new": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\", allow_inf_nan=False)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields"
+      ]
+    },
+    {
+      "name": "schema-finite-FrameCoverage",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=False)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "new": "class FrameCoverage(BaseModel):\n    \"\"\"Sparse layout-only evidence cannot establish readable text or narration.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\", allow_inf_nan=True)\n    duration_s: float = Field(default=0, ge=0)\n    sampling_limited: bool = False\n    text_unavailable: bool = True\n    audio_unavailable: bool = True\n    frames: list[FrameEvidence] = Field(default_factory=list)",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_coverage_rejects_invalid_duration"
+      ]
+    },
+    {
+      "name": "schema-extra-VisionCapability",
+      "file": "src/autotester/schema/video_frames.py",
+      "old": "class VisionCapability(BaseModel):\n    \"\"\"Model-bound behavioral probe receipt; model metadata is never evidence.\"\"\"\n\n    model_config = ConfigDict(extra=\"forbid\")\n    model: str\n    endpoint_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    fixture_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    output_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    passed: bool",
+      "new": "class VisionCapability(BaseModel):\n    \"\"\"Model-bound behavioral probe receipt; model metadata is never evidence.\"\"\"\n\n    model_config = ConfigDict(extra=\"ignore\")\n    model: str\n    endpoint_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    fixture_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    output_sha256: str = Field(pattern=r\"^[0-9a-f]{64}$\")\n    passed: bool",
+      "kills": [
+        "tests/test_video_frame_schema.py::test_capability_requires_hashes_and_rejects_unknown_fields"
+      ]
+    }
+  ]
+}

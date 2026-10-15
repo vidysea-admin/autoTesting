@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.320" timestamp="2026-10-15T08:50:51.505093+00:00" hostname="windows-demo"><testcase classname="tests.test_litellm_provider" name="test_see_video_without_behavioral_capability_is_unavailable" time="0.181"><failure message="AssertionError: Regex pattern did not match.&#10;  Expected regex: 'capability_unverified'&#10;  Actual message: 'frame vision unavailable: wrong_reason'">tests\test_litellm_provider.py:114: in test_see_video_without_behavioral_capability_is_unavailable
+    with pytest.raises(ProviderError, match="capability_unverified"):
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'capability_unverified'
+E     Actual message: 'frame vision unavailable: wrong_reason'</failure></testcase></testsuite></testsuites>

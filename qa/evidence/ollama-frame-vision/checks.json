@@ -1,0 +1,58 @@
+{
+  "commands": [
+    {
+      "label": "lint",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "src/autotester/providers/video_frames.py",
+        "src/autotester/providers/litellm_provider.py",
+        "src/autotester/providers/model_chain.py",
+        "src/autotester/schema/video_frames.py",
+        "src/autotester/schema/observation.py",
+        "tests/test_video_frames.py",
+        "tests/test_video_frame_schema.py",
+        "tests/test_litellm_provider.py"
+      ],
+      "exit": 0,
+      "duration_s": 0.8440000000009604,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "label": "consumers",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "tests/test_ingest.py::test_ingest_video_produces_screens_and_flows",
+        "tests/test_analyze_video.py::test_the_analysis_is_persisted_not_just_returned",
+        "tests/test_analyze_video.py::test_timestamps_from_a_later_chunk_land_in_whole_video_time",
+        "--basetemp",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-vision\\.work\\pytest-consumers"
+      ],
+      "exit": 0,
+      "duration_s": 13.15599999999904,
+      "log_sha256": "2671d1de7494bfff48dc9488123c30b3593f89f4376ba613b3c4205774b959f6"
+    }
+  ],
+  "files": {
+    "src/autotester/providers/video_frames.py": "0a0a53dc72315405bf946d1b2df573298ed42cddcc99909ffe2672a6ab2e88ab",
+    "src/autotester/providers/litellm_provider.py": "5c22dce6cba0a59862fb19697717ec1c9d2eeb34a6638d473ffa4940af2d0865",
+    "src/autotester/providers/model_chain.py": "07fc5cae8e642f1ed086481a6bfc5c9d377389000715f6d01c87bf9741c4d22c",
+    "src/autotester/schema/video_frames.py": "aad471519a8e5b1a45649971fca6c8be654709254e417babe1e1306a75f76731",
+    "src/autotester/schema/observation.py": "1471bfb0078cfd620807eb6c3950bfb1660cce62d712a25210639f2f36e5c5d0",
+    "tests/test_video_frames.py": "b90af7425829f53a9b18fc074dd58c3b88ab8e5f7cf3da0f77a80456e53cc759",
+    "tests/test_video_frame_schema.py": "23012c52dd379716771dbe154efa85a4412c2d506165185de36ddc3398e844c0",
+    "tests/test_litellm_provider.py": "c7494665181d2e9827197d1df832022356c0ef870cf781da0cbd5998a7efd745",
+    "src/autotester/skills/frame-vision/SKILL.md": "5d291ccbe4a459512c3f68410689c60e777c32827811918cadef60bd5e9f75a8",
+    "tests/conftest.py": "4ebfe06149062ddb5fe88ac13397b98886752931721928176b3625ebaf2b0c3d",
+    "tests/tests_mutation_fixtures.py": "38e74cecf3d089907e8fa86333612393b0b9cda3d513ff5729f2a25532acb582",
+    "scripts/regression_proof.py": "611d6ed0303984bc5a604ee38a7c3b2355541d9e39ef55595c67cedca9ca3e0a",
+    "uv.lock": "d7ff32b5ab4a29951a8fda4c1bee20caa20e906a4657a09c354c5250ec3459b1",
+    "pyproject.toml": "8d5896164e3d21e70f3a04ca79f45a281f63e0458f6c8b3dc87abe52c5546673"
+  },
+  "static": "scoped AST/docstring and file/function caps passed"
+}

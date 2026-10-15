@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.schema.base import Artifact
 from autotester.schema.enums import Action, Confidence, IssueCategory, IssueOrigin, Severity
+from autotester.schema.video_frames import FrameCoverage
 
 
 class ObservedStep(BaseModel):
@@ -125,6 +126,7 @@ class VideoObservation(BaseModel):
     issues: list[ObservedIssue] = Field(default_factory=list)
     summary: str = ""
     open_questions: list[str] = Field(default_factory=list)
+    visual_coverage: FrameCoverage | None = None
 
 
 class ModelObservation(Artifact):

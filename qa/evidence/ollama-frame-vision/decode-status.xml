@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.941" timestamp="2026-10-15T08:49:56.558200+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_failed_frame_decode_is_explicitly_withheld" time="0.157"><failure message="AssertionError: assert 'ignored' == 'frame_decode_failed'&#10;  &#10;  - frame_decode_failed&#10;  + ignored">tests\test_video_frames.py:224: in test_failed_frame_decode_is_explicitly_withheld
+    assert error.value.coverage.frames[0].reason == "frame_decode_failed"
+E   AssertionError: assert 'ignored' == 'frame_decode_failed'
+E     
+E     - frame_decode_failed
+E     + ignored</failure></testcase></testsuite></testsuites>

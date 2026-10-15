@@ -24,6 +24,7 @@ from autotester.providers import ollama_cloud
 from autotester.providers.attempts import AttemptBudgetExhausted, attempt_budget
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.litellm_provider import LiteLLMProvider
+from autotester.schema.observation import VisionOptions
 from autotester.schema.run import ProviderUsage
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
@@ -49,7 +50,11 @@ class ModelChainProvider(Provider):
         self._call = threading.local()
         order = configured_order(options.get("model"))
         secrets = options.get("secrets") or []
-        self._tiers = [LiteLLMProvider(model=m, secrets=secrets) for m in order]
+        capabilities = options.get("vision_capabilities") or {}
+        self._tiers = [LiteLLMProvider(model=m, secrets=secrets,
+                                      vision_capability=capabilities.get(m),
+                                      **({"frame_limits": options["frame_limits"]}
+                                         if "frame_limits" in options else {})) for m in order]
 
     @property
     def id(self) -> str:  # type: ignore[override]
@@ -81,6 +86,12 @@ class ModelChainProvider(Provider):
             prompt_file: str | None = None, fed_id: str | None = None) -> Any:
         return self._run("act", prompt, schema, prompt_file, fed_id)
 
+    def see_video(self, path: Path, prompt: str, schema: type[ModelT],
+                  options: VisionOptions | None = None, *,
+                  prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:
+        return self._run("see_video", prompt, schema, prompt_file, fed_id,
+                         path=path, options=options)
+
     def judge(self, prompt: str, schema: type[ModelT], images: list[Path] | None = None, *,
               prompt_file: str | None = None, fed_id: str | None = None) -> ModelT:
         return self._run("judge", prompt, schema, prompt_file, fed_id, images=images)
@@ -99,16 +110,21 @@ class ModelChainProvider(Provider):
 
     def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):
         errors: list[str] = []
+        coverage = None
         for tier in tiers:
             tier.trace = self.trace
             try:
-                result = getattr(tier, method)(prompt, schema, prompt_file=prompt_file,
-                                               fed_id=fed_id, **extra)
+                args = ((extra["path"], prompt, schema)
+                        if method == "see_video" else (prompt, schema))
+                kwargs = {key: value for key, value in extra.items() if key != "path"}
+                result = getattr(tier, method)(*args, prompt_file=prompt_file,
+                                               fed_id=fed_id, **kwargs)
             except AttemptBudgetExhausted:
                 self._sync_usage()
                 raise
             except ProviderError as exc:
                 self._sync_usage()
+                coverage = getattr(exc, "coverage", coverage)
                 errors.append(str(exc))
                 log.warning("model-chain: tier %s failed (%s); falling through",
                             tier.label, type(exc).__name__)
@@ -117,7 +133,9 @@ class ModelChainProvider(Provider):
             log.info("model-chain: tier %s served the %s call", tier.label, method)
             self._sync_usage()
             return result
-        raise ProviderError("model-chain: every tier failed: " + " | ".join(errors))
+        failure = ProviderError("model-chain: every tier failed: " + " | ".join(errors))
+        failure.coverage = coverage
+        raise failure
 
     def _sync_usage(self) -> None:
         with self._usage_lock:

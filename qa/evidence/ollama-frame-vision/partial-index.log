@@ -1,0 +1,22 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_partial_withholding_retains_original_index_and_time ___________
+tests\test_video_frames.py:94: in test_partial_withholding_retains_original_index_and_time
+    assert [(f.index, f.timestamp_s, f.status) for f in evidence] == [
+E   AssertionError: assert [(0, 0.0, 'in..., 'included')] == [(0, 0, 'incl..., 'included')]
+E     
+E     At index 1 diff: (0, 0.0, 'withheld') != (1, 1, 'withheld')
+E     Use -v to get more diff
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_partial_withholding_retains_original_index_and_time
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_partial_withholding_retains_original_index_and_time
+1 failed, 2 warnings in 1.12s

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.108" timestamp="2026-10-15T08:49:13.163124+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_fallback_serves_configured_model_only" time="0.307"><failure message="autotester.providers.base.ProviderError: litellm:ollama/glm-5.3-flash vision call failed: RuntimeError: offline">tests\test_video_frames.py:168: in test_fallback_serves_configured_model_only
+    result = chain.see_video(Path("x.mp4"), "Observe", VideoObservation)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:92: in see_video
+    return self._run("see_video", prompt, schema, prompt_file, fed_id,
+src\autotester\providers\model_chain.py:109: in _run
+    return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:120: in _try_tiers
+    result = getattr(tier, method)(*args, prompt_file=prompt_file,
+src\autotester\providers\litellm_provider.py:156: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:139: in see_video
+    result = provider._structured(prompt, schema, role="vision", content_parts=parts,
+src\autotester\providers\litellm_provider.py:272: in _structured
+    message = self._complete(messages, schema, strategy, role, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\litellm_provider.py:238: in _complete
+    raise ProviderError(self._failure(role, exc, messages)) from None
+E   autotester.providers.base.ProviderError: litellm:ollama/glm-5.3-flash vision call failed: RuntimeError: offline</failure></testcase></testsuite></testsuites>

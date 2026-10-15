@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.002" timestamp="2026-10-15T08:50:35.140801+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_chain_failure_retains_visual_shortfall" time="0.166"><failure message="AttributeError: 'ProviderError' object has no attribute 'coverage'">tests\test_video_frames.py:258: in test_chain_failure_retains_visual_shortfall
+    assert error.value.coverage.text_unavailable
+           ^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'ProviderError' object has no attribute 'coverage'</failure></testcase></testsuite></testsuites>

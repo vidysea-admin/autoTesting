@@ -1,0 +1,44 @@
+FFFFFF                                                                   [100%]
+================================== FAILURES ===================================
+_______ test_unsupported_generation_controls_reject_explicitly[values0] _______
+tests\test_video_frames.py:235: in test_unsupported_generation_controls_reject_explicitly
+    with pytest.raises(video_frames.FrameVisionError, match="unsupported_generation_options"):
+E   Failed: DID NOT RAISE FrameVisionError
+_______ test_unsupported_generation_controls_reject_explicitly[values1] _______
+tests\test_video_frames.py:235: in test_unsupported_generation_controls_reject_explicitly
+    with pytest.raises(video_frames.FrameVisionError, match="unsupported_generation_options"):
+E   Failed: DID NOT RAISE FrameVisionError
+_______ test_unsupported_generation_controls_reject_explicitly[values2] _______
+tests\test_video_frames.py:235: in test_unsupported_generation_controls_reject_explicitly
+    with pytest.raises(video_frames.FrameVisionError, match="unsupported_generation_options"):
+E   Failed: DID NOT RAISE FrameVisionError
+_______ test_unsupported_generation_controls_reject_explicitly[values3] _______
+tests\test_video_frames.py:235: in test_unsupported_generation_controls_reject_explicitly
+    with pytest.raises(video_frames.FrameVisionError, match="unsupported_generation_options"):
+E   Failed: DID NOT RAISE FrameVisionError
+_______ test_unsupported_generation_controls_reject_explicitly[values4] _______
+tests\test_video_frames.py:235: in test_unsupported_generation_controls_reject_explicitly
+    with pytest.raises(video_frames.FrameVisionError, match="unsupported_generation_options"):
+E   Failed: DID NOT RAISE FrameVisionError
+_______ test_unsupported_generation_controls_reject_explicitly[values5] _______
+tests\test_video_frames.py:235: in test_unsupported_generation_controls_reject_explicitly
+    with pytest.raises(video_frames.FrameVisionError, match="unsupported_generation_options"):
+E   Failed: DID NOT RAISE FrameVisionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly[values0]
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly[values0]
+FAILED tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly[values1]
+FAILED tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly[values2]
+FAILED tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly[values3]
+FAILED tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly[values4]
+FAILED tests/test_video_frames.py::test_unsupported_generation_controls_reject_explicitly[values5]
+6 failed, 2 warnings in 1.84s

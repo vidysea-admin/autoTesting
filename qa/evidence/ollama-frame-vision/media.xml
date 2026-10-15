@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="4" time="1.202" timestamp="2026-10-15T08:48:41.677200+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_decode_audio_and_source_pixel_limits[probe_result0-unsupported_or_audio_only_media]" time="0.232"><failure message="Failed: DID NOT RAISE FrameVisionError">tests\test_video_frames.py:129: in test_decode_audio_and_source_pixel_limits
+    with pytest.raises(video_frames.FrameVisionError, match=reason):
+E   Failed: DID NOT RAISE FrameVisionError</failure></testcase><testcase classname="tests.test_video_frames" name="test_decode_audio_and_source_pixel_limits[probe_result1-unsupported_or_audio_only_media]" time="0.103"><failure message="Failed: DID NOT RAISE FrameVisionError">tests\test_video_frames.py:129: in test_decode_audio_and_source_pixel_limits
+    with pytest.raises(video_frames.FrameVisionError, match=reason):
+E   Failed: DID NOT RAISE FrameVisionError</failure></testcase><testcase classname="tests.test_video_frames" name="test_decode_audio_and_source_pixel_limits[probe_result2-unsupported_or_audio_only_media]" time="0.005"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for FrameEvidence&#10;timestamp_s&#10;  Input should be a finite number [type=finite_number, input_value=nan, input_type=float]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/finite_number">tests\test_video_frames.py:130: in test_decode_audio_and_source_pixel_limits
+    instance.see_video(Path("x.mp3"), "Observe", VideoObservation)
+src\autotester\providers\litellm_provider.py:156: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:133: in see_video
+    parts = _parts(Path(path), Path(scratch), coverage, limits, times, stack)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\video_frames.py:79: in _parts
+    evidence = FrameEvidence(index=index, timestamp_s=timestamp, status="withheld")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for FrameEvidence
+E   timestamp_s
+E     Input should be a finite number [type=finite_number, input_value=nan, input_type=float]
+E       For further information visit https://errors.pydantic.dev/2.13/v/finite_number</failure></testcase><testcase classname="tests.test_video_frames" name="test_decode_audio_and_source_pixel_limits[probe_result3-source_pixel_limit]" time="0.004" /></testsuite></testsuites>

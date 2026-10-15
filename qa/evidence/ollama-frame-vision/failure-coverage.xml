@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.008" timestamp="2026-10-15T08:50:28.004841+00:00" hostname="windows-demo"><testcase classname="tests.test_video_frames" name="test_invalid_limit_shape_and_transport_failures_retain_evidence" time="0.233"><failure message="AttributeError: 'ProviderError' object has no attribute 'coverage'">tests\test_video_frames.py:249: in test_invalid_limit_shape_and_transport_failures_retain_evidence
+    assert error.value.coverage.frames[0].status == "included"
+           ^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'ProviderError' object has no attribute 'coverage'</failure></testcase></testsuite></testsuites>

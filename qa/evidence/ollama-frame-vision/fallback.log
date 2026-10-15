@@ -1,0 +1,36 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_fallback_serves_configured_model_only __________________
+tests\test_video_frames.py:168: in test_fallback_serves_configured_model_only
+    result = chain.see_video(Path("x.mp4"), "Observe", VideoObservation)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:92: in see_video
+    return self._run("see_video", prompt, schema, prompt_file, fed_id,
+src\autotester\providers\model_chain.py:109: in _run
+    return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\model_chain.py:120: in _try_tiers
+    result = getattr(tier, method)(*args, prompt_file=prompt_file,
+src\autotester\providers\litellm_provider.py:156: in see_video
+    return see_video(self, path, prompt, schema, options,
+src\autotester\providers\video_frames.py:139: in see_video
+    result = provider._structured(prompt, schema, role="vision", content_parts=parts,
+src\autotester\providers\litellm_provider.py:272: in _structured
+    message = self._complete(messages, schema, strategy, role, **meta)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\providers\litellm_provider.py:238: in _complete
+    raise ProviderError(self._failure(role, exc, messages)) from None
+E   autotester.providers.base.ProviderError: litellm:ollama/glm-5.3-flash vision call failed: RuntimeError: offline
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.work\wt-vision\.work\vision-proof-r4\subject\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_video_frames.py::test_fallback_serves_configured_model_only
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_video_frames.py::test_fallback_serves_configured_model_only
+1 failed, 2 warnings in 1.11s
