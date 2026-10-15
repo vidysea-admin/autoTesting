@@ -1,0 +1,146 @@
+[
+  {
+    "label": "preflight",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "C:/Users/product/.agents/skills/checker/scripts/review_budget.py",
+      "preflight",
+      "--root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs-cycle2",
+      "--import-name",
+      "autotester",
+      "--import-root",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs-cycle2\\src",
+      "--temp-parent",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs-cycle2"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.2970000000022992,
+    "output_sha256": "6e5a96e7405200ec6c83b3fe792f4fbc93b24ca8c2c684bf15ce16f2d5afc5b0",
+    "report_sha256": null,
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "efb06ede06969b30637fc15ee6df45819c4874a8fd8b9dd35300edf7a06826f6",
+      "tests/test_acceptance_baseline.py": "841db5e08e419dad75ed8e63aa0d035f30466d7cdb547747f21342834e0a64e1"
+    },
+    "identity_sha256": "b17ea22d8d161aeaea7471b578f77744a125a227f452d88987709ea5ee7a9a83",
+    "spec_sha256": "f7b826e3ff3af378ddf7cc694805d312de08c3a0ec7eafefb2ac5f0428912d57"
+  },
+  {
+    "label": "green",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation",
+      "tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[inside]",
+      "tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[outside]",
+      "-p",
+      "no:cacheprovider",
+      "-p",
+      "_source_reports",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs-cycle2\\temp-green"
+    ],
+    "exit_code": 0,
+    "duration_s": 8.625,
+    "output_sha256": "60c9f3ae61f71f4fd70b4914fd2115ac76a1bda66968861bc4a97f6de304568d",
+    "report_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "efb06ede06969b30637fc15ee6df45819c4874a8fd8b9dd35300edf7a06826f6",
+      "tests/test_acceptance_baseline.py": "841db5e08e419dad75ed8e63aa0d035f30466d7cdb547747f21342834e0a64e1"
+    },
+    "identity_sha256": "b17ea22d8d161aeaea7471b578f77744a125a227f452d88987709ea5ee7a9a83",
+    "spec_sha256": "f7b826e3ff3af378ddf7cc694805d312de08c3a0ec7eafefb2ac5f0428912d57"
+  },
+  {
+    "label": "red",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[outside]",
+      "-p",
+      "no:cacheprovider",
+      "-p",
+      "_source_reports",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs-cycle2\\temp-red"
+    ],
+    "exit_code": 1,
+    "duration_s": 9.875,
+    "output_sha256": "83ae7c3893ea8050d9c6830cfcd1d631b4b4109498140bd616d6d3e1024202ef",
+    "report_sha256": "29784a325cc9e40e36b9268edff4205484a02f8256d0a91c4f73598a848e5fb6",
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "3ac520ca7c05591b33372b39ecfaf34186d587763e830d77e80377d60ed52488",
+      "tests/test_acceptance_baseline.py": "841db5e08e419dad75ed8e63aa0d035f30466d7cdb547747f21342834e0a64e1"
+    },
+    "identity_sha256": "b17ea22d8d161aeaea7471b578f77744a125a227f452d88987709ea5ee7a9a83",
+    "spec_sha256": "f7b826e3ff3af378ddf7cc694805d312de08c3a0ec7eafefb2ac5f0428912d57"
+  },
+  {
+    "label": "restored",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_acceptance_baseline.py::test_same_build_scoped_refs_and_input_only_isolation",
+      "tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[inside]",
+      "tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[outside]",
+      "-p",
+      "no:cacheprovider",
+      "-p",
+      "_source_reports",
+      "--basetemp",
+      "C:\\Users\\product\\Desktop\\autoTesting\\.work\\codex-acceptance-baselines\\.work\\baseline-proofs-cycle2\\temp-restored"
+    ],
+    "exit_code": 0,
+    "duration_s": 8.0779999999977,
+    "output_sha256": "beaa5ba9d9104d79e4f644b4c9908f30c596572439b306ea09405a0e3a7c92f8",
+    "report_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "efb06ede06969b30637fc15ee6df45819c4874a8fd8b9dd35300edf7a06826f6",
+      "tests/test_acceptance_baseline.py": "841db5e08e419dad75ed8e63aa0d035f30466d7cdb547747f21342834e0a64e1"
+    },
+    "identity_sha256": "b17ea22d8d161aeaea7471b578f77744a125a227f452d88987709ea5ee7a9a83",
+    "spec_sha256": "f7b826e3ff3af378ddf7cc694805d312de08c3a0ec7eafefb2ac5f0428912d57"
+  },
+  {
+    "label": "lint",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-m",
+      "ruff",
+      "check",
+      "src/autotester/stages/acceptance_baseline.py",
+      "tests/test_acceptance_baseline.py"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.23400000000037835,
+    "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "report_sha256": null,
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "efb06ede06969b30637fc15ee6df45819c4874a8fd8b9dd35300edf7a06826f6",
+      "tests/test_acceptance_baseline.py": "841db5e08e419dad75ed8e63aa0d035f30466d7cdb547747f21342834e0a64e1"
+    },
+    "identity_sha256": "b17ea22d8d161aeaea7471b578f77744a125a227f452d88987709ea5ee7a9a83",
+    "spec_sha256": "f7b826e3ff3af378ddf7cc694805d312de08c3a0ec7eafefb2ac5f0428912d57"
+  },
+  {
+    "label": "shape",
+    "argv": [
+      "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+      "-c",
+      "import ast,pathlib; paths=['src/autotester/stages/acceptance_baseline.py', 'tests/test_acceptance_baseline.py']\nfor n in paths:\n p=pathlib.Path(n); t=ast.parse(p.read_bytes()); assert len(p.read_bytes().splitlines())<=300 and ast.get_docstring(t); assert all(x.end_lineno-x.lineno+1<=50 for x in ast.walk(t) if isinstance(x,(ast.FunctionDef,ast.AsyncFunctionDef)))\nprint(\"shape OK\")"
+    ],
+    "exit_code": 0,
+    "duration_s": 0.21900000000096043,
+    "output_sha256": "9eff6e38b56bb32fbc62dbd2e289e26bf20f63f2eaeb78597327a26e5da98de8",
+    "report_sha256": null,
+    "source_sha256": {
+      "src/autotester/stages/acceptance_baseline.py": "efb06ede06969b30637fc15ee6df45819c4874a8fd8b9dd35300edf7a06826f6",
+      "tests/test_acceptance_baseline.py": "841db5e08e419dad75ed8e63aa0d035f30466d7cdb547747f21342834e0a64e1"
+    },
+    "identity_sha256": "b17ea22d8d161aeaea7471b578f77744a125a227f452d88987709ea5ee7a9a83",
+    "spec_sha256": "f7b826e3ff3af378ddf7cc694805d312de08c3a0ec7eafefb2ac5f0428912d57"
+  }
+]

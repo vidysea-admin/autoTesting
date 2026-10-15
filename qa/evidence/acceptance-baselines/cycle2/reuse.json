@@ -1,0 +1,18 @@
+{
+  "prior_code": "8d793363a2d0d3098ce4172eec8cf096036855c6",
+  "prior_wrapper": "417b3c011ec92308812a1436eb98a47b0bfb489a",
+  "authenticated_by": "93d9ad143937fbf4b5353441da4a2a0e930e5259",
+  "prior_identity_sha256": "76f30cd0c5287d1ba65c950732c9b5e6b6d69aa663ad6846e4e2e5f9ab88fb75",
+  "compatibility_sha256": "d659211834fb52f3782e922212bf756eeb02dae55c47268a70dd1e5da7578ad8",
+  "source_delta_exact_two_hunks": true,
+  "original_22_test_bodies_unchanged": true,
+  "changed_inventory_paths": [
+    "src/autotester/stages/acceptance_baseline.py",
+    "tests/test_acceptance_baseline.py"
+  ],
+  "other_source_entries_unchanged": 1018,
+  "interpreter_dependencies_lock_unchanged": true,
+  "explicit_import_root_mapping": true,
+  "prior_13_proofs_are_old_sha_not_relabelled": true,
+  "reasoning": "Only resolved source-root preflight and validated config read changed. All prior fixtures are in-root. Remaining helper bodies, schema/script, original tests and consumers are byte-identical; prior authenticated 13 chains retained. Changed source boundary gets fresh legitimate/escape/no-output execution and guard proof."
+}

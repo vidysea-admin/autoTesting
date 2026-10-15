@@ -1,0 +1,8 @@
+{
+  "file": "src/autotester/stages/acceptance_baseline.py",
+  "old": "    if (not source_dir.is_relative_to(source_root)\n            or not config_path.is_relative_to(source_root)):\n        raise ValueError(\"source project must remain within the supplied source root\")\n",
+  "new": "",
+  "kills": [
+    "tests/test_acceptance_baseline.py::test_resolved_source_project_stays_in_supplied_root[outside]"
+  ]
+}

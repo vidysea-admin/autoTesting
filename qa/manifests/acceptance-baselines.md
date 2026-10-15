@@ -1,13 +1,44 @@
 # Manifest — acceptance-baselines
 
 Status: ready-for-check
-Fix cycle: 1
+Fix cycle: 2
 Unit: T-169 isolated input-only baseline preparation (does not close T-169/T-206/T-136)
 Base SHA: bd2b465ff8cf2b67f6aa162068c77d3f82f2499c
-Code/test SHA: 8d793363a2d0d3098ce4172eec8cf096036855c6
-Production-code SHA: b6722b612f39ab25d72f4816a049322b30bcee57 (unchanged since INIT)
+Code/test SHA: 35624de61e94b6b94286b0fe679141566892304d
+Production-code SHA: 35624de61e94b6b94286b0fe679141566892304d
+Prior FAIL SHA: 93d9ad143937fbf4b5353441da4a2a0e930e5259
 Branch: codex/acceptance-baselines
 Root: C:/Users/product/Desktop/autoTesting/.work/codex-acceptance-baselines
+
+## Cycle 2 containment repair
+
+Cycle 1 remains FAIL, preserved at the Prior FAIL SHA and in
+`qa/evidence/acceptance-baselines/cycle2/cycle1-verdict.git.md`; the working-byte verdict and
+previous manifest are also retained. Its actual source-project junction reproducer and success
+receipt are under `checker-cycle1/`. This is the bounded fix of that linked canonical verdict
+under `qa/loop.md` Record's on-FAIL mechanism; no issue ID was invented and no contract changed.
+
+The source project directory and its resolved config must both stay under the resolved supplied
+source root, before reading config bytes or creating outputs. The validated resolved config path
+is then read. Explicit approved teaching files retain their independent input-root policy.
+Only this preflight/read and two appended parameterized cases changed after the reviewed source.
+Actual junction variants prove legitimate in-root aliases succeed and escaping project aliases
+fail before any config read or output. Original 22 test bodies remain byte-identical.
+
+Cycle 2 `probe.py`, `identity.json`, `inventory.json`, `mutation.json`, `commands.json` and raw logs
+bind the fresh complete source copy, Git bytes, retained interpreter/import/temp preflight,
+unchanged dependency/lock identity and explicit environment import-root mapping. Three focused
+cases passed, removing the exact guard produced the named outside-junction RED, and exact-byte
+restoration returned all three to GREEN. Scoped Ruff and AST caps/docstrings passed. Commands
+total 27.328s; maker total active time/tokens/cost remain unknown. The original 13 mutations were
+not rerun: `reuse.json` authenticates their prior identity and checker compatibility receipt,
+proves the exact two production hunks, original test preservation and all other inventory bytes,
+and explains the unaffected behavior. They remain evidence at their historical SHA, not new-SHA
+executions. The historical cycle 1 evidence below is retained with that qualification.
+
+Independent cycle 2 review remains required. Prior checker allocation/debits (170s/5,300 tokens)
+remain historical across retries; actual reviewer totals and cost remain unknown. A further
+bounded review allocation must be explicitly assessed by the parent, not silently reset.
 
 ## What changed
 
@@ -42,7 +73,7 @@ and does not claim a real route/browser/model run or complete either acceptance 
 Immediate consumers are the thin preparation script and its direct temp-data tests. The rich input
 caller awaits the independently checked mixed-teaching handoff; no mixed-owned file was edited.
 
-## Evidence and remaining gates
+## Historical cycle 1 evidence and remaining gates
 
 Historical initial checks: 19 passed (1.53s), ten static formatting issues; original sandbox
 preflight temp-write refusal retained, escalated retry succeeded. These unbound logs are historical,
@@ -58,7 +89,7 @@ scoped Ruff clean and AST caps/docstrings clean (maximum function 44 lines).
 `scoped-shape.log` bind that result. Every command records argv, source/lock/environment identity,
 log hashes and durations; no environment values are published.
 
-The final 22-case INIT at the Code/test SHA passed in 1.98s, including an actual resolved Windows
+The final 22-case INIT at 8d793363 passed in 1.98s, including an actual resolved Windows
 junction escape refusal and injected partial-write failure preserving source bytes and refusing
 unchanged partial-output reuse. Exact code/test Git bytes, complete source-copy inventory,
 Python/import/temp identity, scoped Ruff and AST checks passed. Final identity, commands and logs
