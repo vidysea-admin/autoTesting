@@ -57,9 +57,8 @@ def test_generation_is_persistent_immutable_and_not_a_password_identity(tmp_path
     assert load_notification_pref(first_id).email_run_reports
     db._READY.discard(db.auth_db_path())
     assert accounts.get_user(first_id).generation == first.generation
-    with pytest.raises(sqlite3.IntegrityError, match="immutable"):
-        with db.transaction() as conn:
-            conn.execute("UPDATE users SET generation = ? WHERE id = ?", ("a" * 32, first_id))
+    with pytest.raises(sqlite3.IntegrityError, match="immutable"), db.transaction() as conn:
+        conn.execute("UPDATE users SET generation = ? WHERE id = ?", ("a" * 32, first_id))
     assert accounts.get_user(first_id).generation == first.generation
     other, created = accounts.bootstrap_admin("second-admin@team.test", PASSWORD)
     assert created and other.generation != first.generation

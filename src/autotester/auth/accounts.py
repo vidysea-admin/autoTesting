@@ -187,7 +187,8 @@ def bootstrap_admin(email: str, password: str) -> tuple[User, bool]:
         row = conn.execute("SELECT id FROM users WHERE email = ?", (address,)).fetchone()
         if row is None:
             user_id = conn.execute(
-                "INSERT INTO users (email, password_hash, created_at, generation) VALUES (?, ?, ?, ?)",
+                "INSERT INTO users (email, password_hash, created_at, generation) "
+                "VALUES (?, ?, ?, ?)",
                 (address, password_hash, db.now_iso(), db.new_account_generation()),
             ).lastrowid
         else:
