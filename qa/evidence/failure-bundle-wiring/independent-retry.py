@@ -1,0 +1,10 @@
+exec(open('qa/evidence/failure-bundle-wiring/independent-check.py').read().split("nodes=")[0])
+copy=work/'mutation'; shutil.copytree(r/'scripts',copy/'scripts'); target=copy/'src/autotester/stages/run_artifacts.py'; original=(r/'src/autotester/stages/run_artifacts.py').read_bytes(); target.write_bytes(original); menv=dict(env,PYTHONPATH=str(copy/'src')); node='tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage'
+p,_=run('independent-mutation-green',['-m','pytest',node,'--basetemp',str(work/'mgreen')],copy,menv); assert p.returncode==0
+try:
+ target.write_bytes(original.replace(b'if index.run_id != run_id:',b'if False:')); mutated=hashlib.sha256(target.read_bytes()).hexdigest(); p,raw=run('independent-mutation-red-valid',['-m','pytest',node,'--basetemp',str(work/'mred')],copy,menv); assert p.returncode==1 and 'FAILED tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage' in raw
+finally: target.write_bytes(original)
+p,_=run('independent-mutation-restored',['-m','pytest',node,'--basetemp',str(work/'mrestored')],copy,menv); assert p.returncode==0
+p,_=run('independent-ruff',['-m','ruff','check','src/autotester/schema/failure_bundle.py','src/autotester/stages/run_artifacts.py','src/autotester/stages/run_launcher.py','src/autotester/stages/report_export.py','tests/test_run_failure_artifacts.py']); assert p.returncode==0
+p,_=run('independent-structure',['-c',"from pathlib import Path; from autotester.doctor import check_file_sizes,check_function_sizes,check_file_names,check_duplicate_definitions; r=Path.cwd(); v=[*check_file_sizes(r),*check_function_sizes(r),*check_file_names(r),*check_duplicate_definitions(r)]; print(*v,sep='\\n'); assert not v"]); assert p.returncode==0
+(out/'independent-runtime.json').write_text(json.dumps({'results':results,'original_sha256':hashlib.sha256(original).hexdigest(),'mutated_sha256':mutated,'restored_sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'initial_attempt':'collection error missing isolated scripts/regression_proof.py, retained log, repaired copy'},indent=2))

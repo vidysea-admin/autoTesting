@@ -1,0 +1,78 @@
+{
+  "results": [
+    {
+      "label": "independent-mutation-green",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage",
+        "--basetemp",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-failure-bundles\\.work\\independent-bundle\\mgreen"
+      ],
+      "exit_code": 0,
+      "duration_s": 8.889999999999418,
+      "output_sha256": "28d1fde500dbe031d0bd01db889ea87da8bced8f8f52fe6c8e3a7d37c6d5ffcc"
+    },
+    {
+      "label": "independent-mutation-red-valid",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage",
+        "--basetemp",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-failure-bundles\\.work\\independent-bundle\\mred"
+      ],
+      "exit_code": 1,
+      "duration_s": 9.171999999998661,
+      "output_sha256": "14bb05ac947f06023c84b7e63152e606ab93b9a5841625d27414734cef961952"
+    },
+    {
+      "label": "independent-mutation-restored",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_run_failure_artifacts.py::test_report_lookup_rejects_partial_corrupt_and_wrong_lineage",
+        "--basetemp",
+        "C:\\Users\\product\\Desktop\\autoTesting\\.work\\wt-failure-bundles\\.work\\independent-bundle\\mrestored"
+      ],
+      "exit_code": 0,
+      "duration_s": 7.437000000001717,
+      "output_sha256": "ca2d87902b6ca8dffbeefca7f1510bf7e1f5826b0b95d250b8d63fbe1c3c7e50"
+    },
+    {
+      "label": "independent-ruff",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "src/autotester/schema/failure_bundle.py",
+        "src/autotester/stages/run_artifacts.py",
+        "src/autotester/stages/run_launcher.py",
+        "src/autotester/stages/report_export.py",
+        "tests/test_run_failure_artifacts.py"
+      ],
+      "exit_code": 0,
+      "duration_s": 0.43699999999807915,
+      "output_sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+    },
+    {
+      "label": "independent-structure",
+      "command": [
+        "C:\\Users\\product\\Desktop\\autoTesting\\.venv\\Scripts\\python.exe",
+        "-c",
+        "from pathlib import Path; from autotester.doctor import check_file_sizes,check_function_sizes,check_file_names,check_duplicate_definitions; r=Path.cwd(); v=[*check_file_sizes(r),*check_function_sizes(r),*check_file_names(r),*check_duplicate_definitions(r)]; print(*v,sep='\\n'); assert not v"
+      ],
+      "exit_code": 0,
+      "duration_s": 7.296999999998661,
+      "output_sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    }
+  ],
+  "original_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+  "mutated_sha256": "067012bd1d8391f4bdf61165f115a738c5211e806a109ee13e715ab3f06a1f93",
+  "restored_sha256": "a756729eaf3fd5b2005ba05c3c381e98714b2615c63a334809371750705e878c",
+  "initial_attempt": "collection error missing isolated scripts/regression_proof.py, retained log, repaired copy"
+}
