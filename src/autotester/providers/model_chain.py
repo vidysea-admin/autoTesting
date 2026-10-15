@@ -21,6 +21,7 @@ from typing import Any, TypeVar
 from pydantic import BaseModel
 
 from autotester.providers import ollama_cloud
+from autotester.providers.attempts import AttemptBudgetExhausted, attempt_budget
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.litellm_provider import LiteLLMProvider
 from autotester.schema.run import ProviderUsage
@@ -93,13 +94,21 @@ class ModelChainProvider(Provider):
         if not tiers:
             raise ProviderError(self.unavailable_reason() or "no usable tier")
         tiers[0].guard_text(prompt)  # redaction gate: refuse once, never fall through
+        with attempt_budget(2 * len(tiers), wall_clock_s=240 * len(tiers)):
+            return self._try_tiers(tiers, method, prompt, schema, prompt_file, fed_id, extra)
+
+    def _try_tiers(self, tiers, method, prompt, schema, prompt_file, fed_id, extra):
         errors: list[str] = []
         for tier in tiers:
             tier.trace = self.trace
             try:
                 result = getattr(tier, method)(prompt, schema, prompt_file=prompt_file,
                                                fed_id=fed_id, **extra)
+            except AttemptBudgetExhausted:
+                self._sync_usage()
+                raise
             except ProviderError as exc:
+                self._sync_usage()
                 errors.append(str(exc))
                 log.warning("model-chain: tier %s failed (%s); falling through",
                             tier.label, type(exc).__name__)
@@ -113,6 +122,7 @@ class ModelChainProvider(Provider):
     def _sync_usage(self) -> None:
         with self._usage_lock:
             self.usage = [ProviderUsage(provider=t.label, role=u.role, calls=u.calls,
+                                        failed_calls=u.failed_calls,
                                         input_tokens=u.input_tokens,
                                         output_tokens=u.output_tokens)
                           for t in self._tiers for u in t.usage]

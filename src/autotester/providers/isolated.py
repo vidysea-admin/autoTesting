@@ -165,3 +165,4 @@ class IsolatedProvider(Provider):
                 for entry in self.usage:
                     if entry.role == usage.role:
                         entry.calls += max(0, usage.calls - 1)
+                        entry.failed_calls += usage.failed_calls

@@ -121,7 +121,8 @@ def _trace_card(store: ProjectStore, run_id: str) -> str:
     )
     llm_rows = "".join(
         f"<tr><td>{escape(s.role)}</td><td>{escape(s.provider)}</td>"
-        f"<td>{s.latency_s:.2f}s</td><td>${s.cost:.4f}</td></tr>"
+        f"<td>{s.latency_s:.2f}s</td><td>"
+        + ("unknown" if s.cost is None else f"${s.cost:.4f}") + "</td></tr>"
         for s in spans if isinstance(s, LLMSpan)
     )
     if not stage_rows and not llm_rows:

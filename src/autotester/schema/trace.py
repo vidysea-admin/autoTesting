@@ -46,10 +46,11 @@ class LLMSpan(BaseModel):
     provider: str = Field(description="Provider.label -- 'id:model'")
     role: str
     prompt_file: str | None = None
-    input_tokens: int = 0
-    output_tokens: int = 0
+    input_tokens: int | None = 0
+    output_tokens: int | None = 0
     latency_s: float = 0.0
-    cost: float = 0.0
+    failed: bool = False
+    cost: float | None = 0.0
     retries: int = 0
     fallback_hops: int = 0
     fed_id: str | None = Field(default=None, description="case or verdict id this call fed")

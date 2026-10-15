@@ -1,0 +1,58 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_failed_attempts_trace_unknown_usage_and_preserve_winner _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001855DC21610>
+tmp_path = WindowsPath('C:/Users/product/.codex/worktrees/provider-attempts/autoTesting/.work/provider-attempts/proof-copy-2/.work/usage-unknown-red/test_failed_attempts_trace_unk0')
+
+    def test_failed_attempts_trace_unknown_usage_and_preserve_winner(monkeypatch, tmp_path):
+        fake = install(monkeypatch, [TimeoutError("secret-content"), reply('{"ok":true}')])
+        monkeypatch.setenv("OLLAMA_API_KEY", "secret-content")
+        monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+        chain = ModelChainProvider()
+        chain.trace = TraceWriter(tmp_path / "trace.jsonl", "run-1")
+        with attempt_budget(3) as budget:
+            assert chain.judge("private prompt", AttemptAnswer).ok
+        assert len(fake.calls) == budget.used == 2
+        assert chain.served.endswith("deepseek-v4.1-flash")
+        assert [(u.calls, u.failed_calls) for u in chain.usage] == [(1, 1), (1, 0)]
+        assert chain.usage[0].input_tokens is chain.usage[0].output_tokens is None
+        rows = [json.loads(s) for s in (tmp_path / "trace.jsonl").read_text().splitlines()]
+        assert rows[0]["failed"] and rows[0]["input_tokens"] is rows[0]["cost"] is None
+        assert rows[1]["input_tokens"] == 11 and not rows[1]["failed"]
+        assert "secret-content" not in str(rows) and "private prompt" not in str(rows)
+        with pytest.raises(ReviewRefused, match="unknown"):
+            provider_cost(chain)
+        store = ProjectStore("demo", tmp_path)
+        store.paths.run_trace("r1").parent.mkdir(parents=True, exist_ok=True)
+        store.paths.run_trace("r1").write_text((tmp_path / "trace.jsonl").read_text())
+        assert "unknown" in _trace_card(store, "r1")
+        isolated = IsolatedProvider(lambda: chain)
+        isolated._merge_usage([u.model_dump() for u in chain.usage])
+        assert isolated.usage[0].calls == 2 and isolated.usage[0].failed_calls == 1
+        assert isolated.usage[0].input_tokens is None
+        unknown = reply('{"ok":true}')
+        unknown.usage = None
+        fake.responses.append(unknown)
+        with attempt_budget(1) as missing:
+            assert chain.act("again", AttemptAnswer).ok
+>       assert missing.attempts[0].input_tokens is None
+E       AssertionError: assert 0 is None
+E        +  where 0 = ProviderAttempt(provider='litellm:ollama_chat/glm-5.3-flash', role='agent', status='succeeded', input_tokens=0, output_tokens=None, latency_s=2.8100001145503484e-05).input_tokens
+
+tests\test_provider_attempts.py:76: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:113 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (ProviderError); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\provider-attempts\autoTesting\.work\provider-attempts\proof-copy-2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner
+1 failed, 2 warnings in 0.95s

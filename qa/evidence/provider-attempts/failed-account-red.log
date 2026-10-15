@@ -1,0 +1,39 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_failed_attempts_trace_unknown_usage_and_preserve_winner _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020B6EC21650>
+tmp_path = WindowsPath('C:/Users/product/.codex/worktrees/provider-attempts/autoTesting/.work/provider-attempts/proof-copy-2/.work/failed-account-red/test_failed_attempts_trace_unk0')
+
+    def test_failed_attempts_trace_unknown_usage_and_preserve_winner(monkeypatch, tmp_path):
+        fake = install(monkeypatch, [TimeoutError("secret-content"), reply('{"ok":true}')])
+        monkeypatch.setenv("OLLAMA_API_KEY", "secret-content")
+        monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+        chain = ModelChainProvider()
+        chain.trace = TraceWriter(tmp_path / "trace.jsonl", "run-1")
+        with attempt_budget(3) as budget:
+            assert chain.judge("private prompt", AttemptAnswer).ok
+        assert len(fake.calls) == budget.used == 2
+        assert chain.served.endswith("deepseek-v4.1-flash")
+>       assert [(u.calls, u.failed_calls) for u in chain.usage] == [(1, 1), (1, 0)]
+E       assert [(1, 0), (1, 0)] == [(1, 1), (1, 0)]
+E         
+E         At index 0 diff: (1, 0) != (1, 1)
+E         Use -v to get more diff
+
+tests\test_provider_attempts.py:55: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  autotester.providers.model_chain:model_chain.py:113 model-chain: tier litellm:ollama_chat/glm-5.3-flash failed (ProviderError); falling through
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\.codex\worktrees\provider-attempts\autoTesting\.work\provider-attempts\proof-copy-2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_provider_attempts.py::test_failed_attempts_trace_unknown_usage_and_preserve_winner
+1 failed, 2 warnings in 1.75s

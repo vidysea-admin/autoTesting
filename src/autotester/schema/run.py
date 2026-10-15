@@ -33,8 +33,9 @@ class ProviderUsage(BaseModel):
     provider: str
     role: str
     calls: int = 0
-    input_tokens: int = 0
-    output_tokens: int = 0
+    input_tokens: int | None = 0
+    output_tokens: int | None = 0
+    failed_calls: int = 0
 
 
 class RawResult(Artifact):

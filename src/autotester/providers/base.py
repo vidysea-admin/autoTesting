@@ -104,7 +104,8 @@ class Provider(ABC):
         """True when credentials/binaries for this provider are present."""
 
     def record(
-        self, role: str, input_tokens: int = 0, output_tokens: int = 0, *,
+        self, role: str, input_tokens: int | None = 0, output_tokens: int | None = 0, *,
+        failed: bool = False,
         prompt_file: str | None = None, fed_id: str | None = None,
         latency_s: float = 0.0, retries: int = 0, fallback_hops: int = 0,
     ) -> None:
@@ -123,8 +124,12 @@ class Provider(ABC):
             for entry in self.usage:
                 if entry.role == role:
                     entry.calls += 1
-                    entry.input_tokens += input_tokens
-                    entry.output_tokens += output_tokens
+                    entry.failed_calls += int(failed)
+                    entry.input_tokens = (None if entry.input_tokens is None or input_tokens is None
+                                          else entry.input_tokens + input_tokens)
+                    entry.output_tokens = (
+                        None if entry.output_tokens is None or output_tokens is None
+                        else entry.output_tokens + output_tokens)
                     matched = True
                     break
             if not matched:
@@ -132,7 +137,7 @@ class Provider(ABC):
                     ProviderUsage(
                         provider=self.id,
                         role=role,
-                        calls=1,
+                        calls=1, failed_calls=int(failed),
                         input_tokens=input_tokens,
                         output_tokens=output_tokens,
                     )
@@ -142,7 +147,7 @@ class Provider(ABC):
                     provider=self.label, role=role, prompt_file=prompt_file,
                     input_tokens=input_tokens, output_tokens=output_tokens,
                     latency_s=latency_s, retries=retries, fallback_hops=fallback_hops,
-                    fed_id=fed_id,
+                    fed_id=fed_id, failed=failed,
                 )
 
 
