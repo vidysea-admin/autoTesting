@@ -2,78 +2,58 @@
 
 Verdict: FAIL
 Status: FAIL
-Cycle checked: 0
-Reviewed SHA: 4bdb3437878f9c0f4ec9694ba105e29c28cbac83
+Cycle checked: 1
+Reviewed SHA: ba5735e73525dd27019acbf14addea4312c93b71
 Base SHA: 3f081243030be35f856a57286ffa0efc5602d6d7
+Prior verdict: FAIL cycle 0 at 4bdb3437 (verdict commit edca4583)
 Checker: independent, fresh context (Opus 5.5), 2026-10-16
-Final hashes (sha256): scripts/container_diagnose.sh 93149e6633428f4d5254aa8433cf0e9de195cec00b16b99b41fc6c2c20b93b63; tests/test_container_ci_workflow.py 0a7c11cd9585f2c48a08248f4585578d20fd715c9e2d3aa187315b69dd58ad85
+Final hashes (sha256): scripts/container_diagnose.sh 9d430e6d41ce0ce7c70f704f8e6c2846cc3ab01975ec88a355914740b2a426e9; src/autotester/core/redact_cli.py 7889d0cdf3a233bc1ab7abd0b2e1055bab1943fb70bff3d5e1bc82c1de361efb; tests/test_container_redaction.py e34c055e7a9a87814b1794b8a77f257ed2ae6afcba7c99cd90b3532c2279bd2a; tests/test_container_ci_workflow.py a7d4885d3ebf0146b828b48beff8fab2bfafdb8fe28e6e8c7ca3634ec2f56a76
 
-## Why FAIL (proven, reproducible with GNU sed 4.9 by sourcing the script)
-The script header promises "No secret values are ever written". The manifest claims quoted JSON values are masked to the closing quote. The log is shared outside the team, so leaks here are blocking. Probe: `.work/checker-diagnose-redaction-hardening/leak_probe.sh`, output `leak_probe.out`: 15 of 72 shapes leak.
-1. **Repo-native key names leak.** `PATHLYNKS_PW=x`, `DB_PASS=x`, `pass=x` and `pw=x` pass through unchanged. The name list has `passw(or)?d|pwd` but not `pass` or `pw`. This repo really uses `PATHLYNKS_PW`, `PROD_PW`, `DEMO_PW`, `APP_PASS` and `ST_PASS` (tests/qa evidence), so a container log that echoes such an env value would leak it.
-2. **An escaped quote inside a JSON value leaks the tail.** `{"password":"a\"S3CR3T"}` becomes `{"password":"<redacted>"S3CR3T"}`. This contradicts the manifest's "quoted values masked to the closing quote".
-3. **Other leaks:**
-   - `password => "x"` becomes `password =<redacted> "x"`
-   - `<password>x</password>`
-   - URL-encoded `password%3Dx` and `password%22%3A%22x`
-   - OAuth `?code=x&state=1`
-   - space-separated `token x`, `the token is x` and `GEMINI_API_KEY x`
-   - short flag `-p x`
-4. **BSD/macOS sed:** there is no detection and no fail-safe. The script does not check `sed --version` and does not warn. BSD ERE has no `\b`, so the AKIA/ASIA rule probably stops matching there, and the `I` flag behaviour is version-dependent. This was not verifiable here, so it is unproven but unguarded: a silent leak cannot be excluded.
+## Why FAIL (proven, one narrow blocker)
+Manifest layer 1 says: "real secret values from the repo-root `.env` ... and `--secrets-file` ... Every exact occurrence is masked under any key name." The repo reads `.env` with `python-dotenv` (`core/env.py::load_repo_env` -> `dotenv_values`), but `_redact_assignments` parses it in awk with different rules. For three valid dotenv forms the value the app actually uses is never put in the value file, so it leaks wherever it is not next to a secret-looking name.
+Probe: `.work/checker-diagnose-redaction-hardening/c1/dotenv_shapes.sh`, output `dotenv_shapes.out`.
+- `ZA=Inl1neSecret # test account`: dotenv gives `Inl1neSecret`, the script loads `Inl1neSecret # test account`. `a Inl1neSecret b` LEAKS.
+- `ZB = Sp4cedSecret` (spaces around `=`): the whole line is loaded as the value. LEAKS.
+- `ZC="Qu0teSecret" # c`: the script loads `Qu0teSecret" # c`. LEAKS.
+- `ZD='Sq1Secret'` and `export ZE=...` are masked.
+Real-world exposure today: none. A counts-only parity check (`parity.py` / `parity.out`, no values printed) on the real repo-root `.env` gives dotenv_values=17 and missing=1, a 3-digit number that the numeric skip rule drops by design. So this is a latent leak, triggered as soon as someone adds an inline comment. It is still a contract mismatch on the boundary.
+Narrow repair:
+- Build the `.env` candidates with the same parser the repo uses (dotenv / core.env, when python imports), or have the awk path also emit the comment-stripped, trimmed and unquoted form. Masking both forms is safe.
+- Add tests for the three shapes above.
 
-Masked correctly (sample):
-- mixed case `PassWord=` and `X-Api-Key:`
-- spaces around `=` and `:`
-- single- and double-quoted values with spaces
-- embedded `=` and `&`
-- `?token=` and `access_token=`
-- `Authorization:Bearer` with no space, Basic and Proxy-Authorization
-- `client_secret` and `private_key_id`
-- base64 after `secret:`
-- `export FOO_SECRET=`
-- postgres/redis/mysql userinfo
-- `.env` lines with `#`
-- end-of-line tokens
-- ghp, AKIA, JWT, sk- (including sk-proj), AIza, xoxb
-- PEM: RSA, EC, OPENSSH, ENCRYPTED and PGP. Single-line, JSON `\n` and multi-line all work, and an unterminated block masks to end of stream.
+## Verified OK (independent)
+- All 72 cycle-0 probe shapes are masked by the name layer alone, with no value file: 72 ok, 0 LEAK (`c1/probe72_namelayer.out`). The tricky outputs were inspected; escaped-quote JSON is now masked to the closing quote.
+- Fresh shapes through the value layer, python and no-python (`c1/fresh_probe.sh`, `fresh_py.out`, `fresh_nopy.out`):
+  - masked: a value under a bizarre key or in free text, every occurrence; a value in a URL path segment, in a query string and in JSON; the 6- and 7-char boundary values; a value full of regex metacharacters (`a.b*c[d]~e/f\g&h#1`); a value starting with `-`; a multi-word quoted value
+  - masked with python only, as designed: the `%58` and `&#88;` encodings
+- Expected or accepted residuals (advisory, not blocking):
+  - line-wrapped halves leak (inherent to line-based masking)
+  - base64 of a secret is not masked: `Redactor.scrub` masks only exact, percent, entity and plus forms; `contains_folded` only detects
+  - 5-char values are skipped. This diverges from Redactor's no-minimum policy (AT-002); the floor is a brief-sanctioned over-redaction trade-off.
+  - values skipped by design: numeric (e.g. an 8-digit PIN), values starting with `/`, and any value containing `localhost`. They are masked only when the name or URL-userinfo layer sees them.
+- Value secrecy:
+  - Values reach the filters only through stdin and files: sed via `-f "$vf.sed"`, python via a path in argv, never a value in argv.
+  - The temp dir is `mktemp -d` plus `chmod 700` and is removed by the EXIT trap. The trap was verified to run on TERM and INT.
+  - Advisory: the files inside follow the umask (not 0600 themselves); the 0700 dir is the protection.
+- redact_cli.py: 38 lines with a one-job docstring. It reuses `core.redact.Redactor.scrub` with no duplicate masking logic and works stdin to stdout. When python fails the pipe yields empty output, never raw text, though without a notice (advisory).
+- Fail-safe: fake non-GNU sed on PATH (`c1/fakebin/sed`, passthrough that rejects `--version`). Probes `failsafe_nopy.out` and `failsafe_py.out` (python present). Both keep only the header, READINESS, PermissionError, RESULT, [FAIL] and uid lines, plus `[5 line(s) withheld ...]`; every secret line is withheld.
+- Over-redaction:
+  - `test_diagnosis_signatures_survive_redaction` passes.
+  - Image Env values `noninteractive`, `only-managed` and `manual` will be masked as words (benign).
+  - `8000`, `true` and paths stay readable.
+- Advisory: `scripts/container_diagnose.sh` is 356 lines, over the 300-line design rule. doctor does not scan .sh, so it is not a doctor failure.
+- Advisory: each `redact` call spawns python. On this saturated CPU that took about 20 s per call.
 
-## Over-redaction and ordering
-- Order: `redact` runs on every section before it is written to LOG, and DIAGNOSIS reads that redacted LOG. That order is correct for confidentiality.
-- Over-redaction probe (`over_input.txt` to `over_output.txt`):
-  - These lines are unchanged: Permission denied, uid=10001, exec format error, PREFLIGHT FAIL, Address already in use, OOMKilled, python paths including `session.py` and `keyboard.py`, and `session started`.
-  - These are cosmetically mangled: `author: bob`, `keyboard: layout`, `keys=3 sessions=1`.
-- `diagnose` gives identical output on the raw and redacted copies: 9 FAIL plus env-absent.
-- Risk: a stray, unterminated `-----BEGIN X-----` line deletes the rest of that section's stream. That can hide later signature lines in the same section. This is advisory.
-- Performance: roughly linear, but slow on this contended CPU. A 40 KB line containing a key took 8.7 s, and a 300 KB line took 215 s (`scaling2.result`, `long.result`). This is advisory.
+## Commands (independent, exit codes captured under .work/checker-diagnose-redaction-hardening/c1/)
+- preflight `review_budget.py preflight`, venv python 3.11.16, import root = worktree src: PREFLIGHT_OK (`preflight.out`)
+- `python -m pytest tests/test_container_redaction.py tests/test_container_ci_workflow.py` (PYTHONPATH=worktree/src): 89 passed, rc=0 (`pytest.out`, `pytest.rc`)
+- `bash -n scripts/container_diagnose.sh`: rc=0; `ruff check src tests scripts`: All checks passed, rc=0
+- `python -c "from autotester.cli import app; app()" doctor`: doctor: clean, rc=0 (advisories only)
+- No maker evidence reused; all results produced here.
 
-## Trap and app-perm
-- The trap is now `trap "docker rm -f '$cname' ..."`, expanded at install time. That is safe under `set -u`, and `cname=autotester-smoke-$$` cannot contain quotes. The regression test passes. Accepted.
-- `app-perm` fires on `PermissionError: [Errno 13] ... '/app/.work'` and on `mkdir: cannot create directory`. It does not fire on benign "denied" text or on the python exec Permission denied line (tests pass). Accepted.
+## Metrics
+- Maker (brief, unverified): ~116k tokens, >=3,400 s across both cycles.
+- Checker c1: ~600 s wall (launch to verdict, includes background waits). Target was <=500 s: OVERRUN of about 100 s, recorded and not waived. Runtime tokens unknown (null). Budget inputs and results: `c1/phase1b-input.json`, `c1/phase1b-result.json` (BOOTSTRAP_REVIEW, ratio unverified).
 
-## Commands (independently run, exit codes in evidence files)
-- `bash -n scripts/container_diagnose.sh`: rc=0 (`bashn.out`)
-- `review_budget.py preflight`: PREFLIGHT_OK, import from the worktree src, py 3.11.16 (`preflight.out`)
-- `PYTHONPATH=<wt>/src .venv/Scripts/python -m pytest tests/test_container_ci_workflow.py`: 61 passed, rc=0, 444.66 s (`pytest.out`)
-- `ruff check src tests scripts`: rc=0 (`ruff.out`)
-- doctor: "doctor: clean", rc=0 (`doctor.out`)
-
-Evidence directory: `.work/checker-diagnose-redaction-hardening/`. All of it was independently produced; no maker evidence was reused.
-
-## Fix requests (cycle 1)
-1. Add `pass` and `pw` to the name set, at least as `_pass`, `_pw` and bare `pass=`/`pw=`. Add a test for `PATHLYNKS_PW=`.
-2. Handle backslash-escaped quotes inside quoted values, using `"([^"\\]|\\.)*"`.
-3. Cover `=>`, XML tags, URL-encoded `%3D`/`%22`, and the OAuth `code=` param.
-4. Make the script refuse to run, or mask whole lines, when sed is not GNU. Detect this with `sed --version` or a self-test.
-
-## Not verified
-- Real docker run
-- BSD/macOS sed
-
-## Budget (BOOTSTRAP_REVIEW plus standing escalation; ratio unverified)
-- Maker usage: unknown (null).
-- Checker active time: about 1177 s by the bash wall clock, including 445 s of pytest and about 215 s of the long-line probe.
-- Checker tokens: unknown (null), with debits of 70k for startup and 60k for review.
-- Escalation limit: 480 s. **Exceeded on active_s: `NEEDS_EXTRA_REVIEW` (`phase2-final-result.json`, rc=2). The breach is recorded, not waived.**
-- The 150k token limit is above the CLAUDE.md 1.0x maker cap, which cannot be evaluated because maker tokens are unknown.
-- Clock note: the helper's `observed_at` and the bash `date` disagree by about 8 min.
-- No PASS was issued.
+## Remaining gates
+After the fix: re-check of the dotenv-parity repair, plus the full suite post-merge. A real docker run and Cloud Run log shapes are still unverified.
