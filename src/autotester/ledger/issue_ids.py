@@ -21,6 +21,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from autotester.core.file_lock import file_lock
 from autotester.doctor import Violation
 
 GRANDFATHER = Path("qa") / "issues-dupes-grandfathered.json"
@@ -48,6 +49,20 @@ def duplicate_groups(rows: list[dict]) -> dict[str, list[str]]:
     return {i: t for i, t in titles.items() if i and len(t) > 1}
 
 
+def duplicate_lines(path: Path) -> dict[str, list[tuple[int, str]]]:
+    """{id: [(1-based line number, title), ...]} for every id on more than one line."""
+    found: dict[str, list[tuple[int, str]]] = {}
+    text = path.read_text(encoding="utf-8", errors="replace")
+    for number, line in enumerate(text.splitlines(), 1):
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(row, dict) and row.get("id"):
+            found.setdefault(str(row["id"]), []).append((number, str(row.get("title", ""))))
+    return {i: v for i, v in found.items() if len(v) > 1}
+
+
 def next_issue_id(rows: list[dict]) -> str:
     highest = max((int(m.group(1)) for r in rows if (m := _NUMERIC.match(str(r.get("id", ""))))),
                   default=0)
@@ -56,12 +71,34 @@ def next_issue_id(rows: list[dict]) -> str:
 
 def append_issue(path: Path, row: dict) -> dict:
     """Append one row; refuse a duplicate id (call `next_issue_id` for a free one)."""
-    existing = read_rows(path) if path.exists() else []
-    if any(r.get("id") == row.get("id") for r in existing):
-        raise ValueError(f"{row.get('id')} already exists in {path}; use {next_issue_id(existing)}")
-    with path.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+    with file_lock(path.with_name(path.name + ".lock"), what="issues ledger"):
+        existing = read_rows(path) if path.exists() else []
+        if any(r.get("id") == row.get("id") for r in existing):
+            raise ValueError(
+                f"{row.get('id')} already exists in {path}; use {next_issue_id(existing)}")
+        _append_line(path, row)
     return row
+
+
+def _append_line(path: Path, row: dict) -> None:
+    line = json.dumps(row, ensure_ascii=False) + "\n"
+    if path.exists() and path.stat().st_size and not path.read_bytes().endswith(b"\n"):
+        line = "\n" + line  # never glue onto an unterminated last row
+    with path.open("a", encoding="utf-8", newline="\n") as handle:
+        handle.write(line)
+
+
+def append_new_issue(path: Path, row: dict) -> dict:
+    """Allocate the next free id and append, in one locked step (collision-safe).
+
+    Allocation and append share the lock, so two local writers cannot take the same
+    id. Branches merged with `merge=union` can still collide; `check_issue_id_unique`
+    is the backstop for that case."""
+    with file_lock(path.with_name(path.name + ".lock"), what="issues ledger"):
+        existing = read_rows(path) if path.exists() else []
+        new = {**row, "id": next_issue_id(existing)}
+        _append_line(path, new)
+    return new
 
 
 def _grandfathered(root: Path) -> Counter:
@@ -79,9 +116,10 @@ def check_issue_id_unique(root: Path) -> list[Violation]:
         return []
     allowed = _grandfathered(root)
     out: list[Violation] = []
-    for issue, titles in sorted(duplicate_groups(read_rows(ledger)).items()):
-        extra = Counter((issue, t) for t in titles) - allowed
+    for issue, spots in sorted(duplicate_lines(ledger).items()):
+        extra = Counter((issue, t) for _, t in spots) - allowed
         if extra:
+            where = ", ".join(str(n) for n, _ in spots)
             out.append(Violation("issue-id-duplicate", "qa/issues.jsonl",
-                                 f"{issue} appears on {len(titles)} rows; renumber the later one"))
+                                 f"{issue} appears on lines {where}; renumber the later one"))
     return out

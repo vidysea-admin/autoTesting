@@ -287,6 +287,7 @@ def report_html(
 
 
 app.command("loop-status")(cli_loop.loop_status_cmd)
+app.command("loop-tick")(cli_loop.loop_tick_cmd)
 app.command("explore")(cli_crawl.explore_cmd)
 app.command("approve")(cli_crawl.approve_cmd)
 report_app.command("crawl")(cli_crawl.report_crawl)
