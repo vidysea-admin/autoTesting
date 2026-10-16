@@ -37,3 +37,23 @@ def loop_status_cmd(
     # off, yet `report_lines` above just printed CORRUPT and "last: none
     # credible". `strict_unhealthy` covers both the silent-now case and that one.
     raise typer.Exit(1 if (strict and report.strict_unhealthy) else 0)
+
+
+def loop_tick_cmd(
+    note: str = typer.Argument("", help="text after the timestamp, e.g. 'wave=9 ...'"),
+) -> None:
+    """Append `<UTC stamp> <note>` to `qa/.last-tick` atomically; never truncates (AT-644)."""
+    from datetime import UTC, datetime
+
+    from autotester.core.atomic_tick import append_tick
+    from autotester.core.paths import repo_root
+
+    stamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    append_tick(repo_root() / "qa" / ".last-tick", f"{stamp} {note}".rstrip())
+    typer.echo(stamp)
+
+
+def attach_loop_commands(app: typer.Typer) -> None:
+    """Attach the loop commands to the main app (keeps `cli.py` under its line budget)."""
+    app.command("loop-status")(loop_status_cmd)
+    app.command("loop-tick")(loop_tick_cmd)

@@ -60,6 +60,7 @@
 | `cli_subapps.py` | The list of CLI sub-apps `autotester` registers (T-205/TF5, design rule). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
 | `cli_video_review.py` | `autotester ingest review`: a pointer-guided review of one recording (T-197, CLI half). |
+| `core/atomic_tick.py` | One job: append a stamp to `qa/.last-tick` atomically and never shrink the file (AT-644). |
 | `core/consent.py` | The consent gate (D-018): nothing outward-facing starts without a human's |
 | `core/env.py` | Load the repo-root `.env` — one definition, used by every entry point. |
 | `core/excel.py` | Workbook presentation helpers shared by every Excel exporter. |

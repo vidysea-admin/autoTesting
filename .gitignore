@@ -89,3 +89,6 @@ projects/*/reviews/
 .worktrees/
 .claude/settings.json.bak-*
 HANDOFF.md
+
+# sidecar locks for append-only qa logs (tick log, issues ledger)
+qa/*.lock
