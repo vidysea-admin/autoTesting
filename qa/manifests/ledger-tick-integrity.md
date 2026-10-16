@@ -1,6 +1,6 @@
 # Manifest - ledger-tick-integrity
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Cycle 0 base-of-fix SHA:** ce4e124a5ffefef83f881d07aa538860b5b515b8 (verdict commit 1e1cbef6 FAIL)
 
