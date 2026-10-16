@@ -43,6 +43,7 @@ from autotester.stages.bug_wiring import record_run_bugs
 from autotester.stages.catalog import catalog, tiers_to_run
 from autotester.stages.coverage import diff_coverage, queue_requests
 from autotester.stages.entry_precondition import requires_unauthenticated
+from autotester.stages.execute import probe_request
 from autotester.stages.explore_consent import covering_approval
 from autotester.stages.orchestrate import StageContext
 from autotester.stages.parallel_run import (
@@ -53,7 +54,7 @@ from autotester.stages.parallel_run import (
 )
 from autotester.stages.reachability import latest_warnings
 from autotester.stages.run_artifacts import assemble_run_bundles
-from autotester.stages.run_budget import RunBudget, action_cost, probe_request, wall_clock_request_s
+from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
 from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially

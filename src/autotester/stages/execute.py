@@ -240,3 +240,22 @@ def _result(
         # AT-577: only THIS case's own slice, never the shared session's full history.
         evidence=list(session.state.evidence[evidence_start:]),
     )
+
+
+def step_probe_floor(step: Step) -> int:
+    """The probes ONE step is certain to spend, mirroring `_run_steps` and `browser/assertions.py`
+    (the only places a probe is charged): a fill takes two field samples; a step that is an
+    ASSERT or declares an expectation runs `assert_expected` (>= 2: one `met` plus the final
+    pass); a click/navigate/back that waits on a url or text polls at least once. A floor --
+    polling can spend more -- and pinned equal to the real minimum by tests."""
+    declares = _declares_expectation(step.expected)
+    settles = (step.action in (Action.CLICK, Action.NAVIGATE, Action.BACK)
+               and bool(step.expected.url or step.expected.visible_text))
+    return (2 * (step.action is Action.FILL) + 2 * (step.action is Action.ASSERT or declares)
+            + settles)
+
+
+def probe_request(cases: list[Case]) -> int:
+    """Probes a run is KNOWN to spend, for the human-grant preflight (ISS-d063-grant-budget-3):
+    a row granting fewer is refused before a browser opens, not at the first probe."""
+    return sum(step_probe_floor(step) for case in cases for step in case.steps)

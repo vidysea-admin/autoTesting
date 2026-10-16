@@ -23,8 +23,8 @@ from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import Action, ApprovalKind, CaseClass, CaseKind
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project, SecretRef
+from autotester.stages.execute import probe_request
 from autotester.stages.explore_consent import covering_approval
-from autotester.stages.run_budget import probe_request
 from autotester.stages.run_launcher import LaunchRefused, require_live_case_approval
 from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app
@@ -103,7 +103,7 @@ def test_the_launcher_preflight_derives_probes_from_the_cases_and_refuses(make) 
     grant_live_case_approval(store, target="https://demo.test/app", max_probes=0)
     project = store.load_project()
     fill = _case(Action.FILL, Action.ASSERT)
-    assert probe_request([fill]) == 3 and probe_request([_case(Action.CLICK)]) == 0
+    assert probe_request([fill]) == 4 and probe_request([_case(Action.CLICK)]) == 0
     with pytest.raises(LaunchRefused) as refused:
         require_live_case_approval(project, store, [fill])
     assert refused.value.status == 403 and "probes" in refused.value.reason

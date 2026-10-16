@@ -1,11 +1,22 @@
 # Run-approval grant scope and probe budget
 
 Status: ready-for-check
-Fix cycle: 0
+Fix cycle: 1
 Risk: high (consent gate, security)
 Base: c4d48ad109f1ef77f73ee9172866cc5feeca7063
 Candidate: see the unit commit (`git log -1 --format=%H` on branch worktree-agent-a70bbe56d22416ba9)
 Branch: worktree-agent-a70bbe56d22416ba9
+
+## Fix cycle 1 (checker FAIL cycle 0, verdict a80c2b21)
+
+`probe_request` undercounted runtime spend. Moved from `run_budget.py` to `stages/execute.py`
+beside `_run_steps` and `_declares_expectation`, now summing `step_probe_floor(step)`: fill 2;
+ASSERT or any declared expectation (`assert_expected`) 2; click/navigate/back waiting on a url
+or visible text +1 (settle poll). `run_launcher` imports it from execute. New
+tests/test_probe_floor_matches_runtime.py runs the real `execute._run_steps` and
+`browser/assertions.py` against a stub browser for every step kind and asserts RunBudget spend
+== `probe_request`; one-below-floor stops; pathlynks cases spend >= floor and floor > 20.
+Cycle-0 test count updated (fill+assert floor is 4).
 
 ## Issues addressed
 
@@ -41,7 +52,8 @@ crashes (test `test_legacy_and_edited_rows_fail_closed_without_a_crash`).
 ## Changed paths
 
 - src/autotester/stages/explore_consent.py (scope-equality reuse; `probes` floor)
-- src/autotester/stages/run_budget.py (`probe_request`)
+- src/autotester/stages/execute.py (`step_probe_floor`, `probe_request`)
+- tests/test_probe_floor_matches_runtime.py (new)
 - src/autotester/stages/run_launcher.py (passes probe floor; 299 lines)
 - src/autotester/core/consent.py (`MAX_GRANT_PROBES`)
 - src/autotester/ui/routes_crawl_approval.py (max_probes field + validation)
