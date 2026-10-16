@@ -1,76 +1,30 @@
 #!/usr/bin/env bash
 # One-file container diagnostics: writes container-debug-<timestamp>.log with every log needed to
 # see why the AutoTester image fails (build, image config, permissions, run, logs, state), then a
-# DIAGNOSIS section that names the likely cause and fix. No secret values are ever written.
+# DIAGNOSIS section that names the likely cause and fix. Secrets are redacted in layers (see
+# "redaction" below): real values first, then secret-looking names; if that is unavailable the log
+# keeps only headers and signature lines. Still review the log before sharing it.
 #
 # Usage: scripts/container_diagnose.sh [--image TAG] [--no-build] [--timeout N] [--out DIR]
-#                                      [--gcloud SERVICE --region REGION]
+#                                      [--gcloud SERVICE --region REGION] [--secrets-file FILE]
 #   --image TAG      diagnose an existing image; skips the build
 #   --no-build       skip the build and use the existing local tag autotester-debug:local
 #   --timeout N      seconds to wait for readiness (default 240)
 #   --out DIR        directory for the log and summary.md (default .)
 #   --gcloud/--region  append Cloud Run logs for the service (needs gcloud)
+#   --secrets-file F extra secret values to mask everywhere: one per line, or KEY=VALUE lines
 # Exit: 0 healthy; 1 a check failed (see DIAGNOSIS); 2 usage or no docker.
-# The functions below are sourceable (redact, diagnose) so tests run without docker.
+# redact and diagnose live in scripts/container_diagnose_lib.sh (sourced; tests use it without docker).
 
-# Mask the VALUE after KEY/TOKEN/SECRET/PASSWORD names, and Bearer credentials.
-redact() {
-  sed -E \
-    -e 's/(([Kk][Ee][Yy]|[Tt][Oo][Kk][Ee][Nn]|[Ss][Ee][Cc][Rr][Ee][Tt]|[Pp][Aa][Ss][Ss][Ww]([Oo][Rr])?[Dd])[A-Za-z0-9_]*"?[[:space:]]*[=:][[:space:]]*"?)[^[:space:]",]+/\1<redacted>/g' \
-    -e 's/([Bb][Ee][Aa][Rr][Ee][Rr][[:space:]]+)[A-Za-z0-9._~+\/=-]+/\1<redacted>/g' \
-    -e 's/(AIza)[A-Za-z0-9_-]{20,}/\1<redacted>/g' \
-    -e 's/(sk-)[A-Za-z0-9_-]{16,}/\1<redacted>/g'
-}
-
-# diagnose LOGFILE: print one [FAIL]/[INFO] line (cause + fix) per known signature found in LOGFILE.
-# Return status = number of FAIL signatures (max 100); 0 means none.
-diagnose() {
-  local f="$1" fails=0 cr
-  cr="$(printf '\r')"
-  _hit() { grep -Eq -- "$1" "$f"; }
-  _fail() { echo "[FAIL] $1: $2 Fix: $3"; fails=$((fails + 1)); }
-  if _hit '(/opt/venv/bin/python.*Permission denied|Permission denied.*/opt/venv/bin/python|ExitCode=126|exit code:? 126|exited with (status|code) 126|exit\(126\))'; then
-    _fail perm-denied "python cannot be executed (Permission denied / exit 126): the image is stale (built before f572a4b5, python under /root) or the wrong USER runs it." "rebuild with 'docker build --no-cache' from current master, redeploy by digest, and confirm the image User is 10001."
-  fi
-  if _hit 'PREFLIGHT FAIL'; then
-    _fail preflight "the entrypoint preflight refused to start; its uid and path lines follow." "rebuild from master (see perm-denied) and compare the uid and permissions below."
-    grep -E -A8 'PREFLIGHT FAIL' "$f" | grep -E 'PREFLIGHT FAIL|uid=|readlink|perms|HINT|^ *[fd]:|^[-dl][-rwxs]{9}' | sed 's/^/        /'
-  fi
-  if _hit '(OOMKilled=true|"OOMKilled": *true|exceeded.*memory limit|Memory limit .*exceeded)'; then
-    _fail oom "the container was killed for running out of memory." "give it at least 4 GiB (Cloud Run: --memory 4Gi; compose: AUTOTESTER_MEM_LIMIT=6g)."
-  fi
-  if _hit '(READINESS: NOT READY|STARTUP TCP probe failed|startup probe failed)'; then
-    _fail not-ready "port 8000 never accepted connections within the wait." "raise the startup-probe timeout (failureThreshold x periodSeconds >= 180 s), check PORT and that the container port is 8000, and read the container logs section for the first error."
-  fi
-  if _hit 'Address already in use|address already in use|port is already allocated'; then
-    _fail port-in-use "the port is already bound by another process or container." "stop the other listener (docker ps -a; ss -ltnp) or map a different host port."
-  fi
-  if _hit '(GCS|gcsfuse|Cloud Storage|gs://)[^[:cntrl:]]*([Ee]rror|[Ff]ailed|denied|not found|403|404)|FileNotFoundError[^[:cntrl:]]*\.env'; then
-    _fail gcs-or-env "a Cloud Storage download/mount or a required .env file failed." "check the bucket name and that the service account has storage.objects access; the app starts without /app/.env but provider keys are then missing."
-  fi
-  if _hit '(Xvfb|x11vnc|websockify)[^[:cntrl:]]*([Ff]ailed|[Cc]annot|[Ee]rror|not found|died)|Cannot open display|Fatal server error|container service (exited|startup timed out|could not start)'; then
-    _fail display "Xvfb, x11vnc or websockify failed, so the supervisor stopped the stack." "read the lines before 'container service' in the container logs; make sure /tmp is writable and shm is not tiny."
-  fi
-  if _hit '[Ee]xec format error'; then
-    _fail exec-format "the image architecture does not match this host (exec format error)." "build for linux/amd64: docker build --platform linux/amd64 ."
-  fi
-  if _hit "bad interpreter|\^M|/bin/(ba)?sh${cr}"; then
-    _fail crlf "a shell script has Windows (CRLF) line endings (bad interpreter)." "check out with LF endings (.gitattributes sets *.sh eol=lf), run 'git add --renormalize .' and rebuild."
-  fi
-  if _hit '/app/\.env is absent'; then
-    echo "[INFO] env-absent: /app/.env is not in the image. Expected; the app starts without it (provider keys and logins are then unset)."
-  fi
-  if [ "$fails" -eq 0 ]; then echo "[OK] no known failure signature found"; else echo "$fails failure signature(s) found"; fi
-  [ "$fails" -gt 100 ] && fails=100
-  return "$fails"
-}
+# shellcheck source=container_diagnose_lib.sh
+source "$(dirname "${BASH_SOURCE[0]}")/container_diagnose_lib.sh"
 
 _sec() { printf '\n===== SECTION %s =====\n' "$1" >>"$LOG"; echo "== $1" >&2; }
 _run() { { echo "\$ $*"; "$@" 2>&1; echo "[exit=$?]"; } | redact >>"$LOG"; }
 
 main() {
   set -u
-  local image="" nobuild=0 timeout=240 out="." gsvc="" region="" ts root
+  local image="" nobuild=0 timeout=240 out="." gsvc="" region="" ts root sfile="" vdir
   while [ $# -gt 0 ]; do
     case "$1" in
       --image) image="${2:?--image needs a tag}"; nobuild=1; shift 2 ;;
@@ -79,7 +33,8 @@ main() {
       --out) out="${2:?--out needs a directory}"; shift 2 ;;
       --gcloud) gsvc="${2:?--gcloud needs a service}"; shift 2 ;;
       --region) region="${2:?--region needs a region}"; shift 2 ;;
-      -h|--help) sed -n '2,15p' "${BASH_SOURCE[0]}"; return 0 ;;
+      --secrets-file) sfile="${2:?--secrets-file needs a file}"; shift 2 ;;
+      -h|--help) sed -n '2,17p' "${BASH_SOURCE[0]}"; return 0 ;;
       *) echo "unknown argument: $1" >&2; return 2 ;;
     esac
   done
@@ -90,8 +45,17 @@ main() {
   LOG="$out/container-debug-$ts.log"; : >"$LOG"
   local tag="${image:-autotester-debug:local}" cname="autotester-smoke-$$"
   local origins="${AUTOTESTER_ALLOWED_ORIGINS:-http://localhost:8000}" build_rc="skipped"
-  trap 'docker rm -f "$cname" >/dev/null 2>&1' EXIT
+  umask 077  # every temp file below is 0600 (the values dir is 0700)
+  vdir="$(mktemp -d)"; chmod 700 "$vdir"; _REDACT_VALUES="$vdir/values"; : >"$_REDACT_VALUES"
+  # expand now: cname and vdir are local to main
+  trap "docker rm -f '$cname' >/dev/null 2>&1; rm -rf '$vdir'" EXIT
   echo "container-debug log, UTC $ts, image tag $tag" >>"$LOG"
+  [ -f "$root/.env" ] && _redact_env_load "$root/.env"
+  [ -z "$sfile" ] || _redact_env_load "$sfile"
+  docker image inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$tag" 2>/dev/null | cut -d= -f2- | _redact_load
+  if ! _redact_gnu_sed; then
+    echo "NOTICE: full redaction unavailable (sed is not GNU): this log keeps only headers, signature lines and DIAGNOSIS." | tee -a "$LOG" >&2
+  fi
 
   _sec "1 HOST AND DOCKER"
   _run uname -a; _run docker version; { docker info 2>&1 | head -40 | redact; } >>"$LOG"
@@ -141,6 +105,7 @@ main() {
   if [ "$ready" = "yes" ]; then echo "READINESS: READY after ${elapsed}s" >>"$LOG"
   else echo "READINESS: NOT READY after ${elapsed}s (limit ${timeout}s)" >>"$LOG"; fi
 
+  docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$cname" 2>/dev/null | cut -d= -f2- | _redact_load
   _sec "7 DOCKER LOGS"
   docker logs "$cname" 2>&1 | redact >>"$LOG"
   _sec "8 DOCKER PS AND STATE"

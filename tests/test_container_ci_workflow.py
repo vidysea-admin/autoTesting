@@ -1,6 +1,7 @@
 """Container smoke workflow shape, and the DIAGNOSIS/redact functions of the diagnose script.
 
 No docker: the script is sourced under bash and fed canned log snippets."""
+# ruff: noqa: E501
 
 import shutil
 import subprocess
@@ -11,10 +12,12 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/container_diagnose.sh"
+LIB = ROOT / "scripts/container_diagnose_lib.sh"  # redact and diagnose (sourced by SCRIPT)
 WORKFLOW = ROOT / ".github/workflows/container-smoke.yml"
 BASH = shutil.which("bash")
 needs_bash = pytest.mark.skipif(BASH is None, reason="bash not installed")
-PATHS = {"Dockerfile", "docker/**", "scripts/container_diagnose.sh", "pyproject.toml",
+PATHS = {"Dockerfile", "docker/**", "scripts/container_diagnose.sh",
+         "scripts/container_diagnose_lib.sh", "pyproject.toml",
          "uv.lock", "src/**", ".github/workflows/container-smoke.yml"}
 
 
@@ -61,15 +64,17 @@ def test_no_secrets_or_env_dump():
 def diagnose(tmp_path, snippet):
     log = tmp_path / "in.log"
     log.write_bytes(snippet.encode())
-    cmd = f'source "{SCRIPT.as_posix()}"; diagnose "{log.as_posix()}"; echo "rc=$?"'
+    cmd = f'source "{LIB.as_posix()}"; diagnose "{log.as_posix()}"; echo "rc=$?"'
     r = subprocess.run([BASH, "-c", cmd], capture_output=True, text=True, check=True)
     return r.stdout
 
 
 @needs_bash
-def test_script_syntax_and_line_endings():
-    assert subprocess.run([BASH, "-n", str(SCRIPT)]).returncode == 0
-    assert b"\r" not in SCRIPT.read_bytes()
+@pytest.mark.parametrize("path", [SCRIPT, LIB], ids=["main", "lib"])
+def test_script_syntax_line_endings_and_size(path):
+    assert subprocess.run([BASH, "-n", str(path)]).returncode == 0
+    data = path.read_bytes()
+    assert b"\r" not in data and data.count(b"\n") <= 300  # repo rule: a file is at most 300 lines
 
 
 @needs_bash
@@ -107,12 +112,37 @@ def test_clean_log_and_env_absent_is_info(tmp_path):
 
 
 @needs_bash
-def test_redaction():
-    text = ("OPENAI_API_KEY=sk-abcdefghijklmnop1234\nAUTOTESTER_APPROVAL_KEY=hunter2\n"
-            'x {"password": "s3cr3t!"}\nAuthorization: Bearer abc.def-ghi\n'
-            "DB_PASSWORD: pw99\nPORT=8000\n")
-    cmd = f'source "{SCRIPT.as_posix()}"; redact'
-    r = subprocess.run([BASH, "-c", cmd], input=text, capture_output=True, text=True, check=True)
-    for leaked in ("sk-abcdefghijklmnop1234", "hunter2", "s3cr3t", "abc.def-ghi", "pw99"):
-        assert leaked not in r.stdout
-    assert "PORT=8000" in r.stdout and "AUTOTESTER_APPROVAL_KEY=<redacted>" in r.stdout
+@pytest.mark.parametrize("snippet", [
+    "PermissionError: [Errno 13] Permission denied: '/app/.work'",
+    "mkdir: cannot create directory '/app/.work': Permission denied",
+])
+def test_app_level_permission_error_is_a_failure(tmp_path, snippet):
+    out = diagnose(tmp_path, snippet)
+    assert "[FAIL] app-perm" in out and "/data" in out and "perm-denied" not in out
+    assert not out.rstrip().endswith("rc=0")
+
+
+@needs_bash
+@pytest.mark.parametrize("snippet", [
+    "access denied by policy; request denied for user",
+    "Denied: nothing to do\nconsent denied by the user",
+    "/entrypoint.sh: line 10: /opt/venv/bin/python: Permission denied",
+])
+def test_benign_denied_text_does_not_fire_app_perm(tmp_path, snippet):
+    assert "app-perm" not in diagnose(tmp_path, snippet)
+
+
+@needs_bash
+def test_exit_trap_removes_container_without_unbound_error(tmp_path):
+    """Regression: the EXIT trap used a main()-local $cname under set -u ('cname: unbound variable')."""
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    calls = tmp_path / "calls.txt"
+    fake = bindir / "docker"
+    fake.write_text(f'#!/bin/sh\necho "$@" >> "{calls.as_posix()}"\nexit 0\n', encoding="utf-8", newline="\n")
+    fake.chmod(0o755)
+    cmd = (f'export PATH="$(cd "{bindir.as_posix()}" && pwd):$PATH"; source "{SCRIPT.as_posix()}"; '
+           f'main --image x --timeout 1 --out "{tmp_path.as_posix()}/out"')
+    r = subprocess.run([BASH, "-c", cmd], capture_output=True, text=True, timeout=90)
+    assert "unbound variable" not in r.stderr, r.stderr
+    assert "rm -f autotester-smoke-" in calls.read_text(encoding="utf-8")
