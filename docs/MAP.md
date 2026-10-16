@@ -73,6 +73,7 @@
 | `core/paths.py` | Filesystem layout. The ONLY place project paths are constructed. |
 | `core/pricing.py` | Per-token cost estimates for LLM-call trace spans (D-041 phase 1, RT4). |
 | `core/redact.py` | Secret redaction. Every log line and stored artifact passes through here. |
+| `core/redact_cli.py` | Filter: mask known secret VALUES in a stream with `Redactor`. One job, for shell scripts. |
 | `core/redact_encodings.py` | Exact encoded-spelling search: precompute how a declared secret would look |
 | `core/redact_escaped.py` | Escaped-spelling redaction: percent/entity/plus-encoded secrets, encoded PII, URL creds. |
 | `core/redact_fold.py` | Credential folding: normalise a string so a case, punctuation, homoglyph, |

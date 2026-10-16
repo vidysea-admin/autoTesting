@@ -1,41 +1,157 @@
 #!/usr/bin/env bash
 # One-file container diagnostics: writes container-debug-<timestamp>.log with every log needed to
 # see why the AutoTester image fails (build, image config, permissions, run, logs, state), then a
-# DIAGNOSIS section that names the likely cause and fix. No secret values are ever written.
+# DIAGNOSIS section that names the likely cause and fix. Secrets are redacted in layers (see
+# "redaction" below): real values first, then secret-looking names; if that is unavailable the log
+# keeps only headers and signature lines. Still review the log before sharing it.
 #
 # Usage: scripts/container_diagnose.sh [--image TAG] [--no-build] [--timeout N] [--out DIR]
-#                                      [--gcloud SERVICE --region REGION]
+#                                      [--gcloud SERVICE --region REGION] [--secrets-file FILE]
 #   --image TAG      diagnose an existing image; skips the build
 #   --no-build       skip the build and use the existing local tag autotester-debug:local
 #   --timeout N      seconds to wait for readiness (default 240)
 #   --out DIR        directory for the log and summary.md (default .)
 #   --gcloud/--region  append Cloud Run logs for the service (needs gcloud)
+#   --secrets-file F extra secret values to mask everywhere: one per line, or KEY=VALUE lines
 # Exit: 0 healthy; 1 a check failed (see DIAGNOSIS); 2 usage or no docker.
 # The functions below are sourceable (redact, diagnose) so tests run without docker.
 
-# redact: stdin -> stdout. Masks the VALUE and keeps the KEY NAME so the log stays readable.
-# Fail safe: when unsure, mask. Covers key=value / key: value / JSON (also backslash-escaped JSON) for
-# key|token|secret|password|passwd|pwd|auth|credential(s)|session|cookie|private names (case-insensitive,
-# so api_key, X-Api-Key, DB_PASSWORD, SESSION_ID all match), quoted values to the closing quote,
-# URL user:pass@, Authorization/Cookie/Set-Cookie headers (whole value), Bearer tokens, CLI flags
-# (--password x, --token x), PEM blocks (multi-line) and token shapes (AKIA, ghp_, github_pat_, eyJ JWT,
-# AIza, xox, sk-). Needs GNU sed (the I flag).
-_REDACT_NAME='[A-Za-z0-9_.-]*(key|token|secret|passw(or)?d|pwd|auth|credentials?|session|cookie|private)[A-Za-z0-9_.-]*'
-read -r -d '' _REDACT_SED <<'EOF' || true
-s/-----BEGIN [A-Z ]*-----.*-----END [A-Z ]*-----/<redacted-pem>/g
-/-----BEGIN [A-Z ]*-----/,/-----END [A-Z ]*-----/{
-s/-----BEGIN [A-Z ]*-----.*/<redacted-pem>/;t
-d
+# ---- redaction -------------------------------------------------------------------------------
+# redact: stdin -> stdout, layered, strongest first. The log is shared outside the team, so it fails
+# safe: when unsure, mask. The KEY NAME is kept; only the value goes.
+#  1 value layer: _REDACT_VALUES names a file of real secret values (repo-root .env, image and
+#    container Env, --secrets-file; see _redact_load). Every exact occurrence is masked, any key name.
+#  2 name layer (GNU sed): value after a secret-looking name (PW|PASS|PASSWORD|SECRET|TOKEN|KEY|
+#    APIKEY|AUTH|CREDENTIAL|COOKIE|SESSION|PRIVATE as a segment or suffix) for = : => whitespace,
+#    XML tags, URL-encoded %3D, JSON (escaped quotes too), --password x, -p x; URL user:pass@,
+#    Authorization/Cookie headers, ?code=, PEM blocks, token shapes (AKIA ghp_ JWT AIza xox sk-).
+#  3 python layer: when python and the repo src import, the values go through core.redact.Redactor
+#    (exact value plus its encodings) before the sed layers. One concept, one place.
+#  4 fail safe: sed that is not GNU cannot run layer 2 reliably, so only headers, signature lines
+#    and the DIAGNOSIS block are kept (see _redact_failsafe), with a loud notice.
+_REDACT_VALUES="${_REDACT_VALUES:-}"
+_REDACT_PY=""
+_redact_home() { (cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd); }
+_redact_gnu_sed() { sed --version 2>/dev/null | head -n 1 | grep -q 'GNU sed'; }
+_redact_python() {
+  [ -z "${REDACT_NO_PYTHON:-}" ] || return 1
+  local c home
+  if [ -z "$_REDACT_PY" ]; then
+    _REDACT_PY=none; home="$(_redact_home)"
+    for c in "${AUTOTESTER_PYTHON:-python3}" python3 python; do
+      if command -v "$c" >/dev/null 2>&1 &&
+         PYTHONPATH="$home/src" "$c" -c 'import autotester.core.redact_cli' >/dev/null 2>&1; then
+        _REDACT_PY="$c"; break
+      fi
+    done
+  fi
+  [ "$_REDACT_PY" != none ]
 }
+
+# _redact_filter_values: stdin candidate values -> stdout the ones worth masking, longest first.
+# Skips values shorter than 6, common words, paths, plain numbers/versions and localhost URLs.
+_redact_filter_values() {
+  awk '
+    BEGIN { n = split("true false null none yes no on off localhost root admin", c, " "); for (i = 1; i <= n; i++) common[c[i]] = 1 }
+    { v = $0; sub(/\r$/, "", v) }
+    length(v) < 6 { next }
+    tolower(v) in common { next }
+    v ~ /^\/[A-Za-z0-9_.\/:-]*$/ { next }
+    v ~ /^[0-9.:-]+$/ { next }
+    v ~ /localhost|127\.0\.0\.1/ { next }
+    { print length(v) "\t" v }
+  ' | sort -t "$(printf '\t')" -k1,1nr | cut -f2- | awk '!seen[$0]++'
+}
+
+# _redact_assignments: stdin .env / secrets-file lines -> candidate values (the value of KEY=VALUE,
+# quotes stripped; a bare line is a value itself; a short "value" such as base64 padding keeps the line).
+_redact_assignments() {
+  awk '
+    /^[[:space:]]*#/ { next }
+    { line = $0; sub(/\r$/, "", line); sub(/^[[:space:]]*export[[:space:]]+/, "", line)
+      if (match(line, /^[A-Za-z_][A-Za-z0-9_]*=/)) {
+        v = substr(line, RLENGTH + 1); gsub(/^["\047]|["\047]$/, "", v); print v
+        if (length(v) < 6) print line
+      } else print line }
+  '
+}
+
+# _redact_load: add the candidate values on stdin to the value file and rebuild its sed script.
+_redact_load() {
+  local vf="$_REDACT_VALUES"
+  [ -n "$vf" ] || { cat >/dev/null; return 0; }
+  { [ -f "$vf" ] && cat "$vf"; cat; } | _redact_filter_values >"$vf.new" && mv "$vf.new" "$vf"
+  sed -e 's#[][\\/.*^$|+?(){}~]#\\&#g' -e 's#^#s~#' -e 's#$#~<redacted>~g#' "$vf" >"$vf.sed" 2>/dev/null || : >"$vf.sed"
+}
+
+# _redact_failsafe: the sed layers are unavailable, so keep only what DIAGNOSIS needs. A kept line
+# that mentions a secret-like word is withheld too. One summary line says how many were withheld.
+_redact_failsafe() {
+  awk '
+    BEGIN {
+      keep = "^(=====|== |\\$ |\\[(FAIL|INFO|OK|exit=|build exit)|RESULT:|READINESS:|State:|[0-9]+ failure signature|Id/digest:|User:|Entrypoint:)|PREFLIGHT FAIL|Permission denied|PermissionError|Errno 13|OOMKilled|exceeded.*memory limit|already in use|already allocated|exec format error|bad interpreter|\\.env is absent|IMPORT_OK|probe failed|uid=|readlink|Cannot open display|container service|Xvfb|x11vnc|websockify"
+      secret = "key|token|secret|pass|pwd|pw=|auth|cred|cookie|session|private|://[^ ]*@|[?&]code="
+    }
+    { l = tolower($0) }
+    $0 ~ keep && l !~ secret { print; next }
+    { held++ }
+    END { if (held) print "[" held " line(s) withheld: full redaction unavailable (sed is not GNU)]" }
+  '
+}
+
+# Name layer rule pieces. _RN is the key name (a segment or suffix of the name), _RT its optional
+# tail (_FILE, -id, id), _RS the separator (= : => whitespace-colon, JSON quote, %3D, %22%3A%22).
+_RT='([_.-][A-Za-z0-9_.-]*|id)?'
+_RS='(\\?["'"'"']?[[:space:]]*(=>|[=:])[[:space:]]*|%22%3[Aa]%22|%3[Dd])'
+_RN_I="(((password|passwd|secret|token|credentials?|cookie|api[_-]?key|private|session)|(^|[^A-Za-z])(pass|pwd|pw|key|auth))${_RT}${_RS})"
+_RN_C="([a-z](Key|Pass|Pwd|Pw|Auth)${_RT}${_RS})"
+# _redact_valrules PREFIX FLAGS: escaped-JSON, double-quoted, single-quoted, then unquoted values.
+_redact_valrules() {
+  printf '%s\n' \
+    "s/($1)\\\\\"([^\\\\\"]|\\\\[^\"])*\\\\\"/\\1\\\\\"<redacted>\\\\\"/$2" \
+    "s/($1)\"(\\\\.|[^\"\\\\])*\"/\\1\"<redacted>\"/$2" \
+    "s/($1)'[^']*'/\\1'<redacted>'/$2" \
+    "s/($1)[^[:space:]\"'&<>\\][^[:space:]\"'&]*/\\1<redacted>/$2"
+}
+_redact_script() {
+  cat <<'EOF'
+s/-----BEGIN [A-Z ]*-----.*-----END [A-Z ]*-----/<redacted-pem>/g
+/-----BEGIN [A-Z ]*-----/{
+s/-----BEGIN [A-Z ]*-----.*/<redacted-pem>/
+x
+s/.*/PEM/
+x
+b pemend
+}
+x
+/^PEM$/{
+x
+/^[A-Za-z0-9+\/=]{32,}[[:space:]]*$/{
+s/.*/<redacted-pem-body>/
+b pemend
+}
+x
+s/.*//
+x
+b pemend
+}
+x
+:pemend
 s/((proxy-)?authorization\\?["']?[[:space:]]*[=:][[:space:]]*).*/\1<redacted>/I
 s/((set-)?cookie[[:space:]]*:[[:space:]]*).*/\1<redacted>/I
 s/(bearer[[:space:]]+)[A-Za-z0-9._~+\/=-]+/\1<redacted>/Ig
 s#(//)[^/@[:space:]"']+@#\1<redacted>@#g
-s/(--[A-Za-z0-9_-]*(password|passwd|pwd|token|secret|key|auth|credentials?|session|cookie)[A-Za-z0-9_-]*[[:space:]]+)[^-[:space:]][^[:space:]]*/\1<redacted>/Ig
-s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)\\"[^\\]*\\"/\1\\"<redacted>\\"/Ig
-s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)"[^"]*"/\1"<redacted>"/Ig
-s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)'[^']*'/\1'<redacted>'/Ig
-s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)[^[:space:]"',;&]+/\1<redacted>/Ig
+s/(<[A-Za-z0-9_.:-]*(password|passwd|secret|token|credentials?|api[_-]?key|pass|pw|key)[A-Za-z0-9_.:-]*>)[^<]+/\1<redacted>/Ig
+s/(--?[A-Za-z0-9_-]*(password|passwd|pwd|pass|pw|token|secret|key|auth|credentials?|session|cookie)[A-Za-z0-9_-]*[[:space:]]+)[^-[:space:]][^[:space:]]*/\1<redacted>/Ig
+s/((^|[[:space:]])-p[[:space:]]+)[^-\/.0-9[:space:]][^[:space:]]*/\1<redacted>/g
+s/((^|[[:space:]])-p[[:space:]]+)[0-9][0-9:]*[^0-9:[:space:]][^[:space:]]*/\1<redacted>/g
+s/([?&]code=)[^&[:space:]"']+/\1<redacted>/Ig
+s/("code"[[:space:]]*:[[:space:]]*)"[^"]*"/\1"<redacted>"/Ig
+EOF
+  _redact_valrules "$_RN_I" Ig
+  _redact_valrules "$_RN_C" g
+  cat <<'EOF'
+s/((^|[^A-Za-z0-9])(password|passwd|secret|token|api[_-]?key)([_.-][A-Za-z0-9_.-]*)?[[:space:]]+((is|was)[[:space:]]+)?)[^[:space:]=:<][^[:space:]]*/\1<redacted>/Ig
 s/\b(AKIA|ASIA)[A-Z0-9]{16}/\1<redacted>/g
 s/(gh[pousr]_)[A-Za-z0-9]{20,}/\1<redacted>/g
 s/(github_pat_)[A-Za-z0-9_]{20,}/\1<redacted>/g
@@ -44,8 +160,22 @@ s/(xox[baprs]-)[A-Za-z0-9-]{8,}/\1<redacted>/g
 s/(AIza)[A-Za-z0-9_-]{20,}/\1<redacted>/g
 s/(sk-)[A-Za-z0-9_-]{16,}/\1<redacted>/g
 EOF
-_REDACT_SED="${_REDACT_SED//@NAME@/$_REDACT_NAME}"
-redact() { sed -E "$_REDACT_SED"; }
+}
+_REDACT_SED="$(_redact_script)"
+
+redact() {
+  local vf="$_REDACT_VALUES" py=0 home
+  if [ -n "$vf" ] && [ -s "$vf" ] && _redact_python; then py=1; home="$(_redact_home)"; fi
+  if ! _redact_gnu_sed; then
+    if [ "$py" -eq 1 ]; then PYTHONPATH="$home/src" "$_REDACT_PY" -m autotester.core.redact_cli "$vf" | _redact_failsafe
+    else _redact_failsafe; fi
+    return
+  fi
+  if [ "$py" -eq 1 ]; then
+    PYTHONPATH="$home/src" "$_REDACT_PY" -m autotester.core.redact_cli "$vf" | sed -E -f "$vf.sed" -e "$_REDACT_SED"
+  elif [ -n "$vf" ] && [ -s "$vf.sed" ]; then sed -E -f "$vf.sed" -e "$_REDACT_SED"
+  else sed -E -e "$_REDACT_SED"; fi
+}
 
 # diagnose LOGFILE: print one [FAIL]/[INFO] line (cause + fix) per known signature found in LOGFILE.
 # Return status = number of FAIL signatures (max 100); 0 means none.
@@ -98,7 +228,7 @@ _run() { { echo "\$ $*"; "$@" 2>&1; echo "[exit=$?]"; } | redact >>"$LOG"; }
 
 main() {
   set -u
-  local image="" nobuild=0 timeout=240 out="." gsvc="" region="" ts root
+  local image="" nobuild=0 timeout=240 out="." gsvc="" region="" ts root sfile="" vdir
   while [ $# -gt 0 ]; do
     case "$1" in
       --image) image="${2:?--image needs a tag}"; nobuild=1; shift 2 ;;
@@ -107,7 +237,8 @@ main() {
       --out) out="${2:?--out needs a directory}"; shift 2 ;;
       --gcloud) gsvc="${2:?--gcloud needs a service}"; shift 2 ;;
       --region) region="${2:?--region needs a region}"; shift 2 ;;
-      -h|--help) sed -n '2,15p' "${BASH_SOURCE[0]}"; return 0 ;;
+      --secrets-file) sfile="${2:?--secrets-file needs a file}"; shift 2 ;;
+      -h|--help) sed -n '2,19p' "${BASH_SOURCE[0]}"; return 0 ;;
       *) echo "unknown argument: $1" >&2; return 2 ;;
     esac
   done
@@ -118,8 +249,16 @@ main() {
   LOG="$out/container-debug-$ts.log"; : >"$LOG"
   local tag="${image:-autotester-debug:local}" cname="autotester-smoke-$$"
   local origins="${AUTOTESTER_ALLOWED_ORIGINS:-http://localhost:8000}" build_rc="skipped"
-  trap "docker rm -f '$cname' >/dev/null 2>&1" EXIT  # expand now: cname is local to main
+  vdir="$(mktemp -d)"; chmod 700 "$vdir"; _REDACT_VALUES="$vdir/values"; : >"$_REDACT_VALUES"
+  # expand now: cname and vdir are local to main
+  trap "docker rm -f '$cname' >/dev/null 2>&1; rm -rf '$vdir'" EXIT
   echo "container-debug log, UTC $ts, image tag $tag" >>"$LOG"
+  [ -f "$root/.env" ] && _redact_assignments <"$root/.env" | _redact_load
+  [ -z "$sfile" ] || _redact_assignments <"$sfile" | _redact_load
+  docker image inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$tag" 2>/dev/null | cut -d= -f2- | _redact_load
+  if ! _redact_gnu_sed; then
+    echo "NOTICE: full redaction unavailable (sed is not GNU): this log keeps only headers, signature lines and DIAGNOSIS." | tee -a "$LOG" >&2
+  fi
 
   _sec "1 HOST AND DOCKER"
   _run uname -a; _run docker version; { docker info 2>&1 | head -40 | redact; } >>"$LOG"
@@ -169,6 +308,7 @@ main() {
   if [ "$ready" = "yes" ]; then echo "READINESS: READY after ${elapsed}s" >>"$LOG"
   else echo "READINESS: NOT READY after ${elapsed}s (limit ${timeout}s)" >>"$LOG"; fi
 
+  docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$cname" 2>/dev/null | cut -d= -f2- | _redact_load
   _sec "7 DOCKER LOGS"
   docker logs "$cname" 2>&1 | redact >>"$LOG"
   _sec "8 DOCKER PS AND STATE"
