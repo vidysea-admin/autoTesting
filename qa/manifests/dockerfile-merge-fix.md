@@ -1,6 +1,6 @@
 # dockerfile-merge-fix
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 Base: b6aa6cae0f3227a5767c1d264e9216e0b67aa064
 Candidate: see `git log -1 -- qa/manifests/dockerfile-merge-fix.md` (the commit that adds this file)
