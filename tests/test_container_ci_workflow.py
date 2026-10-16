@@ -12,10 +12,12 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/container_diagnose.sh"
+LIB = ROOT / "scripts/container_diagnose_lib.sh"  # redact and diagnose (sourced by SCRIPT)
 WORKFLOW = ROOT / ".github/workflows/container-smoke.yml"
 BASH = shutil.which("bash")
 needs_bash = pytest.mark.skipif(BASH is None, reason="bash not installed")
-PATHS = {"Dockerfile", "docker/**", "scripts/container_diagnose.sh", "pyproject.toml",
+PATHS = {"Dockerfile", "docker/**", "scripts/container_diagnose.sh",
+         "scripts/container_diagnose_lib.sh", "pyproject.toml",
          "uv.lock", "src/**", ".github/workflows/container-smoke.yml"}
 
 
@@ -62,15 +64,17 @@ def test_no_secrets_or_env_dump():
 def diagnose(tmp_path, snippet):
     log = tmp_path / "in.log"
     log.write_bytes(snippet.encode())
-    cmd = f'source "{SCRIPT.as_posix()}"; diagnose "{log.as_posix()}"; echo "rc=$?"'
+    cmd = f'source "{LIB.as_posix()}"; diagnose "{log.as_posix()}"; echo "rc=$?"'
     r = subprocess.run([BASH, "-c", cmd], capture_output=True, text=True, check=True)
     return r.stdout
 
 
 @needs_bash
-def test_script_syntax_and_line_endings():
-    assert subprocess.run([BASH, "-n", str(SCRIPT)]).returncode == 0
-    assert b"\r" not in SCRIPT.read_bytes()
+@pytest.mark.parametrize("path", [SCRIPT, LIB], ids=["main", "lib"])
+def test_script_syntax_line_endings_and_size(path):
+    assert subprocess.run([BASH, "-n", str(path)]).returncode == 0
+    data = path.read_bytes()
+    assert b"\r" not in data and data.count(b"\n") <= 300  # repo rule: a file is at most 300 lines
 
 
 @needs_bash

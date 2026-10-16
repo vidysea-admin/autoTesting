@@ -11,6 +11,7 @@ on:
       - Dockerfile
       - docker/**
       - scripts/container_diagnose.sh
+      - scripts/container_diagnose_lib.sh
       - pyproject.toml
       - uv.lock
       - src/**
@@ -20,6 +21,7 @@ on:
       - Dockerfile
       - docker/**
       - scripts/container_diagnose.sh
+      - scripts/container_diagnose_lib.sh
       - pyproject.toml
       - uv.lock
       - src/**

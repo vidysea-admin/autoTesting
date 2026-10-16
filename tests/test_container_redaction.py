@@ -16,7 +16,7 @@ import pytest
 from autotester.core.redact_cli import mask_stream
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts/container_diagnose.sh"
+SCRIPT = ROOT / "scripts/container_diagnose_lib.sh"  # redact and diagnose live here (sourced)
 BASH = shutil.which("bash")
 needs_bash = pytest.mark.skipif(BASH is None, reason="bash not installed")
 S = "S3CR3T"
@@ -216,3 +216,73 @@ def test_performance_300kb_log_under_10_seconds(tmp_path):
     assert S not in dst.read_text(encoding="utf-8")
     elapsed = int(secs.read_text().strip())
     assert elapsed < 10, f"redact took {elapsed}s for 300 KB"
+
+
+# ---- cycle 2: .env values come from the repo's own dotenv parser; awk reader is dotenv-compatible ----
+ENV_TEXT = ('ZA=Inl1neSecret # test account\nZB = Sp4cedSecret\nZC="Qu0teSecret" # c\n'
+            "export ZE=Exp0rtSecret\nZF=\"first-Mline1\nsecond-Mline2\"\nZG=\nZH='Sq1Secret' # x\n")
+ENV_SECRETS = ["Inl1neSecret", "Sp4cedSecret", "Qu0teSecret", "Exp0rtSecret", "first-Mline1", "second-Mline2", "Sq1Secret"]
+PY_ENV = {"REDACT_NO_PYTHON": "", "AUTOTESTER_PYTHON": Path(sys.executable).as_posix(), "PYTHONIOENCODING": "utf-8"}
+
+
+def test_redact_cli_env_values_match_dotenv(tmp_path):
+    from dotenv import dotenv_values
+
+    from autotester.core.redact_cli import env_values
+    envf = tmp_path / "x.env"
+    envf.write_text(ENV_TEXT, encoding="utf-8")
+    vals = env_values(envf)
+    assert vals == [ln for v in dotenv_values(envf).values() for ln in (v or "").splitlines() if ln.strip()]
+    assert sorted(vals) == sorted(ENV_SECRETS)
+
+
+@needs_bash
+@pytest.mark.parametrize("mode", ["awk", "python"])
+def test_env_load_masks_dotenv_forms_in_free_text(tmp_path, mode):
+    envf = tmp_path / "x.env"
+    envf.write_text(ENV_TEXT, encoding="utf-8")
+    extra = f'_REDACT_VALUES="{tmp_path.as_posix()}/values"; : >"$_REDACT_VALUES"; _redact_env_load "{envf.as_posix()}";'
+    text = "".join(f"a {s} b\n" for s in ENV_SECRETS) + "keys ZG ZA ok\n"
+    out = run_redact(text, extra, env=PY_ENV if mode == "python" else None)
+    for s in ENV_SECRETS:
+        assert s not in out, out
+    assert out.count("<redacted>") == len(ENV_SECRETS) and "keys ZG ZA ok" in out, out
+
+
+@needs_bash
+def test_python_path_reads_env_with_dotenv(tmp_path):
+    envf = tmp_path / "x.env"
+    envf.write_text(ENV_TEXT, encoding="utf-8")
+    cmd = f'source "{SCRIPT.as_posix()}"; _redact_python && _redact_cli --values-from-env "{envf.as_posix()}"'
+    r = subprocess.run([BASH, "-c", cmd], capture_output=True, text=True, check=True, env={**os.environ, **PY_ENV}, timeout=300)
+    assert sorted(r.stdout.split()) == sorted(ENV_SECRETS)
+
+
+@needs_bash
+def test_redact_cli_failure_gives_notice_and_fail_safe(tmp_path):
+    fake = tmp_path / "fakepy"
+    fake.write_text('#!/bin/sh\ncase "$1" in -c) exit 0 ;; esac\ncat >/dev/null; exit 3\n', encoding="utf-8", newline="\n")
+    fake.chmod(0o755)
+    extra = f'_REDACT_VALUES="{tmp_path.as_posix()}/values"; : >"$_REDACT_VALUES"; echo Zq9xLongValue77 | _redact_load;'
+    text = "== 5 PERMISSION CHECK\nodd: Zq9xLongValue77\nplain hunter3value\nREADINESS: NOT READY after 1s\n"
+    cmd = f'source "{SCRIPT.as_posix()}"; {extra} redact'
+    r = subprocess.run([BASH, "-c", cmd], input=text, capture_output=True, text=True, check=True, timeout=120,
+                       env={**os.environ, "REDACT_NO_PYTHON": "", "AUTOTESTER_PYTHON": fake.as_posix()})
+    assert "Zq9xLongValue77" not in r.stdout and "hunter3value" not in r.stdout
+    assert "python redaction failed" in r.stdout and "NOTICE" in r.stderr
+    assert "== 5 PERMISSION CHECK" in r.stdout and "READINESS: NOT READY" in r.stdout and "withheld" in r.stdout
+    assert not list(tmp_path.glob("values.in")) and not list(tmp_path.glob("values.out"))
+
+
+@needs_bash
+def test_temp_files_are_0600(tmp_path):
+    main_src = (ROOT / "scripts/container_diagnose.sh").read_text(encoding="utf-8")
+    assert main_src.index("umask 077") < main_src.index("mktemp -d")
+    cmd = (f'umask 022; source "{SCRIPT.as_posix()}"; _REDACT_VALUES="{tmp_path.as_posix()}/values"; '
+           f'echo Zq9xLongValue77 | _redact_load; (umask 077; : >"{tmp_path.as_posix()}/probe"); '
+           f'stat -c "%a %n" "{tmp_path.as_posix()}"/values "{tmp_path.as_posix()}"/values.sed "{tmp_path.as_posix()}"/probe')
+    r = subprocess.run([BASH, "-c", cmd], capture_output=True, text=True, check=True, timeout=120)
+    modes = dict(ln.split(" ", 1)[::-1] for ln in r.stdout.splitlines())
+    if modes[f"{tmp_path.as_posix()}/probe"] != "600":
+        pytest.skip("this filesystem does not honour umask (Windows NTFS); the static umask check ran")
+    assert all(m == "600" for m in modes.values()), modes

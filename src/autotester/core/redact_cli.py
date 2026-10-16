@@ -1,9 +1,13 @@
-"""Filter: mask known secret VALUES in a stream with `Redactor`. One job, for shell scripts.
+"""Filter for shell scripts: mask known secret VALUES in a stream, or list a `.env` file's values.
 
-Usage: `python -m autotester.core.redact_cli VALUES_FILE < in > out`. VALUES_FILE holds one secret
-value per line (blank lines ignored). The values are read, never printed. The masking itself is
-`core.redact.Redactor.scrub` (exact value plus its encodings); this module only adapts it to
-stdin/stdout so `scripts/container_diagnose.sh` reuses it instead of a second implementation.
+Two modes, one job (give `scripts/container_diagnose_lib.sh` the repo's own secret handling):
+- `python -m autotester.core.redact_cli VALUES_FILE < in > out`: VALUES_FILE holds one secret
+  value per line (blank lines ignored). The masking is `core.redact.Redactor.scrub` (exact value
+  plus its encodings); this module only adapts it to stdin/stdout.
+- `python -m autotester.core.redact_cli --values-from-env ENV_FILE > values`: print every value
+  of ENV_FILE, one line each (a multiline value prints each of its lines), parsed by
+  `python-dotenv` `dotenv_values`, the same parser `core.env.load_repo_env` uses. Values go to
+  stdout (a pipe), never argv; the caller writes them only into its own 0600 file.
 """
 
 from __future__ import annotations
@@ -12,9 +16,13 @@ import re
 import sys
 from pathlib import Path
 
+from dotenv import dotenv_values
+
 from autotester.core.redact import Redactor
 
 _LABEL = re.compile(r"\[REDACTED\]:\d+")
+_USAGE = ("usage: python -m autotester.core.redact_cli VALUES_FILE < in > out\n"
+          "       python -m autotester.core.redact_cli --values-from-env ENV_FILE > values")
 
 
 def mask_stream(text: str, values: list[str]) -> str:
@@ -23,9 +31,21 @@ def mask_stream(text: str, values: list[str]) -> str:
     return _LABEL.sub("<redacted>", redactor.scrub(text)).replace("[REDACTED]", "<redacted>")
 
 
+def env_values(path: Path) -> list[str]:
+    """Every non-empty value line of the dotenv file at `path`, as `dotenv_values` reads it."""
+    out: list[str] = []
+    for value in dotenv_values(path).values():
+        out.extend(line for line in (value or "").splitlines() if line.strip())
+    return out
+
+
 def filter_main(argv: list[str]) -> int:
-    if len(argv) != 2:
-        print("usage: python -m autotester.core.redact_cli VALUES_FILE < in > out", file=sys.stderr)
+    if len(argv) == 3 and argv[1] == "--values-from-env":
+        lines = env_values(Path(argv[2]))
+        sys.stdout.buffer.write("".join(f"{v}\n" for v in lines).encode("utf-8"))
+        return 0
+    if len(argv) != 2 or argv[1].startswith("--"):
+        print(_USAGE, file=sys.stderr)
         return 2
     raw = Path(argv[1]).read_text(encoding="utf-8", errors="replace")
     values = [v for v in raw.splitlines() if v]
