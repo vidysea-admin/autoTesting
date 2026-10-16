@@ -1,38 +1,30 @@
 # Verdict - hosting-backup
 
-**Verdict:** FAIL
-**Status:** FAIL
-**Cycle checked:** 0
-**Reviewed SHA:** 5512c7b54573829abfc6be2c18004efbce537c42 (base 3f081243; candidate tree clean, verified before write)
+**Verdict:** PASS
+**Status:** PASS
+**Cycle checked:** 1
+**Reviewed SHA:** 887ac17ac4a5c42f0d5ed0ac04d39d7e0b353a81 (base 3f081243; prior FAIL 0171092d, cycle 0; candidate tree clean, verified before write)
 
 ## Scope
-AT-868 / T-203 slice: scripts/backup.sh, scripts/restore.sh, docker/DEPLOY.md backup section, tests/test_backup_restore.py. Contract: qa/contracts/hosting.md HO36 (slice only; admin page, linux evidence and encryption are declared follow-ups, AT-868 stays open) and HO37 (design rules).
+AT-868 / T-203 slice: scripts/backup.sh, scripts/restore.sh, docker/DEPLOY.md backup section, tests/test_backup_restore.py. Contract: qa/contracts/hosting.md HO36 (slice only; admin page, linux evidence and encryption remain declared follow-ups, AT-868 stays open) and HO37.
 
-## Independent checks (evidence under .work/chk/ev/*.rc and *.log, worktree-local scratch)
-- bash -n backup.sh and restore.sh: rc 0 / rc 0.
-- pytest tests/test_backup_restore.py (no -q, venv python, PYTHONPATH=worktree src): 4 passed, rc 0 (72 s).
-- ruff check src tests scripts: rc 0.
-- autotester doctor: rc 0, "doctor: clean". A first run flagged root-clutter b.log, which was my own stray probe output (removed); not a candidate defect.
-- Adversarial probes run in scratch dirs (chk, chk3, chk4): see findings. Data-root convention matches container-writable-workdir (`AUTOTESTER_DATA_DIR`, default `/data`; env default verified). Spaces in root/out/archive paths work. Missing root and missing `--root` value exit 1. GCS path exercised (gsutil present: reaches upload and returns its error rc).
+## Independent checks (evidence in worktree .work/chk1/ev/*.rc, *.log)
+- bash -n backup.sh, restore.sh: rc 0 / 0.
+- pytest tests/test_backup_restore.py (no -q, venv python, PYTHONPATH=worktree src): 10 passed, 1 skipped (backslash name, POSIX only), rc 0, 82 s.
+- ruff check src tests scripts: rc 0. autotester doctor: rc 0, clean.
+- Cycle-0 probes re-run in scratch (.work/chk1/s), all prior blockers closed:
+  1. Relative archive path: `cd out && restore.sh x.tar.gz --root ../r1` restores 3 files, rc 0.
+  2. Extra member (archive+manifest+sidecar all re-forged consistently but with an extra file): REFUSED, staged tree differs from manifest. Link members (symlink then file through it, and hardlink; crafted with python tarfile since this host cannot create symlinks): both REFUSED from the listing before extraction, target not left behind. Absolute/`..` member: REFUSED. Missing sidecar: REFUSED. Tampered manifest (sidecar kept): REFUSED.
+  3. Nested secrets: with 14 secret-named files seeded at root and nested (.env, .env.local, key.pem, id_rsa*, credentials*.json, token*.json, *service-account*.json, Cookies*, Login Data, .auth/db), the default archive held only keep.txt, flow.json and sub/env.txt. `--include-secrets` archives all 19 and warns.
+  Failed restores remove the target they created.
 
-## Findings
+## Answers to the brief
+- Forged sidecar: a fully self-consistent forged archive + manifest + sidecar (attacker controls both) is accepted (probe: modified keep.txt restored, rc 0). Expected: the sidecar guards corruption and a one-sided tamper, not an attacker who controls both. Acceptable for this slice because DEPLOY.md states "real signing is a follow-up"; it must stay on the AT-868 list (HO36 signing/encryption).
+- `--force` window: restore stages and verifies fully first, then per top-level entry does rm -rf then mv. A crash between the two loses that one existing entry; existing entries not in the archive are kept (merge, not replace; verified). This is NOT stated in DEPLOY.md or `--help` (DEPLOY says "overwrite" and "renaming it into the target", which reads as more atomic than it is). Acceptable for a manual restore with the stack stopped, but add one line to DEPLOY.md. Non-blocking residual. The default path (new or empty target, no --force) is safe: verification and staging complete before any write to the target, and nothing pre-existing is touched.
+- Backslash names: the test is skipped on this host and the script behaviour for them is unverified here. By code reading the staged-tree sha256sum compare uses the same escaped-name output on both sides, so it should hold. Recommend adding tests/test_backup_restore.py to the Linux container-smoke workflow; non-blocking residual that AT-868 must close with Linux evidence (HO10).
 
-### Proven defects (blocking)
-1. **restore.sh fails for any relative archive path.** `(cd "$STAGE" && grep ... "$MANIFEST")` resolves a relative `$MANIFEST` after the cd. Repro: `restore.sh out/autotester-backup-*.tar.gz --root rr` and `cd out && restore.sh x.tar.gz` both end "REFUSED, per-file sha256 check failed" on a valid archive; the absolute path works. It fails closed, but the tests only use absolute paths so it was missed. It also leaves an empty target dir created (`mkdir -p "$ROOT"` runs before verification). Fix: absolutize ARCHIVE/MANIFEST after the argument loop, and add a relative-path test.
-2. **Restore integrity checks have gaps.** (a) A file present in the archive but absent from the manifest is restored unverified (probe d, h: rc 0). (b) A manifest line for a name containing a backslash or newline starts with `\` and is silently dropped by the `^[0-9a-f]{64} ` filter, so that file is not verified (probe g: a wrong hash restored with rc 0). (c) No check that archive members are regular files: a symlink or hardlink member is accepted. A "symlink then file through it" member sequence was crafted, but GNU tar on this Windows host cannot create symlinks, so the Linux behaviour is NOT verified here; on Linux as root a link to an absolute path followed by a file under it is the classic exploit. Fix: list the archive (`tar -tvzf`), reject non-regular, absolute and `..` members, and require the member list to equal the manifest file list (also compare against the `files` count).
-3. **Secret exclusion is top-level only.** Without `--include-secrets` the archive still held `projects/x/.env`, `.env.local`, `projects/x/.auth/db`, `credentials.json`, `id_rsa`, `key.pem`, `token.json` and `misc/Cookies`; only `./.env`, `./.auth` and `./profiles` are skipped. DEPLOY.md says credentials never live in a project folder, so this matches the documented layout, but the repo already knows these credential names (`stages/credential_files.py`) and an unencrypted archive that leaks them is the failure this flag exists to prevent. Fix: exclude by basename and suffix at any depth using that list, plus `.auth` and Cookies/profile directories at any depth, or state in the script header, manifest and DEPLOY.md that only the top-level three paths are excluded. The maker must pick one and test it.
-
-### Non-blocking observations (record, fix when convenient)
-- Manifest is unsigned: the archive hash is anchored only to a file sitting beside it, so someone who can write both can forge a consistent pair. This cannot be fixed without a key or the HO36 passphrase; say so in DEPLOY.md.
-- The final `tar | tar` copy is not atomic. `--force` merges over the target and a mid-copy failure (disk full) leaves a half-restored tree; nothing outside the target is ever deleted (verified: the failed per-file check left the existing target untouched, "KEEP" file intact). The staging dir sits under the target, so an interrupted restore can leave `.restore-stage.*`, which the next backup would include.
-- `find -type f` does not match symlinks, so links are skipped rather than followed (by code reading; native symlinks could not be created on this host to run it). A symlink in the data root is silently omitted from the backup.
-- `--out` inside the root makes later archives include earlier ones (default `./backups` is cwd-relative).
-- No snapshot consistency for live files (the auth SQLite file is copied raw). A partial archive is left behind if tar fails midway (no manifest, so restore refuses it).
-- HO36 asks for an encrypted snapshot; this slice documents "store encrypted" instead. Accepted as the declared slice, not a pass on HO36.
-- `restore.sh ../` traversal member: GNU tar refused it (rc 2, nothing written outside). Absolute-path member: leading `/` stripped. Stage cleaned on exit.
-
-## Remaining gates
-Fix cycle 1 for findings 1-3 with tests (relative path; extra and backslash-named member; non-regular member; nested secret name). Linux/docker re-run of the symlink probe (HO10 evidence) is still owed by AT-868.
+## Residuals (non-blocking, recorded)
+Undocumented `--force` non-atomic window and merge semantics; unsigned manifest; Linux backslash/symlink-on-disk evidence owed; encryption (HO36) and admin page; `--out` inside root; no live-SQLite snapshot consistency; `.env*` also skips `.env.example` (safe direction).
 
 ## Accounting
-Maker usage unknown (BOOTSTRAP_REVIEW scope with standing escalation, <=300 s target; the actual check ran over that because pytest took 72 s under saturated CPU and a gcloud call stalled once). Ratios unverified; tokens and cost not measured by the host (null).
+Maker usage unknown, BOOTSTRAP_REVIEW with standing escalation (<=300 s). Active time exceeded 300 s because pytest took 82 s under saturated CPU, plus scripted probes; overrun recorded, not waived. Tokens and cost not host-measured (null); ratios unverified.
