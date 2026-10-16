@@ -1,6 +1,6 @@
 # Manifest — container-ci-smoke
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 Unit: container-ci-smoke (CI container smoke + one-file diagnostics for the Cloud Run exit 126 failure)
 Base SHA: 7a9c5365
