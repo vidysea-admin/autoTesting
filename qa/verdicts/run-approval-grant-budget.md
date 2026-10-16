@@ -1,74 +1,91 @@
 # Verdict - run-approval-grant-budget
 
-**Verdict:** FAIL
-**Status:** FAIL
-**Cycle checked:** 0
-**Reviewed SHA:** 1dc74b2b0818e8bb90c86dc9efeca760f9bedc9c (base c4d48ad109f1ef77f73ee9172866cc5feeca7063, branch worktree-agent-a70bbe56d22416ba9)
+**Verdict:** PASS
+**Status:** PASS
+**Cycle checked:** 1
+**Reviewed SHA:** 0e544ba907ec89da52818d3750899708f1587110 (base c4d48ad109f1ef77f73ee9172866cc5feeca7063, branch worktree-agent-a70bbe56d22416ba9)
 
 ## Scope
-ISS-d063-grant-budget-1, -2, -3 / AT-675, AT-570 claim. Consent contract CN5, CN10, CN11; core-invariants C12.
-Changed: stages/explore_consent.py, stages/run_budget.py, stages/run_launcher.py (299 lines),
-core/consent.py, ui/routes_crawl_approval.py, tests/test_run_approval_grant_budget.py (12 tests).
+Fix cycle 1 for the cycle-0 FAIL (verdict commit a80c2b21): `probe_request` undercounted the probes a
+LIVE_CASE run really spends (ISS-d063-grant-budget-3). The verdict also re-confirms that the areas that
+passed at cycle 0 have not regressed: ISS-d063-grant-budget-1 and -2, AT-570, consent CN5/CN10/CN11 and
+core-invariants C12.
 
-## Independent checks (outputs and exit codes in .work/checker-rab/)
-- Preflight (review_budget.py, PYTHONPATH=src, main .venv python 3.11.16): PREFLIGHT_OK, import from worktree src.
-- pytest (22 files: new file, ui_crawl_approval(+_list), explore_consent, run_launcher(+_approval, +_priorities_approval),
-  run_budget_judge_time, consent, credential_run_approval, approval_prod_gate(+_paths), approval_residual_callers,
-  approval_revoke, approval_signing, parallel_run_approval, team_run_approval, ui_auth_host_and_consent,
-  ui_origin_guard, ui_production_approval, ui_runs_live_case_approval, schedule_gate): 403 passed, rc 0 (pytest.txt).
-- ruff check on the 6 changed paths: clean, rc 0.
-- doctor: candidate clean rc 0; base (git archive of c4d48ad1 into .work) clean rc 0; same advisory warnings.
-- Probe .work/checker-rab/probe_budget.py (rc 0, probe_budget.txt).
+Cycle-1 diff (a80c2b21..0e544ba9, verified with git):
+- stages/execute.py gains `step_probe_floor` and `probe_request` (261 lines).
+- stages/run_budget.py loses the old `probe_request`.
+- stages/run_launcher.py now imports `probe_request` from execute (300 lines).
+- tests/test_probe_floor_matches_runtime.py is new.
+- tests/test_run_approval_grant_budget.py: one expected count changes from 3 to 4.
+
+explore_consent.py, core/consent.py and ui/routes_crawl_approval.py are byte-unchanged since cycle 0. Scope
+match, max_probes validation, schedule/release gating and legacy rows are therefore unchanged and were
+re-run green.
+
+## Independent checks (outputs and exit codes in .work/checker-rab-c1/)
+- **Preflight.** Main .venv python 3.11.16 with PYTHONPATH set to the worktree src: PREFLIGHT_OK, and the
+  import comes from the worktree src (preflight.txt).
+- **Runtime-spend audit (by reading the code).** Probes are charged only in browser/assertions.py: `_probe`,
+  called from `settle` (url or visible_text polling), `met` and the final pass of `assert_expected`, and from
+  evidence.py `_field_sample`, which session.fill calls twice. No other session handler charges a probe:
+  goto, click (click_recovery trial-clicks are not budget probes), select, upload, wait, hover, press_key,
+  scroll, back and screenshot. There are no case retries (run_case_pipeline), and session start, entry
+  cases and the serial or parallel paths spend no probes outside case.steps.
+- **Independent enumeration probe (probe_enum.py / probe_enum.out, exit 0).**
+  - It enumerates every `Action` member (11) and every subset of `ExpectedState.model_fields`. The 6 fields
+    are url, visible_text, absent_text, dom_asserts, visual_signal and network, taken from the schema.
+  - Lists hold several values. FILL is tried with both a plain and a `{{SECRET:K}}` value.
+  - It runs the REAL `execute._run_steps` with the REAL `BrowserSession.fill`, `_field_sample`, `settle`,
+    `_met` and `assert_expected` bound onto a stub, which is stronger than the maker's stubbed fill.
+  - Results: 768 rows, 0 errors. Spend at the all-met minimum equals the floor in every row (0 under, 0 over).
+    On an all-unmet (polling) page, spend is never below the floor.
+  - All 11 actions in one case: spend 27, floor 27. A grant one probe short (26) stops with
+    `RunBudgetExceeded ... max_probes`.
+- **Mutation of the equality test (isolated full copies under .work/checker-rab-c1/mut_*; the candidate was
+  not touched).**
+  - Note: `scripts/regression_proof.py` (imported by tests/conftest.py) prepends the repo `src`, which defeats
+    a PYTHONPATH-only mutation. The first attempt was invalid for that reason, so I made complete
+    src/tests/scripts/pyproject copies.
+  - The baseline copy passed 17 of 17. Each mutation was killed:
+    - fill 2 -> 1: 3 failed.
+    - ASSERT/expectation 2 -> 1: 11 failed.
+    - settle +1 dropped: 7 failed.
+  - Logs are in mutrun2_*.out, with the import origin confirmed per copy.
+- **pytest (26 files, without -q).**
+  - Files: the new file, grant_budget, run_budget_judge_time, run_launcher (plus _approval,
+    _priorities_approval, _retired), execute (plus _assertions, _new_actions, _serial_evidence_scope),
+    ui_crawl_approval (plus _list), consent, explore_consent, ui_auth_host_and_consent,
+    credential_run_approval, ui_runs (plus _live_case_approval, _queue, _serial_entry_mix_live,
+    _serial_entry_order), schedule_wiring, regression_trigger, approval_prod_gate_paths and team_run_launcher.
+  - Result: 329 passed, rc 0, 333 s (pytest_scoped.out, pytest_scoped.exit).
+- **ruff check** on the 8 changed paths: clean, rc 0 (ruff.out).
+- **doctor:** clean, rc 0 (doctor.out).
 
 ## Findings
-1. BLOCKING (ISS-d063-grant-budget-3 not fixed as claimed). `run_budget.probe_request` says it counts the
-   probes a run is KNOWN to spend, but it counts only 2 per FILL and 1 per ASSERT. At runtime
-   (`stages/execute.py::_run_steps`, `browser/assertions.py`) every step with a declared expectation
-   spends probes: `assert_expected` spends at least 2 (one `met()` plus the final `_probe`), and
-   CLICK/NAVIGATE/BACK with an expectation also spend `settle` polls. Probe results:
-   - ASSERT with the expectation already met: counted 1, spends 2. A row with max_probes=1 passes
-     preflight and then stops with `run budget exhausted: max_probes`.
-   - NAVIGATE with expected.url: counted 0, spends 3. `require_live_case_approval` with a human row
-     max_probes=0 PASSES preflight. The run then stops at its first probe after the browser opens.
-     That is the exact failure ISS-3 records.
-   - Real projects/pathlynks/cases.jsonl: probe_request=20, with 4 non-FILL/ASSERT steps that declare
-     expectations and are not counted.
-   This is not a budget bypass: RunBudget still brakes at runtime, and C12 holds. But the preflight
-   floor is below the known minimum, so the ISS-3 outcome ("refuse in preflight when max_probes
-   cannot cover the run") is not delivered. The test pins the wrong count (`_case(Action.CLICK)` == 0
-   only because its steps declare no expectation).
-   Fix: count probes for every step that declares an expectation (and for each ASSERT) using the
-   executor's real minimum, and add a test that pins it against the runtime spend.
-2. Non-blocking. tests/run_approval_fixture.py docstring still says a case run "spends actions, never
-   probes" and that the form has no max_probes field. Both are now false.
-
-## Hunt results (no bypass found)
-- Scope match (-1): the scope is canonical JSON with sorted keys. SecretRef lowercases domains and
-  strips leading dots, so a case variant reuses the row (same scope). A trailing dot,
-  include_subdomains, or an extra or reordered domain list mints a NEW signed row and does not reuse.
-  A domain of only evil.demo.test is refused before any write. An empty or legacy scope never equals
-  the validated JSON. The production path and the human fallback still see human rows only. The
-  credential VALUE is not part of the scope: a rotated value under the same key reuses the row. This
-  is per the CN11 definition; noted, not a violation.
-- -2: test_ui_origin_guard and the new cross-site test pass. A foreign Origin gets 403 and nothing is written.
-- max_probes form field: -1, 40001, abc and 1e3 return 400. A huge int fails the server-side range check.
-  A missing field defaults to 0, which grants none (fail closed). The range check is server-side in `_capped`.
-- schedule_gate and release do not pass a floor. This is not a bypass: release EXECUTE re-gates
-  through `orchestrate_execute -> require_live_case_approval`, and `trigger_run -> prepare_run`
-  gates too, so it is only a pre-check disagreement.
-- AT-570: `ui/routes_runs.py::trigger_run -> run_launcher.prepare_run -> require_live_case_approval`. Gated.
-- Back-compat: a max_probes=0 row is refused with "probes N > approved 0" plus a grant command. No crash.
-- HMAC: schema/approval.py is unchanged, so the bound payload is unchanged. Edited rows are refused (test passes).
-
-## Evidence provenance
-Everything above was produced independently by this checker. No maker receipts were reused.
-
-## Accounting
-Mode BOOTSTRAP_REVIEW (maker usage unknown) plus the standing escalation (limit 480 s, 120000 tokens).
-Measured active time (wall, waits not separated) was 929 s, including 209 s of pytest and two doctor
-runs. This BREACHES the 480 s limit: assess p2-final returned NEEDS_EXTRA_REVIEW, exceeded active_s.
-The breach is recorded, not waived. Tokens: actual null, debit 60000. Ratios unverified.
-Inputs and results: .work/checker-rab/p1-review.*, p2-final.*.
+1. **Floor vs runtime: no undercount found.** This holds for any step kind, expectation combination, secret
+   fill or polling wait. Polling only ever spends more, which the runtime brake decides.
+2. **The equality test is real.** Lowering any of the floor's three terms by 1 fails it.
+3. **One concept, one place: holds.** The old run_budget.py copy is removed. `grep probe_request|step_probe_floor`
+   finds only execute.py (definition) and run_launcher.py (the single caller). The table sits beside
+   `_run_steps`/`_declares_expectation` and reuses `_declares_expectation`; it does not duplicate it.
+4. **The Pathlynks `>=` assertion is adequate.** Exact equality is pinned per kind by the parametrized test and
+   by my 768-row enumeration. The Pathlynks test adds `floor > 20`, which guards the cycle-0 regression.
+5. **Advisory, non-blocking.**
+   - run_launcher.py is at exactly 300/300 lines. ux-advisory-wiring also edits it and merges later, so it will
+     need to extract code or it will trip the C2 cap.
+   - tests/run_approval_fixture.py's docstring still says "a case run spends actions, never probes", which is
+     stale.
+   - The maker's FakeSession.fill stubs two probes rather than running the real `session.fill`. My probe covers
+     the real path.
 
 ## Remaining gates
-Maker fix cycle 1 for finding 1. Then a full suite at integration.
+- Full combined suite after merge (repository release/integration gate).
+- Push and close-out are the maker's or orchestrator's, per D-007. This checker does not push.
+
+## Accounting
+- Wall time about 1,870 s (launch to pre-verdict), including 333 s of pytest and about 30 s of mutation runs.
+  This is over the 400 s focus target and over the 10% target. **Overrun recorded, not waived.**
+- Checker tokens (actual_total) are not measured by this host: null. Maker cycle-1 usage is unknown, so the
+  ratio is unverified.
+- No review_budget.py assess gate was run per phase. This is a process miss; it is recorded, and it does not
+  affect the verification evidence.
