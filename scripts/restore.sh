@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # One job: verify a backup.sh archive against its sha256 manifest, then restore it into a state root.
-# Usage: restore.sh ARCHIVE.tar.gz [--root DIR] [--force]   (needs ARCHIVE.tar.gz.manifest beside it)
+# Usage: restore.sh ARCHIVE.tar.gz [--root DIR] [--force]   (needs ARCHIVE.manifest and .manifest.sha256 beside it)
 set -euo pipefail
+export LC_ALL=C
 
 ROOT="${AUTOTESTER_DATA_DIR:-/data}"
 FORCE=0
@@ -15,32 +16,47 @@ while [ $# -gt 0 ]; do
     *) ARCHIVE="$1"; shift ;;
   esac
 done
+refuse() { echo "restore: REFUSED, $1" >&2; exit 1; }
 [ -n "$ARCHIVE" ] && [ -f "$ARCHIVE" ] || { echo "restore: archive required and must exist" >&2; exit 2; }
+ARCHIVE="$(cd "$(dirname "$ARCHIVE")" && pwd)/$(basename "$ARCHIVE")"
 MANIFEST="$ARCHIVE.manifest"
-[ -f "$MANIFEST" ] || { echo "restore: manifest missing: $MANIFEST" >&2; exit 1; }
+[ -f "$MANIFEST" ] && [ -f "$MANIFEST.sha256" ] || refuse "manifest or manifest.sha256 missing beside the archive"
 
+[ "$(sha256sum < "$MANIFEST" | cut -d' ' -f1)" = "$(tr -d ' \r\n' < "$MANIFEST.sha256")" ] \
+  || refuse "manifest sha256 mismatch (tampered or corrupt)"
 want="$(awk '$1=="archive_sha256"{print $2}' "$MANIFEST")"
-have="$(sha256sum < "$ARCHIVE" | cut -d' ' -f1)"
-if [ -z "$want" ] || [ "$want" != "$have" ]; then
-  echo "restore: REFUSED, archive sha256 does not match the manifest (tampered or corrupt)" >&2
-  exit 1
-fi
+[ -n "$want" ] && [ "$want" = "$(sha256sum < "$ARCHIVE" | cut -d' ' -f1)" ] \
+  || refuse "archive sha256 does not match the manifest (tampered or corrupt)"
+
+# Member names and types are checked from the listing before anything is extracted.
+TYPES="$(tar -tzvf - < "$ARCHIVE" | cut -c1)"
+if printf '%s\n' "$TYPES" | grep -qvE '^[-d]$'; then refuse "archive holds a non-regular member (link or device)"; fi
+NAMES="$(tar -tzf - < "$ARCHIVE")"
+if printf '%s\n' "$NAMES" | grep -qE '^/|(^|/)\.\.(/|$)'; then refuse "archive holds an absolute or parent-relative path"; fi
 
 if [ -d "$ROOT" ] && [ -n "$(ls -A "$ROOT" 2>/dev/null)" ] && [ "$FORCE" -ne 1 ]; then
-  echo "restore: REFUSED, target $ROOT is not empty (use --force to overwrite)" >&2
-  exit 1
+  refuse "target $ROOT is not empty (use --force to overwrite)"
 fi
 
-mkdir -p "$ROOT"; ROOT="$(cd "$ROOT" && pwd)"
+CREATED=0; [ -d "$ROOT" ] || { mkdir -p "$ROOT"; CREATED=1; }
+ROOT="$(cd "$ROOT" && pwd)"
 STAGE="$(mktemp -d "$ROOT/.restore-stage.XXXXXX")"
-trap 'rm -rf "$STAGE"' EXIT
+cleanup() { rm -rf "$STAGE"; [ "$CREATED" -eq 1 ] && [ "$OK" -ne 1 ] && rmdir "$ROOT" 2>/dev/null || true; }
+OK=0; trap cleanup EXIT
 tar -C "$STAGE" -xzf - < "$ARCHIVE"
 
-# Verify every file against the manifest before anything touches the live tree.
-(cd "$STAGE" && grep -E '^[0-9a-f]{64} [ *]' "$MANIFEST" | sha256sum -c --quiet -) \
-  || { echo "restore: REFUSED, per-file sha256 check failed" >&2; exit 1; }
-n="$(grep -cE '^[0-9a-f]{64} [ *]' "$MANIFEST" || true)"
+[ -z "$(find "$STAGE" ! -type f ! -type d -print -quit)" ] || refuse "extracted tree holds a non-regular entry"
+# Allowlist and integrity in one: the staged tree must hash to exactly the manifest entries.
+EXPECT="$(sed -n '/^# entries/,$p' "$MANIFEST" | tail -n +2)"
+ACTUAL="$(cd "$STAGE" && find . -type f -print0 | sed -z 's|^\./||' | sort -z | xargs -0 -r sha256sum)"
+[ "$EXPECT" = "$ACTUAL" ] || refuse "staged files differ from the manifest (extra, missing or modified file)"
 
-# Move into place (cp -a keeps modes; the stage dir is excluded since it sits under ROOT).
-(cd "$STAGE" && tar -cf - .) | tar -C "$ROOT" -xf -
-echo "restore: $n files restored into $ROOT"
+# Rename each top-level entry into place (same filesystem as the stage).
+shopt -s nullglob dotglob
+for e in "$STAGE"/*; do
+  name="$(basename "$e")"
+  rm -rf "${ROOT:?}/$name"
+  mv "$e" "$ROOT/$name"
+done
+OK=1
+echo "restore: $(printf '%s' "$EXPECT" | grep -c . || true) files restored into $ROOT"

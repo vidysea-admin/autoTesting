@@ -171,7 +171,7 @@ Keep the archive off the server and treat it as a secret (it holds credentials a
 
 `backup.sh` archives the writable state root (default `/data`, or `--root DIR` / `AUTOTESTER_DATA_DIR`)
 into `autotester-backup-<UTC stamp>.tar.gz` plus `<archive>.manifest` (file count, archive sha256,
-and a sha256 per file). Caches are always skipped. Secrets (`.env`, `.auth/`, `profiles/` browser
+and a sha256 per file). Caches are always skipped. Secrets (`.env*`, `.auth`, `profiles`, `*.pem`, `*.key`, `id_rsa*`, `credentials*.json`, `token*.json`, `*service-account*.json`, browser cookie and login stores, at any depth; browser
 sessions) are skipped unless you pass `--include-secrets`, which prints a warning: such an archive
 must be stored encrypted and private. `--gcs gs://bucket/prefix` also uploads archive and manifest
 when `gsutil` or `gcloud` is installed (exit 3 if it is not; the local archive is kept).
@@ -196,8 +196,8 @@ bash scripts/restore.sh /backups/autotester-backup-<stamp>.tar.gz --root /data  
 bash scripts/restore.sh /backups/autotester-backup-<stamp>.tar.gz --root /data --force  # overwrite
 ```
 
-`restore.sh` needs the `.manifest` file beside the archive, refuses an archive whose sha256 does not
-match, verifies every file's sha256 in a staging folder before touching the target, and refuses a
+`restore.sh` needs the `.manifest` and `.manifest.sha256` files beside the archive (the manifest hash is checked first; real signing is a follow-up, as is HO36 encryption), refuses an archive whose sha256 does not
+match, rejects link members, then requires the staged tree to match the manifest exactly (no extra, missing or modified file) in a staging folder before renaming it into the target, and refuses a
 non-empty target without `--force`. Start the stack again afterwards.
 
 ### 10. Upgrade and rollback
