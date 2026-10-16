@@ -1,6 +1,6 @@
 # Manifest - ux-advisory-wiring
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Issues addressed:** AT-794
 **Base SHA:** 5e76ae2238707161fa33f5ae379a11a281a951d3

@@ -1,6 +1,6 @@
 # Manifest - ux-advisory-integration
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Issues addressed:** AT-794 (integration onto new master), AT-794 F1
 **Base SHA:** 766eae68d70ee0e6315cabe9d90dd0dc14e81147 (master after run-approval-grant-budget close-out)
