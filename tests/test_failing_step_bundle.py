@@ -9,9 +9,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from test_execute import LOGIN, make_case, session_with_fake_page
 from test_run_failure_artifacts import _launch
 
+from autotester.browser.destroy_guard import AccountDestroyRefused
+from autotester.browser.session import NavigationRefused
 from autotester.core.redact import Redactor
 from autotester.schema.enums import Action, Outcome, Result
 from autotester.schema.failure_bundle import BundleIndex
@@ -19,6 +22,7 @@ from autotester.schema.flowspec import Step
 from autotester.schema.verdict import Verdict
 from autotester.stages.execute import run_case
 from autotester.stages.failure_bundle import build_failure_bundle, load_bundle
+from autotester.stages.run_budget import RunBudgetExceeded
 
 RUN = "run_787"
 
@@ -87,3 +91,54 @@ def test_missing_step_falls_back_to_heuristic_with_marker(tmp_path: Path) -> Non
     unknown = result.model_copy(update={"failing_step": 99})
     other = load_bundle(_bundle(tmp_path / "x", case, unknown))
     assert other.failing_step_source == "heuristic_fallback"
+
+
+def test_first_failure_wins_over_a_later_raise(tmp_path: Path) -> None:
+    steps = [Step(order=1, action=Action.NAVIGATE, target=LOGIN),
+             Step(order=2, action=Action.CLICK, target="button[type=submit]",
+                  expected={"visible_text": ["Dashboard"]}),
+             Step(order=3, action=Action.CLICK, target="button.broken")]
+    session = session_with_fake_page(tmp_path)
+    session.page.body_text = "Invalid credentials"
+    case = make_case(steps)
+    result = run_case(case, session)
+    assert result.outcome is Outcome.ERRORED and result.failing_step == 2
+    assert result.failing_step_cause is None  # the raise was step 3, not the failure
+    manifest = load_bundle(_bundle(tmp_path, case, result))
+    assert manifest.failing_step == 2 and manifest.failing_step_source == "recorded"
+
+
+def test_polled_unmet_expectation_names_the_settled_step(tmp_path: Path) -> None:
+    steps = [Step(order=1, action=Action.NAVIGATE, target=LOGIN),
+             Step(order=2, action=Action.CLICK, target="button[type=submit]",
+                  expected={"url": "/never-arrives"}),
+             Step(order=3, action=Action.NAVIGATE, target=LOGIN)]
+    session = session_with_fake_page(tmp_path)
+    case = make_case(steps)
+    result = run_case(case, session)
+    assert result.outcome is Outcome.ASSERTION_FAILED and result.failing_step == 2
+    assert load_bundle(_bundle(tmp_path, case, result)).failing_step_source == "recorded"
+
+
+def _raising_click(exc: Exception):
+    def click(*_a, **_k):
+        raise exc
+    return click
+
+
+@pytest.mark.parametrize("exc,source", [
+    (AccountDestroyRefused("refused"), "blocked_by_guard"),
+    (NavigationRefused("refused"), "blocked_by_guard"),
+    (RunBudgetExceeded("max_actions"), "budget_stop"),
+])
+def test_guard_refusal_and_budget_stop_get_distinct_sources(
+        tmp_path: Path, monkeypatch, exc, source) -> None:
+    steps = [Step(order=1, action=Action.NAVIGATE, target=LOGIN),
+             Step(order=2, action=Action.CLICK, target="button[type=submit]")]
+    session = session_with_fake_page(tmp_path)
+    monkeypatch.setattr(session, "click", _raising_click(exc))
+    case = make_case(steps)
+    result = run_case(case, session)
+    assert result.outcome is Outcome.ERRORED and result.failing_step == 2
+    manifest = load_bundle(_bundle(tmp_path, case, result))
+    assert manifest.failing_step == 2 and manifest.failing_step_source == source

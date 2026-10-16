@@ -59,6 +59,11 @@ class RawResult(Artifact):
         description="AT-787: `order` of the step the executor saw break (first unmet assertion, "
                     "or the step that raised/blocked); None when nothing failed or unrecorded",
     )
+    failing_step_cause: Literal["blocked_by_guard", "budget_stop"] | None = Field(
+        default=None,
+        description="AT-787: set when the (first) failing step stopped on a guard refusal or "
+                    "a budget brake",
+    )
     evidence: list[Evidence] = Field(default_factory=list)
     log_ref: str | None = None
 

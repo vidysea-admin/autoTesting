@@ -1,7 +1,7 @@
 # Manifest - at787-failure-step
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Issues addressed:** AT-787
 
 ## What changed
@@ -12,3 +12,8 @@
 
 ## Tests
 `tests/test_failing_step_bundle.py` (new); regression: test_failure_bundle*, test_run_failure_artifacts, test_execute*.
+
+## Fix cycle 1
+- First failure wins: an earlier unmet assertion is kept when a later step raises (`_first`).
+- `RawResult.failing_step_cause` (blocked_by_guard | budget_stop) set when the first failing step itself was a guard refusal or budget brake; the manifest `failing_step_source` carries it. Backward compatible: both fields optional.
+- Tests added: unmet-then-raise, polled unmet url, guard (x2) and budget stop.

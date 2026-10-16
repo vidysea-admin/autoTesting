@@ -105,7 +105,7 @@ def _failing_step(case: Case, result: RawResult,
             raise BundleError(f"failing step {requested} is not a step of case {case.id}")
         return requested, "explicit"
     if result.failing_step in orders:
-        return result.failing_step, "recorded"
+        return result.failing_step, result.failing_step_cause or "recorded"
     seen = [e.step_order for e in result.evidence if e.step_order is not None]
     fallback = max(seen) if seen else (orders[0] if orders else None)
     if fallback is not None and fallback not in orders:
