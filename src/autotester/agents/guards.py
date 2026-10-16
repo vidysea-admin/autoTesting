@@ -16,6 +16,7 @@ http(s) URL), plus the declared login case's credential entry.
 
 from __future__ import annotations
 
+import itertools
 import re
 import unicodedata
 from dataclasses import dataclass, field
@@ -25,6 +26,7 @@ from autotester.browser.secrets import SecretStore
 from autotester.browser.session import NavigationRefused, check_destination
 from autotester.core.consent import require_project_approval
 from autotester.core.redact import PLACEHOLDER_RE
+from autotester.core.redact_wrap import is_ignorable_char
 from autotester.schema.agent_layer import RefusalClass
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
@@ -107,25 +109,78 @@ _CONFUSABLES = {  # code point -> Latin letter (Cyrillic a e o p c x y i s j d h
          0x3BF, 0x3BD, 0x3B9), "aeopcxyisjdhovi", strict=True)}
 _CONFUSABLE_TABLE = str.maketrans(_CONFUSABLES)
 _UNNAMED = "unnamed control"
+_BRAILLE_BLANK = "⠀"  # visible-blank So, not default-ignorable; blank to a reader
 
 
-def _click_names(name: str) -> tuple[str, ...]:
-    """A click target as the person sees it, in two readings: NFKC, lookalikes folded, case folded,
-    separators and whitespace collapsed (`normalise_label`), with invisible/format characters
-    dropped (`De<ZWSP>lete`) and with them read as a space (`Save<ZWSP>draft`)."""
+def _hidden(ch: str) -> bool:
+    """READ_ONLY reading of 'draws nothing': the one redaction helper (`is_ignorable_char`,
+    AT-351/611: Cf/Cc, Default_Ignorable incl. Hangul fillers, variation selectors, tags) plus
+    the Braille blank."""
+    return ch == _BRAILLE_BLANK or is_ignorable_char(ch)
+
+
+def _blank_name(name: str) -> bool:
+    """True when nothing a person can read is left: only whitespace, hidden characters, or
+    combining marks (Mn/Me) with no base."""
+    return all(ch.isspace() or _hidden(ch) or unicodedata.category(ch) in ("Mn", "Me")
+               for ch in unicodedata.normalize("NFKC", name))
+
+
+_MAX_HIDDEN_RUNS = 4  # 2**4 = 16 readings; more hidden runs inside the text are refused
+_TOO_HIDDEN = "click name hides invisible characters inside its text at too many places"
+
+
+def _click_names(name: str, strict: bool = False) -> tuple[str, ...]:
+    """A click target as the person sees it. Always the base two readings: NFKC, lookalikes
+    folded, case folded, separators collapsed (`normalise_label`), Cf dropped (`De<ZWSP>lete`)
+    and Cf read as a space (`Save<ZWSP>draft`). `strict` (READ_ONLY) adds `_hidden_readings`,
+    so a READ_ONLY name is matched against a superset of what base matched (never weaker)."""
     text = unicodedata.normalize("NFKC", name)
+    out = [explore_safety.normalise_label("".join(
+        hidden if unicodedata.category(ch) == "Cf" else (" " if ch.isspace() else ch)
+        for ch in text).translate(_CONFUSABLE_TABLE).casefold()) for hidden in ("", " ")]
+    return tuple(dict.fromkeys(out + list((strict and _hidden_readings(name)) or ())))
+
+
+def _visible_pieces(name: str) -> list[str]:
+    """NFKC, case folded, then lookalikes folded (capital Cyrillic too); whitespace and
+    punctuation (Unicode P*: `:` `,` dashes, brackets, quotes) read as a space; split at every
+    run of hidden characters (`_hidden`)."""
+    text = unicodedata.normalize("NFKC", name).casefold().translate(_CONFUSABLE_TABLE)
+    marked = "".join(" " if ch.isspace() or unicodedata.category(ch)[0] == "P"
+                     else "\0" if _hidden(ch) else ch for ch in text)
+    return re.split("\0+", marked)
+
+
+def _hidden_readings(name: str) -> tuple[str, ...] | None:
+    """Every reading of each hidden run that sits between two visible characters as a join
+    (`De<ZWSP>lete`) or a gap (`Delete<U+2800>item`), chosen per run, so mixing the two meanings
+    in one name cannot pick a reading no form covers. None when more than `_MAX_HIDDEN_RUNS`
+    such runs hide inside the text (READ_ONLY refuses that, fail closed)."""
+    pieces = _visible_pieces(name)
+    joints = [i for i in range(len(pieces) - 1)
+              if pieces[i][-1:].strip() and pieces[i + 1][:1].strip()]
+    if len(joints) > _MAX_HIDDEN_RUNS:
+        return None
     out = []
-    for hidden in ("", " "):
-        seen = "".join(hidden if unicodedata.category(ch) == "Cf" else (" " if ch.isspace() else ch)
-                       for ch in text)
-        out.append(explore_safety.normalise_label(seen.translate(_CONFUSABLE_TABLE).casefold()))
-    return tuple(dict.fromkeys(out))
+    for choice in itertools.product(("", " "), repeat=len(joints)):
+        gap = dict(zip(joints, choice, strict=True))
+        text = pieces[0] + "".join(gap.get(i, "") + p for i, p in enumerate(pieces[1:]))
+        out.append(explore_safety.normalise_label(text))
+    return tuple(out)
 
 
 def _click_refusal(name: str, project: Project,
                    ctx: DestroyContext | None = None) -> str | None:
-    """Deny-list, never-click and unnamed (blank after cleaning) checks for a click target."""
-    names = _click_names(name)
+    """Deny-list, never-click and unnamed (blank after cleaning) checks for a click target.
+    Under READ_ONLY an invisible-filler-only name is unnamed too, and a name hiding invisible
+    runs inside its text at more than `_MAX_HIDDEN_RUNS` places is refused."""
+    strict = project.write_policy is WritePolicy.READ_ONLY
+    if strict and _blank_name(name):
+        return _UNNAMED
+    if strict and _hidden_readings(name) is None:
+        return _TOO_HIDDEN
+    names = _click_names(name, strict)
     if not any(names):
         return _UNNAMED
     return next((why for n in names if (why := _click_denied(n, project, ctx))), None)
@@ -198,7 +253,7 @@ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
     if action is Action.CLICK:  # D-086 HG-1: benign clicks run; deny-list/never-click still hold
         return _click_refusal(step.target, project, walk.ctx) or (
             "click on a control named like a commit can change state"
-            if any(_COMMIT_NAME.search(n) for n in _click_names(step.target)) else None)
+            if any(_COMMIT_NAME.search(n) for n in _click_names(step.target, True)) else None)
     if action is Action.FILL:
         return "fill outside the declared login's credential entry"
     return f"{action.value} can change state"
