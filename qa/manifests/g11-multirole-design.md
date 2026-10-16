@@ -1,6 +1,6 @@
 # Manifest — g11-multirole-design
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Prior FAIL: qa/verdicts/g11-multirole-design.md cycle 0 (verdict commit dd6da595; reviewed b8862b35)
 Unit: g11-multirole-design — DESIGN only (docs, goal rows, contract proposals, decision draft). No product code.
