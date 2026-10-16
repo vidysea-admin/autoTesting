@@ -1,6 +1,6 @@
 # Manifest - hosting-backup
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** AT-868 / T-203 slice: backup and restore of persistent state (go-live critical part only)
 **Branch:** hosting-backup
