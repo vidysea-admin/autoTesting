@@ -12,6 +12,7 @@ from autotester.schema.project import Project
 from autotester.schema.run_state import ExpansionAttempt, PipelineBatch, StageName
 from autotester.schema.verdict import Verdict
 from autotester.stages.expand import expand
+from autotester.stages.flow_plan import plans_from_batch
 from autotester.stages.grade import grade
 from autotester.stages.orchestrate import StageContext
 from autotester.stages.orchestrate_execute import (
@@ -194,6 +195,8 @@ def make_report_stage():
                            ctx.store.paths.root, case_overrides=cases)
         export_excel(batch.project, ctx.run_id, output / "report.xlsx",
                      ctx.store.paths.root, case_overrides=cases)
+        for plan in plans_from_batch(batch):  # RR6: a completed flow leaves its plan
+            ctx.store.save_flow_plan(plan)
         prune_old_videos(view)
         ask_for_what_it_did_not_recognise(view, ctx.run_id)
         return str(html)

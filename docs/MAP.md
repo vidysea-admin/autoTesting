@@ -261,6 +261,7 @@
 | `stages/explore_traversal.py` | Which screen the crawl visits next — the frontier's ORDER, and nothing else. |
 | `stages/explore_typing.py` | The X10-b typing pre-pass (D-029): what the crawler types, and where it |
 | `stages/failure_bundle.py` | Assemble and load one atomic failure bundle (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
+| `stages/flow_plan.py` | Derive each completed flow's persisted validation plan from a finished run (AT-898, RR6). |
 | `stages/generic_acceptance.py` | GENERIC ACCEPTANCE: one harness that drives a product through BOTH entry modes (T-169). |
 | `stages/grade.py` | GRADE: an independent, stateless judge reads a Rubric + a RawResult's evidence. |
 | `stages/grade_images.py` | Deliver sanitized grading images and expose privacy-driven visual evidence shortfalls. |
