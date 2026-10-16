@@ -5975,3 +5975,91 @@ Built `tests/acceptance/` (rig.py, review_support.py, schedule_support.py, conft
 
 Contract ingest I9: "every SDK exception (upload, poll, generate) is re-raised as `ProviderError` **with its cause chained**."
 Current task requires safe errors/redaction, and core C5 forbids secrets in logs/artifacts. Original SDK exception causes can contain vendor payloads, credentials, uploaded paths, and prompt echoes. Maker suppresses the raw cause (`from None`) and reports only a safe exception category. Please clarify I9's cause-chain requirement against C5 and D-101/D-102 safety; do not require raw secret-bearing causes. MAX_TOKENS truncation remains explicit and bypasses malformed-JSON repair.
+
+## 2026-10-16 · maker (g11-multirole-design) · proposed criteria for a new multi-role-platform contract (Group 11, T-207..T-218)
+
+Source: `docs/features/multi-role-platform/intent.md` (O16-O21, Umesh's 2026-10-16 answers). No contract exists; maker never creates or edits one. Checker to fold into a new `qa/contracts/multi-role-platform.md` (prefix MP, unused today) after Umesh approves the G11 decision draft (`qa/manifests/g11-decision-draft.md`). Verify lines name a fixture; none is satisfied by a file existing (vacuous-guard class).
+
+**T-207 schema**
+- **MP1 — Platform and PlatformLink are closed shapes.** `schema/platform.py::Platform` and `schema/platform_link.py::PlatformLink` are Pydantic with `extra="forbid"`; link kind is the closed set `redirect | sso | shared_account | handoff`; a link naming an undeclared platform id fails validation. Verify: round-trip plus one unknown-field and one dangling-link rejection test. serves: intent#O16
+- **MP2 — A RoleAccount holds keys, never values.** `RoleAccount` and `MailboxRef` carry only `SecretRef`-shaped keys matching `^[A-Z][A-Z0-9_]*$`; a field holding a value-shaped string (contains `@` with a password, or any non-key text in a key field) is rejected. Verify: schema test plus `core.redact.assert_no_raw_secrets` over a serialised project. serves: intent#O17
+- **MP3 — Old projects still load.** A project.json with one `base_url` and no `platforms` loads as exactly one implicit platform whose allowed_domains equal the project's; writing it back does not add the new fields. Verify: round-trip of a real pre-G11 fixture byte-compared. serves: intent#O16
+
+**T-208 onboarding**
+- **MP4 — N accounts across M platforms at new-project time.** The new-project flow accepts at least 8 role accounts across 3 platforms in one submission, stores keys in the repo-root `.env` through the existing env editor, and the saved project lists every account with role, platform and tenant label. Verify: route test with 8x3 fixture; live persona walk as `onboarder`. serves: intent#O17
+- **MP5 — Scope refusal names the reason.** A role account whose SecretRef domain scope admits a host outside its own platform (including the subdomain suffix-match case) is refused with a message naming the account, the platform and the wider host. Verify: two fixtures, sibling subdomains with `include_subdomains` true and false. serves: intent#O17, intent#O7
+- **MP6 — Identity and permission.** The form and its POST require a signed-in member with the existing project-edit permission (no new permission key, auth.md). Verify: anonymous and no-group requests get the existing refusal. serves: intent#O17
+
+**T-209 severity and banner**
+- **MP7 — Leak and privilege are always P0.** `stages/finding_priority.py` assigns P0 to every finding of class data-leak or privilege-escalation, with no model input and no override argument. Verify: parametrised test over every class plus a mutation that lowers one to P1 turns the test red. serves: intent#O19
+- **MP8 — Banner first.** When any P0 leak or privilege finding exists, the rendered report's first header block is a release-blocking banner with the count and a link to each finding's repro; with none, no banner renders. Verify: render test on both fixtures, asserting position, not just presence. serves: intent#O19
+- **MP9 — No third-party PII persists.** `LeakEvidence` holds count, field names, at most 5 HMAC-SHA256 hashed ids keyed per project, a masked screenshot path and a URL template; a planted canary name, email and phone in the probed page appear in no file under the run directory, no log line and no provider prompt. Verify: canary sweep over the run dir and captured prompts. serves: intent#O19, intent#O7
+- **MP10 — Repro survives masking.** Each P0 finding carries role, platform, URL template, ordered action steps and the count, enough for a second run to reproduce it. Verify: replay the recorded repro against the fixture and get the same count. serves: intent#O19, intent#O3
+
+**T-210 session runner**
+- **MP11 — One isolated context per role.** Two role accounts in one run share no cookies, storage or profile directory; a sign-out in one leaves the other signed in. Verify: local two-account fixture app. serves: intent#O18
+- **MP12 — Links are followed and accounted for.** Every declared PlatformLink is reported followed, failed (with reason) or not reached; a hop landing on a host outside every declared platform stops and becomes a finding. Verify: fixture with a redirect, an SSO hop and one off-platform redirect. serves: intent#O16, intent#O4
+
+**T-211 cross-role scenarios**
+- **MP13 — Role-tagged steps and timed assertions.** A scenario step names the role account that performs it; an assertion names observer role, channel (`ui | mailbox | api`), `present | absent` and within_s; the runner polls until within_s and records the observed time. Verify: fixture where B's view updates after 2 s passes at T=5 and fails at T=1. serves: intent#O18
+- **MP14 — Absence is evidence.** An `absent` assertion passes only after the full window elapsed with no match; a `present` assertion that never matched fails with the window and the last observation. Verify: both directions on the fixture. serves: intent#O18, intent#O3
+- **MP15 — Unbuilt oracles say so.** The oracle registry lists every G11 oracle by module name; a missing module is reported `not built` in the run summary, never omitted. Verify: registry test with one module absent. serves: intent#O20, intent#O4
+
+**T-212 mailbox**
+- **MP16 — Read-only mailbox.** The IMAP reader uses `EXAMINE` and `BODY.PEEK` only; no STORE, COPY, MOVE, EXPUNGE or APPEND command is ever sent. Verify: fake IMAP server records the command list. serves: intent#O18, intent#O7
+- **MP17 — Bounded and scrubbed.** The fetch is bounded by since-time, recipient and a message cap; bodies pass `Redactor.scrub`; a credential-shaped token in a body is recorded as present, never its value. Verify: fixture mailbox with a planted temporary password. serves: intent#O18, intent#O7
+
+**T-213 authz oracles**
+- **MP18 — Cross-tenant probe.** With two tenants (or one tenant with a declared own-entity count), rows visible to tenant A that are not A's are counted and reported P0 with LeakEvidence. Verify: fixture app that leaks 3 foreign rows. serves: intent#O19
+- **MP19 — Vertical privilege and role-assign escalation.** Requests captured in a higher role's session are replayed in a lower role's context (reads); one role-assign attempt per control is made where the lower role can reach it; success is P0 and is reverted in the same run with the revert recorded. Verify: fixture with one escalatable endpoint and one correctly refused. serves: intent#O19
+- **MP20 — Probes are bounded and deterministic.** At most 3 id-swap reads per endpoint, 1 list page per list view, a per-platform request cap; a bound that stops a probe names what was left unprobed; no provider call is made by these oracles. Verify: counting fake transport; provider stub asserts zero calls. serves: intent#O19, intent#O4
+
+**T-214 network oracles**
+- **MP21 — Hidden API error.** A first-party 4xx/5xx response during a step whose UI shows success becomes a finding citing the request (redacted URL, status) and the success screen. Verify: fixture returning 500 behind a success toast. serves: intent#O20, intent#O3
+- **MP22 — Request and polling budget.** Requests per screen and the minimum polling interval are measured from `network_capture`; exceeding the project's declared budget is a finding with the measured numbers. Verify: fixture polling every 200 ms against a 1 s budget. serves: intent#O20
+
+**T-215 consistency and answer key**
+- **MP23 — Same entity, N readers.** An entity handle produced in a scenario is read as each declared role; differing field values across roles (beyond declared role-specific fields) are a finding listing each role's value class, not raw personal values. Verify: fixture where the parent sees a stale status. serves: intent#O20
+- **MP24 — Answer-key scoring.** Given an answer-key fixture derived from product docs, answering every item correctly must yield the documented score; a mismatch is a finding. The fixture records its source and is refused if it cites a benchmark finding. Verify: fixture scoring 7/10 for all-correct answers. serves: intent#O20, intent#O21
+
+**T-216 surface oracles**
+- **MP25 — Copy, branding and timezone lint.** Declared lint rules (brand terms, forbidden strings, expected display timezone) run over visible DOM text and mail bodies; each hit cites screen or message and the rule. Verify: fixture with a wrong brand name and a UTC time shown to an IST user. serves: intent#O20
+- **MP26 — Responsive sweep.** Each visited screen is checked at the declared viewports; horizontal overflow or a control off-screen is a finding with a masked screenshot. Verify: fixture overflowing at 375 px. serves: intent#O20
+
+**T-217 credential policy and payment**
+- **MP27 — Credential policy.** Account-creation and reset flows are probed for weak-password acceptance and for credentials sent in plain mail; findings record the rule broken, never the value. Verify: fixture accepting a 4-character password and mailing it. serves: intent#O20, intent#O7
+- **MP28 — Payment presence, no charge.** The payment oracle reports whether each declared paid path reaches a gateway page (and a coupon path where declared) and stops there unless the provider is in test mode; no real charge is ever submitted. Verify: fixture gateway whose submit endpoint records zero calls. serves: intent#O20
+
+**T-218 CEO benchmark**
+- **MP29 — Scored by the existing scorer.** Recall (overall and per priority), FP rate over adjudicated findings and wall time come from `stages/bench.py`/`acceptance_comparison`; no second scorer. Unadjudicated findings are neither TP nor FP. serves: intent#O21, intent#O6
+- **MP30 — Ordering and contamination recorded.** The atomic list's sha256 and commit time precede the run's start; scenarios derived from a specific finding are labelled and excluded from recall; without the recorded ordering recall reads `unavailable (ordering not recorded)` (T-136 gate). Only counts and the hash are committed. serves: intent#O21
+- **MP31 — Eight roles, linked platforms, live.** The acceptance run uses the onboarded 8 role accounts across the linked platforms in a real visible browser under a valid RunApproval, and reports per oracle whether it ran. serves: intent#O21, intent#O16, intent#O18
+
+**Status:** unfolded
+
+## 2026-10-16 · maker (g11-multirole-design, fix cycle 1) · addendum to the MP1-MP31 proposals above
+
+Answers checker verdict `qa/verdicts/g11-multirole-design.md` cycle 0 (F1, A1-A5). Where this addendum restates a criterion, the restatement replaces the earlier text when /checker folds; the earlier section stays as appended. Still unfolded; still held on the G11 decision draft.
+
+**F1: two techniques that had no owner**
+- **MP32 — Negative input per role (T-219).** For each form flow, the INPUT_EMPTY, INPUT_BOUNDARY, INPUT_UNICODE_OVERSIZE and DOUBLE_SUBMIT cases that `stages/expand.py` already produces run once per role account whose permitted surface reaches the form; `expand.py` is not edited. A submission the product accepts in breach of a declared `FieldConstraints` rule, a rule enforced for one role and not another, or a double submit that creates two records is a finding naming the role, form, rule and class. Verify: a synthetic fixture form with a rule matrix (required, min and max length, pattern, numeric range), enforced for role A and skipped for role B, plus a non-idempotent submit; every matrix cell is asserted, and a mutation that drops the per-role loop turns the role-B cells red. serves: intent#O20, intent#O3
+- **MP33 — State consistency after an action (T-220).** A `StateProbe` (`schema/state_probe.py`, reusing `schema/flowspec.py::ExpectedState`) names a counter, list or status reader (selector or first-party API pattern), the expected delta and the reader roles. The oracle reads before the action, after it, and after a reload, as each reader role; a missing, wrong-sized or non-persistent change is a finding citing all three readings. Verify: a synthetic fixture with three faults (counter not incremented, incremented only for the actor, reverted on reload) and one correct counter; each fault is reported and the correct one is not. serves: intent#O18, intent#O20
+
+**A1: fixtures stay blind (replaces the Verify lines of MP17, MP25 and MP27)**
+- **MP17 Verify:** a fixture mailbox with credential-shaped tokens of several synthetic shapes (numeric code, mixed token, URL-embedded token); none is stored, each is recorded as present.
+- **MP25 Verify:** a synthetic rule matrix: each declared brand term misspelt once, each forbidden string present once, and a timestamp rendered in each of two arbitrary zones other than the declared display zone; every cell is reported, and a control page with none is clean.
+- **MP27 Verify:** a synthetic matrix over every declared password rule (length, character classes, reuse) on create and reset flows, and outgoing messages carrying each synthetic token shape; each broken rule is reported by rule name, never by value.
+- **Fixture rule:** unit-test fixtures are synthetic and cover each rule class as a matrix. None may reproduce one benchmark finding's case; /checker rejects a fixture that does.
+
+**A2:** `schema/multi_role_enums.py` holds every G11 enum and is created and edited by T-207 only. A later unit that needs a new enum defines it in its own schema file. Verify (any G11 unit after T-207): `git diff --name-only <base>..<candidate>` does not list `schema/multi_role_enums.py`.
+
+**A3 (restates MP8's location):** the banner is built in a new `stages/report_banner.py` and called first by `stages/unified_report_render.py`; `stages/unified_report.py` is not edited by T-209.
+
+**A5 (adds to MP20):** T-213's probes reuse the T-154 bounded-pass mechanism, not a second probe concept. The planned probe count must be covered by a signed `RunApproval` checked through `core/consent.py::require_project_approval`; a code-side ceiling refuses an oversized plan; a refusal sends nothing and appends one non-secret line to `refusals.jsonl`. Verify: an approval covering 2 probes against a plan of 3 is refused with zero transport calls and one refusal line; no `schema/probe_budget.py` exists.
+
+**A4: Verify lines for MP29-MP31**
+- **MP29 Verify:** a synthetic atomic list (6 items over 3 priorities) and a synthetic AutoTester finding set (3 matches, 1 adjudicated FP, 1 unadjudicated) give recall 3/6 overall and per priority, an FP rate over adjudicated findings only, and one recall line per technique with its owning unit (an owner that did not run reads `not run`). The numbers are asserted equal to `stages/bench.py` output on the same input, and a second scorer module is absent.
+- **MP30 Verify:** three fixtures. In the first the list hash and commit time precede the run start, and recall is a number. In the second the list postdates the run, and recall reads `unavailable (ordering not recorded)`. In the third a scenario is labelled derived-from-finding, and its match is excluded from recall. A grep of the committed scorecard finds only counts and the list's sha256.
+- **MP31 Verify:** run evidence lists 8 onboarded role accounts and every declared platform with each one's login outcome, references a valid signed RunApproval id, records headed mode, and has a per-oracle ran / not built / not run table covering every registry entry; a role or oracle missing from the table fails.
+
+**Status:** unfolded
