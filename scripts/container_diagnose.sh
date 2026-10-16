@@ -13,14 +13,39 @@
 # Exit: 0 healthy; 1 a check failed (see DIAGNOSIS); 2 usage or no docker.
 # The functions below are sourceable (redact, diagnose) so tests run without docker.
 
-# Mask the VALUE after KEY/TOKEN/SECRET/PASSWORD names, and Bearer credentials.
-redact() {
-  sed -E \
-    -e 's/(([Kk][Ee][Yy]|[Tt][Oo][Kk][Ee][Nn]|[Ss][Ee][Cc][Rr][Ee][Tt]|[Pp][Aa][Ss][Ss][Ww]([Oo][Rr])?[Dd])[A-Za-z0-9_]*"?[[:space:]]*[=:][[:space:]]*"?)[^[:space:]",]+/\1<redacted>/g' \
-    -e 's/([Bb][Ee][Aa][Rr][Ee][Rr][[:space:]]+)[A-Za-z0-9._~+\/=-]+/\1<redacted>/g' \
-    -e 's/(AIza)[A-Za-z0-9_-]{20,}/\1<redacted>/g' \
-    -e 's/(sk-)[A-Za-z0-9_-]{16,}/\1<redacted>/g'
+# redact: stdin -> stdout. Masks the VALUE and keeps the KEY NAME so the log stays readable.
+# Fail safe: when unsure, mask. Covers key=value / key: value / JSON (also backslash-escaped JSON) for
+# key|token|secret|password|passwd|pwd|auth|credential(s)|session|cookie|private names (case-insensitive,
+# so api_key, X-Api-Key, DB_PASSWORD, SESSION_ID all match), quoted values to the closing quote,
+# URL user:pass@, Authorization/Cookie/Set-Cookie headers (whole value), Bearer tokens, CLI flags
+# (--password x, --token x), PEM blocks (multi-line) and token shapes (AKIA, ghp_, github_pat_, eyJ JWT,
+# AIza, xox, sk-). Needs GNU sed (the I flag).
+_REDACT_NAME='[A-Za-z0-9_.-]*(key|token|secret|passw(or)?d|pwd|auth|credentials?|session|cookie|private)[A-Za-z0-9_.-]*'
+read -r -d '' _REDACT_SED <<'EOF' || true
+s/-----BEGIN [A-Z ]*-----.*-----END [A-Z ]*-----/<redacted-pem>/g
+/-----BEGIN [A-Z ]*-----/,/-----END [A-Z ]*-----/{
+s/-----BEGIN [A-Z ]*-----.*/<redacted-pem>/;t
+d
 }
+s/((proxy-)?authorization\\?["']?[[:space:]]*[=:][[:space:]]*).*/\1<redacted>/I
+s/((set-)?cookie[[:space:]]*:[[:space:]]*).*/\1<redacted>/I
+s/(bearer[[:space:]]+)[A-Za-z0-9._~+\/=-]+/\1<redacted>/Ig
+s#(//)[^/@[:space:]"']+@#\1<redacted>@#g
+s/(--[A-Za-z0-9_-]*(password|passwd|pwd|token|secret|key|auth|credentials?|session|cookie)[A-Za-z0-9_-]*[[:space:]]+)[^-[:space:]][^[:space:]]*/\1<redacted>/Ig
+s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)\\"[^\\]*\\"/\1\\"<redacted>\\"/Ig
+s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)"[^"]*"/\1"<redacted>"/Ig
+s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)'[^']*'/\1'<redacted>'/Ig
+s/(@NAME@\\?["']?[[:space:]]*[=:][[:space:]]*)[^[:space:]"',;&]+/\1<redacted>/Ig
+s/\b(AKIA|ASIA)[A-Z0-9]{16}/\1<redacted>/g
+s/(gh[pousr]_)[A-Za-z0-9]{20,}/\1<redacted>/g
+s/(github_pat_)[A-Za-z0-9_]{20,}/\1<redacted>/g
+s/eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]*)?/eyJ<redacted>/g
+s/(xox[baprs]-)[A-Za-z0-9-]{8,}/\1<redacted>/g
+s/(AIza)[A-Za-z0-9_-]{20,}/\1<redacted>/g
+s/(sk-)[A-Za-z0-9_-]{16,}/\1<redacted>/g
+EOF
+_REDACT_SED="${_REDACT_SED//@NAME@/$_REDACT_NAME}"
+redact() { sed -E "$_REDACT_SED"; }
 
 # diagnose LOGFILE: print one [FAIL]/[INFO] line (cause + fix) per known signature found in LOGFILE.
 # Return status = number of FAIL signatures (max 100); 0 means none.
@@ -31,6 +56,9 @@ diagnose() {
   _fail() { echo "[FAIL] $1: $2 Fix: $3"; fails=$((fails + 1)); }
   if _hit '(/opt/venv/bin/python.*Permission denied|Permission denied.*/opt/venv/bin/python|ExitCode=126|exit code:? 126|exited with (status|code) 126|exit\(126\))'; then
     _fail perm-denied "python cannot be executed (Permission denied / exit 126): the image is stale (built before f572a4b5, python under /root) or the wrong USER runs it." "rebuild with 'docker build --no-cache' from current master, redeploy by digest, and confirm the image User is 10001."
+  fi
+  if _hit '(PermissionError: \[Errno 13\]|Errno 13\] Permission denied|(cannot (create|open|write)|mkdir|touch)[^[:cntrl:]]*Permission denied)'; then
+    _fail app-perm "the app writes under a path uid 10001 cannot write (PermissionError)." "make the directory writable by uid 10001 in the image, or point it at /data (the writable volume)."
   fi
   if _hit 'PREFLIGHT FAIL'; then
     _fail preflight "the entrypoint preflight refused to start; its uid and path lines follow." "rebuild from master (see perm-denied) and compare the uid and permissions below."
@@ -90,7 +118,7 @@ main() {
   LOG="$out/container-debug-$ts.log"; : >"$LOG"
   local tag="${image:-autotester-debug:local}" cname="autotester-smoke-$$"
   local origins="${AUTOTESTER_ALLOWED_ORIGINS:-http://localhost:8000}" build_rc="skipped"
-  trap 'docker rm -f "$cname" >/dev/null 2>&1' EXIT
+  trap "docker rm -f '$cname' >/dev/null 2>&1" EXIT  # expand now: cname is local to main
   echo "container-debug log, UTC $ts, image tag $tag" >>"$LOG"
 
   _sec "1 HOST AND DOCKER"
