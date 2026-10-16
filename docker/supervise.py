@@ -68,7 +68,7 @@ def stop_children(children: list[subprocess.Popen], grace: float) -> None:
     reap_children(children)
 
 
-def run_stack(services: list[tuple[str, list[str]]], *, timeout=5.0, grace=2.0) -> int:
+def run_stack(services: list[tuple[str, list[str]]], *, timeout=60.0, grace=2.0) -> int:
     """Return failure on any child exit/startup failure; drain all children on signals."""
     children: list[subprocess.Popen] = []
     stopping = 0
