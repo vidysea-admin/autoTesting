@@ -63,6 +63,8 @@ projects/*/crawl/*/frontier.json
 projects/*/crawl/*/nodes.jsonl
 projects/*/crawl/*/edges.jsonl
 projects/*/crawl/*/issues.jsonl
+# Whole crawl dir ignored (2026-10-16): repo is public and crawl data is sensitive.
+projects/*/crawl/
 
 # Landplane recovery 2026-09-21 (D-030): runtime residue that must not go public.
 # .codex/ = another agent tool's local hook config; T-161's checked-PASS manifest

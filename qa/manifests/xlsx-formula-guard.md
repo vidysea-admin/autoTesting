@@ -1,6 +1,6 @@
 # Manifest - xlsx-formula-guard
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Issues addressed:** AT-925, AT-582
 
