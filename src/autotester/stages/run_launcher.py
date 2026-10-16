@@ -9,7 +9,8 @@ The gates are part of the launcher, not of any caller (none can skip them): 400 
 no provider / a credential with no value, then the D-018 live-case approval (403, AT-570; D-068
 derives it from the project's own credentials) before a run id, a directory or a browser exists.
 
-`LaunchRefused` carries the HTTP status; `RunSeams` supplies the judge and width planner.
+The gate helpers live in `run_gates` (re-exported here); `RunSeams` supplies the judge and
+width planner.
 """
 
 from __future__ import annotations
@@ -23,18 +24,15 @@ from typing import Any, NamedTuple, Protocol
 
 from autotester.browser.secrets import SecretStore
 from autotester.browser.video import VIDEO_OVERHEAD_MB
-from autotester.core.consent import ApprovalRequired
 from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
-from autotester.core.redact import placeholder_keys
 from autotester.core.safe_names import SLUG_PATTERN
 from autotester.providers import for_role, why_unavailable
 from autotester.providers.base import Provider, ProviderError
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case, CasePriority
 from autotester.schema.catalog import TIER_BY_CLASS, Catalog
-from autotester.schema.crawl import CrawlBounds
-from autotester.schema.enums import Action, ApprovalKind, CaseStatus, Trigger
+from autotester.schema.enums import CaseStatus, Trigger
 from autotester.schema.project import Project
 from autotester.schema.run import Run, RunBounds
 from autotester.schema.run_state import StageCheckpoint, StageName
@@ -42,9 +40,6 @@ from autotester.schema.team_enums import RunVia
 from autotester.stages.bug_wiring import record_run_bugs
 from autotester.stages.catalog import catalog, tiers_to_run
 from autotester.stages.coverage import diff_coverage, queue_requests
-from autotester.stages.entry_precondition import requires_unauthenticated
-from autotester.stages.execute import probe_request
-from autotester.stages.explore_consent import covering_approval
 from autotester.stages.orchestrate import StageContext
 from autotester.stages.parallel_run import (
     DEFAULT_PER_CONTEXT_MB,
@@ -54,20 +49,20 @@ from autotester.stages.parallel_run import (
 )
 from autotester.stages.reachability import latest_warnings
 from autotester.stages.run_artifacts import assemble_run_bundles
-from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
+from autotester.stages.run_budget import RunBudget
+from autotester.stages.run_gates import (
+    LaunchRefused,
+    is_entry_case,
+    require_declared_values,
+    require_live_case_approval,
+)
+from autotester.stages.ux_wiring import advise_after_run
 from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
 
-__all__ = ["DEFAULT_SEAMS", "LaunchRefused", "Prepared", "RunSeams", "launch_run", "prepare_run"]
-
-
-class LaunchRefused(Exception):
-    """A gate said no. `status` is the HTTP code a route shows; `reason` the human sentence."""
-
-    def __init__(self, status: int, reason: str) -> None:
-        super().__init__(reason)
-        self.status, self.reason = status, reason
+__all__ = ["DEFAULT_SEAMS", "LaunchRefused", "Prepared", "RunSeams", "is_entry_case",
+           "launch_run", "prepare_run", "require_declared_values", "require_live_case_approval"]
 
 
 class PlanningLedger(Protocol):
@@ -105,56 +100,6 @@ class Prepared(NamedTuple):
     approval: RunApproval
     entry_flags: list[bool]
     cat: Catalog
-
-
-def is_entry_case(case: Case, project: Project) -> bool:
-    """True when the case must start logged out: its first step navigates to the project's own
-    `base_url` (a sign-in page, AT-044), or its precondition is a logged-out visitor
-    (`deeplink_unauth`): the shared signed-in profile would hide it, so it gets a wiped one."""
-    return (bool(case.steps) and case.steps[0].action is Action.NAVIGATE
-            and case.steps[0].target == project.base_url) or requires_unauthenticated(case)
-
-
-def require_declared_values(
-    project: Project, secrets: SecretStore, slug: str, cases: list[Case] | None = None,
-) -> set[str]:
-    """Check referenced credentials before launch; unused roles never gate a run."""
-    keys = ({ref.key for ref in project.secrets} if cases is None else {
-        key for case in cases for step in case.steps
-        for text in (step.target, step.value or "") for key in placeholder_keys(text)
-    })
-    missing = sorted(key for key in keys if not secrets.has_value(key))
-    if missing:
-        raise LaunchRefused(400, (
-            f"{', '.join(missing)} has no value yet. Enter it on the project's "
-            f"Credentials page (/projects/{slug}/env) before running."
-            if len(missing) == 1 else
-            f"these credentials have no value yet: {', '.join(missing)}. Enter them on the "
-            f"project's Credentials page (/projects/{slug}/env) before running."
-        ))
-    return keys
-
-
-def require_live_case_approval(
-    project: Project, store: ProjectStore, cases: list[Case],
-    secrets: SecretStore | None = None, account_keys: set[str] | None = None,
-) -> RunApproval:
-    """Pre-run D-018/CN11 gate (D-068): a covering human grant, else one derived from the
-    project's provisioned credentials -- reused if an earlier row covers the run, else minted.
-
-    Refuse before run-id/directory/browser creation, naming human-grant shortfalls.
-    System-derived action/probe/time brakes bound, never expand, account consent.
-    """
-    bounds = CrawlBounds(max_actions=sum(action_cost(c) for c in cases),
-                         wall_clock_s=wall_clock_request_s(cases))
-    try:
-        if any(case.project != project.slug for case in cases):
-            raise ApprovalRequired("case project differs from the requested project")
-        return covering_approval(
-            project, store, bounds, kind=ApprovalKind.LIVE_CASE, secrets=secrets,
-            account_keys=account_keys or None, probes=probe_request(cases))
-    except ApprovalRequired as exc:
-        raise LaunchRefused(403, str(exc)) from exc
 
 
 def judge_or_refuse(project: Project, seams: RunSeams) -> Provider:
@@ -267,9 +212,7 @@ def launch_run(
     requested_by: str | None = None, slot_key: str | None = None, via: RunVia | None = None,
     seams: RunSeams = DEFAULT_SEAMS, priorities: list[CasePriority] | None = None,
     requested_at: datetime | None = None, requested_by_id: int | None = None) -> Run:
-    """Run the project (every case, or `priorities` plus pinned p0) as `run_id`.
-
-    Gates run here, none skippable; raises `LaunchRefused` before any directory or browser."""
+    """Run the project (all cases, or `priorities` + pinned p0); gates run here, none skippable."""
     store, project, cases, judge, paths, secrets, approval, entry_flags, cat = prepare_run(
         slug, seams, priorities)
     run_id = run_id or f"run-{ulid()}"
@@ -289,6 +232,7 @@ def launch_run(
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
     )
     prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
+    advise_after_run(store, run_id, judge)  # AT-794: advisory, non-fatal
     ask_for_what_it_did_not_recognise(store, run_id)
     return run
 

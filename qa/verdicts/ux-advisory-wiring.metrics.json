@@ -1,0 +1,1 @@
+{"unit":"ux-advisory-wiring","cycle":0,"mode":"BOOTSTRAP_REVIEW+standing_escalation","token_metric":"actual_total","checker_tokens":null,"maker_tokens":null,"ratio_status":"unverified","active_s_approx":660,"overrun":"exceeds 180s bootstrap + 300s escalation; recorded, not waived","commands":{"preflight":0,"ruff":0,"doctor_candidate":0,"pytest_scoped":0,"probe":0}}
