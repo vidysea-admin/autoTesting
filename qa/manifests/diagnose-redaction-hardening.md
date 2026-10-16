@@ -1,6 +1,6 @@
 # Manifest — diagnose-redaction-hardening
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 2
 Unit: diagnose-redaction-hardening (follow-up to qa/verdicts/container-ci-smoke.md advisory; CI run 38908337519 findings; fixes cycle-0 and cycle-1 FAIL qa/verdicts/diagnose-redaction-hardening.md)
 Base SHA: 3f081243 (cycle 0 candidate 4bdb3437, verdict commit edca4583; cycle 1 candidate ba5735e7, verdict commit 4d8f239e)
