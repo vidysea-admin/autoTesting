@@ -54,6 +54,7 @@ from autotester.stages.parallel_run import (
 from autotester.stages.reachability import latest_warnings
 from autotester.stages.run_artifacts import assemble_run_bundles
 from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
+from autotester.stages.ux_wiring import advise_after_run
 from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
@@ -267,9 +268,7 @@ def launch_run(
     requested_by: str | None = None, slot_key: str | None = None, via: RunVia | None = None,
     seams: RunSeams = DEFAULT_SEAMS, priorities: list[CasePriority] | None = None,
     requested_at: datetime | None = None, requested_by_id: int | None = None) -> Run:
-    """Run the project (every case, or `priorities` plus pinned p0) as `run_id`.
-
-    Gates run here, none skippable; raises `LaunchRefused` before any directory or browser."""
+    """Run the project (all cases, or `priorities` + pinned p0); gates run here, none skippable."""
     store, project, cases, judge, paths, secrets, approval, entry_flags, cat = prepare_run(
         slug, seams, priorities)
     run_id = run_id or f"run-{ulid()}"
@@ -289,6 +288,7 @@ def launch_run(
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
     )
     prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
+    advise_after_run(store, run_id, judge)  # AT-794: advisory, non-fatal
     ask_for_what_it_did_not_recognise(store, run_id)
     return run
 
