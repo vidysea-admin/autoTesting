@@ -57,7 +57,7 @@ from autotester.stages.run_gates import (
     require_live_case_approval,
 )
 from autotester.stages.ux_wiring import advise_after_run
-from autotester.stages.video_retention import prune_old_videos
+from autotester.stages.video_retention import prune_old_videos_safely
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
 
@@ -231,10 +231,16 @@ def launch_run(
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
     )
-    prune_old_videos(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
+    run_follow_ups(store, run_id, judge)
+    return run
+
+
+def run_follow_ups(store: ProjectStore, run_id: str, judge) -> None:
+    """After the save: advise, ask (O5), and only then prune (AT-735) -- a video a human
+    has not yet been asked about is never deleted, and a prune error never fails the run."""
     advise_after_run(store, run_id, judge)  # AT-794: advisory, non-fatal
     ask_for_what_it_did_not_recognise(store, run_id)
-    return run
+    prune_old_videos_safely(store)  # T-191/AT-587 V5: most recent 20 kept videos, project-wide
 
 
 def ask_for_what_it_did_not_recognise(store: ProjectStore, run_id: str) -> None:
