@@ -1,7 +1,7 @@
 # Manifest - flowplan-writer
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Base SHA:** f6c1ac4e63c466db09f1c7a465863a55faec513e
 **Candidate SHA:** the commit carrying this file (`git log -1 -- qa/manifests/flowplan-writer.md`)
 **Issues addressed:** AT-898. AT-794 (`run_ux_advisory` no caller) is a different seam (`ui/routes_runs.py::trigger_run`, T-125) and is NOT touched.
@@ -19,3 +19,6 @@ release-regression RR6 (each completed flow leaves a persisted plan; no plan mea
 
 ## Required checks
 `pytest tests/test_flow_plan_writer.py tests/test_orchestrate_downstream.py`, ruff on changed paths, `autotester doctor` delta vs base.
+
+## Fix cycle 1
+Regenerated docs/MAP.md via `autotester map` (row for stages/flow_plan.py). Doctor exit 0 on candidate. Note: the shared venv editable install pointed at another worktree, so CLI runs need PYTHONPATH=<this worktree>/src.
