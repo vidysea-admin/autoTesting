@@ -298,6 +298,7 @@
 | `stages/run_artifacts.py` | Assemble post-run failure evidence and validate links without changing functional records. |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | Observe cases and grade their persisted evidence with reusable default rubrics (RP1-RP4). |
+| `stages/run_gates.py` | The pre-run gates: refusal type, credential check and the D-018 live-case approval. |
 | `stages/run_launcher.py` | The one run launcher: gates, execution and the saved `Run` (T-205, team-foundation TF1/TF2). |
 | `stages/run_record.py` | T-136c: persist a finished run with its measured wall clock and name it for bench tooling. |
 | `stages/run_service.py` | Run / report / catalog as plain functions for the CLI and the MCP server (T-174, CM1-CM4). |

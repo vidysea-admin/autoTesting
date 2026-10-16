@@ -43,3 +43,9 @@ class UXPolicy(BaseModel):
                     "cap, not a money or token ceiling; cases past it are recorded as "
                     "skipped_budget and never touch a functional verdict (PU3)",
     )
+    deadline_s: float = Field(
+        default=300.0, gt=0, le=3600,
+        description="wall-clock ceiling for the whole advisory pass: once spent, no further "
+                    "UX call is issued and the remaining cases are recorded as skipped_budget "
+                    "(a call already in flight is not interrupted). Never fails the run",
+    )

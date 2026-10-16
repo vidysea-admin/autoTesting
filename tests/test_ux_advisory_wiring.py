@@ -125,3 +125,32 @@ def test_the_pass_output_appears_in_the_exports(tmp_path, monkeypatch) -> None:
     wb = Workbook()
     add_ux_sheet(wb, state, {case.id: case}, Redactor({}))
     assert "UX findings (advisory)" in wb.sheetnames
+
+
+class _SlowProvider(MockProvider):
+    """A judge slower than the pass deadline: each call burns 0.15 s."""
+
+    def judge(self, *args, **kwargs):
+        import time
+
+        time.sleep(0.15)
+        return super().judge(*args, **kwargs)
+
+
+def test_the_pass_stops_issuing_calls_after_its_deadline_and_stays_nonfatal(
+        tmp_path, monkeypatch) -> None:
+    """AT-794 F1: a slow provider cannot stretch the advisory pass past `deadline_s`."""
+    store = _build(tmp_path, monkeypatch)
+    store.add_case(Case(project="demo", flow_id="f", kind=CaseKind.BEST,
+                        case_class=CaseClass.HAPPY, title="t2",
+                        steps=[Step(order=1, action=Action.CLICK, target="#go2")]))
+    store.save_project(store.load_project().model_copy(
+        update={"ux_policy": UXPolicy(enabled=True, deadline_s=0.05)}))
+    draft = UXDraft(severity=Severity.S2, finding="Label is unclear", step_order=1)
+    slow = _SlowProvider(responses={"judge": [UXJudgment(findings=[draft])] * 3})
+    run = launch_run("demo", seams=_seams(slow))
+    report = store.load_ux_report(run.id)
+    assert report is not None and report.calls_used == 1
+    statuses = sorted(c.status.value for c in report.cases)
+    assert statuses == sorted([UXCaseStatus.ANALYZED.value, UXCaseStatus.SKIPPED_BUDGET.value])
+    assert store.load_run(run.id) == run

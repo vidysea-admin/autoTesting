@@ -14,6 +14,7 @@ logical UX calls, failed attempts included; it is NOT a money/token ceiling.
 
 from __future__ import annotations
 
+import time
 from html import escape
 from pathlib import Path
 
@@ -192,7 +193,7 @@ def _advise_case(
                      "no screenshot evidence is on disk"), 0
     if budget_left <= 0:
         return _skip(case_id, persona.id, UXCaseStatus.SKIPPED_BUDGET,
-                     "the per-run UX call budget was exhausted"), 0
+                     "the per-run UX call or time budget was exhausted"), 0
     try:
         outcome = judge_case_ux(case, result, persona, provider, secrets=secrets,
                                 run_dir=run_dir, docs=docs)
@@ -218,10 +219,12 @@ def run_ux_advisory(
     cases = {c.id: c for c in store.list_cases()}
     personas = {p.id: p for p in store.list_user_personas()}
     cap, used, outcomes = project.ux_policy.max_calls, 0, []
+    deadline = time.monotonic() + project.ux_policy.deadline_s  # F1: pass-level bound
     for case_id in (run.case_ids if run and run.case_ids else list(results)):
         outcome, spent = _advise_case(
             case_id, cases.get(case_id), results.get(case_id), project, personas, provider,
-            secrets, store.paths.run_dir(run_id), cap - used, docs)
+            secrets, store.paths.run_dir(run_id),
+            0 if time.monotonic() >= deadline else cap - used, docs)
         used += spent
         outcomes.append(outcome)
     report = UXReport(run_id=run_id, project=store.paths.slug, provider=provider.label,
