@@ -135,3 +135,8 @@ def test_deploy_is_self_diagnosing_and_honours_cloud_run_port():
     assert "UV_PYTHON_DOWNLOADS=manual" in dockerfile
     after_user = dockerfile.split("USER 10001:10001", 1)[1]
     assert "import autotester" in after_user and "readlink -f /opt/venv/bin/python" in after_user
+    users = [ln.split()[1] for ln in dockerfile.splitlines() if ln.startswith("USER ")]
+    assert users and users[-1] not in ("root", "0", "0:0"), "final USER must be non-root"
+    if "<<'EOF'" in dockerfile:
+        body = dockerfile.split("<<'EOF'", 1)[1].split("\nEOF", 1)[0]
+        assert body.rstrip().splitlines()[-1].strip() == 'exec "$@"', "wrapper must exec"

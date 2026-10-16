@@ -116,7 +116,7 @@ RUN set -eu; \
     test -x "$PYTHON_REAL"; \
     /opt/venv/bin/python --version; \
     /opt/venv/bin/python -c \
-      "import os, sys, autotester; print('uid:', os.getuid()); print('python:', sys.executable); print('application import: OK')"; \
+      "import autotester, os, sys; print('uid:', os.getuid()); print('python:', sys.executable); print('application import: OK')"; \
     echo "--- Writable-directory check ---"; \
     touch /data/.write-test; \
     rm /data/.write-test; \
@@ -184,9 +184,12 @@ else
 fi
 
 echo "========== STARTING APPLICATION ENTRYPOINT =========="
+exec "$@"
 EOF
 
 RUN chmod 755 /startup-diagnostics.sh
+
+USER 10001:10001
 
 # --------------------------------------------------
 # 10. Launch diagnostics before the real entrypoint
