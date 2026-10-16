@@ -3,7 +3,7 @@
 **Purpose:** the feature-level intent for Group 10: why the team loop exists, its outcomes O8-O15, its user types (admin, subadmin, dev, tester) and the answers Umesh gave on 2026-10-07.
 **Open me when:** you are building or checking any of T-197..T-201 and need the reason behind a requirement, or a criterion cites `serves: intent#O8`..`O15`.
 
-**Originator:** Umesh (CEO meeting asks + chat 2026-10-07, D-067, D-070, D-072) · **Date:** 2026-10-07 · **Status:** draft, grill answered (`.work/grill-team-loop-dev-portal.md`, scratch), awaiting plan approval (`qa/gates/plan-approved-g10.md`)
+**Originator:** Umesh (CEO meeting asks + chat 2026-10-07, D-067, D-070, D-072) · **Date:** 2026-10-07 · **Status:** implemented; T-197..T-201 are done in `.goal/goal.json`, closed by checker verdicts `qa/verdicts/t197-video-pointers.r2.b.md` (T-197), `qa/verdicts/t-198-team-loop.md`, `qa/verdicts/t-199-team-loop.md`, `qa/verdicts/t-200-team-loop.md`, `qa/verdicts/t-201-team-loop.md`. Grill: `.work/grill-team-loop-dev-portal.md` (scratch)
 
 ## Problem
 Developers record "how it is built and what it is for" videos and send them as Drive zips by mail.

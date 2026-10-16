@@ -155,6 +155,11 @@ under-reporting the build.*
 - [x] T-193 base64-of-UTF-16 (PowerShell `-EncodedCommand`) no longer bypasses either redaction door
 - [x] T-194 `redact_encodings.py` docstring corrected (credited a removed `lru_cache`)
 - [x] T-195 `_is_exit_call` now catches `os._exit(1)` and aliased `sys` (`import sys as s; s.exit()`)
+- [x] docker-deploy-hardening: Cloud Run deploy self-diagnoses exit 126 (preflight + smoke RUN) — checker PASS, `qa/verdicts/docker-deploy-hardening.md`
+- [x] dockerfile-merge-fix: non-root USER and exec in diagnostics wrapper restored after devops merge — checker PASS (static only), `qa/verdicts/dockerfile-merge-fix.md`
+- [x] ledger-tick-integrity: atomic `.last-tick` writes, lock sidecar, retry (AT-644, AT-645, AT-676) — checker PASS cycle 1, `qa/verdicts/ledger-tick-integrity.md`
+- [x] flowplan-writer (AT-898): REPORT persists one FlowPlan per fully graded flow — checker PASS cycle 1, `qa/verdicts/flowplan-writer.md`
+- [x] xlsx-formula-guard: `clean_cell` neutralises leading `= + - @` in exported cells (AT-925, AT-582) — checker PASS, `qa/verdicts/xlsx-formula-guard.md`
 - [ ] T-185 re-check `wave/at408-416-scroll-reach` (merge master, fresh cycle, real-Chromium Mode D)
 
 ---
@@ -260,7 +265,7 @@ to exceed its declared scope. `write_policy` stays `read_only`.*
 2. Both intake modes work on a real target and beat-or-match a human tester (T-169).
 3. Every finding is evidence-backed and correctly classified; coverage shows untested branches.
 
-## Progress (from `.goal/goal.json`, 2026-10-14): **88 / 92 done (96%)**
+## Progress (from `.goal/goal.json`, 2026-10-16): **89 / 92 done (97%)**
 
 **Status 2026-10-14:** T-200 done. T-145, T-169, T-206: code done, live runs in progress under Umesh's production approvals. T-136: deferred until the human tester list arrives. Hosted Ubuntu check: deferred until host details arrive. TV9 clause 2 is decided by D-097.
 

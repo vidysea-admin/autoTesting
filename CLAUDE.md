@@ -103,7 +103,7 @@ This project runs dev work through the maker-checker pair:
 - **Ledger on PASS:** when a goal task with `user_value: high` closes on a checker PASS, the maker appends a `docs/FEATURES.jsonl` row (`autotester ledger add … --unit T-NNN --verdict qa/verdicts/<slug>.md`) with a **prefilled** reason (task note + originating instruction) shown to Umesh to confirm or edit; `normal` tasks auto-stamp `update`. Before picking a unit, run `autotester ledger relitigation "<unit title + description>"` — a gate means a HUMAN_GATE. Rules decide only where certain (D-004).
 - **Push on PASS (D-007, standing exception to confirm-first):** after every checker-PASS commit,
   the checker pushes `origin master` itself — no confirmation asked. This repo is public
-  (github.com/umeshsugara-ai/autoTesting); commits reaching this point are already narrowly
+  (github.com/vidysea-admin/autoTesting); commits reaching this point are already narrowly
   scoped and independently verified. Known residual: the harness safety classifier may still
   block a `git push`/`gh` call regardless of this authorization — if so, report the block and
   hand it to Umesh exactly as before, do not attempt to route around it.
