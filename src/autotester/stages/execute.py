@@ -16,9 +16,10 @@ import time
 from collections.abc import Callable
 
 from autotester.browser import conditions
+from autotester.browser.destroy_guard import AccountDestroyRefused
 from autotester.browser.locators import LocatorNotFound
 from autotester.browser.secrets import MissingSecret
-from autotester.browser.session import BrowserSession
+from autotester.browser.session import BrowserSession, NavigationRefused
 from autotester.schema.case import Case
 from autotester.schema.crawl import SafetyPolicy
 from autotester.schema.enums import Action, Outcome
@@ -104,13 +105,26 @@ def _drain_network_evidence(session: BrowserSession) -> None:
         responses, session.project, policy, session.secrets.redactor()))
 
 
+def _first(earlier: int | None, current: int) -> int:
+    """The FIRST failing step: an earlier unmet assertion outranks a later raise."""
+    return current if earlier is None else earlier
+
+
+def _cause(exc: Exception) -> str | None:
+    """AT-787: why a step stopped, when it was a refusal or a brake rather than a browser fault."""
+    if isinstance(exc, AccountDestroyRefused | NavigationRefused):
+        return "blocked_by_guard"
+    return "budget_stop" if isinstance(exc, RunBudgetExceeded) else None
+
+
 def _run_steps(
     case: Case, session: BrowserSession, start: float, evidence_start: int
-) -> RawResult | bool:
+) -> RawResult | int | None:
     """Run every step in order. Returns a terminal `RawResult` the moment a step is
     BLOCKED_HITL/ERRORED, else the `assertion_failed` bool for the caller to finish with
-    (split out of `run_case` so both functions stay under the file's line cap)."""
-    assertion_failed = False
+    (split out of `run_case` so both functions stay under the file's line cap). The non-terminal
+    return is the `order` of the first step whose expectation was unmet (AT-787), else None."""
+    assertion_failed: int | None = None
     for step in sorted(case.steps, key=lambda s: s.order):
         try:
             budget = getattr(session, "budget", None)
@@ -134,17 +148,20 @@ def _run_steps(
             if pre is not None:
                 if step.action is not Action.ASSERT:
                     session.assert_expected(step.expected, step_order=step.order)
-                if _assertions_unmet(session, pre):
-                    assertion_failed = True
+                if assertion_failed is None and _assertions_unmet(session, pre):
+                    assertion_failed = step.order
             session.screenshot(f"step{step.order:02d}-{step.action}", step_order=step.order)
             if budget is not None:
                 budget.check()
         except MissingSecret as exc:
             return _result(case, session, start, Outcome.BLOCKED_HITL,
-                           evidence_start=evidence_start, hitl_prompt=str(exc))
+                           evidence_start=evidence_start, hitl_prompt=str(exc),
+                           failing_step=_first(assertion_failed, step.order))
         except Exception as exc:  # the executor reports, it never crashes the run
             return _result(case, session, start, Outcome.ERRORED, evidence_start=evidence_start,
-                           error=_error_text(session, step, exc))
+                           error=_error_text(session, step, exc),
+                           failing_step=_first(assertion_failed, step.order),
+                           failing_step_cause=_cause(exc) if assertion_failed is None else None)
     return assertion_failed
 
 
@@ -201,9 +218,9 @@ def run_case(case: Case, session: BrowserSession) -> RawResult:
         conditions.reset(session, case.case_class)
     if isinstance(outcome, RawResult):
         return outcome
-    if outcome:  # assertion_failed
+    if outcome is not None:  # order of the first step whose expectation was unmet
         return _result(case, session, start, Outcome.ASSERTION_FAILED,
-                       evidence_start=evidence_start)
+                       evidence_start=evidence_start, failing_step=outcome)
     return _result(case, session, start, Outcome.COMPLETED, evidence_start=evidence_start)
 
 
@@ -226,6 +243,8 @@ def _result(
     error: str | None = None,
     hitl_prompt: str | None = None,
     not_run_reason: str | None = None,
+    failing_step: int | None = None,
+    failing_step_cause: str | None = None,
 ) -> RawResult:
     # AT-341: an exception's own message (any exception, not only a named one)
     # can embed a resolved secret — the same boundary `_record` already holds
@@ -237,6 +256,8 @@ def _result(
         error=session.secrets.scrub_optional(error),
         hitl_prompt=session.secrets.scrub_optional(hitl_prompt),
         not_run_reason=session.secrets.scrub_optional(not_run_reason),
+        failing_step=failing_step,
+        failing_step_cause=failing_step_cause,
         # AT-577: only THIS case's own slice, never the shared session's full history.
         evidence=list(session.state.evidence[evidence_start:]),
     )

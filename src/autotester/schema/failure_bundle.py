@@ -70,6 +70,13 @@ class BundleManifest(Artifact):
     run_id: str
     case_id: str
     failing_step: int | None = None
+    failing_step_source: (
+        Literal["recorded", "explicit", "heuristic_fallback", "blocked_by_guard", "budget_stop"]
+        | None
+    ) = Field(
+        default=None,
+        description="AT-787: where failing_step came from; heuristic_fallback = no recorded step",
+    )
     steps_included: list[int] = Field(default_factory=list)
     files: list[BundleFile] = Field(default_factory=list)
 
