@@ -1,6 +1,6 @@
 # Plan — AutoTester, remaining units
 
-**Purpose:** the 4 remaining tasks (refreshed 2026-10-14 from `.goal/goal.json`: 88 of 92 tasks done, 4 pending) in dependency order — files touched, how each is tested, criticality, persona walk — and the tasks held on a human gate.
+**Purpose:** the 3 remaining tasks (refreshed 2026-10-16 from `.goal/goal.json`: 89 of 92 tasks done, 3 pending: T-136, T-169, T-206) in dependency order — files touched, how each is tested, criticality, persona walk — and the tasks held on a human gate.
 **Open me when:** picking the next unit or wave, or asking what is deliberately not being built right now.
 
 <!-- PLAN phase step 4, BACKFILL. Covers only what is NOT yet shipped; M0–M6 units are already
@@ -11,7 +11,7 @@
 
 **Status 2026-10-14:** T-200 done. T-145, T-169, T-206: code done, live runs in progress under Umesh's production approvals. T-136: deferred until the human tester list arrives. Hosted Ubuntu check: deferred until host details arrive. TV9 clause 2 is decided by D-097.
 
-**Spec:** docs/spec.md (backfill, 2026-09-27; Group 10 R32-R65 added 2026-10-07) · **Status:** draft; Group 10 units G1-G10 await `qa/gates/plan-approved-g10.md`
+**Spec:** docs/spec.md (backfill, 2026-09-27; Group 10 R32-R65 added 2026-10-07) · **Status:** draft; Group 10 units T-197..T-201 are done (see `docs/features/team-loop/intent.md`)
 
 **Scope decisions (Umesh, 2026-09-27):** build order = everything, max parallel, bounded only by
 measured RAM. Track C is built through C3 only; T-154 (adversarial pass) and T-155 (its report)
@@ -79,6 +79,14 @@ Group 10 first (top priority). Every group-10 unit goes through the maker PLAN g
 
 Closed since the 2026-09-27 list (no longer in this plan): T-195, T-185, AT-335, T-186, T-189,
 T-191, T-192, T-150, T-171 (all checker-PASS or fixed; see `docs/FEATURES.jsonl`).
+
+## Landed 2026-10-16 (checker PASS)
+
+- docker-deploy-hardening: Cloud Run deploy self-diagnoses exit 126 (preflight + smoke RUN) — `qa/verdicts/docker-deploy-hardening.md`
+- dockerfile-merge-fix: non-root USER and exec in diagnostics wrapper restored after devops merge — `qa/verdicts/dockerfile-merge-fix.md`
+- ledger-tick-integrity: atomic `.last-tick` writes, lock sidecar, retry (AT-644, AT-645, AT-676) — `qa/verdicts/ledger-tick-integrity.md`
+- flowplan-writer (AT-898): REPORT persists one FlowPlan per fully graded flow — `qa/verdicts/flowplan-writer.md`
+- xlsx-formula-guard: `clean_cell` neutralises leading `= + - @` in exported cells (AT-925, AT-582) — `qa/verdicts/xlsx-formula-guard.md`
 
 ## Held / blocked (not in this plan's waves) - rewritten 2026-10-10 (D-080, D-081)
 
