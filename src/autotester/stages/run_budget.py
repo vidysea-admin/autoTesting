@@ -23,6 +23,7 @@ from contextlib import contextmanager
 
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
+from autotester.schema.enums import Action
 
 
 class RunBudgetExceeded(RuntimeError):
@@ -218,6 +219,16 @@ def wall_clock_request_s(cases: list[Case]) -> float:
     whole run's time; `RunBudget` holds that allowance outside the browser clock."""
     return (sum(action_cost(c) for c in cases) * WALL_CLOCK_PER_ACTION_S
             + judge_allowance_s(cases))
+
+
+def probe_request(cases: list[Case]) -> int:
+    """The probes this run is KNOWN to spend, for the human-grant preflight (ISS-d063-grant-
+    budget-3): two field samples per fill and one observation pass per assertion. A floor, not
+    a ceiling -- the runtime brake still decides the rest -- so a row granting fewer probes is
+    refused before a browser opens instead of stopping the run at its first fill."""
+    steps = [step for case in cases for step in case.steps]
+    return (2 * sum(1 for st in steps if st.action is Action.FILL)
+            + sum(1 for st in steps if st.action is Action.ASSERT))
 
 
 JUDGE_ALLOWANCE_PER_CASE_S = 45.0

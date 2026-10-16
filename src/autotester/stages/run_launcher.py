@@ -53,7 +53,7 @@ from autotester.stages.parallel_run import (
 )
 from autotester.stages.reachability import latest_warnings
 from autotester.stages.run_artifacts import assemble_run_bundles
-from autotester.stages.run_budget import RunBudget, action_cost, wall_clock_request_s
+from autotester.stages.run_budget import RunBudget, action_cost, probe_request, wall_clock_request_s
 from autotester.stages.video_retention import prune_old_videos
 from autotester.store.project_store import ProjectStore
 from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
@@ -144,15 +144,14 @@ def require_live_case_approval(
     Refuse before run-id/directory/browser creation, naming human-grant shortfalls.
     System-derived action/probe/time brakes bound, never expand, account consent.
     """
-    bounds = CrawlBounds(
-        max_actions=sum(action_cost(c) for c in cases),
-        wall_clock_s=wall_clock_request_s(cases),
-    )
+    bounds = CrawlBounds(max_actions=sum(action_cost(c) for c in cases),
+                         wall_clock_s=wall_clock_request_s(cases))
     try:
         if any(case.project != project.slug for case in cases):
             raise ApprovalRequired("case project differs from the requested project")
-        return covering_approval(project, store, bounds, kind=ApprovalKind.LIVE_CASE,
-                                 secrets=secrets, account_keys=account_keys or None)
+        return covering_approval(
+            project, store, bounds, kind=ApprovalKind.LIVE_CASE, secrets=secrets,
+            account_keys=account_keys or None, probes=probe_request(cases))
     except ApprovalRequired as exc:
         raise LaunchRefused(403, str(exc)) from exc
 
