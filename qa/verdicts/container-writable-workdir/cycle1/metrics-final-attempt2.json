@@ -1,0 +1,55 @@
+{
+ "token_metric": "actual_total",
+ "maker": {
+  "token_metric": "actual_total",
+  "active_s": 3100,
+  "tokens": 214000,
+  "cost": null
+ },
+ "reviewers": [
+  {
+   "token_metric": "actual_total",
+   "id": "checker-c0-review",
+   "active_s": 1690,
+   "tokens": null,
+   "cost": null,
+   "budget_debit": {
+    "token_metric": "actual_total",
+    "active_s": 1690,
+    "tokens": 7000
+   }
+  },
+  {
+   "token_metric": "actual_total",
+   "id": "checker-c1-review",
+   "active_s": 426,
+   "tokens": null,
+   "cost": null,
+   "budget_debit": {
+    "token_metric": "actual_total",
+    "active_s": 426,
+    "tokens": 80000
+   }
+  }
+ ],
+ "next_phase": {
+  "token_metric": "actual_total",
+  "kind": "finalization",
+  "active_s": 30,
+  "tokens": 2000,
+  "cost": null
+ },
+ "completion_reserve": true,
+ "completion_reserve_id": "container-writable-workdir/1/2ec00db18eb79c4aae9eea16c0098d96ef117d1d",
+ "completion_reserve_tokens": 2000,
+ "escalation": {
+  "authority": "orchestrator (CLAUDE.md standing escalation, Umesh 2026-10-16)",
+  "reason": "go-live re-check touching auth store/.env location; mandatory scoped tests/ruff/doctor/bash -n",
+  "limits": {
+   "token_metric": "actual_total",
+   "active_s": 2300,
+   "tokens": 214000,
+   "cost": null
+  }
+ }
+}

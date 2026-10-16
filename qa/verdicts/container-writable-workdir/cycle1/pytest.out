@@ -1,0 +1,21 @@
+...................s.................................................... [ 52%]
+.................................................................        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.claude\worktrees\container-writable-workdir\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+  <unknown>:19: DeprecationWarning: invalid escape sequence '\s'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+136 passed, 1 skipped, 6 warnings in 139.32s (0:02:19)
+exit 0
+dur 159s

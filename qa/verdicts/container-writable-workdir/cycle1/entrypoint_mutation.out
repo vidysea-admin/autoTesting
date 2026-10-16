@@ -1,0 +1,4 @@
+orig app=wapp ROOT=
+orig app=nonexist ROOT=/data
+mut app=wapp ROOT=/data
+mut app=nonexist ROOT=/data
