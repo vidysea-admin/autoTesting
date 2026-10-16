@@ -2,37 +2,50 @@
 
 **Verdict:** FAIL
 **Status:** FAIL
-**Cycle checked:** 0
-**Reviewed SHA:** 4119e0a0c153f86ff06ab7dd2eb5f2ffec224640 (base c4d48ad109f1ef77f73ee9172866cc5feeca7063, branch worktree-agent-a1af8a18cb4bcb723)
+**Cycle checked:** 1
+**Reviewed SHA:** 5dbbe33cfebac0b8f0cf48388128184a45244416 (base c4d48ad109f1ef77f73ee9172866cc5feeca7063, branch worktree-agent-a1af8a18cb4bcb723)
+**Prior cycle:** cycle 0 FAIL at 4119e0a0c153f86ff06ab7dd2eb5f2ffec224640 (verdict commit 0d0b5b68; findings F1-F4 kept in git history)
 
 ## Scope
-ISS-t179b-hg1-1 (AT-1017: invisible blank click names not treated as unnamed under READ_ONLY) and ISS-t179b-hg1-2 (AT-1018: close/cancel account or subscription allowed under READ_ONLY). Diff verified independently: src/autotester/agents/guards.py (+_FILLERS, _blank_name, READ_ONLY branch in _click_refusal), src/autotester/schema/crawl.py (one DEFAULT_DENY_PATTERNS entry), tests/test_agent_write_guard_gaps.py (new), qa/manifests/agent-write-guard-gaps.md.
+ISS-t179b-hg1-1 (invisible blank click names under READ_ONLY) and ISS-t179b-hg1-2 ("Close account"-style phrases under READ_ONLY). The diff was verified independently with `git diff c4d48ad1 5dbbe33c`. Changed paths: src/autotester/agents/guards.py, src/autotester/schema/crawl.py, tests/test_agent_write_guard_gaps.py and the qa manifest and verdict. sha256 at the candidate: guards.py dac593ba..f9e2, crawl.py ace41f6a..a522, test file b2aa711c..faa.
 
-## Independent checks (evidence in .work/check-awgg/ of this worktree)
-- preflight (review_budget.py): PREFLIGHT_OK, venv Python 3.11.16, import origin = worktree src (preflight.out).
-- pytest test_agent_write_guard_gaps.py test_never_click_destroy.py test_never_click_destroy_2.py test_agent_tools.py test_browser_use_guard.py test_explore_safety.py test_agent_destination_seam.py: 393 passed, exit 0 (pytest.out, pytest.exit).
-- ruff on the 3 changed source/test paths: All checks passed, exit 0 (ruff.out).
-- doctor (uv run --no-sync, main .venv): clean, exit 0 (doctor.out).
-- Red at base (base guards.py + crawl.py in an isolated src copy, autotester pre-imported from the copy): 17 failed / 30 passed, exit 1 (red-base.out). Tests bite.
-- Mutation (READ_ONLY condition replaced with `if True`): 5 test_allow_writes_unchanged_for_fillers failures, exit 1 (red-mut.out). The ALLOW_WRITES regression test does exercise the policy split.
-- Adversarial probe (probe.py / probe.out), all through guards.write_policy_refusal and explore_safety.deny_reason / is_destructive.
+## Independent checks (evidence in .work/check-awgg-c1/ of this worktree, not committed)
+- preflight: PREFLIGHT_OK. The venv is Python 3.11.16 and the import origin is this worktree's src (preflight.out).
+- pytest on 7 files: test_agent_write_guard_gaps, test_never_click_destroy, test_never_click_destroy_2, test_agent_tools, test_browser_use_guard, test_explore_safety and test_agent_destination_seam. Result: 430 passed, exit 0 (pytest.out, pytest.exit).
+- ruff on the 3 changed source and test paths: All checks passed, exit 0 (ruff.out).
+- doctor: clean (advisories only) and exit 0 on both the candidate and the base tree. The base tree came from `git archive` at c4d48ad1, and the import origin was checked for each run (doctor-cand.out, doctor-base.out). `python -m autotester` has no `__main__`, so doctor was run through `autotester.main()` with argv `doctor`.
+- Adversarial probe: probe.py, run on the candidate (probe.out) and on a base src copy (probe-base.out). The per-name comparison is in cmp-base.txt, cmp-cand.txt and cmp.diff. A targeted regression probe, regress.py, was also run on base and candidate (regress-base.out, regress-cand.out).
+
+## Cycle-0 findings re-run
+- F1: CLOSED. All 46 probed blank-only code points are refused under READ_ONLY as "unnamed control". They are U+034F, U+FE00, U+FE0F, U+E0100, U+180B, U+180F, U+17B4, U+17B5, U+2065, U+0301, U+16FE4, U+FFF0-FFF8, U+E0FFF, U+2800, the Hangul fillers, the tag characters and all the Cf characters. Mark-only combinations (U+0300+U+0301, U+3164+U+0301, space+U+20DD) are refused too. `is_ignorable_char` returns True for every Default_Ignorable code point probed. U+2800 and U+0301 are False, and the guard covers those itself.
+- F2: CLOSED. `_FILLERS` is gone and the guard imports `core.redact_wrap.is_ignorable_char`. Doctor is clean.
+- F3: the cycle-0 names are CLOSED. "De<U+115F>lete", "Del<U+034F>ete", "Dele<U+FE0F>te", "Del<U+180B>ete", "Sa<U+115F>ve", "Purch<U+034F>ase" and "Sub<U+FE0F>mit" are all refused, along with the tag, VS17 and U+17B4 variants. A new bypass of the same class is listed under N1 below.
+- F4: CLOSED for the required forms. Determiner, plural and adjective forms, stop/end, plan, auto-renew and "turn off auto-renew" are all refused. So are the full-width, newline/tab, NBSP and lowercase-Cyrillic forms.
 
 ## Findings (FAIL)
-F1 - AT-1017 not closed (proven). Under READ_ONLY these one-character names, all Unicode Default_Ignorable_Code_Point and drawn as nothing, are still ALLOWED as named clicks: U+034F (CGJ), U+FE00 and U+FE0F (variation selectors), U+E0100 (VS17), U+180B and U+180F (Mongolian FVS), U+17B4, U+17B5, U+2065. Lower confidence: a combining-mark-only name (U+0301, U+0300+U+0301) and U+16FE4 are also allowed. Refused correctly: U+180E, U+2060-2064, U+FEFF, U+00AD, U+115F, U+1160, U+3164, U+FFA0, U+2800, U+3000, U+200B, U+200E/F, U+202E, U+2066, U+061C, tag characters U+E0001/E0020/E0041, U+1BCA0, U+00A0.
-F2 - One concept, one place. `_FILLERS` / `_blank_name` is a second definition of "invisible character". The canonical one is core/redact_wrap.py `_DEFAULT_IGNORABLE` / `is_ignorable_char`, and its AT-351 docstring records this exact miss (U+034F and FE00-FE0F are Mn, not Cf). The new set is narrower, and that is why F1 exists. Fix direction: reuse is_ignorable_char, plus U+2800, which is visible-blank So and not default-ignorable.
-F3 - Fillers inside a name are read only as a space, never also dropped. The Cf characters get both readings in _click_names. So under READ_ONLY these render as the plain word and are ALLOWED: "De<U+115F>lete", "Del<U+034F>ete", "Dele<U+FE0F>te" and "Del<U+180B>ete". The commit-name check is evaded the same way: "Sa<U+115F>ve", "Purch<U+034F>ase" and "Sub<U+FE0F>mit". The deny-list bypass for U+115F, U+1160, U+3164 and U+FFA0 was handled inconsistently by this change. The others are pre-existing and belong to the same class.
-F4 - AT-1018 residual phrase gaps under READ_ONLY (all ALLOWED): "Cancel subscriptions", "Cancel this subscription", "Cancel our subscription", "Cancel Premium subscription", "Stop subscription", "End membership", "Cancel plan", "Cancel auto-renew". "Close account settings now" and "Close account<U+2800>settings" are also allowed. Those two are ambiguous labels and acceptable. Refused correctly: Close account (already at base via account_destroy, confirmed), close  account, CLOSE ACCOUNT, Close my account, Cyrillic o/a lookalikes, Close-account, Close_account, NBSP/ZWSP/U+2800/U+3164 separated forms, Delete subscription, Unsubscribe, Cancel membership, Cancel your subscription, Cancel the membership.
+N1 - Proven READ_ONLY regression against the base, introduced by this change (blocking). `_click_names(strict=True)` now treats U+2800 and the Hangul fillers as hidden, so they are dropped in the "drop" reading. Before the change, U+2800 survived NFKC and acted as a regex word boundary. As a result, a Cf character inside a word combined with a U+2800 word separator was REFUSED at the base and is ALLOWED at the candidate:
+- 'Pur​chase⠀now'
+- 'De​lete⠀item'
+- 'Sub​mit⠀form'
+- 'Sa​ve⠀draft'
+- 'Pa​y⠀now'
+- 'Unsub​scribe⠀now'
 
-## Observations (not blocking on their own)
-- The "... settings" exclusion is moot for subscriptions. "Cancel subscription settings" is still refused by the pre-existing `\bcancel subscription\b`, which over-blocks a settings link (pre-existing behaviour). "Close account settings" is allowed.
-- Crawler consumer: normal READ_ONLY navigation is not broken. "Close", "x", "X", "Close dialog", "Cancel", "Close menu", "Account settings" and "Next ->" all return deny_reason None.
-- ALLOW_WRITES in guards is unchanged (probed and mutation-proven). The manifest's "deny-list is already off under ALLOW_WRITES" is incomplete, though. `explore_safety.is_destructive` reads deny_patterns at every policy, so under ALLOW_WRITES "Cancel membership" and "Close subscription" now count as destructive, and `destructive_last` ordering changes. That is the safe direction, but it is untested and undeclared.
+Source: regress-base.out vs regress-cand.out. The same mixed shape built from non-Cf hidden characters is ALLOWED at both base and candidate. That is the F3 class this cycle claimed to close: 'De͏lete⠀item', 'Can͏cel⠀plan', 'Cancel⠀subscri͏ption', 'Sa͏ve⠀draft', 'Sub️mitㅤform' and 'Cancelㅤmember​ship'. Root cause: the two readings use one rule for every hidden character, either drop all of them or space all of them. A word-joining invisible character and a word-separating visible blank need different readings in the same name. Fix direction: read visible blanks (U+2800, U+115F, U+1160, U+3164, U+FFA0) as a space in BOTH readings, and drop or space only the zero-width ignorables. Alternatively, add a mixed reading. Add these names as tests, including the six base-refused ones.
+
+## Advisories (not blocking on their own)
+- More than 2 words between verb and noun are ALLOWED: "Cancel my current premium subscription" and "Cancel your Premium Plus subscription". Punctuation that is not a separator also passes: "Cancel: subscription", "Cancel, subscription", "Cancel—subscription", "Cancel (subscription)" and "Cancel 'subscription'". The pre-existing `\bcancel subscription\b` has the same gap, because normalise_label folds only `-_./+|`. Consider widening the gap to about 4 words and adding `:,;()'"` and the dashes to the separators.
+- Capital Cyrillic homoglyphs are ALLOWED ("Сancel plan"). `_CONFUSABLE_TABLE` is applied before casefold and maps lowercase only, so this is pre-existing and also open at the base. Macron "Delēte" is visible, so it is out of scope.
+- False positives in the safe direction under READ_ONLY and TEST_ACCOUNT (crawler deny_reason too): "Close account menu", "Close this account menu", "Close plan details", "Close subscription details", "End of plan" and "Close the plan comparison" are now refused. This is acceptable for a fail-closed tier: it costs a little coverage and blocks nothing destructive. "Close", "×", "✕", "X", "Close dialog", "Close menu", "Cancel", "Back", "Plan your trip", "Subscription details", "Membership benefits", "View plan", "Change plan", "Stop video", "Close account settings" and "Cancel and go back" all remain allowed.
+- Test weakness: the SAFE list in tests/test_agent_write_guard_gaps.py has the literal string "00d7", not "×". The multiplication-sign close button is not actually tested. It passes in the probe.
+- ALLOW_WRITES: guards output is identical between base and candidate for all 20 probed names (cmp.diff shows no ALLOW_WRITES rows). The only ALLOW_WRITES change is the declared `is_destructive` ordering ("Cancel membership", "Close subscription", "Cancel plan" and "Close this account menu" now sort last). That is declared, pinned by test_is_destructive_reads_deny_list_at_every_policy, and accepted.
+- The TEST_ACCOUNT tier's crawler deny_reason widens the same way as READ_ONLY. The manifest names deny_reason as a consumer, so this is in scope.
 
 ## Required to pass
-Close F1 and F2: reuse core.redact_wrap.is_ignorable_char (plus U+2800) for the READ_ONLY blank-name test. Close F3: give the fillers/ignorables the same drop-or-space two readings as Cf. Close F4 for at least the determiner/plural/adjective subscription forms ("cancel [any word] subscription(s)", "end membership"). Add tests for each.
+Close N1: no READ_ONLY name refused at the base may be allowed, and the mixed invisible-in-word plus visible-blank-separator shapes must be refused. Add tests for the listed names. Fix the "00d7" test literal.
 
 ## Independent vs reused
-All evidence was produced independently by this checker. None of the maker's claims or receipts were reused. The maker's "393 passed" matched the independent run.
+All evidence was produced independently by this checker at 5dbbe33c. No maker receipts were reused. The maker's test-count claim was not relied on.
 
 ## Accounting
-BOOTSTRAP_REVIEW (maker usage unknown; ratios unverified). Standing escalation applied (Umesh CLAUDE.md 2026-10-16) with finite limits of 480 s and 120,000 actual_total tokens. Review phase measured at about 442 s from 1792148755 to 1792149197 epoch. Finalization (verdict, commit, readback) was additional and pushes the total past 480 s, so the escalation is breached; this is recorded, not waived. Host token usage is not exposed, so tokens are null (debit only). Metrics: .work/check-awgg/metrics-phase1.json, assess-phase1.out, metrics-final.json.
+Maker usage is self-reported and unverified: about 184k actual_total tokens and about 1330 s across both cycles. The standing escalation applies (Umesh CLAUDE.md, 2026-10-16): the per-cycle cap is 1.0x maker tokens and 433 s. The cumulative limits are 945 s and 284,000 tokens, which include the cycle-0 debit of 512 s and 100k tokens. The cycle-1 review phase ran from epoch 1792150309 to 1792151628, 1319 s with no excluded waits. That includes about 120 s for a first probe run that hung on cp1252 stdout, 68 s of pytest and two doctor runs. Time is BREACHED: the cumulative checker time is 1831 s, a 1.38x active-time ratio, against a 0.10 target. The breach is recorded, not waived, and the assess result is NEEDS_EXTRA_REVIEW (exit 2). Host token usage is not exposed, so tokens are null and only a 120k debit is recorded. Metrics: .work/check-awgg-c1/metrics-phase1b.json, assess-phase1b.out, metrics-final.json and assess-final.out.
