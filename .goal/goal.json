@@ -1792,6 +1792,229 @@
       },
       "note": "Evidence only, no code (D-074). Depends on units G2-G9; the hosted check waits on T-203 deploy. | Acceptance: end to end on Pathlynks with redacted videos, reviews, bugs, a schedule tick, a Test press, reports on the website and by email for a user who ticked it; review recall against the oracle as numbers; persona walks (dev, admin) in a live browser; Ubuntu run once T-203 deploys. | HOSTED CHECK 2026-10-14 (Umesh): production host is Ubuntu; exact host and DNS details come later; the hosted leg waits on them.",
       "criticality": "critical"
+    },
+    {
+      "id": "T-207",
+      "title": "G11-1 Platform, PlatformLink, RoleAccount, MailboxRef schema + optional project fields (multi-role intent; O16, O17)",
+      "status": "pending",
+      "deps": [],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-207-g11-schema.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N schema/platform.py, schema/platform_link.py, schema/role_account.py, schema/mailbox_ref.py, schema/multi_role_enums.py; E schema/project.py. Old project.json loads as one implicit platform. | Parallel-safe with (no file overlap): foundation; nothing runs beside it. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "high",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-208",
+      "title": "G11-2 Onboarding form: N role accounts across M platforms on a NEW project, keys only, scope-checked (O17)",
+      "status": "pending",
+      "deps": [
+        "T-207"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-208-g11-onboarding.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/role_onboarding.py, ui/routes_role_accounts.py, ui/role_accounts_view.py; E ui/routers.py. Reuses ui/env_editor.py, ui/credential_guard.py. Refuses a SecretRef wider than its platform (suffix-match trap). | Parallel-safe with (no file overlap): T-209. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "high",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-209",
+      "title": "G11-3 MultiRoleFinding, LeakEvidence, P0 rule and the release-blocking report banner (O19)",
+      "status": "pending",
+      "deps": [
+        "T-207"
+      ],
+      "base_criticality": "critical",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-209-g11-severity-banner.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N schema/multi_role_finding.py, schema/leak_evidence.py, stages/finding_priority.py, stages/leak_evidence.py; E stages/unified_report.py, stages/unified_report_render.py. Leak/privilege always P0; HMAC ids, masked screenshots, no PII on disk. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "critical",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-210",
+      "title": "G11-4 Multi-role session runner: one isolated context per role account, platform links followed and reported (O16, O18)",
+      "status": "pending",
+      "deps": [
+        "T-207",
+        "T-209"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-210-g11-session-runner.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/multi_role_session.py, stages/platform_links.py. Reuses browser/session.py, stages/parallel_run.py isolation, stages/manual_login.py. Off-platform hop = finding. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "high",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-211",
+      "title": "G11-5 CrossRoleScenario runner: role-tagged steps, 'role B sees or receives X within T' assertions, oracle registry (O18, O20)",
+      "status": "pending",
+      "deps": [
+        "T-210"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-211-g11-cross-role-runner.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N schema/cross_role_scenario.py, schema/role_step.py, schema/cross_role_assertion.py, schema/oracle_context.py, stages/cross_role_runner.py, stages/oracle_registry.py. Registry names every oracle module up front; unbuilt oracle reports 'not built'. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "high",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-212",
+      "title": "G11-6 Mailbox oracle: read-only IMAP read per role, presence and absence within T (O18, O20)",
+      "status": "pending",
+      "deps": [
+        "T-211"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-212-g11-mailbox-oracle.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N sources/imap_mailbox.py, stages/oracle_mailbox.py, schema/mail_observation.py. Reuses sources/email.py parsing. HUMAN_GATE: IMAP host + per-role mailbox keys; source-adapters.md has no IMAP today (checker fold). | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216, T-217. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "high",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-213",
+      "title": "G11-7 Authz oracles: cross-tenant probe, vertical privilege, role-assign escalation, bounded (O19)",
+      "status": "pending",
+      "deps": [
+        "T-211",
+        "T-209"
+      ],
+      "base_criticality": "critical",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-213-g11-authz-oracles.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/oracle_tenant.py, stages/oracle_privilege.py, schema/probe_budget.py. Reuses network_capture, permission surface. Deterministic, no model sees leaked content; successful escalation reverted in-run. | Parallel-safe with (no file overlap): T-212, T-214, T-215, T-216, T-217. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "critical",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-214",
+      "title": "G11-8 Network oracles: API error hidden by the UI, request-rate and polling budget (O20)",
+      "status": "pending",
+      "deps": [
+        "T-211"
+      ],
+      "base_criticality": "medium",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-214-g11-network-oracles.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_api_error.py, stages/oracle_request_budget.py, schema/request_budget.py. Reuses stages/network_capture.py. | Parallel-safe with (no file overlap): T-212, T-213, T-215, T-216, T-217. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "medium",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-215",
+      "title": "G11-9 Cross-role consistency and answer-key scoring oracles (O20)",
+      "status": "pending",
+      "deps": [
+        "T-211"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-215-g11-consistency-answer-key.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_consistency.py, stages/oracle_answer_key.py, schema/entity_reading.py, schema/answer_key.py. Answer keys come from product docs, never from benchmark findings (contamination rule). | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-216, T-217. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "high",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-216",
+      "title": "G11-10 Surface oracles: copy/branding/timezone lint and responsive sweep (O20)",
+      "status": "pending",
+      "deps": [
+        "T-211"
+      ],
+      "base_criticality": "medium",
+      "user_value": "normal",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-216-g11-surface-oracles.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_copy_lint.py, stages/oracle_responsive.py, schema/lint_rule.py. Reuses CaseClass.VIEWPORT_MOBILE, ux_advisory evidence reading. | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-215, T-217. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "medium",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-217",
+      "title": "G11-11 Credential-policy and payment-flow-presence oracles (O19, O20)",
+      "status": "pending",
+      "deps": [
+        "T-211",
+        "T-212"
+      ],
+      "base_criticality": "high",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-217-g11-credential-payment-oracles.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size S. Files: N stages/oracle_credential_policy.py, stages/oracle_payment.py. Password in mail recorded as token-present only; payment stops at the gateway page unless provider test mode. | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "high",
+      "created": "2026-10-16T00:00:00"
+    },
+    {
+      "id": "T-218",
+      "title": "G11-12 CEO-benchmark acceptance: 8 roles across linked platforms, recall/FP/time vs the atomic list (O21, O6)",
+      "status": "pending",
+      "deps": [
+        "T-208",
+        "T-212",
+        "T-213",
+        "T-214",
+        "T-215",
+        "T-216",
+        "T-217"
+      ],
+      "base_criticality": "critical",
+      "user_value": "high",
+      "done_check": {
+        "type": "cmd",
+        "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-218-g11-ceo-benchmark.md",
+        "expect_exit": 0
+      },
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/ceo_benchmark.py (maps private atomic list to BenchCorpus like known_bugs.py). Reuses bench.py, acceptance_comparison.py. HUMAN_GATE: atomic split + hash pinned before run; FP adjudication; CEO active hours. | Parallel-safe with (no file overlap): none (final). Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "criticality": "critical",
+      "created": "2026-10-16T00:00:00"
     }
   ],
   "decisions": [],
