@@ -95,14 +95,22 @@ def _check_one_run(run_id: str, case: Case, result: RawResult, verdict: Verdict,
                           f"{result.case_id}")
 
 
-def _failing_step(case: Case, result: RawResult, requested: int | None) -> int | None:
+def _failing_step(case: Case, result: RawResult,
+                  requested: int | None) -> tuple[int | None, str | None]:
+    """The step to centre on and its provenance: a caller-pinned one, else the executor's
+    recorded `result.failing_step` (AT-787), else the old heuristic, marked as such."""
     orders = [s.order for s in case.steps]
-    if requested is None:
-        seen = [e.step_order for e in result.evidence if e.step_order is not None]
-        requested = max(seen) if seen else (orders[0] if orders else None)
-    if requested is not None and requested not in orders:
-        raise BundleError(f"failing step {requested} is not a step of case {case.id}")
-    return requested
+    if requested is not None:
+        if requested not in orders:
+            raise BundleError(f"failing step {requested} is not a step of case {case.id}")
+        return requested, "explicit"
+    if result.failing_step in orders:
+        return result.failing_step, "recorded"
+    seen = [e.step_order for e in result.evidence if e.step_order is not None]
+    fallback = max(seen) if seen else (orders[0] if orders else None)
+    if fallback is not None and fallback not in orders:
+        raise BundleError(f"failing step {fallback} is not a step of case {case.id}")
+    return fallback, "heuristic_fallback"
 
 
 def _window(case: Case, failing: int | None, neighbours: int) -> list[int]:
@@ -167,7 +175,7 @@ def build_failure_bundle(
     before the first byte is written.
     """
     _check_one_run(run_id, case, result, verdict, sources, spans)
-    failing = _failing_step(case, result, failing_step)
+    failing, source = _failing_step(case, result, failing_step)
     steps = _window(case, failing, neighbours)
     kept = [s for s in sources if s.step_order in steps]
     if any(not s.masked for s in kept):
@@ -185,7 +193,8 @@ def build_failure_bundle(
     w = _Writer(partial, run_id)
     _write_parts(w, redactor, case, result, verdict, kept, spans, steps)
     manifest = BundleManifest(bundle_id=bundle_id, run_id=run_id, case_id=case.id,
-                              failing_step=failing, steps_included=steps, files=w.files)
+                              failing_step=failing, failing_step_source=source,
+                              steps_included=steps, files=w.files)
     (partial / MANIFEST).write_text(_dump(redactor, manifest), encoding="utf-8")
     partial.rename(final)
     return final

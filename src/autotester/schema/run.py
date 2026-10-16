@@ -54,6 +54,11 @@ class RawResult(Artifact):
                     "(VIEWPORT_MOBILE/LOCALE_I18N) the executor could not enact -- outcome is "
                     "then NOT_RUN and this names why, never a silent default-condition PASS",
     )
+    failing_step: int | None = Field(
+        default=None,
+        description="AT-787: `order` of the step the executor saw break (first unmet assertion, "
+                    "or the step that raised/blocked); None when nothing failed or unrecorded",
+    )
     evidence: list[Evidence] = Field(default_factory=list)
     log_ref: str | None = None
 
