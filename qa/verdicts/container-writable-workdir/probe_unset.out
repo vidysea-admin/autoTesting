@@ -1,0 +1,2 @@
+{'dir': True, 'profile': True, 'queue': True, 'auth': True, 'team': True, 'set_dir': True, 'set_env_file_repo': True, 'explicit_root_wins': True}
+exit=0

@@ -1,0 +1,33 @@
+...........F                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_env_example_documents_every_key_the_code_reads _____________
+
+    def test_env_example_documents_every_key_the_code_reads() -> None:
+        documented = set(re.findall(r"^#?\s*(AUTOTESTER_[A-Z_]+)=", (ROOT / ".env.example")
+                                   .read_text(encoding="utf-8"), re.M))
+        used = set()
+        for path in (ROOT / "src").rglob("*.py"):
+            used |= set(re.findall(r"AUTOTESTER_[A-Z_]+[A-Z]", path.read_text(encoding="utf-8")))
+>       assert used - documented == set(), f"undocumented env keys: {sorted(used - documented)}"
+E       AssertionError: undocumented env keys: ['AUTOTESTER_DATA_DIR']
+E       assert {'AUTOTESTER_DATA_DIR'} == set()
+E         
+E         Extra items in the left set:
+E         'AUTOTESTER_DATA_DIR'
+E         Use -v to get more diff
+
+tests\test_hosting_deploy.py:70: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.claude\worktrees\container-writable-workdir\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+1 failed, 11 passed, 2 warnings in 219.28s (0:03:39)
+exit=1 secs=309

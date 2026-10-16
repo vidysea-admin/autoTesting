@@ -1,0 +1,15 @@
+{
+  "token_metric": "actual_total",
+  "maker": {"token_metric": "actual_total", "active_s": null, "tokens": null, "cost": null},
+  "reviewers": [
+    {"token_metric": "actual_total", "id": "checker-c0-review", "active_s": 1690, "tokens": null, "cost": null,
+     "budget_debit": {"token_metric": "actual_total", "active_s": 1690, "tokens": 7000}}
+  ],
+  "next_phase": {"token_metric": "actual_total", "kind": "finalization", "active_s": 30, "tokens": 600, "cost": null},
+  "completion_reserve": true,
+  "completion_reserve_id": "container-writable-workdir/0/64cc8cc8957d398eb04877420af87d264f150c31",
+  "completion_reserve_tokens": 600,
+  "bootstrap_scope": "BOOTSTRAP_REVIEW: diff+consumers review, scoped pytest, ruff, doctor, bash -n",
+  "bootstrap": {"token_metric": "actual_total", "active_s": 180, "tokens": 6000, "cost": null},
+  "escalation": {"authority": "orchestrator (CLAUDE.md standing escalation, Umesh 2026-10-16)", "reason": "security-relevant go-live fix; mandatory scoped tests/ruff/doctor", "limits": {"token_metric": "actual_total", "active_s": 480, "tokens": 7000, "cost": null}}
+}
