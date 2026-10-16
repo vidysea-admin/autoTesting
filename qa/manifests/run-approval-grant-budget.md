@@ -1,6 +1,6 @@
 # Run-approval grant scope and probe budget
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Risk: high (consent gate, security)
 Base: c4d48ad109f1ef77f73ee9172866cc5feeca7063
