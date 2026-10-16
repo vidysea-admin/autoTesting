@@ -184,6 +184,31 @@ The admin page for concurrency and upload limits, sign-in, the noVNC gate, runni
 non-root user, and the scheduled backup script wait on T-204 and later units. Until the admin
 page exists, set `AUTOTESTER_MAX_CONCURRENT_RUNS` in `server.env` and restart.
 
+## Cloud Run (no VNC) and exit 126 triage
+
+Supported route for the live VNC viewers is a GCE VM with `docker/compose.prod.yml` (Part A).
+Cloud Run runs the UI only. Replace `<placeholders>`; rebuild the image from current master first.
+
+```bash
+gcloud run deploy autotester --image <region>-docker.pkg.dev/<project>/<repo>/autotester:<tag> \
+  --region <region> --execution-environment gen2 --port 8000 \
+  --no-cpu-throttling --cpu 2 --memory 4Gi --min-instances 1 --timeout 3600 \
+  --set-env-vars AUTOTESTER_ALLOWED_ORIGINS=https://<service-url>,AUTOTESTER_ALLOWED_HOSTS=<service-host> \
+  --add-volume name=data,type=cloud-storage,bucket=<bucket> --add-volume-mount volume=data,mount-path=/data \
+  --startup-probe tcpSocket.port=8000,initialDelaySeconds=10,timeoutSeconds=5,periodSeconds=10,failureThreshold=18
+```
+
+The container binds `$PORT` (default 8000): `--port` must match, or drop the flag and let Cloud
+Run inject `PORT=8080`. CPU must stay always allocated (`--no-cpu-throttling`); the app runs
+background work between requests. Start-up runs Xvfb and the VNC sidecars before the app.
+
+### Troubleshooting: exit 126 (`/opt/venv/bin/python: Permission denied`)
+
+1. Read the log: the entrypoint prints `PREFLIGHT FAIL` with uid, the real python path and perms.
+2. Rebuild from current master with `--no-cache` and redeploy by digest. Images built before
+   f572a4b5 keep python under `/root`, which uid 10001 cannot enter. The build now fails if it is so.
+3. Still failing: `docker run --rm --user 10001 --entrypoint /opt/venv/bin/python <image> -c "print(1)"`.
+
 ## Part B: Windows (development, or a Windows server)
 
 Production is Ubuntu; this part covers developing on Windows and running the UI as a service
