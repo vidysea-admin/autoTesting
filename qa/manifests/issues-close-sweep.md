@@ -1,6 +1,6 @@
 # Manifest - issues-close-sweep
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 
 Changed path: `qa/issues.jsonl` only (15 rows edited in place, no id added or removed). Statuses set to `fixed`, never `verified`.
