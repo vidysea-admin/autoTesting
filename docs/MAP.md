@@ -326,6 +326,7 @@
 | `stages/unified_report.py` | The damage-control report's loaders and assembly (T-168, `damage-control-report.md` DC1-DC4). |
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
+| `stages/ux_wiring.py` | Run the advisory UX pass after a run is saved, and never let it touch the run (AT-794). |
 | `stages/video_access.py` | Who may open a video, and how: the video resource, shares and share links (TP1, TP3). |
 | `stages/video_comments.py` | Timestamped comments on a video, and promoting one to a pointer (TP2, TP6). |
 | `stages/video_pointers.py` | Parse a reviewer's pointer file into typed lines and a whole error list (TV1). |
