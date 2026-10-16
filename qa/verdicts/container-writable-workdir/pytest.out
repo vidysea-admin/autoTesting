@@ -1,0 +1,85 @@
+.......................s.........................................F...... [ 54%]
+F...............................................F...........             [100%]
+================================== FAILURES ===================================
+_ test_au21_no_onboarded_key_becomes_an_environment_variable[anthropic-ANTHROPIC_BASE_URL] _
+
+root = WindowsPath('C:/Users/product/AppData/Local/Temp/claude/C--Users-product-Desktop-autoTesting/5aec902b-1207-4886-9e7e-7e118352b899/scratchpad/bt/p1/test_au21_no_onboarded_key_bec0/root')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DD821BC390>
+slug = 'anthropic', key = 'ANTHROPIC_BASE_URL'
+
+    @pytest.mark.parametrize(("slug", "key"), ATTACKS)
+    def test_au21_no_onboarded_key_becomes_an_environment_variable(
+            root: Path, monkeypatch: pytest.MonkeyPatch, slug: str, key: str) -> None:
+        """The class, not four examples: whatever the Developer's slug and key, the value that
+        lands in `.env` is never exported at the next start."""
+        dev = team()["dev"]
+        _onboard(dev, slug, key)
+        _restart(monkeypatch, root)
+>       assert key not in os.environ and "EVIL" not in os.environ.values()
+E       AssertionError: assert ('ANTHROPIC_BASE_URL' not in {'AI_AGENT': 'claude-code_2-1-299_agent', 'ALLUSERSPROFILE': 'C:\\ProgramData', 'ANTHROPIC_BASE_URL': 'https://api.anthropic.com', 'API_TIMEOUT_MS': '900000', ...})
+E        +  where {'AI_AGENT': 'claude-code_2-1-299_agent', 'ALLUSERSPROFILE': 'C:\\ProgramData', 'ANTHROPIC_BASE_URL': 'https://api.anthropic.com', 'API_TIMEOUT_MS': '900000', ...} = os.environ
+
+tests\test_ui_auth_envkeys.py:58: AssertionError
+_ test_au21_env_add_and_undeclare_leave_nothing_exported[anthropic-ANTHROPIC_BASE_URL] _
+
+root = WindowsPath('C:/Users/product/AppData/Local/Temp/claude/C--Users-product-Desktop-autoTesting/5aec902b-1207-4886-9e7e-7e118352b899/scratchpad/bt/p1/test_au21_env_add_and_undeclar0/root')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DD82261150>
+slug = 'anthropic', key = 'ANTHROPIC_BASE_URL'
+
+    @pytest.mark.parametrize(("slug", "key"), ATTACKS[:4])
+    def test_au21_env_add_and_undeclare_leave_nothing_exported(
+            root: Path, monkeypatch: pytest.MonkeyPatch, slug: str, key: str) -> None:
+        """Declaring through `/env/add`, then removing the declaration (the value stays in `.env`),
+        still exports nothing: the key sits in a project's namespace whether declared or not."""
+        dev = team()["dev"]
+        project(root, slug)  # a project that already exists (onboarding may now refuse the slug)
+        set_owner(slug, user_id("dev@team.test"))
+        resp = dev.post(f"/projects/{slug}/env/add", data={
+            "key": key, "value": "EVIL", "domains": f"{slug}.test"})
+        dev.post(f"/projects/{slug}/secrets/{key}/delete")
+        assert resp.status_code in {303, 400, 403}
+        _restart(monkeypatch, root)
+>       assert key not in os.environ and "EVIL" not in os.environ.values()
+E       AssertionError: assert ('ANTHROPIC_BASE_URL' not in {'AI_AGENT': 'claude-code_2-1-299_agent', 'ALLUSERSPROFILE': 'C:\\ProgramData', 'ANTHROPIC_BASE_URL': 'https://api.anthropic.com', 'API_TIMEOUT_MS': '900000', ...})
+E        +  where {'AI_AGENT': 'claude-code_2-1-299_agent', 'ALLUSERSPROFILE': 'C:\\ProgramData', 'ANTHROPIC_BASE_URL': 'https://api.anthropic.com', 'API_TIMEOUT_MS': '900000', ...} = os.environ
+
+tests\test_ui_auth_envkeys.py:74: AssertionError
+_____________ test_env_example_documents_every_key_the_code_reads _____________
+
+    def test_env_example_documents_every_key_the_code_reads() -> None:
+        documented = set(re.findall(r"^#?\s*(AUTOTESTER_[A-Z_]+)=", (ROOT / ".env.example")
+                                   .read_text(encoding="utf-8"), re.M))
+        used = set()
+        for path in (ROOT / "src").rglob("*.py"):
+            used |= set(re.findall(r"AUTOTESTER_[A-Z_]+[A-Z]", path.read_text(encoding="utf-8")))
+>       assert used - documented == set(), f"undocumented env keys: {sorted(used - documented)}"
+E       AssertionError: undocumented env keys: ['AUTOTESTER_DATA_DIR']
+E       assert {'AUTOTESTER_DATA_DIR'} == set()
+E         
+E         Extra items in the left set:
+E         'AUTOTESTER_DATA_DIR'
+E         Use -v to get more diff
+
+tests\test_hosting_deploy.py:70: AssertionError
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  C:\Users\product\Desktop\autoTesting\.claude\worktrees\container-writable-workdir\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\product\Desktop\autoTesting\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+  <unknown>:19: DeprecationWarning: invalid escape sequence '\s'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_ui_auth_envkeys.py::test_au21_no_onboarded_key_becomes_an_environment_variable[anthropic-ANTHROPIC_BASE_URL]
+FAILED tests/test_ui_auth_envkeys.py::test_au21_env_add_and_undeclare_leave_nothing_exported[anthropic-ANTHROPIC_BASE_URL]
+FAILED tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
+3 failed, 128 passed, 1 skipped, 6 warnings in 1553.21s (0:25:53)
+exit=1 secs=1711

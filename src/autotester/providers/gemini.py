@@ -23,6 +23,7 @@ from typing import Any, TypeVar
 import httpx
 from pydantic import BaseModel, ValidationError
 
+from autotester.core.paths import work_dir
 from autotester.providers.attempts import attempt_budget, check_deadline
 from autotester.providers.base import Provider, ProviderError
 from autotester.providers.gemini_files import GeminiDeadlineTransport, upload_and_wait
@@ -140,7 +141,7 @@ class GeminiProvider(Provider):
             contents.append(types.Part.from_bytes(data=data, mime_type="audio/wav"))
         elif video_path is not None:
             contents.append(upload_and_wait(client, video_path,
-                                            cache_path=Path(".work/gemini_uploads.json"),
+                                            cache_path=work_dir() / "gemini_uploads.json",
                                             deadline=deadline))
         for path in images or []:
             if path.exists():

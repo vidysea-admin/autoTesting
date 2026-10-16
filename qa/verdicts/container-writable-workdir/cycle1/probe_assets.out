@@ -1,0 +1,8 @@
+root True
+prompts_dir_exists True under_root False
+skills_dir_exists True
+grade_skill_len True
+package_root_has_ui True
+work_dir_under_root True
+observe_js_ok True
+exit 0
