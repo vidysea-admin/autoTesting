@@ -1,6 +1,6 @@
 # Manifest - flowplan-writer
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Base SHA:** f6c1ac4e63c466db09f1c7a465863a55faec513e
 **Candidate SHA:** the commit carrying this file (`git log -1 -- qa/manifests/flowplan-writer.md`)
