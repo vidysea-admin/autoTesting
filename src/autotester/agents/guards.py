@@ -25,6 +25,7 @@ from autotester.browser.secrets import SecretStore
 from autotester.browser.session import NavigationRefused, check_destination
 from autotester.core.consent import require_project_approval
 from autotester.core.redact import PLACEHOLDER_RE
+from autotester.core.redact_wrap import is_ignorable_char
 from autotester.schema.agent_layer import RefusalClass
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
@@ -107,27 +108,35 @@ _CONFUSABLES = {  # code point -> Latin letter (Cyrillic a e o p c x y i s j d h
          0x3BF, 0x3BD, 0x3B9), "aeopcxyisjdhovi", strict=True)}
 _CONFUSABLE_TABLE = str.maketrans(_CONFUSABLES)
 _UNNAMED = "unnamed control"
-# Blank-looking fillers that are not whitespace/Cf: Braille blank and the Hangul fillers (NFKC folds
-# U+3164/U+FFA0 to U+1160). READ_ONLY only (T-179b HG-1): ALLOW_WRITES behaviour is unchanged.
-_FILLERS = frozenset("⠀ᅟᅠㅤﾠ")
+_BRAILLE_BLANK = "⠀"  # visible-blank So, not default-ignorable; blank to a reader
+
+
+def _hidden(ch: str) -> bool:
+    """READ_ONLY reading of 'draws nothing': the one redaction helper (`is_ignorable_char`,
+    AT-351/611: Cf/Cc, Default_Ignorable incl. Hangul fillers, variation selectors, tags) plus
+    the Braille blank."""
+    return ch == _BRAILLE_BLANK or is_ignorable_char(ch)
 
 
 def _blank_name(name: str) -> bool:
-    """True when the name shows nothing: only whitespace, format/control or filler characters."""
-    text = unicodedata.normalize("NFKC", name)
-    return not "".join(ch for ch in text if ch not in _FILLERS
-                       and unicodedata.category(ch) not in ("Cf", "Cc", "Zs", "Zl", "Zp")).strip()
+    """True when nothing a person can read is left: only whitespace, hidden characters, or
+    combining marks (Mn/Me) with no base."""
+    return all(ch.isspace() or _hidden(ch) or unicodedata.category(ch) in ("Mn", "Me")
+               for ch in unicodedata.normalize("NFKC", name))
 
 
-def _click_names(name: str) -> tuple[str, ...]:
+def _click_names(name: str, strict: bool = False) -> tuple[str, ...]:
     """A click target as the person sees it, in two readings: NFKC, lookalikes folded, case folded,
     separators and whitespace collapsed (`normalise_label`), with invisible/format characters
-    dropped (`De<ZWSP>lete`) and with them read as a space (`Save<ZWSP>draft`)."""
+    dropped (`De<ZWSP>lete`) and with them read as a space (`Save<ZWSP>draft`). `strict`
+    (READ_ONLY) widens "invisible" from Cf to `_hidden` (fillers, variation selectors, ...)."""
     text = unicodedata.normalize("NFKC", name)
     out = []
     for hidden in ("", " "):
-        seen = "".join(hidden if unicodedata.category(ch) == "Cf" else (" " if ch.isspace() else ch)
-                       for ch in text)
+        seen = "".join(
+            " " if ch.isspace() else hidden if (_hidden(ch) if strict
+                                                 else unicodedata.category(ch) == "Cf") else ch
+            for ch in text)
         out.append(explore_safety.normalise_label(seen.translate(_CONFUSABLE_TABLE).casefold()))
     return tuple(dict.fromkeys(out))
 
@@ -136,11 +145,10 @@ def _click_refusal(name: str, project: Project,
                    ctx: DestroyContext | None = None) -> str | None:
     """Deny-list, never-click and unnamed (blank after cleaning) checks for a click target.
     Under READ_ONLY an invisible-filler-only name is unnamed too."""
-    if project.write_policy is WritePolicy.READ_ONLY:
-        if _blank_name(name):
-            return _UNNAMED
-        name = "".join(" " if ch in _FILLERS else ch for ch in unicodedata.normalize("NFKC", name))
-    names = _click_names(name)
+    strict = project.write_policy is WritePolicy.READ_ONLY
+    if strict and _blank_name(name):
+        return _UNNAMED
+    names = _click_names(name, strict)
     if not any(names):
         return _UNNAMED
     return next((why for n in names if (why := _click_denied(n, project, ctx))), None)
@@ -213,7 +221,7 @@ def _read_only_refusal(step: Step, project: Project, walk: _Walk) -> str | None:
     if action is Action.CLICK:  # D-086 HG-1: benign clicks run; deny-list/never-click still hold
         return _click_refusal(step.target, project, walk.ctx) or (
             "click on a control named like a commit can change state"
-            if any(_COMMIT_NAME.search(n) for n in _click_names(step.target)) else None)
+            if any(_COMMIT_NAME.search(n) for n in _click_names(step.target, True)) else None)
     if action is Action.FILL:
         return "fill outside the declared login's credential entry"
     return f"{action.value} can change state"

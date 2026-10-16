@@ -34,7 +34,10 @@ DEFAULT_DENY_PATTERNS = (
     r"\bpurge\b", r"\bdrop\b", r"\breset\b", r"\brevoke\b", r"\bterminate\b",
     r"\bcancel subscription\b", r"\bpay\b", r"\bcheckout\b", r"\bsend\b", r"\bsubmit\b",
     r"\bapprove\b", r"\breject\b", r"\bpublish\b", r"\bunsubscribe\b",
-    r"\b(?:close|cancel) (?:my |your |the )?(?:account|subscription|membership)\b(?! settings)",
+    r"\b(?:close|cancel|end|stop)\b (?:\w+ ){0,2}(?:account|subscriptions?|memberships?|plan|"
+    r"auto ?renew\w*)\b"
+    r"(?! settings$)",
+    r"\bturn off (?:\w+ )?auto ?renew",
 )
 
 # Never clicked at ANY write_policy, including ALLOW_WRITES. The [\s\w]{0,10}
