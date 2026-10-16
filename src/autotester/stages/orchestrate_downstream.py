@@ -32,7 +32,7 @@ from autotester.stages.run_launcher import (
     judge_or_refuse,
     save_tracked_run,
 )
-from autotester.stages.video_retention import prune_old_videos
+from autotester.stages.video_retention import prune_old_videos_safely
 from autotester.store.filestore import read_json, write_json
 from autotester.store.project_store import ProjectStore
 
@@ -197,8 +197,8 @@ def make_report_stage():
                      ctx.store.paths.root, case_overrides=cases)
         for plan in plans_from_batch(batch):  # RR6: a completed flow leaves its plan
             ctx.store.save_flow_plan(plan)
-        prune_old_videos(view)
         ask_for_what_it_did_not_recognise(view, ctx.run_id)
+        prune_old_videos_safely(view)  # AT-735: after the O5 ask, error-safe
         return str(html)
     return run
 
