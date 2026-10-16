@@ -209,6 +209,46 @@ background work between requests. Start-up runs Xvfb and the VNC sidecars before
    f572a4b5 keep python under `/root`, which uid 10001 cannot enter. The build now fails if it is so.
 3. Still failing: `docker run --rm --user 10001 --entrypoint /opt/venv/bin/python <image> -c "print(1)"`.
 
+## Debugging a failing container
+
+One script collects everything into one file. Run it from the repo root (it needs docker, curl and
+git; no secrets):
+
+```bash
+bash scripts/container_diagnose.sh                      # rebuild with --no-cache, then run and diagnose
+bash scripts/container_diagnose.sh --image <image:tag>  # an image you already built or pulled
+bash scripts/container_diagnose.sh --timeout 300 --out ./evidence
+bash scripts/container_diagnose.sh --image <image:tag> --gcloud <service> --region <region>
+```
+
+It writes `container-debug-<UTC timestamp>.log` and `summary.md` in `--out` (default `.`) and exits
+non-zero when the image User is not 10001, `import autotester` fails, port 8000 never answers
+`/healthz`, or DIAGNOSIS finds a failure signature. Send the one `.log` file to the team.
+
+Reading the log: it is split into `===== SECTION n =====` blocks. 1 host and docker, 2 git SHA, 3 full
+build log, 4 image User/Entrypoint/Cmd/Env names (values are never written), 5 permission check run
+twice (image user and `--user 10001:10001`: `id`, the real python path, `namei -l`, directory
+modes, import), 6 start-up with a readiness line (`READINESS: READY after Ns` or `NOT READY`),
+7 `docker logs`, 8 `docker ps -a` and State (ExitCode, OOMKilled, Error), 8a Cloud Run logs
+(only with `--gcloud`), 9 DIAGNOSIS: one `[FAIL] id: cause Fix: ...` line per known signature
+(exit 126 / Permission denied, PREFLIGHT FAIL, OOMKilled, port not ready, Address already in use,
+GCS or .env failure, Xvfb/x11vnc failure, exec format error, CRLF). Start at section 9, then read the
+section it points to. Anything that looks like a KEY, TOKEN, SECRET, PASSWORD or Bearer value is masked.
+
+CI evidence: the `container-smoke` workflow (`.github/workflows/container-smoke.yml`) builds and
+starts the image on every change to the Dockerfile, `docker/`, `src/` or the lock files, and on manual
+run. Open the run in the Actions tab: the job summary shows DIAGNOSIS, and the artifact
+`container-smoke-evidence` (kept 14 days) holds the same `container-debug-*.log` and `summary.md`.
+The smoke runs with no secrets: the app starts without `/app/.env`, and there is no in-app GCS
+download (Cloud Storage is only a Cloud Run volume mount).
+
+Cloud Run logs for a revision (needs `gcloud auth login`):
+
+```bash
+gcloud run services logs read <service> --region <region> --limit 300
+gcloud logging read 'resource.type="cloud_run_revision" AND resource.labels.service_name="<service>" AND resource.labels.revision_name="<revision>"' --limit 300 --freshness 1d
+```
+
 ## Part B: Windows (development, or a Windows server)
 
 Production is Ubuntu; this part covers developing on Windows and running the UI as a service

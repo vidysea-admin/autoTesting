@@ -1,0 +1,59 @@
+# Builds the production image and starts it, so a broken container (e.g. exit 126 on
+# /opt/venv/bin/python) shows up in CI with one downloadable log. No secrets are used: the app
+# starts without /app/.env (load_repo_env returns nothing when it is absent) and there is no
+# in-app GCS download (Cloud Storage is a Cloud Run volume mount, not used here).
+name: container-smoke
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - Dockerfile
+      - docker/**
+      - scripts/container_diagnose.sh
+      - pyproject.toml
+      - uv.lock
+      - src/**
+      - .github/workflows/container-smoke.yml
+  pull_request:
+    paths:
+      - Dockerfile
+      - docker/**
+      - scripts/container_diagnose.sh
+      - pyproject.toml
+      - uv.lock
+      - src/**
+      - .github/workflows/container-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      AUTOTESTER_ALLOWED_ORIGINS: http://localhost:8000
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build, run and diagnose the container
+        run: bash scripts/container_diagnose.sh --out "$RUNNER_TEMP/evidence" --timeout 240
+
+      - name: Publish summary
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/evidence/summary.md" ]; then cat "$RUNNER_TEMP/evidence/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          else echo "container_diagnose.sh produced no summary (it failed before writing one)." >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-smoke-evidence
+          path: |
+            ${{ runner.temp }}/evidence/container-debug-*.log
+            ${{ runner.temp }}/evidence/summary.md
+          retention-days: 14
+          if-no-files-found: warn
