@@ -286,8 +286,7 @@ def report_html(
     typer.secho(f"wrote {path}", fg=typer.colors.GREEN)
 
 
-app.command("loop-status")(cli_loop.loop_status_cmd)
-app.command("loop-tick")(cli_loop.loop_tick_cmd)
+cli_loop.attach_loop_commands(app)
 app.command("explore")(cli_crawl.explore_cmd)
 app.command("approve")(cli_crawl.approve_cmd)
 report_app.command("crawl")(cli_crawl.report_crawl)

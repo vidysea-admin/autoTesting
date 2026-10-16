@@ -19,7 +19,7 @@ def test_append_tick_keeps_history_and_adds_newline(tmp_path: Path) -> None:
     atomic_tick.append_tick(p, "2026-01-03T00:00:00Z c")
     assert p.read_text(encoding="utf-8").splitlines() == [
         "2026-01-01T00:00:00Z a", "2026-01-02T00:00:00Z b", "2026-01-03T00:00:00Z c"]
-    assert [f.name for f in tmp_path.iterdir()] == [".last-tick"]
+    assert not list(tmp_path.glob("*.tmp"))
 
 
 def test_append_tick_rejects_empty_and_leaves_file(tmp_path: Path) -> None:
@@ -41,7 +41,7 @@ def test_append_tick_failed_replace_keeps_original(tmp_path: Path, monkeypatch) 
     with pytest.raises(OSError):
         atomic_tick.append_tick(p, "c")
     assert p.read_text(encoding="utf-8") == "a\nb\n"
-    assert [f.name for f in tmp_path.iterdir()] == [".last-tick"]
+    assert not list(tmp_path.glob("*.tmp"))
 
 
 def _ledger(tmp_path: Path, rows: list[dict]) -> Path:
@@ -79,3 +79,55 @@ def test_append_does_not_glue_onto_unterminated_row(tmp_path: Path) -> None:
     p.write_text('{"id": "AT-1", "title": "a"}', encoding="utf-8")
     issue_ids.append_new_issue(p, {"title": "b"})
     assert [r["id"] for r in issue_ids.read_rows(p)] == ["AT-1", "AT-2"]
+
+
+def test_append_tick_threaded_keeps_every_line(tmp_path: Path) -> None:
+    p = tmp_path / ".last-tick"
+    p.write_text("seed\n", encoding="utf-8")
+    errors: list[Exception] = []
+
+    def work(i: int) -> None:
+        try:
+            atomic_tick.append_tick(p, f"t{i}")
+        except Exception as exc:
+            errors.append(exc)
+
+    threads = [threading.Thread(target=work, args=(i,)) for i in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert errors == []
+    assert sorted(p.read_text(encoding="utf-8").splitlines()) == sorted(
+        ["seed", *[f"t{i}" for i in range(8)]])
+    assert sorted(f.name for f in tmp_path.iterdir()) == [".last-tick", ".last-tick.lock"]
+
+
+def test_append_tick_retries_permission_error_then_succeeds(tmp_path: Path, monkeypatch) -> None:
+    p = tmp_path / ".last-tick"
+    p.write_text("a\n", encoding="utf-8")
+    real, calls = os.replace, []
+
+    def flaky(src, dst):
+        calls.append(1)
+        if len(calls) < 3:
+            raise PermissionError("held open")
+        real(src, dst)
+
+    monkeypatch.setattr(os, "replace", flaky)
+    atomic_tick.append_tick(p, "b")
+    assert len(calls) == 3 and p.read_text(encoding="utf-8") == "a\nb\n"
+
+
+def test_append_tick_raises_when_every_retry_fails(tmp_path: Path, monkeypatch) -> None:
+    p = tmp_path / ".last-tick"
+    p.write_text("a\n", encoding="utf-8")
+    monkeypatch.setattr(atomic_tick, "_RETRY_DELAYS_S", (0.0, 0.0))
+
+    def locked(*_args):
+        raise PermissionError("held open")
+
+    monkeypatch.setattr(os, "replace", locked)
+    with pytest.raises(PermissionError):
+        atomic_tick.append_tick(p, "b")
+    assert p.read_text(encoding="utf-8") == "a\n"

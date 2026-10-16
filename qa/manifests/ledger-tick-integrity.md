@@ -1,7 +1,16 @@
 # Manifest - ledger-tick-integrity
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
+**Cycle 0 base-of-fix SHA:** ce4e124a5ffefef83f881d07aa538860b5b515b8 (verdict commit 1e1cbef6 FAIL)
+
+## Fix cycle 1 changes
+- `cli.py` back to 300 lines: loop commands attach via `cli_loop.attach_loop_commands(app)`.
+- `docs/MAP.md` regenerated with `autotester map` (run with PYTHONPATH pinned to this worktree's src; the venv editable install points at another worktree).
+- `core/atomic_tick.py`: `file_lock` sidecar (`.last-tick.lock`), unique temp name (pid + thread id + uuid), `os.replace` retried with backoff on PermissionError and raised if all retries fail.
+- `.gitignore`: `qa/*.lock`.
+- Tests added: threaded 8-writer all-lines-land, retry-then-succeed, raise-after-exhausted retries.
+- Doctor: base exit 0 (checker-measured), candidate exit 0 (doctor: clean). Tests 30 passed.
 **Issues addressed:** AT-644, AT-645, AT-676
 **Base SHA:** c4d48ad109f1ef77f73ee9172866cc5feeca7063
 **Candidate SHA:** this commit (HEAD of branch worktree-agent-a1fe02b3d106c13e7)

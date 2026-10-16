@@ -51,3 +51,9 @@ def loop_tick_cmd(
     stamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     append_tick(repo_root() / "qa" / ".last-tick", f"{stamp} {note}".rstrip())
     typer.echo(stamp)
+
+
+def attach_loop_commands(app: typer.Typer) -> None:
+    """Attach the loop commands to the main app (keeps `cli.py` under its line budget)."""
+    app.command("loop-status")(loop_status_cmd)
+    app.command("loop-tick")(loop_tick_cmd)
