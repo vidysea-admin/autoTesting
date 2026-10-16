@@ -6036,3 +6036,30 @@ Source: `docs/features/multi-role-platform/intent.md` (O16-O21, Umesh's 2026-10-
 - **MP31 — Eight roles, linked platforms, live.** The acceptance run uses the onboarded 8 role accounts across the linked platforms in a real visible browser under a valid RunApproval, and reports per oracle whether it ran. serves: intent#O21, intent#O16, intent#O18
 
 **Status:** unfolded
+
+## 2026-10-16 · maker (g11-multirole-design, fix cycle 1) · addendum to the MP1-MP31 proposals above
+
+Answers checker verdict `qa/verdicts/g11-multirole-design.md` cycle 0 (F1, A1-A5). Where this addendum restates a criterion, the restatement replaces the earlier text when /checker folds; the earlier section stays as appended. Still unfolded; still held on the G11 decision draft.
+
+**F1: two techniques that had no owner**
+- **MP32 — Negative input per role (T-219).** For each form flow, the INPUT_EMPTY, INPUT_BOUNDARY, INPUT_UNICODE_OVERSIZE and DOUBLE_SUBMIT cases that `stages/expand.py` already produces run once per role account whose permitted surface reaches the form; `expand.py` is not edited. A submission the product accepts in breach of a declared `FieldConstraints` rule, a rule enforced for one role and not another, or a double submit that creates two records is a finding naming the role, form, rule and class. Verify: a synthetic fixture form with a rule matrix (required, min and max length, pattern, numeric range), enforced for role A and skipped for role B, plus a non-idempotent submit; every matrix cell is asserted, and a mutation that drops the per-role loop turns the role-B cells red. serves: intent#O20, intent#O3
+- **MP33 — State consistency after an action (T-220).** A `StateProbe` (`schema/state_probe.py`, reusing `schema/flowspec.py::ExpectedState`) names a counter, list or status reader (selector or first-party API pattern), the expected delta and the reader roles. The oracle reads before the action, after it, and after a reload, as each reader role; a missing, wrong-sized or non-persistent change is a finding citing all three readings. Verify: a synthetic fixture with three faults (counter not incremented, incremented only for the actor, reverted on reload) and one correct counter; each fault is reported and the correct one is not. serves: intent#O18, intent#O20
+
+**A1: fixtures stay blind (replaces the Verify lines of MP17, MP25 and MP27)**
+- **MP17 Verify:** a fixture mailbox with credential-shaped tokens of several synthetic shapes (numeric code, mixed token, URL-embedded token); none is stored, each is recorded as present.
+- **MP25 Verify:** a synthetic rule matrix: each declared brand term misspelt once, each forbidden string present once, and a timestamp rendered in each of two arbitrary zones other than the declared display zone; every cell is reported, and a control page with none is clean.
+- **MP27 Verify:** a synthetic matrix over every declared password rule (length, character classes, reuse) on create and reset flows, and outgoing messages carrying each synthetic token shape; each broken rule is reported by rule name, never by value.
+- **Fixture rule:** unit-test fixtures are synthetic and cover each rule class as a matrix. None may reproduce one benchmark finding's case; /checker rejects a fixture that does.
+
+**A2:** `schema/multi_role_enums.py` holds every G11 enum and is created and edited by T-207 only. A later unit that needs a new enum defines it in its own schema file. Verify (any G11 unit after T-207): `git diff --name-only <base>..<candidate>` does not list `schema/multi_role_enums.py`.
+
+**A3 (restates MP8's location):** the banner is built in a new `stages/report_banner.py` and called first by `stages/unified_report_render.py`; `stages/unified_report.py` is not edited by T-209.
+
+**A5 (adds to MP20):** T-213's probes reuse the T-154 bounded-pass mechanism, not a second probe concept. The planned probe count must be covered by a signed `RunApproval` checked through `core/consent.py::require_project_approval`; a code-side ceiling refuses an oversized plan; a refusal sends nothing and appends one non-secret line to `refusals.jsonl`. Verify: an approval covering 2 probes against a plan of 3 is refused with zero transport calls and one refusal line; no `schema/probe_budget.py` exists.
+
+**A4: Verify lines for MP29-MP31**
+- **MP29 Verify:** a synthetic atomic list (6 items over 3 priorities) and a synthetic AutoTester finding set (3 matches, 1 adjudicated FP, 1 unadjudicated) give recall 3/6 overall and per priority, an FP rate over adjudicated findings only, and one recall line per technique with its owning unit (an owner that did not run reads `not run`). The numbers are asserted equal to `stages/bench.py` output on the same input, and a second scorer module is absent.
+- **MP30 Verify:** three fixtures. In the first the list hash and commit time precede the run start, and recall is a number. In the second the list postdates the run, and recall reads `unavailable (ordering not recorded)`. In the third a scenario is labelled derived-from-finding, and its match is excluded from recall. A grep of the committed scorecard finds only counts and the list's sha256.
+- **MP31 Verify:** run evidence lists 8 onboarded role accounts and every declared platform with each one's login outcome, references a valid signed RunApproval id, records headed mode, and has a per-oracle ran / not built / not run table covering every registry entry; a role or oracle missing from the table fails.
+
+**Status:** unfolded

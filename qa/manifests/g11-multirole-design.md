@@ -1,12 +1,13 @@
 # Manifest — g11-multirole-design
 
 Status: ready-for-check
-Fix cycle: 0
+Fix cycle: 1
+Prior FAIL: qa/verdicts/g11-multirole-design.md cycle 0 (verdict commit dd6da595; reviewed b8862b35)
 Unit: g11-multirole-design — DESIGN only (docs, goal rows, contract proposals, decision draft). No product code.
 Root: C:/Users/product/Desktop/autoTesting/.claude/worktrees/agent-acbb80660b817cd91
 Branch: worktree-agent-acbb80660b817cd91
 Base SHA: 7409a48678d3568a75a360aa6d2c1a65bff78479
-Candidate SHA: the single commit on this branch above the base (`git log -1` on the branch)
+Candidate SHA: the fix-cycle-1 commit directly above dd6da595 (branch tip)
 Date: 2026-10-16
 Dual check: no
 
@@ -20,10 +21,11 @@ in substance in the intent file.
 - N `docs/features/multi-role-platform/intent.md` — Group 11 intent: O16-O21, user types, Umesh's
   answers, safety (leak evidence, bounded probes, ALLOW_WRITES unchanged), scoring, design per piece
   (schema file + stage file, reused vs new), non-goals, human gates.
-- E `.goal/goal.json` — 12 pending rows T-207..T-218 (next free id was T-207), each with deps,
+- E `.goal/goal.json` — 14 pending rows T-207..T-220 (next free id was T-207), each with deps,
   user_value, a `qa/verdicts/<slug>.md` done_check, size, files and a "parallel-safe with" note.
 - E `qa/feedback-inbox.md` — appended section, criteria MP1-MP31 (prefix MP unused in
-  `qa/contracts/`), each citing `serves: intent#O*`. Status: unfolded.
+  `qa/contracts/`), each citing `serves: intent#O*`; cycle 1 appends an addendum (MP32, MP33, blind
+  fixtures for MP17/MP25/MP27, A2/A3/A5 restatements, Verify lines for MP29-MP31). Status: unfolded.
 - N `qa/manifests/g11-decision-draft.md` — decision entry for Umesh, placeholder id `D-NEXT` (not a
   number, so no dangling citation), Approved-by PENDING. Script NOT run.
 - E `CLAUDE.md` — one router row for the new intent file (doctor L6 `doc-unrouted` requires it).
@@ -44,16 +46,36 @@ used (totals by priority and by technique); no finding id, title, repro step or 
 | T-210 | G11-4 multi-role session runner + platform links | L | T-207, T-209 | W3 (T-208 may still run) |
 | T-211 | G11-5 CrossRoleScenario runner + oracle registry | L | T-210 | W4 |
 | T-212 | G11-6 mailbox oracle (read-only IMAP) | M | T-211 | W5 |
+| T-219 | G11-13 negative input per role (reuses expand input classes) | M | T-211 | W5 |
+| T-220 | G11-14 state consistency after an action (StateProbe + ExpectedState) | M | T-211 | W5 |
 | T-213 | G11-7 cross-tenant, vertical privilege, role-assign escalation | L | T-211, T-209 | W5 |
 | T-214 | G11-8 hidden API error, request/polling budget | M | T-211 | W5 |
 | T-215 | G11-9 cross-role consistency, answer key | M | T-211 | W5 |
 | T-216 | G11-10 copy/branding/timezone lint, responsive sweep | M | T-211 | W5 |
 | T-217 | G11-11 credential policy, payment presence | S | T-211, T-212 | W6 (parallel with W5 except T-212) |
-| T-218 | G11-12 CEO-benchmark acceptance | L | T-208, T-212..T-217 | W7 final |
+| T-218 | G11-12 CEO-benchmark acceptance | L | T-208, T-212..T-217, T-219, T-220 | W7 final |
 
 Parallel safety comes from disjoint files: each oracle has its own stage/schema files and the T-211
 registry imports them by name, so no oracle unit edits a shared file. `schema/project.py` is edited
-only by T-207, `ui/routers.py` only by T-208, the unified report only by T-209.
+only by T-207, `schema/multi_role_enums.py` only by T-207 (all G11 enums up front), `ui/routers.py`
+only by T-208, `stages/unified_report_render.py` only by T-209 (banner in new `stages/report_banner.py`;
+`stages/unified_report.py` untouched).
+
+## Fix cycle 1 (answers verdict cycle 0)
+- **F1:** `data-validation/negative-input` -> T-219 `stages/oracle_negative_input.py`, reusing
+  `stages/expand.py` INPUT_EMPTY/INPUT_BOUNDARY/INPUT_UNICODE_OVERSIZE/DOUBLE_SUBMIT run per role
+  account (expand.py not edited), MP32. `state-consistency-after-action` -> T-220
+  `stages/oracle_state_after.py` + `schema/state_probe.py`, reusing `ExpectedState`, before/after/reload
+  reads per role, MP33. O20 names both. T-218's scorecard prints one recall line per technique with its
+  owning unit (intent Scoring section; MP29 Verify).
+- **A1:** MP17/MP25/MP27 Verify lines replaced with synthetic rule-matrix fixtures; fixture rule stated.
+- **A2:** all G11 enums created by T-207 only; later units define new enums in their own schema file.
+- **A3:** T-209 banner in new `stages/report_banner.py`; only `unified_report_render.py` (171 lines) edited.
+- **A4:** Verify lines added for MP29-MP31.
+- **A5:** T-213 reuses the T-154 bounded-pass mechanism (RunApproval probe count via
+  `require_project_approval`, code-side ceiling, `refusals.jsonl`); `schema/probe_budget.py` dropped.
+- **A6 (not done here):** O16-O21 enter `docs/intent.md` only after the decision is appended; the
+  master merge is left to the orchestrator (one commit per cycle).
 
 ## Acceptance for this unit (what the checker can judge)
 1. The intent file covers outcomes, user types, Umesh's 4 answers, non-goals, a safety section (leak
@@ -62,7 +84,7 @@ only by T-207, `ui/routers.py` only by T-208, the unified report only by T-209.
    ordering and independence, contamination rule).
 2. Design sections name one schema file per model and one stage file per piece, with reuse listed
    (network_capture, permission surface, CaseClass/expand, grade, acceptance_comparison, sources/email).
-3. Goal rows T-207..T-218 parse, use the existing row shape, have no dangling deps, and order
+3. Goal rows T-207..T-220 parse, use the existing row shape, have no dangling deps, and order
    foundation -> runner -> parallel oracles -> benchmark.
 4. Every MP criterion cites `serves: intent#O*` with an id defined in the intent file (O16-O21) or
    the root intent (O3, O4, O6, O7).

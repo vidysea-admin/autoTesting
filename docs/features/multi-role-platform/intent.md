@@ -1,7 +1,7 @@
-# Intent — Multi-role, multi-platform testing (group 11, T-207..T-218)
+# Intent — Multi-role, multi-platform testing (group 11, T-207..T-220)
 
 **Purpose:** the feature-level intent and design for Group 11: why AutoTester must test N role accounts across M linked platforms, its outcomes O16-O21, the user types, Umesh's 2026-10-16 answers, the leak-evidence safety policy, the CEO-benchmark scoring rule, and the schema/stage file per piece.
-**Open me when:** you are building or checking any of T-207..T-218, a criterion cites `serves: intent#O16`..`O21`, or you need to know which file owns a Platform, RoleAccount, cross-role scenario or oracle.
+**Open me when:** you are building or checking any of T-207..T-220, a criterion cites `serves: intent#O16`..`O21`, or you need to know which file owns a Platform, RoleAccount, cross-role scenario or oracle.
 
 **Originator:** Umesh (chat 2026-10-16, answers below) · **Date:** 2026-10-16 · **Status:** draft, awaiting Umesh's approval of the decision draft (`qa/manifests/g11-decision-draft.md`) and a G11 plan gate. Nothing here is built.
 
@@ -47,7 +47,8 @@ decision draft authorizes; until then this file is their only home.
   release-blocking, in a banner at the top of the report, with reproducible steps. Evidence is counts,
   hashed ids and masked screenshots, never third-party personal data.
 - **O20** Each depth oracle (mailbox, hidden API error, request budget, cross-role consistency,
-  answer key, copy/branding/timezone lint, responsive sweep, credential policy, payment-flow presence)
+  answer key, copy/branding/timezone lint, responsive sweep, credential policy, payment-flow presence,
+  negative input per role, state consistency after an action)
   produces findings with evidence and an honest label (O3). An oracle that did not run says so by name.
 - **O21** AutoTester is scored against the CEO benchmark on recall, false positives and time against an
   atomic finding list, with ordering and independence handled as the T-136 gate requires (O6).
@@ -113,6 +114,14 @@ T-171), `expand` with its `CaseClass` taxonomy, `grade`, `stages/acceptance_comp
   hash and commit time are recorded before the run. **Contamination rule:** oracles may be designed from
   the technique categories above, but no scenario, fixture or prompt may be written from a specific
   finding. Any scenario derived from one is labelled and its matches are excluded from recall.
+- **Every technique has an owner and its own line.** The scorecard prints one recall line per CEO
+  detection technique, each naming the G11 unit that owns it: multi-role comparison (T-211, T-215),
+  copy/branding/i18n (T-216), inbox (T-212), state consistency after an action (T-220), cross-role
+  consistency (T-215), negative input (T-219), handoff chain (T-210, T-211), notification absence
+  (T-211, T-212), cross-tenant probe (T-213), API error (T-214), answer key (T-215), responsive (T-216),
+  payment (T-217), request count (T-214). A technique whose owner did not run reads `not run`, never 0.
+- **Fixtures stay blind.** Unit-test fixtures are synthetic and cover each rule class as a matrix
+  (every declared rule, arbitrary values); none reproduces one benchmark finding's case.
 - **Reported numbers:** recall overall and per priority (P0 first), recall excluding findings that
   need seeded data AutoTester was not given, FP rate over adjudicated findings, and AutoTester wall
   time. The CEO's active hours were not recorded; time stays `unknown` until Umesh gives them.
@@ -120,8 +129,11 @@ T-171), `expand` with its `CaseClass` taxonomy, `grade`, `stages/acceptance_comp
   gateway, a meeting join).
 
 ## Design: the pieces, their files, and reuse
-One model per schema file. Every enum G11 adds goes in `schema/multi_role_enums.py` (`schema/enums.py`
-is at its 300-line cap). R = reused, E = edited, N = new.
+One model per schema file. `schema/enums.py` is at its 300-line cap, so T-207 creates
+`schema/multi_role_enums.py` with **every** G11 enum up front (LinkKind, AccountOrigin, Priority,
+FindingClass, AssertChannel, Expectation, OracleName) and is its only editor; a later unit that needs
+a new enum defines it in its own schema file, so no two parallel units touch one file.
+R = reused, E = edited, N = new.
 
 ### Platform and PlatformLink (T-207)
 - `schema/platform.py` N: `Platform` (id, name, base_url, allowed_domains, include_subdomains,
@@ -150,12 +162,14 @@ is at its 300-line cap). R = reused, E = edited, N = new.
   module up front and imports it by name, so an unbuilt oracle reports `not built` and the oracle units
   never edit a shared file.
 
-### Oracles (T-212..T-217, parallel)
+### Oracles (T-212..T-217, T-219, T-220; parallel)
 | oracle | stage file (N) | schema (N) | reuses |
 |---|---|---|---|
 | mailbox read + absence within T | `sources/imap_mailbox.py`, `stages/oracle_mailbox.py` | `schema/mail_observation.py` | `sources/email.py` parsing, `Redactor` |
-| cross-tenant authz probe | `stages/oracle_tenant.py` | `schema/probe_budget.py` | `network_capture`, permission surface |
-| vertical privilege, role-assign escalation | `stages/oracle_privilege.py` | (probe_budget) | permission surface, captured higher-role requests |
+| cross-tenant authz probe | `stages/oracle_tenant.py` | — | T-154 consent + probe ceiling, `network_capture`, permission surface |
+| vertical privilege, role-assign escalation | `stages/oracle_privilege.py` | — | T-154 consent + probe ceiling, permission surface, captured higher-role requests |
+| negative input per role | `stages/oracle_negative_input.py` | — | `expand` CaseClass INPUT_EMPTY, INPUT_BOUNDARY, INPUT_UNICODE_OVERSIZE, DOUBLE_SUBMIT; `stages/case_expectation.py`; `FieldConstraints` |
+| state consistency after an action | `stages/oracle_state_after.py` | `schema/state_probe.py` | `schema/flowspec.py::ExpectedState`, cross_role_runner handles, `network_capture` |
 | API error hidden by the UI | `stages/oracle_api_error.py` | — | `network_capture`, `grade` evidence |
 | request rate and polling budget | `stages/oracle_request_budget.py` | `schema/request_budget.py` | `network_capture` |
 | cross-role consistency | `stages/oracle_consistency.py` | `schema/entity_reading.py` | cross_role_runner handles |
@@ -165,13 +179,33 @@ is at its 300-line cap). R = reused, E = edited, N = new.
 | credential policy | `stages/oracle_credential_policy.py` | — | mailbox oracle, `synthetic_values` |
 | payment-flow presence | `stages/oracle_payment.py` | — | permission surface `destructive` flag |
 
+Units: T-212 mailbox; T-213 tenant + privilege; T-214 API error + request budget; T-215 consistency +
+answer key; T-216 lint + responsive; T-217 credential policy + payment; T-219 negative input; T-220
+state after action.
+
+- **Probes reuse T-154, not a second probe concept.** T-213's id-swap and escalation probes are planned
+  and capped the way `stages/adversarial.py` caps its pass: the planned probe count must be covered by a
+  signed `RunApproval` checked through `core/consent.py::require_project_approval`, a code-side probe
+  ceiling refuses an oversized plan, and a refusal sends nothing and appends one non-secret line to
+  `refusals.jsonl`. There is no `schema/probe_budget.py`.
+- **Negative input reuses `expand`.** T-219 does not edit `stages/expand.py`; it asks `expand` for the
+  INPUT_EMPTY, INPUT_BOUNDARY, INPUT_UNICODE_OVERSIZE and DOUBLE_SUBMIT cases of each form flow and runs
+  them once per role account whose permitted surface reaches the form, so a validation rule enforced for
+  one role and missing for another is caught. Acceptance of an input that violates a declared
+  `FieldConstraints` rule, or a double submit that creates two records, is a finding.
+- **State after an action reuses `ExpectedState`.** T-220's `StateProbe` (`schema/state_probe.py`)
+  names a counter, list or status reader (a selector or a first-party API pattern), the expected delta
+  after an action, and the role accounts that read it. The oracle reads before and after the action, and
+  again after a reload, as each named role, and reports a missing, wrong or non-persistent change.
+
 ### Severity and the report banner (T-209)
 - `schema/multi_role_finding.py` N: `MultiRoleFinding` (oracle, priority P0/P1/P2, class, roles,
   platform, repro steps, evidence refs, leak evidence). `schema/leak_evidence.py` N: `LeakEvidence`
   (count, field_names, hashed_ids, masked_screenshot, url_template).
 - `stages/finding_priority.py` N: data-leak and privilege classes are always P0, with no model input
   and no override. `stages/leak_evidence.py` N: HMAC hashing and pre-write masking.
-- `stages/unified_report.py` E and `stages/unified_report_render.py` E: a release-blocking banner as the
+- `stages/report_banner.py` N builds the banner; `stages/unified_report_render.py` E (171 lines) calls
+  it first. `stages/unified_report.py` (297 lines) is not edited. The banner is the
   first block of the report header when any P0 leak or privilege finding exists, with the count and a
   link to each repro. P0/P1/P2 map onto the existing `Severity` S1-S3 for the bug loop; the banner reads
   the priority, not S1.
