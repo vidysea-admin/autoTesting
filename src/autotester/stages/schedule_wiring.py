@@ -23,7 +23,7 @@ from typing import NamedTuple, Protocol
 from autotester.auth.loopback import auth_disabled
 from autotester.browser.secrets import SecretStore
 from autotester.core.consent import ApprovalRequired, require_project_approval
-from autotester.core.paths import ProjectPaths, repo_root, team_path
+from autotester.core.paths import ProjectPaths, projects_root, team_path
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
 from autotester.schema.run_queue import ACTIVE, QueueEntry
@@ -98,7 +98,7 @@ def scheduled_projects(root: Path | None = None) -> tuple[list[ScheduledProject]
     saw (it is then recorded `missed`, not dropped). The core's lookback still bounds it. The
     exact bound needs a `saved_at` on the schedule, set by the save route (held)."""
     heartbeat = read_heartbeat(schedule_paths(root).heartbeat)
-    base = (root or repo_root()) / "projects"
+    base = projects_root(root)
     items: list[ScheduledProject] = []
     invalid: list[str] = []
     for config in sorted(base.glob("*/project.json")) if base.is_dir() else []:

@@ -23,6 +23,13 @@ preflight_fail() {
 "$PY" -c "import sys" >/dev/null 2>&1 || preflight_fail "$PY fails to start"
 echo "entrypoint: uid=$(id -u) python=$(readlink -f "$PY") app port=${APP_PORT} (PORT=${PORT:-unset})"
 
+# /app is root-owned and read-only to uid 10001; /data is the one writable volume. All mutable state
+# (projects/, profiles/, .work/, .auth/) goes there via core/paths.py. A caller's own value wins.
+export AUTOTESTER_DATA_DIR="${AUTOTESTER_DATA_DIR:-/data}"
+mkdir -p "$AUTOTESTER_DATA_DIR/projects" "$AUTOTESTER_DATA_DIR/.work" 2>/dev/null || true
+# Seed the committed project definitions once; never overwrite what a run already changed.
+cp -rn /app/projects/. "$AUTOTESTER_DATA_DIR/projects/" 2>/dev/null || true
+
 # Readiness sockets gate startup; the supervisor monitors every service throughout.
 # The app starts last on purpose: a resumed queued run launches headed Chromium at app startup and
 # needs Xvfb on :99 first. The sidecars become ready in about a second; give the Cloud Run startup

@@ -36,7 +36,7 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
-from autotester.core.paths import repo_root
+from autotester.core.paths import projects_root, repo_root
 
 ENV_FILE = ".env"
 
@@ -58,13 +58,13 @@ def is_server_key(key: str) -> bool:
     return key in PROVIDER_KEYS or key.startswith(SERVER_PREFIX)
 
 
-def project_credentials(root: Path) -> tuple[tuple[str, ...], frozenset[str]]:
+def project_credentials(root: Path | None) -> tuple[tuple[str, ...], frozenset[str]]:
     """(namespaces of every project, keys any project declares) read straight from
     `projects/*/project.json`. A project's credential is read from the file by
     `SecretStore` and typed into a page; it is never a setting for this process."""
     prefixes: list[str] = []
     declared: set[str] = set()
-    for config in sorted((root / "projects").glob("*/project.json")):
+    for config in sorted(projects_root(root).glob("*/project.json")):
         prefixes.append(key_namespace(config.parent.name))
         try:
             rows = json.loads(config.read_text(encoding="utf-8")).get("secrets", [])
@@ -104,7 +104,7 @@ def load_repo_env(root: Path | None = None) -> list[str]:
     if not path.exists():
         return []
 
-    prefixes, declared = project_credentials(base)
+    prefixes, declared = project_credentials(root)
     loaded: list[str] = []
     for key, value in dotenv_values(path).items():
         if not key or not value or os.environ.get(key):

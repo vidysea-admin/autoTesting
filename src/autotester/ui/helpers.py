@@ -24,7 +24,7 @@ from starlette.middleware import Middleware
 
 from autotester.browser.secrets import host_of
 from autotester.browser.session import NavigationRefused, check_destination
-from autotester.core.paths import SLUG_PATTERN, repo_root
+from autotester.core.paths import SLUG_PATTERN, projects_root
 from autotester.core.redact import PLACEHOLDER_RE
 from autotester.schema.enums import Action
 from autotester.schema.flowspec import Step
@@ -156,7 +156,7 @@ def _require_reachable_navigate_steps(steps: list[Step], project: Project) -> No
 
 
 def _project_slugs() -> list[str]:
-    projects_dir = repo_root() / "projects"
+    projects_dir = projects_root()
     if not projects_dir.exists():
         return []
     return sorted(p.name for p in projects_dir.iterdir() if (p / "project.json").exists())

@@ -11,13 +11,13 @@ import json
 import threading
 from datetime import UTC, datetime
 
-from autotester.core.paths import repo_root
+from autotester.core.paths import data_root
 
 _LOCK = threading.Lock()
 
 
 def _append(row: dict[str, object]) -> None:
-    path = repo_root() / ".work" / "audit.jsonl"
+    path = data_root() / ".work" / "audit.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps({"ts": datetime.now(UTC).isoformat(), **row}, ensure_ascii=False)
     with _LOCK, path.open("a", encoding="utf-8") as handle:

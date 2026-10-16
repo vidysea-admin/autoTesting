@@ -12,10 +12,11 @@ from pathlib import Path
 from autotester.core.repo_docs import RepoDocs
 from autotester.core.safe_names import SLUG_PATTERN, UnsafeName, safe_name
 
-__all__ = ["ENV_ROOT", "SLUG_PATTERN", "ProjectPaths", "RepoDocs", "repo_root", "team_path",
-           "work_dir"]
+__all__ = ["ENV_DATA_DIR", "ENV_ROOT", "SLUG_PATTERN", "ProjectPaths", "RepoDocs", "data_root",
+           "projects_root", "repo_root", "team_path", "work_dir"]
 
 ENV_ROOT = "AUTOTESTER_ROOT"
+ENV_DATA_DIR = "AUTOTESTER_DATA_DIR"
 
 
 def repo_root() -> Path:
@@ -26,16 +27,32 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
+def data_root(root: Path | None = None) -> Path:
+    """Where mutable state lives: `projects/`, `profiles/`, `.work/`, `.auth/`. An explicit `root`
+    wins; else `AUTOTESTER_DATA_DIR` (the container sets `/data`, the only writable volume, as
+    `/app` is root-owned); else the repo root, so local dev is unchanged. `.env` stays at
+    `repo_root()` -- credentials are config, not state."""
+    if root is not None:
+        return root
+    override = os.environ.get(ENV_DATA_DIR)
+    return Path(override).resolve() if override else repo_root()
+
+
+def projects_root(root: Path | None = None) -> Path:
+    return data_root(root) / "projects"
+
+
 class ProjectPaths:
     """Resolved paths for one project. Construct with a slug, ask for what you need."""
 
     def __init__(self, slug: str, root: Path | None = None) -> None:
         self.slug = slug
         self.root = root or repo_root()
+        self._data = data_root(root)
 
     @property
     def dir(self) -> Path:
-        return self.root / "projects" / self.slug
+        return self._data / "projects" / self.slug
 
     @property
     def config(self) -> Path:
@@ -136,7 +153,7 @@ class ProjectPaths:
     @property
     def profile_dir(self) -> Path:
         """Persistent browser profile — gitignored, holds the logged-in session."""
-        return self.root / "profiles" / self.slug
+        return self._data / "profiles" / self.slug
 
     def run_dir(self, run_id: str) -> Path:
         """`runs/<run_id>`; the id must be one safe path segment and the result stay under
@@ -267,7 +284,7 @@ class ProjectPaths:
 
 def work_dir(root: Path | None = None) -> Path:
     """Scratch space. Nothing here is committed; nothing outside here is scratch."""
-    path = (root or repo_root()) / ".work"
+    path = data_root(root) / ".work"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -278,4 +295,4 @@ def team_path(*parts: str, root: Path | None = None) -> Path:
     Every part is checked by `core.safe_names.safe_name`, so a slug, id or encoded slot key
     that could escape the root raises `UnsafeName` before any file is touched. `.work/` is
     ignored by git and by `.dockerignore`, so nothing under it is ever committed or baked in."""
-    return (root or repo_root()) / ".work" / "team" / Path(*(safe_name(p) for p in parts))
+    return data_root(root) / ".work" / "team" / Path(*(safe_name(p) for p in parts))
