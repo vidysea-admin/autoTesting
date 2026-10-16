@@ -17,7 +17,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore
-from autotester.core.consent import validate_grant_bounds
+from autotester.core.consent import MAX_GRANT_PROBES, validate_grant_bounds
 from autotester.core.ids import SigningKeyMissing
 from autotester.core.paths import ProjectPaths
 from autotester.schema.approval import RunApproval
@@ -71,6 +71,8 @@ def _crawl_approval_form(slug: str, target: str, production: bool = False) -> st
         "expiry.form.addEventListener('submit',syncOffset);</script>"
         "<div class='field'><label>Maximum actions</label>"
         "<input type='number' name='max_actions' min='1' value='200' required></div>"
+        "<div class='field'><label>Maximum probes (0 grants none)</label>"
+        "<input type='number' name='max_probes' min='0' max='40000' value='4000' required></div>"
         "<div class='field'><label>Wall clock (seconds)</label>"
         "<input type='number' name='wall_clock_s' min='1' step='any' value='600' required></div>"
         "<div class='field'><label>Note (optional)</label>"
@@ -177,7 +179,9 @@ def _future_iso(value: str, offset_minutes: int) -> str:
 
 
 
-def _capped(actions: int, seconds: float, expiry: str) -> None:
+def _capped(actions: int, seconds: float, expiry: str, probes: int) -> None:
+    if not 0 <= probes <= MAX_GRANT_PROBES:
+        raise HTTPException(400, f"max probes must be between 0 and {MAX_GRANT_PROBES}")
     try:
         validate_grant_bounds(actions, seconds, datetime.fromisoformat(expiry))
     except ValueError as exc:
@@ -197,7 +201,8 @@ def _checked_kind(kind: str, scope: str) -> ApprovalKind:
 def crawl_approval_submit(
     request: Request, slug: str, kind: str = Form("crawl"), production: str = Form(""),
     scope: str = Form(""), expires_at: str = Form(""), max_actions: str = Form(""),
-    wall_clock_s: str = Form(""), timezone_offset_minutes: str = Form("0"), note: str = Form(""),
+    wall_clock_s: str = Form(""), max_probes: str = Form("0"),
+    timezone_offset_minutes: str = Form("0"), note: str = Form(""),
 ) -> Response:
     """Persist one bounded approval; project and target always come from disk."""
     store, project = _load_project_or_404(slug)
@@ -210,26 +215,26 @@ def crawl_approval_submit(
         _refuse_unsafe_submission([
             ("scope", allowed_scope), ("expiry", expires_at),
             ("maximum actions", max_actions), ("wall clock", wall_clock_s),
-            ("timezone offset", timezone_offset_minutes), ("note", note),
+            ("maximum probes", max_probes), ("timezone offset", timezone_offset_minutes),
+            ("note", note),
         ], project, secrets)
         actions, seconds = int(max_actions), float(wall_clock_s)
-        offset = int(timezone_offset_minutes)
+        offset, probes = int(timezone_offset_minutes), int(max_probes)
         if actions <= 0 or seconds <= 0 or not isfinite(seconds):
             raise HTTPException(400, "crawl approval bounds must be positive")
         if not -840 <= offset <= 840:
             raise HTTPException(400, "timezone offset must be between -840 and 840 minutes")
         expiry = _future_iso(expires_at, offset)
-        _capped(actions, seconds, expiry)
+        _capped(actions, seconds, expiry, probes)
     except ValueError:
         return _approval_error(slug, "kind and bounds must be valid, numbers for bounds")
     except HTTPException as exc:
         return _approval_error(slug, str(exc.detail))
-    now = datetime.now(UTC).isoformat()
     candidate = RunApproval(
         project=project.slug, run_kind=run_kind, target=project.base_url,
         production=project.production or bool(production),
-        scope=allowed_scope, max_actions=actions, wall_clock_s=seconds,
-        granted_by=signer, granted_at=now, expires_at=expiry,
+        scope=allowed_scope, max_actions=actions, max_probes=probes, wall_clock_s=seconds,
+        granted_by=signer, granted_at=datetime.now(UTC).isoformat(), expires_at=expiry,
         note=note.strip() or None,
     )
     try:

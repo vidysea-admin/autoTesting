@@ -38,7 +38,7 @@ from autotester.store.project_store import ProjectStore
 def covering_approval(project: Project, store: ProjectStore, bounds: CrawlBounds,
                       *, kind: ApprovalKind = ApprovalKind.CRAWL,
                       secrets: SecretStore | None = None,
-                      account_keys: set[str] | None = None) -> RunApproval:
+                      account_keys: set[str] | None = None, probes: int = 0) -> RunApproval:
     """The RunApproval covering this run, or `ApprovalRequired`.
 
     `kind` defaults to `CRAWL` so every existing caller is unchanged, and the
@@ -54,20 +54,24 @@ def covering_approval(project: Project, store: ProjectStore, bounds: CrawlBounds
     AT-759: an account-derived row counts ONLY through `_credential_approval`, which
     re-validates the current .env and declaration on every run. Every other path (a
     credential removed or re-scoped, the declaration dropped, ADVERSARIAL) sees human-granted
-    rows alone, so removing a credential ends coverage at once instead of at row expiry."""
+    rows alone, so removing a credential ends coverage at once instead of at row expiry.
+
+    `probes` is the probe floor a HUMAN-granted row must cover at preflight (the credential
+    path derives its own, larger one): a row granting fewer is refused here, not mid-run."""
     rows = store.list_approvals()
     human = [row for row in rows if not is_account_derived(row)]  # AT-759: see below
     if project.production:  # D-088: a production target is covered by human-granted rows only
         return require_project_approval(
-            rows, project=project, kind=kind, target=project.base_url,
+            rows, project=project, kind=kind, target=project.base_url, probes=probes,
             actions=bounds.max_actions, wall_clock_s=bounds.wall_clock_s)
     if kind not in ACCOUNT_KINDS or not project.secrets:
-        return _require(human, project, kind, bounds)
+        return _require(human, project, kind, bounds, probes)
     try:
-        return _credential_approval(project, store, bounds, kind, rows, secrets, account_keys)
+        return _credential_approval(
+            project, store, bounds, kind, rows, secrets, account_keys, probes)
     except ApprovalRequired as why:
         try:  # credentials unavailable: a human-granted row can still cover it, as before D-068
-            return _require(human, project, kind, bounds)
+            return _require(human, project, kind, bounds, probes)
         except ApprovalRequired as human_refusal:
             raise ApprovalRequired(
                 f"{human_refusal}\n(credential-derived approval unavailable: {why})") from None
@@ -83,6 +87,7 @@ def _require(rows: list[RunApproval], project: Project, kind: ApprovalKind,
 def _credential_approval(
     project: Project, store: ProjectStore, bounds: CrawlBounds, kind: ApprovalKind,
     rows: list[RunApproval], secrets: SecretStore | None, account_keys: set[str] | None,
+    floor: int = 0,
 ) -> RunApproval:
     """D-068/CN11: validate first (a refusal writes nothing), reuse any row that covers the
     run (human-granted first, and with the probes this run needs: a probe-less row would stop
@@ -90,11 +95,14 @@ def _credential_approval(
     loaded row."""
     secrets = secrets or SecretStore.load(project, store.paths.env_file, strict=False)
     keys = account_keys or _default_account_keys(project, store, secrets)
-    probes = account_probe_budget(bounds.max_actions)
-    validate_account_scope(project, secrets, account_keys=keys)
+    probes = max(floor, account_probe_budget(bounds.max_actions))
+    scope = validate_account_scope(project, secrets, account_keys=keys)
     validate_account_bounds(bounds.max_actions, probes, bounds.wall_clock_s)
     try:
-        return _require(sorted(rows, key=is_account_derived), project, kind, bounds, probes)
+        # ISS-d063-grant-budget-1: an account-derived row is reusable ONLY for the exact
+        # credential scope it was minted for; a human row has no scope to match here.
+        usable = [r for r in rows if not is_account_derived(r) or r.scope == scope]
+        return _require(sorted(usable, key=is_account_derived), project, kind, bounds, probes)
     except ApprovalRequired:
         pass
     try:

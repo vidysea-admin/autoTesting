@@ -40,6 +40,7 @@ def is_account_derived(approval: RunApproval) -> bool:
 MAX_GRANT_ACTIONS = 2000
 MAX_GRANT_WALL_CLOCK_S = 86400.0
 MAX_GRANT_DAYS = 30
+MAX_GRANT_PROBES = MAX_GRANT_ACTIONS * PROBES_PER_ACTION  # the UI form's cap (AT-675)
 
 
 def validate_grant_bounds(
