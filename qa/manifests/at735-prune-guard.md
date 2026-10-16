@@ -1,6 +1,6 @@
 # AT-735 prune_old_videos guard and ordering
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 Risk: low (post-save housekeeping ordering)
 Base: 3f081243
