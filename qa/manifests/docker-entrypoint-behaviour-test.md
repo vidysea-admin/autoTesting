@@ -1,6 +1,6 @@
 # Manifest - docker-entrypoint-behaviour-test
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Follow-up of:** qa/verdicts/docker-deploy-hardening.md (advisory 5), qa/verdicts/dockerfile-merge-fix.md
 
