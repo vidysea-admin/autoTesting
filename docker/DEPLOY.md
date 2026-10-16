@@ -167,6 +167,39 @@ sudo tar czf /var/backups/autotester-$(date +%F).tgz -C /srv/autotester data
 
 Keep the archive off the server and treat it as a secret (it holds credentials and sessions).
 
+#### Scripted backup and restore (`scripts/backup.sh`, `scripts/restore.sh`)
+
+`backup.sh` archives the writable state root (default `/data`, or `--root DIR` / `AUTOTESTER_DATA_DIR`)
+into `autotester-backup-<UTC stamp>.tar.gz` plus `<archive>.manifest` (file count, archive sha256,
+and a sha256 per file). Caches are always skipped. Secrets (`.env*`, `.auth`, `profiles`, `*.pem`, `*.key`, `id_rsa*`, `credentials*.json`, `token*.json`, `*service-account*.json`, browser cookie and login stores, at any depth; browser
+sessions) are skipped unless you pass `--include-secrets`, which prints a warning: such an archive
+must be stored encrypted and private. `--gcs gs://bucket/prefix` also uploads archive and manifest
+when `gsutil` or `gcloud` is installed (exit 3 if it is not; the local archive is kept).
+
+```bash
+bash scripts/backup.sh --root /data --out /backups --gcs gs://<bucket>/autotester-backups
+```
+
+Cloud Run: mount the bucket at `/data` as in the Cloud Run section below, then run the script as a
+Cloud Run job from the same image (`--command bash --args scripts/backup.sh,--out,/tmp/b,--gcs,gs://<bucket>/backups`)
+triggered by Cloud Scheduler, for example nightly:
+
+```bash
+gcloud scheduler jobs create http autotester-backup --schedule "0 2 * * *" --time-zone UTC   --uri "https://run.googleapis.com/v2/projects/<project>/locations/<region>/jobs/autotester-backup:run"   --http-method POST --oauth-service-account-email <sa>@<project>.iam.gserviceaccount.com
+# or on a VM, crontab:  0 2 * * *  cd /opt/autotester && bash scripts/backup.sh --root /srv/autotester/data --out /var/backups
+```
+
+Restore: stop the stack, then
+
+```bash
+bash scripts/restore.sh /backups/autotester-backup-<stamp>.tar.gz --root /data          # empty target
+bash scripts/restore.sh /backups/autotester-backup-<stamp>.tar.gz --root /data --force  # overwrite
+```
+
+`restore.sh` needs the `.manifest` and `.manifest.sha256` files beside the archive (the manifest hash is checked first; real signing is a follow-up, as is HO36 encryption), refuses an archive whose sha256 does not
+match, rejects link members, then requires the staged tree to match the manifest exactly (no extra, missing or modified file) in a staging folder before renaming it into the target, and refuses a
+non-empty target without `--force`. Start the stack again afterwards.
+
 ### 10. Upgrade and rollback
 
 ```bash
@@ -181,7 +214,7 @@ queued runs resume, and the queue file lives at `<data>/.work/run_queue.json`.
 ### What is not in this release yet
 
 The admin page for concurrency and upload limits, sign-in, the noVNC gate, running as a
-non-root user, and the scheduled backup script wait on T-204 and later units. Until the admin
+non-root user, and the admin audit trail wait on T-204 and later units. Until the admin
 page exists, set `AUTOTESTER_MAX_CONCURRENT_RUNS` in `server.env` and restart.
 
 ## Cloud Run (no VNC) and exit 126 triage
