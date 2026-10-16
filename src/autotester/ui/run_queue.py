@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from autotester.core.ids import ulid
-from autotester.core.paths import data_root, team_path
+from autotester.core.paths import repo_root, team_path
 from autotester.delivery.inbox import DeliveryLog
 from autotester.schema.run_queue import ACTIVE, QueueEntry, QueueStatus, RunQueueFile
 from autotester.schema.team_enums import RunVia
@@ -71,7 +71,7 @@ def _registered_runner(entry: QueueEntry) -> None:
 
 
 def _queue_file() -> Path:
-    return data_root() / ".work" / "run_queue.json"
+    return repo_root() / ".work" / "run_queue.json"
 
 
 class RunQueue:

@@ -23,12 +23,17 @@ preflight_fail() {
 "$PY" -c "import sys" >/dev/null 2>&1 || preflight_fail "$PY fails to start"
 echo "entrypoint: uid=$(id -u) python=$(readlink -f "$PY") app port=${APP_PORT} (PORT=${PORT:-unset})"
 
-# /app is root-owned and read-only to uid 10001; /data is the one writable volume. All mutable state
-# (projects/, profiles/, .work/, .auth/) goes there via core/paths.py. A caller's own value wins.
-export AUTOTESTER_DATA_DIR="${AUTOTESTER_DATA_DIR:-/data}"
-mkdir -p "$AUTOTESTER_DATA_DIR/projects" "$AUTOTESTER_DATA_DIR/.work" 2>/dev/null || true
-# Seed the committed project definitions once; never overwrite what a run already changed.
-cp -rn /app/projects/. "$AUTOTESTER_DATA_DIR/projects/" 2>/dev/null || true
+# The data root is AUTOTESTER_ROOT (hosting.md HO3; core/paths.py::repo_root is its only reader). An
+# operator or compose value always wins. Unset and /app not writable (the image runs as uid 10001
+# with a root-owned /app) -> /data, the one writable volume. A writable /app (the dev compose bind
+# mount) keeps the repo-root behaviour so state survives recreate (docker.md D6).
+if [ -z "${AUTOTESTER_ROOT:-}" ] && [ ! -w /app ]; then
+  export AUTOTESTER_ROOT=/data
+fi
+if [ -n "${AUTOTESTER_ROOT:-}" ]; then
+  mkdir -p "$AUTOTESTER_ROOT/projects" "$AUTOTESTER_ROOT/.work" 2>/dev/null || true
+  [ -w "$AUTOTESTER_ROOT" ] || echo "WARNING: AUTOTESTER_ROOT=$AUTOTESTER_ROOT is not writable by uid $(id -u); runs and queue state will fail" >&2
+fi
 
 # Readiness sockets gate startup; the supervisor monitors every service throughout.
 # The app starts last on purpose: a resumed queued run launches headed Chromium at app startup and

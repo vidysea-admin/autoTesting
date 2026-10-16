@@ -13,7 +13,7 @@ import logging
 import os
 from pathlib import Path
 
-from autotester.core.paths import data_root
+from autotester.core.paths import repo_root
 from autotester.schema.server_settings import (
     DEFAULT_MAX_CONCURRENT_RUNS,
     DEFAULT_MAX_UPLOAD_BYTES,
@@ -31,7 +31,7 @@ FILE_NAME = "server_settings.json"
 
 
 def settings_path(root: Path | None = None) -> Path:
-    return data_root(root) / ".work" / FILE_NAME
+    return (root or repo_root()) / ".work" / FILE_NAME
 
 
 def load_server_settings(root: Path | None = None) -> tuple[ServerSettings | None, str | None]:

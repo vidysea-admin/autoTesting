@@ -17,7 +17,7 @@ from datetime import UTC, datetime
 
 from autotester.auth import db
 from autotester.auth.access import authorize
-from autotester.core.paths import data_root
+from autotester.core.paths import repo_root
 from autotester.delivery import email as mail
 from autotester.schema.auth import PermissionKey, Principal, ResourceRef
 from autotester.schema.delivery import Recipient, RenderedMessage
@@ -156,7 +156,7 @@ def notify_approvers(emails: list[str], link: str, *, environ: Mapping[str, str]
     env = os.environ if environ is None else environ
     if transport is None and not mail.is_configured(env):
         return 0
-    sender = transport or mail.select_transport(env, data_root() / ".work" / "outbox")
+    sender = transport or mail.select_transport(env, repo_root() / ".work" / "outbox")
     message = RenderedMessage(subject="AutoTester: someone asked for access to a video",
                               body=f"Someone asked for access to a video you can approve.\n"
                                    f"Open the requests page: {link}\n")

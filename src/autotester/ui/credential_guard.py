@@ -23,7 +23,7 @@ from autotester.core.env import (
     is_server_key,
     key_namespace,
 )
-from autotester.core.paths import projects_root
+from autotester.core.paths import repo_root
 from autotester.core.redact import BIDI_OVERRIDES, PLACEHOLDER_RE
 from autotester.schema.project import Project
 from autotester.store.project_store import ProjectStore
@@ -63,7 +63,7 @@ def refuse_foreign_key(project: Project, key: str) -> None:
     ns = key_namespace(project.slug)
     if not name.startswith(ns):
         raise HTTPException(400, f"a credential key for this project must start with {ns}")
-    projects_dir = projects_root()
+    projects_dir = repo_root() / "projects"
     slugs = (sorted(p.name for p in projects_dir.iterdir() if (p / "project.json").exists())
              if projects_dir.exists() else [])
     for slug in (s for s in slugs if s != project.slug):

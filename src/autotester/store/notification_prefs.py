@@ -6,7 +6,7 @@ import sqlite3
 from pathlib import Path
 
 from autotester.auth import accounts, db
-from autotester.core.paths import data_root, repo_root
+from autotester.core.paths import repo_root
 from autotester.schema.delivery import NotificationPref
 from autotester.store.filestore import read_json, write_json
 
@@ -14,7 +14,7 @@ from autotester.store.filestore import read_json, write_json
 def _preference_path(user_id: int, root: Path | None) -> Path:
     if type(user_id) is not int or user_id < 1:
         raise ValueError("a positive numeric account id is required")
-    return data_root(root) / ".work" / "notification_prefs" / f"{user_id}.json"
+    return (root or repo_root()) / ".work" / "notification_prefs" / f"{user_id}.json"
 
 
 def _preference_generation(user_id: int, root: Path | None) -> str | None:

@@ -1,20 +1,26 @@
 # Manifest — container-writable-workdir
 
 Status: ready-for-check
-Fix cycle: 0
+Fix cycle: 1
 Unit: container-writable-workdir (PermissionError on /app/.work as uid 10001; Actions run 38908337519)
 Base SHA: 3f081243
 Branch: container-writable-workdir
 
-## Changed paths
-- src/autotester/core/paths.py: new `ENV_DATA_DIR` (AUTOTESTER_DATA_DIR), `data_root(root=None)`, `projects_root(root=None)`; the only place the var is read. Explicit root wins; unset = repo root (unchanged). ProjectPaths.dir/profile_dir, work_dir, team_path use it. `env_file` stays at the repo root.
-- Rerouted hardcoded writers: ui/run_queue.py, auth/audit.py, auth/db.py (.auth default), stages/video_requests.py (outbox), store/server_settings.py, store/notification_prefs.py, providers/gemini.py (cwd-relative `.work/gemini_uploads.json` -> work_dir()).
-- Project listing readers use projects_root(): ui/credential_guard.py, ui/helpers.py, stages/schedule_wiring.py, core/env.py (project_credentials).
-- docker/entrypoint.sh: exports AUTOTESTER_DATA_DIR=${AUTOTESTER_DATA_DIR:-/data} (no Dockerfile edit, since the Docker team edits it), mkdirs, and seeds /app/projects into /data/projects with `cp -rn` (never overwrites).
-- tests/test_data_dir.py (new).
+## Cycle 1 (answers verdict 8bdbd0e3)
+- Dropped AUTOTESTER_DATA_DIR (it duplicated HO3). The one variable is AUTOTESTER_ROOT, read only by core/paths.py::repo_root. All `src/` is back at base except gemini.py. That means projects/, profiles/, .work/ (audit, queue, settings, outbox), .auth and .env already follow it.
+- Root cause of the CI failure: the image sets no AUTOTESTER_ROOT (only compose.prod.yml does), so a plain `docker run` wrote to the root-owned /app.
+- docker/entrypoint.sh: `AUTOTESTER_ROOT=/data` only when unset AND /app is not writable. An operator or compose value always wins. It creates projects/ and .work/, and prints a warning to stderr if the root is not writable. The seeding step is removed (.dockerignore excludes projects/, so it was a no-op).
+- D6 dev compose: docker-compose.yml now sets `AUTOTESTER_ROOT=/app` explicitly (the bind-mounted repo is the data root). The entrypoint also leaves a writable /app alone, so both mechanisms keep repo-root behaviour across recreate. Auth store stays in the mounted ./.auth.
+- HO9: no new key; AUTOTESTER_ROOT is already in .env.example.
+- .env: with AUTOTESTER_ROOT=/data the UI credential/settings writers write `repo_root()/.env` = /data/.env, which is writable and is exactly the file core/env.py::load_repo_env reads (the same resolver). In the container with a read-only /app and no root, the entrypoint now sets /data, so there is no split-brain. Nothing was moved.
+- providers/gemini.py: the cwd-relative `.work/gemini_uploads.json` now uses work_dir() (the only real hardcoded-path gap).
 
-## Notes
-- Runs, evidence, bundles, video, crawl, sources are all ProjectPaths-derived, so they follow `projects/` to /data.
-- /app stays root-owned; no chmod.
-- Risk: /data is ephemeral on Cloud Run unless a volume is mounted; seeding copies the image's projects on each cold start.
-- Not verifiable here (no docker): a real container start.
+## Changed paths
+docker/entrypoint.sh, docker-compose.yml, src/autotester/providers/gemini.py, tests/test_container_writable_root.py (new; replaces test_data_dir.py), this manifest.
+
+## Checks
+scoped pytest (env -u ANTHROPIC_BASE_URL): test_container_*, test_hosting_deploy, test_ui_auth_envkeys, test_env_loading, test_run_queue = 103 passed, 1 skipped (before a lint-only edit of the new test; it then re-ran 6 passed). bash -n, ruff and doctor are clean.
+
+## Test environment
+This host sets ANTHROPIC_BASE_URL, which breaks two test_au21 cases; tests were run with `env -u ANTHROPIC_BASE_URL`.
+Not verifiable here (no docker): a real container start.
