@@ -1,6 +1,6 @@
 # Manifest — container-writable-workdir
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Unit: container-writable-workdir (PermissionError on /app/.work as uid 10001; Actions run 38908337519)
 Base SHA: 3f081243
