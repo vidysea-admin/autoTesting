@@ -1,6 +1,7 @@
 """Synthetic service lifecycle and runtime ownership checks; no Docker/browser needed."""
 
 import importlib.util
+import re
 import signal
 import socket
 import subprocess
@@ -133,10 +134,13 @@ def test_deploy_is_self_diagnosing_and_honours_cloud_run_port():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     assert "UV_PYTHON_PREFERENCE=only-managed" in dockerfile
     assert "UV_PYTHON_DOWNLOADS=manual" in dockerfile
-    after_user = dockerfile.split("USER 10001:10001", 1)[1]
-    assert "import autotester" in after_user and "readlink -f /opt/venv/bin/python" in after_user
-    users = [ln.split()[1] for ln in dockerfile.splitlines() if ln.startswith("USER ")]
-    assert users and users[-1] not in ("root", "0", "0:0"), "final USER must be non-root"
-    if "<<'EOF'" in dockerfile:
-        body = dockerfile.split("<<'EOF'", 1)[1].split("\nEOF", 1)[0]
-        assert body.rstrip().splitlines()[-1].strip() == 'exec "$@"', "wrapper must exec"
+    lines = dockerfile.splitlines()
+    users = [(n, ln.split()[1]) for n, ln in enumerate(lines) if ln.startswith("USER ")]
+    assert users and users[-1][1] not in ("root", "0", "0:0"), "final USER must be non-root"
+    first_nonroot = next(n for n, u in users if u not in ("root", "0", "0:0"))
+    after_user = "\n".join(lines[first_nonroot:])
+    assert re.search(r"import [^\"\n]*\bautotester\b", after_user), "no non-root import"
+    assert "readlink -f /opt/venv/bin/python" in after_user
+    assert "ENTRYPOINT" in dockerfile
+    body = re.findall(r"^\s*'(.*)' \\\r?$", dockerfile, re.M)
+    assert body and body[-1].strip() in ('exec "$@"', "exec /entrypoint.sh"), "wrapper must exec"
