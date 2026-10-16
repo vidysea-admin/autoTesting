@@ -1,6 +1,6 @@
 # Manifest - docker-deploy-hardening
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Unit:** make the Cloud Run deploy self-diagnosing (exit 126 `/opt/venv/bin/python: Permission denied`)
 **Base SHA:** c4d48ad109f1ef77f73ee9172866cc5feeca7063
