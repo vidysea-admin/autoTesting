@@ -13,6 +13,8 @@ WORKDIR /app
 
 ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
     UV_PYTHON_INSTALL_DIR=/opt/uv-python \
+    UV_PYTHON_PREFERENCE=only-managed \
+    UV_PYTHON_DOWNLOADS=manual \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_PYTHON=3.12
 
@@ -48,6 +50,10 @@ ENV HOME=/home/autotester \
     DISPLAY=:99
 
 USER 10001:10001
+
+# Fail the build, not the deploy, when the runtime user cannot exec the interpreter.
+RUN /opt/venv/bin/python -c "import autotester, sys; print(sys.executable)" \
+    && test -x "$(readlink -f /opt/venv/bin/python)"
 
 EXPOSE 8000 6080 6081
 

@@ -122,3 +122,16 @@ def test_cleanup_escalates_to_kill_and_waits_for_children(monkeypatch):
     monkeypatch.setattr(supervisor, "reap_children", lambda _: calls.append("reap"))
     supervisor.stop_children([child], grace=0)
     assert calls == [signal.SIGTERM, 9, "wait", "reap"]
+
+
+def test_deploy_is_self_diagnosing_and_honours_cloud_run_port():
+    entrypoint = (ROOT / "docker/entrypoint.sh").read_text(encoding="utf-8")
+    assert "${PORT:-8000}" in entrypoint and "--port ${APP_PORT}" in entrypoint
+    assert "PREFLIGHT FAIL" in entrypoint and "exit 126" in entrypoint
+    assert entrypoint.index("PREFLIGHT FAIL") < entrypoint.index("exec ")
+    assert "\r" not in entrypoint
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    assert "UV_PYTHON_PREFERENCE=only-managed" in dockerfile
+    assert "UV_PYTHON_DOWNLOADS=manual" in dockerfile
+    after_user = dockerfile.split("USER 10001:10001", 1)[1]
+    assert "import autotester" in after_user and "readlink -f /opt/venv/bin/python" in after_user

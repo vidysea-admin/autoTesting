@@ -5,7 +5,28 @@ set -euo pipefail
 # Same-user leftovers from a prior container start. Never change ownership as root here.
 rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
 
+PY=/opt/venv/bin/python
+APP_PORT="${PORT:-8000}"
+
+preflight_fail() {
+  echo "PREFLIGHT FAIL: $1" >&2
+  echo "  uid=$(id -u) gid=$(id -g) python=$PY" >&2
+  echo "  readlink -f: $(readlink -f "$PY" 2>&1 || true)" >&2
+  if command -v namei >/dev/null 2>&1; then namei -l "$PY" >&2 || true
+  else ls -ld "$PY" "$(readlink -f "$PY" 2>/dev/null)" /opt/uv-python /opt/venv >&2 || true; fi
+  echo "  /opt/uv-python perms: $(stat -c '%A %U:%G' /opt/uv-python 2>&1 || true)" >&2
+  echo "  HINT: image built before f572a4b5 or wrong USER; rebuild from current master." >&2
+  exit 126
+}
+
+[ -x "$PY" ] && [ -x "$(readlink -f "$PY" 2>/dev/null)" ] || preflight_fail "cannot exec $PY"
+"$PY" -c "import sys" >/dev/null 2>&1 || preflight_fail "$PY fails to start"
+echo "entrypoint: uid=$(id -u) python=$(readlink -f "$PY") app port=${APP_PORT} (PORT=${PORT:-unset})"
+
 # Readiness sockets gate startup; the supervisor monitors every service throughout.
+# The app starts last on purpose: a resumed queued run launches headed Chromium at app startup and
+# needs Xvfb on :99 first. The sidecars become ready in about a second; give the Cloud Run startup
+# probe a generous timeout instead of racing the display.
 # VNC stays loopback-only; the two web viewers retain separate proxy permissions.
 exec /opt/venv/bin/python /app/docker/supervise.py \
   unix:/tmp/.X11-unix/X99 "Xvfb :99 -screen 0 ${AUTOTESTER_SCREEN:-1600x1000x24}" \
@@ -13,4 +34,4 @@ exec /opt/venv/bin/python /app/docker/supervise.py \
   tcp:5901 'x11vnc -display :99 -forever -shared -nopw -localhost -quiet -rfbport 5901 -viewonly' \
   tcp:6080 'websockify --web=/usr/share/novnc 6080 localhost:5900' \
   tcp:6081 'websockify --web=/usr/share/novnc 6081 localhost:5901' \
-  tcp:8000 'uv run uvicorn autotester.ui.app:app --host 0.0.0.0 --port 8000 --no-access-log'
+  "tcp:${APP_PORT}" "uv run uvicorn autotester.ui.app:app --host 0.0.0.0 --port ${APP_PORT} --no-access-log"
