@@ -1,6 +1,6 @@
 # Manifest - at787-failure-step
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Issues addressed:** AT-787
 
