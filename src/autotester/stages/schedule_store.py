@@ -8,12 +8,14 @@ serialise). The caller passes every path; this module knows no data root.
   slot. The file name is the percent-encoded `slot_key` (reversible, no `:` for Windows).
 - **Slot record**: one JSON line appended with a single `os.write` on an `O_APPEND` handle.
 - **Purge**: `purge_project` removes a deleted project's markers and its own records file,
-  together or not at all.
+  together or not at all, also across an interrupt or a kill (a manifest lets the next purge adopt
+  a stranded stage).
 - **Heartbeat**: written to a temp file then `os.replace`d, so a reader sees old or new, never half.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -147,13 +149,75 @@ def project_records_path(records_dir: Path, project: str) -> Path:
     return records_dir / (quote(project, safe="") + ".jsonl")
 
 
+_MANIFEST = "manifest.json"
+
+
+def _stage_prefix(project: str) -> str:
+    """Stage dirs are named per project, so a purge only ever adopts its own project's leftovers
+    (another project's purge may be running right now)."""
+    return ".purge-" + hashlib.sha256(project.encode("utf-8")).hexdigest()[:16] + "-"
+
+
+def _restore_stage(stage: Path) -> bool:
+    """Put back what an uncommitted purge moved into `stage`, then delete it. True once it is gone.
+
+    The manifest is written before the first move and deleted at the commit point, so: no
+    manifest means nothing to put back (never started, or committed and only the delete was
+    interrupted); a manifest means the purge did not finish. Every file is tried (one stuck
+    file never strands the rest), and a file is never put over one that is already there."""
+    manifest = stage / _MANIFEST
+    if not manifest.is_file():
+        shutil.rmtree(stage, ignore_errors=True)
+        return True
+    try:
+        sources = json.loads(manifest.read_text(encoding="utf-8"))["sources"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+    clean = True
+    for n, src in enumerate(sources):
+        held, dest = stage / str(n), Path(src)
+        if not held.exists():
+            continue
+        try:
+            if dest.exists():
+                raise FileExistsError(dest)
+            os.replace(held, dest)
+        except OSError:
+            clean = False
+    if clean:
+        shutil.rmtree(stage, ignore_errors=True)
+    return clean
+
+
+def _recover_stages(claim_dir: Path, project: str) -> int:
+    done = 0
+    for stage in sorted(claim_dir.parent.glob(_stage_prefix(project) + "*")):
+        done += stage.is_dir() and _restore_stage(stage)
+    return done
+
+
+def recover_stale_purges(claim_dir: Path, records_path: Path, project: str) -> int:
+    """Adopt the `.purge-*` stage dirs a killed purge of this project left behind: put the files
+    back if that purge had not committed, delete the stage if it had. Returns stages cleared."""
+    with _APPEND_LOCK, file_lock(_lock_path(records_path), what="purge"):
+        return _recover_stages(claim_dir, project)
+
+
 def purge_project(claim_dir: Path, records_path: Path, project: str) -> None:
     """Delete a project's claim markers and its records file (project deleted, HO24). Idempotent.
 
     Two-phase, so the markers and the records go together or not at all: every file is first
-    `os.replace`d into a staging directory (rolled back if any move fails, e.g. a Windows sharing
-    violation), then the staging directory is removed. Refuses a records file that holds another
-    project's lines (the old shared layout): purging it would mean rewriting them."""
+    `os.replace`d into a staging directory, then the staging directory is removed. Any exception
+    (OSError, SystemExit, Ctrl-C) rolls every file back. A hard kill cannot roll back by itself,
+    so the stage keeps a manifest and the next purge of this project adopts it first
+    (`_restore_stage`). Refuses a records file that holds another project's lines (the old
+    shared layout): purging it would mean rewriting them."""
+    with _APPEND_LOCK, file_lock(_lock_path(records_path), what="purge"):
+        _recover_stages(claim_dir, project)
+        _purge_locked(claim_dir, records_path, project)
+
+
+def _purge_locked(claim_dir: Path, records_path: Path, project: str) -> None:
     if records_path.is_file() and any(r.project != project for r in read_records(records_path)):
         raise ValueError(f"{records_path.name} is shared with another project; "
                          "records are kept one file per project (project_records_path)")
@@ -162,17 +226,17 @@ def purge_project(claim_dir: Path, records_path: Path, project: str) -> None:
     files += [records_path] if records_path.is_file() else []
     if not files:
         return
-    stage = claim_dir.parent / f".purge-{uuid.uuid4().hex}"
+    stage = claim_dir.parent / f"{_stage_prefix(project)}{uuid.uuid4().hex}"
     stage.mkdir(parents=True)
-    moved: list[tuple[Path, Path]] = []
     try:
+        (stage / (_MANIFEST + ".tmp")).write_text(
+            json.dumps({"sources": [str(f) for f in files]}), encoding="utf-8")
+        os.rename(stage / (_MANIFEST + ".tmp"), stage / _MANIFEST)  # all of it, or none
         for n, src in enumerate(files):
             os.replace(src, stage / str(n))
-            moved.append((src, stage / str(n)))
-    except OSError:
-        for src, held in reversed(moved):
-            os.replace(held, src)
-        shutil.rmtree(stage, ignore_errors=True)
+        (stage / _MANIFEST).unlink()  # the commit point: from here recovery deletes, not restores
+    except BaseException:
+        _restore_stage(stage)
         raise
     shutil.rmtree(stage, ignore_errors=True)
 
