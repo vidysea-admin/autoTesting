@@ -106,5 +106,9 @@
  [
   "auth",
   "Team login accounts (T-204)."
+ ],
+ [
+  "sweep",
+  "The checker's append-only sweep log (qa/.last-sweep)."
  ]
 ]

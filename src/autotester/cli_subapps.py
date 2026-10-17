@@ -18,8 +18,8 @@ SUBAPPS: list[tuple[str, typer.Typer]] = [
     ("ingest", cli_video.app),
     ("issues", cli_issues.app),
     ("schedule", cli_schedule.app),
-    ("sweep", cli_sweep.app),  # AT-699 qa/.last-sweep append-only writer
     ("auth", auth_app),  # T-204 team login
+    ("sweep", cli_sweep.app),  # AT-699 qa/.last-sweep append-only writer
 ]
 
 
