@@ -177,3 +177,60 @@ def test_compile_evals_shows_the_provider_only_the_scrubbed_prompt(tmp_path) -> 
     assert spy.prompts, "the provider was never called, so nothing was proven"
     assert all(SECRET not in p and EMAIL not in p for _, p in spy.prompts)
     assert any("[REDACTED]" in p and "<email>" in p for _, p in spy.prompts)
+
+
+# --- AT-929: case_proposals.jsonl is a stored artifact, so it is scrubbed too (C5) ---------
+
+def staged_store(tmp_path, flow: Flow) -> tuple[ProjectStore, FlowSpec]:
+    store = ProjectStore("demo", tmp_path)
+    store.save_project(Project(
+        slug="demo", name="Demo", base_url="https://app.test", allowed_domains=["app.test"],
+        secrets=[SecretRef(key="ST_PASS", domains=["app.test"])]))
+    (tmp_path / ".env").write_text(f"ST_PASS={SECRET}\nOTHER_KEY={UNDECLARED}\n", encoding="utf-8")
+    spec = approve(FlowSpec(project="demo", flows=[flow]), by="umesh")
+    store.save_flowspec(spec)
+    return store, spec
+
+
+def test_a_flow_name_holding_a_secret_is_not_stored_in_case_proposals_jsonl(tmp_path) -> None:
+    """A flow named from a video that spoke the password must not land raw in the new file."""
+    from autotester.stages.expand import stage_and_review
+    store, spec = staged_store(tmp_path, flow_with(name=f"Sign in {SECRET} {UNDECLARED}"))
+    rows = stage_and_review(store, spec, [], [], "umesh")
+    stored = store.paths.case_proposals.read_text(encoding="utf-8")
+    assert SECRET not in stored and UNDECLARED not in stored
+    assert "[REDACTED]" in stored
+    assert all(SECRET not in p.title for p in rows)
+
+
+def test_a_reviewer_name_that_is_a_declared_secret_is_refused_and_never_stored(tmp_path) -> None:
+    """`--by <password>` (a pasted-wrong-argument slip) is refused before anything is written."""
+    from autotester.stages.expand import stage_and_review
+    store, spec = staged_store(tmp_path, flow_with())
+    first = propose_cases(spec)[0].id
+    with pytest.raises(ValueError, match="reviewer") as err:
+        stage_and_review(store, spec, [first], [], f"ops {SECRET}")
+    assert SECRET not in str(err.value)
+    assert not store.paths.case_proposals.exists() or SECRET not in (
+        store.paths.case_proposals.read_text(encoding="utf-8"))
+
+
+def test_a_flow_id_that_is_a_secret_is_refused_not_stored(tmp_path) -> None:
+    """flow_id must keep matching the FlowSpec, so it cannot be masked: staging is refused."""
+    from autotester.stages.expand import stage_and_review
+    flow = flow_with().model_copy(update={"id": f"flow_{SECRET}"})
+    store, spec = staged_store(tmp_path, flow)
+    with pytest.raises(ValueError, match="flow id") as err:
+        stage_and_review(store, spec, [], [], "umesh")
+    assert SECRET not in str(err.value)
+    assert not store.paths.case_proposals.exists() or SECRET not in (
+        store.paths.case_proposals.read_text(encoding="utf-8"))
+
+
+def test_an_ordinary_reviewer_and_flow_still_stage_and_approve_after_the_scrub(tmp_path) -> None:
+    from autotester.stages.expand import stage_and_review
+    store, spec = staged_store(tmp_path, flow_with())
+    first = propose_cases(spec)[0].id
+    rows = stage_and_review(store, spec, [first], [], "umesh")
+    assert any(p.id == first and p.status == "approved" and p.reviewed_by == "umesh"
+               for p in rows)
