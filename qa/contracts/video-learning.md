@@ -162,10 +162,12 @@ passing parametrized test, because that test never goes through a row. Any futur
 cell is judged the same way — open the file a tester would open.
 
 *Scope note (checker, 2026-09-09):* VL6 covers the sheet this exporter writes, which is
-`ERP_Issues_ALL.xlsx`'s 13-column form. The second human workbook `ERP_Issues_Trainers.xlsx` is a
-**different** schema (12 columns, no `Date`, `Clip` where ALL says `Recording`) — measured on the
-real files. Nothing in this unit reads or accommodates it; reconciling the two belongs to T-136's
-scorer and is not scored here.
+`ERP_Issues_ALL.xlsx`'s 13-column form. The second human-workbook shape (12 columns, no `Date`,
+`Clip` where ALL says `Recording`) is a **different** schema — measured on the real files when they
+existed. Nothing in this unit reads or accommodates it; loading both shapes is VL9's scorer concern
+and is not scored here. T-136's acceptance baseline is no longer a workbook: since 2026-09-27 it is
+the comparison artifact `uv run python scripts/check_acceptance_comparison.py pathlynks` (parallel
+human tester), so VL6 cites no workbook for T-136.
 
 ## Invariants
 
@@ -381,10 +383,13 @@ A test that supplies `--root` exercises the branch that is not shipped and canno
 
 ### VL9 — Both ground-truth sheet shapes load, read off the files themselves
 
-`ERP_Issues_Trainers.xlsx` (12 columns, `Clip`) and `ERP_Issues_ALL.xlsx` (13 columns,
-`Recording`) both load, with the real workbooks read where the corpus is present and an offline
-shape test beside it. Row counts and column names are measurements, never transcriptions (VL6's
-rule, same reason).
+The 12-column `Clip` form and the 13-column `Recording` form (`ERP_Issues_ALL.xlsx`) both load,
+each proved by an offline shape test that needs no corpus; any real workbook of either shape is
+also read where it is present on disk, and an absent workbook is reported as absent, never
+substituted by a transcription. Row counts and column names are measurements, never
+transcriptions (VL6's rule, same reason). VL9 judges the **scorer's loader** only: T-136's
+acceptance baseline is the comparison artifact (`scripts/check_acceptance_comparison.py pathlynks`),
+not a workbook, and no criterion here may depend on a workbook that is not on disk.
 
 ### VL10 — A cell that cannot be read is refused; a cell that is absent is not scored as agreement
 
@@ -430,6 +435,29 @@ disk** is *unknown coverage*, not zero and not silence: `complete: true` may not
 any source that supplied a scored issue has no analysis to read. Skipping the unreadable and
 reporting on the remainder is the same claim-more-than-happened shape VL3 exists to stop, one level
 up.
+
+### VL15 — A declared local video corpus is ingestible as a labelled human-tester bench baseline
+
+*(Added 2026-10-17 on Umesh's decision, `qa/gates/umesh-decisions-2026-10-17.md`: the team's existing
+screen recordings are the labelled human-tester **bench baseline** for the AutoTester-vs-human
+scorecard, T-136/T-169. They are not a case-generation source and not a heuristic-tuning set.)*
+
+A corpus directory declared for a project is ingestible **as a body of labelled recordings**,
+distinct from single-video ingest: one invocation over the directory enumerates every recording in
+it, records for each one its label (the recording's identity, as VL10 keys it) and its analysis
+status, and a recording that cannot be read is listed as unreadable, not dropped and not counted.
+The result feeds only the bench baseline side of the scorecard; nothing derived from the corpus is
+written into case generation or a tuned heuristic.
+
+Any eval-method output derived from the corpus **states how many recordings it rests on** (and how
+many were declared, readable and analysed), as a field in the artifact, not a log line. A figure
+over a partial corpus that does not say it is partial is the claim-more-than-happened shape VL3 and
+VL14 exist to stop. An empty or unreadable corpus directory refuses with a command that runs (VL7)
+rather than producing a baseline of zero recordings.
+
+Judged by running the shipped corpus invocation on a corpus of at least 2 recordings where one is
+unreadable, and reading the artifact: counts declared/readable/analysed, the unreadable one named.
+*Status: criterion only. The build is a separate, open unit (AT-665 resolution).*
 
 ### I-VL7 — The scorer asks no model anything
 
@@ -524,3 +552,19 @@ reason).
   measurement of the fix's real, confirmed behaviour (the same-provider merge bound and the
   length-preference rule), independent of the manifest's mistaken narrative. See
   `qa/verdicts/at231-adjudicate-duplicate-merge.md`.
+
+- 2026-10-17 · routine · **Re-anchor T-136 citations (AT-752) and add VL15 (AT-665).** Sources:
+  `qa/feedback-inbox.md` line 6067 (2026-10-17T14:38:00Z, Umesh "fix all of these too") and
+  `qa/gates/umesh-decisions-2026-10-17.md` (AT-665: bench baseline). (1) The VL6 scope note and VL9
+  named `ERP_Issues_Trainers.xlsx`, absent from disk, although T-136's ground truth changed on
+  2026-09-27 to a parallel human tester (`.goal/goal.json` T-136 note): both now say the 12-column
+  `Clip` shape and point T-136's acceptance baseline at the comparison artifact
+  (`scripts/check_acceptance_comparison.py pathlynks`). VL9 keeps its strength: both shapes must
+  still load and be proved by an offline shape test; only the dependence on an absent file is
+  removed. The 2026-09-09 amendment-log entry that measured against the real
+  `ERP_Issues_Trainers.xlsx` (the `at231-adjudicate-duplicate-merge` cycle-1 entry) is history of
+  a measurement made when the file existed; this log is append-only, so it is left verbatim.
+  (2) VL15 added: a declared local video corpus is ingestible as a labelled body of recordings and
+  any output derived from it states how many recordings it rests on, framed as the human-tester
+  bench baseline. This tightens the contract (new criterion) and weakens no safety or data
+  invariant, so it is a routine amendment. The build of VL15 is a separate unit, still open.
