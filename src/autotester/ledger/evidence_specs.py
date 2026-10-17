@@ -19,11 +19,20 @@ tombstone entry counts only if its `moved_to` node-id ACTUALLY resolves in the
 current tree; an absent or a lying tombstone is reported exactly like no
 tombstone at all -- trusting a tag's presence instead of resolving it is the
 vacuous-guard class (AT-218) this project keeps re-discovering.
+
+AT-711 adds the same idea for a manifest's capability rows: a row names the
+tree it ran on (`tree: head=<sha> porcelain=<clean|digest>`, from `record_tree`)
+and `check_capability_row_tree` COMPARES that head with the submitted commit.
+A recorded head nothing compares is a field, not a check; a dirty digest is
+disclosure (`tree_disclosures`), never disqualification.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
+import subprocess
 from pathlib import Path
 
 from autotester.doctor import Violation
@@ -154,3 +163,81 @@ def check_stale_evidence_specs(root: Path) -> list[Violation]:
             )
             out.append(Violation("evidence-spec-stale-unexplained", f"{rel}::{nodeid}", detail))
     return out
+
+
+_TREE_RE = re.compile(
+    r"tree:\s*head=([0-9a-f]{7,40})\s+porcelain=(clean|[0-9a-f]{8,64})", re.IGNORECASE)
+_MANIFEST_DIR = "qa/manifests/"
+
+
+def _git(root: Path, *args: str) -> str:
+    """Read-only git over an argv list (no shell). Raises on a git failure."""
+    out = subprocess.run(["git", "-C", str(root), *args],
+                         capture_output=True, text=True, check=True)
+    return out.stdout
+
+
+def record_tree(root: Path) -> str:
+    """The marker a maker pastes into a capability row: HEAD plus a digest of
+    `git status --porcelain` taken NOW, or `porcelain=clean` for an empty one."""
+    head = _git(root, "rev-parse", "HEAD").strip()
+    porcelain = _git(root, "status", "--porcelain")
+    digest = hashlib.sha256(porcelain.encode("utf-8")).hexdigest()[:16] if porcelain else "clean"
+    return f"tree: head={head} porcelain={digest}"
+
+
+def _capability_rows(text: str) -> list[str]:
+    """Data rows of the `## Capability coverage` table (header and separator dropped)."""
+    rows: list[str] = []
+    in_section, previous = False, ""
+    for line in text.splitlines():
+        if line.startswith("## "):
+            in_section = line.lower().startswith("## capability coverage")
+            previous = ""
+            continue
+        if not (in_section and line.lstrip().startswith("|")):
+            continue
+        if re.fullmatch(r"\s*\|[\s:|-]+\|\s*", line):
+            if rows and rows[-1] == previous:
+                rows.pop()  # the row before the separator was the header
+            continue
+        rows.append(line)
+        previous = line
+    return rows
+
+
+def _head_covers(root: Path, recorded: str, submitted: str) -> bool:
+    """Equal heads, or the only paths between them are manifests (the maker
+    commits the manifest AFTER the code commit it names, so it cannot name its own)."""
+    if submitted.startswith(recorded) or recorded.startswith(submitted):
+        return True
+    try:
+        changed = _git(root, "diff", "--name-only", recorded, submitted).split()
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    return bool(changed) and all(c.startswith(_MANIFEST_DIR) for c in changed)
+
+
+def check_capability_row_tree(manifest: Path, submitted: str, root: Path) -> list[Violation]:
+    """Refuse a capability row whose recorded HEAD is not the submitted commit,
+    and a row that records none. A non-empty porcelain digest is not checked here."""
+    rel = manifest.name
+    out: list[Violation] = []
+    for number, row in enumerate(_capability_rows(manifest.read_text(encoding="utf-8")), 1):
+        found = _TREE_RE.search(row)
+        if found is None:
+            out.append(Violation("capability-row-tree-unrecorded", f"{rel}::row{number}",
+                                 "row names no `tree: head=<sha> porcelain=<...>` marker"))
+        elif not _head_covers(root, found.group(1).lower(), submitted.lower()):
+            out.append(Violation(
+                "capability-row-tree-mismatch", f"{rel}::row{number}",
+                f"row ran at {found.group(1)[:12]}, submitted commit is {submitted[:12]}"))
+    return out
+
+
+def tree_disclosures(manifest: Path) -> list[str]:
+    """Rows that ran on a dirty tree (digest is not `clean`): disclosure, not failure."""
+    rows = _capability_rows(manifest.read_text(encoding="utf-8"))
+    found = (_TREE_RE.search(r) for r in rows)
+    return [f"row{n}: head={m.group(1)[:12]} porcelain={m.group(2)}"
+            for n, m in enumerate(found, 1) if m and m.group(2).lower() != "clean"]
