@@ -54,4 +54,4 @@ Repro: qa/evidence/at929-proposal-scrub/repro_generate_bypass.py.txt now passes 
 ## Live browser evidence
 Not UI-touching — no surface changed (changed paths: src/autotester/stages/expand.py, tests/test_expand_redaction.py)
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at929-proposal-scrub.md + at929-proposal-scrub.b.md, cycle 1, dual)
