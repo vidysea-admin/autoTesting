@@ -43,4 +43,4 @@ Method: copy of src, scripts, pyproject and the tests helpers in the scratchpad 
 ## Live browser evidence
 Not UI-touching — no surface changed. Changed path: tests/test_ui_credential_bidi.py only (the test drives the app through TestClient).
 
-## Status: ready-for-check
+## Status: merged-no-check (test-lane)
