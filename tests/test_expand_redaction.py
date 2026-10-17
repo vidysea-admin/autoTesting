@@ -234,3 +234,31 @@ def test_an_ordinary_reviewer_and_flow_still_stage_and_approve_after_the_scrub(t
     rows = stage_and_review(store, spec, [first], [], "umesh")
     assert any(p.id == first and p.status == "approved" and p.reviewed_by == "umesh"
                for p in rows)
+
+
+def test_the_generate_route_does_not_store_a_flow_name_secret_in_case_proposals_jsonl(
+        tmp_path, monkeypatch) -> None:
+    """AT-929 cycle 1: POST /cases/generate staged raw titles before the review gate fired."""
+    from fastapi.testclient import TestClient
+
+    from autotester.ui.app import app
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store, _ = staged_store(tmp_path, flow_with(name=f"Sign in {SECRET} {UNDECLARED}"))
+    TestClient(app).post("/projects/demo/cases/generate", follow_redirects=False)
+    stored = store.paths.case_proposals.read_text(encoding="utf-8")
+    assert stored, "the route staged nothing, so nothing was proven"
+    assert SECRET not in stored and UNDECLARED not in stored
+    assert "[REDACTED]" in stored
+
+
+def test_the_generate_route_refuses_a_flow_id_that_is_a_secret_and_stores_nothing(
+        tmp_path, monkeypatch) -> None:
+    from fastapi.testclient import TestClient
+
+    from autotester.ui.app import app
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store, _ = staged_store(tmp_path, flow_with().model_copy(update={"id": f"flow_{SECRET}"}))
+    response = TestClient(app).post("/projects/demo/cases/generate", follow_redirects=False)
+    assert SECRET not in response.text
+    assert not store.paths.case_proposals.exists() or SECRET not in (
+        store.paths.case_proposals.read_text(encoding="utf-8"))

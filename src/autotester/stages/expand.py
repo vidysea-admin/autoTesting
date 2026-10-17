@@ -175,11 +175,18 @@ def _scrub_proposals(rows: list[CaseProposal], by: str,
                                          "rationale": scrub(p.rationale)}) for p in rows]
 
 
+def stage_scrubbed_proposals(store: ProjectStore, spec: FlowSpec,
+                             by: str = "") -> list[CaseProposal]:
+    """The one way proposals reach case_proposals.jsonl: scrubbed first (AT-929), then staged."""
+    rows = _scrub_proposals(propose_cases(spec), by, _store_secrets(store))
+    store.stage_case_proposals(rows)
+    return rows
+
+
 def stage_and_review(store: ProjectStore, spec: FlowSpec, approve: list[str],
                      prune: list[str], by: str) -> list[CaseProposal]:
     """Stage this spec's proposals, apply the human's approve/prune decisions, return the rows."""
-    rows = _scrub_proposals(propose_cases(spec), by, _store_secrets(store))
-    store.stage_case_proposals(rows)
+    rows = stage_scrubbed_proposals(store, spec, by)
     if set(approve) & set(prune):
         raise ValueError("a proposal cannot be approved and pruned together")
     for proposal_id in approve + prune:
