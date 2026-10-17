@@ -44,4 +44,4 @@ The hard-kill cases call `recover_stale_purges`, which does not exist on the bas
 ## Live browser evidence
 Not UI-touching - no surface changed: src/autotester/stages/schedule_store.py and tests/test_schedule_purge_crash.py only.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/schedule-purge-crash-safe.md, cycle 0)
