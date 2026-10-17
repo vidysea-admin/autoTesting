@@ -41,4 +41,4 @@ Metrics: start=2026-10-17 end=2026-10-17 wall_min=15 agent_min=unavailable block
 ## Live browser evidence
 Not UI-touching — changed paths: tests/test_approval_prod_gate.py, tests/test_approval_prod_gate_paths.py.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/fix6c-approval-tests.md, cycle 1)
