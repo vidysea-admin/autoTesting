@@ -54,4 +54,4 @@ Falsified in a throwaway copy OUTSIDE the worktree (scratchpad/fals682), both fi
 ## Live browser evidence
 SKIP — the Playwright MCP server failed to connect in this session; the run page and export are asserted through FastAPI TestClient HTML (`test_run_view_*`) and the written export file (`test_export_html_*`). Changed paths: src/autotester/ui/routes_report.py (one new card on the run page), src/autotester/stages/report_export.py.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at682-run-bounds-render.md, cycle 0)
