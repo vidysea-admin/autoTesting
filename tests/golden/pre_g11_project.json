@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-03T04:06:42.956710Z",
+  "slug": "pathlynks",
+  "name": "Pathlynks",
+  "base_url": "https://pathlynks.vidysea.com/signin",
+  "allowed_domains": [
+    "pathlynks.vidysea.com"
+  ],
+  "write_policy": "allow_writes",
+  "production": true,
+  "max_parallel": 1,
+  "permitted_surface": [],
+  "secrets": [
+    {
+      "key": "PATHLYNKS_USER_EMAIL",
+      "domains": [
+        "pathlynks.vidysea.com"
+      ],
+      "include_subdomains": false,
+      "mask_in_screenshot": false
+    },
+    {
+      "key": "PATHLYNKS_USER_PASSWORD",
+      "domains": [
+        "pathlynks.vidysea.com"
+      ],
+      "include_subdomains": false,
+      "mask_in_screenshot": true
+    }
+  ],
+  "providers": {
+    "vision": "gemini",
+    "agent": "langchain-fallback",
+    "judge": "langchain-fallback",
+    "vision_allow_gemini_fallback": true
+  },
+  "test_id_attributes": [],
+  "headed": true,
+  "description": "Vidysea's Pathlynks product, PRODUCTION environment (pathlynks.vidysea.com; D-088). Student/user role logs in at /signin. Exact-host secrets (D-087/AT-651). The prepod environment (dev-new.vidysea.com) is the separate project pathlynks-prepod.",
+  "login_case_id": "case_cfa40e6b95c2",
+  "ux_policy": {
+    "enabled": false,
+    "max_calls": 20,
+    "deadline_s": 300.0
+  }
+}
