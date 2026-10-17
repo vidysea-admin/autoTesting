@@ -272,3 +272,28 @@ def test_a_row_is_found_whatever_order_its_keys_are_in(tmp_path: Path) -> None:
     row = json.dumps({"status": "open", "id": "AT-900", "severity": "low", "title": "t"})
     _qa(tmp_path, ledger=row + "\n", manifests={"u.md": "**Issues addressed:** AT-900 (low, open)"})
     assert checks.check_qa_issue_rows(tmp_path) == []
+
+
+def _twins(*statuses: str) -> str:
+    return "\n".join(ROW % s for s in statuses) + "\n"
+
+
+@pytest.mark.parametrize(("statuses", "stale"), [
+    (("open", "verified"), True), (("verified", "open"), True), (("open", "fixed"), True),
+    (("fixed", "verified"), False)])
+def test_a_repeated_id_with_an_open_twin_still_makes_a_passed_unit_stale(
+        statuses: tuple[str, str], stale: bool, tmp_path: Path) -> None:
+    """AT-656, AT-548/549/552: `out[id] = status` kept the last of two rows, so a PASSed unit that
+    claimed the fix passed on a lie. Built by construction (C12b): the duplicate IS the defect."""
+    _qa(tmp_path, ledger=_twins(*statuses),
+        manifests={"u.md": "**Issues addressed:** AT-900 (low, open -> fixed)"},
+        verdicts={"u.md": "VERDICT: PASS"})
+    assert ("ledger-row-stale" in [v.rule for v in checks.check_qa_issue_rows(tmp_path)]) is stale
+
+
+@pytest.mark.parametrize("statuses", [("open", "verified"), ("verified", "verified")])
+def test_the_reader_never_reports_one_clean_status_for_a_repeated_id(
+        statuses: tuple[str, str]) -> None:
+    got = checks._status_by_id(_twins(*statuses) + (ROW % "open").replace("900", "901"))
+    assert got["AT-900"] not in {"open", "verified", "fixed"}, got
+    assert got["AT-901"] == "open", "a unique id still reads as its plain status"
