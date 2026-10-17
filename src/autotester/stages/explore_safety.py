@@ -35,6 +35,7 @@ OFF_DOMAIN_LINK_REFUSED = "href outside allowed domains"
 TYPING_DISABLED = "typing disabled under this policy (X10-b)"
 """Why a form field was not typed: the run has not met D-029's four conditions."""
 
+_UNTYPEABLE_INPUT_TYPES = frozenset({"password", "file"})
 _TYPING_POLICIES = frozenset({WritePolicy.TEST_ACCOUNT, WritePolicy.ALLOW_WRITES})
 
 
@@ -48,10 +49,13 @@ def typing_allowed(policy: SafetyPolicy) -> bool:
 
 def typing_target_allowed(el: ElementRef) -> bool:
     """Which elements may receive a synthetic value: textbox/textarea/combobox
-    roles the observer already reports, never an upload, never a field whose
-    own name marks it a password/credential field (a "change password" form is
-    a credential change — D-029's non-destructive clause)."""
+    roles the observer already reports, never an upload (`type="file"`), never
+    a real password input (`type="password"`), never a field whose own name
+    marks it a password/credential field (a "change password" form is a
+    credential change — D-029's non-destructive clause)."""
     if el.role not in ("textbox", "combobox", "search"):
+        return False
+    if el.type.lower() in _UNTYPEABLE_INPUT_TYPES:  # AT-650: the real type, not a name guess
         return False
     label = f"{el.name} {el.selector}".lower()
     return not ("password" in label or "passwd" in label)

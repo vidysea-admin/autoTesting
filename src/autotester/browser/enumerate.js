@@ -144,6 +144,7 @@
       in_row: inRow(el),
       target_blank: el.getAttribute("target") === "_blank",
       tag: tag,
+      type: tag === "input" ? (el.type || "").toLowerCase() : "",
     });
   }
   return out;

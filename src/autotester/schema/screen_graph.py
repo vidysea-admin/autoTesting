@@ -43,6 +43,12 @@ class ElementRef(BaseModel):
     )
     target_blank: bool = False
     tag: str = ""
+    type: str = Field(
+        default="",
+        description="the `<input>`'s real type ('password', 'file', 'text', ...), lowercased; "
+        "'' for any non-input and for a graph stored before AT-650. The typing gate "
+        "(`stages/explore_safety.py::typing_target_allowed`) reads it, never the name alone",
+    )
 
 
 class PageObservation(BaseModel):
