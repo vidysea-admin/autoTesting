@@ -68,7 +68,7 @@
 | `core/exit_codes.py` | The one exit-code table for machine-facing commands (T-174, CM1). |
 | `core/file_lock.py` | One job: a cross-process advisory file lock (`msvcrt.locking` on Windows, `flock` elsewhere). |
 | `core/ids.py` | Identifier generation. The ONLY place ids are minted. |
-| `core/image_privacy.py` | Withhold uncertain images or mask all locally recognized text before external delivery. |
+| `core/image_privacy.py` | Mask all locally recognized text before external delivery; withhold when OCR cannot be trusted. |
 | `core/localtime.py` | Fixed-offset time zones and local-to-UTC conversion for the scheduler. |
 | `core/path_pii.py` | One job: make a URL path template safe to store -- no email, phone, token, UUID or JWT. |
 | `core/paths.py` | Filesystem layout. The ONLY place project paths are constructed. |

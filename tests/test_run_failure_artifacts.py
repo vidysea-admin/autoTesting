@@ -67,7 +67,7 @@ def _launch(tmp_path, monkeypatch, *, paths=None, verdict_result=Result.FAIL):
 
 def _ocr(path):
     return ("level\tpage_num\tblock_num\tpar_num\tline_num\tconf\tleft\ttop\twidth\theight\ttext\n"
-            "5\t1\t1\t1\t1\t99\t0\t5\t25\t5\tprivate\n")
+            "5\t1\t1\t1\t1\t99\t0\t6\t25\t1\tprivate\n")
 
 
 def test_launcher_bundles_sanitized_copies_and_reports(tmp_path, monkeypatch):
@@ -125,7 +125,7 @@ def test_containment_and_uncertain_images_are_explicit(tmp_path, monkeypatch):
 
     def uncertain(path):
         inspected.append(path)
-        return _ocr(path).replace("99\t", "30\t")
+        return _ocr(path).replace("99\t", "101\t")  # impossible score: still fail closed
 
     monkeypatch.setattr(image_privacy, "_local_ocr", uncertain)
     store, run, case, _ = _launch(tmp_path, monkeypatch, paths=[str(outside), "shot.png"],
