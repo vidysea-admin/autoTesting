@@ -169,3 +169,19 @@ def test_env_creation_is_coordinated_across_processes(tmp_path, monkeypatch) -> 
             if child.poll() is None:
                 child.kill()
                 child.wait(timeout=5)
+
+
+def test_tmp_root_not_on_system_volume(tmp_path, request) -> None:
+    """AT-672: C: dropped to 0.34 GB free during full suites on Umesh's Windows host, so
+    pytest temp files (tmp_path / tmp_path_factory) raised ENOSPC mid-run and produced false
+    FAILs in unrelated tests. `tests/conftest.py` therefore roots basetemp under the repo's own
+    `.work/pytest-tmp` (the repo drive), unless the caller passed an explicit `--basetemp`."""
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    if request.config.getoption("basetemp") is not None and not getattr(
+        request.config, "_at672_redirected", False
+    ):
+        pytest.skip("explicit --basetemp given by the caller")
+    root = (repo / ".work" / "pytest-tmp").resolve()
+    assert tmp_path.resolve().is_relative_to(root), f"{tmp_path} is not under {root}"
