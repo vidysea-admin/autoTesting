@@ -33,5 +33,4 @@ LIVE-BROWSER: not-applicable (src/autotester/core/image_privacy.py)
 ISSUES-WRITTEN: none (dual check: PROPOSED-ISSUE P1 above)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
 EXPLANATION: The cycle-1 repair (QUOTE_NONE at image_privacy.py:87) closes the quote-start token swallow; the new test fails without it and every quote and malformed-row variant I probed either masks the secret row or withholds the image. No full suite run (pre-push 6c).
-Metrics: start=2026-10-17T23:02:00Z end=2026-10-17T23:12:00Z wall_min=10 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-17.13 lane=normal check_s=600 mutants=0 defects_unit=0 defects_6c=0
-slow: reading checker protocol 3 min
+Metrics: start=2026-10-17T23:02:00Z end=2026-10-17T23:07:00Z wall_min=5 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-17.13 lane=normal check_s=300 mutants=0 defects_unit=0 defects_6c=0
