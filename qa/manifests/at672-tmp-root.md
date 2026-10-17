@@ -3,7 +3,7 @@
 **Contract:** qa/contracts/core-invariants.md (no feature contract; AT-672 criterion C1 below)
 **Goal task:** none
 **Date:** 2026-10-17
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at672-tmp-root.md, cycle 0)
 **Fix cycle:** 0 of max 2
 **Hold fix cycles:** 0 of 2
 **Hold-reopens:** 0
