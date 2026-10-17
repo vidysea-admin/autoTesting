@@ -21,8 +21,9 @@ from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
 from autotester.schema.approval import RunApproval
 from autotester.schema.crawl import Crawl, CrawlBounds
-from autotester.schema.enums import ApprovalKind, EdgeOutcome, IssueKind
+from autotester.schema.enums import ApprovalKind, EdgeOutcome, IssueKind, NodeStatus
 from autotester.schema.project import Project
+from autotester.schema.screen_graph import ScreenNode
 from autotester.stages.explore import run_crawl
 from autotester.store.project_store import ProjectStore
 
@@ -132,11 +133,43 @@ def test_the_dialog_page_does_not_trap_the_crawl(
     """X8: five confirm() dialogs with dialog_repeat_limit=2 must abort that
     node and let the crawl finish, not hang."""
     crawl, store = crawl_result
+    _assert_crawl_not_trapped(crawl, store.list_nodes(crawl.id))
+
+
+def _assert_crawl_not_trapped(crawl: Crawl, nodes: list[ScreenNode]) -> None:
+    """The invariant behind X8: the crawl finished and the dialog node left the
+    frontier (any status but QUEUED). WHICH terminal status is not asserted: a
+    node that aborted on a load-induced navigation timeout did not trap the
+    crawl either (AT-196)."""
     assert crawl.finished_at is not None
-    nodes = {n.url_template: n for n in store.list_nodes(crawl.id)}
-    dialog_node = nodes.get("/dialog.html")
-    if dialog_node is not None:
-        assert dialog_node.status.value in ("aborted_dialog", "explored")
+    dialog = {n.url_template: n for n in nodes}.get("/dialog.html")
+    if dialog is not None:
+        assert dialog.status is not NodeStatus.QUEUED
+
+
+def _dialog_node(status: NodeStatus) -> ScreenNode:
+    return ScreenNode(crawl_id="c", project="p", url_template="/dialog.html",
+                      url_example="http://127.0.0.1/dialog.html", signature="s", status=status)
+
+
+def test_a_load_induced_aborted_error_on_the_dialog_node_is_not_a_trapped_crawl() -> None:
+    """AT-196: a finished crawl whose dialog node aborted on a navigation
+    timeout (ABORTED_ERROR) was not trapped, so the invariant must hold."""
+    crawl = Crawl(project="p", finished_at="2026-10-17")
+    _assert_crawl_not_trapped(crawl, [_dialog_node(NodeStatus.ABORTED_ERROR)])
+
+
+def test_a_dialog_node_left_queued_is_a_trapped_crawl() -> None:
+    """The thing X8 exists to catch: the node never left the frontier."""
+    crawl = Crawl(project="p", finished_at="2026-10-17")
+    with pytest.raises(AssertionError):
+        _assert_crawl_not_trapped(crawl, [_dialog_node(NodeStatus.QUEUED)])
+
+
+def test_a_crawl_that_never_finished_is_a_trapped_crawl() -> None:
+    crawl = Crawl(project="p")
+    with pytest.raises(AssertionError):
+        _assert_crawl_not_trapped(crawl, [_dialog_node(NodeStatus.EXPLORED)])
 
 
 def test_the_filter_toggle_is_a_distinct_same_url_screen(
