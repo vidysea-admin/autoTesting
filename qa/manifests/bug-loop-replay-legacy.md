@@ -3,7 +3,7 @@
 **Contract:** qa/contracts/team-bug-loop.md (TB4, TB6); AT-979 = C1, AT-980 = C2 (qa/issues.jsonl last row per id)
 **Goal task:** none
 **Date:** 2026-10-17
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/bug-loop-replay-legacy.md, cycle 0)
 **Fix cycle:** 0 of max 2
 **Hold fix cycles:** 0 of 2
 **Hold-reopens:** 0
