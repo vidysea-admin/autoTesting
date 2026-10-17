@@ -13,6 +13,7 @@ it walked in on; `stages/adjudicate.py` then drops what it sees twice (A4).
 from __future__ import annotations
 
 import subprocess
+import time
 from math import isfinite
 from pathlib import Path
 
@@ -30,6 +31,16 @@ forever and no health signal said a word. 900s is deliberately generous
 -- a 180s chunk re-encoded at `-preset veryfast` finishes in seconds on
 any machine that can run the browser, so this bound only ever fires on a
 hang, never on slow-but-working work."""
+
+TOTAL_TIMEOUT_S = 1800.0
+"""Wall-clock ceiling on the WHOLE `encode_chunks` loop (ISS-at639-1).
+
+`CHUNK_TIMEOUT_S` bounds one cut, but a 40 minute recording plans ~13 chunks,
+so a systemically sick ffmpeg (full disk, driver fault) whose every cut ends
+just under the per-chunk bound still held INGEST for ~N x 900s. Past this the
+loop raises `subprocess.TimeoutExpired`, which `media_prep.prepare` already
+turns into UnreadableRecording. Each cut gets `min(CHUNK_TIMEOUT_S, remaining)`
+so the last one cannot overshoot the ceiling either."""
 
 MIN_TAIL_S = 10.0
 """A tail shorter than this is folded into the previous chunk rather than sent
@@ -113,14 +124,19 @@ def encode_chunks(source: Path, out_dir: Path,
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     chunks: list[MediaChunk] = []
+    started = time.monotonic()
     for index, (offset_s, length_s) in enumerate(plan):
         path = out_dir / chunk_name(index, offset_s)
+        remaining = TOTAL_TIMEOUT_S - (time.monotonic() - started)
+        if remaining <= 0:
+            raise subprocess.TimeoutExpired(["ffmpeg", str(source)], TOTAL_TIMEOUT_S)
         try:
             subprocess.run(
                 ["ffmpeg", "-y", "-i", str(source), "-ss", f"{offset_s}", "-t", f"{length_s}",
                  "-c:v", "libx264", "-preset", "veryfast", "-crf", "22",
                  "-c:a", "aac", str(path)],
-                check=True, capture_output=True, timeout=CHUNK_TIMEOUT_S,
+                check=True, capture_output=True,
+                timeout=min(CHUNK_TIMEOUT_S, remaining),
             )
         except (OSError, subprocess.SubprocessError):
             # AT-165's lesson, applied here: a timeout kills ffmpeg MID-WRITE,
