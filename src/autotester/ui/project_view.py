@@ -7,6 +7,7 @@ Split out of `app.py` when that file crossed its 300-line cap. It sits beside
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from html import escape
 
 from autotester.auth.access import authorize, resource_for
@@ -139,62 +140,118 @@ def _actions_card(safe_slug: str, run_button: str, case_count: int) -> str:
 
 # -- home-page cards (moved from ui/app.py by T-204 to keep app.py under 300 lines) --
 
-def _latest_run_status(slug: str) -> tuple[str | None, dict[str, int]]:
-    """The latest run id (or None if the project has never run) and its verdict
-    counts — same lookup `routes_report.py`'s report page already does per
-    project, reused here rather than a second way to compute "how did the
-    last run go" (ui.md U2/U4: real persisted state, never recomputed)."""
+def _ago(then: datetime, now: datetime) -> str:
+    """Whole-unit age in the largest unit that fits ("3 hours ago"); never rounds up to 0."""
+    seconds = max(int((now - then).total_seconds()), 0)
+    for unit, size in (("day", 86400), ("hour", 3600), ("minute", 60)):
+        if seconds >= size:
+            n = seconds // size
+            return f"{n} {unit}{'s' if n != 1 else ''} ago"
+    return "just now"
+
+
+def _last_change(store: ProjectStore) -> datetime | None:
+    """When the project's own definition (settings or cases) last changed on disk."""
+    stamps = [p.stat().st_mtime for p in (store.paths.config, store.paths.cases) if p.exists()]
+    return datetime.fromtimestamp(max(stamps), UTC) if stamps else None
+
+
+def _has_corrupt_run(store: ProjectStore) -> bool:
+    """A run dir whose run.json exists but will not load -- `valid_runs_newest_first` skips
+    it silently, which would make the project read as "never run" (U15 forbids that)."""
+    runs_dir = store.paths.runs_dir
+    if not runs_dir.exists():
+        return False
+    for path in runs_dir.iterdir():
+        if path.is_dir() and (path / "run.json").exists():
+            try:
+                store.load_run(path.name)
+            except ValueError:
+                return True
+    return False
+
+
+def _standing(slug: str) -> dict:
+    """One project's home-page standing, read from persisted evidence only (U15/U4).
+
+    `state` is "none" (no runs), "unreadable" (any evidence failed to load) or "ok";
+    "ok" carries the latest verdict `counts`, its `ago` age and whether it is `stale`
+    (older than the project's last change). `cases` is None when it cannot be read."""
     store = ProjectStore(slug)
-    runs = valid_runs_newest_first(store)
+    try:
+        cases = len(store.list_cases())
+        project = store.load_project()
+        if _has_corrupt_run(store):
+            raise ValueError("corrupt run")
+        runs = valid_runs_newest_first(store)
+        counts = _run_counts(store, runs[0].id) if runs else {}
+    except (ValueError, OSError):
+        return {"state": "unreadable", "cases": None, "name": slug}
+    name = project.name if project else slug
     if not runs:
-        return None, {}
-    return runs[0].id, _run_counts(store, runs[0].id)
+        return {"state": "none", "cases": cases, "name": name}
+    now = datetime.now(UTC)
+    when = runs[0].finished_at or runs[0].created_at
+    when = when if when.tzinfo else when.replace(tzinfo=UTC)
+    changed = _last_change(store)
+    return {"state": "ok", "cases": cases, "name": name, "counts": counts,
+            "ago": _ago(when, now), "stale": changed is not None and when < changed}
+
+
+def _status_html(standing: dict) -> str:
+    if standing["state"] == "unreadable":
+        return "<span class='meta'>unreadable</span>"
+    if standing["state"] == "none":
+        return "<span class='meta'>no runs</span>"
+    counts = standing["counts"]
+    badges = ("".join(theme.badge(escape(k), count=v) for k, v in counts.items())
+              or "<span class='meta'>no verdicts recorded</span>")
+    stale = (" <span class='meta'>stale: project changed since this run</span>"
+             if standing["stale"] else "")
+    return f"{badges} <span class='meta'>{standing['ago']}</span>{stale}"
 
 
 def project_card(slug: str) -> str:
-    store = ProjectStore(slug)
-    project = store.load_project()
-    name = escape(project.name) if project else escape(slug)
-    case_count = len(store.list_cases())
+    standing = _standing(slug)
+    cases = standing["cases"]
+    count = ("" if cases is None
+             else f"{cases} case{'s' if cases != 1 else ''}")
     safe_slug = escape(slug)
-    run_id, counts = _latest_run_status(slug)
-    if run_id is None:
-        status = "<span class='meta'>never run</span>"
-    else:
-        status = "".join(theme.badge(escape(k), count=v) for k, v in counts.items())
     return (
         f"<a class='project-card' href='/projects/{safe_slug}'>"
-        f"<span class='name'>{name}</span>"
-        f"<span class='meta'>{case_count} case{'s' if case_count != 1 else ''}</span>"
-        f"<span class='card-status'>{status}</span></a>"
+        f"<span class='name'>{escape(standing['name'])}</span>"
+        f"<span class='meta'>{count}</span>"
+        f"<span class='card-status'>{_status_html(standing)}</span></a>"
     )
 
 
 def portfolio_stats(slugs: list[str]) -> str:
-    """Aggregate health across every onboarded project — the piece a
-    non-technical user needs before clicking into any one project (feedback
-    2026-09-06: the home page showed names and case counts only, nothing
-    saying what's actually passing or failing)."""
-    total_cases = 0
-    never_run = 0
-    failing = 0
-    healthy = 0
-    for slug in slugs:
-        total_cases += len(ProjectStore(slug).list_cases())
-        _run_id, counts = _latest_run_status(slug)
-        if _run_id is None:
-            never_run += 1
-        elif counts.get("FAIL", 0) > 0 or counts.get("BLOCKED", 0) > 0:
-            failing += 1
-        else:
-            healthy += 1
+    """Aggregate health across every onboarded project -- the piece a non-technical
+    user needs before clicking into any one project (feedback 2026-09-06; U15). A
+    project whose evidence cannot be read is named and counted as skipped, never
+    folded into a zero."""
+    standings = {slug: _standing(slug) for slug in slugs}
+    ok = [s for s in standings.values() if s["state"] == "ok"]
+    skipped = [slug for slug, s in standings.items() if s["state"] == "unreadable"]
+    never_run = sum(1 for s in standings.values() if s["state"] == "none")
+    failing = sum(1 for s in ok if s["counts"].get("FAIL") or s["counts"].get("BLOCKED"))
+    healthy = sum(1 for s in ok if s["counts"] and not (
+        s["counts"].get("FAIL") or s["counts"].get("BLOCKED")))
+    stale = sum(1 for s in ok if s["stale"])
+    total_cases = sum(s["cases"] or 0 for s in standings.values())
     tiles = [
         theme.stat(str(len(slugs)), "projects"),
         theme.stat(str(total_cases), "cases"),
+        theme.stat(str(len(ok)), "have run"),
         theme.stat(str(healthy), "latest run clean"),
     ]
     if failing:
         tiles.append(theme.stat(str(failing), "latest run failing"))
     if never_run:
         tiles.append(theme.stat(str(never_run), "never run"))
+    if stale:
+        tiles.append(theme.stat(str(stale), "latest run stale"))
+    if skipped:
+        names = ", ".join(escape(s) for s in skipped)
+        tiles.append(theme.stat(str(len(skipped)), f"skipped (unreadable): {names}"))
     return f"<div class='stat-row'>{''.join(tiles)}</div>"
