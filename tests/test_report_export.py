@@ -9,6 +9,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 from openpyxl import load_workbook
 from symlink_support import link_dir, link_file
 
@@ -23,10 +24,11 @@ from autotester.schema.enums import (
 )
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
-from autotester.schema.run import Evidence, RawResult, Run
+from autotester.schema.run import Evidence, RawResult, Run, RunBounds
 from autotester.schema.verdict import Verdict
 from autotester.stages import report_export
 from autotester.store import ProjectStore
+from autotester.ui.app import app
 
 RUN_ID = "run-test123"
 PNG_BYTES = base64.b64decode(  # a real, tiny, valid 1x1 PNG
@@ -186,3 +188,57 @@ def test_export_html_shows_the_error_for_an_errored_case(tmp_path: Path) -> None
     html = out.read_text(encoding="utf-8")
     assert "TimeoutError: boom" in html
     assert "INCONCLUSIVE" in html
+
+
+def test_export_html_header_states_the_bounds_the_run_ran_under_in_raw_seconds(
+    tmp_path: Path,
+) -> None:
+    """AT-682/CN10: the portable report header carries the approval and its raw bounds."""
+    store = _seed(tmp_path, outcome=Outcome.COMPLETED, result=Result.PASS)
+    run = store.load_run(RUN_ID)
+    assert run is not None
+    store.save_run(run.model_copy(update={"bounds": RunBounds(
+        approval_id="apr_live", max_actions=200000, max_probes=0, wall_clock_s=600000000.0)}))
+
+    out = report_export.export_html("demo", RUN_ID, tmp_path / "out.html", tmp_path)
+
+    html = out.read_text(encoding="utf-8")
+    assert "ran under approval apr_live: 200000 actions / 0 probes / 600000000.0s" in html
+
+
+def test_export_html_says_bounds_not_recorded_for_a_run_that_recorded_none(
+    tmp_path: Path,
+) -> None:
+    _seed(tmp_path, outcome=Outcome.COMPLETED, result=Result.PASS)
+
+    out = report_export.export_html("demo", RUN_ID, tmp_path / "out.html", tmp_path)
+
+    assert "approval bounds NOT RECORDED" in out.read_text(encoding="utf-8")
+
+
+
+def _run_page(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, bounds: RunBounds | None) -> str:
+    """The live run page for a seeded run whose envelope carries `bounds`."""
+    store = _seed(tmp_path, outcome=Outcome.COMPLETED, result=Result.PASS)
+    run = store.load_run(RUN_ID)
+    assert run is not None
+    store.save_run(run.model_copy(update={"bounds": bounds}))
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    return TestClient(app).get(f"/projects/demo/runs/{RUN_ID}").text
+
+
+def test_run_view_shows_the_19_year_wall_clock_the_run_ran_under_in_raw_seconds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AT-682/CN10: an implausible bound is VISIBLE on the run page, raw, not capped."""
+    text = _run_page(tmp_path, monkeypatch, RunBounds(
+        approval_id="apr_live", max_actions=200000, max_probes=0, wall_clock_s=600000000.0))
+    assert "ran under approval apr_live: 200000 actions / 0 probes / 600000000.0s" in text
+
+
+def test_run_view_says_bounds_not_recorded_for_a_run_that_recorded_none(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    text = _run_page(tmp_path, monkeypatch, None)
+    assert "approval bounds NOT RECORDED" in text
+    assert "0 probes" not in text
