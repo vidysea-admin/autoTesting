@@ -1,6 +1,6 @@
 # at854-loop-md — rewrite qa/loop.md to the current maker policy (AT-854, folds AT-754)
 
-Status: merged-no-check (docs-lane) candidate
+Status: merged-no-check (docs-lane)
 Fix cycle: 0
 Branch: wave/at854-loop-md (base int/1017 ab99c07d)
 Lane: docs (only `qa/loop.md` and this manifest changed; no code, test or contract)
