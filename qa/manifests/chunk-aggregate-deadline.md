@@ -42,4 +42,4 @@ Metrics: start=2026-10-17T00:00:00Z end=2026-10-17T00:00:00Z wall_min=unavailabl
 ## Live browser evidence
 Not UI-touching — no surface changed (changed paths: src/autotester/media/chunks.py, tests/test_media_shellout.py).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/chunk-aggregate-deadline.md, cycle 0)
