@@ -162,14 +162,19 @@
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
 | `schema/lead_loop.py` | The steps a lead-tester model may return, and what a finished loop reports (T-179 AL5/AL7). |
 | `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
+| `schema/mailbox_ref.py` | Where a role account's mailbox is, as KEYS only (MP2) -- plus the one secret-key rule. |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
+| `schema/multi_role_enums.py` | The Group 11 (multi-role platform) vocabulary file: every closed value set G11 adds. |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
+| `schema/platform.py` | One product surface inside a multi-platform project (MP1). |
+| `schema/platform_link.py` | A declared hop from one platform to another (MP1). |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
 | `schema/project.py` | Project configuration and the secret contract. One directory per project. |
 | `schema/provider_attempt.py` | Safe physical model-request accounting, without prompts or vendor error payloads. |
 | `schema/provider_migration.py` | Explicit dry-run plans and safe outcomes for exact legacy provider migration. |
 | `schema/release.py` | Release regression shapes: a flow's persisted plan, a run's scope, its record and diff. |
 | `schema/review_recall.py` | The TA16 evidence record: a video review measured against an oracle, in numbers (T-206). |
+| `schema/role_account.py` | One signed-in identity on one platform, held as KEYS only (MP2, MPI5). |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
 | `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
@@ -580,10 +585,18 @@
 | `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
 | `CitationReview` (`schema/ledger.py`) | An inline inventory declaration, bound to exact visible occurrence content. |
 | `SealedRecord` (`schema/ledger.py`) | One reviewed, hash-bound row covering the citations of a closed historical unit. |
+| `MailboxRef` (`schema/mailbox_ref.py`) | A read-only mailbox, named by keys. The values stay in the repo-root `.env`. |
 | `TranscriptSegment` (`schema/media.py`) | One spoken utterance, absolute seconds into the source video. |
 | `Transcript` (`schema/media.py`) | A video's narration. `from_sidecar` loads the exact shape the existing |
 | `MediaChunk` (`schema/media.py`) | One re-encoded chunk of a longer video. |
 | `MediaPrep` (`schema/media.py`) | Probe + chunk manifest for one `Source`. Degrades gracefully (VL1): |
+| `LinkKind` (`schema/multi_role_enums.py`) | How one platform hands a user to another (MP1). |
+| `AccountOrigin` (`schema/multi_role_enums.py`) | Who supplied a role account: the onboarder typed it, or a run created it. |
+| `Priority` (`schema/multi_role_enums.py`) | Finding priority. P0 is release-blocking; leak and privilege classes are always P0 (MP7). |
+| `FindingClass` (`schema/multi_role_enums.py`) | What kind of defect a multi-role finding is; one class per oracle outcome. |
+| `AssertChannel` (`schema/multi_role_enums.py`) | Where a cross-role assertion looks (MP13). |
+| `Expectation` (`schema/multi_role_enums.py`) | Whether the observed thing must appear or must stay away within the window (MP14). |
+| `OracleName` (`schema/multi_role_enums.py`) | Every G11 oracle. The value is the stage module suffix: `stages/oracle_<value>.py` (MP15). |
 | `ObservedStep` (`schema/observation.py`) | One action a vision model saw in a video. Raw material for a `Step` — |
 | `ObservedFlow` (`schema/observation.py`) | One journey a vision model saw across screens. |
 | `ObservedScreen` (`schema/observation.py`) | One distinguishable screen a vision model saw. |
@@ -591,6 +604,8 @@
 | `VisionOptions` (`schema/observation.py`) | Generation config for a vision call — the settings the proven external |
 | `VideoObservation` (`schema/observation.py`) | A vision provider's raw reading of one video (or chunk) — turned into a |
 | `ModelObservation` (`schema/observation.py`) | One model's raw answer for one chunk — cached on disk so re-running the |
+| `Platform` (`schema/platform.py`) | A platform's boundary. Secrets for it are scoped within `allowed_domains` (MPI5). |
+| `PlatformLink` (`schema/platform_link.py`) | `from_platform` -> `to_platform`, reached through `url_template` or `control_name`. |
 | `PersonaProfile` (`schema/portal_persona.py`) | What the product is, at a glance — the durable header of the persona. |
 | `AuthField` (`schema/portal_persona.py`) | One credential input the login SHAPE has. Carries the SecretRef KEY, never |
 | `AuthShape` (`schema/portal_persona.py`) | How the product authenticates, described by shape alone (PP5): which |
@@ -622,6 +637,7 @@
 | `ReleaseRecord` (`schema/release.py`) | One release's durable outcome: per-flow results, ONE issues log and the diff. |
 | `OracleRef` (`schema/review_recall.py`) | Where the denominator came from. Never a claim of independence. |
 | `ReviewRecall` (`schema/review_recall.py`) | `recall.json`. `k` and `unconfirmed_count` must be re-derivable from the id lists. |
+| `RoleAccount` (`schema/role_account.py`) | A test account for one role. Its scope is the account's own permissions (D-018). |
 | `Evidence` (`schema/run.py`) | A file or value the grader may cite. Already redacted and masked. |
 | `ProviderUsage` (`schema/run.py`) | Token and call accounting per provider role — the cost story per run. |
 | `RawResult` (`schema/run.py`) | One case's execution record. |

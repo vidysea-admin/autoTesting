@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-17T23:42:09",
+  "updated": "2026-10-18T03:33:06",
   "progress": {
     "total": 106,
-    "done": 89,
+    "done": 90,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 17,
+    "pending": 16,
     "current": "T-136",
-    "percent": 84
+    "percent": 85
   },
   "tasks": [
     {
@@ -1796,7 +1796,7 @@
     {
       "id": "T-207",
       "title": "G11-1 Platform, PlatformLink, RoleAccount, MailboxRef schema + optional project fields (multi-role intent; O16, O17)",
-      "status": "pending",
+      "status": "done",
       "deps": [],
       "base_criticality": "high",
       "user_value": "high",
@@ -1807,7 +1807,8 @@
       },
       "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N schema/platform.py, schema/platform_link.py, schema/role_account.py, schema/mailbox_ref.py, schema/multi_role_enums.py (ALL G11 enums up front: LinkKind, AccountOrigin, Priority, FindingClass, AssertChannel, Expectation, OracleName; T-207 is its only editor); E schema/project.py. Old project.json loads as one implicit platform. | Parallel-safe with (no file overlap): foundation; nothing runs beside it. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
       "criticality": "high",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-18T03:33:06"
     },
     {
       "id": "T-208",

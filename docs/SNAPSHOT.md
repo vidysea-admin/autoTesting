@@ -34,8 +34,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-136 [high] Acceptance: AutoTester's Pathlynks report scored against a parallel human tester, with recall/FP/time in the manifest
 - T-169 [high] Generic two-mode acceptance: rich teaching inputs and URL-plus-credentials only, no CLI
 - T-206 [high] G10 Group 10 acceptance: end to end on Pathlynks (docs/plan.md G10; O8-O15, O6)
-- T-207 [high] G11-1 Platform, PlatformLink, RoleAccount, MailboxRef schema + optional project fields (multi-role intent; O16, O17)
 - T-208 [high] G11-2 Onboarding form: N role accounts across M platforms on a NEW project, keys only, scope-checked (O17)
+- T-209 [high] G11-3 MultiRoleFinding, LeakEvidence, P0 rule and the release-blocking report banner (O19)
 ## Last decisions (computed status)
 - D-100 2026-10-15 decision ACTIVE
 - D-101 2026-10-15 decision ACTIVE
