@@ -3,7 +3,7 @@
 **Unit:** AT-734, `browser/video.py` silent paths. One criterion per clause of the issue's `expected`: C1 lost video is a typed marker, C2 guarded move keeps the real RawResult, C3 `_ignore_close_errors.__exit__` swallows `Exception` only.
 **Contract:** `qa/contracts/run-video.md` (T-191, AT-587)
 **Goal task:** none
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at734-video-lost-marker.md, cycle 0)
 **Policy-Version:** proportional-verification/2026-10-15.12
 **Tier:** M (multi-file behaviour: `browser/video.py` + `stages/run_case_pipeline.py`); single checker
 **Dual check:** no
