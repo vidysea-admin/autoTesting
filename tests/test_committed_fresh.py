@@ -32,7 +32,7 @@ def write_lf(path: Path, text: str) -> None:
     path.write_bytes(text.replace("\r\n", "\n").encode("utf-8"))
 
 
-def source_repo(base: Path, *, commit_fresh: bool) -> Path:
+def source_repo(base: Path, *, commit_fresh: bool, crlf_blobs: bool = False) -> Path:
     """A repo whose committed MAP.md is fresh or stale; docs/ARCHITECTURE.md for the snapshot."""
     src = base / "origin"
     (src / "src" / "autotester").mkdir(parents=True)
@@ -48,6 +48,12 @@ def source_repo(base: Path, *, commit_fresh: bool) -> Path:
     else:
         write_lf(docs.snapshot, "# stale snapshot\n")
     git(src, "init", "-b", "main")
+    if crlf_blobs:  # a repo that really stores CRLF in its blobs (autocrlf off where committed)
+        git(src, "config", "core.autocrlf", "false")
+        for rel in ("docs/MAP.md", "docs/SNAPSHOT.md"):
+            raw = (src / rel).read_bytes()
+            lf_only = raw.replace(b"\r\n", b"\n")
+            (src / rel).write_bytes(lf_only.replace(b"\n", b"\r\n"))
     git(src, "add", "-A")
     git(src, "commit", "-m", "seed")
     return src
@@ -67,8 +73,20 @@ def test_fixture_really_checks_out_crlf(tmp_path: Path) -> None:
 
 
 def test_a_fresh_committed_tree_is_clean_despite_crlf_on_disk(tmp_path: Path) -> None:
-    """Sabotage target: drop the LF normalisation and this goes red on the CRLF checkout."""
+    """The row's constraint-2 shape: a clone writes CRLF to disk and the check must stay clean.
+    (Not the normalisation falsifier: the fresh side is rendered via read_text, so only a blob
+    that itself holds CRLF reaches `_lf`; see the next test.)"""
     clone = checked_out(tmp_path, source_repo(tmp_path, commit_fresh=True))
+    assert cf.check_committed_generated_fresh(clone) == []
+
+
+def test_a_fresh_blob_committed_with_crlf_is_not_stale(tmp_path: Path) -> None:
+    """Sabotage target: drop the LF normalisation and a CRLF blob reads as stale."""
+    src = source_repo(tmp_path, commit_fresh=True, crlf_blobs=True)
+    shown = subprocess.run(["git", "show", "HEAD:docs/MAP.md"], cwd=src, capture_output=True,
+                           check=True).stdout
+    assert b"\r\n" in shown  # the blob itself holds CRLF
+    clone = checked_out(tmp_path, src)
     assert cf.check_committed_generated_fresh(clone) == []
 
 
