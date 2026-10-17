@@ -84,7 +84,7 @@ def _text_boxes(tsv: str, size: tuple[int, int]) -> list[tuple[int, int, int, in
     """Boxes to black out: every text line's full band, plus each low-confidence word's box."""
     boxes = []
     lines: dict[tuple[str, ...], list[tuple[int, int, int, int]]] = {}
-    for row in csv.DictReader(io.StringIO(tsv), delimiter="	"):
+    for row in csv.DictReader(io.StringIO(tsv), delimiter="\t", quoting=csv.QUOTE_NONE):
         if row.get("level") != "5":
             continue
         confidence = float(row["conf"])

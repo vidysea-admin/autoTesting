@@ -282,3 +282,14 @@ def test_ocr_failure_still_withholds_and_does_not_disclose(screenshot, monkeypat
     monkeypatch.setattr(privacy, "_local_ocr", fail)
     with privacy.sanitized_images([screenshot]) as batch:
         assert batch.paths == [] and batch.withheld == 1 and batch.reasons == ["sanitation_failed"]
+
+
+def test_token_starting_with_quote_does_not_swallow_following_secret_row(wide, monkeypatch):
+    # Tesseract TSV is unquoted: a token like `"hi` must not hide the secret row after it.
+    tsv = _rows((1, '"hi', 97, 10, 10, 40, 20), (2, "hunterTwo", 97, 10, 80, 90, 20))
+    monkeypatch.setattr(privacy, "_local_ocr", lambda path: tsv)
+    with privacy.sanitized_images([wide]) as batch:
+        assert len(batch.paths) == 1, batch.reasons
+        with Image.open(batch.paths[0]) as image:
+            assert image.getpixel((40, 20)) == (0, 0, 0)
+            assert image.getpixel((40, 90)) == (0, 0, 0)      # secret row after the quote token

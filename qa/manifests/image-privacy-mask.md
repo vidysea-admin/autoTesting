@@ -3,7 +3,8 @@
 **Goal task:** T-136 (found by the approved live T-136 run, report .work/t136-live-report.md)
 **Date:** 2026-10-18
 Status: ready-for-check
-**Fix cycle:** 0 of max 2
+**Fix cycle:** 1 of max 2
+**Repair base:** 5bad0129
 **Hold fix cycles:** 0 of 2
 **Hold-reopens:** 0
 **Resume-reset:** unused
@@ -55,6 +56,11 @@ Tests[C3]: tests/test_image_privacy_engine.py::test_lookup_prefers_path_over_env
 Falsify[C1]: throwaway copy of `src tests scripts pyproject.toml` under the session scratchpad (outside the worktree; `autotester.__file__` printed from the copy via `PYTHONPATH=<copy>/src;<copy>/scripts`), in `_text_boxes` the low-confidence branch replaced by `raise ImagePrivacyError("uncertain_ocr")` (the old behavior) -> tests/test_image_privacy.py 29 passed, 9 failed
 Falsify[C2]: same copy, the `if not lines: raise ImagePrivacyError("no_recognized_text")` guard removed -> tests/test_image_privacy.py 34 passed, 4 failed (empty TSV and blank-only TSV released)
 Falsify[C3]: same copy, `WINDOWS_TESSERACT` dropped from the lookup tuple -> tests/test_image_privacy_engine.py 9 passed, 1 skipped, 1 failed (`test_lookup_falls_back_to_windows_install`)
+Round: 1 (repair of coordinator A C1: a TSV token starting with a double quote made csv.DictReader swallow the rows after it, releasing a secret line unmasked)
+Tests[C1] (cycle 1): tests/test_image_privacy.py::test_token_starting_with_quote_does_not_swallow_following_secret_row (token `"hi` on line 1, `hunterTwo` on line 2; both bands must be black); sha: the commit that carries this manifest line, on base 5bad0129; new test only, no existing test edited
+Pre-check[C1] (cycle 1): base 5bad0129 + working tree, TMP/TEMP=D:/autoTesting/.work/tmp: red before fix `uv run pytest tests/test_image_privacy.py -k quote -p no:xdist -o addopts=` -> 1 failed at tests/test_image_privacy.py:295 (`assert (255, 255, 255) == (0, 0, 0)`); after fix `uv run pytest tests/test_image_privacy.py tests/test_image_privacy_engine.py tests/test_run_failure_artifacts.py -p no:xdist -o addopts=` -> 54 passed, t=58s; `uv run ruff check src tests` -> All checks passed!
+Falsification[C1]: copy of src tests scripts pyproject.toml under the session scratchpad (outside the worktree; autotester.__file__ printed from the copy via PYTHONPATH=<copy>/src;<copy>/scripts), `, quoting=csv.QUOTE_NONE` removed from image_privacy.py:87 -> new test 1 failed at tests/test_image_privacy.py:295 (`assert (255, 255, 255) == (0, 0, 0)`); restored -> 1 passed
+Fix[C1]: src/autotester/core/image_privacy.py:87 `csv.DictReader(io.StringIO(tsv), delimiter="	", quoting=csv.QUOTE_NONE)` (delimiter now an escape, not a literal tab)
 Metrics: start=2026-10-18T07:40:00Z end=2026-10-18T08:35:00Z wall_min=55 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=1 mutations=3 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-17.13 lane=normal check_s=484 mutants=3 defects_unit=0 defects_6c=0
 
 ## How to verify (commands + expected)
