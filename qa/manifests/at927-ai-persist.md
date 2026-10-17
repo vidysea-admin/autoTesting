@@ -43,4 +43,4 @@ Baseline 11 passed. Each mutation went red on its own assertion:
 - Honest limit: nothing outside `stages/ai_*` calls `capture_run`/`judge_capture` yet (no CLI or UI caller exists, none was asked for); this unit makes persistence and the report round trip real, not a new command.
 - Incident: a failed `cd` in one of my falsification commands made it run in the main checkout, which left copies of the four src files and older copies of five `scripts/*.py` uncommitted there. Reported to the coordinator; not touched from here.
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at927-ai-persist.md, cycle 0)
