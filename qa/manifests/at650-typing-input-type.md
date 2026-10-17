@@ -47,4 +47,4 @@ Metrics: start=2026-10-17T13:40:00Z end=2026-10-17T14:20:00Z wall_min=40 agent_m
 ## Live browser evidence
 Real headless Chromium via the `page_factory` fixture: tests/test_explore_typing_input_type.py::test_enumerate_reports_the_real_type_of_a_password_input_named_pin set a page with `type=password` (PIN), `type=file` (Avatar), no type (Plain), `type="PassWord"` (Upper) and ran `enumerate_elements`; reported types ('password','file','text','password'), the gate refused the three and allowed Plain. No screen changed, so no screenshots; no qa/evidence dir.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at650-typing-input-type.md + at650-typing-input-type.b.md, cycle 0, dual)
