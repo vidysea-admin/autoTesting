@@ -1,6 +1,6 @@
 # Manifest - t207-multirole-schema (T-207, G11-1)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t207-multirole-schema.md, cycle 0)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP1, MP2, MP3, MPI3; invariants MPI1-MPI6 held)
 **Goal task:** T-207
