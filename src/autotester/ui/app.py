@@ -108,6 +108,8 @@ def onboard_form() -> str:
         + "<h1>Onboard a project</h1>"
         "<p class='subtitle'>Give AutoTester a URL and test account. Add whatever you already "
         "know; otherwise it can learn by exploring after approval.</p>"
+        "<p><a class='btn' href='/onboard/roles'>Several roles or platforms? Onboard with "
+        "role accounts</a></p>"
         f"{theme.card(project_view.intake_form())}"
     )
     return theme.page("Onboard", body)

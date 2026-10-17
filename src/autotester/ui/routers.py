@@ -34,6 +34,7 @@ from autotester.ui import (
     routes_project_edit,
     routes_proposals,
     routes_report,
+    routes_role_accounts,
     routes_runs,
     routes_schedule,
     routes_server_settings,
@@ -89,6 +90,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_video_comments.router,
     routes_video_review.router,   # TA5 Run review; `STUBS['video_review']` stays registered, empty
     routes_access_requests.router,
+    routes_role_accounts.router,   # T-208 G11: /onboard/roles and /projects/{slug}/accounts
     *STUBS.values(),
 )
 
