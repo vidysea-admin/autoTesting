@@ -20,15 +20,19 @@ from math import isfinite
 from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
-from autotester.core.ids import content_id
-from autotester.core.paths import RepoDocs
+from autotester.core.paths import ProjectPaths, RepoDocs
 from autotester.core.redact import Redactor
 from autotester.providers.base import ModelT, Provider
 from autotester.schema.ai_check import AiCapture, AiCheckKind, AiCheckMethod
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import Evidence, RawResult
 from autotester.schema.verdict import Criterion, Failure, Judgment, Rubric, Verdict
-from autotester.stages.ai_capture import CaptureWithheld
+from autotester.stages.ai_capture import (
+    CaptureWithheld,
+    capture_id,
+    persist_scrubbed,
+    store_capture,
+)
 from autotester.stages.ai_catalog import CHECK_METHOD
 from autotester.stages.grade import grade
 
@@ -74,9 +78,7 @@ def _assert_clean(redactor: Redactor, text: str) -> None:
 
 
 def _case_id(cap: AiCapture) -> str:
-    prompts = [e.prompt for e in cap.exchanges]
-    return content_id("aic", {"check": cap.check.value, "endpoint": cap.endpoint,
-                              "prompts": prompts})
+    return capture_id(cap)
 
 
 def _rubric(cap: AiCapture, case_id: str, reference: str | None, budget: float | None) -> Rubric:
@@ -178,13 +180,38 @@ def _check_inputs(cap: AiCapture, reference: str | None, budget: float | None) -
         raise ValueError("a latency_budget check needs finite nonnegative latency_budget_s")
 
 
+def store_verdict(paths: ProjectPaths, cap: AiCapture, verdict: Verdict,
+                  redactor: Redactor) -> Path:
+    """Write `verdict` beside its capture, `ai/behavioural/<capture_id>/verdict.json`."""
+    path = paths.ai_capture_dir(capture_id(cap)) / "verdict.json"
+    persist_scrubbed(path, verdict, redactor)
+    return path
+
+
 def judge_capture(
     cap: AiCapture, *, run_id: str, judge: Provider, redactor: Redactor,
     reference: str | None = None, latency_budget_s: float | None = None,
     docs: RepoDocs | None = None, run_dir: Path | None = None,
-    secrets: SecretStore | None = None,
+    secrets: SecretStore | None = None, paths: ProjectPaths | None = None,
 ) -> Verdict:
-    """One grade-owned `Verdict` for one capture, using the check's declared instrument."""
+    """One grade-owned `Verdict` for one capture, using the check's declared instrument.
+
+    With `paths` the capture and its verdict are also persisted under `projects/<slug>/ai/`
+    (AT-927) for the AI report to read; the verdict returned is the one judged, unchanged."""
+    verdict = _judge(cap, run_id=run_id, judge=judge, redactor=redactor, reference=reference,
+                     latency_budget_s=latency_budget_s, docs=docs, run_dir=run_dir,
+                     secrets=secrets)
+    if paths is not None:
+        store_capture(paths, cap, redactor)
+        store_verdict(paths, cap, verdict, redactor)
+    return verdict
+
+
+def _judge(
+    cap: AiCapture, *, run_id: str, judge: Provider, redactor: Redactor,
+    reference: str | None, latency_budget_s: float | None, docs: RepoDocs | None,
+    run_dir: Path | None, secrets: SecretStore | None,
+) -> Verdict:
     _check_inputs(cap, reference, latency_budget_s)
     clean = _scrubbed(cap, redactor)
     ref = redactor.scrub(reference) if reference else None
