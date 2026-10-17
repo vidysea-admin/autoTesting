@@ -75,3 +75,5 @@ and whoever builds T-136 creates **this** path. Do not add a second script to ma
 **Links:** D-052 · D-053 · WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058) · D-018 · D-048 (superseded as first target) · T-122 · T-145 ·
 `qa/gates/erp-credentials.md` · `qa/gates/live-crawl-target.md` · `core/env.py:46-67` · `AT-086` ·
 `AT-651` · `projects/pathlynks/project.json`
+
+Answered: 2026-09-27 — first target is the Pathlynks USER account (`PATHLYNKS_USER_*` keys), not the counsellor account — Umesh, chat (verbatim in "The answer, verbatim" above); Pathlynks-first routing recorded as D-052 (`docs/DECISIONS.md:1281`, `Approved-by: Umesh`)

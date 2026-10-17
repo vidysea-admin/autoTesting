@@ -110,3 +110,5 @@ edit and the `projects/pathlynks/project.json` flip per the section above. The s
 `at654-d029-dev-only-vs-production-pathlynks.md` and `pathlynks-user-account-first.md` were corrected
 to `WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058)` the same day; `qa/QUEUE.md` is the maker's surface and still carries the
 old one.
+
+Answered: 2026-09-27 — `ALLOW_WRITES`, on every target including production — Umesh, chat; recorded as D-053 (`docs/DECISIONS.md:1360`); re-confirmed 2026-09-28 (see the note at the end of this file)

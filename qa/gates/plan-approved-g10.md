@@ -27,3 +27,5 @@ Bug closes after 2 consecutive passes. Email checkbox defaults off. "Custom time
 
 ## Answer
 Approved -- Umesh, 2026-10-07 (chat), recorded as D-074.
+
+Answered: 2026-10-07 — approved (Group 10 plan, units G1-G10) — Umesh, chat; recorded as D-074 (`docs/DECISIONS.md:2218`, `Approved-by: Umesh (chat, 2026-10-07)`)
