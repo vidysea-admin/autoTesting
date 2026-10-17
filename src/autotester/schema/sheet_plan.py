@@ -105,12 +105,19 @@ class SheetPlan(BaseModel):
     tab: str
     rows: list[PlanRow] = Field(default_factory=list)
     unchanged: int = Field(default=0, ge=0, description="bugs whose row already matches")
+    adopts: dict[str, dict[str, str]] = Field(
+        default_factory=dict,
+        description="bug key -> column -> a cell the sheet already holds at our value but memory "
+                    "does not record (a write that landed before a crash); memory only, no write")
     plan_hash: str = ""
 
     @model_validator(mode="after")
     def _hash(self) -> SheetPlan:
-        derived = content_id("plan", {"sheet": self.sheet_id, "tab": self.tab,
-                                      "rows": [r.model_dump(mode="json") for r in self.rows]})
+        body: dict = {"sheet": self.sheet_id, "tab": self.tab,
+                      "rows": [r.model_dump(mode="json") for r in self.rows]}
+        if self.adopts:      # only when present, so a plan without adoptions hashes as before
+            body["adopts"] = self.adopts
+        derived = content_id("plan", body)
         if self.plan_hash and self.plan_hash != derived:
             raise ValueError("plan_hash does not match the plan's content")
         self.plan_hash = derived

@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from autotester.schema.sheet_plan import SheetState
+from autotester.stages.sheet_plan import unguard
+from autotester.stages.sheet_write import register_writer
 
 
+@register_writer
 class FakeSheet:
     """Header row plus data rows, a call log, a switch for `live`, and a way to fail after k writes.
     Extra human columns (ones the mapping never names) are just more header cells."""
@@ -53,3 +56,12 @@ class FakeSheet:
 
     def snapshot(self) -> tuple:
         return (tuple(self.header), tuple(tuple(r) for r in self.rows))
+
+
+class StripGuardSheet(FakeSheet):
+    """A sheet that drops the formula-guard apostrophe on read-back (AT-984's assumption)."""
+
+    def read(self, sheet_id: str, tab: str) -> SheetState:
+        state = super().read(sheet_id, tab)
+        state.rows = [[unguard(c) for c in r] for r in state.rows]
+        return state
