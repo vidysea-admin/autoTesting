@@ -42,4 +42,4 @@ Note for the checker: the terminal-depth call now loses the late-re-render toler
 ## Live browser evidence
 Not UI-touching — no surface changed (changed paths: src/autotester/stages/explore_return.py, tests/test_explore_return_determinism.py).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at335-tolerance-scope.md, cycle 0)
