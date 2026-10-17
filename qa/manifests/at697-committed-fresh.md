@@ -3,7 +3,7 @@
 **Contract:** qa/contracts/living-ledger.md:26-33 (L1 "Committed == disk == fresh"); issue AT-697 (qa/issues.jsonl:702)
 **Goal task:** none
 **Date:** 2026-10-18
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at697-committed-fresh.md, cycle 0)
 **Fix cycle:** 0 of max 2
 **Hold fix cycles:** 0 of 2
 **Hold-reopens:** 0
