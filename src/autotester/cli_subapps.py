@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import typer
 
-from autotester import cli_issues, cli_revoke, cli_run, cli_schedule, cli_video
+from autotester import cli_issues, cli_revoke, cli_run, cli_schedule, cli_sweep, cli_video
 from autotester.cli_auth import app as auth_app
 from autotester.core.exit_codes import exit_code_table
 
@@ -19,6 +19,7 @@ SUBAPPS: list[tuple[str, typer.Typer]] = [
     ("issues", cli_issues.app),
     ("schedule", cli_schedule.app),
     ("auth", auth_app),  # T-204 team login
+    ("sweep", cli_sweep.app),  # AT-699 qa/.last-sweep append-only writer
 ]
 
 

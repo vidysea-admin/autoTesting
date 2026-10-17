@@ -58,6 +58,7 @@
 | `cli_run.py` | `autotester run`, `run-report`, `catalog`, `mcp-serve`: the machine-facing commands (T-174). |
 | `cli_schedule.py` | `autotester schedule tick`: the stateless pass that makes scheduled tests run (T-200, TS7). |
 | `cli_subapps.py` | The list of CLI sub-apps `autotester` registers (T-205/TF5, design rule). |
+| `cli_sweep.py` | `autotester sweep stamp`: the one append-only writer of the checker's sweep log (AT-699). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
 | `cli_video_review.py` | `autotester ingest review`: a pointer-guided review of one recording (T-197, CLI half). |
 | `core/atomic_tick.py` | One job: append a stamp to `qa/.last-tick` atomically and never shrink the file (AT-644). |
