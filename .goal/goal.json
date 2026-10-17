@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-13T06:21:00",
+  "updated": "2026-10-17T23:42:09",
   "progress": {
-    "total": 92,
+    "total": 106,
     "done": 89,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 3,
-    "current": "T-169",
-    "percent": 97
+    "pending": 17,
+    "current": "T-136",
+    "percent": 84
   },
   "tasks": [
     {
@@ -607,7 +607,7 @@
       "attempts": 0,
       "created": "2026-09-07T17:15:41",
       "user_value": "high",
-      "criticality": "high"
+      "criticality": "critical"
     },
     {
       "id": "T-140",
@@ -1897,7 +1897,7 @@
         "expect_exit": 0
       },
       "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N sources/imap_mailbox.py, stages/oracle_mailbox.py, schema/mail_observation.py. Reuses sources/email.py parsing. HUMAN_GATE: IMAP host + per-role mailbox keys; source-adapters.md has no IMAP today (checker fold). | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
-      "criticality": "high",
+      "criticality": "critical",
       "created": "2026-10-16T00:00:00"
     },
     {
@@ -1989,7 +1989,7 @@
         "expect_exit": 0
       },
       "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size S. Files: N stages/oracle_credential_policy.py, stages/oracle_payment.py. Password in mail recorded as token-present only; payment stops at the gateway page unless provider test mode. | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
-      "criticality": "high",
+      "criticality": "critical",
       "created": "2026-10-16T00:00:00"
     },
     {
@@ -2464,6 +2464,97 @@
       "message": "T-200 is CRITICAL — human required",
       "task_id": "T-200",
       "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "critical",
+      "message": "T-136 is CRITICAL — human required",
+      "task_id": "T-136",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "warn",
+      "message": "T-207 needs review (high)",
+      "task_id": "T-207",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "warn",
+      "message": "T-208 needs review (high)",
+      "task_id": "T-208",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "critical",
+      "message": "T-209 is CRITICAL — human required",
+      "task_id": "T-209",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "warn",
+      "message": "T-210 needs review (high)",
+      "task_id": "T-210",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "warn",
+      "message": "T-211 needs review (high)",
+      "task_id": "T-211",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "critical",
+      "message": "T-212 is CRITICAL — human required",
+      "task_id": "T-212",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "critical",
+      "message": "T-213 is CRITICAL — human required",
+      "task_id": "T-213",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "warn",
+      "message": "T-215 needs review (high)",
+      "task_id": "T-215",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "critical",
+      "message": "T-217 is CRITICAL — human required",
+      "task_id": "T-217",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "critical",
+      "message": "T-218 is CRITICAL — human required",
+      "task_id": "T-218",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "warn",
+      "message": "T-219 needs review (high)",
+      "task_id": "T-219",
+      "acked": false
+    },
+    {
+      "ts": "2026-10-17T14:02:02",
+      "level": "warn",
+      "message": "T-220 needs review (high)",
+      "task_id": "T-220",
+      "acked": false
     }
   ],
   "preferences": {
@@ -2472,9 +2563,9 @@
     "risk_tolerance": "conservative"
   },
   "analytics": {
-    "velocity_per_day": 1.75,
-    "eta_days": 9.1
+    "velocity_per_day": 1.59,
+    "eta_days": 10.7
   },
-  "last_deterministic_tick": "2026-10-12T18:37:26",
+  "last_deterministic_tick": "2026-10-17T23:42:09",
   "last_agentic_tick": "2026-09-03T10:32:18"
 }
