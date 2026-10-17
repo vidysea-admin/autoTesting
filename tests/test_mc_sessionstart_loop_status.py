@@ -140,7 +140,8 @@ def _run_hook(cwd: Path, env: dict[str, str]) -> subprocess.CompletedProcess[str
     return subprocess.run(
         ["powershell.exe" if shutil.which("powershell") else "pwsh",
          "-NoProfile", "-NonInteractive", "-File", str(HOOK)],
-        cwd=cwd, env=env, capture_output=True, text=True, timeout=60 * timing_scale(),
+        cwd=cwd, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=60 * timing_scale(),
     )
 
 
@@ -163,6 +164,24 @@ def test_hook_prints_the_report_and_exits_zero_on_a_healthy_log(tmp_path: Path) 
     assert result.returncode == 0, result.stderr
     assert "ticks: 1" in result.stdout
     assert "LOOP UNHEALTHY" not in result.stdout
+
+
+@windows_only
+def test_hook_output_is_utf8_with_the_non_ascii_separator_intact(tmp_path: Path) -> None:
+    """AT-858 (D-103): the hook set UTF-8 output only at the SNAPSHOT tail, so earlier lines (the
+    loop-status `ticks: N middot last:`) left as OEM/ANSI bytes. `_run_hook` decodes with
+    errors=replace, so any such stray byte surfaces here as U+FFFD instead of vanishing."""
+    qa = tmp_path / "qa"
+    qa.mkdir()
+    (qa / "manifests").mkdir()
+    recent = (datetime.now(UTC) - timedelta(minutes=1)).isoformat()
+    (qa / ".last-tick").write_text(recent + " . TICK . healthy\n", encoding="utf-8")
+
+    result = _run_hook(REPO, _base_env(AUTOTESTER_ROOT=str(tmp_path)))
+
+    assert result.returncode == 0, result.stderr
+    assert "ticks: 1 \u00b7 last:" in result.stdout, "the non-ASCII separator was lost or mangled"
+    assert "\ufffd" not in result.stdout, "a non-UTF-8 byte reached the hook output"
 
 
 @windows_only
