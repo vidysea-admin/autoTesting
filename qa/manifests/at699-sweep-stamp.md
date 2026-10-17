@@ -68,4 +68,4 @@ Metrics: wall_min=40 suite_runs=0 repeat_runs=0 mutations=2 cycle=0 policy=propo
 ## Live-browser verification
 Not applicable: a CLI-only unit, no screen, route or template.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at699-sweep-stamp.md, cycle 0)
