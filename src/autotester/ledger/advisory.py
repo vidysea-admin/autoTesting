@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 # blocking (they are simply not listed here). To promote the check to blocking by a later
 # decision, empty ADVISORY_CITATION and the blocking() filter will count them again.
 ADVISORY_CITATION = frozenset({"decision-citation-coverage", "decision-citation-declaration"})
-NON_BLOCKING = ADVISORY_CITATION | {"decision-citation-sealed", "decision-citation-known-disputed"}
+NON_BLOCKING = ADVISORY_CITATION | {"decision-citation-sealed", "decision-citation-known-disputed",
+                                      "committed-leg-skipped"}
 
 
 def blocking(violations: list[Violation]) -> list[Violation]:

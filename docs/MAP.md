@@ -91,6 +91,7 @@
 | `ledger/advisory.py` | Which doctor findings are advisory warnings and which block (L10, D-087). |
 | `ledger/checks.py` | Design rules over the project's RECORDS, as opposed to its source files. |
 | `ledger/citations.py` | Does every `D-NNN` cited in a gate, contract, manifest, verdict or doc resolve to an |
+| `ledger/committed_fresh.py` | L1 committed leg: each generated doc's committed blob must equal a fresh regeneration (AT-697). |
 | `ledger/evidence_specs.py` | AT-516 (D-048, gate answer c): does a unit's evidence spec (`mutations.json`) |
 | `ledger/issue_ids.py` | Id uniqueness for `qa/issues.jsonl` (AT-676, AT-645). |
 | `ledger/relitigation.py` | The cyclic-rebuild gate: is this new unit a retired feature coming back? |
