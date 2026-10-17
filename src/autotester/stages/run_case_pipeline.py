@@ -185,7 +185,7 @@ def observe_case(case: Case, session: BrowserSession, store: ProjectStore, *,
         scripted = run_scripted(case, session, store, execute)
     finally:
         video_rel = session.end_case_video()
-    scripted.result = _with_events(scripted.result, restarts)
+    scripted.result = _with_events(scripted.result, restarts + _take_session_events(session))
     return scripted, video_rel
 
 
