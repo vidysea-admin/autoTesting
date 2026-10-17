@@ -193,3 +193,42 @@ def test_a_login_failed_stop_reason_names_the_login_case_error(tmp_path: Path) -
     assert crawl.stop_reason is not None
     assert "locator not found" in crawl.stop_reason
     assert IDENTIFIER in crawl.stop_reason
+
+
+def test_a_two_step_login_whose_second_fill_fails_off_the_login_path_is_login_failed(
+    tmp_path: Path,
+) -> None:
+    """AT-889 fix cycle 1: the case's OWN submit left /signin and the password field
+    is gone -- that is a login the case just failed, not a pre-existing session."""
+    project = make_project()
+    session, page = make_session(tmp_path, project)
+    page.fillable[SIGNIN] = {IDENTIFIER}  # the password field is never rendered
+    case = _login_case()
+    case.steps += [
+        Step(order=3, action=Action.CLICK, target="button.save"),  # lands on /saved
+        Step(order=4, action=Action.FILL, target="input[name='password']", value="x"),
+    ]
+    store = ProjectStore("demo", tmp_path)
+    grant_crawl_approval(store, project)
+    crawl = run_crawl(project, session, store, observer=PageObserver(), login_case=case)
+    assert crawl.status is CrawlStatus.LOGIN_FAILED
+    assert crawl.stop_reason is not None
+    assert "password" in crawl.stop_reason
+
+
+def test_a_live_session_still_drains_a_login_api_401_before_proceeding(tmp_path: Path) -> None:
+    """The live-session reading runs the same AT-528 drain a completed case does."""
+    project = make_project()
+    session, page = make_session(tmp_path, project)
+    _stage_late_redirect(page)
+
+    class RejectedObserver(PageObserver):
+        def drain(self):  # type: ignore[no-untyped-def]
+            return [], [(f"{BASE}api/auth/login", "401")], [], ([], [])
+
+    store = ProjectStore("demo", tmp_path)
+    grant_crawl_approval(store, project)
+    crawl = run_crawl(project, session, store, observer=RejectedObserver(),
+                      login_case=_login_case())
+    assert crawl.status is CrawlStatus.LOGIN_FAILED
+    assert "AT-528" in (crawl.stop_reason or "")

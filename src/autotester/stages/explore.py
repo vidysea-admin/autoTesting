@@ -81,9 +81,8 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
         return True
     result = run_case(case, rt.session)
     rt.store.save_result(rt.crawl.id, result)
-    if result.outcome is not Outcome.COMPLETED:
-        if _live_session_midcase(rt, case, result.failing_step, login_step and login_step.target):
-            return True
+    if result.outcome is not Outcome.COMPLETED and not _live_session_midcase(
+            rt, case, result.failing_step, login_step and login_step.target):
         rt.stop_reason = f"login case did not complete (AT-889): {result.error}"
         return False
     # AT-528: a COMPLETED step sequence is NOT proof of authentication — run_case
@@ -105,9 +104,10 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
 
 def _live_session_midcase(rt: ExploreRuntime, case: Case, failing: int | None,
                           login_url: str | None) -> bool:
-    """AT-889: FILL broke and the page is off the login path -> live session, proceed."""
+    """AT-889: the FIRST fill broke, no page-changing step before it, page off login."""
+    before = {s.action for s in case.steps if s.order < (failing or 0)}
     fill = any(s.order == failing and s.action is Action.FILL for s in case.steps)
-    return bool(login_url and fill
+    return bool(login_url and fill and before <= {Action.NAVIGATE, Action.WAIT, Action.ASSERT}
                 and urlparse(rt.session.current_url()).path != urlparse(login_url).path)
 
 
