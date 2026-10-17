@@ -46,4 +46,4 @@ Metrics: start=2026-10-17T17:35:00 end=2026-10-17T18:05:00 wall_min=30 agent_min
 ## Live browser evidence
 Not UI-touching - no surface changed (only tests/test_explore_live.py).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at196-dialog-test-invariant.md, cycle 0)
