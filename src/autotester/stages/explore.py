@@ -81,7 +81,9 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
         return True
     result = run_case(case, rt.session)
     rt.store.save_result(rt.crawl.id, result)
-    if result.outcome is not Outcome.COMPLETED:
+    if result.outcome is not Outcome.COMPLETED and not _live_session_midcase(
+            rt, case, result.failing_step, login_step and login_step.target):
+        rt.stop_reason = f"login case did not complete (AT-889): {result.error}"
         return False
     # AT-528: a COMPLETED step sequence is NOT proof of authentication — run_case
     # observes, it never judges (E1); the live Pathlynks crawl
@@ -98,6 +100,15 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
                           f"({url} -> {why} — invalid credentials?) — AT-528 guard")
         return False
     return True
+
+
+def _live_session_midcase(rt: ExploreRuntime, case: Case, failing: int | None,
+                          login_url: str | None) -> bool:
+    """AT-889: the FIRST fill broke, no page-changing step before it, page off login."""
+    before = {s.action for s in case.steps if s.order < (failing or 0)}
+    fill = any(s.order == failing and s.action is Action.FILL for s in case.steps)
+    return bool(login_url and fill and before <= {Action.NAVIGATE, Action.WAIT, Action.ASSERT}
+                and urlparse(rt.session.current_url()).path != urlparse(login_url).path)
 
 
 def _already_past_login(rt: ExploreRuntime, login_url: str) -> bool:
@@ -186,7 +197,7 @@ def _login_failed_reason(rt: ExploreRuntime) -> str:
     verbatim — the vaguer sentence would overwrite the server's verdict."""
     if rt.stop_reason and "AT-528" in rt.stop_reason:
         return rt.stop_reason
-    reason = "login case did not complete"
+    reason = rt.stop_reason or "login case did not complete"  # AT-889 names the case error
     if rt.login_precheck_error:
         reason += f" (precheck also failed: {rt.login_precheck_error})"
     return reason

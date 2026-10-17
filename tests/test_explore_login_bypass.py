@@ -147,3 +147,88 @@ def test_a_login_api_401_during_the_bootstrap_is_login_failed(
     assert "401" in crawl.stop_reason
     assert "AT-528" in crawl.stop_reason
     assert cf is not None  # keep the import meaningful if the test evolves
+
+
+# -- AT-889: a redirect landing AFTER the one-shot precheck -------------------
+
+def _stage_late_redirect(page) -> None:  # type: ignore[no-untyped-def]
+    """/signin renders for the precheck's goto, then the app redirects to the
+    dashboard by the time the login case's own NAVIGATE runs -- no sleeps: the
+    redirect is bound to the second visit of /signin."""
+    real_goto, visits = page.goto, []
+
+    def goto(url: str, wait_until: str = "") -> None:
+        if url == SIGNIN:
+            visits.append(url)
+            if len(visits) > 1:
+                page.redirects[SIGNIN] = BASE
+        real_goto(url, wait_until)
+
+    page.goto = goto
+    page.fillable[SIGNIN] = {IDENTIFIER}
+
+
+def test_a_session_redirect_after_the_precheck_still_reaches_the_crawl(tmp_path: Path) -> None:
+    """crawl_01M4KMYEX8YQ4M3DB8J0991Z1T: /signin rendered at the precheck, the app then
+    redirected to the dashboard and the FILL waited on a field that was gone."""
+    project = make_project()
+    session, page = make_session(tmp_path, project)
+    _stage_late_redirect(page)
+    store = ProjectStore("demo", tmp_path)
+    grant_crawl_approval(store, project)
+    crawl = run_crawl(project, session, store, observer=PageObserver(), login_case=_login_case())
+    assert crawl.status is CrawlStatus.COMPLETED
+    assert crawl.stop_reason == "frontier empty"
+
+
+def test_a_login_failed_stop_reason_names_the_login_case_error(tmp_path: Path) -> None:
+    """Still on /signin and the field genuinely absent: a real failure, and the
+    crawl folder alone must say why (the case's own error, not a bare sentence)."""
+    project = make_project()
+    session, _page = make_session(tmp_path, project)  # nothing fillable at /signin
+    store = ProjectStore("demo", tmp_path)
+    grant_crawl_approval(store, project)
+    crawl = run_crawl(project, session, store, observer=PageObserver(), login_case=_login_case())
+    assert crawl.status is CrawlStatus.LOGIN_FAILED
+    assert crawl.stop_reason is not None
+    assert "locator not found" in crawl.stop_reason
+    assert IDENTIFIER in crawl.stop_reason
+
+
+def test_a_two_step_login_whose_second_fill_fails_off_the_login_path_is_login_failed(
+    tmp_path: Path,
+) -> None:
+    """AT-889 fix cycle 1: the case's OWN submit left /signin and the password field
+    is gone -- that is a login the case just failed, not a pre-existing session."""
+    project = make_project()
+    session, page = make_session(tmp_path, project)
+    page.fillable[SIGNIN] = {IDENTIFIER}  # the password field is never rendered
+    case = _login_case()
+    case.steps += [
+        Step(order=3, action=Action.CLICK, target="button.save"),  # lands on /saved
+        Step(order=4, action=Action.FILL, target="input[name='password']", value="x"),
+    ]
+    store = ProjectStore("demo", tmp_path)
+    grant_crawl_approval(store, project)
+    crawl = run_crawl(project, session, store, observer=PageObserver(), login_case=case)
+    assert crawl.status is CrawlStatus.LOGIN_FAILED
+    assert crawl.stop_reason is not None
+    assert "password" in crawl.stop_reason
+
+
+def test_a_live_session_still_drains_a_login_api_401_before_proceeding(tmp_path: Path) -> None:
+    """The live-session reading runs the same AT-528 drain a completed case does."""
+    project = make_project()
+    session, page = make_session(tmp_path, project)
+    _stage_late_redirect(page)
+
+    class RejectedObserver(PageObserver):
+        def drain(self):  # type: ignore[no-untyped-def]
+            return [], [(f"{BASE}api/auth/login", "401")], [], ([], [])
+
+    store = ProjectStore("demo", tmp_path)
+    grant_crawl_approval(store, project)
+    crawl = run_crawl(project, session, store, observer=RejectedObserver(),
+                      login_case=_login_case())
+    assert crawl.status is CrawlStatus.LOGIN_FAILED
+    assert "AT-528" in (crawl.stop_reason or "")

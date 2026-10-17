@@ -1,0 +1,28 @@
+from pathlib import Path
+from crawl_fake import grant_crawl_approval, make_project, make_session
+from autotester.browser.observe import PageObserver
+from autotester.schema.case import Case
+from autotester.schema.enums import Action, CaseClass, CaseKind, CrawlStatus
+from autotester.schema.flowspec import Step
+from autotester.stages.explore import run_crawl
+from autotester.store.project_store import ProjectStore
+
+SIGNIN = "https://app.test/signin"
+ID = "input[name='identifier']"
+PW = "input[name='password']"
+
+def test_wrong_creds_two_step_login_redirect_off_path(tmp_path: Path) -> None:
+    case = Case(project="demo", flow_id="login", kind=CaseKind.BEST, case_class=CaseClass.HAPPY,
+        title="log in", steps=[
+        Step(order=1, action=Action.NAVIGATE, target=SIGNIN),
+        Step(order=2, action=Action.FILL, target=ID, value="someone"),
+        Step(order=3, action=Action.CLICK, target="button.save"),  # wrong creds -> app lands on /saved (a non-login path)
+        Step(order=4, action=Action.FILL, target=PW, value="bad")])
+    project = make_project()
+    session, page = make_session(tmp_path, project)
+    page.fillable[SIGNIN] = {ID}
+    store = ProjectStore("demo", tmp_path)
+    grant_crawl_approval(store, project)
+    crawl = run_crawl(project, session, store, observer=PageObserver(), login_case=case)
+    print("STATUS", crawl.status, "|", crawl.stop_reason)
+    assert crawl.status is CrawlStatus.LOGIN_FAILED
