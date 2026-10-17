@@ -53,7 +53,26 @@ def loop_tick_cmd(
     typer.echo(stamp)
 
 
+def ledger_backref_cmd(
+    rev: str = typer.Argument("HEAD", help="the fixing/closing commit"),
+    exclude: str = typer.Option("", "--exclude", help="the row id being closed; left out"),
+) -> None:
+    """AT-712: list open `qa/issues.jsonl` rows and `qa/gates/` files naming a path `rev` changed.
+
+    Report only -- it never edits a row or a gate (rows are history, L8). The closing agent reads
+    the shortlist and appends a pointer by hand where the content really did go stale."""
+    from autotester.core.paths import repo_root
+    from autotester.ledger import store
+
+    lines = store.backref_report(repo_root(), rev, exclude=exclude or None)
+    for line in lines:
+        typer.echo(line)
+    if not lines:
+        typer.echo("no open row or gate names a path this commit changed")
+
+
 def attach_loop_commands(app: typer.Typer) -> None:
     """Attach the loop commands to the main app (keeps `cli.py` under its line budget)."""
+    app.command("ledger-backref")(ledger_backref_cmd)
     app.command("loop-status")(loop_status_cmd)
     app.command("loop-tick")(loop_tick_cmd)

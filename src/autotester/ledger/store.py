@@ -3,11 +3,16 @@
 Built on `store.filestore`'s generic JSONL primitives (C3: one concept, one
 place for "how a file gets read or written") plus the one rule specific to
 this collection: rows are history, so a repeated id is a defect, not a merge.
+
+Also holds the read-only close-out back-reference (AT-712): which open
+`qa/issues.jsonl` rows and `qa/gates/` files name a path a fixing commit changed.
 """
 
 from __future__ import annotations
 
 import json
+import re
+import subprocess
 from datetime import date
 from pathlib import Path
 
@@ -127,3 +132,98 @@ def load_goal_tasks(goal_path: Path) -> list[dict]:
     if not goal_path.exists():
         return []
     return json.loads(goal_path.read_text(encoding="utf-8")).get("tasks", [])
+
+
+# --- AT-712: close-out back-reference (report only; never edits a row or a gate) ---------------
+
+_BACKREF_SKIP = ("qa/", ".goal/", ".work/", "docs/FEATURES.jsonl", "docs/DECISIONS.md")
+_BACKREF_GENERIC = frozenset({"__init__.py"})
+
+
+def changed_paths(root: Path, rev: str) -> list[str]:
+    """Files the commit `rev` touched (read-only git, argv list, no shell)."""
+    out = subprocess.run(
+        ["git", "-C", str(root), "diff-tree", "--no-commit-id", "--name-only", "-r", "-m",
+         "--root", rev],
+        check=True, capture_output=True, text=True, encoding="utf-8").stdout
+    return sorted({line.strip() for line in out.splitlines() if line.strip()})
+
+
+def _backref_needles(changed: list[str]) -> list[tuple[re.Pattern[str], str, str]]:
+    """(pattern, changed path, needle) for every trailing path suffix, longest first. A suffix
+    must start at a path-component boundary and end at a non-word char, so `filestore.py`
+    never matches `store.py` and `run_budget.py.bak` never matches `run_budget.py`."""
+    found: list[tuple[re.Pattern[str], str, str]] = []
+    for path in changed:
+        if path.startswith(_BACKREF_SKIP):
+            continue
+        parts = path.split("/")
+        for i in range(len(parts)):
+            needle = "/".join(parts[i:])
+            if i == len(parts) - 1 and parts[-1] in _BACKREF_GENERIC:
+                continue
+            pattern = re.compile(r"(?<![\w./\-])" + re.escape(needle) + r"(?!\w)")
+            found.append((pattern, path, needle))
+    return sorted(found, key=lambda f: -len(f[2]))
+
+
+def _backref_hit(text: str, needles: list[tuple[re.Pattern[str], str, str]]) -> str | None:
+    """The longest changed-path suffix `text` names, as 'path (basename only)'; else None."""
+    text = text.replace("\\", "/")
+    for pattern, path, needle in needles:
+        if pattern.search(text):
+            return path if "/" in needle else f"{path} (basename only)"
+    return None
+
+
+def backref_candidates(
+    changed: list[str], issue_rows: list[dict], gates: dict[str, str],
+    *, exclude: str | None = None,
+) -> list[str]:
+    """Open rows (title/evidence) and gate-file lines that name a changed path. A shortlist for a
+    human to judge, not a verdict; the fixing row (`exclude`) and non-open rows are left out."""
+    needles = _backref_needles(changed)
+    lines: list[str] = []
+    for row in issue_rows:
+        if row.get("status") != "open" or row.get("id") == exclude:
+            continue
+        for field in ("title", "evidence"):
+            hit = _backref_hit(str(row.get(field, "")), needles)
+            if hit:
+                title = str(row.get("title", ""))[:70]
+                lines.append(f"{row.get('id')} [open] names {hit} in {field}: {title}")
+                break
+    for name, text in sorted(gates.items()):
+        for number, line in enumerate(text.splitlines(), start=1):
+            hit = _backref_hit(line, needles)
+            if hit:
+                lines.append(f"{name}:{number} names {hit}")
+                break
+    return lines
+
+
+def _read_issue_rows(path: Path) -> tuple[list[dict], list[str]]:
+    rows: list[dict] = []
+    notes: list[str] = []
+    if not path.exists():
+        return rows, notes
+    for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if not raw.strip():
+            continue
+        try:
+            row = json.loads(raw)
+        except json.JSONDecodeError:
+            row = None
+        if isinstance(row, dict):
+            rows.append(row)
+        else:
+            notes.append(f"{path.parent.name}/{path.name}:{number} unreadable row (skipped)")
+    return rows, notes
+
+
+def backref_report(root: Path, rev: str, *, exclude: str | None = None) -> list[str]:
+    """Candidates for commit `rev` against `<root>/qa/issues.jsonl` and `<root>/qa/gates/*.md`."""
+    rows, notes = _read_issue_rows(root / "qa" / "issues.jsonl")
+    gates = {f"qa/gates/{p.name}": p.read_text(encoding="utf-8", errors="replace")
+             for p in sorted((root / "qa" / "gates").glob("*.md"))}
+    return notes + backref_candidates(changed_paths(root, rev), rows, gates, exclude=exclude)
