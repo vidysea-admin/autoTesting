@@ -32,9 +32,7 @@ _BADGE_COLOR = {
 
 
 def _run_sort_key(run: Run) -> tuple:
-    created = run.created_at
-    if created.tzinfo is None:
-        created = created.replace(tzinfo=UTC)
+    created = run.created_at if run.created_at.tzinfo else run.created_at.replace(tzinfo=UTC)
     return created.astimezone(UTC), run.id
 
 
@@ -53,6 +51,15 @@ def valid_runs_newest_first(store: ProjectStore) -> list[Run]:
             runs.append(run)
     runs.sort(key=_run_sort_key, reverse=True)
     return runs
+
+
+def bounds_text(run: Run | None) -> str:
+    """AT-682/CN10: the bounds a run ran under, raw (never capped); None = NOT RECORDED."""
+    b = run.bounds if run else None
+    if b is None:
+        return "approval bounds NOT RECORDED"
+    return (f"ran under approval {b.approval_id}: {b.max_actions} actions / "
+            f"{b.max_probes} probes / {b.wall_clock_s}s")
 
 
 def _latest_run_id(store: ProjectStore) -> str:
@@ -199,7 +206,6 @@ def _case_section(
     error = escape(result.error) if result.error else ""
     no_shots = "<p class='meta'>no screenshots captured</p>"
     detail = _failure_detail_html(verdict, case, redactor)
-    video_html = _video_link_html(result)
     href, bundle_note = bundle_report_detail(store, run_id, result.case_id, export_dir)
     bundle_html = (f"<a href='{escape(href, quote=True)}'>{escape(bundle_note)}</a>"
                    if href else escape(bundle_note))
@@ -209,7 +215,7 @@ def _case_section(
         f"<p class='meta'>{scoreboard}{error}{note}</p>"
         f"{detail}{ux_findings_html(ux, result.case_id, redactor)}"
         f"<div class='shots'>{figures or no_shots}</div>"
-        f"{video_html}<p class='meta'>{bundle_html}</p>"
+        f"{_video_link_html(result)}<p class='meta'>{bundle_html}</p>"
         "</section>"
     )
 
@@ -220,14 +226,10 @@ def _video_link_html(result) -> str:
     page would defeat the whole point of the exception. Path is run-relative,
     same as `Evidence.path` everywhere else; `report-export.md`'s "relative
     to the run directory" phrasing (not to the exported file)."""
-    videos = [e for e in result.evidence if e.kind is EvidenceKind.VIDEO]
-    if not videos:
-        return ""
-    links = "".join(
+    return "".join(
         f"<p class='meta'><a href='{escape(v.path)}'>video ({escape(v.path)})</a></p>"
-        for v in videos
+        for v in result.evidence if v.kind is EvidenceKind.VIDEO
     )
-    return links
 
 
 def _failure_detail_html(verdict: Verdict | None, case: Case | None, redactor: Redactor) -> str:
@@ -248,9 +250,8 @@ def _failure_detail_html(verdict: Verdict | None, case: Case | None, redactor: R
         + "".join(f"<li>{escape(step)}</li>" for step in steps)
         + "</ol>"
     ) if steps else ""
-    if not failures_html and not steps_html:
-        return ""
-    return f"<div class='detail'>{failures_html}{steps_html}</div>"
+    both = failures_html + steps_html
+    return f"<div class='detail'>{both}</div>" if both else ""
 
 
 def export_html(
@@ -291,6 +292,7 @@ def export_html(
         f"<style>{style}</style>"
         f"<h1>{escape(project_slug)} — run report</h1>"
         f"<p class='meta'>Run <code>{escape(run_id)}</code> · {len(results)} case(s)</p>"
+        f"<p class='meta'>{escape(bounds_text(store.load_run(run_id)))}</p>"
         f"{sections}"
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)

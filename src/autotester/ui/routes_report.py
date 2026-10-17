@@ -15,6 +15,7 @@ from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.trace import LLMSpan, StageSpan
 from autotester.stages.catalog import failures_first
 from autotester.stages.report_export import (
+    bounds_text,
     export_excel,
     export_html,
     png_base64,
@@ -170,8 +171,6 @@ def run_view(slug: str, run_id: str) -> Response:
     run_dir = store.paths.run_dir(run_id)
     cases = {c.id: c for c in store.list_cases()}
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
-    results = store.load_results(run_id)
-    counts = _run_counts(store, run_id)
     run = store.load_run(run_id)
 
     def _case_body(r, case_index: int) -> str:
@@ -194,7 +193,7 @@ def run_view(slug: str, run_id: str) -> Response:
             f"{_video_section(slug, run_id, r.evidence)}"
         )
 
-    sections = _sections(results, verdicts, cases, _case_body)
+    sections = _sections(store.load_results(run_id), verdicts, cases, _case_body)
     body = (
         theme.breadcrumb(
             ("Projects", "/"), (safe_slug, f"/projects/{safe_slug}"),
@@ -203,7 +202,8 @@ def run_view(slug: str, run_id: str) -> Response:
         + f"<h1>Run <code>{safe_run_id}</code></h1>"
         + team_run_view.started_by(run)
         + preflight_view.warnings_card(run.preflight_warnings if run else None)
-        + _counts_stats(counts, run.catalog_runnable_counts if run else None)
+        + theme.card(f"<p>{escape(bounds_text(run))}</p>", title="Run bounds")
+        + _counts_stats(_run_counts(store, run_id), run.catalog_runnable_counts if run else None)
         + _trace_card(store, run_id)
         + (sections or theme.empty_state("📭", "No case results in this run yet."))
     )
