@@ -2,7 +2,7 @@
 
 Unit: AT-746 (medium)
 Fix cycle: 0
-Status: merged-no-check (docs-lane) candidate
+Status: merged-no-check (docs-lane)
 Files: `qa/gates/at638-four-contract-files-authorization.md`, `qa/gates/pathlynks-user-account-first.md`, `qa/gates/write-policy-tier.md`, `qa/gates/plan-approved-g10.md`, this manifest. Markdown only; no code or test touched.
 
 ## What changed
