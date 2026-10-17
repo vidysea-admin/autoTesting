@@ -19,7 +19,7 @@ from autotester.browser.secrets import SecretStore
 from autotester.core.consent import ApprovalRequired
 from autotester.core.ids import run_id as mint_run_id
 from autotester.core.paths import ProjectPaths
-from autotester.schema.release import ReleaseDecision, ReleaseRecord
+from autotester.schema.release import ReleaseDecision, ReleaseRecord, ReleaseScope
 from autotester.schema.run_state import RunState
 from autotester.stages.release import ReleaseError, start_release
 from autotester.stages.unified_report import (
@@ -30,23 +30,47 @@ from autotester.stages.unified_report import (
 from autotester.store.project_store import ProjectStore
 
 
-def _echo_state(project: str, state: RunState) -> None:
+def _echo_scope(scope: ReleaseScope) -> None:
+    """What the pause is asking the release manager to approve (AT-899)."""
+    for plan in scope.plans:
+        typer.echo(f"  flow {plan.flow_id} - {len(plan.case_ids)} case(s)")
+    typer.echo(f"  scope: {len(scope.case_ids)} case(s), up to {scope.max_actions} action(s)")
+    typer.echo(f"  build: {scope.git_sha or 'not given (pass --git-sha)'}")
+    if scope.unplanned_flow_ids:
+        typer.echo("  unplanned (reported `not run`): " + ", ".join(scope.unplanned_flow_ids))
+
+
+def _echo_closing(project: str, state: RunState, scope: ReleaseScope | None) -> None:
+    pending = state.next_pending()
+    decision = state.release_decision
+    if decision is not None and not decision.approved:
+        typer.secho(f"declined by {decision.by}: release stopped, nothing was run and no "
+                    "release record exists", fg=typer.colors.YELLOW)
+        typer.echo(f"next: `autotester release {project}` starts a new release")
+    elif pending is None:
+        typer.secho(f"finished - see `autotester release-log {project} {state.run_id}`")
+    elif pending.status == "awaiting_human":
+        if scope is not None:
+            _echo_scope(scope)
+        typer.secho(f"paused for your decision: `autotester release {project} --run-id "
+                    f"{state.run_id} --approve-by <name>` (or --decline-by <name>)",
+                    fg=typer.colors.YELLOW)
+    else:
+        by = f"approved by {decision.by}: " if decision is not None else ""
+        typer.secho(f"{by}stopped at {pending.stage.value}: no executor is wired into this CLI "
+                    "(a host injects EXECUTE/GRADE runners)", fg=typer.colors.YELLOW)
+        typer.echo(f"next: once a host has run it, `autotester release-log {project} "
+                   f"{state.run_id}` prints the issues log")
+
+
+def _echo_state(project: str, state: RunState, scope: ReleaseScope | None = None) -> None:
     typer.secho(f"{project}: release {state.run_id}", fg=typer.colors.GREEN)
     for cp in state.stages:
         colour = {"done": typer.colors.GREEN, "failed": typer.colors.RED,
                   "skipped": typer.colors.GREEN}.get(cp.status, typer.colors.YELLOW)
         typer.secho(f"  {cp.stage.value:8} {cp.status}" + (f" - {cp.error}" if cp.error else ""),
                     fg=colour)
-    pending = state.next_pending()
-    if pending is None:
-        typer.secho(f"finished - see `autotester release-log {project} {state.run_id}`")
-    elif pending.status == "awaiting_human":
-        typer.secho(f"paused for your decision: `autotester release {project} --run-id "
-                    f"{state.run_id} --approve-by <name>` (or --decline-by <name>)",
-                    fg=typer.colors.YELLOW)
-    else:
-        typer.secho(f"stopped at {pending.stage.value}: no executor is wired into this CLI "
-                    "(a host injects EXECUTE/GRADE runners)", fg=typer.colors.YELLOW)
+    _echo_closing(project, state, scope)
 
 
 def release_cmd(
@@ -68,13 +92,20 @@ def release_cmd(
     by = approve_by or decline_by
     decision = ReleaseDecision(approved=bool(approve_by), by=by) if by else None
     secrets = SecretStore.load(proj, ProjectPaths(project).env_file, strict=False)
+    rid = run_id or mint_run_id("rel")
     try:
-        state = start_release(proj, store, run_id=run_id or mint_run_id("rel"), runners={},
+        state = start_release(proj, store, run_id=rid, runners={},
                               secrets=secrets, git_sha=git_sha, decision=decision)
     except (ApprovalRequired, ReleaseError) as exc:
         typer.secho(str(exc), fg=typer.colors.RED)
         raise typer.Exit(2) from None
-    _echo_state(project, state)
+    except ValueError:
+        if decision is None:
+            raise
+        typer.secho(f"release {rid} is not waiting for an answer - already answered (or never "
+                    f"paused); see `autotester release-log {project} {rid}`", fg=typer.colors.RED)
+        raise typer.Exit(1) from None
+    _echo_state(project, state, store.load_release_scope(rid))
 
 
 def _echo_log(record: ReleaseRecord) -> None:
