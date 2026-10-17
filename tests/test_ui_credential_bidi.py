@@ -163,3 +163,32 @@ def test_ordinary_bidi_punctuation_is_still_accepted(
     }, follow_redirects=False)
 
     assert response.status_code in (200, 303), f"{label}: {response.text[:200]}"
+
+
+def test_a_declared_placeholder_combined_with_an_override_is_still_refused(
+    client: TestClient, scratch_root: Path
+) -> None:
+    """AT-360: the ORDERING property. A value holding a declared
+    `{{SECRET:KEY}}` placeholder takes the placeholder early return in
+    `_refuse_unsafe_value`, so if the override check ran after that return the
+    value would be accepted and stored with a reordering character in it. The
+    check must run before the placeholder branch; none of the tests above feed
+    a placeholder, so none of them can see it move."""
+    _seed(client, scratch_root, "demo")
+    placeholder = "{{SECRET:DEMO_PASSWORD}}"
+
+    for field in ("title", "step_value", "step_expected"):
+        data = {
+            "title": "Log in", "case_class": "happy",
+            "step_action": ["fill"], "step_target": ["#q"],
+            "step_value": ["x"], "step_expected": [""],
+        }
+        mixed = f"{placeholder}{RLO}{placeholder[::-1]}"
+        data[field] = mixed if field == "title" else [mixed]
+        response = client.post("/projects/demo/cases", data=data,
+                               follow_redirects=False)
+        assert response.status_code == 400, (
+            f"placeholder + override via {field} was accepted")
+        assert "direction" in response.text.lower()
+
+    assert ProjectStore("demo", scratch_root).list_cases() == []
