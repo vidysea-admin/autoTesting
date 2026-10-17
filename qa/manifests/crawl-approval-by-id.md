@@ -38,4 +38,4 @@ Metrics: start=2026-10-17 end=2026-10-17 wall_min=45 agent_min=unavailable block
 ## Live browser evidence
 Not UI-touching — no surface changed (changed paths: scripts/check_crawl_approval.py, tests/test_check_crawl_approval.py).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/crawl-approval-by-id.md, cycle 0)
