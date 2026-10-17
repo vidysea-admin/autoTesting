@@ -3,7 +3,7 @@
 **Contract:** `qa/contracts/explore.md` (login bootstrap, X10, X18) · `qa/contracts/core-invariants.md`
 **Goal task:** none (issue-driven, AT-889)
 **Date:** 2026-10-17
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at889-login-session-race.md, cycle 1)
 **Fix cycle:** 1 of max 2
 **Repair base:** 0a88215b
 **Dual check:** no
@@ -17,7 +17,7 @@
 - `src/autotester/stages/explore.py:200` — `_login_failed_reason` keeps the case error in `stop_reason` (precheck cause still appended; AT-528 verbatim path unchanged). File is exactly 300 lines.
 - `tests/test_explore_login_bypass.py` — two tests: `test_a_session_redirect_after_the_precheck_still_reaches_the_crawl` (C1), `test_a_login_failed_stop_reason_names_the_login_case_error` (C2). Deterministic: the redirect is bound to the second visit of /signin, no sleeps.
 
-Status: ready-for-check
+Status: checked-PASS (qa/verdicts/at889-login-session-race.md, cycle 1)
 
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-15.12
