@@ -30,7 +30,7 @@ Read tests/conftest.py:42-52. The loop touches only direct children of `<repo>/.
 - Explicit `--basetemp=<dir>`: conftest returns early (`config.option.basetemp is not None`), run used the caller's dir, new test skipped (1 skipped), nothing created under `.work/pytest-tmp` for it. Respected.
 - xdist: the project venv does not have xdist installed (`import xdist` fails), so `-n 2` could not be run. Read only: `hasattr(config, "workerinput")` is the standard worker check, and xdist also forwards the controller's `basetemp` option to workers, so the first condition already returns early on a worker. Not executed; not a criterion item.
 
-## Findings (non-blocking, ledger row AT-1012 appended)
+## Findings (non-blocking, ledger row AT-1014 appended)
 - low: the new test asserts the tmp dir is under `<repo>/.work/pytest-tmp`, not that the volume differs from the OS temp volume; if a checkout lived on C: it would still pass. C1 is met for this host (repo on D:, test red on base). Wording of the criterion vs the instrument only.
 - low: runs older than 24 h are pruned but a run's own dir is not removed at session end, so a full-suite loop can leave several GB under `.work/pytest-tmp` for a day (D: had 131 GB free). Acceptable; noted.
 - Scratch left in the checker scratchpad (junction `fals672c/.work/pytest-tmp/oldjunc` -> `outside_victim`): the cleanup command was denied by the harness; harmless, outside the repo.
