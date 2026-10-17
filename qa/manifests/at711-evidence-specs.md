@@ -45,4 +45,4 @@ Throwaway copy of `src/autotester` + the test file under the session scratchpad 
 ## Live browser evidence
 Not UI-touching — no surface changed (changed paths: src/autotester/ledger/evidence_specs.py, tests/test_evidence_spec_tombstones.py).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at711-evidence-specs.md, cycle 0)
