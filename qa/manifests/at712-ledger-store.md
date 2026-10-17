@@ -49,4 +49,4 @@ doctor: clean
 ## Live browser evidence
 Not UI-touching — no surface changed. Changed paths: src/autotester/ledger/store.py, src/autotester/cli_loop.py, tests/test_ledger_backref.py (CLI/ledger only).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at712-ledger-store.md, cycle 0)
