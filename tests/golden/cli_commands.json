@@ -44,8 +44,16 @@
   "Open a real browser for a human to log in by hand -- no password needed."
  ],
  [
+  "ledger-backref",
+  "AT-712: list open `qa/issues.jsonl` rows and `qa/gates/` files naming a path `rev` changed."
+ ],
+ [
   "loop-status",
   "Report gaps in `qa/.last-tick` \u2014 was the maker loop alive, and was any stop deliberate?"
+ ],
+ [
+  "loop-tick",
+  "Append `<UTC stamp> <note>` to `qa/.last-tick` atomically; never truncates (AT-644)."
  ],
  [
   "explore",
