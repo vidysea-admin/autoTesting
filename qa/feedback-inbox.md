@@ -6035,7 +6035,7 @@ Source: `docs/features/multi-role-platform/intent.md` (O16-O21, Umesh's 2026-10-
 - **MP30 — Ordering and contamination recorded.** The atomic list's sha256 and commit time precede the run's start; scenarios derived from a specific finding are labelled and excluded from recall; without the recorded ordering recall reads `unavailable (ordering not recorded)` (T-136 gate). Only counts and the hash are committed. serves: intent#O21
 - **MP31 — Eight roles, linked platforms, live.** The acceptance run uses the onboarded 8 role accounts across the linked platforms in a real visible browser under a valid RunApproval, and reports per oracle whether it ran. serves: intent#O21, intent#O16, intent#O18
 
-**Status:** unfolded
+**Status:** folded 2026-10-18 by /checker (check-fold-g11-contracts) -> `qa/contracts/multi-role-platform.md` MP1-MP33 (+MP34/MP35 gated legs, MPI1-MPI6); IMAP -> `source-adapters.md` SA9; MP6 ruling in the amendment log.
 
 ## 2026-10-16 · maker (g11-multirole-design, fix cycle 1) · addendum to the MP1-MP31 proposals above
 
@@ -6062,6 +6062,6 @@ Answers checker verdict `qa/verdicts/g11-multirole-design.md` cycle 0 (F1, A1-A5
 - **MP30 Verify:** three fixtures. In the first the list hash and commit time precede the run start, and recall is a number. In the second the list postdates the run, and recall reads `unavailable (ordering not recorded)`. In the third a scenario is labelled derived-from-finding, and its match is excluded from recall. A grep of the committed scorecard finds only counts and the list's sha256.
 - **MP31 Verify:** run evidence lists 8 onboarded role accounts and every declared platform with each one's login outcome, references a valid signed RunApproval id, records headed mode, and has a per-oracle ran / not built / not run table covering every registry entry; a role or oracle missing from the table fails.
 
-**Status:** unfolded
+**Status:** folded 2026-10-18 by /checker (check-fold-g11-contracts) -> `qa/contracts/multi-role-platform.md` MP1-MP33 (+MP34/MP35 gated legs, MPI1-MPI6); IMAP -> `source-adapters.md` SA9; MP6 ruling in the amendment log.
 
 2026-10-17T14:38:00Z · Umesh (maker session chat) · PATTERN: a contract criterion must not cite an artifact that left the critical path · EVIDENCE: AT-752 -- ERP_Issues_Trainers.xlsx absent from disk; qa/contracts/video-learning.md:165,384,513 still cite it although T-136 ground truth changed 2026-09-27 to a parallel human tester (goal note) · APPLIES NEXT: re-anchor those T-136 lines to the comparison artifact (scripts/check_acceptance_comparison.py pathlynks) and drop the xlsx reference. Umesh: "fix all of these too".

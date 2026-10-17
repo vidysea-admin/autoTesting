@@ -321,6 +321,21 @@ citation. So the citation is checked, not trusted.
   **Links:** AT-710; AT-718; ISS-at710-1; D-060; D-062; T-196.
 
 
+### L11 - The sweep log `qa/.last-sweep` is append-only through one writer (AT-699, option (a))
+- `qa/.last-sweep` is the checker's append-only sweep log: one line per sweep, history never rewritten. A writer
+  `autotester sweep stamp "<line>"` (new `src/autotester/cli_sweep.py`, registered through `cli_subapps.py`; D-104 item 2 authorizes the new
+  module) is the one documented write path, the `autotester ledger add` pattern. It appends exactly one line to `qa/.last-sweep`, creates
+  nothing else, never truncates or rewrites existing content, and **refuses an empty or whitespace-only line with a non-zero exit, leaving the
+  file byte-identical**. A line containing a newline is refused (one stamp = one line). If the file does not exist it is created with the
+  one line. The writer adds no schema, migration or reformatting of existing lines, and the sweep's content (what a sweep records) is unchanged.
+- Scope: option (b) (extending the PreToolUse append-guard to `qa/.last-sweep`) is an enforcement path and needs `Approved-by: Umesh`; it is
+  **not** part of this criterion and not built with it. Ship (a) first; (b) becomes a gate only if the stamp is still clobbered afterwards.
+- **Verify:** a fixture file with N lines (use a tmp copy, never the real log): `autotester sweep stamp "x"` exits 0, the first N lines are
+  byte-identical to before and line N+1 is `x`; an empty line and a whitespace-only line each exit non-zero and leave the file byte-identical; a
+  two-line argument is refused and leaves it byte-identical; CRLF/LF of existing lines is preserved. **Sabotage:** open the file with `"w"`
+  instead of `"a"` - the N-line fixture goes red; drop the empty-line refusal - the empty-line fixture goes red.
+  *Serves:* AT-699; L7 (history is append-only), core-invariants C12.
+
 ## Out of scope
 The UI view of the ledger (T-100); auto-inferring `user_value` from run data (suggestion source
 only, later); Google-Sheet sync.
@@ -465,3 +480,4 @@ only, later); Google-Sheet sync.
   does reduce the check count, so it is listed in the 2026-10-11 contract-maintenance report for Umesh.
   **Changes-authorized:** D-066 (L10 sealed-record text as committed in 2749e38d); D-068 item 2 and
   D-069 (K1/K2). **Links:** T-196; D-060; D-062; D-066; D-068; D-069; ISS-t196-citation-subjects-k1k2.
+- 2026-10-18 - routine (add) - L11 added: `qa/.last-sweep` is append-only through one writer, `autotester sweep stamp "<line>"` (AT-699 option (a)): appends one line, refuses an empty or whitespace-only or multi-line argument, never truncates; Verify fixture and `"w"`-for-`"a"` sabotage named. Option (b) (hook guard, an enforcement path needing `Approved-by: Umesh`) is explicitly out of this criterion. **Links:** AT-699; D-104 item 2; L7. Why: the planner (`.work/g11-wave-plan.md` section 4) found no criterion for AT-699 (`grep last-sweep qa/contracts` empty), and the builder must not start without one; living-ledger owns the append-only logs (L7, L8) and AT-699 is filed on it.

@@ -124,3 +124,30 @@ unknown usage remains unknown. SA7 PDF/local OCR and mixed-source rules are unch
 Verify supplied-transcript zero-call behavior, missing audio capability, bounded
 extraction/transcription, missing key, no download/local-ASR invocation, sanitized
 transport, provenance and prohibited privacy/global-budget fallback using fakes.
+
+## 2026-10-18 read-only mailbox amendment (D-104, Group 11)
+
+Owner authorization: D-104 (Umesh, 2026-10-17) opened the Group 11 build, and `docs/features/multi-role-platform/intent.md` records Umesh's
+requirement that role mailboxes are read (answer 2 and the "Mailbox access is read-only" safety line). This clause takes precedence only on
+the named behaviour: the Phase-2 EMAIL scope and the no-fire line "No IMAP/SMTP fetch, no mailbox credentials" describe the *EMAIL source
+adapter* (local .eml/.mbox files) and stay true for it. The Group 11 mailbox oracle is a different consumer, not a `SourceKind`, and it
+may read a mailbox over IMAP under SA9. SA3 is unchanged and is restated below as a floor.
+
+### SA9 — Read-only IMAP mailbox access (Group 11, T-212)
+- **Read-only.** The reader sends `EXAMINE` and `FETCH ... BODY.PEEK` only. It never sends `SELECT`, `STORE`, `COPY`, `MOVE`, `EXPUNGE`,
+  `APPEND` or `DELETE`, and no message is marked read, moved or deleted. No SMTP and no sending of any kind.
+- **Keys by name only, never a value.** The host, user and password are named by `SecretRef`-shaped keys (`^[A-Z][A-Z0-9_]*$`) resolved from the
+  repo-root `.env` through `core/env.py::load_repo_env` at connect time. The key is declared in the project's `SecretRef[]`; a project resolves
+  only the keys it declares. A value never appears in a model, `project.json`, a log, an exception message, a screenshot or any file under the
+  run directory (SA3, core-invariants C5, `core.redact.assert_no_raw_secrets`).
+- **Bounded.** Every fetch is bounded by a since-time, a recipient and a message cap, and by a connect/read timeout. Bodies pass `Redactor.scrub`
+  before they are stored or compared; a credential-shaped token in a body is recorded as "present", never as its value.
+- **Honest failure.** A missing key, a refused login, a timeout or an unreachable host is reported as `unavailable` with the reason; it is never
+  read as "no message arrived" (an absent message is evidence only after a successful read of the whole window).
+- Criteria for the oracle itself are MP16, MP17 and the gated live leg MP34 in `multi-role-platform.md`. Verify the command restriction with a
+  fake IMAP server that records every command line; verify key handling by planting a canary value in a fixture `.env` and grepping the run
+  directory and logs for it (empty).
+
+Amendment-log line: 2026-10-18 · routine (add; strengthens SA3 for a new consumer, weakens nothing) · SA9 added · why: wave plan blocker "no IMAP in
+source-adapters"; T-212 needs a contract anchor for read-only mailbox access. Not a CRITICAL amendment: it adds no write or outward-facing action
+(read-only commands, no SMTP), keeps credentials key-only, and widens nothing in SA3.
