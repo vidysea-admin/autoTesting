@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 from crawl_fake import grant_crawl_approval
@@ -33,8 +34,9 @@ from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.project import Project
+from autotester.stages import explore_return
 from autotester.stages.explore import run_crawl
-from autotester.stages.explore_return import RETURN_SETTLE_TOLERANCE_MS
+from autotester.stages.explore_return import MAX_REPLAY_DEPTH, RETURN_SETTLE_TOLERANCE_MS
 from autotester.store.project_store import ProjectStore
 
 BASE = "https://modal.test/"
@@ -195,3 +197,63 @@ def test_return_to_still_fails_when_the_lag_exceeds_the_bound(tmp_path: Path) ->
         "reached the page behind the modal despite a lag past the bound -- "
         "the tolerance is no longer bounded"
     )
+
+
+class _FakeClock:
+    """Stands in for `explore_return.time`: `sleep` advances `monotonic`
+    instantly, so a poll's full 1500ms ceiling is measurable without waiting."""
+
+    def __init__(self) -> None:
+        self.now = 0.0
+        self.slept_s = 0.0
+
+    def monotonic(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        self.now += seconds
+        self.slept_s += seconds
+
+
+def _lost_runtime() -> tuple[SimpleNamespace, SimpleNamespace]:
+    """A runtime whose browser never lands on the node, on any rung, and
+    whose node has a discovering edge -- so `_replay_discovery` reaches its
+    depth check instead of the seed ('no edge') exit."""
+    session = SimpleNamespace(current_url=lambda: "https://elsewhere.test/",
+                              go_back=lambda: None, goto=lambda url: None,
+                              settle=lambda timeout_ms=0: None)
+    node = SimpleNamespace(id="n-target", depth=1, url_example=BASE)
+    rt = SimpleNamespace(session=session, bounds=SimpleNamespace(settle_ms=0),
+                         project=SimpleNamespace(base_url=BASE), return_error=None,
+                         nodes={}, discovery={"n-target": SimpleNamespace(from_node="n-from")})
+    return rt, node
+
+
+def test_return_at_the_terminal_replay_depth_does_not_poll_a_rung_that_cannot_recover(
+        monkeypatch: Any) -> None:
+    """AT-335 follow-up. At depth == MAX_REPLAY_DEPTH the ladder's replay rung
+    bails immediately (no click, no recursion), so the 1500ms poll after each
+    of back/goto buys nothing but ~3s of dead wait per terminal call. The
+    terminal rung must check the fingerprint once and move on."""
+    clock = _FakeClock()
+    monkeypatch.setattr(explore_return, "time", clock)
+    monkeypatch.setattr(explore_return, "_fingerprint", lambda rt, depth: "n-other")
+    rt, node = _lost_runtime()
+
+    assert explore_return.return_to(rt, node, depth=MAX_REPLAY_DEPTH) is False
+    assert "MAX_REPLAY_DEPTH" in (rt.return_error or "")
+    assert clock.slept_s == 0.0, f"polled {clock.slept_s}s on a rung that cannot recover"
+
+
+def test_return_below_the_terminal_depth_still_polls_each_recoverable_rung(
+        monkeypatch: Any) -> None:
+    """Keeps the AT-335 tolerance where it can pay off: below the terminal
+    depth, back and goto each get the full bounded window."""
+    clock = _FakeClock()
+    monkeypatch.setattr(explore_return, "time", clock)
+    monkeypatch.setattr(explore_return, "_fingerprint", lambda rt, depth: "n-other")
+    rt, node = _lost_runtime()
+
+    assert explore_return.return_to(rt, node, depth=0) is False
+    window_s = RETURN_SETTLE_TOLERANCE_MS / 1000
+    assert clock.slept_s >= 2 * window_s - 2 * explore_return._RETURN_POLL_S

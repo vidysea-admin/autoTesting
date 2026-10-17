@@ -77,17 +77,20 @@ def return_to(rt: ExploreRuntime, node: ScreenNode, *, depth: int = 0) -> bool:
     `_replay_discovery` is the way back to such a screen.
     """
     rt.return_error = None  # never report a previous node's cause as this one's
+    # AT-335 follow-up: at the terminal depth the replay rung bails at once, so
+    # a poll after back/goto only delays that bail -- check once, no window.
+    window_ms = 0 if depth >= MAX_REPLAY_DEPTH else RETURN_SETTLE_TOLERANCE_MS
     try:
         if (rt.session.current_url() == node.url_example
                 and _fingerprint(rt, node.depth) == node.id):
             return True
         rt.session.go_back()
         rt.session.settle(timeout_ms=rt.bounds.settle_ms)
-        if _matches(rt, node):
+        if _matches(rt, node, window_ms):
             return True
         rt.session.goto(node.url_example)
         rt.session.settle(timeout_ms=rt.bounds.settle_ms)
-        if _matches(rt, node):
+        if _matches(rt, node, window_ms):
             return True
         replay_failed = _replay_discovery(rt, node, depth)
         if replay_failed is None:
