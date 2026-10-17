@@ -5,6 +5,10 @@ facts (the reply, the latency, whether it parsed as JSON, which expected keys we
 those facts MEAN is settled elsewhere: `stages/ai_judge.py` hands them to the independent judge
 or to a rule over the recorded numbers. Nothing here builds a verdict.
 
+Persistence (AT-927): `store_capture` and `persist_scrubbed` write a capture, or the judge's
+verdict beside it, to `projects/<slug>/ai/behavioural/<capture_id>/` through the one atomic
+writer; every string is scrubbed first and a surviving secret withholds the file whole.
+
 Gates, all before any byte leaves: clean project, endpoint, prompts and approval metadata,
 then a matching signed `RunApproval` for this exact endpoint (D-018). Every stored string is
 scrubbed, and the whole capture must still be clean afterwards, or it is withheld whole
@@ -21,19 +25,56 @@ import time
 from collections.abc import Callable
 from datetime import datetime
 from math import isfinite
+from pathlib import Path
+from typing import TypeVar
+
+from pydantic import BaseModel
 
 from autotester.core.consent import require_project_approval
+from autotester.core.ids import content_id
+from autotester.core.paths import ProjectPaths
 from autotester.core.redact import Redactor
 from autotester.schema.ai_check import AiCapture, AiCheckKind, AiExchange, AiReply
 from autotester.schema.approval import RunApproval
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
+from autotester.store.filestore import write_json
 
+ModelT = TypeVar("ModelT", bound=BaseModel)
 Send = Callable[[str, str], AiReply]
 
 
 class CaptureWithheld(ValueError):
     """A secret survived scrubbing, so the text is refused. Names no value."""
+
+
+def capture_id(cap: AiCapture) -> str:
+    """Stable id of what was asked (check, endpoint, prompts): also the capture's folder name."""
+    prompts = [e.prompt for e in cap.exchanges]
+    return content_id("aic", {"check": cap.check.value, "endpoint": cap.endpoint,
+                              "prompts": prompts})
+
+
+def persist_scrubbed(path: Path, model: ModelT, redactor: Redactor) -> ModelT:
+    """Scrub every string of `model`, re-check, then atomically write it at `path`.
+
+    Raises `CaptureWithheld` (nothing written) when a secret survives the scrub."""
+    clean = type(model).model_validate(redactor.scrub_obj(model.model_dump(mode="json")))
+    try:
+        redactor.assert_clean(clean.model_dump_json())
+    except ValueError:
+        raise CaptureWithheld("a secret survived scrubbing; the file was withheld") from None
+    write_json(path, clean)
+    return clean
+
+
+def store_capture(paths: ProjectPaths, cap: AiCapture, redactor: Redactor) -> Path:
+    """Write `cap` to `ai/behavioural/<capture_id>/capture.json`; return that folder."""
+    if cap.project != paths.slug:
+        raise ValueError(f"capture belongs to project {cap.project!r}, not {paths.slug!r}")
+    folder = paths.ai_capture_dir(capture_id(cap))
+    persist_scrubbed(folder / "capture.json", cap, redactor)
+    return folder
 
 
 def _scrub_all(redactor: Redactor, texts: list[str]) -> list[str]:

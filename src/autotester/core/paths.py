@@ -87,6 +87,20 @@ class ProjectPaths:
         return self.dir / "rubrics"
 
     @property
+    def ai_dir(self) -> Path:
+        """Track C evidence (AT-927): `behavioural/<id>/{capture,verdict}.json`, `adversarial/`,
+        and the one workbook `ai-report.xlsx` the report stage writes."""
+        return self.dir / "ai"
+
+    def ai_capture_dir(self, capture_id: str) -> Path:
+        """One behavioural capture's folder; the id must be one safe path segment."""
+        return self.ai_dir / "behavioural" / safe_name(capture_id)
+
+    @property
+    def ai_report(self) -> Path:
+        return self.ai_dir / "ai-report.xlsx"
+
+    @property
     def scripts_dir(self) -> Path:
         return self.dir / "scripts"
 

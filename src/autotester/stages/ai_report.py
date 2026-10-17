@@ -219,10 +219,12 @@ def _write(path: Path, sheets: dict[str, list[list[str]]], redactor: Redactor) -
     wb.save(path)
 
 
-def export_ai_report(store: ProjectStore, out: Path, *, checks: list[AiCheckEntry],
-                     redactor: Redactor) -> Path:
-    """Write the workbook at `out` from stored evidence and the caller's check entries."""
-    ai_dir = store.paths.dir / "ai"
+def export_ai_report(store: ProjectStore, out: Path | None = None, *,
+                     checks: list[AiCheckEntry], redactor: Redactor) -> Path:
+    """Write the workbook at `out` (default `projects/<slug>/ai/ai-report.xlsx`) from stored
+    evidence and the caller's check entries."""
+    out = out or store.paths.ai_report
+    ai_dir = store.paths.ai_dir
     stored = _stored_captures(ai_dir)
     adversarial, adv_runs = _adversarial_sheet(checks, ai_dir)
     sheets = {"Summary": _summary(store.paths.slug, checks, stored, adv_runs)}
