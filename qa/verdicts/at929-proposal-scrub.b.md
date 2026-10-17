@@ -27,4 +27,4 @@ Whole-unit diff vs base (non-qa): src/autotester/stages/expand.py, src/autoteste
 
 PROPOSED-ISSUE: {"severity":"low","type":"process","title":"Stale unscrubbed rows already in an existing case_proposals.jsonl are retained: stage_case_proposals skips ids already present, and a scrubbed row has a different id, so older raw rows are not rewritten","evidence":"project_store.py:136,145 (existing ids kept); only affects files written before AT-929 landed; not a defect in the changed code","expected":"One-off migration or a doctor warning for pre-fix rows (candidate only)"}
 
-Metrics: start=2026-10-17T16:40:00Z end=2026-10-17T16:56:00Z wall_min=16 agent_min=16 blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-15.12 lane=normal check_s=960 mutants=0 defects_unit=0 defects_6c=0
+Metrics: start=2026-10-17T16:38:00Z end=2026-10-17T16:52:00Z wall_min=14 agent_min=14 blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-15.12 lane=normal check_s=840 mutants=0 defects_unit=0 defects_6c=0
