@@ -6063,3 +6063,5 @@ Answers checker verdict `qa/verdicts/g11-multirole-design.md` cycle 0 (F1, A1-A5
 - **MP31 Verify:** run evidence lists 8 onboarded role accounts and every declared platform with each one's login outcome, references a valid signed RunApproval id, records headed mode, and has a per-oracle ran / not built / not run table covering every registry entry; a role or oracle missing from the table fails.
 
 **Status:** unfolded
+
+2026-10-17T14:38:00Z · Umesh (maker session chat) · PATTERN: a contract criterion must not cite an artifact that left the critical path · EVIDENCE: AT-752 -- ERP_Issues_Trainers.xlsx absent from disk; qa/contracts/video-learning.md:165,384,513 still cite it although T-136 ground truth changed 2026-09-27 to a parallel human tester (goal note) · APPLIES NEXT: re-anchor those T-136 lines to the comparison artifact (scripts/check_acceptance_comparison.py pathlynks) and drop the xlsx reference. Umesh: "fix all of these too".

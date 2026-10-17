@@ -2678,3 +2678,31 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (explicit capability-unavailable Gemini fallback authorization in this chat, 2026-10-15).
 
 **Links:** D-101; D-099; qa/verdicts/provider-policy.md cycle 1; qa/manifests/provider-policy.md cycle 2; owner capability-fallback clarification in this chat.
+
+## D-103 | 2026-10-17 | type: decision | status: ACTIVE
+
+**What:** Fix AT-858: qa/hooks/mc-sessionstart.ps1 sets [Console]::OutputEncoding to UTF-8 only at the SNAPSHOT tail, after earlier non-ASCII output, so the session-start lines can be mis-decoded. Set UTF-8 output encoding before the first output line, and add a test that decodes the hook output as UTF-8.
+
+**Why:** The row rules a test-only decode fix inadequate; the defect is in the enforcement-path hook itself, which needs an authorizing entry with Approved-by under the Lab protocol (qa/hooks/* is an enforcement path per CLAUDE.md).
+
+**Result:** One encoding statement moves to the top of the hook; no hook logic, directive text or exit behaviour changes. Implemented by a maker build unit with a /checker verdict (tier L: hooks).
+
+**Changes-authorized:** qa/hooks/mc-sessionstart.ps1 (UTF-8 output encoding set before first output); tests/test_mc_sessionstart_loop_status.py (UTF-8 decode test). No other enforcement path.
+
+**Approved-by:** Umesh (explicit "Approved-by: Umesh" pick for AT-858 in the maker session chat, 2026-10-17, after "fix all of these too").
+
+**Links:** AT-858; qa/gates/umesh-decisions-2026-10-17.md
+
+## D-104 | 2026-10-17 | type: decision | status: ACTIVE
+
+**What:** (1) Start building Group 11 multi-role / multi-platform testing (T-207..T-220) now, before the live acceptance runs finish; real role credentials are supplied by Umesh later, so units that need live role accounts stop at a credential gate rather than at a build gate. (2) Allow the new src/ module(s) that AT-697/AT-699 need. (3) Approve live headed acceptance runs on production Pathlynks with the PATHLYNKS_* test account under a signed production RunApproval (D-096) for T-136/T-169/T-206; T-136 takes route (a), a live graded run, with Umesh validating the human column afterwards instead of the run waiting on it.
+
+**Why:** Umesh, maker session chat 2026-10-17: "tu build krrlee multi role authetication laakr dunga tho krr legaa naa tu bhi"; "yes go for it" (AT-697/699); "tu autotester se test krwaa aur report ready krr, humman ka mai dekh krr validate kr lungaa, tujhe human ka wait kyu krna hai tu run krr". Human dependency is kept to after-the-fact validation (AT-281: "human dependency naa k barabar rakho").
+
+**Result:** G11 units enter the maker queue in plan order (docs/plan.md); AT-697/699 may add the new module they name, still subject to doctor rules; the live-acceptance HUMAN_GATE is Answered.
+
+**Changes-authorized:** none of ARCHITECTURE.md prose or enforcement paths; product code under src/ per maker units with /checker verdicts.
+
+**Approved-by:** Umesh (maker session chat, 2026-10-17, quoted above).
+
+**Links:** T-207..T-220; T-136; T-169; T-206; AT-697; AT-699; AT-281; qa/gates/live-acceptance-runs.md; qa/gates/umesh-decisions-2026-10-17.md; docs/features/multi-role-platform/intent.md
