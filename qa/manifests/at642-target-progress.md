@@ -1,6 +1,6 @@
 # at642-target-progress
 
-Status: merged-no-check (docs-lane) candidate
+Status: merged-no-check (docs-lane)
 Fix cycle: 0
 Issue: AT-642 (qa/issues.jsonl line 639) -- target.md progress line overstated/undated vs .goal/goal.json
 Branch: wave/at642-target-progress (base int/1017 head ab99c07d)
