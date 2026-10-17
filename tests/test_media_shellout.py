@@ -187,3 +187,37 @@ def test_a_timed_out_cut_leaves_no_half_written_chunk(monkeypatch, tmp_path: Pat
 
     leftovers = sorted(p.name for p in out_dir.glob("*.mp4"))
     assert leftovers == [], f"a truncated chunk survived the timeout: {leftovers}"
+
+
+# -- ISS-at639-1: the per-chunk bound needs a whole-plan ceiling too ----------
+
+def test_a_forty_minute_recording_whose_every_cut_is_slow_hits_a_total_deadline(
+        monkeypatch, tmp_path: Path) -> None:
+    """ISS-at639-1: `CHUNK_TIMEOUT_S` bounds ONE cut, but `prepare` loops
+    `encode_chunks` over the whole plan, so a systemically sick ffmpeg (full
+    disk, bad driver) where every cut takes just under the per-chunk bound
+    still held INGEST for ~N x 900s -- 13 chunks of a 40 minute recording is
+    ~3h. Every cut here "succeeds" after 800 fake seconds; none ever times out
+    on its own, which is exactly why the per-chunk bound never fires."""
+    plan = chunks_mod.plan_chunks(40 * 60.0)
+    assert len(plan) >= 13, f"fixture must be a many-chunk plan, got {len(plan)}"
+    now = [0.0]
+    timeouts: list[float] = []
+
+    def slow_cut(argv, *args, **kwargs):
+        timeouts.append(kwargs["timeout"])
+        now[0] += 800.0
+        return subprocess.CompletedProcess(list(argv), 0, stdout="", stderr="")
+
+    clock = type("Clock", (), {"monotonic": staticmethod(lambda: now[0])})
+    monkeypatch.setattr(chunks_mod, "time", clock)
+    monkeypatch.setattr(chunks_mod.subprocess, "run", slow_cut)
+
+    with pytest.raises(subprocess.TimeoutExpired):
+        chunks_mod.encode_chunks(tmp_path / "in.mp4", tmp_path / "out", plan)
+
+    assert now[0] <= chunks_mod.TOTAL_TIMEOUT_S + 800.0, (
+        f"the plan ran {now[0]:.0f}s of cuts against a {chunks_mod.TOTAL_TIMEOUT_S:.0f}s "
+        f"ceiling -- {len(timeouts)} of {len(plan)} chunks were cut")
+    assert len(timeouts) < len(plan)
+    assert max(timeouts) <= chunks_mod.CHUNK_TIMEOUT_S
