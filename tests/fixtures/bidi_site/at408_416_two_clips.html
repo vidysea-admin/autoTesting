@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>two independent clip boundaries in one chain</title>
+<!-- ISS-at408-416-1: clipA(hidden) > scrollerA(auto) > clipB(hidden) >
+     scrollerB(auto) > glyphs. Two hard clips, each adjacent to its own
+     scroller, in a single ancestor chain. Every sentinel is reachable by
+     scrolling A then B; the negative control (a clipped box that does NOT
+     overflow) stays a real boundary and must stay excluded. -->
+<p>CONTROL_2C_ALWAYS_VISIBLE</p>
+<div id="ca" style="height:50px;width:300px;overflow:hidden">
+  <div id="sa" style="height:140px;width:290px;overflow:auto">
+    <p>A_TOP_SENTINEL</p>
+    <div id="cb" style="height:60px;width:270px;overflow:hidden">
+      <div id="sb" style="height:100px;width:260px;overflow:auto">
+        <p>B_TOP_SENTINEL</p>
+        <p style="margin-top:300px">B_FAR_SENTINEL</p>
+      </div>
+    </div>
+    <p style="margin-top:300px">A_FAR_SENTINEL</p>
+  </div>
+</div>
+<div id="cn" style="height:30px;width:300px;overflow:hidden;margin-top:1200px">
+  <p>NEG_TOP_SENTINEL</p>
+  <p style="margin-top:200px">NEG_HIDDEN_SENTINEL</p>
+</div>

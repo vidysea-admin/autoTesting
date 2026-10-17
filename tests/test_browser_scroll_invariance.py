@@ -135,9 +135,11 @@ def _open_defects(shape: tuple[str, ...], clip_path: bool) -> list[str]:
     independent count taken by fixing each defect in turn. Post-fix expectation
     (unverified, see above): 14 red shapes, all AT-417.
     """
-    defects = []
-    if clip_path and shape[0] == "auto":
-        defects.append("AT-417")
+    defects: list[str] = []
+    # AT-417 FIXED (scroll-reach-clip-and-depth): a clip-path box that also
+    # scrolls is now a scroller first, so its 14 shapes no longer xfail. No
+    # open defect is derived from structure any more; the hook stays so the
+    # next one is a one-line `defects.append(...)` again.
     return defects
 
 

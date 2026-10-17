@@ -83,3 +83,68 @@ def test_at416_below_the_fold_is_still_reported_after_scrolling_the_pane(page_fa
     assert "CARD2_TOP_SENTINEL" in seen, seen
     assert "CARD2_BELOW_FOLD_SENTINEL" in seen, seen
     assert "CARD3_HIDDEN_SENTINEL" not in seen, seen
+
+
+_MID_END = ("el.scrollHeight / 2", "el.scrollHeight")
+
+
+def _scroll_all(page, ids: tuple[str, ...], expr: str) -> None:
+    """Scroll every named pane, outermost first, so the inner ones are laid out."""
+    for sid in ids:
+        page.eval_on_selector(f"#{sid}", f"el => {{ el.scrollTop = {expr}; }}")
+    page.evaluate("() => { document.body.offsetHeight; }")
+    page.wait_for_timeout(30)
+
+
+def _assert_invariant(page, ids: tuple[str, ...], want: tuple[str, ...]) -> None:
+    """The reported set is complete at rest and identical in every scroll state."""
+    at_rest = visual_text(page)
+    for sentinel in want:
+        assert sentinel in at_rest, (sentinel, at_rest)
+    for expr in _MID_END:
+        for subset in (ids, ids[::-1], ids[:1], ids[-1:]):
+            for sid in ids:
+                page.eval_on_selector(f"#{sid}", "el => { el.scrollTop = 0; }")
+            _scroll_all(page, subset, expr)
+            seen = visual_text(page)
+            assert sorted(seen) == sorted(at_rest), (subset, expr, seen)
+
+
+def test_at417_a_clip_path_box_that_is_also_a_scroller_keeps_its_scroll_offset(
+        page_factory) -> None:
+    """AT-417: the clip-path branch `continue`d before the scroll accumulation,
+    so a pane that is both `clip-path` and `overflow:auto` lost its own offset
+    and its first line vanished once scrolled to the end."""
+    page, visit = page_factory
+    visit("at417_clip_scroller.html")
+    assert page.eval_on_selector("#at417_cp", "el => el.scrollTop") == 0
+    _assert_invariant(page, ("at417_cp",),
+                      ("CONTROL_AT417_ALWAYS_VISIBLE", "AT417_FIRST_LINE", "AT417_LAST_LINE"))
+    _scroll_to_end(page, "#at417_cp")
+    seen = visual_text(page)
+    assert "AT417_FIRST_LINE" in seen and "AT417_LAST_LINE" in seen, seen
+
+
+def test_iss_at408_416_1_three_scroller_crossings_under_one_clip_are_scroll_invariant(
+        page_factory) -> None:
+    """The segment-chain generalization at N=3: three genuinely scrolling
+    panes under one hard clip, every combination of scroll positions."""
+    page, visit = page_factory
+    visit("at408_416_three_scrollers.html")
+    ids = ("s1", "s2", "s3")
+    _assert_invariant(page, ids, (
+        "CONTROL_3S_ALWAYS_VISIBLE", "S1_TOP_SENTINEL", "S1_FAR_SENTINEL",
+        "S2_TOP_SENTINEL", "S2_FAR_SENTINEL", "S3_TOP_SENTINEL", "S3_FAR_SENTINEL"))
+
+
+def test_iss_at408_416_1_two_independent_clip_boundaries_are_scroll_invariant(
+        page_factory) -> None:
+    """Two hard clips, each adjacent to its own scroller, in ONE chain; plus a
+    negative control proving a non-overflowing clipped box is still a boundary."""
+    page, visit = page_factory
+    visit("at408_416_two_clips.html")
+    ids = ("sa", "sb")
+    _assert_invariant(page, ids, (
+        "CONTROL_2C_ALWAYS_VISIBLE", "A_TOP_SENTINEL", "A_FAR_SENTINEL",
+        "B_TOP_SENTINEL", "B_FAR_SENTINEL", "NEG_TOP_SENTINEL"))
+    assert "NEG_HIDDEN_SENTINEL" not in visual_text(page)

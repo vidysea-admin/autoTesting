@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>clip-path on a box that is itself a scroll container</title>
+<!-- AT-417: an element that is BOTH clip-path and overflow:auto. reachOf used to
+     `continue` on the clip-path branch before the scroll accumulation, so the
+     pane's own scroll offset was lost and the clip was tested against the
+     glyph's MOVING rect. Both lines must be reported before and after the pane
+     is scrolled (qa/contracts/ui.md U14a). -->
+<p>CONTROL_AT417_ALWAYS_VISIBLE</p>
+<div id="at417_cp" style="clip-path:inset(0 0 0 0);height:40px;width:300px;overflow:auto">
+  <p>AT417_FIRST_LINE</p>
+  <p style="margin-top:400px">AT417_LAST_LINE</p>
+</div>

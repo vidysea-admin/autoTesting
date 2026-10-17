@@ -85,14 +85,18 @@ function reachOf(el) {
   });
   for (let node = el; node && node !== document.documentElement; node = node.parentElement) {
     const style = window.getComputedStyle(node);
-    if (style.clipPath !== "none") {
-      clip = narrow(clip, node.getBoundingClientRect());
-      continue;
-    }
-    if (style.overflow === "visible") continue;
     const box = node.getBoundingClientRect();
     const scrollsY = SCROLLS.test(style.overflowY) && node.scrollHeight > node.clientHeight;
     const scrollsX = SCROLLS.test(style.overflowX) && node.scrollWidth > node.clientWidth;
+    // AT-417: clip-path and scrolling are independent — a box can be both. A
+    // clip-path box that does NOT scroll is a hard clip; one that DOES is a
+    // scroller first (its clip is its own box, the very reference the next
+    // segment is anchored on, so it can never exclude what that box shows).
+    if (style.clipPath !== "none" && !scrollsX && !scrollsY) {
+      clip = narrow(clip, box);
+      continue;
+    }
+    if (style.overflow === "visible" && !scrollsX && !scrollsY) continue;
     if (scrollsX) scrollX += node.scrollLeft;
     if (scrollsY) scrollY += node.scrollTop;
     if (scrollsX || scrollsY) {

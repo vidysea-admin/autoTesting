@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>three scroller crossings under one hard clip</title>
+<!-- ISS-at408-416-1: three nested overflow:auto scrollers (each genuinely
+     overflowing) under ONE overflow:hidden card. The segment chain in
+     visual_order_reach.js must hold at N=3, not only the N<=2 depth the
+     generated corpus reaches. Every sentinel is reachable by scrolling. -->
+<p>CONTROL_3S_ALWAYS_VISIBLE</p>
+<div id="s0" style="height:42px;width:300px;overflow:hidden">
+  <div id="s1" style="height:120px;width:290px;overflow:auto">
+    <p>S1_TOP_SENTINEL</p>
+    <div id="s2" style="height:80px;width:270px;overflow:auto">
+      <p>S2_TOP_SENTINEL</p>
+      <div id="s3" style="height:40px;width:250px;overflow:auto">
+        <p>S3_TOP_SENTINEL</p>
+        <p style="margin-top:300px">S3_FAR_SENTINEL</p>
+      </div>
+      <p style="margin-top:300px">S2_FAR_SENTINEL</p>
+    </div>
+    <p style="margin-top:300px">S1_FAR_SENTINEL</p>
+  </div>
+</div>
