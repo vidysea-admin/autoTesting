@@ -2,9 +2,7 @@
 ran AND a matching human approval covered it.
 
 Replaces `{"cmd": "true"}` — a check that could never fail, on the highest-risk
-task in the plan. Exits 0 only when the newest tracked crawl summary
-(`projects/<slug>/crawl_summaries/`, written when a crawl finishes; the full crawl dir is
-gitignored, so a clean checkout has only this) names a recorded approval id that is in
+task in the plan. Exits 0 only when the judged crawl summary names a recorded approval id that is in
 approvals.jsonl, intact, matches project/kind/target, covered the recorded bounds when
 the crawl started, and -- for a project declared `production` (D-088) -- is a
 human-granted `production: true` row. The signature is verified when
@@ -12,12 +10,19 @@ AUTOTESTER_APPROVAL_KEY is available; without it (a clean checkout) a non-produc
 passes with "signature NOT verified", but a production project FAILS (a content hash is
 forgeable by anyone who can edit approvals.jsonl).
 
-    uv run python scripts/check_crawl_approval.py <project-slug>
+    uv run python scripts/check_crawl_approval.py <project-slug> [<crawl-id>]
+
+Only COMMITTED summaries (`git ls-files projects/<slug>/crawl_summaries/`, written when a crawl
+finishes; the full crawl dir is gitignored, so a clean checkout has only these) are judged
+(AT-999): an untracked leftover on disk is never picked up. With `<crawl-id>` that tracked
+summary is judged; without it, the newest tracked one. A `<crawl-id>` that is not tracked
+FAILS. If git cannot list the files the check fails closed.
 """
 
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -27,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from autotester.core.consent import ApprovalRequired, is_account_derived, require_approval
 from autotester.core.env import load_repo_env
 from autotester.core.ids import APPROVAL_KEY_ENV
+from autotester.schema.crawl_summary import CrawlSummary
 from autotester.schema.enums import ApprovalKind, CrawlStatus
 from autotester.store.project_store import ProjectStore
 
@@ -36,21 +42,45 @@ def _fail(msg: str) -> int:
     return 1
 
 
+def _tracked_ids(store: ProjectStore) -> set[str]:
+    """Crawl ids whose summary file git tracks (AT-999). Empty when git cannot say (fail closed)."""
+    folder = store.paths.crawl_summaries_dir
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(store.paths.root), "ls-files", "-z", "--", str(folder)],
+            capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return set()
+    return {Path(p).stem for p in out.split("\0") if p.endswith(".json")}
+
+
+def _pick_summary(store: ProjectStore, slug: str, want: str | None) -> CrawlSummary | str:
+    """The tracked, finished summary to judge: `want` if given, else the newest. Or an error."""
+    tracked = _tracked_ids(store)
+    if want is not None and want not in tracked:
+        return (f"crawl {want} is not tracked by git (no committed "
+                f"projects/{slug}/crawl_summaries/{want}.json); commit its summary first")
+    done = [s for s in store.list_crawl_summaries() if s.crawl_id in tracked
+            and s.status is not CrawlStatus.RUNNING and s.finished_at
+            and (want is None or s.crawl_id == want)]
+    if not done:
+        return f"no tracked crawl summary for '{slug}' (projects/{slug}/crawl_summaries/)"
+    return done[0]
+
+
 def main() -> int:
     load_repo_env()  # AT-110: signatures are verified when the key is in .env
-    if len(sys.argv) != 2:
-        print("usage: check_crawl_approval.py <project-slug>")
+    if len(sys.argv) not in (2, 3):
+        print("usage: check_crawl_approval.py <project-slug> [<crawl-id>]")
         return 2
-    slug = sys.argv[1]
+    slug, want = sys.argv[1], (sys.argv[2:] or [None])[0]
     store = ProjectStore(slug)
     project = store.load_project()
     if project is None:
         return _fail(f"no project '{slug}'")
-    done = [s for s in store.list_crawl_summaries()
-            if s.status is not CrawlStatus.RUNNING and s.finished_at]
-    if not done:
-        return _fail(f"no tracked crawl summary for '{slug}' (projects/{slug}/crawl_summaries/)")
-    latest = done[0]
+    latest = _pick_summary(store, slug, want)
+    if isinstance(latest, str):
+        return _fail(latest)
     if not latest.approval_id:
         return _fail(f"crawl {latest.crawl_id} records no gating approval id")
     row = next((a for a in store.list_approvals() if a.id == latest.approval_id), None)
