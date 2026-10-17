@@ -204,7 +204,8 @@ class VideoMixin:
     def end_case_video(self) -> str | None:
         """Close the case's page (finalizing its recording) and return the
         run-relative path evidence uses, or `None` when video is off for this
-        session. Renames Playwright's randomly-named output file to
+        session, or the video was lost (a lost one records a `video-lost` session event).
+        Renames Playwright's randomly-named output file to
         `<evidence_prefix>/<case_id>.webm` (or `<case_id>.webm` with no
         prefix) -- the same nesting convention `EvidenceMixin.screenshot`
         already uses for parallel siblings sharing one `run_dir`."""
@@ -223,15 +224,26 @@ class VideoMixin:
             return None
         try:
             temp_path = Path(video.path())
-        except Exception:
-            return None
+        except Exception as exc:
+            return self._video_lost(case_id, "recording path unreadable", exc)
         prefix = getattr(self.state, "evidence_prefix", "") or ""
         rel = f"{prefix}/{case_id}.webm" if prefix else f"{case_id}.webm"
         final_path = self.state.run_dir / rel
-        final_path.parent.mkdir(parents=True, exist_ok=True)
-        if temp_path.exists():
-            temp_path.replace(final_path)
+        try:  # runs in the caller's `finally`: a failed move must not replace the real result
+            final_path.parent.mkdir(parents=True, exist_ok=True)
+            if temp_path.exists():
+                temp_path.replace(final_path)
+        except OSError as exc:
+            return self._video_lost(case_id, "recording could not be moved", exc)
         return rel if final_path.exists() else None
+
+    def _video_lost(self, case_id: str, why: str, exc: BaseException) -> None:
+        """AT-734: a lost video is a recorded event (`label="video-lost"`, drained with the
+        session events), never the same `None` as 'video off'."""
+        note = self._scrubbed(f"video for case {case_id} was lost: {why} ({_one_line(exc)})")
+        events = getattr(self, "_session_events", [])
+        events.append(Evidence(kind=EvidenceKind.DOM, path=note, label="video-lost"))
+        self._session_events = events
 
 
 def _one_line(exc: BaseException) -> str:
@@ -246,5 +258,6 @@ class _ignore_close_errors:
     def __enter__(self) -> None:
         return None
 
-    def __exit__(self, *_exc: object) -> bool:
-        return True
+    def __exit__(self, exc_type: type[BaseException] | None, *_rest: object) -> bool:
+        """Swallow `Exception` only; `KeyboardInterrupt`/`SystemExit` must propagate (AT-734)."""
+        return exc_type is None or issubclass(exc_type, Exception)
