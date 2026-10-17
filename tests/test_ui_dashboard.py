@@ -6,6 +6,7 @@ health view.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -146,3 +147,91 @@ def test_index_project_with_clean_latest_run_counts_as_healthy(
     assert response.status_code == 200
     assert "latest run clean" in response.text
     assert "latest run failing" not in response.text
+
+
+def _onboard(client: TestClient, slug: str) -> ProjectStore:
+    client.post("/onboard", data={
+        "slug": slug, "name": slug.title(), "base_url": f"https://{slug}.test",
+        "allowed_domains": f"{slug}.test",
+    })
+    return ProjectStore(slug)
+
+
+def _run_with(store: ProjectStore, result: Result, created_at: datetime | None = None) -> Run:
+    run = Run(project=store.paths.slug, case_ids=["case-1"])
+    if created_at is not None:
+        run = run.model_copy(update={"created_at": created_at})
+    store.save_run(run)
+    store.save_verdict(run.id, Verdict(run_id=run.id, case_id="case-1",
+                                       result=result, grader_provider="mock"))
+    return run
+
+
+def _card(html: str, slug: str) -> str:
+    """The one project card for `slug`, so an assertion cannot pass on a neighbour."""
+    start = html.index(f"class='project-card' href='/projects/{slug}'")
+    return html[start:html.index("</a>", start)]
+
+
+def test_u15_home_shows_latest_outcome_and_age_per_project_and_no_runs_for_the_idle_one(
+    client: TestClient, scratch_root: Path
+) -> None:
+    """U15 / AT-664, Umesh 2026-09-06: with one project never run and one with a failed
+    run, `/` must say what happened last and how long ago for the second, `no runs` for
+    the first, and invent a `0` for neither."""
+    _onboard(client, "idle")
+    failed = _onboard(client, "broken")
+    _run_with(failed, Result.FAIL, datetime.now(UTC) - timedelta(hours=3))
+
+    html = client.get("/").text
+
+    assert "no runs" in _card(html, "idle")
+    assert "0 fail" not in _card(html, "idle").lower()
+    assert theme.badge("FAIL", count=1) in _card(html, "broken")
+    assert "3 hours ago" in _card(html, "broken")
+    assert "no runs" not in _card(html, "broken")
+
+
+def test_u15_home_counts_how_many_projects_have_ever_had_a_run(
+    client: TestClient, scratch_root: Path
+) -> None:
+    _onboard(client, "idle")
+    _run_with(_onboard(client, "busy"), Result.PASS)
+
+    html = client.get("/").text
+
+    assert theme.stat("1", "have run") in html
+    assert theme.stat("2", "projects") in html
+
+
+def test_u15_home_names_a_project_with_unreadable_run_evidence_and_counts_it_skipped(
+    client: TestClient, scratch_root: Path
+) -> None:
+    """A corrupt run.json used to make the project look `never run` (the run was dropped
+    silently). It must read `unreadable`, be named, and be counted as skipped."""
+    _run_with(_onboard(client, "healthy"), Result.PASS)
+    rotten = _onboard(client, "rotten")
+    run = _run_with(rotten, Result.PASS)
+    (rotten.paths.run_dir(run.id) / "run.json").write_text("{not json", encoding="utf-8")
+
+    html = client.get("/").text
+
+    assert "unreadable" in _card(html, "rotten")
+    assert "no runs" not in _card(html, "rotten")
+    assert theme.stat("1", "skipped (unreadable): rotten") in html
+    assert theme.stat("1", "have run") in html
+
+
+def test_u15_home_labels_a_run_older_than_the_projects_last_change_as_stale(
+    client: TestClient, scratch_root: Path
+) -> None:
+    old = _onboard(client, "aging")
+    _run_with(old, Result.PASS, datetime.now(UTC) - timedelta(days=2))
+    fresh = _onboard(client, "fresh")
+    _run_with(fresh, Result.PASS)
+
+    html = client.get("/").text
+
+    assert "stale" in _card(html, "aging")
+    assert "2 days ago" in _card(html, "aging")
+    assert "stale" not in _card(html, "fresh")
