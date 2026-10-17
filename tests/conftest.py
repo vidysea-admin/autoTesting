@@ -12,8 +12,10 @@ from __future__ import annotations
 import functools
 import http.server
 import os
+import shutil
 import sys
 import threading
+import time
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
@@ -24,6 +26,34 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from regression_proof import _NoCacheHandler
 
 _APPROVAL_KEY_ENV = "AUTOTESTER_APPROVAL_KEY"
+_TMP_ROOT = Path(__file__).resolve().parents[1] / ".work" / "pytest-tmp"
+_TMP_KEEP_SECONDS = 24 * 3600
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """AT-672: root every `tmp_path` / `tmp_path_factory` dir under `<repo>/.work/pytest-tmp`.
+
+    pytest's default basetemp lives in the OS temp dir, which on Umesh's Windows host is on C:;
+    C: fell to 0.34 GB free during full suites and the resulting ENOSPC showed up as false FAILs
+    in unrelated tests. The repo's `.work/` (gitignored) is on the repo drive. Chosen over a
+    "redirect only when TEMP is on the system drive" test because it is one rule on every OS
+    and CI, not a drive-letter heuristic. A caller's explicit `--basetemp` wins; xdist workers
+    keep the per-worker dir their controller gave them. Each run gets its own short dir (so
+    concurrent runs never delete each other's files) and runs older than a day are pruned."""
+    if config.option.basetemp is not None or hasattr(config, "workerinput"):
+        return
+    _TMP_ROOT.mkdir(parents=True, exist_ok=True)  # pytest mkdirs basetemp without parents
+    run_dir = _TMP_ROOT / f"r{os.getpid()}-{int(time.time())}"
+    config.option.basetemp = run_dir
+    config._at672_redirected = True  # type: ignore[attr-defined]
+    if _TMP_ROOT.is_dir():
+        cutoff = time.time() - _TMP_KEEP_SECONDS
+        for old in _TMP_ROOT.iterdir():
+            try:
+                if old.is_dir() and old.stat().st_mtime < cutoff:
+                    shutil.rmtree(old, ignore_errors=True)
+            except OSError:
+                pass  # pruning is best-effort; never fail a run over it
 
 
 @pytest.fixture(scope="session", autouse=True)
