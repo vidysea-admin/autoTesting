@@ -265,15 +265,17 @@ to exceed its declared scope. `write_policy` stays `read_only`.*
 2. Both intake modes work on a real target and beat-or-match a human tester (T-169).
 3. Every finding is evidence-backed and correctly classified; coverage shows untested branches.
 
-## Progress (from `.goal/goal.json`, 2026-10-16): **89 / 92 done (97%)**
+## Progress (from `.goal/goal.json`, 2026-10-18): **90 / 106 done (85%)**
+
+*Point-in-time snapshot, hand-copied from `.goal/goal.json` (no script regenerates this line): that file is the live count and this line drifts as tasks close or are added. Re-derive before quoting it.*
 
 **Status 2026-10-14:** T-200 done. T-145, T-169, T-206: code done, live runs in progress under Umesh's production approvals. T-136: deferred until the human tester list arrives. Hosted Ubuntu check: deferred until host details arrive. TV9 clause 2 is decided by D-097.
 
 **Roadmap reconciliation, 2026-09-27:** this file previously read "47 / 70 done (67%)" and listed no
 tasks above T-184. `T-185..T-195` were in the machine backlog and absent here — **nine of the eleven
 already done.** They are now in M6b. The roadmap was under-reporting the build by eleven tasks, which
-is the opposite of the failure mode this file exists to prevent, so the count is now derived from
-`.goal/goal.json` rather than maintained by hand.
+is the opposite of the failure mode this file exists to prevent, so the count is now taken from
+`.goal/goal.json` (copied by hand at each update, dated in the heading, AT-642).
 
 **Landed 2026-09-27:** ~~T-165 hybrid BFS→bounded-DFS traversal~~ (**reopened 2026-09-30, not done** —
 see M8; AT-113 cycle 4 pending under D-070) · T-186, T-189, T-192, T-193, T-194, T-195, T-191 · `at438-answered-gate-remainder`
