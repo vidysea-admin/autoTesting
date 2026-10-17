@@ -55,4 +55,4 @@ Falsifying edit for every row: `git show 69ebfae7:src/autotester/cli_release.py`
 ## Live browser evidence
 Not UI-touching - no surface changed. Changed paths: src/autotester/cli_release.py, tests/test_cli_release.py (terminal CLI output only).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at899-release-cli.md, cycle 0)
