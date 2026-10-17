@@ -52,4 +52,4 @@ Falsified in a throwaway copy at scratchpad/mut (outside the worktree), PYTHONPA
 ## Live browser evidence
 Real headless Chromium via the `page_factory` fixture in every test above (visual_text against served fixtures, console not captured). No separate qa/evidence directory: the instrument is the pytest run itself; pasted runner output is in the sections above.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/scroll-reach-clip-and-depth.md, cycle 0)
