@@ -10,6 +10,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -165,6 +166,17 @@ def _load_script(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     return mod
 
 
+def _track_summaries(root: Path) -> None:
+    """Make `root` a git repo with every crawl summary COMMITTED: the done_check judges only
+    git-tracked summaries (AT-999), as in a real checkout."""
+    def git(*args: str) -> None:
+        subprocess.run(["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t",
+                        *args], check=True, capture_output=True)
+    git("init")
+    git("add", "-A", "--", "projects")
+    git("commit", "-m", "reviewed crawl")
+
+
 def test_done_check_passes_from_summary_alone_for_a_production_row(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys) -> None:
     project = _prod_project()
@@ -173,6 +185,7 @@ def test_done_check_passes_from_summary_alone_for_a_production_row(
     _crawl(tmp_path, project, store)
     store.save_project(project)
     shutil.rmtree(store.paths.crawls_dir)  # clean checkout: the crawl dir is gitignored
+    _track_summaries(tmp_path)
     assert _load_script(tmp_path, monkeypatch).main() == 0
     assert "production=True" in capsys.readouterr().out
 
@@ -184,6 +197,7 @@ def test_done_check_fails_when_a_production_project_was_gated_by_a_non_productio
     store.add_approval(_row(plain, production=False))
     _crawl(tmp_path, plain, store)  # legitimately allowed while undeclared
     store.save_project(_prod_project())  # D-088 now declares it production
+    _track_summaries(tmp_path)
     assert _load_script(tmp_path, monkeypatch).main() == 1
     assert "not production:true" in capsys.readouterr().out
 
@@ -199,5 +213,6 @@ def test_done_check_fails_without_a_recorded_approval_id(
     del data["approval_id"]
     path.write_text(json.dumps(data), encoding="utf-8")
     store.save_project(project)
+    _track_summaries(tmp_path)
     assert _load_script(tmp_path, monkeypatch).main() == 1
     assert "no gating approval id" in capsys.readouterr().out

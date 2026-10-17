@@ -12,7 +12,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from test_approval_prod_gate import _crawl, _load_script, _prod_project
+from test_approval_prod_gate import _crawl, _load_script, _prod_project, _track_summaries
 from test_approval_prod_gate import _row as prod_row
 
 from autotester.agents import guards
@@ -145,6 +145,7 @@ def test_done_check_fails_closed_for_production_without_the_key(
     store.add_approval(prod_row(project, production=True))
     _crawl(tmp_path, project, store)
     store.save_project(project)
+    _track_summaries(tmp_path)
     monkeypatch.delenv("AUTOTESTER_APPROVAL_KEY", raising=False)
     assert _load_script(tmp_path, monkeypatch).main() == 1
     out = capsys.readouterr().out
