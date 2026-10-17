@@ -3,7 +3,7 @@
 Contract: qa/contracts/core-invariants.md (hook output must reach the session undamaged); no contract edited
 Issues: AT-858 (the session-start hook sets UTF-8 output only at the SNAPSHOT tail, so earlier lines leave as OEM/ANSI bytes)
 Authority: D-103 (docs/DECISIONS.md, Approved-by: Umesh 2026-10-17) authorizes exactly qa/hooks/mc-sessionstart.ps1 and tests/test_mc_sessionstart_loop_status.py. Only those two files changed.
-Status: ready-for-check
+Status: checked-PASS (qa/verdicts/at858-hook-utf8.md, cycle 0)
 Fix cycle: 0
 Policy-Version: proportional-verification/2026-10-17.13
 Tier: L (enforcement-path hook, checker-gated, one checker)
