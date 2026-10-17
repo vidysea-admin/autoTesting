@@ -14,6 +14,7 @@ once, at its earliest applied time: the result is a function of the set of files
 process wrote first (P8). `fold` orders by event
 time, not by write order, so late-arriving events give the same bugs.
 
+A file written by the T-199a code (`bev_<id>.json`, no time in the name) is read like any other.
 A file that is not a valid event (torn, zero-length after a crash, or named for another event) does
 not stop the store (P4): the valid events are kept, the file is reported by name in `snapshot().bad`
 and never deleted, and applying the same event again repairs its own file. A persistent permission
@@ -51,6 +52,12 @@ def file_name(event: BugEvent) -> str:
     """The event's file. The time is part of the name so two writers of one fact at two times
     leave two files, never one overwriting the other (P8)."""
     return f"{event.event_id}@{event.at.astimezone(UTC):%Y%m%dT%H%M%S%f}Z.json"
+
+
+def legacy_file_name(event: BugEvent) -> str:
+    """The name the T-199a code gave an event, with no time in it (AT-980). Such files are read as
+    they are, so an older store is never silently empty; new events use `file_name`."""
+    return f"{event.event_id}.json"
 
 
 def _read(path: Path) -> BugEvent | None:
@@ -102,7 +109,7 @@ class BugStore:
                 continue
             if event is None:  # removed between the listing and the read
                 continue
-            if path.name != file_name(event):
+            if path.name not in (file_name(event), legacy_file_name(event)):
                 bad.append(BadEventFile(name=path.name, why="file name is not this event's name"))
                 continue
             found.append(event)
