@@ -38,4 +38,4 @@ Metrics: start=2026-10-17T00:00:00Z end=2026-10-17T00:00:00Z wall_min=10 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed. Changed path: tests/test_delivery_records_for_run.py (test only).
 
-## Status: ready-for-check
+## Status: merged-no-check (test-lane)
