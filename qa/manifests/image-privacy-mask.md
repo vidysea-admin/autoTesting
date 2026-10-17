@@ -2,7 +2,7 @@
 **Contract:** qa/contracts/core-invariants.md (core-invariants 5: secrets never reach a model call or artifact; 2: design rules); docs/ARCHITECTURE.md security model (screenshots are sanitized locally before any external delivery)
 **Goal task:** T-136 (found by the approved live T-136 run, report .work/t136-live-report.md)
 **Date:** 2026-10-18
-Status: ready-for-check
+Status: checked-PASS (qa/verdicts/image-privacy-mask.md + image-privacy-mask.b.md, cycle 1, dual)
 **Fix cycle:** 1 of max 2
 **Repair base:** 5bad0129
 **Hold fix cycles:** 0 of 2
