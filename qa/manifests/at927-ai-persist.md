@@ -24,7 +24,7 @@
 ## Pre-check and tests
 Pre-check[AT-927]: a62fa404 uv run pytest tests/test_ai_persist.py -> 11 passed
 Pre-check[AI9]: a62fa404 uv run pytest tests/test_ai_persist.py tests/test_ai_report.py -> passed (part of 794 passed below)
-Pre-check[AI14]: a62fa404 uv run ruff check src tests scripts && uv run autotester doctor -> All checks passed; doctor: clean
+Pre-check[AI14]: a62fa404 uv run pytest tests/test_ai_persist.py -> 11 passed (secret tests included; ruff and doctor also clean on this sha)
 Tests[AT-927]: tests/test_ai_persist.py::test_judge_capture_with_paths_persists_the_capture_and_the_verdict, tests/test_ai_persist.py::test_capture_judge_store_report_round_trip — persistence of capture and verdict, then the workbook reading them back.
 Tests[AI9]: tests/test_ai_persist.py::test_capture_judge_store_report_round_trip, tests/test_ai_report.py — the stored result lands in the tier sheet; the existing report tests are unchanged and still green.
 Tests[AI14]: tests/test_ai_persist.py::test_a_planted_secret_never_reaches_capture_json, tests/test_ai_persist.py::test_a_secret_in_a_judge_reason_never_reaches_verdict_json, tests/test_ai_persist.py::test_an_encoded_secret_withholds_the_capture_and_writes_nothing — no secret in either stored file, and a surviving encoded secret withholds the file.
