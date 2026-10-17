@@ -5,11 +5,14 @@ contract, dispatching an independent checker, closing on PASS, and picking the n
 without a human hand-cranking each step.
 
 Prompt: `/maker continue "d:/autoTesting"` — bind to the root, reconcile disk state, sweep if due
-(every 5th tick or >2h since `qa/.last-sweep`), pull one unit (QUEUE.md top TODO row → open
-issues by severity → contract gaps → feedback inbox), build it against its contract with real
-command output, write `qa/manifests/<slug>.md`, dispatch a fresh `/checker` subagent in the same
-turn, close out on its verdict file, then name a terminal state and either `ScheduleWakeup` the
-next tick or `stop: true`. Never self-certify PASS; never touch `qa/contracts/`.
+(something changed since `qa/.last-sweep` AND it is older than 2 h or this is the 5th tick since;
+or the file is absent — maker SKILL.md:663-665), pull one unit from the work sources (a contract
+criterion or `qa/GOAL.md` row not yet MET, then a `qa/QUEUE.md` row the human asked for or a
+candidate moved out of Candidates with `approved: <date>`; SKILL.md:13), build it against its
+contract with real command output, write `qa/manifests/<slug>.md`, dispatch a fresh `/checker`
+subagent in the same turn, close out on its verdict file, then name a terminal state and either
+`ScheduleWakeup` the next tick or `stop: true`. Never self-certify PASS; never touch
+`qa/contracts/`.
 
 Verify: select the D-100 unit risk tier in `qa/adapter.json` (`verify.unit_policy`), then
 judge every applicable criterion against an immutable head. Unit PASS is independent evidence
@@ -73,10 +76,11 @@ D-100 proportional independent review (effective for this repo):
 Steps (OCAVR):
 1. **Observe** — bind to `d:/autoTesting`; read `qa/.last-tick`, `qa/.last-sweep`,
    `qa/QUEUE.md`, open rows in `qa/issues.jsonl`, and `.goal/goal.json`'s pending tasks.
-2. **Choose** — one work unit: the top clear QUEUE.md TODO row, else the highest-severity open
-   issue, else a contract gap, else a feedback-inbox item. A `GRILL:` row or a task genuinely
-   requiring live Pathlynks/video input is never "chosen" — it is named as `HUMAN_GATE` and the
-   next unblocked unit is picked instead.
+2. **Choose** — one work unit from the work sources above: an unmet contract criterion or
+   `qa/GOAL.md` row, else a human-asked `qa/QUEUE.md` TODO row. An open issue, a sweep finding or a
+   Candidates row is never built on its own; it needs `approved: <date>` (SKILL.md:13, 716-722).
+   A `GRILL:` row or a task genuinely requiring live Pathlynks/video input is never "chosen" — it
+   is named as `HUMAN_GATE` and the next unblocked unit is picked instead.
 3. **Act** — write or fix the code/doc against its contract; run the selected tier commands for real and record integration obligations.
 4. **Verify** — write the evidence manifest, dispatch `/checker` in the same turn, read
    `qa/verdicts/<slug>.md` (the file, `Cycle checked: N` must match) — never trust the
@@ -86,37 +90,70 @@ Steps (OCAVR):
    `docs/FEATURES.jsonl` row for a `user_value: high` task, regenerate `docs/SNAPSHOT.md`,
    commit and push (checker pushes its own PASS commit per D-007; maker pushes its own
    deliverable commit split from the checker's, same standing authorization). On FAIL: fix
-   exactly what the verdict names, re-dispatch (max 3 cycles, then `STALLED` + `/agent-debugger`).
+   exactly what the verdict names and re-dispatch a repair checker (SKILL.md:34). **Fix-cycle cap
+   is 2:** after cycle 2 FAILs, the maker rewrites the brief (this includes 2 consecutive FAILs on
+   one criterion) or the unit goes to `STALLED` (HUMAN_GATE); a third cycle is never
+   auto-dispatched. A fix cycle whose verdict shows no new evidenced failure beyond the previous
+   one's ends the chain at `STALLED` too (no-progress stop).
 6. **Repeat/stop** — stamp `qa/.last-tick` with the terminal state and either `ScheduleWakeup`
    (60s if the backlog is non-empty; a background heartbeat sleep is also armed on any tick that
    dispatched no subagent, since `ScheduleWakeup` measurably drops ~1 in 9 wakeups) or
    `stop: true`.
 
 Stop (named terminal states — see maker/SKILL.md "THE CONTINUATION RULE"):
-- `ADVANCED` — one unit moved on evidence → continue (60s).
-- `BACKLOG_EMPTY` — no pending handshake, no open issues, no queue rows, sweep fresh → `stop: true`.
+- `ADVANCED` — one unit moved on evidence → continue (60s). The tick line may say `ADVANCED` only
+  when it names a commit sha or a verdict file created in that tick (`--evidence`, .9-16a;
+  SKILL.md:158).
+- `BACKLOG_EMPTY` — goal met: every contract criterion and `qa/GOAL.md` row MET or owner-accepted,
+  no `ready-for-check` manifest or unclosed handshake (a `merged-no-check` manifest does not
+  count), no human-asked `qa/QUEUE.md` row, no `HOLD:` line. Open issues of any severity, sweep
+  findings and Candidates rows do not count; the stop report lists the `priority: S1/S2|security`
+  Candidates rows → `stop: true` (SKILL.md:159).
 - `HUMAN_GATE` — the next unit needs a decision only Umesh can make and nothing else is
-  unblocked → heartbeat every 1800s, max 8, then `stop: true`. (Currently: T-050 needs an
-  unambiguous live-Pathlynks go-ahead; T-060 needs a Pathlynks demo video — both genuinely
-  human-gated as of 2026-09-03.)
-- `STALLED` — 3 fix cycles exhausted on the only available unit → dispatch `/agent-debugger`
-  once, report, `stop: true`.
-- `EXHAUSTED` — a tick/token bound hit → diagnose, `stop: true`, report the bound honestly.
+  unblocked → write `qa/gates/<slug>.md` (question, options, answer format, blocked units, ISO
+  stamp) and notify the owner, then heartbeat every 1800s, max 8, then `stop: true`. An answer
+  is appended to the gate file as `Answered: <ISO> — <choice> — <where>` before it is acted on
+  (SKILL.md:160, 756-762). Umesh's standing answers are recorded in `docs/DECISIONS.md`,
+  notably D-081 (the seven inputs of 2026-10-10: report first, full run approval, local hosting,
+  no live Tracker write); read it and the gate file before re-asking anything. Open gates are
+  the files in `qa/gates/` headed `HUMAN_GATE (OPEN)` or `(PARTIAL)`; today
+  `t136-independent-human-list.md`, `t199-first-live-write.md` (the real Pathlynks Tracker
+  sheet) and `t203-host-and-dns.md` (host name and DNS).
+- `STALLED` — the fix-cycle cap (2) is hit on the only available unit, or a fix cycle made no
+  progress → the manifest flips to `Status: STALLED` (the state that records the HUMAN_GATE);
+  dispatch ONE `/agent-debugger` (phases 1-2) writing `qa/debug/<unit-slug>-cycle<N>.md`,
+  report, `stop: true` (SKILL.md:161, 167-176).
+- `EXHAUSTED` — a tick/token bound hit → diagnose the same way, `stop: true`, report the bound
+  honestly, never as success.
 - `BLOCKED` — environment prevents execution (plan mode, permission denial) → `ScheduleWakeup` 300s,
   **max 6 consecutive BLOCKED ticks** (~30 min), then `stop: true` and report the block to Umesh — a
   standing block must not wake the loop every 5 minutes forever (AT-566, sweep 2026-09-25).
   `BLOCKED (classifier)` follows the same cap.
-- `PAUSED` — `qa/.paused` exists → `stop: true`; only `/maker resume` lifts it.
+- `PAUSED` — `qa/.paused` exists → `stop: true`. It is written by Umesh (`/maker pause`), by the
+  loop-level no-progress pause (.9-16b: three consecutive ticks that close no unit with no agent
+  in flight in `qa/.wave.json`), or by a quota or rate-limit stop (.9-16c; the line carries the
+  reason and the reset time); the last two also notify the owner. Only `/maker resume`, asked
+  for in a user message of the current conversation, lifts it; the agent never deletes or
+  overwrites the file. After a quota stop, the agent that stopped is resumed with `SendMessage`
+  after the reset, never re-dispatched fresh (.14-5). Note: the .12 policy says automatic
+  acceptance stagnation enters closure mode (no new expansion; required repair/check/integration
+  continue) and does not create `qa/.paused`; explicit user pauses and quota gates stay binding
+  (SKILL.md:57, 165, 1691; .9-16 text: proportional-verification-pattern.md:238).
 
 Human gate: exactly which actions stop and ask Umesh first, per the project's own standing rules
 (`CLAUDE.md`, `qa/adapter.json`, and the maker skill's hard rules) —
 - **Any live action against the real Pathlynks product** (a headed browser run, a login attempt,
   a deliberate wrong-credentials test, a read-only Mongo query against `PATHLYNKS_MONGO_URI`) —
-  never auto-run without explicit per-use approval, even with dev-environment credentials already
-  in hand. This is the rule that currently gates T-050 and any live-DB verification of T-045.
-- **Writing to `docs/DECISIONS.md`** — append-only, and any entry touching an enforcement path
-  (`.claude/hooks/*`, `scripts/append_decision.ps1`, `.claude/settings.json`, `qa/hooks/*`) needs
-  `Approved-by: Umesh` on the entry before the path itself changes (this gates AT-015's fix).
+  needs a signed `RunApproval` row naming target and scope, and `production: true` for
+  pathlynks.vidysea.com (D-096), even with credentials already in hand. Umesh has authorised the
+  maker to mint those rows for the T-145 crawl and the T-154 adversarial pass (D-081 item 3) and
+  approved the live acceptance runs for T-136, T-169 and T-206 (D-104 item 3,
+  `qa/gates/live-acceptance-runs.md`). Anything else live is a HUMAN_GATE. Writing to the real
+  Pathlynks Tracker sheet stays gated (`qa/gates/t199-first-live-write.md`, D-081 item 7).
+- **Writing to `docs/DECISIONS.md`** — append-only via `scripts/append_decision.ps1`, and any
+  entry touching an enforcement path (`.claude/hooks/*`, `scripts/append_decision.ps1`,
+  `.claude/settings.json`, `qa/hooks/*`) needs `Approved-by: Umesh` on the entry before the path
+  itself changes (D-103 is the worked example for `qa/hooks/mc-sessionstart.ps1`).
 - **Adding or changing a real credential** — `.env` values, new `SecretRef`s, any `.env.example`
   edit that could accidentally carry a real value (the AT-025 incident class).
 - **Anything irreversible or outward-facing** — a force-push, a destructive git op, deleting a
