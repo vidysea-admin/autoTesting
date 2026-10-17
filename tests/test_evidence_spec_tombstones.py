@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -14,7 +15,12 @@ from pydantic import ValidationError
 
 from autotester import doctor
 from autotester.core.paths import repo_root
-from autotester.ledger.evidence_specs import check_stale_evidence_specs
+from autotester.ledger.evidence_specs import (
+    check_capability_row_tree,
+    check_stale_evidence_specs,
+    record_tree,
+    tree_disclosures,
+)
 from autotester.schema.evidence_tombstone import EvidenceTombstoneEntry
 
 
@@ -172,3 +178,90 @@ def test_the_repos_own_evidence_specs_are_clean_or_honestly_tombstoned() -> None
     AT-504, AT-506, AT-509 and AT-511 are the seven this unit tagged; AT-311,
     AT-520 and AT-523 use the bare-name style and were never actually stale."""
     assert check_stale_evidence_specs(repo_root()) == []
+
+
+
+# --- AT-711: a capability row is bound to the commit it ran on, by COMPARISON ---
+
+def _git(repo: Path, *args: str) -> str:
+    out = subprocess.run(
+        ["git", "-C", str(repo), "-c", "user.email=t@t", "-c", "user.name=t", *args],
+        capture_output=True, text=True, check=True)
+    return out.stdout.strip()
+
+
+def _commit(repo: Path, rel: str, text: str) -> str:
+    path = repo / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+    _git(repo, "add", rel)
+    _git(repo, "commit", "-m", f"change {rel}")
+    return _git(repo, "rev-parse", "HEAD")
+
+
+def _manifest(repo: Path, marker: str) -> Path:
+    path = repo / "qa" / "manifests" / "u.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "# m\n\n## Capability coverage\n\n"
+        "| capability | check | edit | observed |\n|---|---|---|---|\n"
+        f"| binds the row | t | e | PASS before, FAIL after {marker} |\n\n"
+        "## Live browser evidence\n\nNot UI-touching\n", encoding="utf-8")
+    return path
+
+
+@pytest.fixture
+def repo(tmp_path: Path) -> Path:
+    _git(tmp_path, "init", "-q")
+    return tmp_path
+
+
+def test_a_row_run_on_a_dirty_tree_at_the_submitted_head_passes_with_disclosure(
+        repo: Path) -> None:
+    head = _commit(repo, "scripts/probe.py", "v1\n")
+    (repo / "scripts" / "probe.py").write_text("v1 + uncommitted fix\n", encoding="utf-8")
+    marker = record_tree(repo)  # the AT-701 shape: the row ran with work not yet committed
+    manifest = _manifest(repo, marker)
+
+    assert check_capability_row_tree(manifest, head, repo) == []
+    assert len(tree_disclosures(manifest)) == 1
+    assert "porcelain=clean" not in marker
+
+
+def test_a_row_on_a_clean_tree_at_the_wrong_commit_is_refused(repo: Path) -> None:
+    """The maker's own refinement of AT-711: a clean digest at a stale commit reads
+    as impeccable provenance, so the criterion is the COMPARISON, not the recording."""
+    old = _commit(repo, "a.txt", "one\n")
+    marker = record_tree(repo)
+    assert "porcelain=clean" in marker and old[:12] in marker
+    submitted = _commit(repo, "src/fix.py", "fix\n")
+    manifest = _manifest(repo, marker)
+
+    out = check_capability_row_tree(manifest, submitted, repo)
+
+    assert [v.rule for v in out] == ["capability-row-tree-mismatch"]
+    assert tree_disclosures(manifest) == []
+
+
+def test_a_row_naming_no_tree_at_all_is_refused(repo: Path) -> None:
+    head = _commit(repo, "a.txt", "one\n")
+    manifest = _manifest(repo, "")
+
+    out = check_capability_row_tree(manifest, head, repo)
+
+    assert [v.rule for v in out] == ["capability-row-tree-unrecorded"]
+
+
+def test_a_row_recorded_at_the_code_commit_survives_a_manifest_only_follow_up(
+        repo: Path) -> None:
+    code = _commit(repo, "src/fix.py", "fix\n")
+    manifest = _manifest(repo, record_tree(repo))
+    _git(repo, "add", "qa/manifests/u.md")
+    _git(repo, "commit", "-m", "manifest")
+    submitted = _git(repo, "rev-parse", "HEAD")
+    assert submitted != code
+
+    assert check_capability_row_tree(manifest, submitted, repo) == []
+    later = _commit(repo, "src/fix.py", "fix, then changed again\n")
+    assert [v.rule for v in check_capability_row_tree(manifest, later, repo)] == [
+        "capability-row-tree-mismatch"]
