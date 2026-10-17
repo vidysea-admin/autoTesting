@@ -1,0 +1,26 @@
+from pathlib import Path
+from fastapi.testclient import TestClient
+from autotester.schema.enums import Action, ReviewStatus
+from autotester.schema.flowspec import Flow, FlowSpec, Review, Screen, Step
+from autotester.schema.project import Project, SecretRef
+from autotester.store.project_store import ProjectStore
+from autotester.ui.app import app
+
+SECRET = "Hunter2-Zebra-4411"
+
+
+def test_generate_route_stores_proposal_title_raw(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    store = ProjectStore("demo", tmp_path)
+    store.save_project(Project(slug="demo", name="Demo", base_url="https://demo.test",
+        allowed_domains=["demo.test"], secrets=[SecretRef(key="ST_PASS", domains=["demo.test"])]))
+    (tmp_path / ".env").write_text(f"ST_PASS={SECRET}\n", encoding="utf-8")
+    spec = FlowSpec(project="demo", review=Review(status=ReviewStatus.APPROVED),
+        screens=[Screen(id="scr_signin", name="Sign in", url_pattern="/signin")],
+        flows=[Flow(id="flow-login", name=f"Sign in {SECRET}", entry_screen="scr_signin",
+            steps=[Step(order=1, action=Action.NAVIGATE, target="https://demo.test/signin")])])
+    store.save_flowspec(spec)
+    r = TestClient(app).post("/projects/demo/cases/generate", follow_redirects=False)
+    print("HTTP", r.status_code, " ".join(r.text.split())[:200])
+    stored = store.paths.case_proposals.read_text(encoding="utf-8")
+    assert SECRET not in stored, "secret stored raw in case_proposals.jsonl via /cases/generate"

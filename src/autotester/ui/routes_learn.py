@@ -23,7 +23,7 @@ from autotester.core.paths import ProjectPaths, RepoDocs
 from autotester.providers import ProviderError, for_role, why_unavailable
 from autotester.schema.enums import ReviewStatus
 from autotester.stages import review as review_stage
-from autotester.stages.expand import expand, propose_cases
+from autotester.stages.expand import expand, stage_scrubbed_proposals
 from autotester.store.project_store import ProjectStore
 from autotester.ui import theme
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
@@ -230,7 +230,7 @@ def generate_cases(slug: str):
 
     try:
         if spec.review.status is ReviewStatus.APPROVED:
-            store.stage_case_proposals(propose_cases(spec))
+            stage_scrubbed_proposals(store, spec)
             store.preflight_case_proposals(spec)
     except ValueError as exc:
         return _refusal(

@@ -159,11 +159,34 @@ def propose_cases(spec: FlowSpec) -> list[CaseProposal]:
     ) for flow in spec.flows for case_class in applicable_classes(flow)]
 
 
+def _scrub_proposals(rows: list[CaseProposal], by: str,
+                     secrets: SecretStore | None) -> list[CaseProposal]:
+    """AT-929 (C5): case_proposals.jsonl is a stored artifact, so operator and target text
+    passes the project redactor before it is staged. `by` and `flow_id` cannot be masked
+    (attribution, and the link back to the FlowSpec), so a secret in either is refused."""
+    if secrets is None:
+        return rows
+    scrub = secrets.redactor().scrub
+    if scrub(by) != by:
+        raise ValueError("the reviewer name matches a stored secret; use your own name")
+    if any(scrub(p.flow_id) != p.flow_id for p in rows):
+        raise ValueError("a flow id matches a stored secret; rename the flow before staging")
+    return [CaseProposal.model_validate({**p.model_dump(), "id": "", "title": scrub(p.title),
+                                         "rationale": scrub(p.rationale)}) for p in rows]
+
+
+def stage_scrubbed_proposals(store: ProjectStore, spec: FlowSpec,
+                             by: str = "") -> list[CaseProposal]:
+    """The one way proposals reach case_proposals.jsonl: scrubbed first (AT-929), then staged."""
+    rows = _scrub_proposals(propose_cases(spec), by, _store_secrets(store))
+    store.stage_case_proposals(rows)
+    return rows
+
+
 def stage_and_review(store: ProjectStore, spec: FlowSpec, approve: list[str],
                      prune: list[str], by: str) -> list[CaseProposal]:
     """Stage this spec's proposals, apply the human's approve/prune decisions, return the rows."""
-    rows = propose_cases(spec)
-    store.stage_case_proposals(rows)
+    rows = stage_scrubbed_proposals(store, spec, by)
     if set(approve) & set(prune):
         raise ValueError("a proposal cannot be approved and pruned together")
     for proposal_id in approve + prune:
