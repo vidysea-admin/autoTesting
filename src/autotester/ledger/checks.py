@@ -140,16 +140,26 @@ def check_ledger(root: Path) -> list[Violation]:
 
 def _status_by_id(text: str) -> dict[str, str]:
     """Each row's `id` -> `status`, read as JSON so key order does not matter (AT-571).
-    A line that is not a JSON object is skipped: C10 judges rows, not syntax."""
-    out: dict[str, str] = {}
+    A line that is not a JSON object is skipped: C10 judges rows, not syntax.
+    A repeated id reads as `conflict:<statuses>`, never as one row's status (AT-656, L8)."""
+    seen: dict[str, list[str]] = {}
     for line in text.splitlines():
         try:
             row = json.loads(line)
         except ValueError:
             continue
         if isinstance(row, dict) and re.fullmatch(ISSUE_ID, str(row.get("id", ""))):
-            out[row["id"]] = str(row.get("status", ""))
-    return out
+            seen.setdefault(row["id"], []).append(str(row.get("status", "")))
+    return {i: s[0] if len(s) == 1 else _CONFLICT + "|".join(sorted(set(s)))
+            for i, s in seen.items()}
+
+
+_CONFLICT = "conflict:"
+
+
+def _is_open(status: str) -> bool:
+    """`open`, or a repeated id with an `open` row among its twins."""
+    return "open" in status.removeprefix(_CONFLICT).split("|")
 
 
 def check_qa_issue_rows(root: Path) -> list[Violation]:
@@ -185,7 +195,7 @@ def check_qa_issue_rows(root: Path) -> list[Violation]:
                            if _claims_a_fix(note)}
                 out += [Violation("ledger-row-stale", subject,
                                   f"{issue} is still `open` although this unit PASSed")
-                        for issue in sorted(claimed) if status_of.get(issue) == "open"]
+                        for issue in sorted(claimed) if _is_open(status_of.get(issue, ""))]
     return out
 
 
