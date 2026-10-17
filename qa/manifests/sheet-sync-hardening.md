@@ -3,7 +3,7 @@
 **Contract:** qa/contracts/team-bug-loop.md (TB9, TB10, TB11, TB13 in part); criteria are the issue texts AT-981..AT-984, one each (C1..C4)
 **Goal task:** none
 **Date:** 2026-10-17
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/sheet-sync-hardening.md + sheet-sync-hardening.b.md, cycle 0, dual)
 **Fix cycle:** 0 of max 2
 **Hold fix cycles:** 0 of 2
 **Hold-reopens:** 0
@@ -61,4 +61,4 @@ Falsification ran in a throwaway copy outside the worktree (`.../scratchpad/fals
 ## Live browser evidence
 Not UI-touching - no surface changed. Changed paths: src/autotester/stages/sheet_plan.py, src/autotester/stages/sheet_write.py, src/autotester/schema/sheet_plan.py, tests/sheet_fake.py, tests/test_sheet_sync_hardening.py (no UI route or template).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/sheet-sync-hardening.md + sheet-sync-hardening.b.md, cycle 0, dual)
