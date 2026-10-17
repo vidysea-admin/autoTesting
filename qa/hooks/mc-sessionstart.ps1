@@ -1,6 +1,9 @@
 # maker-checker Layer 2 — session-start directive (pending-state aware, AUTO-CONTINUE)
 # SessionStart stdout is injected into the agent's context — a directive here is read as an
 # instruction, not just a status line.
+# AT-858 (D-103): UTF-8 before the FIRST output line, not at the SNAPSHOT tail -- every earlier
+# Write-Output (and the loop-status child's stdout) otherwise leaves in the host's OEM/ANSI page.
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 function Get-ManifestStatus($path) {
   # AT-673/AT-669/AT-662: read the Status FIELD, not the phrase. Anchoring alone is not enough --
   # measured on disk, the field has SIX shapes across 263 manifests: 234 `## Status:`,
@@ -147,6 +150,10 @@ try {
   $lsPsi.Arguments = "run --project `"$ROOT`" autotester loop-status --strict"
   $lsPsi.WorkingDirectory = $ROOT
   $lsPsi.UseShellExecute = $false
+  # AT-858: the child (python) must WRITE UTF-8 and we must READ it as UTF-8, or its non-ASCII
+  # separator reaches the now-UTF-8 output as a replacement character.
+  $lsPsi.EnvironmentVariables["PYTHONIOENCODING"] = "utf-8"
+  $lsPsi.StandardOutputEncoding = [System.Text.Encoding]::UTF8
   $lsPsi.RedirectStandardOutput = $true
   $lsPsi.RedirectStandardError = $true
   $lsProc = New-Object System.Diagnostics.Process
@@ -180,7 +187,6 @@ try {
 if (Test-Path 'docs/SNAPSHOT.md') {
   try { & uv run autotester snapshot 2>$null | Out-Null } catch {}
   Write-Output "--- docs/SNAPSHOT.md (generated; router in CLAUDE.md) ---"
-  [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
   Get-Content 'docs/SNAPSHOT.md' -Encoding UTF8 | Write-Output
 }
 exit 0
