@@ -1,31 +1,44 @@
-# Verdict A - at929-proposal-scrub
-Date: 2026-10-17 · Cycle checked: 0 · Bound to: D:/autoTesting/.worktrees/at929-proposal-scrub · Base 69ebfae7 (git merge-base HEAD master) · Head b5d83803 (+01797fdb manifest)
-Policy-Version: proportional-verification/2026-10-15.12 · Dual check coordinator A (blind)
+# Verdict A - at929-proposal-scrub (repair check)
+Cycle checked: 1
+Date: 2026-10-17 (checker A, blind coordinator; bound to D:/autoTesting/.worktrees/at929-proposal-scrub)
+Base 69ebfae7 (= git merge-base HEAD master); Repair base 248026de (ancestor of HEAD 4addd97e, verified); product head 2cb9e414.
 
 ## Check plan
-Logic + security change (secret scrub of stored proposals). Checks: manifest verify commands, step 4c diff read, one falsification for C1 in a copy outside the worktree, writer enumeration for case_proposals.jsonl (criterion says "every field").
+Repair checker. Failed criterion C1 (AT-929: every proposal field scrubbed before store; the generate route bypassed it).
+Plan: (1) read repair diff 248026de..HEAD in full + whole-unit diff scope; (2) grep every writer of case_proposals.jsonl in src/;
+(3) re-run affected tests + ruff + doctor; (4) 1 falsification of the repaired path in copies outside the worktree;
+(5) security read of the changed lines. No UI-visible change (stage-layer + route redirect/refusal page only): no Mode D. Policy proportional-verification/2026-10-15.12.
 
-VERDICT: FAIL
-SCOREBOARD: 0/1 criteria met (AT-929), core-invariants C5 not held for this artifact, 0 other invariants touched
-TIER: L (security: secret redaction of stored proposals; dual-trigger src/autotester/stages/expand.py:181)
-FAILURES:
-- [AT-929] sev: medium · A second writer of case_proposals.jsonl stores the flow name raw, so "every field ... passes Redactor.scrub before it is stored" is not met · fix direction: scrub at the store write (ProjectStore.stage_case_proposals, project_store.py:131, which the issue names: "the store layer never calls Redactor.scrub"), or route src/autotester/ui/routes_learn.py:233 through the same scrub · issue: P1
-  Evidence: routes_learn.py:233 (read by me) is `store.stage_case_proposals(propose_cases(spec))` inside POST /projects/{slug}/cases/generate, bypassing `_scrub_proposals`, which the builder wired only into `stage_and_review` (expand.py:181). I ran evidence/at929-proposal-scrub/repro_generate_bypass.py.txt in a git-archive copy of HEAD b5d83803 (copy outside the worktree): project with declared secret ST_PASS, approved FlowSpec whose flow name contains the secret, POST /cases/generate. Result: 1 failed, `'Hunter2-Zebra-4411' is contained here: "title":"Sign in Hunter2-Zebra-4411 - happy"`, and the same in every double_submit/etc. row's title. Route replied HTTP 400 (review gate, later in the route) but the raw rows were already written to case_proposals.jsonl, because staging happens before the gate at routes_learn.py:233-234. The builder's own UI-facing path is therefore still unscrubbed.
-CAPABILITY-COVERAGE: 1/1 rows reproduced (the manifest row is real but only isolates the stage_and_review path, not "every field/every writer")
-LIVE-BROWSER: not-applicable (changed paths: src/autotester/stages/expand.py, tests/test_expand_redaction.py)
-ISSUES-WRITTEN: none (dual coordinator)
+## Evidence
+- Callers: `grep stage_case_proposals src` -> only expand.py:182 (inside stage_scrubbed_proposals) and its def project_store.py:131.
+  stage_scrubbed_proposals callers: expand.py:189 (stage_and_review -> cli.py:223, routes_proposals.py:108,143) and routes_learn.py:233 (the generate route).
+  Other writer of the file, review_case_proposal (project_store.py:149), is reached only via stage_and_review (expand.py:193), so `reviewed_by` is covered by the `--by` refusal; routes_proposals.py:76-80 also pre-refuses.
+  No path stages a proposal unscrubbed.
+- Tests (run by me in the worktree): `uv run pytest tests/test_expand_redaction.py tests/test_expand.py tests/test_expand_cli.py tests/test_ui_learn.py tests/test_ui_learn_guard.py` -> 68 passed (28 s).
+  `uv run ruff check src tests scripts` -> All checks passed!; `uv run autotester doctor` -> doctor: clean.
+- Diff scope (4c): repair diff touches only expand.py (new stage_scrubbed_proposals; stage_and_review reuses it), routes_learn.py (import + one call), tests. Whole-unit src/tests diff = those 3 files, all in the manifest's What changed; qa/ files are bookkeeping.
+  Removed lines in whole unit: only the 2 raw `stage_case_proposals(propose_cases(spec))` call forms and the `propose_cases` import they replaced. No function, test, route or key deleted.
+- Security read: error text in `_scrub_proposals` (expand.py:172,174) is static and never echoes the value; the route refusal page prints str(exc) (routes_learn.py:238) = that static text. The route test asserts SECRET not in response.text.
+  Refusing (not masking) a --by or flow id equal to a stored secret leaves nothing unscrubbed in the store, which satisfies AT-929 expected text and its fix_direction ("or reject a --by value that matches a declared secret").
+  Flow id cannot be masked: it is the FlowSpec link (proposal.require_current).
+
+## Falsification (C1, repaired path), copies of `git archive HEAD` in scratchpad, worktree untouched
+Both route tests named `test_the_generate_route_does_not_store_a_flow_name_secret_in_case_proposals_jsonl` and `..._refuses_a_flow_id_that_is_a_secret_and_stores_nothing`.
+- Floor (revert the repaired hunk): routes_learn.py:233 back to `store.stage_case_proposals(propose_cases(spec))`. Green in copy first (2 passed), then RED on the named assertions ("'Hunter2-Zebra-4411' is contained here" in case_proposals.jsonl; and the flow-id test stores a file with the secret). Not an import error.
+- Mutant (1): stage_scrubbed_proposals stages `propose_cases(spec)` unscrubbed. Green first, then 5 failed in tests/test_expand_redaction.py (both route tests + the 3 stage_and_review scrub tests), all on secret-in-file / DID NOT RAISE assertions.
+Evidence of runs: scratchpad f1/f2 (session-local); commands reproducible as above.
+
+## Result
+SCOREBOARD C1 met. Invariants touched: core-invariants secret-redaction (stored artifact) holds on every writer.
+PROPOSED-ISSUE: {"severity":"low","type":"wording","title":"routes_learn.py:236-241 refusal page for a staging ValueError always says 'Case proposals need human review' and points at `autotester expand --proposals`, which is misleading when the cause is a flow id/secret refusal; cosmetic","expected":"refusal body names the actual cause or the rename action"}
+
+VERDICT: PASS
+SCOREBOARD: 1/1 criteria met, core-invariants holds
+TIER: L (security: secret redaction of staged proposals; dual-trigger src/autotester/stages/expand.py:181)
+FAILURES: none
+CAPABILITY-COVERAGE: 1/1 rows reproduced (repaired route path + stage_scrubbed_proposals mutant)
+LIVE-BROWSER: not-applicable (changed paths: src/autotester/stages/expand.py, src/autotester/ui/routes_learn.py, tests/test_expand_redaction.py; no rendered output changed)
+ISSUES-WRITTEN: none (dual coordinator; PROPOSED-ISSUE above)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
-EXPLANATION: The builder's scrub works on the CLI/proposals-UI path stage_and_review: the 4 new tests pass and the falsification is real. But AT-929's expected text covers every stored field of case_proposals.jsonl and names the store layer, and the Generate-cases route writes the same file through the unscrubbed `store.stage_case_proposals`. Refusing a `--by` or flow id equal to a secret, rather than masking it, is acceptable under the issue's own fix direction ("or reject a --by value that matches a declared secret"); error text does not echo the secret (test asserts it; I read it at expand.py:171,174).
-
-## Evidence (all run by me)
-- `uv run pytest tests/test_expand_redaction.py` -> 27 passed (one earlier concurrent run had 2 WinError 5 rename failures from a parallel run; 14 re-run alone and the 52-test combined run passed)
-- `uv run pytest tests/test_expand_redaction.py tests/test_expand.py tests/test_expand_cli.py` -> 52 passed in 59.6s (27 + 25 as the manifest expects)
-- `uv run ruff check src tests scripts` -> All checks passed!; `uv run autotester doctor` -> doctor: clean
-- Falsification C1 (copy at scratchpad cpA, outside worktree): the 4 AT-929 nodes green (4 passed) before; after replacing the `if secrets is None:` guard with `if True:` (always return rows) -> red on the named assertions: `assert 'Hunter2-Zebra-4411' not in ...` and `Failed: DID NOT RAISE ValueError` x2; ordinary-reviewer test stays green. Real, assertion-level red.
-- Step 4c diff scope: 2 files (expand.py +17/-1, tests +57), both listed in What changed; nothing removed except the one `rows = propose_cases(spec)` line replaced.
-- Bypass repro: see FAILURES.
-
-PROPOSED-ISSUE: {"feature":"failure-bundle","severity":"medium","type":"security","title":"AT-929 scrub covers only stage_and_review; ui/routes_learn.py:233 generate_cases stages propose_cases(spec) raw into case_proposals.jsonl (flow name with a declared secret stored verbatim, before the review gate)","expected":"Every writer of case_proposals.jsonl scrubs title/rationale (scrub in ProjectStore.stage_case_proposals, or share _scrub_proposals)","evidence":"qa/evidence/at929-proposal-scrub/repro_generate_bypass.py.txt"}
-PROPOSED-ISSUE: {"feature":"failure-bundle","severity":"low","type":"quality","title":"stage_and_review scrub uses scrub(by) != by to detect a secret; the review route's _refuse_unsafe_submission and CLI could share one helper (note only, no defect shown)"}
-
-Metrics: start=2026-10-17T12:55:00Z end=2026-10-17T16:32:00Z wall_min=45 agent_min=unavailable blocked_min=100 suite_runs=0 repeat_runs=0 mutations=1 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-15.12 lane=normal check_s=2700 mutants=1 defects_unit=1 defects_6c=0
+EXPLANATION: The cycle-0 bypass (POST /cases/generate staging raw titles) is closed: the route now calls stage_scrubbed_proposals, the single path from propose_cases to case_proposals.jsonl, and every other writer reaches the store through it. Reverting the route hunk or the scrub makes the named route tests go red on the secret-in-file assertion.
+Metrics: start=2026-10-17T16:46:00Z end=2026-10-17T16:55:00Z wall_min=9 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-15.12 lane=normal check_s=540 mutants=1 defects_unit=0 defects_6c=0
