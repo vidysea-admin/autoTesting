@@ -54,6 +54,12 @@ def safe_cell(value: str) -> str:
     return "'" + value if value[:1] in FORMULA_STARTS else value
 
 
+def unguard(value: str) -> str:
+    """The text a person sees: `safe_cell`'s leading apostrophe removed. A sheet may or may not
+    keep that apostrophe on read-back, so cells are compared in this form (AT-984)."""
+    return value[1:] if value[:1] == "'" and value[1:2] in FORMULA_STARTS else value
+
+
 def _cell(row: list[str], index: int) -> str:
     return row[index] if index < len(row) else ""
 
@@ -78,31 +84,35 @@ def _located(sheet: SheetState, key_at: int) -> dict[str, list[int]]:
 
 
 def _row_for(bug: TrackedBug, rows: list[int], sheet: SheetState, index: dict[str, int],
-             cols: SheetColumns, memory: SyncMemory, scrub: Scrub) -> PlanRow | None:
+             cols: SheetColumns, memory: SyncMemory,
+             scrub: Scrub) -> tuple[PlanRow | None, dict[str, str]]:
+    """The planned row (None when it already matches) and the cells to adopt into memory."""
     want = {cols.columns[f]: safe_cell(scrub(v)) for f, v in bug_values(bug).items()
             if f in cols.columns}
     if not rows:
-        return PlanRow(action="append", bug_key=bug.bug_key,
-                       changes=[CellChange(column=h, before="", after=v) for h, v in want.items()])
+        return PlanRow(action="append", bug_key=bug.bug_key, changes=[
+            CellChange(column=h, before="", after=v) for h, v in want.items()]), {}
     if len(rows) > 1:
         return PlanRow(action="conflict", bug_key=bug.bug_key, row_number=rows[0],
-                       note=f"the key is on {len(rows)} rows {rows}; none is written")
+                       note=f"the key is on {len(rows)} rows {rows}; none is written"), {}
     row, mine = sheet.rows[rows[0] - 2], memory.written.get(bug.bug_key, {})
     changes: list[CellChange] = []
     conflicts: list[CellConflict] = []
+    adopts: dict[str, str] = {}
     for field, header in cols.columns.items():
         have, new, last = _cell(row, index[field]), want[header], mine.get(header)
-        if have == new:
-            continue
-        if have == last or (last is None and have == ""):
-            changes.append(CellChange(column=header, before=have, after=new))
+        if unguard(have) == unguard(new):
+            if new and last != new:      # the sheet holds our value, memory does not (AT-982)
+                adopts[header] = new
+        elif (last is not None and unguard(have) == unguard(last)) or (last is None and have == ""):
+            changes.append(CellChange(column=header, before=scrub(have), after=new))
         else:
-            conflicts.append(CellConflict(column=header, sheet_has=have, we_last_wrote=last,
-                                          we_would_write=new))
+            conflicts.append(CellConflict(column=header, sheet_has=scrub(have),
+                                          we_last_wrote=last, we_would_write=new))
     if not changes and not conflicts:
-        return None
+        return None, adopts
     return PlanRow(action="update" if changes else "conflict", bug_key=bug.bug_key,
-                   row_number=rows[0], changes=changes, conflicts=conflicts)
+                   row_number=rows[0], changes=changes, conflicts=conflicts), adopts
 
 
 def plan_sync(bugs: Iterable[TrackedBug], sheet: SheetState, cols: SheetColumns,
@@ -111,17 +121,21 @@ def plan_sync(bugs: Iterable[TrackedBug], sheet: SheetState, cols: SheetColumns,
     index = _index(sheet, cols)
     located = _located(sheet, index["bug_key"])
     rows: list[PlanRow] = []
+    adopts: dict[str, dict[str, str]] = {}
     unchanged = 0
     for bug in sorted(bugs, key=lambda b: (b.first_seen, b.bug_key)):
         have = located.get(bug.bug_key, [])
         if bug.status not in LIVE_STATUSES and not have:
             continue
-        row = _row_for(bug, have, sheet, index, cols, memory, scrub)
+        row, adopted = _row_for(bug, have, sheet, index, cols, memory, scrub)
+        if adopted:
+            adopts[bug.bug_key] = adopted
         if row is None:
             unchanged += 1
         else:
             rows.append(row)
-    return SheetPlan(sheet_id=cols.sheet_id, tab=cols.tab, rows=rows, unchanged=unchanged)
+    return SheetPlan(sheet_id=cols.sheet_id, tab=cols.tab, rows=rows, unchanged=unchanged,
+                     adopts=adopts)
 
 
 def render_plan(plan: SheetPlan, *, written: bool = False) -> str:
@@ -131,6 +145,9 @@ def render_plan(plan: SheetPlan, *, written: bool = False) -> str:
     lines = [state, f"sheet {plan.sheet_id} / tab {plan.tab!r} / plan {plan.plan_hash}",
              f"{len(plan.writes)} row(s) to write, "
              f"{len(plan.rows) - len(plan.writes)} blocked, {plan.unchanged} already match"]
+    if plan.adopts:
+        lines.append(f"{sum(map(len, plan.adopts.values()))} cell(s) already hold our value and "
+                     "will be remembered (no write)")
     for row in plan.rows:
         where = "new row at the end" if row.row_number is None else f"row {row.row_number}"
         lines.append(f"{row.action.upper():8} {row.bug_key}  ({where})")
