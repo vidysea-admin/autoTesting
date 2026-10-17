@@ -44,4 +44,4 @@ Metrics: start=2026-10-17T09:30:00Z end=2026-10-17T09:50:00Z wall_min=20 agent_m
 ## Live browser evidence
 Not UI-touching — no surface changed (src/autotester/ledger/checks.py and tests/test_ledger_checks.py only).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at656-status-by-id.md, cycle 0)
