@@ -20,6 +20,7 @@ import autotester.store.bug_store as module
 from autotester.schema.tracked_bug import BugEvent, BugStatus, EventKind
 from autotester.stages.bug_loop import Effect, Refusal, fold
 from autotester.store.bug_store import BugStore
+from autotester.store.filestore import write_json
 
 K = EventKind
 S = BugStatus
@@ -201,3 +202,26 @@ def test_p9_replaying_a_run_through_the_store_alone_leaves_count_and_files_uncha
         assert {g.effect for g in got} == {Effect.DUPLICATE}
     assert store.get(KEY).count == 2
     assert {p.name: p.read_bytes() for p in sorted(store.dir.glob("*.json"))} == before
+
+
+# -- AT-980: events written by the T-199a code (`bev_<id>.json`, no time) are still read ----------
+
+def test_at980_an_old_store_of_legacy_named_events_is_read_not_silently_empty(
+        tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    events = [event(K.FAIL, 1), event(K.FAIL, 2), event(K.FAIL, 3)]
+    store.dir.mkdir(parents=True)
+    for e in events:
+        write_json(store.dir / f"{e.event_id}.json", e)   # the T-199a file name
+    snap = store.snapshot()
+    assert snap.bad == [] and len(snap.events) == 3
+    assert store.get(KEY).count == 3
+    assert {r.effect for r in store.apply_all(events)} == {Effect.DUPLICATE}
+
+
+def test_at980_a_legacy_file_under_another_events_name_is_still_bad(tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    a, b = event(K.FAIL, 1), event(K.FAIL, 2)
+    store.dir.mkdir(parents=True)
+    write_json(store.dir / f"{a.event_id}.json", b)
+    assert [x.name for x in store.snapshot().bad] == [f"{a.event_id}.json"]

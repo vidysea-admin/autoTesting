@@ -9,14 +9,16 @@ for each bug of that case (the store keeps only the ones that can move a bug).
 A bug whose case was deleted, or whose criterion was edited or removed, gets a `case_changed` event
 and becomes `stale`, never `fixed` (TB4). A rubric that cannot be loaded is reported, not guessed.
 
-Idempotent per run (TB6): every event's time is the run's own (`finished_at`, else when `run.json`
-was saved), and its ref is `<run>/<case>` or `case/<case>/...`, so the same run produces the same
+Idempotent per run (TB6): every verdict event's time is the run's own (`finished_at`, else when
+`run.json` was saved; a `case_changed` is never earlier than the bug's latest stored event,
+AT-979), and its ref is `<run>/<case>` or `case/<case>/...`, so the same run produces the same
 event ids and the store counts each once. A run exists once `run.json` does; the executor writes it
 after the last case. The bug store is read once per call (P3).
 """
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 
 from autotester.schema.bug_run import RunOutcome, RunReport
@@ -97,9 +99,17 @@ def verdict_events(verdict: Verdict, run_id: str, at: datetime, project: str, ca
 
 
 def changed_case_events(store: ProjectStore, rubrics: _Rubrics, bugs: dict[str, TrackedBug],
-                        run_id: str, at: datetime) -> tuple[list[BugEvent], list[str]]:
+                        run_id: str, at: datetime, history: Iterable[BugEvent] = (),
+                        ) -> tuple[list[BugEvent], list[str]]:
     """A `case_changed` event for each live bug whose case is gone or whose criterion moved, and
-    the keys of live bugs whose rubric could not be loaded to compare (never guessed)."""
+    the keys of live bugs whose rubric could not be loaded to compare (never guessed).
+
+    The change is noticed by whichever run is processed after the edit, which may be an older run
+    replayed late, so it is stamped no earlier than the latest event the store holds for that bug
+    (AT-979): an old run's time would otherwise land before a later FAIL and refuse it."""
+    latest: dict[str, datetime] = {}
+    for h in history:
+        latest[h.bug_key] = max(h.at, latest.get(h.bug_key, h.at))
     cases = {c.id: c for c in store.list_cases()}
     events: list[BugEvent] = []
     unverifiable: list[str] = []
@@ -122,8 +132,8 @@ def changed_case_events(store: ProjectStore, rubrics: _Rubrics, bugs: dict[str, 
             elif bug.criterion_fp and crit.fingerprint != bug.criterion_fp:
                 why = f"{bug.criterion_id}/{crit.fingerprint}"
         if why is not None:
-            events.append(_event(bug.bug_key, K.CASE_CHANGED, f"case/{bug.case_id}/{why}", at,
-                                 run_id))
+            events.append(_event(bug.bug_key, K.CASE_CHANGED, f"case/{bug.case_id}/{why}",
+                                 max(at, latest.get(bug.bug_key, at)), run_id))
     return events, unverifiable
 
 
@@ -144,7 +154,8 @@ def process_run(store: ProjectStore, bugs: BugStore, run_id: str) -> RunReport:
         made, lost = verdict_events(v, run_id, at, run.project, case, rubrics.of(case), snap.bugs)
         events += made
         unresolved += lost
-    changed, unverifiable = changed_case_events(store, rubrics, snap.bugs, run_id, at)
+    changed, unverifiable = changed_case_events(store, rubrics, snap.bugs, run_id, at,
+                                                  snap.events)
     results = bugs.apply_all([*events, *changed], snapshot=snap)
     judged = {v.case_id for v in verdicts}
     return RunReport(
