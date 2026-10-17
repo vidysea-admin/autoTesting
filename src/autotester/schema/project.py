@@ -5,12 +5,16 @@ from __future__ import annotations
 import re
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
 from autotester.schema.intake import SourceOrigin
+from autotester.schema.mailbox_ref import SECRET_KEY_PATTERN
+from autotester.schema.platform import IMPLICIT_PLATFORM_ID, Platform
+from autotester.schema.platform_link import PlatformLink
+from autotester.schema.role_account import RoleAccount
 from autotester.schema.schedule import ScheduleConfig
 from autotester.schema.team_enums import SourceOriginKind
 from autotester.schema.user_persona import PERSONA_ID_PATTERN, UXPolicy
@@ -34,7 +38,7 @@ class SecretRef(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    key: str = Field(pattern=r"^[A-Z][A-Z0-9_]*$")
+    key: str = Field(pattern=SECRET_KEY_PATTERN)
     description: str | None = None
     domains: list[str] = Field(default_factory=list, description="hosts this may be typed into")
     include_subdomains: bool = Field(default=True, strict=True)
@@ -219,6 +223,15 @@ class Project(Artifact):
         default=None,
         description="T-205/TF6, G6: where confirmed bugs go; None means no tracker",
     )
+    platforms: list[Platform] | None = Field(
+        default=None,
+        description="G11 MP1/MP3: the linked products. None (an old project) reads as ONE implicit "
+                    "platform of base_url/allowed_domains (`effective_platforms`), never written",
+    )
+    platform_links: list[PlatformLink] | None = Field(
+        default=None, description="G11 MP1: declared hops between platform ids")
+    role_accounts: list[RoleAccount] | None = Field(
+        default=None, description="G11 MP2: accounts as env KEYS only, never values")
 
     @field_validator("test_id_attributes")
     @classmethod
@@ -228,6 +241,33 @@ class Project(Artifact):
         if bad or len(set(names)) != len(names):
             raise ValueError(f"test_id_attributes must be distinct attribute names, got {names}")
         return names
+
+    @model_validator(mode="after")
+    def _platform_references_resolve(self) -> Project:
+        """MP1: no duplicate ids, and every link end and account platform names a declared one."""
+        ids = [p.id for p in self.platforms] if self.platforms else [IMPLICIT_PLATFORM_ID]
+        accounts = self.role_accounts or []
+        for what, seen in (("platform", ids), ("role account", [a.id for a in accounts])):
+            if len(set(seen)) != len(seen):
+                raise ValueError(f"duplicate {what} id in {seen}")
+        refs = [(f"link {i}", end) for i, link in enumerate(self.platform_links or [])
+                for end in (link.from_platform, link.to_platform)]
+        refs += [(f"role account {a.id}", a.platform_id) for a in accounts]
+        dangling = [f"{who} names undeclared platform {pid!r}"
+                    for who, pid in refs if pid not in ids]
+        if dangling:
+            raise ValueError("; ".join(dangling))
+        return self
+
+    def effective_platforms(self) -> list[Platform]:
+        """The declared platforms, or the ONE implicit platform an old project is (MP3).
+
+        Computed on read; the implicit one is never stored, so a write-back stays byte-identical."""
+        if self.platforms:
+            return list(self.platforms)
+        return [Platform(id=IMPLICIT_PLATFORM_ID, name=self.name, base_url=self.base_url,
+                         allowed_domains=list(self.allowed_domains),
+                         login_case_id=self.login_case_id)]
 
     def secret(self, key: str) -> SecretRef | None:
         return next((s for s in self.secrets if s.key == key), None)
