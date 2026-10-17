@@ -118,3 +118,5 @@ gap in the evidence and is recorded as one.
 - **AT-638 stays `open`.** Track C is genuinely closed (the sibling unit's PASS authored
   `ai-target.md` and `adversarial.md`); the other four capabilities have reviewed *proposals*, which
   is not the same as checkable criteria.
+
+Answered: 2026-09-27 — option A, all four contract files (permission-surface, eval-compiler, release-regression, damage-control-report), not the three-file subset — Umesh; recorded as D-054 (`docs/DECISIONS.md:1432`, `Approved-by: Umesh`)
