@@ -17,8 +17,11 @@ from cross_role_fakes import FakeClock
 from autotester.core.consent import ApprovalRequired
 from autotester.schema.ai_probe import ProbeRefusal
 from autotester.schema.authz_probe import AuthzPlan, TenantProbe
+from autotester.schema.enums import WritePolicy
 from autotester.schema.multi_role_enums import OracleName
 from autotester.schema.oracle_context import OracleState
+from autotester.schema.platform import Platform
+from autotester.schema.project import Project
 from autotester.stages import oracle_tenant
 from autotester.stages.adversarial import AdversarialBlocked, ProbeCeilingExceeded
 from autotester.stages.authz_probe import (
@@ -110,6 +113,40 @@ def test_a5_a_planned_url_outside_the_allowed_domains_is_refused(sc: Scaffold) -
     with pytest.raises(AdversarialBlocked):
         _run(sc)
     assert sc.app.calls == 0 and len(_refusals(sc)) == 1
+
+
+def test_a5_an_approval_for_one_platform_cannot_be_spent_on_a_sibling_platforms_host(
+        sc: Scaffold) -> None:
+    """Cycle 1 (coordinator A): scope is the PROBED platform's own hosts, not the whole project."""
+    sc.store.save_project(Project(
+        slug="demo", name="Demo", base_url="https://app.test/",
+        allowed_domains=["app.test", "other.test"], write_policy=WritePolicy.ALLOW_WRITES,
+        platforms=[Platform(id="primary", name="Primary", base_url="https://app.test/",
+                            allowed_domains=["app.test"]),
+                   Platform(id="other", name="Other", base_url="https://other.test/",
+                            allowed_domains=["other.test"])]))
+    sc.app.serve("tenant-a", "/admin/users", data=rows("a", 2) + rows("x", 3))
+    sc.plan(_plan(_probe(list_url="https://other.test/admin/users", owner_role_id=None,
+                         declared_own_count=2)))
+    sc.grant(5)  # signed for https://app.test/ only
+    with pytest.raises(AdversarialBlocked, match="primary"):
+        _run(sc)
+    assert sc.app.calls == 0 and sc.app.reads == []
+    assert len(_refusals(sc)) == 1
+
+
+def test_a5_a_platform_pinned_to_exact_hosts_refuses_its_own_subdomain(sc: Scaffold) -> None:
+    sc.store.save_project(Project(
+        slug="demo", name="Demo", base_url="https://app.test/", allowed_domains=["app.test"],
+        write_policy=WritePolicy.ALLOW_WRITES,
+        platforms=[Platform(id="primary", name="Primary", base_url="https://app.test/",
+                            allowed_domains=["app.test"], include_subdomains=False)]))
+    sc.plan(_plan(_probe(list_url="https://api.app.test/students", owner_role_id=None,
+                         declared_own_count=1)))
+    sc.grant(5)
+    with pytest.raises(AdversarialBlocked):
+        _run(sc)
+    assert sc.app.calls == 0
 
 
 def test_a5_a_production_project_accepts_only_a_human_production_approval(

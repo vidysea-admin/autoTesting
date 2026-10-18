@@ -153,6 +153,18 @@ def test_mp19_an_assign_that_raises_still_gets_a_revert_attempt_and_no_finding(
     assert sc.app.reverts == [("teacher", "promote"), ("teacher", "invite")]
 
 
+def test_mp19_an_assign_that_raises_and_whose_revert_failed_is_recorded_for_the_operator(
+        sc: Scaffold) -> None:
+    """Cycle 1: state unknown after a raising assign must leave a trace, not only a revert try."""
+    _controls(sc)
+    sc.app.assign_raises = True
+    sc.app.revert_result = False
+    assert _run(sc) == []
+    records = _reverts(sc)
+    assert [(r.control_id, r.reverted) for r in records] == [("promote", False),
+                                                             ("invite", False)]
+
+
 def test_mp19_below_allow_writes_no_role_assign_is_sent_and_the_controls_are_named(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     ro = Scaffold(tmp_path, monkeypatch, write_policy=WritePolicy.READ_ONLY)

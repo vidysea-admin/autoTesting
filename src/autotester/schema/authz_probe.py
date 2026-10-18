@@ -191,6 +191,7 @@ class StopReason(StrEnum):
     WRITE_POLICY = "write_policy"
     NO_ESCALATION_TRANSPORT = "no_escalation_transport"
     TRANSPORT_ERROR = "transport_error"
+    LIST_STATUS = "list_status"
 
 
 class UnprobedItem(BaseModel):

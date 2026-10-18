@@ -161,6 +161,31 @@ def test_mp18_ids_are_hashed_at_most_five_and_withheld_without_the_key(
     assert f.leak_evidence.hashed_ids == [] and f.leak_evidence.ids_withheld_reason == "key_missing"
 
 
+# --- cycle 1: a non-2xx list read is "not probed", never "clean" -------------------------------
+
+def test_mp18_an_owner_list_that_returns_401_names_the_view_unprobed_never_clean(
+        sc: Scaffold) -> None:
+    sc.app.serve("tenant-a", LIST, data=rows("a", 2) + rows("b", 3))
+    sc.app.serve("tenant-b", LIST, status=401)
+    sc.plan(_plan())
+    sc.grant(10)
+    assert _run(sc) == []
+    unprobed = _log(sc).unprobed
+    assert unprobed, "a 401 on the owner list must not read as a clean view"
+    assert {u.reason for u in unprobed} == {StopReason.LIST_STATUS}
+    assert any(u.item.endswith("owner_list") for u in unprobed)
+
+
+def test_mp18_a_viewer_list_that_returns_403_names_the_view_unprobed(sc: Scaffold) -> None:
+    sc.app.serve("tenant-a", LIST, status=403)
+    sc.app.serve("tenant-b", LIST, data=rows("b", 3))
+    sc.plan(_plan())
+    sc.grant(10)
+    assert _run(sc) == []
+    unprobed = _log(sc).unprobed
+    assert unprobed and unprobed[0].reason is StopReason.LIST_STATUS
+
+
 # --- MP20: bounded and deterministic ---------------------------------------------------------
 
 def test_mp20_at_most_three_swaps_and_the_rest_is_named_unprobed(sc: Scaffold) -> None:

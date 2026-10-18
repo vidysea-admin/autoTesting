@@ -110,20 +110,32 @@ def read_safely(transport: ReadTransport, role_id: str, url: str) -> ProbeReply 
         return None
 
 
-def _in_scope(project: Project, platform: Platform, url: str) -> bool:
+def _platform_hosts(platform: Platform) -> list[str]:
+    """The probed platform's OWN hosts: its declared domains, else the host of its base URL.
+
+    Never the project-wide `allowed_domains`: an approval names ONE platform's exact base URL, so
+    it must not be spendable on a sibling platform's host (cycle 0, coordinator A)."""
+    base = urlsplit(platform.base_url).hostname
+    return [d for d in (*platform.allowed_domains, base) if d]
+
+
+def _in_scope(platform: Platform, url: str) -> bool:
     host = urlsplit(url).hostname
-    return bool(host) and (project.allows_domain(host) or any(
-        host == d or host.endswith(f".{d}") for d in platform.allowed_domains))
+    return bool(host) and any(
+        host == d or (platform.include_subdomains and host.endswith(f".{d}"))
+        for d in _platform_hosts(platform))
 
 
-def _check_scope(project: Project, platform: Platform, plan: AuthzPlan) -> None:
+def _check_scope(platform: Platform, plan: AuthzPlan) -> None:
     urls = [platform.base_url]
     for t in plan.tenant_probes:
         urls += [t.list_url, *([t.detail_url] if t.detail_url else [])]
     for p in plan.privilege_probes:
         urls += [*p.read_urls, *(c.url for c in p.controls)]
-    if not all(_in_scope(project, platform, abs_url(platform, u)) for u in urls):
-        raise AdversarialBlocked("a planned URL is outside the platform's allowed_domains")
+    if not all(_in_scope(platform, abs_url(platform, u)) for u in urls):
+        raise AdversarialBlocked(
+            f"a planned URL is outside the domains of platform '{platform.id}' "
+            "(an approval covers one platform's own hosts only)")
 
 
 def _log_refusal(store: ProjectStore, redactor: Redactor, *, target: str, planned: int,
@@ -139,7 +151,7 @@ def gate(*, store: ProjectStore, project: Project, platform: Platform, plan: Aut
     """Every check that must hold before the first request leaves; raises, never sends."""
     planned = plan_size(plan)
     try:
-        _check_scope(project, platform, plan)
+        _check_scope(platform, plan)
         approval = require_project_approval(
             store.list_approvals(), project=project, kind=APPROVAL_KIND, target=platform.base_url,
             probes=planned, wall_clock_s=plan.wall_clock_s, production=project.production,

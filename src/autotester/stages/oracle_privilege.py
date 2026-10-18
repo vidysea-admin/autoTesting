@@ -94,23 +94,29 @@ def _reaches(esc: EscalationTransport, role_id: str, control: RoleAssignControl)
         return False
 
 
+def _record_revert(probe: PrivilegeProbe, control: RoleAssignControl, prep: ProbeSession,
+                   fid: str, reverted: bool) -> None:
+    append_jsonl(prep.run_dir / AUTHZ_DIR / "reverts.jsonl", RevertRecord(
+        finding_id=fid, control_id=control.id, role_id=probe.lower_role_id, reverted=reverted,
+        timestamp=datetime.now(UTC).isoformat()))
+
+
 def _assign(probe: PrivilegeProbe, control: RoleAssignControl, prep: ProbeSession,
             esc: EscalationTransport) -> MultiRoleFinding | None:
     """One attempt. Accepted => revert at once (outside the cap, reserved up front) and record."""
+    fid = finding_id("priv", probe.id, control.id)
     try:
         accepted = bool(esc.assign(probe.lower_role_id, control))
-    except Exception:  # state unknown: undo if anything took, report nothing we cannot prove
-        _revert(esc, probe.lower_role_id, control)
+    except Exception:  # state unknown: undo if anything took, say whether the undo held
+        reverted = _revert(esc, probe.lower_role_id, control)
         prep.budget.extra()
+        _record_revert(probe, control, prep, fid, reverted)
         return None
     if not accepted:
         return None
     reverted = _revert(esc, probe.lower_role_id, control)
     prep.budget.extra()
-    fid = finding_id("priv", probe.id, control.id)
-    append_jsonl(prep.run_dir / AUTHZ_DIR / "reverts.jsonl", RevertRecord(
-        finding_id=fid, control_id=control.id, role_id=probe.lower_role_id, reverted=reverted,
-        timestamp=datetime.now(UTC).isoformat()))
+    _record_revert(probe, control, prep, fid, reverted)
     state = "reverted in run" if reverted else "NOT reverted, undo by hand"
     return _finding(
         probe, prep, fid,

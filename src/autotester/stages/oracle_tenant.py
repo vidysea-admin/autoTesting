@@ -108,7 +108,7 @@ def _merge(*groups: list[Row], id_field: str) -> list[Row]:
 
 def _read_rows(probe: TenantProbe, prep: ProbeSession, role_id: str, name: str,
                unprobed: list[UnprobedItem]) -> list[Row] | None:
-    """One list page as `role_id`; None (and the rest of the view unprobed) when it cannot go."""
+    """One list page as `role_id`; None (rest of the view unprobed, with why) when it cannot go."""
     names = _steps(probe)
     rest = names[names.index(name):]
     stop = prep.budget.take()
@@ -119,7 +119,10 @@ def _read_rows(probe: TenantProbe, prep: ProbeSession, role_id: str, name: str,
     if reply is None:
         unprobed += _unprobed(probe, rest, StopReason.TRANSPORT_ERROR)
         return None
-    return list(reply.rows) if reply.ok else []
+    if not reply.ok:  # a 401/403/5xx is not "no rows": the view was not probed, and says so
+        unprobed += _unprobed(probe, rest, StopReason.LIST_STATUS)
+        return None
+    return list(reply.rows)
 
 
 def _probe_view(probe: TenantProbe, prep: ProbeSession,
