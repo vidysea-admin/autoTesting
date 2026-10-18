@@ -1,0 +1,28 @@
+{
+  "unit": "t208-role-onboarding",
+  "date": "2026-10-18",
+  "user_type": "onboarder",
+  "base_commit": "83c4c161",
+  "browser": "headed, real browser against a local AutoTester server started and stopped by this unit",
+  "credential_gate": "none: the walk is of the AutoTester onboarding form itself; no product credential is used, synthetic keys only",
+  "steps": [
+    "signed in as a member holding project.create, opened /onboard then followed the link to /onboard/roles",
+    "added 3 platform rows and 8 account rows through the add-row buttons, one submission, role/platform/tenant label typed per row, values typed into write-only inputs",
+    "submitted: redirected to /projects/{slug}/accounts, listing shows 8 accounts with role, platform and tenant label",
+    "page text checked: no typed value text appears anywhere on the listing or the form; value inputs render empty",
+    "submitted a scope typed to admit a sibling platform host: refusal 400 naming account, platform and the wider host",
+    "submitted a half-filled account row: refusal 400 naming the row, nothing written"
+  ],
+  "pages_visited": ["/onboard", "/onboard/roles", "/projects/{slug}/accounts"],
+  "interactions": {"clicks": 11, "typed_fields": 52, "form_submissions": 3, "add_row_clicks": 9},
+  "console_errors": 2,
+  "console_errors_detail": "both are the browser's own 'Failed to load resource: 400' lines for the two deliberate refused submissions (MP5 scope refusal, half-filled row); 0 unexpected",
+  "console_warnings": 0,
+  "unexpected_console_errors": 0,
+  "observed_defects": [],
+  "notes": [
+    "a full-page screenshot hung once (tooling timeout); the browser was closed and the walk redone with viewport screenshots",
+    "the dev server PID was started by this unit and stopped at the end"
+  ],
+  "screenshots": ["accounts-listing.png"]
+}

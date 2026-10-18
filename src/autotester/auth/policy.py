@@ -72,6 +72,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     ("GET", "/favicon.ico"): MEMBER,
     ("GET", "/"): MEMBER,
     ("GET", "/onboard"): _key(K.PROJECT_CREATE), ("POST", "/onboard"): _key(K.PROJECT_CREATE),
+    ("GET", "/onboard/roles"): _key(K.PROJECT_CREATE),   # T-208 MP6: same key as /onboard
+    ("POST", "/onboard/roles"): _key(K.PROJECT_CREATE),
     ("GET", "/live"): _key(K.LIVE_VIEW),
     ("GET", "/inbox"): _key(K.REPORT_VIEW),   # T-201c/TT7; rows are filtered per project
     ("GET", "/auth/check"): _key(K.LIVE_VIEW),   # HO12: the proxy's forward_auth target
@@ -90,7 +92,7 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "/product-map", "/flow-diagram", "/schedule", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}",
-        "/proposals")},
+        "/proposals", "/accounts")},
     **{("GET", _P + tail): _REPORT for tail in (
         "/runs/{run_id}", "/tracker", "/tracker/export.csv", "/tracker/export.xlsx",
         "/tracker/{bug_key}", "/report", "/report.xlsx", "/report.html", "/damage-report",
@@ -102,7 +104,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "/login-case", "/flowspec/approve", "/flowspec/request-edit", "/cases/generate",
         "/crawls/{crawl_id}/merge", "/issues/{issue_id}/pin", "/sources",
         "/sources/{source_id}/analyze", "/env/url", "/tracker/{bug_key}/assignee",
-        "/proposals/stage", "/proposals/review")},
+        "/proposals/stage", "/proposals/review",
+        "/accounts")},   # T-208 MP6: project.edit; a value also needs credentials.edit (handler)
     **{("POST", _P + tail): _project(K.VIDEO_UPLOAD) for tail in (
         "/sources/upload", "/sources/drive")},   # T-198: file and Drive-link intake
     **{("POST", _P + tail): _RUN for tail in ("/run", "/explore", "/test")},
