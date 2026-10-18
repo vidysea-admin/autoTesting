@@ -11,7 +11,7 @@ TIER: M (new public oracle modules + a shared schema file; no L trigger in the c
 FAILURES: none
 CAPABILITY-COVERAGE: 6/6 rows evidenced by 2 floor falsifications by me (MP25, MP26) plus the builder's recorded 6 (same files, not re-run: floor is 1 per criterion)
 LIVE-BROWSER: not-applicable (src/autotester/schema, src/autotester/stages, tests only)
-ISSUES-WRITTEN: AT-1025 (medium), AT-1026 (low), AT-1027 (low, process)
+ISSUES-WRITTEN: AT-1025 (medium), AT-1026 (low)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
 
 ## Evidence
@@ -30,5 +30,5 @@ EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
 - CORE-REQUESTs 1-4 in the manifest stand for the maker; PASS here does not close MP25/MP26 against a live T-210 session (fakes only, per manifest).
 
 EXPLANATION: Both criteria are met on my own probes and tests; each falsification went green then red on the named assertion, and the diff adds six files without removing anything. The two limits above are disclosed design choices outside the shipped matrix, so they are ledger rows, not FAILs.
-slow: protocol read and probe authoring 5 min (wall exceeded 10 min, process row AT-1027)
-Metrics: start=2026-10-18T20:17:50Z end=2026-10-18T20:26:55Z wall_min=11 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-18.15 lane=normal check_s=660 mutants=0 defects_unit=0 defects_6c=0
+slow: protocol read and probe authoring 4 min (wall 9 min: over the 5-min target, under the 10-min hard checkpoint)
+Metrics: start=2026-10-18T20:17:50Z end=2026-10-18T20:26:55Z wall_min=9 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-18.15 lane=normal check_s=545 mutants=0 defects_unit=0 defects_6c=0
