@@ -193,3 +193,17 @@ def test_report_lookup_rejects_partial_corrupt_and_wrong_lineage(tmp_path, monke
     store, run, case, _ = _launch(tmp_path / "passed", monkeypatch, verdict_result=Result.PASS)
     assert BundleIndex.model_validate_json(
         (store.paths.bundles_dir(run.id) / "index.json").read_text()).cases == []
+
+
+def test_unparseable_trace_line_is_recorded_with_file_and_line_not_swallowed(
+        tmp_path, monkeypatch, caplog):
+    """AT-1304 C3: a corrupt trace line must say which file and line broke the bundle."""
+    store, run, _, _ = _launch(tmp_path, monkeypatch)
+    trace = store.paths.run_trace(run.id)
+    trace.write_text(trace.read_text().splitlines()[0] + '\n{"latency_s":0.[REDACTED]:X}\n')
+    run_artifacts.assemble_run_bundles(store, run)
+    path = store.paths.bundles_dir(run.id) / "index.json"
+    entry = BundleIndex.model_validate_json(path.read_text()).cases[0]
+    assert entry.status == "unavailable" and entry.diagnostic == "assembly_failed"
+    assert entry.reason == "trace.jsonl:2: not valid JSON"
+    assert "trace.jsonl:2" in caplog.text and SECRET not in path.read_text() + caplog.text
