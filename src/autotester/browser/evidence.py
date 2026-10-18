@@ -35,6 +35,60 @@ BLANK_GRACE_MS = 300
 BLANK_SPREAD = 3  # max-min luminance at or below this counts as uniform
 
 
+# AT-1305: hard upper bound on the extra wait before a step screenshot. Pending = a document still
+# loading, an aria-busy / progressbar element, or a visible control whose text is an in-flight
+# "Logging in..." style label (the ellipsis keeps a plain "Loading" heading out).
+CAPTURE_SETTLE_MS = 4000
+_PENDING_JS = """() => {
+  if (document.readyState !== 'complete') return true;
+  if (document.querySelector('[aria-busy="true"], [role="progressbar"]')) return true;
+  const word = '(logging in|signing in|loading|submitting|processing|saving|please wait)';
+  const label = new RegExp('\\\\b' + word + '\\\\s*(\\\\.{2,}|\\u2026)', 'i');
+  const sel = 'button, [role="button"], a, [role="status"], input[type="submit"]';
+  for (const el of document.querySelectorAll(sel)) {
+    const r = el.getBoundingClientRect();
+    const text = (el.innerText || el.value || '').trim();
+    if (r.width > 0 && r.height > 0 && label.test(text)) return true;
+  }
+  return false;
+}"""
+
+
+def _capture_pending(session) -> bool:
+    """One DOM read: is the page mid-transition? An unreadable page counts as settled (best
+    effort -- a frame that cannot be probed must not stall the capture)."""
+    try:
+        return session.page.evaluate(_PENDING_JS) is True
+    except Exception:
+        return False
+
+
+def settle_for_capture(session, label: str, step_order: int | None,
+                       bound_ms: int = CAPTURE_SETTLE_MS) -> bool:
+    """AT-1305: wait, up to `bound_ms`, for a pending state to clear before the step screenshot.
+
+    A settled page costs one DOM read and no sleep. When the bound runs out the page is still
+    captured and a DOM evidence row (not an `assert ` row) says it did not settle. The run-budget
+    brake is never swallowed. Returns whether the page settled."""
+    elapsed = 0
+    while _capture_pending(session):
+        if elapsed >= bound_ms:
+            session._record(EvidenceKind.DOM, f"page did not settle within {bound_ms}ms before "
+                            f"capture: {label}", step_order=step_order)
+            return False
+        delay = session._timeout(min(assertions.POLL_MS, bound_ms - elapsed)).get(
+            "timeout", assertions.POLL_MS)
+        try:
+            session.page.wait_for_timeout(delay)
+        except RunBudgetExceeded:
+            raise
+        except Exception:
+            pass
+        session._timeout()
+        elapsed += delay
+    return True
+
+
 def _is_blank(path: str) -> bool:
     """True when the PNG at `path` is one flat colour; an unreadable file is NOT blank."""
     try:
