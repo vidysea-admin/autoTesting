@@ -46,4 +46,4 @@ Metrics: start=2026-10-19T03:00:00Z end=2026-10-19T03:25:00Z wall_min=25 agent_m
 - `uv run pytest tests/test_oracle_state_after.py tests/test_state_probe_schema.py tests/test_oracle_answer_key.py tests/test_oracle_copy_lint.py tests/test_network_oracles.py tests/test_leak_evidence.py tests/test_oracle_responsive.py tests/test_leak_url_ids.py` -> expected: all pass (no -q).
 - `git diff --name-only 58e13d6b..58c0361e` -> expected: exactly the 4 files above; no core/image_privacy.py, no qa/contracts.
 
-## Status: ready-for-check
+## Status: checked-PASS
