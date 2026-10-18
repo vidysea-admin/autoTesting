@@ -1,6 +1,6 @@
 # Manifest - fix6c-r4-chokepoint (pre-push check 6c r4 repair, G11)
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Contract:** qa/contracts/core-invariants.md (actuator choke-point D-015); qa/contracts/network-assertions.md NA6
 **Authority:** D-104 (build G11 now); repair of qa/verdicts/integration-6c-int1017-r4.md
