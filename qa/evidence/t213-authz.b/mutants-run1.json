@@ -1,0 +1,87 @@
+[
+ {
+  "mutant": "control",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.74s"
+  ]
+ },
+ {
+  "mutant": "M18a_swap_ignores_status",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.81s"
+  ]
+ },
+ {
+  "mutant": "M18b_list_ignores_status",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.72s"
+  ]
+ },
+ {
+  "mutant": "M19a_4xx_counts_as_success",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_privilege.py::test_mp19_one_escalatable_endpoint_is_p0_and_the_refused_one_is_not",
+   "FAILED tests/test_oracle_privilege.py::test_mp19_a_clean_app_reports_nothing",
+   "FAILED tests/test_oracle_privilege.py::test_registry_runs_the_real_privilege_module",
+   "3 failed, 52 passed, 2 warnings in 3.73s"
+  ]
+ },
+ {
+  "mutant": "M19b_revert_always_recorded_true",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_privilege.py::test_mp19_a_revert_that_did_not_hold_is_recorded_and_called_out[False]",
+   "FAILED tests/test_oracle_privilege.py::test_mp19_a_revert_that_did_not_hold_is_recorded_and_called_out[result1]",
+   "2 failed, 53 passed, 2 warnings in 3.01s"
+  ]
+ },
+ {
+  "mutant": "M19c_write_guard_only_read_only",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.95s"
+  ]
+ },
+ {
+  "mutant": "M20a_ceiling_ge",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.78s"
+  ]
+ },
+ {
+  "mutant": "A5a_probes_minus_one",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_privilege.py::test_the_approval_gate_covers_reads_and_both_attempt_and_revert",
+   "FAILED tests/test_authz_gate.py::test_a5_an_approval_for_two_probes_against_a_plan_of_three_is_refused_with_nothing_sent",
+   "2 failed, 53 passed, 2 warnings in 2.75s"
+  ]
+ },
+ {
+  "mutant": "M20b_no_ceiling_clamp_on_cap",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.79s"
+  ]
+ },
+ {
+  "mutant": "MPI1a_reply_rows_dumped",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_authz_probe_schema.py::test_reply_rows_are_kept_in_memory_and_never_dumped",
+   "1 failed, 54 passed, 2 warnings in 2.62s"
+  ]
+ },
+ {
+  "mutant": "A5b_wall_clock_not_checked",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.81s"
+  ]
+ }
+]

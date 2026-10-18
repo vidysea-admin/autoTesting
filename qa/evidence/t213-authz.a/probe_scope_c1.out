@@ -1,0 +1,12 @@
+sibling-platform host (cycle-0 escape): REFUSED AdversarialBlocked transport_urls=[]
+sibling, include_subdomains=False: REFUSED AdversarialBlocked transport_urls=[]
+protocol-relative //other.test: REFUSED AdversarialBlocked transport_urls=[]
+userinfo app.test@other.test: SCHEMA-REJECTED before the gate (ValidationError)
+suffix lookalike evilapp.test: REFUSED AdversarialBlocked transport_urls=[]
+own path (control, must pass): GATE PASSED, transport saw ['https://app.test/admin/users']
+own subdomain default include_subdomains (control): GATE PASSED, transport saw ['https://api.app.test/admin/users']
+trailing-dot host app.test.: REFUSED AdversarialBlocked transport_urls=[]
+uppercase host APP.TEST: GATE PASSED, transport saw ['https://APP.TEST/admin/users']
+parser-diff 'https://other.test\\@app.test/x' ->in_scope True
+parser-diff 'https://app.test\\@other.test/x' ->in_scope False
+parser-diff 'https://other.test#@app.test/x' ->in_scope False

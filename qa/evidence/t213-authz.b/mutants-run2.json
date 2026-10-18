@@ -1,0 +1,61 @@
+[
+ {
+  "mutant": "control",
+  "rc": 0,
+  "result": [
+   "55 passed, 2 warnings in 2.72s"
+  ]
+ },
+ {
+  "mutant": "M18c_owner_filter_inverted",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_tenant.py::test_mp18_fixture_leaking_three_foreign_rows_is_one_p0_data_leak",
+   "FAILED tests/test_oracle_tenant.py::test_mp18_a_clean_app_reports_nothing - A...",
+   "FAILED tests/test_oracle_tenant.py::test_mp18_id_swap_reads_that_leak_count_once_with_the_list_rows",
+   "FAILED tests/test_oracle_tenant.py::test_mp18_a_correctly_refused_swap_is_not_a_leak",
+   "FAILED tests/test_oracle_tenant.py::test_mp18_ids_are_hashed_at_most_five_and_withheld_without_the_key",
+   "5 failed, 50 passed, 2 warnings in 2.76s"
+  ]
+ },
+ {
+  "mutant": "M18d_count_mode_offset",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_tenant.py::test_mp18_declared_own_count_mode_counts_the_surplus_and_keeps_no_id",
+   "1 failed, 54 passed, 2 warnings in 2.43s"
+  ]
+ },
+ {
+  "mutant": "M20c_swap_limit_4",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_tenant.py::test_mp18_no_foreign_value_reaches_disk_a_log_or_the_finding",
+   "FAILED tests/test_oracle_tenant.py::test_mp18_id_swap_reads_that_leak_count_once_with_the_list_rows",
+   "FAILED tests/test_oracle_tenant.py::test_mp18_a_correctly_refused_swap_is_not_a_leak",
+   "FAILED tests/test_oracle_tenant.py::test_mp20_at_most_three_swaps_and_the_rest_is_named_unprobed",
+   "FAILED tests/test_oracle_tenant.py::test_mp20_the_request_cap_stops_the_pass_and_names_what_was_left",
+   "FAILED tests/test_oracle_tenant.py::test_mp20_the_wall_clock_stops_the_pass_and_the_pacing_is_applied",
+   "6 failed, 49 passed, 2 warnings in 2.40s"
+  ]
+ },
+ {
+  "mutant": "M20d_cap_boundary_ge",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_tenant.py::test_mp20_the_request_cap_stops_the_pass_and_names_what_was_left",
+   "FAILED tests/test_oracle_tenant.py::test_mp20_a_second_view_after_the_cap_is_wholly_unprobed",
+   "FAILED tests/test_oracle_privilege.py::test_mp20_replayed_reads_stop_at_the_cap_and_the_rest_is_named",
+   "FAILED tests/test_oracle_privilege.py::test_the_two_oracles_share_one_platform_cap_through_their_logs",
+   "4 failed, 51 passed, 2 warnings in 2.49s"
+  ]
+ },
+ {
+  "mutant": "M20e_revert_reserve_1",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_privilege.py::test_mp20_the_cap_reserves_room_for_the_revert_so_it_is_never_exceeded",
+   "1 failed, 54 passed, 2 warnings in 2.56s"
+  ]
+ }
+]
