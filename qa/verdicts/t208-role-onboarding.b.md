@@ -1,0 +1,36 @@
+# Verdict (coordinator B) - t208-role-onboarding
+
+Date: 2026-10-18 · Bound root: D:/autoTesting/.worktrees/t208-role-onboarding · Cycle checked: 0
+Head checked: 64479541 (code 83c4c161) · Base: 722bf3df (= `git merge-base HEAD int/1017`) · Policy-Version: proportional-verification/2026-10-18.15
+Verdict path: qa/verdicts/t208-role-onboarding.b.md · Dual check: coordinator B, blind to coordinator A (no other verdict/checkpoint read)
+
+## Check plan
+Tier L, dual trigger auth (routes_role_accounts.py:115) + security (role_onboarding.py:104, `.env` write). Checks: criteria MP4/MP5/MP6 re-run; floor falsification x3 in copies; security read of both files plus a probe set (synthetic keys, scratch AUTOTESTER_ROOT, never the repo `.env`); step 4c diff scope; affected neighbours; judge the browser evidence. SERIAL: sub-checkers not spawned, checks are in one process family sharing the pytest slot.
+
+VERDICT: PASS
+SCOREBOARD: 3/3 criteria met (MP4, MP5, MP6), 2/2 invariants hold (MPI1, MPI6: not touched by the diff; MPI5 key-only/namespace held, probes P1-P6)
+TIER: L (auth permission check src/autotester/ui/routes_role_accounts.py:115; security scope refusal src/autotester/stages/role_onboarding.py:103; `.env` data write routes_role_accounts.py:185,232)
+FAILURES: none
+PROPOSED-ISSUE: {"sev":"low","type":"robustness","where":"src/autotester/ui/routes_role_accounts.py:184-189","what":"New-project path saves project.json (:184) before the .env write (:185) and before set_owner (:187). If write_values raises (lock timeout, disk), the project exists with no owner and no values, the creator gets 404 on it and a retry gets 400 'slug already exists'. Reproduced: probe P8 (qa/evidence/t208-role-onboarding.b/probe_b_security.py). The .env write itself is atomic (os.replace); this is only the cross-store order. Fix direction: write .env first (values already validated) or roll the project dir back on failure."}   (P1)
+PROPOSED-ISSUE: {"sev":"low","type":"credential-guard","where":"src/autotester/ui/routes_role_accounts.py:120-127","what":"_texts() feeds the pasted-credential scan name/URL/domains/role/tenant/scope but not account_id or platform_id. A stored .env value typed into account_id (charset-valid lowercase) is accepted and saved into project.json (303, probe P7), a git-tracked file. Keys are protected by the namespace rule; ids are not. Fix direction: add ids to _texts."}   (P2)
+PROPOSED-ISSUE: {"sev":"low","type":"observation","where":"src/autotester/ui/routes_role_accounts.py:222-228","what":"The edit path replaces an existing SecretRef (kept filter) so a project.edit-only member can change the domain scope of a key that already holds a .env value. This is contract-sanctioned (MP6: no value = project.edit only) and equals the existing delete + declare flow in routes_project_edit.py:219-260 (both project.edit), so it is not a new escalation. Candidate hardening: require credentials.edit when a re-declare changes the scope of a key present in .env."}   (P3)
+CAPABILITY-COVERAGE: 3/3 rows reproduced (green in copy, red on the named assertion, restored)
+LIVE-BROWSER: judged maker evidence qa/evidence/browser-t208-role-onboarding-2026-10-18/ (report.json + accounts-listing.png: 8 accounts, 3 platforms, role/platform/tenant listed, 2 console errors both the deliberate 400s); not re-driven by me per the dispatch hint (every walk criterion is also evidenced by my HTTP-level runs)
+ISSUES-WRITTEN: none (dual coordinator: findings are the PROPOSED-ISSUE lines above)
+EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
+EXPLANATION: All three criteria hold on my own runs, and each is falsified by a single-hunk edit in a copy outside the worktree. The security read found no value leak (responses, caplog, stdout/stderr, every file under the scratch root except `.env`, listing and edit-form DOM), no `.env` clobber (other keys, comments preserved; no .tmp left; a bad value in any row of a batch writes nothing), no namespace escape (provider/AUTOTESTER_*/other-project keys refused on both routes) and no scope escape (7 typed scopes refused naming account, platform, host). Full-suite trigger: `shard_suite.py --affected` returned exit 2 (integration-required, dynamic glob/walk over ui files) -> for the pre-push 6c step; I ran no full suite. Judgement calls 1-9 in the manifest read and accepted; the manifest claim "doctor reports 2 stale-generated" is moot: doctor is clean at HEAD.
+
+## Evidence (all re-run by me, TMP=D:/autoTesting/.work/tmp, repo-root .env never touched)
+- Step 3: `uv run --directory <wt> pytest tests/test_role_onboarding.py tests/test_role_accounts_routes.py tests/test_ui_auth_policy_table.py` -> 34 passed (39 s). Selected node ids = the manifest's Tests[MP4|MP5|MP6] (all in these files).
+- Neighbours (affected by the new route/policy rows): 14 auth/credential/env/project test files -> 210 passed, 1 skipped (73 s).
+- `ruff check` on the 7 changed py files -> All checks passed. `autotester doctor` -> clean.
+- 4b, copy per row under scratchpad/chkB/row1..3 (git archive HEAD, PYTHONPATH=copy/src, import path verified):
+  - MP4: green-before 3 passed; `ro.write_values(...)` at routes_role_accounts.py:185 -> `pass`; red: 2 failed, `KeyError: 'NORTHWIND_ACCT0_PASS'` (assertion on stored keys).
+  - MP5: green-before 2 passed; role_onboarding.py:103 `if outside | sibling:` -> `if False:`; red: 2 failed (`assert 303 == 400`, refusal test).
+  - MP6: green-before 1 passed; routes_role_accounts.py:216 `_require_credentials_edit(slug)` -> `pass`; red: `assert (303 == 403)` in test_mp6_project_edit_alone_declares_keys_but_cannot_write_a_value.
+- Probes (qa/evidence/t208-role-onboarding.b/probe_b_security.py, run in a clean copy, 27 tests, all as designed; P7/P8 print their observations): P1 no value in logs/bodies/files/DOM; P2 `.env` preserved; P3 bad value (newline, CR, both quotes) in any row writes nothing, new and edit; P4 7 scopes refused, 2 normalised scopes accepted and stored normalised; P5 server/foreign keys refused on both routes; P6 another project's key refused; P9 no-group and a non-owner project.create holder refused with `.env` unchanged; P10 creator becomes owner (`@own` scopes work), owner without credentials.edit@own gets 403 on a value.
+- Step 4c: `git diff 722bf3df..83c4c161 --stat` = 10 files, all in the manifest's What changed; deletions are only the 4 policy/test-table list-tail lines extended with `"/accounts"` / the two `/onboard/roles` rows; no function, route, test or config key removed.
+- full-suite trigger: shard_suite exit 2 (integration-required) for maker step 6c; none run here.
+
+Metrics: start=2026-10-18T18:11:59Z end=2026-10-18T19:46:29Z wall_min=94 agent_min=unavailable blocked_min=unavailable suite_runs=0 repeat_runs=0 mutations=3 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-18.15 lane=normal check_s=5670 mutants=0 defects_unit=0 defects_6c=0
+slow: clock jump 52 min between two consecutive tool calls (18:39:01 -> 19:31:28) not caused by my commands; `git archive` copy 3 min; the rest is test runs. wall_min over the L deadline of 45 is therefore not attributable to the check steps; all mandatory evidence completed, so no CONTINUE-NEEDED.
