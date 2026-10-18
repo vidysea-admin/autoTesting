@@ -1,6 +1,6 @@
 # Intent — AutoTester
 
-**Purpose:** why AutoTester exists, in the originator's words — the problem, the numbered outcomes (O1-O15), who uses it, and the constraints every contract inherits.
+**Purpose:** why AutoTester exists, in the originator's words — the problem, the numbered outcomes (O1-O15 here; Group 11's O16-O21 in the feature intent), who uses it, and the constraints every contract inherits.
 **Open me when:** you are about to add a capability and need to know which outcome it serves, or a contract criterion cites `serves: intent#O*`.
 
 <!-- PLAN phase step 1, written as a BACKFILL (maker SKILL.md init step 2b backfill clause):
@@ -68,6 +68,15 @@ than an honest gap.
   groups of ticked permissions, a new account having none. Default groups: CEO/Admin (everything,
   every project), Sub-admin (assigned projects), Developer (own videos, approves access to them),
   Tester (only what is shared, can comment). (D-072; T-204 owns the mechanism.)
+- **O16-O21 (Group 11, multi-role / multi-platform, added 2026-10-18 under D-105)** — N role accounts
+  across M linked platforms tested in one run. The outcomes live in
+  `docs/features/multi-role-platform/intent.md` (one concept, one place; a criterion cites
+  `serves: intent#O16`..`O21` and it resolves there): O16 declared platform links followed and
+  accounted for · O17 N role accounts across M platforms accepted at onboarding, keys only · O18
+  cross-role scenarios asserting what another role sees or receives within T · O19 data leaks and
+  privilege escalation found by bounded probes and shown as a P0 banner, with no third-party personal
+  data stored · O20 depth oracles that each say whether they ran · O21 scored against the CEO
+  benchmark. Status: the schema (T-207) is built; T-208..T-220 are planned (`docs/plan.md`, Group 11).
 
 ## Affected users and systems
 
@@ -88,6 +97,11 @@ user types below per unit (cost gate).
 | `subadmin` | Sub-admin group: manages only the projects assigned to them | add members, approve access, set the schedule, bind the tracker sheet for their projects | a screen showing other projects | 3 | user-management screens | group confirmed 2026-10-07; fields drafted |
 | `trainer` | domain expert supplying recordings | teach a flow by recording it once; confirm a reported bug is real | being asked for a video with no indication of which screen is missing | 3 | screen recordings, WhatsApp, Excel issue sheets | drafted — not confirmed |
 | `release-manager` | whoever runs the release | trigger the approved suite against a release and get a pass/fail with consent respected | a run that writes to production, or one that cannot be resumed after a crash | 1 | release checklists, approval gates | drafted — not confirmed |
+
+Group 11 adds four AutoTester user types (`onboarder`, `lead`, `dev`, `benchmark-owner`), drafted from
+Umesh's 2026-10-16 answers and listed in `docs/features/multi-role-platform/intent.md`. The product roles
+a tester types in (school admin, counsellor, parent, ...) are `RoleAccount.role` values, not AutoTester
+user types.
 
 ### Systems
 `src/autotester/` (stages · schema · browser · providers · ui) · Playwright/Chromium · the
@@ -140,6 +154,9 @@ for report delivery, Google Drive and Sheets through `gws`.
       neither). Gates only the email adapter. Detail in `docs/features/team-loop/intent.md`.
 - [ ] **Q6 (Group 10)** — Which Google identity the server uses to fetch pasted Drive links. Gates only
       the live Drive fetch.
+- [ ] **Group 11** — its human gates (IMAP host and mailbox keys, the atomic split of the CEO list, FP
+      adjudication, the CEO's active hours, mailboxes for accounts created inside a run) are listed in
+      `docs/features/multi-role-platform/intent.md` "Open questions" and `docs/plan.md` "Group 11".
 - [ ] PARKED: `org_id` on every row for a later multi-company move (Q1 follow-up; default: not built).
 - [ ] PARKED: the second product (ERP or another) — the trust number is scored on Pathlynks (D-080 item 4,
       2026-10-10); a second product waits until Pathlynks is proven (Umesh 2026-09-24: "not only erp").

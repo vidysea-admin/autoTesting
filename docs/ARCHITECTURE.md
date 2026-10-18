@@ -32,7 +32,7 @@ Teaching Sources pick INGEST (learn); credentials-only picks DISCOVER (bounded B
 | Concept | Lives in |
 |---|---|
 | All data shapes | `schema/` (one model per file) |
-| Closed vocabularies (actions, case classes, results, policies) | `schema/enums.py` |
+| Closed vocabularies (actions, case classes, results, policies); Group 11's (link kind, account origin, priority, finding class, assert channel, oracle name) | `schema/enums.py`; G11's in `schema/multi_role_enums.py` (enums.py is at its cap) |
 | The edge-case taxonomy | `schema/enums.py::CaseClass` + `KIND_BY_CLASS` |
 | Artifact envelope (schema_version, created_at, provenance) | `schema/base.py::Artifact` |
 | Id minting, content hashing, file sha256 | `core/ids.py` |
@@ -62,6 +62,8 @@ Teaching Sources pick INGEST (learn); credentials-only picks DISCOVER (bounded B
 | Web UI: unified intake, masked .env editor, run/report views, shared visual theme (thin, no second store) | `ui/app.py` + `ui/env_editor.py` + `ui/theme.py::page` |
 | Docker: containerized app + virtual display + noVNC live-watch view (local dev only) | `Dockerfile`, `docker/entrypoint.sh`, `docker-compose.yml` |
 | Regression proof (break a fixture, confirm exactly that case FAILs) + bench (north star scorecard: seeded corpus, real trial vs human-oracle baseline) | `scripts/regression_proof.py`, `stages/bench.py::scorecard` |
+| Multi-role data shapes (**built**, T-207): `Platform`, `PlatformLink` (redirect/sso/shared_account/handoff), `RoleAccount` and `MailboxRef` (secret keys only, never values); optional `Project.platforms`/`platform_links`/`role_accounts`, an old project reads as one implicit platform (`Project.effective_platforms`) | `schema/platform.py`, `schema/platform_link.py`, `schema/role_account.py`, `schema/mailbox_ref.py`, `schema/project.py` |
+| Multi-role runtime (**planned, T-208..T-220, not built**): role onboarding form; one isolated browser context per role account; platform-link following; cross-role runner (role-tagged steps, `ui`/`mailbox`/`api` assertions within T); oracle registry (an unbuilt oracle reports `not built`); the oracles; leak evidence (counts, field names, HMAC ids, masked screenshots, never third-party data) with the P0 report banner; CEO-benchmark scoring on the existing bench scorer | `stages/role_onboarding.py` + `ui/routes_role_accounts.py` (T-208); `stages/multi_role_session.py`, `stages/platform_links.py` (T-210); `stages/cross_role_runner.py`, `stages/oracle_registry.py` (T-211); `stages/oracle_*.py` + `sources/imap_mailbox.py` (T-212..T-217, T-219, T-220); `stages/leak_evidence.py`, `stages/finding_priority.py`, `stages/report_banner.py` (T-209); `stages/ceo_benchmark.py` (T-218). Spec: `docs/features/multi-role-platform/intent.md`, `qa/contracts/multi-role-platform.md` |
 
 Duplicating any of these is a bug — `autotester doctor` fails on a class or function defined twice.
 
@@ -142,9 +144,7 @@ Generated from module and model docstrings into `docs/MAP.md` by `autotester map
 ```bash
 uv run autotester doctor       # design rules
 uv run autotester providers    # which model providers have credentials
-uv run pytest                  # test suite
-uv run ruff check src tests    # lint
-uv run autotester map          # regenerate docs/MAP.md
-uv run autotester snapshot     # regenerate docs/SNAPSHOT.md
+uv run pytest ; uv run ruff check src tests   # test suite ; lint
+uv run autotester map ; snapshot   # regenerate docs/MAP.md ; docs/SNAPSHOT.md
 uv run autotester ledger add … # append a feature event (see docs/FEATURES.jsonl)
 ```

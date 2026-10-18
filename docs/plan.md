@@ -1,6 +1,6 @@
 # Plan — AutoTester, remaining units
 
-**Purpose:** the 3 remaining tasks (refreshed 2026-10-16 from `.goal/goal.json`: 89 of 92 tasks done, 3 pending: T-136, T-169, T-206) in dependency order — files touched, how each is tested, criticality, persona walk — and the tasks held on a human gate.
+**Purpose:** the 3 remaining tasks (refreshed 2026-10-16 from `.goal/goal.json`: 89 of 92 tasks done, 3 pending: T-136, T-169, T-206) in dependency order — files touched, how each is tested, criticality, persona walk — and the tasks held on a human gate. Group 11 (T-207..T-220, added 2026-10-18 under D-105) has its own section below.
 **Open me when:** picking the next unit or wave, or asking what is deliberately not being built right now.
 
 <!-- PLAN phase step 4, BACKFILL. Covers only what is NOT yet shipped; M0–M6 units are already
@@ -11,7 +11,7 @@
 
 **Status 2026-10-14:** T-200 done. T-145, T-169, T-206: code done, live runs in progress under Umesh's production approvals. T-136: deferred until the human tester list arrives. Hosted Ubuntu check: deferred until host details arrive. TV9 clause 2 is decided by D-097.
 
-**Spec:** docs/spec.md (backfill, 2026-09-27; Group 10 R32-R65 added 2026-10-07) · **Status:** draft; Group 10 units T-197..T-201 are done (see `docs/features/team-loop/intent.md`)
+**Spec:** docs/spec.md (backfill, 2026-09-27; Group 10 R32-R65 added 2026-10-07; Group 11 R66-R89 added 2026-10-18) · **Status:** draft; Group 10 units T-197..T-201 are done (see `docs/features/team-loop/intent.md`); Group 11 (T-207..T-220, multi-role) is building: T-207 done, T-208..T-220 pending (see "Group 11 build units")
 
 **Scope decisions (Umesh, 2026-09-27):** build order = everything, max parallel, bounded only by
 measured RAM. Track C is built through C3 only; T-154 (adversarial pass) and T-155 (its report)
@@ -103,6 +103,7 @@ Not held any more:
 No longer held (D-070, 2026-10-07): T-125 and T-165 (runtime egress gate answered), and the FlowSpec
 review gate (status label only). Answered by D-072: the T-204 login mechanism (email and password) and the Group 10 access model.
 Answered by D-081 (2026-10-10): the email sender and credentials (from d:/erp, AutoTester-prefixed keys), the Google identity for Drive links (the existing gws login), run approvals, and Pathlynks-report-first.
+Group 11's credential and human gates are listed in "Group 11 build units" above (role accounts, IMAP host and keys, the CEO-list split and hash, FP adjudication, active hours); they gate T-212's live leg and T-218 only.
 Still owed a human answer: the real T-203 server host and DNS (T-203 runs locally for now; this gates only the hosted check of T-206), the independent human bug list for T-136/T-169, and the first live write of T-199 (deferred by Umesh; T-199 builds a dry run only).
 
 ## Group 10 build units (G1-G10) — refreshed with Umesh's answers, 2026-10-07 (D-072)
@@ -173,6 +174,61 @@ product nobody watches: mitigated by credential-derived approval, single-flight 
 sessions building T-203/T-204 and Group 10 at once will collide on `ui/app.py`; G1 first, then everyone registers
 through `ui/routers.py`.
 
+## Group 11 build units (T-207..T-220) — multi-role, multi-platform (D-104 start, D-105 docs, 2026-10-18)
+
+Spec: R66-R89. Intent: O16-O21 (`docs/features/multi-role-platform/intent.md`). Contract:
+`qa/contracts/multi-role-platform.md` (MP1-MP35, MPI1-MPI6; criteria are the authority, this table only orders the work).
+Wave detail and per-unit briefs: `.work/g11-wave-plan.md` (private scratch). D-104 (Umesh, 2026-10-17) started the
+build before real role credentials exist: a unit that needs a live account builds to green fixtures and then stops at
+a **credential gate**, not a build gate, and the gated leg is a separate open criterion (MP34, MP35).
+
+**State on int/1017 (2026-10-18):** T-207 is built and checker-PASSed (`qa/verdicts/t207-multirole-schema.md`); T-208..T-220
+are pending in `.goal/goal.json`. Everything below the T-207 row is planned, not built.
+
+| G | unit (task) | reqs / criteria | files (N = new, E = edit in place) | tier | depends on | gate |
+|---|---|---|---|---|---|---|
+| W1 | `t207-multirole-schema` (T-207) **done** | R66-R68 / MP1-MP3 | N `schema/multi_role_enums.py`, `platform.py`, `platform_link.py`, `role_account.py`, `mailbox_ref.py`; E `schema/project.py` | M | — | none |
+| W2 | T-208 role onboarding | R69-R71 / MP4-MP6 | N `stages/role_onboarding.py`, `ui/routes_role_accounts.py`, `ui/role_accounts_view.py`; E `ui/routers.py` | L (auth, credential write; dual check) | T-207 | persona walk as `onboarder` needs no product credential |
+| W2 | T-209 finding, leak evidence, P0 banner | R72-R75 / MP7-MP10 | N `schema/multi_role_finding.py`, `schema/leak_evidence.py`, `stages/finding_priority.py`, `stages/leak_evidence.py`, `stages/report_banner.py`; E `stages/unified_report_render.py` (`unified_report.py` not edited) | L (security; dual check) | T-207 | none |
+| W3 | T-210 multi-role session, link following | R76-R77 / MP11-MP12 | N `stages/multi_role_session.py`, `stages/platform_links.py` (reads `browser/session.py`, `stages/parallel_run.py`) | L (concurrency) | T-207, T-209 | none |
+| W4 | T-211 cross-role runner, oracle registry | R78-R80 / MP13-MP15 | N `schema/cross_role_scenario.py`, `role_step.py`, `cross_role_assertion.py`, `oracle_context.py`, `stages/cross_role_runner.py`, `stages/oracle_registry.py` | L (timing) | T-210 | none |
+| W5 | T-212 mailbox oracle | R81 / MP16-MP17 | N `sources/imap_mailbox.py`, `stages/oracle_mailbox.py`, `schema/mail_observation.py` | M | T-211 | **credential gate**: IMAP host and per-role mailbox keys gate the live read (MP34) only; the fake-server build is not gated |
+| W5 | T-213 authz oracles | R82 / MP18-MP20 | N `stages/oracle_tenant.py`, `stages/oracle_privilege.py` (models its bounded pass on `stages/adversarial.py`) | L (tenancy; dual check) | T-211, T-209 | a live probe needs a signed `RunApproval` (D-018, D-096) |
+| W5 | T-214 network oracles | R83 / MP21-MP22 | N `stages/oracle_api_error.py`, `stages/oracle_request_budget.py`, `schema/request_budget.py` | M | T-211 | none |
+| W5 | T-215 consistency, answer key | R84 / MP23-MP24 | N `stages/oracle_consistency.py`, `stages/oracle_answer_key.py`, `schema/entity_reading.py`, `schema/answer_key.py` | M | T-211 | none |
+| W5 | T-216 copy lint, responsive sweep | R85 / MP25-MP26 | N `stages/oracle_copy_lint.py`, `stages/oracle_responsive.py`, `schema/lint_rule.py` | M | T-211 | none |
+| W5 | T-219 negative input per role | R87 / MP32 | N `stages/oracle_negative_input.py` (reads `stages/expand.py`, not edited) | M | T-211 | none |
+| W5 | T-220 state after action | R88 / MP33 | N `stages/oracle_state_after.py`, `schema/state_probe.py` | M | T-211 | none |
+| W6 | T-217 credential policy, payment presence | R86 / MP27-MP28 | N `stages/oracle_credential_policy.py`, `stages/oracle_payment.py` | M | T-211, T-212 | live mail checks wait on the T-212 credential gate (MP34) |
+| W7 | T-218 CEO-benchmark acceptance | R89 / MP29-MP31, MP35 | N `stages/ceo_benchmark.py` (reuses `stages/bench.py`, `stages/acceptance_comparison.py`) | L (live production run) | T-208, T-212..T-217, T-219, T-220 | **credential gate + three human gates** (below) |
+
+**Waves:** W1 alone; W2 runs T-208 and T-209 in parallel (disjoint files); W3 needs T-209; W4 follows T-210; W5 opens seven
+units at once (T-212, T-213, T-214, T-215, T-216, T-219, T-220: no two share a file), bounded by RAM like every wave here;
+W6 (T-217) starts the moment T-212 PASSes; W7 is last. T-207 is the only unit with no dependency.
+
+**File ownership (no two parallel builders share a file):** `schema/multi_role_enums.py` is created and edited by T-207
+only (MPI3); a later unit that needs a new enum defines it in its own schema file. `ui/routers.py` is edited by T-208
+only in this group (Group 10 units also register there, so T-208 rebases on whatever master holds). `stages/oracle_registry.py`
+names every oracle module up front (T-211), so the oracle units never edit it. `docs/MAP.md` and `docs/SNAPSHOT.md` are
+regenerated by whoever merges, not hand-edited by builders.
+
+**Credential and human gates (Group 11):**
+1. Real role accounts (8 roles across 3 platforms) and their per-project keys in the repo-root `.env`: Umesh supplies them
+   later (D-104). Gates the live legs only: MP34 (live mailbox), MP35 (live acceptance). Build criteria pass on fixtures.
+2. IMAP host and per-role mailbox keys (T-212 live leg, T-217 live mail checks, the inbox technique in T-218).
+3. T-218 only: the atomic split of the CEO list confirmed by Umesh with its sha256 pinned before the run; adjudication of
+   AutoTester-only findings (the FP rate); the CEO's active hours for the time number (until then time reads `unknown`).
+4. Mailboxes for accounts created inside a run (the admin creates counsellors and students).
+5. A signed `RunApproval` for any live run (D-018, D-096); a real-money charge is never completed; an escalation probe that
+   succeeds is reverted in the same run.
+A builder who reaches green fixtures writes `credential-gate: <what is missing>` in the manifest and stops; the build is not
+asked for again (D-104).
+
+**Group 11 risks:** (1) a leak oracle that stores or prompts a model with another tenant's data would itself be the leak;
+MPI1 and the canary sweep in MP9 are the guard, and T-209 and T-213 get a dual check. (2) The CEO benchmark is easy to game
+by writing scenarios from its findings; the contamination rule (MP30, MPI2) labels and excludes any such scenario.
+(3) Seven parallel oracle units share one RAM budget and one registry contract; a registry change is a T-211 change.
+
 ## Persona walk rule
 
 Required when a unit adds or changes a screen, a navigation path or a user-facing flow, or touches
@@ -191,6 +247,8 @@ a UI surface. Audience is `internal-tool`, so a required walk covers 1–2 user 
   subagents, Track C2, the browser-use fallback.
 - **S4** — units 22–26: LangGraph regression, the measured agent gain, Track C3, the unified
   damage-control report, and the hosted website go-live.
+- **S8** — Group 11 (T-207..T-220, multi-role), after D-104: runs beside the other slices as its waves open. T-207 is
+  done; the live legs (MP34, MP35) wait on credentials, not on the build.
 
 ## Risks
 

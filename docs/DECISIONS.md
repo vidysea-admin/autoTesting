@@ -2706,3 +2706,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (maker session chat, 2026-10-17, quoted above).
 
 **Links:** T-207..T-220; T-136; T-169; T-206; AT-697; AT-699; AT-281; qa/gates/live-acceptance-runs.md; qa/gates/umesh-decisions-2026-10-17.md; docs/features/multi-role-platform/intent.md
+
+## D-105 | 2026-10-18 | type: decision | status: ACTIVE
+
+**What:** Bring the docs in line with Group 11 (multi-role, multi-platform testing, T-207..T-220) as built on int/1017 plus clearly-marked planned units: docs/spec.md gains requirements R66-R89 and the G11 user types and flows; docs/plan.md gains the G11 waves and units in dependency order with the credential-gate notes; docs/intent.md gains a pointer to O16-O21 in the feature intent; docs/ARCHITECTURE.md prose gains the concept-to-file rows for the multi-role schema (built, T-207) and for the multi-role runtime, oracles, leak evidence and onboarding (planned, T-208..T-220); target.md gains the G11 milestone rows. Docs only: no source, no contract, no CLAUDE.md, no hook.
+
+**Why:** D-104 started the G11 build but its Changes-authorized line excluded ARCHITECTURE.md prose, and the wave plan (.work/g11-wave-plan.md, blocker 3) found that the doc registration the G11 decision draft listed had no authorizing entry. Without it, qa/contracts/multi-role-platform.md cites `serves: intent#O16..O21` that docs/intent.md does not carry, "R1-R65" in docs/spec.md has no G11 requirement, docs/plan.md has no G11 section, and a reader opening ARCHITECTURE.md cannot find where Platform, RoleAccount, the cross-role runner or leak evidence live. Umesh, chat 2026-10-18: "haan, docs update kar".
+
+**Result:** G11 is findable from spec, plan, intent, architecture and target. Built claims are limited to T-207 (schema/multi_role_enums.py, platform.py, platform_link.py, role_account.py, mailbox_ref.py and the optional Project fields); every other G11 file is labelled planned. No decision is re-proposed: nothing REJECTED or SUPERSEDED is revived, and D-018, D-053 (write policy) and the T-136 ordering rule are cited, not re-decided.
+
+**Changes-authorized:** docs/ARCHITECTURE.md prose, exactly two sections. (1) "Concept -> file (one concept, one place)": two new rows (multi-role data shapes, built; multi-role runtime, oracles, leak evidence and onboarding, planned) and one extended cell in the existing "Closed vocabularies" row; no other row is changed. (2) "Commands": two pairs of command lines merged onto one line each so the file holds its 150-line budget (ledger/render.py ARCHITECTURE_MAX_LINES); no command is removed. No other ARCHITECTURE.md section and no generated section is edited. Outside ARCHITECTURE.md: docs/spec.md, docs/plan.md, docs/intent.md and target.md (not decision-gated, listed for audit).
+
+**Approved-by:** Umesh (chat 2026-10-18: "haan, docs update kar").
+
+**Links:** T-207; T-208..T-220; D-104; D-018; D-053; qa/contracts/multi-role-platform.md; docs/features/multi-role-platform/intent.md; qa/manifests/g11-decision-draft.md; .work/g11-wave-plan.md

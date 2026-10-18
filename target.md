@@ -258,6 +258,24 @@ to exceed its declared scope. `write_policy` stays `read_only`.*
 - [ ] T-169 generic two-mode acceptance (rich-teaching mode AND url+credentials-only mode), no CLI,
       measured vs a human on bugs / false positives / coverage / time — **this is "done".**
 
+### M13 · Multi-role, multi-platform testing (Group 11) — ✅ schema built, 🎯 rest planned (D-104, D-105; 2026-10-18)
+*The north star is now the CEO's own live end-to-end test of PathLynks (69 findings, 21 P0, 8 product roles across 2-3 linked
+platforms). One account on one platform cannot find most of them. Intent O16-O21: `docs/features/multi-role-platform/intent.md`;
+requirements R66-R89 in `docs/spec.md`; contract `qa/contracts/multi-role-platform.md`; units and waves in `docs/plan.md`
+"Group 11". Real role credentials arrive later (D-104): a unit that needs a live account builds to green fixtures and stops at
+a credential gate, so `[!]` rows below are gated on Umesh, not on the build.*
+- [x] T-207 Platform, PlatformLink, RoleAccount, MailboxRef schema + optional `Project` fields; an old project reads as one implicit platform (checker PASS, `qa/verdicts/t207-multirole-schema.md`)
+- [ ] T-208 onboarding: N role accounts across M platforms on a new project, keys only, scope-checked
+- [ ] T-209 `MultiRoleFinding`, leak evidence (no third-party data), P0 rule, release-blocking report banner
+- [ ] T-210 multi-role session runner (one isolated context per role) + platform-link following
+- [ ] T-211 cross-role scenario runner (role-tagged steps, "role B sees or receives X within T") + oracle registry
+- [ ] T-212 mailbox oracle (read-only IMAP) · [!] live mailbox read waits on the IMAP host and per-role mailbox keys (MP34)
+- [ ] T-213 authz oracles: cross-tenant, vertical privilege, role-assign escalation, bounded (signed `RunApproval`)
+- [ ] T-214 network oracles (API error hidden by the UI; request and polling budget) · [ ] T-215 cross-role consistency + answer key
+- [ ] T-216 copy/branding/timezone lint + responsive sweep · [ ] T-217 credential-policy + payment-presence oracles
+- [ ] T-219 negative input per role · [ ] T-220 state after an action (before / after / reload, per reader role)
+- [ ] T-218 CEO-benchmark acceptance on the existing bench scorer · [!] the live run waits on role accounts, the pinned atomic list, FP adjudication and the CEO's active hours (MP35)
+
 ---
 
 ## Definition of done (product-level)

@@ -1,13 +1,13 @@
 # Spec — AutoTester
 
-**Purpose:** the requirements (R1-R65) mapped to the outcomes they serve and the contract that judges each one, plus the navigation flow per user type.
+**Purpose:** the requirements (R1-R89) mapped to the outcomes they serve and the contract that judges each one, plus the navigation flow per user type.
 **Open me when:** deriving a contract criterion, picking a unit, or deciding which user types a persona walk must cover.
 
 <!-- PLAN phase step 3, BACKFILL. Requirements below are derived from docs/intent.md and from the
      criteria already living in qa/contracts/ (checker-owned). Where a contract already states a
      rule, this file points at it rather than restating it — one concept, one place. -->
 
-**Intent:** docs/intent.md (backfill, 2026-09-27; Team loop O8-O15 added 2026-10-07) · **Status:** draft — R1-R31 awaiting approval; R32-R65 (Group 10) await `qa/gates/plan-approved-g10.md`
+**Intent:** docs/intent.md (backfill, 2026-09-27; Team loop O8-O15 added 2026-10-07) · **Status:** draft — R1-R31 awaiting approval; R32-R65 (Group 10) await `qa/gates/plan-approved-g10.md`; R66-R89 (Group 11, multi-role) added 2026-10-18 under D-105, T-207 built, the rest planned
 
 ## Requirements
 
@@ -79,10 +79,37 @@
 | R63 | Group 10 uses the permission keys and scopes in `qa/contracts/auth.md` (closed catalogue, scopes `all`, `assigned`, `own`, `shared`) and requests no new keys; it enforces them server-side on every route through T-204's engine. The UI hiding a button is not enforcement. A route needing an unlisted key is a contract gap to raise with the checker | O15 | must | `auth.md` AU11-AU14 + TP4 (proposed) |
 | R64 | Every Group 10 page and state-changing route requires a signed-in member. T-204 is the mechanism; Group 10 consumes its identity and permission interface and implements no login, session, group editor or sign-up | O15, O7 | must | TT1, TI10 |
 | R65 | New modules run on Windows (development) and Ubuntu (production): no POSIX-only calls, path-safety tests cover both separators and drive letters, atomic file markers use portable primitives. T-203's deploy check runs the Group 10 tests on Ubuntu | O9, O12 | must | cross-cutting criterion in each contract |
+| R66 | A `Platform` (id, name, base URL, allowed domains, `include_subdomains`, login case) and a `PlatformLink` (redirect, sso, shared_account or handoff) are closed shapes; a link naming an undeclared platform fails validation (`schema/platform.py`, `schema/platform_link.py`) | O16 | must | `multi-role-platform.md` MP1 ✅ (T-207) |
+| R67 | A `RoleAccount` and a `MailboxRef` hold secret KEYS matching `^[A-Z][A-Z0-9_]*$`, never values; a value-shaped string in a key field is rejected (`schema/role_account.py`, `schema/mailbox_ref.py`) | O17, O7 | must | `multi-role-platform.md` MP2 ✅ (T-207) |
+| R68 | An old project (one `base_url`, no `platforms`) loads as exactly one implicit platform (`Project.effective_platforms`) and writes back byte-identical | O16 | must | `multi-role-platform.md` MP3 ✅ (T-207) |
+| R69 | A new project accepts at least 8 role accounts across 3 platforms in one submission; keys go to the repo-root `.env` through the existing env editor; the saved project lists role, platform and tenant label | O17 | must | `multi-role-platform.md` MP4 🎯 (T-208) |
+| R70 | A role account whose credential scope admits a host outside its own platform (including the suffix-match case of `browser/secrets.py::_host_matches`) is refused with a message naming account, platform and the wider host | O17, O7 | must | `multi-role-platform.md` MP5 🎯 (T-208) |
+| R71 | The role-account form and POST need a signed-in member and add no new permission key: `project.create` for a new project, `project.edit` plus `credentials.edit` for a value written to `.env` (checker ruling on MP6) | O17, O7 | must | `multi-role-platform.md` MP6 🎯 (T-208) |
+| R72 | A finding of class data-leak or privilege-escalation is always P0, with no model input and no override | O19 | must | `multi-role-platform.md` MP7 🎯 (T-209) |
+| R73 | When any P0 leak or privilege finding exists, the first block of the report is a release-blocking banner with the count and a link to each repro; with none, no banner | O19 | must | `multi-role-platform.md` MP8 🎯 (T-209) |
+| R74 | Leak evidence is a count, field names, at most 5 per-project HMAC-SHA256 ids, a masked screenshot and a URL template; no third-party personal data reaches any file, log or prompt, and a leak-flagged page never goes to a model | O19, O7 | must | `multi-role-platform.md` MP9, MPI1 🎯 (T-209) |
+| R75 | Each P0 finding carries role, platform, URL template, ordered steps and the count, enough to reproduce it after masking | O19, O3 | must | `multi-role-platform.md` MP10 🎯 (T-209) |
+| R76 | One isolated browser context per role account: no shared cookies, storage or profile directory; signing one out leaves the other in | O18 | must | `multi-role-platform.md` MP11 🎯 (T-210) |
+| R77 | Every declared platform link is reported followed, failed (with reason) or not reached; a hop landing outside every declared platform stops and becomes a finding | O16, O4 | must | `multi-role-platform.md` MP12 🎯 (T-210) |
+| R78 | A cross-role scenario step names the role account that performs it; an assertion names the observer role, channel (`ui`, `mailbox`, `api`), `present` or `absent`, and `within_s`; the runner polls and records the observed time | O18 | must | `multi-role-platform.md` MP13 🎯 (T-211) |
+| R79 | An `absent` assertion passes only after the full window with no match; a `present` that never matched fails with the window and the last observation | O18, O3 | must | `multi-role-platform.md` MP14 🎯 (T-211) |
+| R80 | The oracle registry lists every G11 oracle by module name; an unbuilt one is reported `not built`, never omitted | O20, O4 | must | `multi-role-platform.md` MP15 🎯 (T-211) |
+| R81 | The mailbox reader is read-only (IMAP `EXAMINE` and `BODY.PEEK` only), bounded by since-time, recipient and message cap, and scrubbed; a credential-shaped token in a body is recorded as present, never its value. The live read against a real mailbox is gated on Umesh's IMAP host and keys | O18, O7 | must | `multi-role-platform.md` MP16, MP17 🎯 (T-212); MP34 [GATED] |
+| R82 | Cross-tenant, vertical-privilege and role-assign probes count foreign rows and report them P0 with leak evidence; they are bounded (3 id-swap reads per endpoint, 1 list page per list view, a per-platform request cap), covered by a signed `RunApproval`, make no provider call, and a successful escalation is reverted in the same run | O19 | must | `multi-role-platform.md` MP18-MP20, MPI4 🎯 (T-213) |
+| R83 | A first-party 4xx/5xx behind a UI success becomes a finding; requests per screen and the minimum polling interval are measured against the project's declared budget | O20, O3 | should | `multi-role-platform.md` MP21, MP22 🎯 (T-214) |
+| R84 | An entity read as each role is compared field by field (value classes, not raw personal values); an answer-key fixture from product docs must yield its documented score | O20, O21 | should | `multi-role-platform.md` MP23, MP24 🎯 (T-215) |
+| R85 | Declared copy, branding and timezone lint rules run over visible text and mail bodies; each visited screen is swept at the declared viewports for overflow and off-screen controls | O20 | should | `multi-role-platform.md` MP25, MP26 🎯 (T-216) |
+| R86 | Account-create and reset flows are probed for weak-password acceptance and credentials in plain mail (the rule broken is recorded, never the value); each declared paid path is checked as far as the gateway page and never charged | O20, O19 | should | `multi-role-platform.md` MP27, MP28 🎯 (T-217) |
+| R87 | The input cases `expand` already produces (empty, boundary, unicode/oversize, double submit) run once per role account whose permitted surface reaches the form, so a rule enforced for one role and missing for another is caught | O20 | should | `multi-role-platform.md` MP32 🎯 (T-219) |
+| R88 | A `StateProbe` reads a counter, list or status before an action, after it and after a reload, as each named reader role; a missing, wrong-sized or non-persistent change is a finding | O18, O20 | should | `multi-role-platform.md` MP33 🎯 (T-220) |
+| R89 | AutoTester is scored against the CEO benchmark by the existing bench scorer (recall overall and per priority, FP over adjudicated findings, wall time), one recall line per detection technique naming its owner unit; the atomic list stays private and only counts and its sha256 are committed; the list's hash and commit time precede the run. The live run is gated | O21, O6 | must | `multi-role-platform.md` MP29-MP31 🎯 (T-218); MP35 [GATED] |
 
 ✅ = shipped and checker-verified · 🎯 = target. R31's numbers are gated on Umesh (credentials
 plus the trainer truth sheet). R32-R65 are the Group 10 "Team loop" requirements
-(contract names are proposals the checker folds in; none exists yet).
+(contract names are proposals the checker folds in; none exists yet). R66-R89 are the Group 11
+"multi-role, multi-platform" requirements; their contract is `qa/contracts/multi-role-platform.md`
+(MP1-MP35, MPI1-MPI6, active 2026-10-18), whose criteria are the authority and which this table points at.
+Only R66-R68 (T-207) are shipped; every other G11 row is a target.
 
 ## Navigation flow per user type
 
@@ -223,6 +250,46 @@ Users, groups and project assignment (T-204) and Settings (T-203) are those unit
 - **F6 test on demand:** G7 Test -> RunRequest (identity from session) -> queue -> run -> report in G8, and email if the clicker ticked it.
 - **F7 share and comment:** G2 share link -> sign-in -> allowed? view : "request access" -> approver acts on G9 -> comments.
 
+## Group 11 — multi-role, multi-platform: user types and flows (2026-10-18)
+
+Audience stays `internal-tool`. The AutoTester user types below come from Umesh's 2026-10-16 answers
+(`docs/features/multi-role-platform/intent.md`); `lead` and `dev` are the types confirmed earlier. The
+product roles a tester types in at onboarding (school admin, counsellor, parent, ...) are
+`RoleAccount.role` values, **not** AutoTester user types, and no code names one.
+
+| id | who | goal | patience | confirmed |
+|---|---|---|---|---|
+| `onboarder` | whoever starts a new project (tester, lead or dev) | hand over N platforms and their role accounts once and have every role tested | 3 | answer 4, 2026-10-16; fields drafted |
+| `lead` | Umesh / product lead | see at the top whether the build leaks data or lets a role escalate; decide ship / no-ship | 1 | answer 3, 2026-10-16 |
+| `dev` | the developer who must fix a P0 | reproduce the leak from the steps without seeing anyone's data | 2 | confirmed 2026-09-27 |
+| `benchmark-owner` | Umesh as author of the CEO list | see recall, FP and time against his own list | 2 | answer 1, 2026-10-16 |
+
+### `onboarder`
+- **Entry:** the new-project form (T-208 extends it with a role-accounts block).
+- **Main goal in <= 4 steps:** declare each platform (URL, allowed domains) and its links -> add each role account (role, platform, credential KEYS, tenant label, optional mailbox keys) -> save -> read the saved project listing every account.
+- **Must understand without being taught:** a key is a name, the value goes in the masked `.env` editor; why an account was refused (the message names account, platform and the wider host).
+- **Negative paths:** a key whose scope is wider than its own platform (refused with the reason) - a value typed into a key field (rejected) - a form that can only take one login (the failure this group removes).
+
+### `lead`
+- **Entry:** the unified report. **Main goal in <= 1 step:** read the P0 banner first (count, link to each repro), then the per-oracle table.
+- **Must understand without being taught:** a leak is P0 and release-blocking whatever the evidence; an oracle that did not run reads `not built` or `not run` by name, never as clean.
+- **Negative paths:** a clean report from a run that never probed (forbidden by R80) - a leak buried below the fold (forbidden by R73).
+
+`dev` reads a finding's repro (role, platform, URL template, steps, count); `benchmark-owner` reads the scorecard (one recall line per technique, `not run` where the owner unit did not run).
+
+### Group 11 screens and flows
+
+| id | screen | who | flows |
+|---|---|---|---|
+| M1 | New project: platforms, links, role accounts | onboarder | F8 |
+| M2 | Report header: P0 leak and privilege banner | lead, dev | F9 |
+| M3 | Run summary: per-oracle ran / not built / not run table, per-link outcome | lead, dev | F9 |
+| M4 | Benchmark scorecard (per-technique recall, FP over adjudicated, time) | benchmark-owner, lead | F10 |
+
+- **F8 onboard:** M1 -> declare platforms and links -> add role accounts (keys only; values through the `.env` editor) -> scope check -> save (needs `project.create`; a value write needs `credentials.edit`).
+- **F9 multi-role run:** a signed `RunApproval` -> one isolated context per role account -> platform links followed and reported -> cross-role scenario steps and timed assertions -> oracles (mailbox, tenant, privilege, API error, request budget, consistency, answer key, lint, responsive, credential policy, payment, negative input, state after action) -> findings with priority -> M2 banner first, then M3.
+- **F10 benchmark:** the private atomic list is hashed and its time recorded before the run -> the run -> the existing bench scorer -> M4 (human gates: the atomic split, FP adjudication, the CEO's active hours).
+
 ## Flow → user types map
 
 | flow | user types |
@@ -242,6 +309,9 @@ Users, groups and project assignment (T-204) and Settings (T-203) are those unit
 | schedule | subadmin, admin |
 | test on demand + reports | dev, subadmin, admin |
 | share, access requests, comments | dev, tester, subadmin, admin |
+| onboard N role accounts across M platforms | onboarder |
+| multi-role run + P0 leak banner | lead, dev |
+| CEO-benchmark scorecard | benchmark-owner, lead |
 
 ## Out of scope (now)
 
@@ -256,6 +326,10 @@ Decision claim D-041: "**Deferred to Umesh:** the differential base-vs-head orac
   external (non-Vidysea) teams; multi-company `org_id` (PARKED). Reconciliation of video flows against the
   crawled KG is T-166, the any-model provider T-202, hosting and the run queue T-203, login and groups
   T-204: each is its own task and Group 10 consumes their seams.
+- **Group 11:** phone, SMS and WhatsApp channels; joining a live video meeting; completing a real payment;
+  any action the supplied account may not take outside an escalation probe; storing or sending to a model
+  any third-party personal data a leak probe saw; product-specific code (no PathLynks role, URL or label
+  in `src/`); re-deciding write policy (D-018, D-053) or the T-136 ordering rule.
 
 ## Seeds
 
