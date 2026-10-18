@@ -47,7 +47,10 @@ class NetworkMixin(PortBase):
         try:
             log = StepNetworkLog(**fields, repro_steps=list(state.repro))
         except ValidationError:  # a repro step that looks personal: keep the step's own action
-            log = StepNetworkLog(**fields, repro_steps=[step.action])
+            try:
+                log = StepNetworkLog(**fields, repro_steps=[step.action])
+            except ValidationError:  # the action itself looks personal: replay nothing
+                log = StepNetworkLog(**fields, repro_steps=[])
         self._logs.append(log)
         state.last_log = len(self._logs) - 1
 

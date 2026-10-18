@@ -15,6 +15,8 @@ from role_port_app import build_project, start_app
 from role_port_run import ALICE, BOB, SIX, context, declare, sign_in, skip_if_no_chromium
 
 from autotester.browser.secrets import SecretStore
+from autotester.schema.cross_role_assertion import CrossRoleAssertion
+from autotester.schema.multi_role_enums import AssertChannel, Expectation
 from autotester.schema.oracle_context import OracleState
 from autotester.schema.role_step import RoleStep
 from autotester.stages.multi_role_session import RoleSessions
@@ -55,3 +57,38 @@ def test_pw4_a_failed_login_errors_every_oracle_and_yields_no_findings(tmp_path)
     for oracle in SIX:
         assert states[oracle].state is OracleState.ERRORED, (oracle, states[oracle].state)
         assert states[oracle].reason == "RoleLoginFailed"
+
+
+def test_an_api_look_sees_only_traffic_after_sign_in_and_reports_a_status_class(tmp_path) -> None:
+    skip_if_no_chromium()
+    app = start_app()
+    try:
+        project = build_project(app, tmp_path)
+        secrets = SecretStore.load(project, tmp_path / ".env", strict=False)
+        with RoleSessions(project, secrets, tmp_path, paths_root=tmp_path) as roles:
+            port = LiveRolePort(roles, [sign_in(app)])
+            assert port.login_all() == {}
+            look = CrossRoleAssertion(id="api", observer_role_id=ALICE, channel=AssertChannel.API,
+                                      expectation=Expectation.PRESENT, target="/api/ping",
+                                      within_s=1)
+            assert port.observe(look).matched is False  # nothing since sign-in
+            port.perform(RoleStep(id="d", role_id=ALICE, action="goto /dashboard"))
+            seen = port.observe(look)
+            assert seen.matched and seen.detail == "api response seen: ok"
+    finally:
+        app.stop()
+
+
+def test_a_role_on_a_platform_with_no_sign_in_declared_is_failed_not_clean(tmp_path) -> None:
+    skip_if_no_chromium()
+    app = start_app()
+    try:
+        project = build_project(app, tmp_path)
+        secrets = SecretStore.load(project, tmp_path / ".env", strict=False)
+        with RoleSessions(project, secrets, tmp_path, paths_root=tmp_path) as roles:
+            port = LiveRolePort(roles, [])
+            assert set(port.login_all()) == {ALICE, BOB}
+            with pytest.raises(RoleLoginFailed):
+                port.perform(RoleStep(id="d", role_id=ALICE, action="goto /home"))
+    finally:
+        app.stop()

@@ -68,6 +68,7 @@ class ResponseLog:
         self.history: collections.deque[Row] = collections.deque(maxlen=HISTORY)
         self.paused = False
         self._t0 = time.monotonic()
+        self._since = 0.0
 
     def attach(self, session: Any) -> None:
         session.page.on("response", self._on_response)
@@ -80,17 +81,21 @@ class ResponseLog:
         self.pending.append(row)
         self.history.append(row)
 
+    def mark(self) -> None:
+        """Responses before now (sign-in traffic) no longer count for `seen`."""
+        self._since = round(time.monotonic() - self._t0, 3)
+
     def take(self) -> list[Row]:
         rows, self.pending = self.pending, []
         return rows
 
     def seen(self, pattern: str) -> tuple[bool, str]:
-        """Did a response whose path fits the route pattern arrive? Never a body, never a number."""
+        """A response on this route pattern since `mark`? Never a body, never a number."""
         pieces = re.split(r"(\{[^}]*\}|\*)", pattern)
         rx = "".join(".*" if p == "*" else "[^/]+" if p.startswith("{") else re.escape(p)
                      for p in pieces)
         hit = next((r for r in reversed(self.history)
-                    if re.fullmatch(rx, urlsplit(r[1]).path)), None)
+                    if r[3] >= self._since and re.fullmatch(rx, urlsplit(r[1]).path)), None)
         if hit is None:
             return False, ""
         return True, "api response seen: " + ("error" if hit[2] >= 400 else "ok")

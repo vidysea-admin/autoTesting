@@ -81,6 +81,7 @@ class LiveRolePort(SurfaceMixin, NetworkMixin):
         state, account = self._states[role_id], self.roles.account(role_id)
         spec = self._logins.get(account.platform_id)
         if spec is None:
+            state.failed = "NoSignInDeclared"
             raise RoleLoginFailed(f"role {role_id} has no sign-in declared for its platform")
         try:
             self.roles.sign_in(role_id, spec.login_url, user_locator=spec.user_locator,
@@ -94,7 +95,8 @@ class LiveRolePort(SurfaceMixin, NetworkMixin):
         state.signed_in, state.failed = proven, None if proven else "SignedInTargetMissing"
         if not proven:
             raise RoleLoginFailed(f"role {role_id} could not sign in ({state.failed})")
-        state.repro = []
+        state.repro, state.last_log = [], None
+        self.roles.run_as(role_id, lambda _s: state.log.mark())
 
     def login_all(self) -> dict[str, str]:
         """Sign every account in; returns role id -> reason for each that failed (never raises)."""
