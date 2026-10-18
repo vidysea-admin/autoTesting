@@ -1,0 +1,3 @@
+# Checkpoint - t218-ceo-bench (checker, cycle 0)
+- check: `uv run pytest tests/test_ceo_benchmark.py tests/test_ceo_run_evidence.py` -> 43 passed; inputs: HEAD bba48b2e (code d6fb0ed8), base cff3ffe6, src/autotester/schema/ceo_*.py, src/autotester/stages/ceo_*.py; uv.lock unchanged, no config or fixture change; env win32 worktree .venv python; checker claude-sonnet-subagent; verdict qa/verdicts/t218-ceo-bench.md; result PASS
+- falsification: MP29 FP-trial include-all red; MP30 ordering gate removed red, derived set emptied red; MP31 headed check removed red; each copy green before. result PASS
