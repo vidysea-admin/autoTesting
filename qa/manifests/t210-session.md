@@ -1,6 +1,6 @@
 # Manifest - t210-session (T-210, G11-4)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t210-session.md)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP11, MP12; invariants MPI1, MPI2, MPI3, MPI5 held)
 **Goal task:** T-210
@@ -66,4 +66,4 @@ Metrics: start=2026-10-18T14:00:00Z end=2026-10-18T20:30:00Z wall_min=390 agent_
 ## Live browser evidence
 Real headless Chromium against the local fixture app only (`tests/multi_role_app.py`); no real product, no external service. Skips if no Chromium is installed.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t210-session.md)
