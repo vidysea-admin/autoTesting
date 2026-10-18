@@ -1,6 +1,6 @@
 # Manifest - t213-authz (T-213, G11-7)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t213-authz.md 4a50a3ec)
 **Fix cycle:** 1
 **Contract:** qa/contracts/multi-role-platform.md (MP18, MP19, MP20 incl. the A5 clause; invariants MPI1, MPI2, MPI3, MPI4 held)
 **Goal task:** T-213
@@ -98,4 +98,4 @@ Metrics: start=2026-10-19T09:00:00Z end=2026-10-19T12:10:00Z wall_min=190 agent_
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema and stage modules plus tests; no route, template or static asset, and no live service was contacted (fake transports only).
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t213-authz.md 4a50a3ec)
