@@ -1,6 +1,6 @@
 # Manifest - at1304-trace-redact (AT-1304: a short numeric secret broke trace.jsonl, so every failure bundle was assembly_failed)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at1304-trace-redact.md + at1304-trace-redact.b.md, dual)
 **Fix cycle:** 0
 **Contract:** qa/contracts/run-trace.md (RT6), qa/contracts/core-invariants.md (redaction: no raw secret reaches disk); no contract edited
 **Goal task:** T-136 (live r3 defect D4, `.work/t136-live-report-r3.md`)
