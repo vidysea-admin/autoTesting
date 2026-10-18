@@ -1,6 +1,6 @@
 # Manifest - t215-consist (T-215, G11)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t215-consist.md d0536aee)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP23, MP24; invariants MPI1, MPI2, MPI3, MPI6 held)
 **Goal task:** T-215
@@ -72,4 +72,4 @@ Metrics: start=2026-10-19T00:00:00Z end=2026-10-19T00:00:00Z wall_min=unavailabl
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema and stage modules plus tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t215-consist.md d0536aee)
