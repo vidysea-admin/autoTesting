@@ -1,6 +1,6 @@
 # Manifest - t136-grade-fix (T-136 live acceptance run, defects D1/D2 and two grading false-holds)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t136-grade-fix.md)
 **Fix cycle:** 0
 **Contract:** qa/contracts/grade.md, qa/contracts/browser-and-secrets.md (B5-B9, B11), qa/contracts/core-invariants.md (fail-closed rule); no contract edited
 **Goal task:** T-136
