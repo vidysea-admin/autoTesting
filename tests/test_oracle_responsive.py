@@ -104,7 +104,11 @@ def test_the_default_viewport_is_the_mobile_one(tmp_path: Path, masked: None) ->
 
 def test_without_a_masking_engine_the_screenshot_is_withheld_not_written_raw(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # hermetic: no tesseract on PATH, in the env, in the repo .env, or at the Windows install
     monkeypatch.setattr(privacy.shutil, "which", lambda name: None)
+    monkeypatch.setattr(privacy, "WINDOWS_TESSERACT", tmp_path / "absent" / "tesseract.exe")
+    monkeypatch.delenv(privacy.TESSERACT_ENV, raising=False)
+    monkeypatch.setattr(privacy, "repo_root", lambda: tmp_path)
     found = sweep(tmp_path, SurfacePort(layouts={375: [layout("grades", 520)]}), 375)
     assert len(found) == 1 and "screenshot withheld (local_ocr_unavailable)" in found[0].title
     assert not list(tmp_path.rglob("*.png"))

@@ -135,7 +135,11 @@ def test_screenshot_is_masked_before_it_is_written(
 
 def test_unmaskable_screenshot_is_withheld_never_written_raw(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # hermetic: no tesseract on PATH, in the env, in the repo .env, or at the Windows install
     monkeypatch.setattr(privacy.shutil, "which", lambda name: None)
+    monkeypatch.setattr(privacy, "WINDOWS_TESSERACT", tmp_path / "absent" / "tesseract.exe")
+    monkeypatch.delenv(privacy.TESSERACT_ENV, raising=False)
+    monkeypatch.setattr(privacy, "repo_root", lambda: tmp_path)
     ev = _evidence(tmp_path, screenshot_png=_png(tmp_path / "raw.png"))
     assert ev.screenshot_path is None and ev.screenshot_withheld_reason == "local_ocr_unavailable"
     assert not list((tmp_path / "run").rglob("*.png"))
