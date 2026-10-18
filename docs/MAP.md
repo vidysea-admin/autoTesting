@@ -150,6 +150,8 @@
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
 | `schema/crawl_summary.py` | CrawlSummary: the small, redacted, TRACKED record of one finished crawl. |
+| `schema/cross_role_assertion.py` | A timed cross-role assertion and the evidence the runner records for it (MP13, MP14). |
+| `schema/cross_role_scenario.py` | A cross-role scenario and the result of running it (MP13-MP15). |
 | `schema/delivery.py` | Report-delivery shapes: preference, recipient, summary, rendered message, record, SMTP settings. |
 | `schema/document.py` | Page-level evidence from bounded, local document extraction. |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
@@ -161,11 +163,14 @@
 | `schema/issue.py` | A video-derived issue — its own artifact, deliberately NOT a `CaseClass`. |
 | `schema/issue_kind.py` | Crawl-detected issue kind. Split out of `schema/enums.py` to keep that |
 | `schema/lead_loop.py` | The steps a lead-tester model may return, and what a finished loop reports (T-179 AL5/AL7). |
+| `schema/leak_evidence.py` | What a data-leak finding may remember about another tenant's data (MP9, MPI1). |
 | `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
 | `schema/mailbox_ref.py` | Where a role account's mailbox is, as KEYS only (MP2) -- plus the one secret-key rule. |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
 | `schema/multi_role_enums.py` | The Group 11 (multi-role platform) vocabulary file: every closed value set G11 adds. |
+| `schema/multi_role_finding.py` | One multi-role finding with the repro that survives masking (MP7, MP10). |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
+| `schema/oracle_context.py` | The oracle interface: what an oracle is handed, what the run reports about each oracle (MP15). |
 | `schema/platform.py` | One product surface inside a multi-platform project (MP1). |
 | `schema/platform_link.py` | A declared hop from one platform to another (MP1). |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
@@ -175,6 +180,7 @@
 | `schema/release.py` | Release regression shapes: a flow's persisted plan, a run's scope, its record and diff. |
 | `schema/review_recall.py` | The TA16 evidence record: a video review measured against an oracle, in numbers (T-206). |
 | `schema/role_account.py` | One signed-in identity on one platform, held as KEYS only (MP2, MPI5). |
+| `schema/role_step.py` | One role-tagged step of a cross-role scenario, and how it went (MP13). |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
 | `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
 | `schema/run_state.py` | RunState: the durable per-run ledger over the filestore's stage artifacts. |
@@ -249,6 +255,7 @@
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
 | `stages/credential_files.py` | Which file names and suffixes hold credentials; they are refused without being opened. |
+| `stages/cross_role_runner.py` | The cross-role runner: role-tagged steps, then timed assertions polled to a window (MP13, MP14). |
 | `stages/discover.py` | Inspect approved bounded file trees for deterministic, cited lexical signals. |
 | `stages/entry_precondition.py` | Whether a case needs a logged-out visitor (so it must not share the signed-in profile). |
 | `stages/eval_compiler.py` | EVAL COMPILER: compile evals from the knowledge graph, the FlowSpec and a written scenario |
@@ -269,6 +276,7 @@
 | `stages/explore_traversal.py` | Which screen the crawl visits next — the frontier's ORDER, and nothing else. |
 | `stages/explore_typing.py` | The X10-b typing pre-pass (D-029): what the crawler types, and where it |
 | `stages/failure_bundle.py` | Assemble and load one atomic failure bundle (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
+| `stages/finding_priority.py` | Finding priority as a pure function of the finding class (MP7). |
 | `stages/flow_plan.py` | Derive each completed flow's persisted validation plan from a finished run (AT-898, RR6). |
 | `stages/generic_acceptance.py` | GENERIC ACCEPTANCE: one harness that drives a product through BOTH entry modes (T-169). |
 | `stages/grade.py` | GRADE: an independent, stateless judge reads a Rubric + a RawResult's evidence. |
@@ -278,10 +286,12 @@
 | `stages/issues.py` | ISSUES: turn an adjudicated analysis into rows a human tester can read. |
 | `stages/knowledge_graph.py` | KNOWLEDGE GRAPH: build the typed graph from the persona + FlowSpec, and resolve a |
 | `stages/known_bugs.py` | Map an AI-assisted video-review findings list to a `BenchCorpus` (bench.md K12). |
+| `stages/leak_evidence.py` | Turn a probe's foreign rows into PII-free `LeakEvidence` and store the finding (MP9, MPI1). |
 | `stages/manual_login.py` | Manual one-time login. Contract: qa/contracts/manual-login.md ML1-ML5. |
 | `stages/media_prep.py` | MEDIA PREP: make a recording readable — probe it, cut it, transcribe it. |
 | `stages/merge_flowspec.py` | Fold a freshly ingested FlowSpec into the reviewed one (Track A6, T-135). |
 | `stages/network_capture.py` | First-party network capture as evidence (T-170, NA1/NA2/NA4/NA5/NA6). |
+| `stages/oracle_registry.py` | The oracle registry: every G11 oracle by module name, built or not (MP15). |
 | `stages/orchestrate.py` | ORCHESTRATE: drive the stage pipeline as a resumable LangGraph run (D-041, T-167). |
 | `stages/orchestrate_checkpoint.py` | Persist one run's LangGraph checkpoint without arbitrary Python deserialization. |
 | `stages/orchestrate_downstream.py` | Adapt generation, observation, independent grading and exports into durable pipeline stages. |
@@ -299,6 +309,7 @@
 | `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
 | `stages/release.py` | The release trigger: stitch every flow's persisted plan into ONE gated release run (T-167). |
 | `stages/release_compare.py` | Release record assembly, the trusted-baseline rule and the regression diff (T-167, RR3/RR6). |
+| `stages/report_banner.py` | The release-blocking banner and the repro sections it links to (MP8, A3). |
 | `stages/report_delivery.py` | The report label (computed once) and the website inbox listing (TT7, R58, R22). |
 | `stages/report_export.py` | Tester-style run reports: an Excel summary and a screen-by-screen HTML |
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
@@ -522,6 +533,12 @@
 | `NoiseCount` (`schema/crawl.py`) | One third-party host's dropped-request tally (never an issue, X9). |
 | `Crawl` (`schema/crawl.py`) | The envelope for one bounded BFS run — `stages/explore.py`'s output. |
 | `CrawlSummary` (`schema/crawl_summary.py`) |  |
+| `AssertVerdict` (`schema/cross_role_assertion.py`) | `not_run` means an earlier step failed, so the assertion was never looked at. |
+| `CrossRoleAssertion` (`schema/cross_role_assertion.py`) | What one role must (or must not) see, on one channel, within a window. |
+| `Observation` (`schema/cross_role_assertion.py`) | One look at a channel: did the target match, and a short description of what was seen. |
+| `AssertionOutcome` (`schema/cross_role_assertion.py`) | The verdict for one assertion. `observed_s` is seconds from the start of its window. |
+| `CrossRoleScenario` (`schema/cross_role_scenario.py`) | Role A acts, role B (or a mailbox, or an API) is expected to show it, within a window. |
+| `ScenarioResult` (`schema/cross_role_scenario.py`) | Everything one scenario run recorded; `passed` = every step ok and every assertion met. |
 | `DeliveryChannel` (`schema/delivery.py`) |  |
 | `DeliveryStatus` (`schema/delivery.py`) |  |
 | `ReportLabel` (`schema/delivery.py`) | The stored report label. Computed once elsewhere (TT7); every reader takes it as given. |
@@ -580,6 +597,7 @@
 | `LeadRun` (`schema/lead_loop.py`) | What one lead loop did. `delegations` counts subagent calls actually made (AL7). |
 | `TokenBudget` (`schema/lead_loop.py`) | A run's declared ceiling (AL11): tokens and/or cost. Either left unset is not enforced. |
 | `AgentRun` (`schema/lead_loop.py`) | How one framework-driven lead run ended. `stopped` names the reason, so a budget halt is |
+| `LeakEvidence` (`schema/leak_evidence.py`) | Counts, headers, keyed hashes and a template: enough to reproduce, nothing to identify. |
 | `FeatureEvent` (`schema/ledger.py`) | One dated event in the life of a feature: planned, live, updated, or retired. |
 | `RelitigationVerdict` (`schema/ledger.py`) | The judge's answer to "is this new unit a retired feature coming back?". |
 | `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
@@ -597,6 +615,8 @@
 | `AssertChannel` (`schema/multi_role_enums.py`) | Where a cross-role assertion looks (MP13). |
 | `Expectation` (`schema/multi_role_enums.py`) | Whether the observed thing must appear or must stay away within the window (MP14). |
 | `OracleName` (`schema/multi_role_enums.py`) | Every G11 oracle. The value is the stage module suffix: `stages/oracle_<value>.py` (MP15). |
+| `ReproVerb` (`schema/multi_role_finding.py`) | The actions a recorded repro step may start with. |
+| `MultiRoleFinding` (`schema/multi_role_finding.py`) | A defect found across roles. Leak evidence is required for a data-leak finding. |
 | `ObservedStep` (`schema/observation.py`) | One action a vision model saw in a video. Raw material for a `Step` — |
 | `ObservedFlow` (`schema/observation.py`) | One journey a vision model saw across screens. |
 | `ObservedScreen` (`schema/observation.py`) | One distinguishable screen a vision model saw. |
@@ -604,6 +624,11 @@
 | `VisionOptions` (`schema/observation.py`) | Generation config for a vision call — the settings the proven external |
 | `VideoObservation` (`schema/observation.py`) | A vision provider's raw reading of one video (or chunk) — turned into a |
 | `ModelObservation` (`schema/observation.py`) | One model's raw answer for one chunk — cached on disk so re-running the |
+| `OracleState` (`schema/oracle_context.py`) | The values are the wording of the contract (MP15, MP31): `not built`, `not run`. |
+| `RoleSessionPort` (`schema/oracle_context.py`) | The seam T-210's `multi_role_session` plugs into; fakes implement it in tests. |
+| `OracleStatus` (`schema/oracle_context.py`) | One oracle's line in the run summary. |
+| `OracleRunSummary` (`schema/oracle_context.py`) | Every G11 oracle exactly once; an omitted oracle is a validation error (MP15). |
+| `OracleContext` (`schema/oracle_context.py`) | What one oracle run is handed. Serialisable fields only, plus the live port. |
 | `Platform` (`schema/platform.py`) | A platform's boundary. Secrets for it are scoped within `allowed_domains` (MPI5). |
 | `PlatformLink` (`schema/platform_link.py`) | `from_platform` -> `to_platform`, reached through `url_template` or `control_name`. |
 | `PersonaProfile` (`schema/portal_persona.py`) | What the product is, at a glance — the durable header of the persona. |
@@ -638,6 +663,9 @@
 | `OracleRef` (`schema/review_recall.py`) | Where the denominator came from. Never a claim of independence. |
 | `ReviewRecall` (`schema/review_recall.py`) | `recall.json`. `k` and `unconfirmed_count` must be re-derivable from the id lists. |
 | `RoleAccount` (`schema/role_account.py`) | A test account for one role. Its scope is the account's own permissions (D-018). |
+| `StepState` (`schema/role_step.py`) | How one step ended. `not_run` is a step skipped because an earlier one failed. |
+| `RoleStep` (`schema/role_step.py`) | An action performed as one named role account. |
+| `StepOutcome` (`schema/role_step.py`) | What the runner recorded for one step: the error is an exception type, never its message. |
 | `Evidence` (`schema/run.py`) | A file or value the grader may cite. Already redacted and masked. |
 | `ProviderUsage` (`schema/run.py`) | Token and call accounting per provider role — the cost story per run. |
 | `RawResult` (`schema/run.py`) | One case's execution record. |
