@@ -1,6 +1,6 @@
 # Manifest - t217-cred-pay (T-217, G11-11)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t217-cred-pay.md e5362e3e)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP27, MP28; invariants MPI1, MPI2, MPI3, MPI4, MPI5 held). The contract file carries MP27 with the A1 Verify matrix and MP28 as quoted below; no "contract pending checker fold-in" note is needed.
 **Goal task:** T-217
@@ -78,4 +78,4 @@ Metrics: start=2026-10-19T09:40:00Z end=2026-10-19T10:40:00Z wall_min=60 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema and stage modules plus tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t217-cred-pay.md e5362e3e)
