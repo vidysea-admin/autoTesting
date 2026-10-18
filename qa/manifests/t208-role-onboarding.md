@@ -1,6 +1,6 @@
 # Manifest - t208-role-onboarding (T-208, G11-2)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual cycle 1: qa/verdicts/t208-role-onboarding.md A cd30c44a, .b.md B e1ad1908)
 **Fix cycle:** 1
 **Contract:** qa/contracts/multi-role-platform.md (MP4, MP5, MP6; invariants MPI1-MPI6 held)
 **Goal task:** T-208
