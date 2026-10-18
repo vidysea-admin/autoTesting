@@ -1,6 +1,6 @@
 # Manifest - t212-mailbox (T-212, G11-6)
 
-**Status:** ready-for-check
+**Status:** checked-PASS build leg (qa/verdicts/t212-mailbox.md; MP34 live leg credential-gated, goal task stays open)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP16, MP17; MP34 is the gated live leg; invariants MPI1, MPI2, MPI3, MPI5 held) and qa/contracts/source-adapters.md SA9
 **Goal task:** T-212
@@ -73,4 +73,4 @@ Metrics: start=2026-10-19T08:30:00Z end=2026-10-19T09:30:00Z wall_min=60 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema, source and stage modules plus tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS build leg (qa/verdicts/t212-mailbox.md; MP34 live leg credential-gated, goal task stays open)
