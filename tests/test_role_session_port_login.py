@@ -92,3 +92,26 @@ def test_a_role_on_a_platform_with_no_sign_in_declared_is_failed_not_clean(tmp_p
                 port.perform(RoleStep(id="d", role_id=ALICE, action="goto /home"))
     finally:
         app.stop()
+
+
+def test_pw4_a_role_whose_sign_in_was_never_attempted_errors_every_oracle(tmp_path) -> None:
+    skip_if_no_chromium()
+    app, run_dir = start_app(), tmp_path / "run"
+    run_dir.mkdir()
+    declare(run_dir)
+    project = build_project(app, tmp_path)
+    secrets = SecretStore.load(project, tmp_path / ".env", strict=False)
+    try:
+        with RoleSessions(project, secrets, run_dir, paths_root=tmp_path) as roles:
+            port = LiveRolePort(roles, [sign_in(app)], success_selectors=["#ok"])
+            port.login(ALICE)  # bob is never attempted: not signed in, not marked failed either
+            for path in ("/home", "/dashboard", "/reports", "/orders"):
+                port.perform(RoleStep(id="v", role_id=ALICE, action=f"goto {path}"))
+            summary, findings = run_oracles(context(run_dir, port), SIX)
+    finally:
+        app.stop()
+    states = {s.oracle: s for s in summary.statuses}
+    assert findings == []
+    for oracle in SIX:
+        assert states[oracle].state is OracleState.ERRORED, (oracle, states[oracle].state)
+        assert states[oracle].reason == "RoleLoginFailed", (oracle, states[oracle].reason)

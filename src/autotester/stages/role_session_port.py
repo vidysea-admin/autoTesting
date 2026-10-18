@@ -79,6 +79,7 @@ class LiveRolePort(SurfaceMixin, NetworkMixin):
     def login(self, role_id: str) -> None:
         """Sign `role_id` in and prove it; on failure the role is marked failed and this raises."""
         state, account = self._states[role_id], self.roles.account(role_id)
+        state.attempted = True
         spec = self._logins.get(account.platform_id)
         if spec is None:
             state.failed = "NoSignInDeclared"

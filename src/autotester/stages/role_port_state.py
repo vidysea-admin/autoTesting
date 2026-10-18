@@ -54,6 +54,7 @@ class RoleState:
     log: ResponseLog
     signed_in: bool = False
     failed: str | None = None
+    attempted: bool = False
     repro: list[str] = field(default_factory=list)
     screens: dict[str, ScreenRecord] = field(default_factory=dict)
     last_log: int | None = None
@@ -87,11 +88,20 @@ class PortBase:
         if state.failed:
             raise RoleLoginFailed(f"role {role_id} could not sign in ({state.failed})")
         if account.platform_id in self._logins and not state.signed_in:
+            if any(st.attempted for st in self._states.values()):  # the sign-in phase skipped it
+                raise RoleLoginFailed(f"role {role_id} could not sign in (never attempted)")
             raise RoleNotSignedIn(f"role {role_id} has not signed in")
         return state
 
     def _require_every_role(self) -> None:
-        """Whole-run reads (screens, layouts, the network log) refuse a run with a failed login."""
-        broken = sorted(rid for rid, st in self._states.items() if st.failed)
+        """Whole-run reads (screens, layouts, the network log) refuse a run with a broken login.
+
+        Broken is a failed attempt, or a role with a declared sign-in that never signed in
+        (never attempted): the working half must not be reported as the whole run.
+        """
+        broken = sorted(
+            rid for rid, st in self._states.items()
+            if st.failed or (not st.signed_in
+                             and self.roles.account(rid).platform_id in self._logins))
         if broken:
             raise RoleLoginFailed(f"role {', '.join(broken)} could not sign in")
