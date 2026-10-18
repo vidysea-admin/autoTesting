@@ -1,6 +1,6 @@
 # Manifest - doctor-oracle-exempt
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/doctor-oracle-exempt.md caea6f75)
 **Fix cycle:** 0
 **Contract:** none - criteria DOE1 and DOE2 are stated in .work/briefs/build-doctor-oracle-exempt.md (enforces core-invariants design rules)
 **Goal task:** none (enabler for the G11 oracle units, schema/oracle_context.py T-211)
@@ -49,4 +49,4 @@ Falsification copies: C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/e
 ## Live browser evidence
 Not UI-touching — no surface changed: changed paths src/autotester/doctor.py, tests/test_doctor_oracle_exempt.py, docs/MAP.md, docs/SNAPSHOT.md.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/doctor-oracle-exempt.md caea6f75)
