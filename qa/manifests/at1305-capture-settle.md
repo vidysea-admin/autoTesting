@@ -1,6 +1,6 @@
 # Manifest - at1305-capture-settle (AT-1305, medium)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at1305-capture-settle.md b1571209)
 **Fix cycle:** 0
 **Contract:** qa/contracts/execute.md (E1-E5 held); unit criteria C1-C3 quoted from the build brief `.work/briefs/build-at1305-capture-settle.md`
 **Goal task:** none (issue AT-1305, from the live T-136 r3 report `.work/t136-live-report-r3.md` section D2)
@@ -61,4 +61,4 @@ A `git stash` / `git stash pop` run in this worktree interleaved with a sibling 
 ## Live browser evidence
 Not UI-touching - no route, template or static asset changed. The detector script was exercised in headless Chromium against static HTML (see Falsification[C3]); a live re-run of T-136 is not done here.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at1305-capture-settle.md b1571209)
