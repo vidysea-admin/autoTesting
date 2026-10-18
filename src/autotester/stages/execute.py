@@ -15,7 +15,7 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 
-from autotester.browser import conditions
+from autotester.browser import conditions, evidence
 from autotester.browser.destroy_guard import AccountDestroyRefused
 from autotester.browser.locators import LocatorNotFound
 from autotester.browser.secrets import MissingSecret
@@ -29,6 +29,8 @@ from autotester.stages import network_capture
 from autotester.stages.run_budget import RunBudgetExceeded
 
 _DEFAULT_WAIT_MS = 5000
+
+_TRANSITIONING = (Action.CLICK, Action.NAVIGATE, Action.BACK, Action.PRESS_KEY, Action.SELECT)
 
 StepHandler = Callable[[BrowserSession, Step], None]
 
@@ -150,7 +152,10 @@ def _run_steps(
                     session.assert_expected(step.expected, step_order=step.order)
                 if assertion_failed is None and _assertions_unmet(session, pre):
                     assertion_failed = step.order
-            session.screenshot(f"step{step.order:02d}-{step.action}", step_order=step.order)
+            label = f"step{step.order:02d}-{step.action}"
+            if step.action in _TRANSITIONING:  # AT-1305: no frame of a still-pending page
+                evidence.settle_for_capture(session, label, step.order)
+            session.screenshot(label, step_order=step.order)
             if budget is not None:
                 budget.check()
         except MissingSecret as exc:
