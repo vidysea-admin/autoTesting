@@ -8,7 +8,7 @@ from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.image_privacy import sanitized_images
-from autotester.core.trace import read_spans
+from autotester.core.trace import TraceParseError, read_spans
 from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.failure_bundle import BundleAssembly, BundleIndex, BundleSource
 from autotester.schema.run import Run
@@ -89,9 +89,12 @@ def assemble_run_bundles(store: ProjectStore, run: Run) -> None:
                     raise ValueError("case_outside_run")
                 entry = _assemble_case(store, run, cases[verdict.case_id],
                                        results[verdict.case_id], verdict, redactor)
-            except Exception:
+            except Exception as exc:
+                # AT-1304 C3: a corrupt trace line says which file and line; never its content.
+                reason = str(exc) if isinstance(exc, TraceParseError) else None
+                _LOG.warning("failure_bundle_assembly_failed %s", reason or type(exc).__name__)
                 entry = BundleAssembly(case_id=verdict.case_id, status="unavailable",
-                                       diagnostic="assembly_failed")
+                                       diagnostic="assembly_failed", reason=reason)
             index.cases.append(entry)
         write_json(_inside(store.paths.bundles_dir(run.id) / "index.json", run_dir), index)
     except Exception:

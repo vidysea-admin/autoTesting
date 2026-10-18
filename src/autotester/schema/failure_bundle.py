@@ -90,6 +90,8 @@ class BundleAssembly(BaseModel):
     bundle_id: str | None = Field(default=None, pattern=r"^fb_[A-Za-z0-9]+$")
     status: Literal["complete", "unavailable"]
     diagnostic: Literal["assembly_failed", "image_text_unavailable"] | None = None
+    reason: str | None = Field(default=None, max_length=200,
+                               description="value-free cause, e.g. 'trace.jsonl:2: not valid JSON'")
     image_text_unavailable: bool = False
     images_requested: int = Field(default=0, ge=0)
     images_included: int = Field(default=0, ge=0)

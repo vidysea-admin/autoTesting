@@ -8,12 +8,23 @@ run-view UI panel (RT7) -- a VIEW over the file, never a second store
 from __future__ import annotations
 
 import json
+from enum import Enum
 from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel, TypeAdapter
 
 from autotester.core.pricing import estimate_cost
 from autotester.core.redact import Redactor
 from autotester.schema.run_state import StageCheckpoint
 from autotester.schema.trace import LLMSpan, StageSpan, ToolSpan
+
+_LINE = TypeAdapter(dict[str, Any])  # encodes datetimes/enums exactly as model_dump_json
+
+
+class TraceParseError(ValueError):
+    """A `trace.jsonl` line that is not JSON; the message names the file and 1-based line,
+    never the line's content (AT-1304 C3)."""
 
 
 class TraceWriter:
@@ -25,11 +36,27 @@ class TraceWriter:
         self.trace_id = trace_id
         self._redactor = redactor or Redactor({})
 
-    def _append(self, line: str) -> None:
-        """RT6: every span passes through `scrub` then the `assert_clean`
-        hard gate before it touches disk -- in that order, on every line."""
-        clean = self._redactor.scrub(line)
-        self._redactor.assert_clean(clean)
+    def _scrub_value(self, value: Any) -> Any:
+        """Mask secrets in the STRING values only. Numbers and timestamps are never text, so
+        a short numeric secret (SMTP port 587) cannot edit a latency of 0.587 (AT-1304).
+        Enum members are the fixed stage/status vocabulary, not free text."""
+        if isinstance(value, Enum):
+            return value
+        if isinstance(value, str):
+            clean = self._redactor.scrub(value)
+            self._redactor.assert_clean(clean)
+            return clean
+        if isinstance(value, dict):
+            return {k: self._scrub_value(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [self._scrub_value(v) for v in value]
+        return value
+
+    def _append(self, span: BaseModel) -> None:
+        """RT6: every string in a span passes through `scrub` then the `assert_clean`
+        hard gate BEFORE JSON encoding -- structurally, so the encoded line is always valid
+        JSON and a JSON escape (quote, backslash) cannot hide a secret from the scrub."""
+        clean = _LINE.dump_json(self._scrub_value(span.model_dump(mode="python"))).decode("utf-8")
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a", encoding="utf-8") as fh:
             fh.write(clean + "\n")
@@ -44,7 +71,7 @@ class TraceWriter:
             error=checkpoint.error,
             started=checkpoint.started, finished=checkpoint.finished, duration_s=duration,
         )
-        self._append(span.model_dump_json())
+        self._append(span)
 
     def record_llm(
         self, *, provider: str, role: str, prompt_file: str | None,
@@ -60,7 +87,7 @@ class TraceWriter:
                   else estimate_cost(provider, input_tokens, output_tokens)),
             retries=retries, fallback_hops=fallback_hops, fed_id=fed_id, failed=failed,
         )
-        self._append(span.model_dump_json())
+        self._append(span)
 
     def record_tool(self, *, seq: int, op: str, name: str, ok: bool = True,
                     refusal: str | None = None, parent_seq: int | None = None,
@@ -69,7 +96,7 @@ class TraceWriter:
         writer and file, never a second trace (RT5)."""
         span = ToolSpan(trace_id=self.trace_id, seq=seq, op=op, name=name, ok=ok,  # type: ignore[arg-type]
                         refusal=refusal, parent_seq=parent_seq, duration_s=duration_s)
-        self._append(span.model_dump_json())
+        self._append(span)
 
 
 def read_tool_spans(path: Path) -> list[ToolSpan]:
@@ -88,10 +115,13 @@ def read_spans(path: Path) -> list[StageSpan | LLMSpan]:
     if not path.exists():
         return []
     spans: list[StageSpan | LLMSpan] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
-        raw = json.loads(line)
+        try:
+            raw = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise TraceParseError(f"{path.name}:{number}: not valid JSON") from exc
         if raw.get("kind") == "tool":  # agent-layer spans: `read_tool_spans`
             continue
         if raw.get("kind") == "llm_call":
