@@ -1,0 +1,5 @@
+E           AssertionError: (<OracleName.NEGATIVE_INPUT: 'negative_input'>, 'RoleNotSignedIn')
+E           assert 'RoleNotSignedIn' == 'RoleLoginFailed'
+E             
+E             - RoleLoginFailed
+E             + RoleNotSignedIn

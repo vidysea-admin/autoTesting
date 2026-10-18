@@ -1,0 +1,15 @@
+PKG D:\autoTesting/.worktrees/g11-port-wiring/src\autotester\__init__.py
+STATUS mailbox not built None
+STATUS tenant not built None
+STATUS privilege not built None
+STATUS negative_input errored RoleLoginFailed
+STATUS state_after errored RoleLoginFailed
+STATUS api_error errored RoleLoginFailed
+STATUS request_budget errored RoleLoginFailed
+STATUS consistency not run None
+STATUS answer_key not run None
+STATUS copy_lint errored RoleLoginFailed
+STATUS responsive errored RoleLoginFailed
+STATUS credential_policy not built None
+STATUS payment not built None
+FINDINGS 0 []
