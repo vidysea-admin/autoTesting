@@ -1,6 +1,6 @@
 # Manifest - t211-crossrole (T-211, G11-5)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t211-crossrole.md a2f1d55e, cycle 0)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP13, MP14, MP15; invariants MPI1, MPI2, MPI3 held)
 **Goal task:** T-211
@@ -75,4 +75,4 @@ Metrics: start=2026-10-18T11:00:00Z end=2026-10-18T11:50:00Z wall_min=50 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema and stage modules plus tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t211-crossrole.md a2f1d55e, cycle 0)
