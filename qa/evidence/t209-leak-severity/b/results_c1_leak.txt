@@ -1,0 +1,17 @@
+collect ok; url_template = https://app.example.test/students/{id}?token={value}&email={value} | ids 5
+files under run dir: ['leak\\probe-1.png', 'multi_role_findings\\probe-1.json']
+  name             in run-dir files: False  in log: False
+  email            in run-dir files: False  in log: False
+  phone            in run-dir files: False  in log: False
+  phone-tail       in run-dir files: False  in log: False
+  secret           in run-dir files: False  in log: False
+  master-key       in run-dir files: False  in log: False
+  derived-key-hex  in run-dir files: False  in log: False
+  derived-key-b64  in run-dir files: False  in log: False
+  raw-id           in run-dir files: False  in log: False
+raw png bytes in any run file: False
+log lines: ['Importing PngImagePlugin', "STREAM b'IHDR' 16 13", "STREAM b'IDAT' 41 150", 'multi-role finding probe-1 class=data_leak count=8']
+hmac check: True True
+templatise https://a.test/invite/xQzLmPwRtYuIoPaSdFgHjK -> https://a.test/{id}/{id}
+templatise https://a.test/students/zorblax-quimby -> https://a.test/students/{id}
+templatise https://a.test/r/Zk3jQmVxLmPw9RtYu1IoPa5S?x=1 -> https://a.test/{id}/{id}?x={value}

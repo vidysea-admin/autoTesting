@@ -1,0 +1,30 @@
+per format: kept-in-template / refused-by-validate-accepted / bytes-in-written-file (N=1000)
+nanoid21                 template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+base62-22                template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+stripe-like cus_+14      template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+cuid2-24                 template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+ULID-26                  template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+objectid-24 hex          template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+uuid4                    template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+numeric 1-9 digits       template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+hex8                     template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+letters-only-22          template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+short-alpha-5            template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+short-token-6 b62        template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+name-slug john-smith     template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+name.dotted              template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+name%20encoded           template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+ext json                 template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+semicolon param          template-kept 0/1000  validate-accepted 0/1000  file-has-raw 0/40
+TOTAL violations: 0
+run dir files: 40
+route-word probe students -> https://a.test/{id}/students
+route-word probe Students -> https://a.test/{id}/Students
+route-word probe STUDENTS -> https://a.test/{id}/STUDENTS
+route-word probe settings -> https://a.test/{id}/settings
+route-word probe students.json -> https://a.test/{id}/{id}
+route-word probe task -> https://a.test/{id}/task
+route-word probe test -> https://a.test/{id}/test
+url probe https://a.test/students?JohnSmith=1&V1StGXR8_Z5jdHi6B-myT=2&abcdefghijklmnopqrstuv=3 -> https://a.test/students?JohnSmith={value}&{key}={value}&abcdefghijklmnopqrstuv={value} accepted
+url probe https://jane-doe.tenant.test:8443/students/{id} -> https://jane-doe.tenant.test:8443/students/{id} accepted
+url probe https://u:pw@a.test/students#frag -> https://a.test/students accepted

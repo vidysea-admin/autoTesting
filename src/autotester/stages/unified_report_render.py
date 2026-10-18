@@ -9,8 +9,10 @@ gaps listed, never green (DC1); a release with no trusted baseline makes no regr
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from html import escape
 
+from autotester.schema.multi_role_finding import MultiRoleFinding
 from autotester.schema.unified_report import (
     ApiSection,
     CaseLine,
@@ -21,6 +23,7 @@ from autotester.schema.unified_report import (
     UnifiedReport,
     WorkflowSection,
 )
+from autotester.stages.report_banner import BANNER_STYLE, render_banner, render_repros
 
 _STYLE = """<style>
 :root{--fg:#1f2937;--bg:#fff;--line:#d1d5db;--ok:#166534;--bad:#b91c1c;--warn:#92400e;
@@ -154,8 +157,11 @@ def _coverage(sec: CoverageSection) -> str:
     return "".join(out)
 
 
-def render_html(report: UnifiedReport) -> str:
-    """The whole report as one HTML document (no scripts, no external assets)."""
+def render_html(report: UnifiedReport, findings: Sequence[MultiRoleFinding] = ()) -> str:
+    """The whole report as one HTML document (no scripts, no external assets).
+
+    `findings` (T-209, MP8): when any is a P0 leak or privilege finding, the release-blocking
+    banner is the first block, before the title, and each finding's repro closes the document."""
     parts = (("regression", "1. Regression against the last trusted release",
               _regression(report.regression)),
              ("api", "2. API failures (first-party responses)", _api(report.api)),
@@ -163,9 +169,12 @@ def render_html(report: UnifiedReport) -> str:
              ("history", "4. Change history", _history(report.history)),
              ("coverage", "Crawl coverage", _coverage(report.coverage)))
     body = "".join(f'<section id="{k}"><h2>{_e(t)}</h2>{h}</section>' for k, t, h in parts)
+    banner = render_banner(findings)
+    style = _STYLE + (BANNER_STYLE if banner else "")
     return (f"<!doctype html><html lang='en'><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            f"<title>Damage-control report - {_e(report.project)}</title>{_STYLE}"
+            f"<title>Damage-control report - {_e(report.project)}</title>{style}{banner}"
             f"<h1>Damage-control report: {_e(report.project)}</h1>"
             f"<p>Run <code>{_e(report.run_id)}</code>. Built from stored evidence only; nothing "
-            f"here is recomputed, and anything missing says so.</p>{body}</html>")
+            f"here is recomputed, and anything missing says so.</p>{body}"
+            f"{render_repros(findings)}</html>")
