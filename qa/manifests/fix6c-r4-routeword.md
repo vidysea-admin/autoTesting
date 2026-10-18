@@ -1,6 +1,6 @@
 # Manifest - fix6c-r4-routeword (6c integration r4 FAIL on int/1017@345c1606, reds group 1 and 2)
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Contract:** none new; repairs qa/verdicts/integration-6c-int1017-r4.md items 1 and 2 (T-209 leak-evidence predicate vs T-220 / answer-key / MP22 tests; image-privacy Windows-install fallback vs two no-OCR tests)
 **Authority:** D-104 (Approved-by: Umesh 2026-10-17: build G11 now)
