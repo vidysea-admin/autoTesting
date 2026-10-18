@@ -1,0 +1,35 @@
+=== mp9
+GREEN-BEFORE rc= 0 | 2 passed, 2 warnings in 1.03s
+RED-AFTER rc= 1
+>       assert out == f"{HOST}/students/{{id}}/profile"
+E       AssertionError: assert 'https://a.ex...B-myT/profile' == 'https://a.ex.../{id}/profile'
+E         
+E         - https://a.example.test/students/{id}/profile
+E         ?                                 ^ ^^
+E         + https://a.example.test/students/V1StGXR8_Z5jdHi6B-myT/profile
+E         ?                                 ^^^^^^^^^^^^^^ ^^^^^^
+>       assert raw not in written.read_text(encoding="utf-8")
+E       assert 'cus_Nffrf7JkLm3pQw' not in '{\n  "findi...w"\n  }\n}\n'
+E         
+E         'cus_Nffrf7JkLm3pQw' is contained here:
+E           /students/cus_Nffrf7JkLm3pQw",
+E             "steps": [
+E               "login as Parent"
+E             ],
+E             "count": 1,...
+E         
+E         ...Full output truncated (12 lines hidden), use '-vv' to show
+FAILED tests/test_leak_url_ids.py::test_templatise_turns_every_id_format_into_a_placeholder[nanoid-21]
+FAILED tests/test_leak_url_ids.py::test_no_id_format_reaches_the_file_write_finding_writes[stripe-like]
+2 failed, 1 warning in 2.67s
+=== mp10
+GREEN-BEFORE rc= 0 | 1 passed, 2 warnings in 0.91s
+RED-AFTER rc= 1
+>       assert replay(FixtureApp(leaky=True), recorded.steps) == recorded.count
+E       AssertionError: assert 0 == 3
+E        +  where 0 = replay(<test_leak_repro_replay.FixtureApp object at 0x00000235D00278D0>, ['login as Parent', 'goto /students'])
+E        +    where <test_leak_repro_replay.FixtureApp object at 0x00000235D00278D0> = FixtureApp(leaky=True)
+E        +    and   ['login as Parent', 'goto /students'] = MultiRoleFinding(finding_id='leak-replay', finding_class=<FindingClass.DATA_LEAK: 'data_leak'>, title='Parent sees ten...hed_ids=[], ids_withheld_reason=None, screenshot_path=None, screenshot_withheld_reason=None, url_template='/students')).steps
+E        +  and   3 = MultiRoleFinding(finding_id='leak-replay', finding_class=<FindingClass.DATA_LEAK: 'data_leak'>, title='Parent sees ten...hed_ids=[], ids_withheld_reason=None, screenshot_path=None, screenshot_withheld_reason=None, url_template='/students')).count
+FAILED tests/test_leak_repro_replay.py::test_replaying_the_recorded_repro_gives_the_same_count
+1 failed, 1 warning in 1.41s
