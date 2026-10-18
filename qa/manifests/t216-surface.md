@@ -1,6 +1,6 @@
 # Manifest - t216-surface (T-216, G11 W5)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t216-surface.md c332e65a)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP25, MP26; invariants MPI1, MPI2, MPI3, MPI6 held). The criteria are in the contract (checker fold-in done 2026-10-18); no "contract pending" note applies.
 **Goal task:** T-216
@@ -74,4 +74,4 @@ Metrics: start=2026-10-19T08:00:00Z end=2026-10-19T09:10:00Z wall_min=70 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema and stage modules plus tests; no route, template or static asset. The oracles are driven by fakes through the port capabilities until T-210 merges.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t216-surface.md c332e65a)
