@@ -1,6 +1,6 @@
 # Manifest - t218-ceo-bench (T-218, G11-12, fixture leg)
 
-**Status:** ready-for-check
+**Status:** checked-PASS build leg (qa/verdicts/t218-ceo-bench.md; MP31 live + MP35 pending credential/RunApproval gates, goal task stays open)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP29, MP30, MP31 build leg; invariants MPI1-MPI6 held; MP35 stays open)
 **Goal task:** T-218
@@ -80,4 +80,4 @@ Metrics: start=unavailable end=unavailable wall_min=unavailable agent_min=unavai
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema and stage modules plus tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS build leg (qa/verdicts/t218-ceo-bench.md; MP31 live + MP35 pending credential/RunApproval gates, goal task stays open)
