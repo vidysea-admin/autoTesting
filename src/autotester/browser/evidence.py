@@ -13,6 +13,8 @@ so both `screenshot()` and `_record()` keep behaving as ordinary methods on
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from autotester.browser import assertions
 from autotester.schema.enums import EvidenceKind
 from autotester.schema.run import Evidence
@@ -25,6 +27,24 @@ MASK_CSS = (
     "color: transparent !important; text-shadow: 0 0 8px rgba(0,0,0,.6) !important; }"
 )
 MASK_ATTR = "data-autotester-secret"
+# T-136 G4: a frame taken before the post-click page rendered is one flat colour. Recapture at most
+# BLANK_RETRIES times, each after a bounded network-idle wait (<= ~2 s per try, ~6 s in all).
+BLANK_RETRIES = 3
+BLANK_IDLE_MS = 1500
+BLANK_GRACE_MS = 300
+BLANK_SPREAD = 3  # max-min luminance at or below this counts as uniform
+
+
+def _is_blank(path: str) -> bool:
+    """True when the PNG at `path` is one flat colour; an unreadable file is NOT blank."""
+    try:
+        from PIL import Image
+
+        with Image.open(path) as image:
+            low, high = image.convert("L").getextrema()
+    except Exception:
+        return False
+    return high - low <= BLANK_SPREAD
 
 
 class EvidenceMixin:
@@ -81,7 +101,31 @@ class EvidenceMixin:
             self.page.wait_for_timeout(self._timeout(250).get("timeout", 250))
             self.page.screenshot(path=path, full_page=False, **self._timeout())
         self._timeout()
+        self._recapture_blank(path, rel, step_order)
         return self._record(EvidenceKind.SCREENSHOT, rel, step_order=step_order, label=label)
+
+    def _recapture_blank(self, path: str, rel: str, step_order: int | None) -> None:
+        """T-136 G4: a uniform frame is re-taken after load/network-idle, bounded; if it stays
+        blank, say so in a DOM evidence row (not an `assert ` row) rather than hide it."""
+        for _ in range(BLANK_RETRIES):
+            if not _is_blank(path):
+                return
+            for state, ms in (("networkidle", BLANK_IDLE_MS), ("timeout", BLANK_GRACE_MS)):
+                try:
+                    if state == "timeout":
+                        self.page.wait_for_timeout(self._timeout(ms).get("timeout", ms))
+                    else:
+                        self.page.wait_for_load_state(state, timeout=self._timeout(ms).get(
+                            "timeout", ms))
+                except RunBudgetExceeded:
+                    raise
+                except Exception:
+                    pass
+            self.page.screenshot(path=path, full_page=False, **self._timeout())
+            self._timeout()
+        if _is_blank(path):
+            self._record(EvidenceKind.DOM, f"screenshot blank after {BLANK_RETRIES} recaptures: "
+                         f"{Path(rel).name}", step_order=step_order)
 
     # -- evidence ---------------------------------------------------------------
     def _record(self, kind: EvidenceKind, path: str, *, step_order: int | None = None,

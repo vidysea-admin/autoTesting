@@ -80,27 +80,40 @@ NOTE_DISAGREES = (
 # only to a WHOLE note that states the outcome was expected ("as expected" / "as intended" /
 # "as designed") and contains no contrary marker anywhere. Otherwise nothing is exempted and the
 # note is held as usual: a false INCONCLUSIVE is acceptable, a false PASS is not.
-_EXPECTED_CUE = re.compile(r"\bas\s+(?:expected|intended|designed)\b", re.IGNORECASE)
+# T-136 G3: "correctly rejected" / "appropriately blocked" state that the rejection was the right
+# outcome; the adverb counts only when it sits directly on a rejection verb, never on its own
+# ("invalid total shown correctly formatted" stays held).
+_EXPECTED_CUE = re.compile(
+    r"\bas\s+(?:expected|intended|designed)\b|"
+    r"\b(?:correctly|properly|appropriately|rightly)\s+"
+    r"(?:rejected|blocked|prevented|denied|refused)\b", re.IGNORECASE)
 _CONTRARY = re.compile(
     r"\b(?:but|however|also|anyway|although|yet|instead|not|never|no|missing|absent|without|"
     r"generic|unexpected\w*|deleted|submitted|saved|charged|leaked|other|wrong|incorrect|crash\w*|"
     r"froze|valid)\b|\b500\b|n't\b", re.IGNORECASE)
 _EXEMPT_TERMS = frozenset({"error", "errors", "denied", "reject", "rejects", "rejected",
-                           "rejection", "rejections", "invalid"})
-# "invalid" is exempt only when it qualifies an input ("invalid email"), not a result.
+                           "rejection", "rejections", "invalid", "incorrect", "wrong",
+                           "block", "blocks", "blocked"})
+# "invalid" / "incorrect" / "wrong" are exempt only when they qualify an input ("invalid email",
+# "incorrect password"), not a result ("wrong amount", "invalid total").
+_INPUT_QUALIFIERS = frozenset({"invalid", "incorrect", "wrong"})
 _INVALID_INPUTS = frozenset({"email", "password", "input", "credentials", "username", "format",
                              "entry", "phone", "date", "login", "characters", "address", "code"})
+_QUALIFIED_INPUT = re.compile(
+    r"\b(?:wrong|incorrect)\s+(?:" + "|".join(sorted(_INVALID_INPUTS)) + r")\b", re.IGNORECASE)
 
 
 def _exemptible(note: str) -> bool:
     """True when the whole note says the error was expected and nothing contradicts it."""
-    return bool(_EXPECTED_CUE.search(note)) and not _CONTRARY.search(note)
+    # "wrong/incorrect <input>" names the bad input the case sent, not a contrary outcome
+    return (bool(_EXPECTED_CUE.search(note))
+            and not _CONTRARY.search(_QUALIFIED_INPUT.sub("", note)))
 
 
 def _exempt(note: str, end: int, term: str) -> bool:
     if term not in _EXEMPT_TERMS:
         return False
-    if term == "invalid":
+    if term in _INPUT_QUALIFIERS:
         following = re.match(r"\s*(\w+)", note[end:])
         return bool(following) and following.group(1).lower() in _INVALID_INPUTS
     return True

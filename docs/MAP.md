@@ -292,7 +292,7 @@
 | `stages/flow_plan.py` | Derive each completed flow's persisted validation plan from a finished run (AT-898, RR6). |
 | `stages/generic_acceptance.py` | GENERIC ACCEPTANCE: one harness that drives a product through BOTH entry modes (T-169). |
 | `stages/grade.py` | GRADE: an independent, stateless judge reads a Rubric + a RawResult's evidence. |
-| `stages/grade_images.py` | Deliver sanitized grading images and expose privacy-driven visual evidence shortfalls. |
+| `stages/grade_images.py` | Deliver sanitized grading images; decide what privacy-driven visual shortfalls do to a verdict. |
 | `stages/grade_note_guard.py` | The notes-vs-verdict cross-check: a judge PASS whose own note describes a defect is not a PASS. |
 | `stages/ingest.py` | INGEST: turn a video Source into a FlowSpec, provenance-tracked to the second. |
 | `stages/issues.py` | ISSUES: turn an adjudicated analysis into rows a human tester can read. |
