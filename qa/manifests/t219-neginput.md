@@ -1,6 +1,6 @@
 # Manifest - t219-neginput (T-219, G11-5)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t219-neginput.md 2986f3b3)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP32; invariants MPI1, MPI2, MPI3 held)
 **Goal task:** T-219
@@ -63,4 +63,4 @@ Metrics: start=2026-10-19T00:00:00Z end=2026-10-19T00:40:00Z wall_min=40 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only schema and stage modules plus tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t219-neginput.md 2986f3b3)
