@@ -1,6 +1,6 @@
 # Manifest - t214-network (T-214, G11-5)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t214-network.md 751bd035)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP21, MP22; invariants MPI1, MPI2, MPI3 held)
 **Goal task:** T-214
@@ -74,4 +74,4 @@ Metrics: start=2026-10-19T00:00:00Z end=2026-10-19T00:40:00Z wall_min=40 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only a schema and two stage modules plus tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t214-network.md 751bd035)
