@@ -43,6 +43,7 @@
 | `browser/locators.py` | Semantic locators: the target grammar and the session's one place that resolves it. |
 | `browser/observe.py` | Passive observation: enumerate a page's controls, capture console/network |
 | `browser/profiles.py` | Establish a logged-out entry profile before any browser opens. |
+| `browser/role_probe.py` | Page-level reads and viewport sweeps for the multi-role port (MP11, MP25, MP26). |
 | `browser/secrets.py` | The credential boundary. Secret values live here and nowhere else. |
 | `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |
 | `browser/video.py` | Per-case video recording for `BrowserSession` (T-191/AT-587). |
@@ -170,6 +171,7 @@
 | `schema/lead_loop.py` | The steps a lead-tester model may return, and what a finished loop reports (T-179 AL5/AL7). |
 | `schema/leak_evidence.py` | What a data-leak finding may remember about another tenant's data (MP9, MPI1). |
 | `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
+| `schema/link_outcome.py` | What happened to one declared PlatformLink when a run tried to follow it (MP12). |
 | `schema/lint_rule.py` | The declared surface checks and what the surface oracles read (MP25, MP26). |
 | `schema/mailbox_ref.py` | Where a role account's mailbox is, as KEYS only (MP2) -- plus the one secret-key rule. |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
@@ -189,6 +191,7 @@
 | `schema/request_budget.py` | What the network oracles read: captured requests per step and the request budget (MP21, MP22). |
 | `schema/review_recall.py` | The TA16 evidence record: a video review measured against an oracle, in numbers (T-206). |
 | `schema/role_account.py` | One signed-in identity on one platform, held as KEYS only (MP2, MPI5). |
+| `schema/role_signin.py` | How one platform's sign-in page is driven, so a live role port can sign its accounts in (MP11). |
 | `schema/role_step.py` | One role-tagged step of a cross-role scenario, and how it went (MP13). |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
 | `schema/run_queue.py` | One Test press waiting for, holding, or having had a browser slot (T-203, hosting.md HO16). |
@@ -302,6 +305,7 @@
 | `stages/manual_login.py` | Manual one-time login. Contract: qa/contracts/manual-login.md ML1-ML5. |
 | `stages/media_prep.py` | MEDIA PREP: make a recording readable — probe it, cut it, transcribe it. |
 | `stages/merge_flowspec.py` | Fold a freshly ingested FlowSpec into the reviewed one (Track A6, T-135). |
+| `stages/multi_role_session.py` | One isolated browser context per role account, each owned by its own thread (MP11). |
 | `stages/network_capture.py` | First-party network capture as evidence (T-170, NA1/NA2/NA4/NA5/NA6). |
 | `stages/oracle_answer_key.py` | The answer-key oracle: answer from the key, compare the score the product shows (MP24). |
 | `stages/oracle_api_error.py` | The hidden API error oracle (MP21): a first-party 4xx/5xx behind a screen that shows success. |
@@ -320,6 +324,7 @@
 | `stages/orchestrate_runners.py` | The concrete stage runners the orchestrator threads — thin adapters over the |
 | `stages/parallel_run.py` | PARALLEL_RUN: fan N cases out across isolated browser contexts (T-173/D-041). |
 | `stages/persona_changes.py` | What moved in the product since the last crawl: new / changed / missing / broken. |
+| `stages/platform_links.py` | Follow every declared PlatformLink and account for it (MP12). |
 | `stages/portal_persona.py` | PORTAL PERSONA: promote per-crawl knowledge into the durable, cross-run |
 | `stages/portal_persona_view.py` | Render a `PortalPersona` as `knowledge.md` — a human-readable VIEW of the |
 | `stages/product_map.py` | PRODUCT MAP: fold every recording analysis into one navigable screen map. |
@@ -334,6 +339,11 @@
 | `stages/report_export.py` | Tester-style run reports: an Excel summary and a screen-by-screen HTML |
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/review_recall.py` | Score stored video reviews against an oracle corpus into a `ReviewRecall` (TA16). |
+| `stages/role_onboarding.py` | Validate N role accounts across M platforms at onboarding time (T-208, MP4-MP5). |
+| `stages/role_port_network.py` | The network-log capability of the live role port: `NetworkLogPort` (MP21, MP22). |
+| `stages/role_port_state.py` | The per-role state and shared guards of the live role port (MP11, MP15). |
+| `stages/role_port_surface.py` | The surface capabilities of the live role port: `TextSurface` and `LayoutSurface` (MP25, MP26). |
+| `stages/role_session_port.py` | The live `RoleSessionPort`: T-210's `RoleSessions` seen through the oracle interface (MP15). |
 | `stages/run_artifacts.py` | Assemble post-run failure evidence and validate links without changing functional records. |
 | `stages/run_budget.py` | RUN_BUDGET: the consent budget one case run spends against (AT-570/AT-660). |
 | `stages/run_case_pipeline.py` | Observe cases and grade their persisted evidence with reusable default rubrics (RP1-RP4). |
@@ -404,6 +414,7 @@
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/preflight_view.py` | One job: render a run's preflight warnings as a card for the run report page. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
+| `ui/role_accounts_view.py` | HTML for the role-account onboarding form and the saved-accounts listing (T-208, MP4). |
 | `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
 | `ui/routes_access_requests.py` | Share-link opening, request-access, and the approvers' list (T-198b / G9, TP3, TP5). |
 | `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |
@@ -426,6 +437,7 @@
 | `ui/routes_project_edit.py` | Edit a project's own settings after onboarding. Contract: qa/contracts/ui.md. |
 | `ui/routes_proposals.py` | Review a project's proposed test cases from the UI: list, approve, prune, single or bulk. |
 | `ui/routes_report.py` | Run history, screenshots and downloads. Contract: qa/contracts/ui-report.md UR1-UR4. |
+| `ui/routes_role_accounts.py` | Onboard and edit N role accounts across M platforms (T-208, MP4-MP6). |
 | `ui/routes_runs.py` | Trigger a real run. Contract: qa/contracts/ui-run.md RU1-RU4. Run-history |
 | `ui/routes_schedule.py` | The schedule routes (TS1): view the card, save, pause, resume and delete one project's schedule. |
 | `ui/routes_server_settings.py` | The admin page for server limits (hosting.md HO15): run concurrency and the upload ceiling. |
@@ -643,6 +655,8 @@
 | `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
 | `CitationReview` (`schema/ledger.py`) | An inline inventory declaration, bound to exact visible occurrence content. |
 | `SealedRecord` (`schema/ledger.py`) | One reviewed, hash-bound row covering the citations of a closed historical unit. |
+| `LinkStatus` (`schema/link_outcome.py`) | Every declared link ends in exactly one of these; none is silently dropped (MP12). |
+| `LinkOutcome` (`schema/link_outcome.py`) | The report row for `Project.platform_links[link_index]`. |
 | `LintKind` (`schema/lint_rule.py`) | What one lint rule checks. |
 | `TextOrigin` (`schema/lint_rule.py`) | Where a text was read: a screen's visible DOM text or a mail body. |
 | `LintRule` (`schema/lint_rule.py`) | One declared rule. `value` is the brand term, the forbidden string or the display zone. |
@@ -723,6 +737,7 @@
 | `OracleRef` (`schema/review_recall.py`) | Where the denominator came from. Never a claim of independence. |
 | `ReviewRecall` (`schema/review_recall.py`) | `recall.json`. `k` and `unconfirmed_count` must be re-derivable from the id lists. |
 | `RoleAccount` (`schema/role_account.py`) | A test account for one role. Its scope is the account's own permissions (D-018). |
+| `RoleSignIn` (`schema/role_signin.py`) | The sign-in recipe of one platform; every account on the platform uses it. |
 | `StepState` (`schema/role_step.py`) | How one step ended. `not_run` is a step skipped because an earlier one failed. |
 | `RoleStep` (`schema/role_step.py`) | An action performed as one named role account. |
 | `StepOutcome` (`schema/role_step.py`) | What the runner recorded for one step: the error is an exception type, never its message. |
