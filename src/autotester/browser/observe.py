@@ -45,8 +45,13 @@ class PageObserver:
     Buffers console errors, failed/4xx+ requests, dialogs, and popup counts
     until `drain()` is called."""
 
-    def __init__(self, dialog_action: DialogAction | None = None) -> None:
+    def __init__(self, dialog_action: DialogAction | None = None, *,
+                 passive: bool = False) -> None:
         self.dialog_action = dialog_action or _default_dialog_action
+        self.passive = passive
+        """A passive observer keeps nothing and handles no dialogs: it installs the one response
+        listener and fans each response out to `subscribe`d hooks (role sessions, hop traces)."""
+        self._hooks: list[Callable[[Any], None]] = []
         self.console: list[str] = []
         self.failed: list[tuple[str, str]] = []
         self.dialogs: list[DialogEvent] = []
@@ -63,9 +68,12 @@ class PageObserver:
         if self._attached:
             return
         self._attached = True
-        page.on("console", self._on_console)
-        page.on("requestfailed", self._on_request_failed)
+        if not self.passive:
+            page.on("console", self._on_console)
+            page.on("requestfailed", self._on_request_failed)
         page.on("response", self._on_response)
+        if self.passive:
+            return
         page.on("dialog", self._on_dialog)
         if page.context is not None:
             page.context.on("page", self._on_popup)
@@ -79,13 +87,24 @@ class PageObserver:
         reason = failure.get("errorText", "failed") if isinstance(failure, dict) else "failed"
         self.failed.append((request.url, reason))
 
+    def subscribe(self, hook: Callable[[Any], None]) -> None:
+        """Also call `hook(response)` for every response (NA6: a read of this one listener)."""
+        self._hooks.append(hook)
+
+    def unsubscribe(self, hook: Callable[[Any], None]) -> None:
+        if hook in self._hooks:
+            self._hooks.remove(hook)
+
     def _on_response(self, response: Any) -> None:
-        if response.status >= 400:
-            self.failed.append((response.url, str(response.status)))
-        # T-170/NA1: every response, independent of status -- the second,
-        # evidence-producing read of the same stream (NA6, no second listener).
-        method = getattr(getattr(response, "request", None), "method", "GET")
-        self.responses.append((method, response.url, response.status))
+        if not self.passive:
+            if response.status >= 400:
+                self.failed.append((response.url, str(response.status)))
+            # T-170/NA1: every response, independent of status -- the second,
+            # evidence-producing read of the same stream (NA6, no second listener).
+            method = getattr(getattr(response, "request", None), "method", "GET")
+            self.responses.append((method, response.url, response.status))
+        for hook in tuple(self._hooks):
+            hook(response)
 
     def _on_dialog(self, dialog: Any) -> None:
         action = self.dialog_action(dialog.type)
@@ -114,6 +133,15 @@ class PageObserver:
         responses = self.responses
         self.responses = []
         return responses
+
+
+def response_observer(session: Any) -> PageObserver:
+    """The session's observer, so a caller can `subscribe` to responses without a second listener.
+    A session started without one gets a passive observer attached to its page (NA6)."""
+    if getattr(session, "observer", None) is None:
+        session.observer = PageObserver(passive=True)
+        session.observer.attach(session.page)
+    return session.observer  # type: ignore[no-any-return]
 
 
 def enumerate_elements(page: Any) -> list[ElementRef]:

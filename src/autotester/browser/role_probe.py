@@ -8,7 +8,11 @@ back to the caller as in-memory values, and a secret input is masked before any 
 
 `ResponseLog` is the one listener that records first-party-candidate responses (document, xhr,
 fetch only, so favicons and assets never read as API errors) with a timestamp; it can be paused so
-a re-visit made only to measure a layout is not counted as the product's own traffic.
+a re-visit made only to measure a layout is not counted as the product's own traffic. It and
+`HopWatch` read responses through the session's one observer listener (NA6), never their own.
+
+`HopWatch` is the route guard and navigation recorder behind `stages/platform_links.py` (T-210):
+the stage names the hosts that are outside, this module does the browser work.
 """
 
 from __future__ import annotations
@@ -17,13 +21,13 @@ import collections
 import contextlib
 import re
 import time
-from collections.abc import Iterator, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from typing import Any, NamedTuple
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 
 from autotester.browser.evidence import MASK_CSS
 from autotester.browser.locators import LocatorNotFound, format_label, resolve
-from autotester.browser.observe import visual_text
+from autotester.browser.observe import response_observer, visual_text
 
 RECORDED_TYPES = frozenset({"document", "xhr", "fetch"})
 HISTORY = 2000
@@ -71,7 +75,7 @@ class ResponseLog:
         self._since = 0.0
 
     def attach(self, session: Any) -> None:
-        session.page.on("response", self._on_response)
+        response_observer(session).subscribe(self._on_response)
 
     def _on_response(self, response: Any) -> None:
         request = response.request
@@ -108,6 +112,66 @@ class ResponseLog:
             yield
         finally:
             self.paused = before
+
+
+def _redirect_target(reply: Any, requested: str) -> str | None:
+    """Where a 3xx reply sends the browser, as an absolute URL; None for any other reply."""
+    location = reply.headers.get("location")
+    return urljoin(requested, location) if location and 300 <= reply.status < 400 else None
+
+
+class HopWatch:
+    """Listeners and the route guard that record (and, on the first hop, refuse) navigations.
+    `outside(url)` says whether a URL is off every declared platform; such a first hop is aborted
+    before the host is contacted, and a redirect to one is read (not followed) and aborted."""
+
+    def __init__(self, session: Any, outside: Callable[[str], bool]) -> None:
+        self.session, self.page, self.outside = session, session.page, outside
+        self.hops: list[str] = []
+        self.status: int | None = None
+
+    def _main_navigation(self, request: Any) -> bool:
+        return bool(request.is_navigation_request() and request.frame == self.page.main_frame)
+
+    def _guard(self, route: Any, request: Any) -> None:
+        if not self._main_navigation(request):
+            route.continue_()
+            return
+        if self.outside(request.url):
+            route.abort()
+            return
+        try:
+            reply = route.fetch(max_redirects=0)  # read a redirect BEFORE the browser follows it
+            target = _redirect_target(reply, request.url)
+            if target and self.outside(target):
+                self.hops.append(target)
+                route.abort()
+                return
+            route.fulfill(response=reply)
+        except Exception:  # a route left unresolved would hang the navigation
+            route.abort()
+
+    def _on_request(self, request: Any) -> None:
+        if self._main_navigation(request):
+            self.hops.append(request.url)
+
+    def _on_response(self, response: Any) -> None:
+        if self._main_navigation(response.request):
+            self.status = response.status
+
+    def attach(self) -> None:
+        self.page.route("**/*", self._guard)
+        self.page.on("request", self._on_request)
+        response_observer(self.session).subscribe(self._on_response)
+
+    def detach(self) -> None:
+        response_observer(self.session).unsubscribe(self._on_response)
+        self.page.remove_listener("request", self._on_request)
+        self.page.unroute("**/*", self._guard)
+
+    def park(self) -> None:
+        """Never leave a role's browser on a stray site."""
+        self.page.goto("about:blank")
 
 
 def look(session: Any, target: str) -> tuple[bool, str]:
