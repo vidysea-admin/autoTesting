@@ -13,7 +13,7 @@ TIER: M (new stage module reading a shared schema; no L trigger in the changed n
 FAILURES: none
 CAPABILITY-COVERAGE: 1/1 rows reproduced
 LIVE-BROWSER: not-applicable (src/autotester/schema/*.py, src/autotester/stages/oracle_negative_input.py, tests only)
-ISSUES-WRITTEN: AT-1025, AT-1026 (both low)
+ISSUES-WRITTEN: AT-1025, AT-1026 (low), AT-1027 (process)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
 
 ## Evidence (all produced in this check)
@@ -29,4 +29,4 @@ EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
 1-3 (two schema files, forms from `<run_dir>/negative_input_forms.json`, role reach via `form.role_ids`) are within MP32 and the closed-schema rule; 4 (two selectors) fits the single-bool `observe`; 5 (`run = _run`) is accepted, the doctor owner suggestion is a candidate not a defect; 6 CORE-REQUEST `fill_field` is declared and refused loudly (TypeError) when absent, so a port without it cannot yield a silent clean run; 7-8 best-effort probe isolation and finding shape accepted, residual edges filed as AT-1026. Duplicate role_ids edge filed as AT-1025.
 
 EXPLANATION: The oracle runs each derived probe once per declared role and the 20-cell matrix test pins every pass and breach, so the role-B findings, the role-A passes and the count-2 double submit are all evidenced. Dropping the per-role loop turns the matrix test red on the expected 10 != 20, and nothing outside the five listed files changed. Over the 5 min target: slow: scratch-copy pytest startup 2.3 min, with the rest spent reading the diff and protocol.
-Metrics: start=2026-10-18T20:15:58Z end=2026-10-18T20:28:30Z wall_min=12 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-18.15 lane=normal check_s=752 mutants=0 defects_unit=0 defects_6c=0 slow=scratch-copy-pytest-startup+read 7
+Metrics: start=2026-10-18T20:15:58Z end=2026-10-18T20:26:13Z wall_min=10 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-18.15 lane=normal check_s=615 mutants=0 defects_unit=0 defects_6c=0 slow: scratch-copy pytest startup 2.3 min (3 cold runs 64+33+35 s)
