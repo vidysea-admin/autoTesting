@@ -75,6 +75,14 @@ def test_plain_route_words_are_kept() -> None:
     assert validate_url_template(url) == url
 
 
+def test_ordinary_route_words_other_units_use_are_kept_but_names_still_are_not() -> None:
+    for word in ("inbox", "mail", "quiz", "status", "items", "fast"):
+        assert validate_url_template(f"/api/{word}") == f"/api/{word}"
+    for name in ("alice", "zorblax-quimby"):  # a person-name slug is never a route word
+        with pytest.raises(ValueError):
+            validate_url_template(f"/inbox/{name}")
+
+
 def test_query_string_values_do_not_survive() -> None:
     out = stage.templatise_url(f"{HOST}/api/v1/students?token=Zx9secret&q=Zorblax&page=2")
     assert out == f"{HOST}/api/v1/students?token={{value}}&q={{value}}&page={{value}}"

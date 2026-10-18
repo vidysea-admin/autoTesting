@@ -31,6 +31,8 @@ ROUTE_WORDS = frozenset({
     "settings", "sign-in", "sign-up", "signin", "signout", "signup", "student", "students",
     "task", "tasks", "teacher", "teachers", "test", "tests", "university", "universities",
     "upload", "uploads", "user", "users", "v1", "v2", "v3", "view",
+    # ordinary route words other units use (fix6c-r4-routeword; AT-1033 tracks the per-project list)
+    "cart", "fast", "inbox", "item", "items", "mail", "me", "quiz", "quizzes", "slow", "status",
 })
 _PLACEHOLDER = re.compile(r"^\{[a-z_]+\}$")
 HashedId = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
