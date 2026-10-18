@@ -75,6 +75,11 @@ def check_platforms(platforms: Sequence[Platform]) -> None:
         if not plat.allowed_domains or not base:
             raise OnboardingError(f"platform {plat.id!r} needs a base URL and at least one "
                                   "allowed domain")
+        for domain in plat.allowed_domains:
+            if "." not in _norm(domain) and _norm(domain) != "localhost":
+                raise OnboardingError(
+                    f"platform {plat.id!r}: {domain!r} is a bare top-level name, not a host; "
+                    "declare the platform's own host (for example app.example.com)")
         if not any(_admits(base, d, True) for d in plat.allowed_domains):
             raise OnboardingError(f"platform {plat.id!r}: its base URL host {base!r} is not "
                                   "covered by its allowed domains")
@@ -142,6 +147,29 @@ def validate_accounts(platforms: Sequence[Platform], accounts: Sequence[RoleAcco
     if stray:
         raise OnboardingError(f"a value was given for undeclared key(s): {', '.join(stray)}")
     return flat
+
+
+def rescoped_keys(project: Project, refs: Sequence[SecretRef], accounts: Sequence[RoleAccount],
+                  present: Mapping[str, str]) -> list[str]:
+    """Keys whose stored value this submission would re-bind: an already-declared key whose
+    domain scope, subdomain rule or platform changes, or a new declaration of a key that
+    already holds a value in `.env`. Changing any of these is a credential action (MP6)."""
+    stored = {s.key: s for s in project.secrets}
+    plat_of = {k: a.platform_id for a in project.role_accounts or []
+               for k in (a.username_key, a.password_key)}
+    new_plat = {k: a.platform_id for a in accounts for k in (a.username_key, a.password_key)}
+    moved: list[str] = []
+    for ref in refs:
+        prev = stored.get(ref.key)
+        if prev is None:
+            if ref.key in present:
+                moved.append(ref.key)
+            continue
+        if (sorted(_norm(d) for d in prev.domains), prev.include_subdomains) != (
+                sorted(_norm(d) for d in ref.domains), ref.include_subdomains) or (
+                ref.key in plat_of and plat_of[ref.key] != new_plat.get(ref.key)):
+            moved.append(ref.key)
+    return sorted(moved)
 
 
 def check_key_namespace(project: Project, refs: Sequence[SecretRef]) -> None:

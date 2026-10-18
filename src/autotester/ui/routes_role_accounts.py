@@ -4,7 +4,8 @@ Routes: `GET/POST /onboard/roles` (a new project, `project.create`, exactly as `
 `GET/POST /projects/{slug}/accounts` (an existing project: `project.edit` for the declarations,
 and `credentials.edit` on top for any value written to the repo-root `.env`, MP6 / auth.md AU21).
 The route policy rows are in `auth/policy.py`; the extra credentials.edit check is
-`_require_credentials_edit`, run before anything is saved. Values go to `.env` only through
+`_require_credentials_edit`, run before anything is saved -- for a value, and for any submission
+that re-points an already-declared key (`ro.rescoped_keys`). Values go to `.env` only through
 `stages.role_onboarding.write_values` (the env editor) and are never echoed, logged or listed.
 """
 
@@ -12,6 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from html import escape
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -181,12 +183,41 @@ async def onboard_roles_submit(request: Request) -> RedirectResponse:
                       allowed_domains=domains, platforms=platforms, role_accounts=accounts,
                       secrets=refs)
     _guard(project, platforms, accounts, scopes, values, _env_now(slug), fresh=True)
-    ProjectStore(slug).save_project(project)
-    ro.write_values(ProjectPaths(slug).env_file, values)
     who = current_principal()
-    if who is not None and who.user_id:  # AU8 vocabulary: the creator owns the project
-        set_owner(slug, who.user_id)
+    _commit(ProjectStore(slug), project, None, values,   # AU8 vocabulary: the creator owns it
+            who.user_id if who is not None and who.user_id else None)
     return RedirectResponse(f"/projects/{slug}/accounts", status_code=303)
+
+
+def _restore(env_path: Path, snapshot: bytes | None, store: ProjectStore,
+             previous: Project | None) -> None:
+    """Put `.env` and project.json back as they were before a failed commit."""
+    if snapshot is None:
+        env_path.unlink(missing_ok=True)
+    else:
+        env_path.write_bytes(snapshot)
+    if previous is None:
+        store.paths.config.unlink(missing_ok=True)
+    else:
+        store.save_project(previous)
+
+
+def _commit(store: ProjectStore, updated: Project, previous: Project | None,
+            values: dict[str, str], owner_id: int | None) -> None:
+    """`.env` first (atomic), then project.json, then the owner grant. A failure after the
+    first write restores both files, so a failed write never leaves a saved project -- and a
+    new project never exists without its owner."""
+    env_path = store.paths.env_file
+    snapshot = env_path.read_bytes() if env_path.exists() else None
+    try:
+        if values:
+            ro.write_values(env_path, values)
+        store.save_project(updated)
+        if owner_id is not None:
+            set_owner(store.paths.slug, owner_id)
+    except Exception:
+        _restore(env_path, snapshot, store, previous)
+        raise
 
 
 def _scope_of(project: Project, acct: RoleAccount) -> list[str]:
@@ -219,6 +250,9 @@ async def accounts_submit(slug: str, request: Request) -> RedirectResponse:
         refs = ro.validate_accounts(platforms, accounts, scopes, values)
     except ro.OnboardingError as exc:
         raise HTTPException(400, str(exc)) from exc
+    env_now = _env_now(slug)
+    if ro.rescoped_keys(project, refs, accounts, env_now):
+        _require_credentials_edit(slug)  # MP6: re-pointing a key is a credential action
     kept = [s for s in project.secrets if s.key not in {r.key for r in refs}]
     domains = list(dict.fromkeys([*project.allowed_domains,
                                   *(d for p in new_platforms for d in p.allowed_domains)]))
@@ -227,9 +261,8 @@ async def accounts_submit(slug: str, request: Request) -> RedirectResponse:
         "role_accounts": accounts, "secrets": [*kept, *refs],
         "allowed_domains": domains})
     _guard(updated.model_copy(update={"secrets": refs}), platforms, accounts,
-           scopes, values, _env_now(slug), fresh=False)
-    store.save_project(updated)
-    ro.write_values(ProjectPaths(slug).env_file, values)
+           scopes, values, env_now, fresh=False)
+    _commit(store, updated, project, values, None)
     return RedirectResponse(f"/projects/{slug}/accounts", status_code=303)
 
 

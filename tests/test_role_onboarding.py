@@ -69,6 +69,18 @@ def test_mp5_typed_scope_inside_the_platform_narrows_the_default() -> None:
     assert all(r.domains == ["www.school.test"] for r in refs)
 
 
+# -- P3 (cycle 1): a bare TLD or dotless host is not a platform boundary ------------------------
+
+@pytest.mark.parametrize("domain", ["com", "intranet", ".com"])
+def test_a_platform_whose_domain_has_no_dot_is_refused_naming_it(domain: str) -> None:
+    with pytest.raises(ro.OnboardingError, match=r"school.*(com|intranet)"):
+        ro.check_platforms([_platform("school", domain)])
+
+
+def test_localhost_and_ordinary_hosts_stay_valid() -> None:
+    ro.check_platforms([_platform("dev", "localhost"), _platform("school", "school.test")])
+
+
 # -- structure and hygiene --------------------------------------------------------------------
 
 def test_default_scope_is_the_platform_domains_and_inherits_include_subdomains() -> None:

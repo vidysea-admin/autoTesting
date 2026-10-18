@@ -83,13 +83,15 @@ def test_mp4_n_accounts_across_three_platforms_in_one_submission(root: Path, cou
 
 def test_mp4_the_saved_project_lists_every_account_with_role_platform_tenant(
         root: Path) -> None:
-    dev = team()["dev"]
-    dev.post("/onboard/roles", data=_form())
-    page = dev.get("/projects/northwind/accounts")
-    assert page.status_code == 200
+    team()["dev"].post("/onboard/roles", data=_form())
+    # a view-only member is served the listing and no form, so a tenant label found on this
+    # page can only have come from the listing itself, not from a prefilled edit input
+    page = _member("viewer@team.test", ["project.view@all"]).get("/projects/northwind/accounts")
+    assert page.status_code == 200 and "Add or change accounts" not in page.text
+    assert "name='account_tenant'" not in page.text
     for i in range(8):
         for token in (f"acct{i}", ROLES[i], PLATFORMS[i % 3][0], f"tenant-{i % 2}"):
-            assert token in page.text
+            assert f"<td>{token}</td>" in page.text
     assert MARK not in page.text and MARK not in json.dumps(
         (root / "projects" / "northwind" / "project.json").read_text(encoding="utf-8"))
 
