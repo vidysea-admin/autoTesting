@@ -138,6 +138,7 @@
 | `schema/ai_probe.py` | Track C adversarial shapes: a file-defined probe set, the record of one pass, a refusal row. |
 | `schema/ai_target.py` | Typed evidence and bounded read scope for deterministic AI target discovery. |
 | `schema/analysis.py` | The adjudicated result of running an ensemble over one video's chunks. |
+| `schema/answer_key.py` | An answer-key fixture derived from product docs, and where it came from (MP24, MPI2, MPI6). |
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
 | `schema/approval_revocation.py` | A signed withdrawal of one `RunApproval` (D-018 follow-up, AT-110 key). |
 | `schema/auth.py` | Team login shapes (T-204, D-072; contract qa/contracts/auth.md): the closed permission |
@@ -146,6 +147,9 @@
 | `schema/bug_run.py` | What reading the bug store and processing one run reports: the shapes of T-199b (TB3, TB4, TB6). |
 | `schema/case.py` | A test case — one falsifiable claim about the product, plus how to check it. |
 | `schema/catalog.py` | The test catalog: schema for `stages/catalog.py::catalog()`'s output. |
+| `schema/ceo_inputs.py` | The CEO-benchmark inputs: the private atomic list and the run's matched findings (MP29, MP30). |
+| `schema/ceo_run_evidence.py` | The evidence one CEO-benchmark acceptance run leaves behind (MP31, build leg). |
+| `schema/ceo_scorecard.py` | The CEO-benchmark scorecard: counts and a hash, never a finding (MP29, MP30, MPI6). |
 | `schema/cli_output.py` | The machine-readable result of a run (T-174, CM2/CM4). |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
@@ -154,6 +158,7 @@
 | `schema/cross_role_scenario.py` | A cross-role scenario and the result of running it (MP13-MP15). |
 | `schema/delivery.py` | Report-delivery shapes: preference, recipient, summary, rendered message, record, SMTP settings. |
 | `schema/document.py` | Page-level evidence from bounded, local document extraction. |
+| `schema/entity_reading.py` | An entity handle read as several roles, and what a reading may remember (MP23, MPI1). |
 | `schema/enums.py` | Every closed vocabulary in the system. Nothing else defines these strings. |
 | `schema/evidence_tombstone.py` | Sidecar tag for a unit's evidence spec whose `kills` node-ids moved out from |
 | `schema/failure_bundle.py` | Failure-bundle shapes (T-178, qa/contracts/failure-bundle.md FB1-FB3). |
@@ -165,10 +170,13 @@
 | `schema/lead_loop.py` | The steps a lead-tester model may return, and what a finished loop reports (T-179 AL5/AL7). |
 | `schema/leak_evidence.py` | What a data-leak finding may remember about another tenant's data (MP9, MPI1). |
 | `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
+| `schema/lint_rule.py` | The declared surface checks and what the surface oracles read (MP25, MP26). |
 | `schema/mailbox_ref.py` | Where a role account's mailbox is, as KEYS only (MP2) -- plus the one secret-key rule. |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
 | `schema/multi_role_enums.py` | The Group 11 (multi-role platform) vocabulary file: every closed value set G11 adds. |
 | `schema/multi_role_finding.py` | One multi-role finding with the repro that survives masking (MP7, MP10). |
+| `schema/negative_input_cell.py` | One cell of the per-role negative-input matrix (MP32). |
+| `schema/negative_input_form.py` | A form to probe with negative input, once per role account that reaches it (MP32). |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/oracle_context.py` | The oracle interface: what an oracle is handed, what the run reports about each oracle (MP15). |
 | `schema/platform.py` | One product surface inside a multi-platform project (MP1). |
@@ -178,6 +186,7 @@
 | `schema/provider_attempt.py` | Safe physical model-request accounting, without prompts or vendor error payloads. |
 | `schema/provider_migration.py` | Explicit dry-run plans and safe outcomes for exact legacy provider migration. |
 | `schema/release.py` | Release regression shapes: a flow's persisted plan, a run's scope, its record and diff. |
+| `schema/request_budget.py` | What the network oracles read: captured requests per step and the request budget (MP21, MP22). |
 | `schema/review_recall.py` | The TA16 evidence record: a video review measured against an oracle, in numbers (T-206). |
 | `schema/role_account.py` | One signed-in identity on one platform, held as KEYS only (MP2, MPI5). |
 | `schema/role_step.py` | One role-tagged step of a cross-role scenario, and how it went (MP13). |
@@ -190,6 +199,7 @@
 | `schema/screenmap.py` | The product map — every screen the system has learned across all a |
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/sheet_plan.py` | The shapes of a tracker-sheet sync PLAN (T-199b dry run; contract TB9, TB10, TB11, TB13 in part). |
+| `schema/state_probe.py` | A state probe: what to read, as whom, and what change the action must leave behind (MP33). |
 | `schema/subagent.py` | The shape of one subagent of the lead tester (T-180, D-042, AL8-AL10): its name, the skill |
 | `schema/teaching.py` | Structured, locator-cited teaching material and its model reading. |
 | `schema/teaching_run.py` | Immutable teaching inputs, materialization and per-source resumable receipts. |
@@ -251,6 +261,8 @@
 | `stages/bug_wiring.py` | BUG WIRING: the one door from a finished run to the project's tracked bugs (T-199d). |
 | `stages/case_expectation.py` | Does a case's own expected outcome say an error is the correct result? (grader-expected-error) |
 | `stages/catalog.py` | CATALOG: derive, per `CaseClass`, whether it applies, whether it can run |
+| `stages/ceo_benchmark.py` | Score the CEO benchmark through the existing bench scorer, and print it (MP29, MP30, MPI6). |
+| `stages/ceo_run_evidence.py` | Check that one CEO-benchmark run's evidence is complete (MP31, build leg on fixture evidence). |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
@@ -291,7 +303,15 @@
 | `stages/media_prep.py` | MEDIA PREP: make a recording readable — probe it, cut it, transcribe it. |
 | `stages/merge_flowspec.py` | Fold a freshly ingested FlowSpec into the reviewed one (Track A6, T-135). |
 | `stages/network_capture.py` | First-party network capture as evidence (T-170, NA1/NA2/NA4/NA5/NA6). |
+| `stages/oracle_answer_key.py` | The answer-key oracle: answer from the key, compare the score the product shows (MP24). |
+| `stages/oracle_api_error.py` | The hidden API error oracle (MP21): a first-party 4xx/5xx behind a screen that shows success. |
+| `stages/oracle_consistency.py` | The cross-role consistency oracle: one entity, read as each role (MP23, MPI1). |
+| `stages/oracle_copy_lint.py` | The copy, branding and timezone lint oracle (MP25). |
+| `stages/oracle_negative_input.py` | The negative-input oracle: bad input, once per role account that reaches the form (MP32). |
 | `stages/oracle_registry.py` | The oracle registry: every G11 oracle by module name, built or not (MP15). |
+| `stages/oracle_request_budget.py` | The request and polling budget oracle (MP22), plus the adapter from `network_capture` to samples. |
+| `stages/oracle_responsive.py` | The responsive sweep oracle (MP26). |
+| `stages/oracle_state_after.py` | The state-after oracle: did an action leave the promised change, and did it persist? (MP33) |
 | `stages/orchestrate.py` | ORCHESTRATE: drive the stage pipeline as a resumable LangGraph run (D-041, T-167). |
 | `stages/orchestrate_checkpoint.py` | Persist one run's LangGraph checkpoint without arbitrary Python deserialization. |
 | `stages/orchestrate_downstream.py` | Adapt generation, observation, independent grading and exports into durable pipeline stages. |
@@ -484,6 +504,10 @@
 | `AnalysedIssue` (`schema/analysis.py`) | An `ObservedIssue` after cross-model merge — `id` is stamped by |
 | `JourneyStop` (`schema/analysis.py`) | One stop in a recording's end-to-end journey — reuses `ObservedScreen`'s |
 | `VideoAnalysis` (`schema/analysis.py`) | One source's adjudicated understanding — screens, flows, the ordered |
+| `AnswerSourceKind` (`schema/answer_key.py`) | Where a key may come from. Only product documentation is accepted. |
+| `AnswerKeySource` (`schema/answer_key.py`) | Where the key was written from: a product document, by reference. |
+| `AnswerItem` (`schema/answer_key.py`) | One answer to give. `is_correct=False` is a deliberately wrong answer (score less). |
+| `AnswerKey` (`schema/answer_key.py`) | The items, the documented all-correct score, and the source. |
 | `RunApproval` (`schema/approval.py`) | One human's authorisation for one kind of run against one target. |
 | `ApprovalRevocation` (`schema/approval_revocation.py`) | One human's withdrawal of consent previously granted by `approval_id`. |
 | `PermissionKey` (`schema/auth.py`) | The closed catalogue (auth.md "Permission catalogue"). |
@@ -519,6 +543,18 @@
 | `PackEntry` (`schema/catalog.py`) | One `StandardPack`'s standing for one project. Reuses `BlockedReason` |
 | `AiCheckEntry` (`schema/catalog.py`) | One Track C `AiCheckKind`'s standing for one AI target (T-152, ai-target.md AI4-AI5). |
 | `Catalog` (`schema/catalog.py`) | One project's whole catalog: every `CaseClass`, exactly once (CT2), |
+| `Technique` (`schema/ceo_inputs.py`) | The CEO's detection techniques (intent "Scoring"); the stage maps each to its owner unit. |
+| `AtomicFinding` (`schema/ceo_inputs.py`) | One atomic defect of the CEO list: identity and categories only, never its text. |
+| `AtomicList` (`schema/ceo_inputs.py`) | The split list. The file stays private under `.work/`; only its count and hash travel. |
+| `RunFinding` (`schema/ceo_inputs.py`) | One AutoTester finding, as matched to the list. `matched_atomic_id` is the one-to-one match. |
+| `ScenarioLabel` (`schema/ceo_inputs.py`) | Marks a scenario written from a specific finding; its matches leave recall (MP30). |
+| `OrderingRecord` (`schema/ceo_inputs.py`) | When the list's hash was committed against when the run started (T-136 gate, MP30). |
+| `CeoRunInput` (`schema/ceo_inputs.py`) | Everything the scorecard is built from; `atomic_sha256` is the hash of the list file. |
+| `RoleLogin` (`schema/ceo_run_evidence.py`) | One role account's login outcome on one platform. |
+| `CeoRunEvidence` (`schema/ceo_run_evidence.py`) | What the run recorded. The check, not this model, decides whether it is complete. |
+| `RecallLine` (`schema/ceo_scorecard.py`) | A recall value with the counts it came from (`detected` of `total` in the population). |
+| `TechniqueLine` (`schema/ceo_scorecard.py`) | One recall line per CEO technique, naming the units that own it (MPI6). |
+| `CeoScorecard` (`schema/ceo_scorecard.py`) | The whole scorecard. Priorities are keyed `P0`, `P1`, `P2` (P0 first). |
 | `CaseReport` (`schema/cli_output.py`) |  |
 | `RegressionReport` (`schema/cli_output.py`) |  |
 | `CoverageGap` (`schema/coverage.py`) | A screen or route observed in a run but absent from the FlowSpec. |
@@ -553,6 +589,10 @@
 | `DocumentPage` (`schema/document.py`) | One physical PDF page, including unreadable pages instead of omissions. |
 | `DocumentReading` (`schema/document.py`) | A local extraction receipt; errors mean the document is not fully learned. |
 | `PdfLimits` (`schema/document.py`) | Resource limits shared by the extraction supervisor and its worker. |
+| `ValueClass` (`schema/entity_reading.py`) | What kind of value a role saw. `vocabulary` carries a declared label; the rest do not. |
+| `EntityField` (`schema/entity_reading.py`) | One field of the entity: where to look, and whether roles may legitimately differ. |
+| `EntityHandle` (`schema/entity_reading.py`) | An entity produced in a scenario, to be read as each of `roles`. |
+| `FieldReading` (`schema/entity_reading.py`) | What one role saw in one field, reduced to its class (and a label from the vocabulary). |
 | `EvidenceTombstoneEntry` (`schema/evidence_tombstone.py`) | One `kills` node-id, named by file + bare function name (no parametrize |
 | `EvidenceTombstone` (`schema/evidence_tombstone.py`) | `qa/evidence/<slug>/mutations.stale.json` -- absent means untagged. |
 | `BundleFileKind` (`schema/failure_bundle.py`) |  |
@@ -603,6 +643,18 @@
 | `DecisionClaim` (`schema/ledger.py`) | The strict inline declaration of a quotation attributed to a decision's What. |
 | `CitationReview` (`schema/ledger.py`) | An inline inventory declaration, bound to exact visible occurrence content. |
 | `SealedRecord` (`schema/ledger.py`) | One reviewed, hash-bound row covering the citations of a closed historical unit. |
+| `LintKind` (`schema/lint_rule.py`) | What one lint rule checks. |
+| `TextOrigin` (`schema/lint_rule.py`) | Where a text was read: a screen's visible DOM text or a mail body. |
+| `LintRule` (`schema/lint_rule.py`) | One declared rule. `value` is the brand term, the forbidden string or the display zone. |
+| `Viewport` (`schema/lint_rule.py`) | One declared viewport; `stages/oracle_responsive.py` maps narrow ones to VIEWPORT_MOBILE. |
+| `SurfaceChecks` (`schema/lint_rule.py`) | The declaration both surface oracles read; viewports default to the mobile one. |
+| `SurfaceText` (`schema/lint_rule.py`) | Visible text of one screen or one mail body, as one role saw it. Never persisted. |
+| `ControlBox` (`schema/lint_rule.py`) | A visible control's horizontal extent in CSS pixels. |
+| `ScreenLayout` (`schema/lint_rule.py`) | What one role's page measured at one viewport (the viewport width is the caller's). |
+| `TextSurface` (`schema/lint_rule.py`) | A port that can read what its role contexts show (screens and received mail). |
+| `LayoutSurface` (`schema/lint_rule.py`) | A port that can resize its role contexts and measure the visited screens. |
+| `SurfaceUnavailable` (`schema/lint_rule.py`) | The port lacks the surface capability, so the oracle cannot look. Never a clean result. |
+| `SurfaceDeclarationMissing` (`schema/lint_rule.py`) | No usable `surface_checks.json`: with nothing declared the oracle would be vacuous. |
 | `MailboxRef` (`schema/mailbox_ref.py`) | A read-only mailbox, named by keys. The values stay in the repo-root `.env`. |
 | `TranscriptSegment` (`schema/media.py`) | One spoken utterance, absolute seconds into the source video. |
 | `Transcript` (`schema/media.py`) | A video's narration. `from_sidecar` loads the exact shape the existing |
@@ -617,6 +669,9 @@
 | `OracleName` (`schema/multi_role_enums.py`) | Every G11 oracle. The value is the stage module suffix: `stages/oracle_<value>.py` (MP15). |
 | `ReproVerb` (`schema/multi_role_finding.py`) | The actions a recorded repro step may start with. |
 | `MultiRoleFinding` (`schema/multi_role_finding.py`) | A defect found across roles. Leak evidence is required for a data-leak finding. |
+| `InputRule` (`schema/negative_input_cell.py`) | The `FieldConstraints` rules (plus required and idempotent submit) a probe can break. |
+| `ProbeCell` (`schema/negative_input_cell.py`) | `breached` is True when the product accepted the input, or created a second record. |
+| `NegativeInputForm` (`schema/negative_input_form.py`) | `rejection_target` matches while the product shows the form refused the input; |
 | `ObservedStep` (`schema/observation.py`) | One action a vision model saw in a video. Raw material for a `Step` — |
 | `ObservedFlow` (`schema/observation.py`) | One journey a vision model saw across screens. |
 | `ObservedScreen` (`schema/observation.py`) | One distinguishable screen a vision model saw. |
@@ -660,6 +715,11 @@
 | `ReleaseIssue` (`schema/release.py`) | One entry of the release's single issues log, always naming its flow (RR6). |
 | `RegressionDiff` (`schema/release.py`) | This release against its trusted baseline (RR3). `baseline_run_id` None = no baseline. |
 | `ReleaseRecord` (`schema/release.py`) | One release's durable outcome: per-flow results, ONE issues log and the diff. |
+| `NetworkLogUnavailable` (`schema/request_budget.py`) | The role-session port does not expose a network log, so the oracle cannot run. |
+| `RequestBudget` (`schema/request_budget.py`) | The declared limits: requests per screen and the fastest allowed polling interval. |
+| `NetworkSample` (`schema/request_budget.py`) | One first-party response, `t_s` seconds from the start of the run. |
+| `StepNetworkLog` (`schema/request_budget.py`) | The requests one role's step made while on one screen. |
+| `NetworkLogPort` (`schema/request_budget.py`) | The seam a role-session port adds so the network oracles can read what it captured. |
 | `OracleRef` (`schema/review_recall.py`) | Where the denominator came from. Never a claim of independence. |
 | `ReviewRecall` (`schema/review_recall.py`) | `recall.json`. `k` and `unconfirmed_count` must be re-derivable from the id lists. |
 | `RoleAccount` (`schema/role_account.py`) | A test account for one role. Its scope is the account's own permissions (D-018). |
@@ -707,6 +767,9 @@
 | `SheetPlan` (`schema/sheet_plan.py`) | What a sync would write. `plan_hash` is derived from the content and checked on load. |
 | `SyncMemory` (`schema/sheet_plan.py`) | What we last wrote, per bug and column, so a later human edit is told from our own value. |
 | `PlanConfirmation` (`schema/sheet_plan.py`) | A named person saw the plan with this hash. Whether that person holds `project.edit` is |
+| `ReaderKind` (`schema/state_probe.py`) | `counter` and `list` read a number (a count of items for a list); `status` reads a state. |
+| `StateFault` (`schema/state_probe.py`) | How a change failed. The values appear verbatim in the finding title. |
+| `StateProbe` (`schema/state_probe.py`) | One state reader, the action that changes it, and who must see the change. |
 | `SubagentName` (`schema/subagent.py`) |  |
 | `SubagentSpec` (`schema/subagent.py`) | One subagent. Frozen: the allowlist cannot be widened after construction. |
 | `SubagentInvocation` (`schema/subagent.py`) | What ONE subagent is handed (AL9): its own prompt, the task text, the files the lead |
