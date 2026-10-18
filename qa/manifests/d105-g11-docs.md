@@ -1,6 +1,6 @@
 # d105-g11-docs — bring the docs in line with Group 11 (T-207..T-220), D-105
 
-Status: ready-for-check
+Status: merged-no-check (docs-lane)
 Fix cycle: 0
 Branch: wave/d105-g11-docs (base int/1017 d9a70882)
 Lane: docs (only `docs/*.md`, `target.md` and this manifest changed; no `.py`, no `qa/contracts`, no CLAUDE.md, no hook)
