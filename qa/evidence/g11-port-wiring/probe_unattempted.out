@@ -1,0 +1,8 @@
+command: .venv/Scripts/python.exe -I probe_unattempted.py   (cwd = worktree; login(alice) only, bob never attempted; 4 screens visited by alice; run_oracles(SIX))
+STATUS negative_input errored RoleNotSignedIn
+STATUS state_after errored RoleNotSignedIn
+STATUS api_error ran None
+STATUS request_budget ran None
+STATUS copy_lint ran None
+STATUS responsive ran None
+FINDINGS 7 [('alice-app', 'api_error'), ('alice-app', 'copy_lint'), ('alice-app', 'request_budget'), ('alice-app', 'responsive')]

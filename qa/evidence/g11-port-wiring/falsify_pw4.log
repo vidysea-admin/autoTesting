@@ -1,0 +1,54 @@
+== GREEN-BEFORE tests/test_role_session_port_login.py::test_pw4_a_failed_login_errors_every_oracle_and_yields_no_findings
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw4\src\autotester\__init__.py
+EXIT 0
+.                                                                        [100%]
+============================== warnings summary ===============================
+tests/test_role_session_port_login.py::test_pw4_a_failed_login_errors_every_oracle_and_yields_no_findings
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 18.77s
+
+== RED-AFTER (edit src/autotester/stages/role_port_state.py: 'broken = sorted(rid for rid, st in self._states.items() if st.failed)' -> 'broken = []')
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw4\src\autotester\__init__.py
+EXIT 1
+ds_no_findings(tmp_path) -> None:
+        skip_if_no_chromium()
+        app, run_dir = start_app(), tmp_path / "run"
+        run_dir.mkdir()
+        declare(run_dir)
+        project = build_project(app, tmp_path, bob_password="not-the-real-pw")
+        secrets = SecretStore.load(project, tmp_path / ".env", strict=False)
+        try:
+            with RoleSessions(project, secrets, run_dir, paths_root=tmp_path) as roles:
+                port = LiveRolePort(roles, [sign_in(app)])
+                with pytest.raises(RoleNotSignedIn):  # not yet attempted: also refused, not clean
+                    port.perform(RoleStep(id="early", role_id=ALICE, action="goto /home"))
+                failures = port.login_all()
+                assert list(failures) == [BOB] and "SignedInTargetMissing" in failures[BOB]
+                port.perform(RoleStep(id="v", role_id=ALICE, action="goto /home"))  # alice is fine
+                summary, findings = run_oracles(context(run_dir, port), SIX)
+                with pytest.raises(RoleLoginFailed):
+                    port.perform(RoleStep(id="b", role_id=BOB, action="goto /home"))
+        finally:
+            app.stop()
+        states = {s.oracle: s for s in summary.statuses}
+>       assert findings == []
+E       AssertionError: assert [MultiRoleFin...vidence=None)] == []
+E         
+E         Left contains 3 more items, first extra item: MultiRoleFinding(finding_id='cl-9f221d311c0a', finding_class=<FindingClass.COPY_OR_BRANDING: 'copy_or_branding'>, titl...e-app', 'goto http://a.localhost:53028/home'], count=1, oracle=<OracleName.COPY_LINT: 'copy_lint'>, leak_evidence=None)
+E         Use -v to get more diff
+
+tests\test_role_session_port_login.py:56: AssertionError
+============================== warnings summary ===============================
+tests/test_role_session_port_login.py::test_pw4_a_failed_login_errors_every_oracle_and_yields_no_findings
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_session_port_login.py::test_pw4_a_failed_login_errors_every_oracle_and_yields_no_findings
+1 failed, 1 warning in 21.30s
+
+RESULT pw4 green_exit=0 red_exit=1
