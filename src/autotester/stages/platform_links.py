@@ -8,7 +8,8 @@ aborted in the browser before that host is contacted, and becomes an `OFF_PLATFO
 
 The verdict rules live in the pure `judge_hops`; the browser work lives in `trace_link`, which
 `follow_platform_links` takes as a parameter so the accounting is testable without a browser.
-It wraps `browser/session.py` (public methods and `.page` only) and edits none of it.
+It wraps `browser/session.py` (public methods) and `browser/role_probe.HopWatch`, and touches no
+page itself (the actuator choke-point).
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from typing import Any
 from urllib.parse import parse_qsl, urljoin, urlsplit
 
 from autotester.browser.locators import LocatorNotFound, format_role
+from autotester.browser.role_probe import HopWatch
 from autotester.browser.secrets import bad_scheme, host_of
 from autotester.schema.leak_evidence import contains_personal_shape, segment_is_id_like
 from autotester.schema.link_outcome import LinkOutcome, LinkStatus
@@ -97,63 +99,13 @@ def _click_control(session: Any, name: str) -> None:
     raise LocatorNotFound(f"no link or button named {name!r}")
 
 
-def _redirect_target(reply: Any, requested: str) -> str | None:
-    """Where a 3xx reply sends the browser, as an absolute URL; None for any other reply."""
-    location = reply.headers.get("location")
-    return urljoin(requested, location) if location and 300 <= reply.status < 400 else None
-
-
-class _HopWatch:
-    """Listeners and the route guard that record (and, on the first hop, refuse) navigations."""
-
-    def __init__(self, page: Any, platforms: list[Platform]) -> None:
-        self.page, self.platforms = page, platforms
-        self.hops: list[str] = []
-        self.status: int | None = None
-
-    def outside(self, url: str) -> bool:
+def _outside_fn(platforms: list[Platform]) -> Callable[[str], bool]:
+    """A URL is outside when it has no host, a non-web scheme, or a host on no declared platform."""
+    def outside(url: str) -> bool:
         host = host_of(url)
         return (not host or bool(bad_scheme(url))
-                or not any(host_in_platform(p, host) for p in self.platforms))
-
-    def _main_navigation(self, request: Any) -> bool:
-        return request.is_navigation_request() and request.frame == self.page.main_frame
-
-    def _guard(self, route: Any, request: Any) -> None:
-        if not self._main_navigation(request):
-            route.continue_()
-            return
-        if self.outside(request.url):
-            route.abort()
-            return
-        try:
-            reply = route.fetch(max_redirects=0)  # read a redirect BEFORE the browser follows it
-            target = _redirect_target(reply, request.url)
-            if target and self.outside(target):
-                self.hops.append(target)
-                route.abort()
-                return
-            route.fulfill(response=reply)
-        except Exception:  # a route left unresolved would hang the navigation
-            route.abort()
-
-    def _on_request(self, request: Any) -> None:
-        if self._main_navigation(request):
-            self.hops.append(request.url)
-
-    def _on_response(self, response: Any) -> None:
-        if self._main_navigation(response.request):
-            self.status = response.status
-
-    def attach(self) -> None:
-        self.page.route("**/*", self._guard)
-        self.page.on("request", self._on_request)
-        self.page.on("response", self._on_response)
-
-    def detach(self) -> None:
-        self.page.remove_listener("request", self._on_request)
-        self.page.remove_listener("response", self._on_response)
-        self.page.unroute("**/*", self._guard)
+                or not any(host_in_platform(p, host) for p in platforms))
+    return outside
 
 
 def trace_link(session: Any, project: Project, link: PlatformLink) -> Trace:
@@ -168,7 +120,8 @@ def trace_link(session: Any, project: Project, link: PlatformLink) -> Trace:
     the hops are still judged."""
     platforms = project.effective_platforms()
     start = next(p for p in platforms if p.id == link.from_platform)
-    watch = _HopWatch(session.page, platforms)
+    outside = _outside_fn(platforms)
+    watch = HopWatch(session, outside)
     watch.attach()
     error: str | None = None
     try:
@@ -180,8 +133,8 @@ def trace_link(session: Any, project: Project, link: PlatformLink) -> Trace:
         watch.detach()
     with contextlib.suppress(Exception):
         now = session.current_url()
-        if watch.outside(now) and now != "about:blank":
-            session.page.goto("about:blank")  # never leave a role's browser on a stray site
+        if outside(now) and now != "about:blank":
+            watch.park()
             now = ""
         landing = None if error or not now else now
     return watch.hops, landing, watch.status, error
