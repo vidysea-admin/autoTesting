@@ -1,6 +1,6 @@
 # Manifest - t220-state (T-220, G11)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t220-state.md aae7b900)
 **Fix cycle:** 0
 **Contract:** qa/contracts/multi-role-platform.md (MP33; invariants MPI1, MPI2, MPI3 held)
 **Goal task:** T-220
@@ -63,4 +63,4 @@ Metrics: start=2026-10-19T09:00:00Z end=2026-10-19T09:30:00Z wall_min=30 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only a schema module, a stage module and tests; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t220-state.md aae7b900)
