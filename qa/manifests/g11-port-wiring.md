@@ -1,6 +1,6 @@
 # Manifest - g11-port-wiring (G11 integration: the real RoleSessionPort over RoleSessions)
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Contract:** `qa/contracts/multi-role-platform.md` (MP11, MP15, MP21-MP26, MPI5) - criteria PW1..PW4 below are PROPOSED for the checker to fold in; no contract edited
 **Goal task:** G11 integration (T-210 checker finding: `RoleSessions` does not implement `RoleSessionPort`); authority D-104 (Approved-by Umesh 2026-10-17; 2026-10-18 "build all remaining features and go live")
