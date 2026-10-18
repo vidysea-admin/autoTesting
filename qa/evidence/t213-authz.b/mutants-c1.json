@@ -1,0 +1,42 @@
+[
+ {
+  "mutant": "control",
+  "rc": 0,
+  "result": [
+   "60 passed, 2 warnings in 2.57s"
+  ]
+ },
+ {
+  "mutant": "C1_MP18_list_status_check_removed",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_tenant.py::test_mp18_an_owner_list_that_returns_401_names_the_view_unprobed_never_clean",
+   "FAILED tests/test_oracle_tenant.py::test_mp18_a_viewer_list_that_returns_403_names_the_view_unprobed",
+   "2 failed, 58 passed, 2 warnings in 2.48s"
+  ]
+ },
+ {
+  "mutant": "C1_MP19_raise_path_record_removed",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_oracle_privilege.py::test_mp19_an_assign_that_raises_and_whose_revert_failed_is_recorded_for_the_operator",
+   "1 failed, 59 passed, 2 warnings in 2.53s"
+  ]
+ },
+ {
+  "mutant": "C1_A5_scope_widened_to_sibling_host",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_authz_gate.py::test_a5_an_approval_for_one_platform_cannot_be_spent_on_a_sibling_platforms_host",
+   "1 failed, 59 passed, 2 warnings in 2.40s"
+  ]
+ },
+ {
+  "mutant": "C1_A5_include_subdomains_ignored",
+  "rc": 1,
+  "result": [
+   "FAILED tests/test_authz_gate.py::test_a5_a_platform_pinned_to_exact_hosts_refuses_its_own_subdomain",
+   "1 failed, 59 passed, 2 warnings in 2.52s"
+  ]
+ }
+]
