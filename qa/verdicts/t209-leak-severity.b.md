@@ -1,0 +1,33 @@
+# Verdict B - t209-leak-severity (coordinator B, dual check)
+
+Cycle checked: 0
+Policy-Version: proportional-verification/2026-10-18.15
+Base (git merge-base HEAD int/1017): 722bf3dfa573182aee9c3305220d66a0a2bd0d1d; code SHA 7746a2b8; HEAD 36a87037
+Evidence: qa/evidence/t209-leak-severity/b/results.md (+ the three scripts beside it)
+
+## Check plan
+Logic + security (HMAC key, PII-free boundary, masking) + rendered output. No UI route, no Mode D, no persona walk (report HTML only), no data collection, no prompt/LLM change. Steps: re-run verify commands; one falsification per criterion in copies outside the worktree; step 4c diff read; independent synthetic leak probe; render equivalence against base. Lane: none (dual check).
+
+## Results
+- Verify cmd 1 (`pytest` on the 5 named files): 49 passed (96.9 s). Verify cmd 2 `git diff --name-only 722bf3df..7746a2b8`: 10 files, none of unified_report.py, multi_role_enums.py, enums.py, image_privacy.py. MPI3 holds. `ruff check src tests scripts`: clean.
+- MP7 met: table covers every FindingClass; no override param; no priority field. Falsified (copy): PRIVILEGE_ESCALATION->P1, green->red on the privilege_escalation node.
+- MP8 met: banner built in report_banner.py, called before `<h1>` in render_html; position asserted; no-findings render is byte-identical to the base render (sha f77b37a13b9ec138 both). Falsified: banner built from all findings, red on the no-banner test.
+- MP10 met: finding holds role, platform, URL template, ordered steps, count; replay reads the finding from disk and gets count 3 (0 on a fixed app). Falsified: write_finding drops the last step, red on the same-count replay.
+- MP9 NOT met, see F1. Rest of the boundary is sound: probe with fake name/email/phone/secret rows and a synthetic master key: no canary, no master key, no derived key (hex/b64), no raw row id, no raw PNG in any run-dir file or log line; a refusal writes nothing; key missing withholds ids (count kept). Falsified: raw screenshot written, red on the masked-before-written test.
+- Step 4c: unified_report_render.py hunk adds one optional arg and the banner/repro calls only; nothing removed; no unlisted file.
+- CAPABILITY-COVERAGE for MP7, MP8, MP10 and the masking row of MP9 reproduced (4/4 rows red on the named node; assertion text not inspected beyond the node failing).
+
+## FAILURES
+- F1 [MP9, MPI1] sev: high - the URL template keeps a raw record id for the common non-numeric id formats. `templatise_url`/`segment_is_id_like` (src/autotester/schema/leak_evidence.py:22-35, read this check) only treat digits, 4-digit runs, 16+ hex, UUID heads, % and @ as ids. Command I ran: `qa/evidence/t209-leak-severity/b/probe_ids.py` - a leak URL `https://a.test/students/<id>` keeps the raw id in url_template for 99.0% of nanoid-21, 99.0% base62-22, 99.3% stripe-like, 91.7% cuid2, 86.7% ULID ids (0% for ObjectId/uuid/numeric). `validate_url_template` (same file :38-53) runs the same predicate, so the model accepts it, and `write_finding` then writes it into multi_role_findings/<id>.json (probe_leak.py: a fake secret placed in the path persisted). The leak URL is the URL that carries the foreign record id, so this is the central case, and it stores the very id the unit hashes with HMAC. Contract MPI1/MP9: "URL template with ids replaced by placeholders", raw ids never written. The manifest names only name slugs as a residual and says digits/hex/UUID become {id}; it does not name opaque ids. Fix direction: treat any path segment that is not on a closed route-word list (or that mixes letters with digits, is camel/mixed-case, or is 20+ chars) as `{id}` in both `templatise_url` and `validate_url_template`, and add tests with nanoid/cuid2/ULID ids. issue: P1
+
+## PROPOSED-ISSUE lines
+PROPOSED-ISSUE: {"severity":"high","type":"security","feature":"t209-leak-severity","title":"url_template keeps raw non-numeric/non-hex record ids (nanoid, cuid2, ULID, base62)","where":"src/autotester/schema/leak_evidence.py:22-35,38-53; src/autotester/stages/leak_evidence.py:76-84","evidence":"qa/evidence/t209-leak-severity/b/probe_ids.py: 86.7-99.3% of random ids of those formats survive templatise_url and pass validate_url_template","fix":"closed route-word allowlist or letter+digit/mixed-case/length rule in segment_is_id_like; tests per id format"}
+PROPOSED-ISSUE: {"severity":"low","type":"test-gap","feature":"t209-leak-severity","title":"canary sweep never looks for the HMAC key (master or derived) and its 'prompts' are strings the test builds","where":"tests/test_leak_evidence.py:144-154","evidence":"CANARIES has no key value; prompts are f-strings of the finding JSON","fix":"add master and derived-key (hex/b64) to the needles; capture prompts from a stub Provider when a stage that calls one exists"}
+PROPOSED-ISSUE: {"severity":"low","type":"security","feature":"t209-leak-severity","title":"MultiRoleFinding title/role/steps refuse only email/phone shapes; a name typed by a caller passes","where":"src/autotester/schema/multi_role_finding.py:73-75","evidence":"read; no name check exists, callers compose these strings","fix":"keep title/role/steps from route patterns and fixed templates, or document the caller rule"}
+PROPOSED-ISSUE: {"severity":"low","type":"process","feature":"t209-leak-severity","title":"MP8 banner is not yet reachable in a real report: unified_report.py:282 still calls render_html without findings","where":"src/autotester/stages/unified_report.py:282","evidence":"manifest judgement call 5 (CORE-REQUEST); allowed by A3","fix":"first unit that produces findings passes them"}
+
+## EXPLANATION
+Four of the five security and rendering areas hold (key never leaves the function, masking fail-closed and raw image kept out of the run dir, banner position, base-identical render, no priority field), and every named criterion test is green and falsifiable. MP9 fails on the URL template: the id predicate misses most modern opaque ids, so the foreign record id the leak URL carries is written in the clear next to its own HMAC. Judgement call: this is a defended FAIL under the "security defect in changed code" rule, not a wording point. The fix is small (one predicate and its tests). `autotester doctor` was not re-run; the manifest's stale-generated claim is unverified by me.
+
+Metrics: start=2026-10-17T23:03:15Z end=2026-10-18T17:56:55Z wall_min=35 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=4 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-18.15 lane=normal check_s=2100 mutants=0 defects_unit=1 defects_6c=0
+(wall_min counts active work; the clock gap is a session suspension, not check time.)
