@@ -1,6 +1,6 @@
 # Manifest - t209-leak-severity (T-209, G11-3)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual cycle 1: qa/verdicts/t209-leak-severity.md A d954e691, .b.md B 0640c09b)
 **Fix cycle:** 1
 **Contract:** qa/contracts/multi-role-platform.md (MP7, MP8, MP9, MP10; invariants MPI1, MPI2, MPI3 held)
 **Goal task:** T-209
@@ -87,4 +87,4 @@ Metrics: start=2026-10-18T09:00:00Z end=2026-10-18T10:30:00Z wall_min=90 agent_m
 ## Live browser evidence
 Not UI-touching - no surface changed: only report-rendering HTML (`stages/unified_report_render.py`) and stages/schema modules changed; no route, template or static asset.
 
-## Status: ready-for-check
+## Status: checked-PASS (dual cycle 1: qa/verdicts/t209-leak-severity.md A d954e691, .b.md B 0640c09b)
