@@ -1,0 +1,52 @@
+== GREEN-BEFORE tests/test_role_session_port.py::test_pw1_a_target_outside_the_roles_platform_is_refused_before_the_browser_moves
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw1\src\autotester\__init__.py
+EXIT 0
+.                                                                        [100%]
+============================== warnings summary ===============================
+tests/test_role_session_port.py::test_pw1_a_target_outside_the_roles_platform_is_refused_before_the_browser_moves
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 73.83s (0:01:13)
+
+== RED-AFTER (edit src/autotester/stages/role_session_port.py: 'if not host_in_platform(platform, host_of(url)):' -> 'if False:')
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw1\src\autotester\__init__.py
+EXIT 1
+, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\role_session_port.py:124: in <lambda>
+    snap = self.roles.run_as(role_id, lambda s: self._do(s, role_id, verb, url, args))
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\role_session_port.py:190: in _do
+    session.goto(url)
+src\autotester\browser\session.py:180: in goto
+    check_destination(self.project, real)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+project = Project(schema_version=1, created_at=datetime.datetime(2026, 10, 18, 21, 49, 15, 121132, tzinfo=datetime.timezone.utc)...ASS', tenant_label=None, mailbox_ref=None, user_persona_ref=None, provided_by=<AccountOrigin.ONBOARDER: 'onboarder'>)])
+url = 'http://evil.localhost:61939/x'
+
+    def check_destination(project: Project, url: str) -> str:
+        """Return the host if `url` is inside the project's domains, else raise (B6).
+        AT-341: `url` can carry a resolved secret (AT-076), so the message never
+        embeds `url` itself — only the already-extracted, never-secret HOST."""
+        host, bad = host_of(url), bad_scheme(url)
+        if bad or not host or not project.allows_domain(host):
+            where = (f"scheme {bad!r} (only http and https)" if bad else
+                     f"host {host!r}" if host else "an unparseable destination")
+>           raise NavigationRefused(f"{where} is outside allowed domains {project.allowed_domains}")
+E           autotester.browser.session.NavigationRefused: host 'evil.localhost' is outside allowed domains ['a.localhost']
+
+src\autotester\browser\session.py:71: NavigationRefused
+============================== warnings summary ===============================
+tests/test_role_session_port.py::test_pw1_a_target_outside_the_roles_platform_is_refused_before_the_browser_moves
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_session_port.py::test_pw1_a_target_outside_the_roles_platform_is_refused_before_the_browser_moves
+1 failed, 1 warning in 73.75s (0:01:13)
+
+RESULT pw1 green_exit=0 red_exit=1

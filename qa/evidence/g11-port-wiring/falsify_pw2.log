@@ -1,0 +1,43 @@
+== GREEN-BEFORE tests/test_role_session_port.py::test_pw2_api_error_finds_the_failed_save_behind_the_success_screen
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw2\src\autotester\__init__.py
+EXIT 0
+.                                                                        [100%]
+============================== warnings summary ===============================
+tests/test_role_session_port.py::test_pw2_api_error_finds_the_failed_save_behind_the_success_screen
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 73.53s (0:01:13)
+
+== RED-AFTER (edit src/autotester/browser/role_probe.py: 'success = next((s for s in success_selectors if resolve(page, s).first.is_visible()), None)' -> 'success = None')
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw2\src\autotester\__init__.py
+EXIT 1
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_pw2_api_error_finds_the_failed_save_behind_the_success_screen ______
+
+live = Live(app=PortApp(port=61934, server=<http.server.ThreadingHTTPServer object at 0x00000266F16B3B90>, sessions={'1172636... 'goto http://a.localhost:61934/reports'], count=1, oracle=<OracleName.RESPONSIVE: 'responsive'>, leak_evidence=None)])
+
+    def test_pw2_api_error_finds_the_failed_save_behind_the_success_screen(live: Live) -> None:
+        found = _by(live, OracleName.API_ERROR)
+>       assert {f.role for f in found} == {ALICE, BOB} and len(found) == 2
+E       AssertionError: assert (set() == {'alice-app', 'bob-app'}
+E         
+E         Extra items in the right set:
+E         'alice-app'
+E         'bob-app'
+E         Use -v to get more diff)
+
+tests\test_role_session_port.py:172: AssertionError
+============================== warnings summary ===============================
+tests/test_role_session_port.py::test_pw2_api_error_finds_the_failed_save_behind_the_success_screen
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_session_port.py::test_pw2_api_error_finds_the_failed_save_behind_the_success_screen
+1 failed, 1 warning in 73.22s (0:01:13)
+
+RESULT pw2 green_exit=0 red_exit=1

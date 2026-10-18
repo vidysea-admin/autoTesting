@@ -1,0 +1,45 @@
+== GREEN-BEFORE tests/test_role_session_port.py::test_pw3_observations_and_screen_text_are_scrubbed
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw3\src\autotester\__init__.py
+EXIT 0
+.                                                                        [100%]
+============================== warnings summary ===============================
+tests/test_role_session_port.py::test_pw3_observations_and_screen_text_are_scrubbed
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 76.58s (0:01:16)
+
+== RED-AFTER (edit src/autotester/stages/role_session_port.py: 'text=self._redactor.scrub(snap.text)))' -> 'text=snap.text))')
+PKG C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\fal_pw3\src\autotester\__init__.py
+EXIT 1
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_pw3_observations_and_screen_text_are_scrubbed ______________
+
+live = Live(app=PortApp(port=57880, server=<http.server.ThreadingHTTPServer object at 0x000002346DD50A50>, sessions={'6055b8d... 'goto http://a.localhost:57880/reports'], count=1, oracle=<OracleName.RESPONSIVE: 'responsive'>, leak_evidence=None)])
+
+    def test_pw3_observations_and_screen_text_are_scrubbed(live: Live) -> None:
+        def detail(target: str) -> str:
+            live.port.perform(RoleStep(id="h", role_id=ALICE, action="goto /home"))
+            return live.port.observe(_look(ALICE, target)).detail
+    
+        debug = detail("#debug")
+        assert detail("#contact") == WITHHELD_DETAIL
+        assert "REDACTED" in debug and PASSWORDS["alice"] not in debug
+>       assert all(PASSWORDS["alice"] not in t.text for t in live.port.surface_texts())
+E       assert False
+E        +  where False = all(<generator object test_pw3_observations_and_screen_text_are_scrubbed.<locals>.<genexpr> at 0x000002346DF8B9F0>)
+
+tests\test_role_session_port.py:215: AssertionError
+============================== warnings summary ===============================
+tests/test_role_session_port.py::test_pw3_observations_and_screen_text_are_scrubbed
+  D:\autoTesting\.worktrees\g11-port-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_session_port.py::test_pw3_observations_and_screen_text_are_scrubbed
+1 failed, 1 warning in 74.51s (0:01:14)
+
+RESULT pw3 green_exit=0 red_exit=1
