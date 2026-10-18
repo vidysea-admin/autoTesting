@@ -22,6 +22,8 @@ from autotester.schema.leak_evidence import (
 from autotester.schema.multi_role_enums import FindingClass, OracleName
 from autotester.schema.platform import PLATFORM_ID_PATTERN
 
+FINDING_ID_PATTERN = r"^[a-z0-9][a-z0-9_-]{1,63}$"
+
 
 class ReproVerb(StrEnum):
     """The actions a recorded repro step may start with."""
@@ -52,9 +54,9 @@ Step = Annotated[str, StringConstraints(min_length=3, max_length=200)]
 class MultiRoleFinding(BaseModel):
     """A defect found across roles. Leak evidence is required for a data-leak finding."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
 
-    finding_id: str = Field(pattern=r"^[a-z0-9][a-z0-9_-]{1,63}$")
+    finding_id: str = Field(pattern=FINDING_ID_PATTERN)
     finding_class: FindingClass
     title: str = Field(min_length=1, max_length=200)
     role: str = Field(min_length=1, max_length=64)

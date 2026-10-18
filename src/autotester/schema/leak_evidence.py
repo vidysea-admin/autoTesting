@@ -19,8 +19,19 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 MAX_HASHED_IDS = 5
 _EMAIL = re.compile(r"[^\s@]+@[^\s@]+\.[^\s@]+")
 _PHONE = re.compile(r"(?<!\w)\+?\d[\d\s().-]{6,}\d(?!\w)")
-_ID_LIKE = re.compile(
-    r"^\d+$|\d{4,}|[0-9a-fA-F]{16,}|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-|[%@]")
+ROUTE_WORDS = frozenset({
+    "about", "account", "accounts", "admin", "api", "application", "applications",
+    "assessment", "assessments", "auth", "career", "careers", "class", "classes",
+    "counsellor", "counsellors", "course", "courses", "dashboard", "detail", "details",
+    "document", "documents", "download", "edit", "forgot-password", "grade", "grades",
+    "help", "home", "index", "list", "log-in", "login", "logout", "message", "messages",
+    "new", "notification", "notifications", "order", "orders", "parent", "parents",
+    "payment", "payments", "profile", "program", "programs", "register", "report",
+    "reports", "reset-password", "result", "results", "school", "schools", "search",
+    "settings", "sign-in", "sign-up", "signin", "signout", "signup", "student", "students",
+    "task", "tasks", "teacher", "teachers", "test", "tests", "university", "universities",
+    "upload", "uploads", "user", "users", "v1", "v2", "v3", "view",
+})
 _PLACEHOLDER = re.compile(r"^\{[a-z_]+\}$")
 HashedId = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 
@@ -31,8 +42,13 @@ def contains_personal_shape(text: str) -> bool:
 
 
 def segment_is_id_like(segment: str) -> bool:
-    """A URL path segment that is (or may carry) an id, token or encoded value."""
-    return bool(segment) and not _PLACEHOLDER.match(segment) and bool(_ID_LIKE.search(segment))
+    """True for every path segment that is not a `{placeholder}` or a closed-list route word.
+
+    The closed `ROUTE_WORDS` list is the only way a literal segment survives, so digits, letters
+    mixed with digits, 20+ character runs, `%`/`@` values and unknown words (nanoid, base62, cuid2,
+    ULID, ObjectId, UUID, `cus_...`, name slugs) all become `{id}` in one predicate.
+    """
+    return bool(segment) and not _PLACEHOLDER.match(segment) and segment.lower() not in ROUTE_WORDS
 
 
 def validate_url_template(url: str) -> str:
@@ -56,7 +72,7 @@ def validate_url_template(url: str) -> str:
 class LeakEvidence(BaseModel):
     """Counts, headers, keyed hashes and a template: enough to reproduce, nothing to identify."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
 
     foreign_row_count: int = Field(ge=0, strict=True)
     field_names: list[Annotated[str, StringConstraints(min_length=1, max_length=64)]] = Field(

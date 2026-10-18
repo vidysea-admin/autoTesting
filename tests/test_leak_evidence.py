@@ -173,10 +173,10 @@ def test_finding_round_trips_through_disk_with_its_repro(tmp_path: Path) -> None
 
 
 def test_finding_refuses_a_repro_that_cannot_be_replayed_or_leaks() -> None:
-    ev = LeakEvidence(foreign_row_count=3, field_names=["Name"], url_template="/s/{id}")
+    ev = LeakEvidence(foreign_row_count=3, field_names=["Name"], url_template="/students/{id}")
     base: dict[str, object] = {
         "finding_id": "leak-9", "finding_class": FindingClass.DATA_LEAK, "title": "t",
-        "role": "Parent", "platform_id": "parent", "url_template": "/s/{id}", "count": 3,
+        "role": "Parent", "platform_id": "parent", "url_template": "/students/{id}", "count": 3,
         "steps": ["login as Parent"], "leak_evidence": ev}
     MultiRoleFinding(**base)
     for over in ({"steps": []}, {"steps": ["dance wildly"]}, {"steps": [f"fill Email = {EMAIL}"]},

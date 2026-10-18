@@ -18,6 +18,7 @@ import hashlib
 import hmac
 import logging
 import os
+import re
 import shutil
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -27,7 +28,7 @@ from urllib.parse import urlsplit
 from autotester.core.env import load_repo_env
 from autotester.core.image_privacy import sanitized_images
 from autotester.schema.leak_evidence import MAX_HASHED_IDS, LeakEvidence, segment_is_id_like
-from autotester.schema.multi_role_finding import MultiRoleFinding
+from autotester.schema.multi_role_finding import FINDING_ID_PATTERN, MultiRoleFinding
 from autotester.store.filestore import write_json
 
 LEAK_KEY_ENV = "AUTOTESTER_LEAK_EVIDENCE_KEY"
@@ -101,15 +102,25 @@ def store_masked_screenshot(png: bytes, dest: Path) -> tuple[Path | None, str | 
     return dest, None
 
 
+def _screenshot_dest(run_dir: Path, finding_id: str) -> Path:
+    """`<run_dir>/leak/<finding_id>.png`; refuse an unsafe slug or a path leaving `run_dir`."""
+    if not re.fullmatch(FINDING_ID_PATTERN, finding_id):
+        raise ValueError("finding_id must be a lowercase slug")
+    dest = run_dir / SCREENSHOT_DIR / f"{finding_id}.png"
+    if not dest.resolve().is_relative_to(run_dir.resolve()):
+        raise ValueError("the screenshot path must stay inside the run directory")
+    return dest
+
+
 def collect_leak_evidence(*, project_slug: str, run_dir: Path, finding_id: str,
                           rows: Sequence[Mapping[str, object]], id_field: str, url: str,
                           screenshot_png: bytes | None = None) -> LeakEvidence:
     """Reduce the foreign `rows` a probe saw to counts, headers, hashes and a URL template."""
+    dest = _screenshot_dest(run_dir, finding_id)
     ids, id_reason = hashed_ids(project_slug, rows, id_field)
     stored: str | None = None
     shot_reason: str | None = None
     if screenshot_png is not None:
-        dest = run_dir / SCREENSHOT_DIR / f"{finding_id}.png"
         path, shot_reason = store_masked_screenshot(screenshot_png, dest)
         stored = path.relative_to(run_dir).as_posix() if path else None
     headers = list(dict.fromkeys(str(name) for row in rows for name in row))
