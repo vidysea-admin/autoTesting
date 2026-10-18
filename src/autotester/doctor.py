@@ -17,12 +17,17 @@ from pathlib import Path
 
 from autotester.core.paths import RepoDocs, repo_root
 from autotester.ledger.advisory import NON_BLOCKING, blocking, warning_summary
+from autotester.schema.multi_role_enums import OracleName
 
 __all__ = ["NON_BLOCKING", "blocking", "warning_summary"]
 
 MAX_FILE_LINES = 300
 MAX_FUNCTION_LINES = 50
 BANNED_NAME_HINTS = ("_v2", "_new", "_old", "_copy", "_final", "_temp")
+ORACLE_STEMS = frozenset(f"oracle_{o.value}" for o in OracleName)
+"""The registry contract (schema/oracle_context.py): an oracle lives at stages/oracle_<value>.py and
+exposes a top-level `run`. The stem is fixed by the enum (COPY_LINT contains `_copy`), so doctor
+exempts exactly these stems from drift-filename and their `run` from duplicate-concept."""
 ALLOWED_ROOT_ENTRIES = {
     ".claude", ".dockerignore", ".git", ".gitignore", ".goal", ".python-version", ".venv",
     ".work", "AGENTS.md", "CLAUDE.md", "README.md", "docker", "docker-compose.yml", "Dockerfile",
@@ -103,7 +108,7 @@ def check_function_sizes(root: Path) -> list[Violation]:
 def check_file_names(root: Path) -> list[Violation]:
     out = []
     for path in _python_files(root):
-        if any(hint in path.stem for hint in BANNED_NAME_HINTS):
+        if path.stem not in ORACLE_STEMS and any(h in path.stem for h in BANNED_NAME_HINTS):
             out.append(Violation("drift-filename", str(path.relative_to(root)),
                                  "edit the original in place instead of versioning the filename"))
     return out
@@ -119,14 +124,18 @@ def check_root_clean(root: Path) -> list[Violation]:
 
 
 def check_duplicate_definitions(root: Path) -> list[Violation]:
-    """Same class or top-level function name defined in two modules = drift."""
+    """Same class or top-level function name defined in two modules = drift. Only `run` inside a
+    stages/oracle_<OracleName>.py module is exempt (the registry contract); it is never recorded."""
     seen: dict[str, str] = {}
     out = []
     for path in _python_files(root):
         rel = str(path.relative_to(root))
+        oracle = path.parent.name == "stages" and path.stem in ORACLE_STEMS
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for node in tree.body:
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)) and not node.name.startswith("_"):
+                if oracle and node.name == "run":
+                    continue
                 if node.name in seen and seen[node.name] != rel:
                     out.append(Violation("duplicate-concept", f"{rel}:{node.lineno}",
                                          f"'{node.name}' also defined in {seen[node.name]}"))
