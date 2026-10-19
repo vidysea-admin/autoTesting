@@ -14,3 +14,5 @@ Two related product decisions the r4 run raised:
 Answer format: "T-136: option <n>; negative-path PASS yes|no; add assertions yes|no".
 Blocks: T-136 close; T-169 and T-206 use the same comparison path.
 Evidence: D:/autoTesting/.work/t136-live-report-r4.md (run-01M58F744J7R3CB99CMH9S7FQ3), -r3.md.
+
+Answered: 2026-10-19 — option 2 (route (b): crawl-issue -> findings converter; crawl issues count as findings); negative-path PASS yes; add assertions yes — Umesh chat 2026-10-19 "go with the best way possible and with your recommendtation" (accepting the maker's recommended defaults); D-106. Units: t136-route-b, t136-negpath-assert.
