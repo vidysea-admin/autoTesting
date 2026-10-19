@@ -1,12 +1,13 @@
 # Manifest - crawl-redact-timestamp (T-136 live r5: a short numeric .env secret corrupted crawl timestamps and the crawl stayed running)
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1 of max 2
+**Repair base:** 6e94d128
 **Contract:** qa/contracts/explore.md (X11), qa/contracts/core-invariants.md (redaction: no raw secret reaches disk); no contract edited
 **Goal task:** T-136 (live run r5, `.work/t136-live-report-r5.md`)
-**Dual check:** required
-dual-trigger: security src/autotester/stages/explore_summary.py:67
-Dual-check reason (maker): the diff exempts `_MINTED` string keys from secret scrubbing before persistence, which narrows redaction (security). Overrides the builder's "no".
+**Dual check:** no
+dual-waiver: small-security 0 lines; prior-dual qa/verdicts/crawl-redact-timestamp-A.md
+Dual-check note (maker): cycle 0 was dual-checked (A and B PASS). The cycle-1 repair changes only tests/test_explore_replay.py (+4 lines, a test double); no product line in the security-triggered files changes, so security behaviour is unchanged.
 **Persona walk:** skip (no UI surface)
 **Issues addressed:** none (T-136 live defect)
 **Executor:** claude-sonnet-subagent
@@ -19,6 +20,15 @@ Dual-check reason (maker): the diff exempts `_MINTED` string keys from secret sc
 - `src/autotester/stages/explore_status.py` - new `crash_reason(exc)`; `_login_failed_reason` moved here verbatim as `login_failed_reason` (explore.py sat at the 300-line cap; now 295). Only caller updated (explore.py `_walk`).
 - Redaction set NOT narrowed: `SecretStore.redactor()` still masks every .env value (AT-004) including `AUTOTESTER_SMTP_PORT`; no key was removed.
 - Tests: `tests/test_crawl_redact_timestamp.py` (new, 5 tests).
+
+## Fix cycle 1 (6c red)
+Cause: the pre-push full suite (qa/verdicts/integration-6c-int1019-redact.md, int/1019 @ 0e0999a4) failed 4 nodes of tests/test_explore_replay.py with `AttributeError: '_Redactor' object has no attribute 'scrub'` at src/autotester/stages/explore_summary.py:69. The product call is right (core/redact.py `Redactor.scrub` :125 exists); the test double `_Redactor` (tests/test_explore_replay.py:84) implemented only `scrub_obj`. Fix: the double gains a pass-through `scrub(text) -> text` (tests/test_explore_replay.py:85-87). `grep "def scrub_obj" tests/` found no other double; the other `scrub_optional` fakes expose no `redactor()` and never reach `scrubbed`.
+Round: 1 files, 1 criteria, est 5 min - one test-double method, 4 failing nodes plus the touched file
+Repaired criterion: C1 (typed timestamps and minted ids survive a numeric secret end to end; the replay path runs `scrubbed` through the session Redactor)
+Tests[C1-fix]: tests/test_explore_replay.py::test_a_replay_that_lands_off_domain_is_refused_and_recorded, ::test_the_off_domain_replay_refusal_is_recorded_as_an_edge_a_surface_can_show, ::test_a_refill_that_leaves_the_domain_is_caught_before_the_submit_is_clicked (whole file, 11 tests) + tests/test_crawl_redact_timestamp.py - the 4 reported red nodes and the file whose double was touched
+Pre-check[C1-fix]: 74120f36 uv run pytest tests/test_explore_replay.py tests/test_crawl_redact_timestamp.py -> 16 passed t=39 blobs=tests/test_explore_replay.py (committed 74120f36)
+Falsify[C1]: red@6e94d128 green@74120f36 - the 4 nodes (test_a_replay_that_lands_off_domain_is_refused_and_recorded[click], [fill], test_the_off_domain_replay_refusal_is_recorded_as_an_edge_a_surface_can_show, test_a_refill_that_leaves_the_domain_is_caught_before_the_submit_is_clicked) failed with the AttributeError on the unchanged head, pass after the fix
+Metrics-cycle1: defects_6c=1
 
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-19.17
@@ -38,7 +48,7 @@ Falsification[C1]: golden ::test_smtp_port_587_in_env_appears_inside_a_crawl_tim
 Falsification[C2]: copy-mutant in scratchpad crawl-redact-timestamp replacing `return value if key in _MINTED else redactor.scrub(value)` with `return value` (scrub nothing) -> 1 failed (::test_free_text_still_masks_the_same_numeric_secret), other 4 passed; restored control -> 5 passed
 Falsification[C3]: copy-mutant in scratchpad crawl-redact-timestamp narrowing the guard `except Exception` to `except ZeroDivisionError` -> 1 failed (::test_a_crawl_that_raises_mid_run_ends_terminal_with_the_error_recorded, ValueError propagates), 4 passed; restored control -> 5 passed
 Lint: 0a6e02c2 `uv run ruff check src tests scripts` -> All checks passed; `uv run autotester doctor` -> doctor: clean; explore.py 295 lines, explore_summary.py 103, explore_status.py 281 (all <= 300)
-Metrics: start=2026-10-19T12:35Z end=2026-10-19T13:50Z wall_min=75 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=1 mutations=3 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 lane=normal check_s=162 mutants=3 defects_unit=0 defects_6c=0 tests=5 tests_min=1
+Metrics: start=2026-10-19T12:35Z end=2026-10-19T13:50Z wall_min=75 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=1 mutations=3 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 lane=normal check_s=162 mutants=3 defects_unit=0 defects_6c=1 tests=5 tests_min=1
 
 ## Residual risk and boundaries
 - The `_MINTED` exemption means a secret equal to (or embedded in) an id or an ISO timestamp string would not be masked in those fields; ids are content hashes or ULIDs and timestamps are generated, never user text. `project` (slug) is deliberately NOT exempt.
