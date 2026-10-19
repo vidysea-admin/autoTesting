@@ -1,6 +1,6 @@
 # Manifest - crawl-redact-timestamp (T-136 live r5: a short numeric .env secret corrupted crawl timestamps and the crawl stayed running)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 2: qa/verdicts/crawl-redact-timestamp.md 56bd5efe; cycle 0 dual A+B; merged to int/1019)
 **Fix cycle:** 2 of max 2
 **Repair base:** 943b0655
 **Contract:** qa/contracts/explore.md (X11), qa/contracts/core-invariants.md (redaction: no raw secret reaches disk); no contract edited
@@ -68,4 +68,4 @@ Metrics: start=2026-10-19T12:35Z end=2026-10-19T13:50Z wall_min=75 agent_min=una
 ## Live browser evidence
 Not UI-touching - no surface changed (changed paths: src/autotester/stages/explore.py, explore_status.py, explore_summary.py, tests/test_crawl_redact_timestamp.py).
 
-## Status: ready-for-check
+## Status: checked-PASS (cycle 2, 56bd5efe)
