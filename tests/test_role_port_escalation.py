@@ -79,7 +79,7 @@ def test_w4_on_the_live_port_an_unbound_control_is_listed_unprobed_not_called_re
     plan = AuthzPlan(platform_id="app", privilege_probes=[PrivilegeProbe(
         id="admin", higher_role_id=BOB, lower_role_id=ALICE,
         controls=[RoleAssignControl(id="unbound", url="/assign")])])
-    wired_port.grant(wired_port.store("g11unbound"), 2)
+    wired_port.grant(wired_port.store("g11unbound"), 3)
     run_dir = wired_port.run_dir("unbound", plan)
     ctx = wired_port.context("g11unbound", run_dir)
     summary, findings = run_oracles(ctx, [OracleName.PRIVILEGE])
@@ -117,7 +117,7 @@ def test_w4_a_press_whose_outcome_is_not_shown_is_still_undone_and_recorded(
         plan = AuthzPlan(platform_id="app", privilege_probes=[PrivilegeProbe(
             id="admin", higher_role_id=BOB, lower_role_id=ALICE,
             controls=[RoleAssignControl(id="unproven", url="/assign")])])
-        wired_port.grant(wired_port.store("g11unproven"), 2)
+        wired_port.grant(wired_port.store("g11unproven"), 3)
         run_dir = wired_port.run_dir("unproven", plan)
         summary, findings = run_oracles(wired_port.context("g11unproven", run_dir),
                                         [OracleName.PRIVILEGE])

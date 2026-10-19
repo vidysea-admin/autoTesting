@@ -14,6 +14,7 @@ from role_port_app import HOST
 from role_port_run import ALICE, BOB
 from role_port_wired import (
     AUTHZ,
+    CONTROLS,
     PLANNED,
     Wired,
     _status,
@@ -32,6 +33,7 @@ from autotester.schema.multi_role_enums import (
     OracleName,
 )
 from autotester.schema.oracle_context import OracleState
+from autotester.stages.authz_probe import plan_size
 from autotester.stages.multi_role_session import PlatformScopeError
 from autotester.stages.oracle_registry import run_oracles
 from autotester.stages.role_port_authz import rows_from
@@ -86,7 +88,7 @@ def _tight_plan(cap: int) -> AuthzPlan:
 def test_w3_nothing_is_sent_once_the_request_cap_is_spent(wired_port: Wired) -> None:
     """Real scenario: a cap of 3 pays for the first control's look, press and undo, so the second
     control's page must not be loaded at all, and is listed unprobed for `request_cap`."""
-    wired_port.grant(wired_port.store("g11cap3"), 4)
+    wired_port.grant(wired_port.store("g11cap3"), 6)
     run_dir, before = wired_port.run_dir("cap3", _tight_plan(3)), len(wired_port.app.loads)
     summary, _ = run_oracles(wired_port.context("g11cap3", run_dir), [OracleName.PRIVILEGE])
     assert _status(summary, OracleName.PRIVILEGE).state is OracleState.RAN
@@ -101,13 +103,38 @@ def test_w3_nothing_is_sent_once_the_request_cap_is_spent(wired_port: Wired) -> 
 def test_w3_a_cap_too_small_for_a_press_and_its_undo_sends_not_even_the_look(
         wired_port: Wired) -> None:
     """Real scenario: cap 2 cannot cover look + press + undo, so no /assign* page is loaded."""
-    wired_port.grant(wired_port.store("g11cap2"), 4)
+    wired_port.grant(wired_port.store("g11cap2"), 6)
     run_dir, before = wired_port.run_dir("cap2", _tight_plan(2)), len(wired_port.app.loads)
     run_oracles(wired_port.context("g11cap2", run_dir), [OracleName.PRIVILEGE])
     assert wired_port.app.loads[before:] == []
     log = ProbeLog.model_validate_json(
         (run_dir / "authz" / "privilege_log.json").read_text(encoding="utf-8"))
     assert log.sent == 0 and {u.reason.value for u in log.unprobed} == {"request_cap"}
+    assert wired_port.app.roles["alice"] == "user"
+
+
+def test_w3_a_plan_whose_every_control_is_reachable_stays_inside_the_signed_approval(
+        wired_port: Wired, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Real scenario: the lower role CAN open both role-assign pages, so each control costs a look,
+    a press and an undo. An operator signs an approval for exactly the planned probe count; the run
+    must not send more than that (MP20: the planned count is covered by the signed approval)."""
+    twin = CONTROLS[0].model_copy(update={"control_id": "make-admin-b"})
+    monkeypatch.setitem(wired_port.port._controls, "make-admin-b", twin)
+    plan = AuthzPlan(platform_id="app", privilege_probes=[PrivilegeProbe(
+        id="admin", higher_role_id=BOB, lower_role_id=ALICE,
+        read_urls=["/api/admin/users", "/api/admin/audit"],
+        controls=[RoleAssignControl(id="make-admin", url="/assign"),
+                  RoleAssignControl(id="make-admin-b", url="/assign")])])
+    planned = plan_size(plan)
+    assert planned == 8                       # 2 reads + 2 controls x (look + press + undo)
+    wired_port.grant(wired_port.store("g11both"), planned)
+    run_dir = wired_port.run_dir("both", plan)
+    run_oracles(wired_port.context("g11both", run_dir), [OracleName.PRIVILEGE])
+    log = ProbeLog.model_validate_json(
+        (run_dir / "authz" / "privilege_log.json").read_text(encoding="utf-8"))
+    pressed = (run_dir / "authz" / "reverts.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(pressed) == 2, "both controls must have been reachable and pressed"
+    assert log.planned == planned and log.sent <= planned
     assert wired_port.app.roles["alice"] == "user"
 
 

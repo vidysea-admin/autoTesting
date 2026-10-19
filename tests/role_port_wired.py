@@ -65,7 +65,7 @@ PLAN = AuthzPlan(
         read_urls=["/api/admin/users", "/api/admin/audit"],
         controls=[RoleAssignControl(id="make-admin", url="/assign"),
                   RoleAssignControl(id="locked", url="/assign-locked")])])
-PLANNED = 11            # tenant: 1 viewer + 1 owner + 3 swaps; privilege: 2 reads + 2 controls x 2
+PLANNED = 13            # tenant: 1 viewer + 1 owner + 3 swaps; privilege: 2 reads + 2 controls x 3
 AUTHZ = [OracleName.TENANT, OracleName.PRIVILEGE]
 
 
