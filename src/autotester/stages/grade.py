@@ -20,7 +20,7 @@ from autotester.providers.base import Provider, load_skill_prompt
 from autotester.schema.enums import EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Failure, Judgment, Rubric, Verdict
-from autotester.stages.grade_images import judge_images, visual_decision
+from autotester.stages.grade_images import judge_images, met_assertions, visual_decision
 from autotester.stages.grade_note_guard import note_guard
 
 SKILL_NAME = "grade"  # src/autotester/skills/grade/SKILL.md (T-175, was grade_v1.md)
@@ -233,7 +233,8 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
                          note=f"self-consistency check failed: {problem}", **counts)
     shortfall = _shortfall(**counts)
     final, note = _assertion_guard(result, judgment.result, judgment.scoreboard, judgment.note)
-    final, note = _defect_decision(judgment, final, note, rubric.expects_error)
+    final, note = _defect_decision(judgment, final, note, rubric.expects_error,
+                                   bool(met_assertions(result)))
     if requested:  # T-136: masked/withheld screenshots, see grade_images.visual_decision
         final, shortfall = visual_decision(final, judgment.failures, result, requested,
                                            delivered, shortfall)
@@ -252,17 +253,20 @@ DEFECT_CONTRADICTION = (
 
 
 def _defect_decision(judgment: Judgment, final: Result, note: str | None,
-                     expects_error: bool = False) -> tuple[Result, str | None]:
+                     expects_error: bool = False, backed: bool = False
+                     ) -> tuple[Result, str | None]:
     """The judge's structured `defect_observed` decides a PASS; the note guard is the backstop.
 
     PASS stands only if the judge said defect_observed=false AND the note guard finds no
     un-negated defect term (a false INCONCLUSIVE beats a false PASS). True -> INCONCLUSIVE (the
-    judge contradicted itself). Field absent -> the clause-scoped note guard (AT-997) decides.
+    judge contradicted itself). Field absent -> the clause-scoped note guard (AT-997) decides; a
+    negative-path case (`expects_error`) whose own deterministic assertion was met (`backed`: the
+    DOM showed the expected rejection) may then also use the expected-error exemption (T-136).
     A non-boolean value never reaches here: `Judgment` rejects it (fail closed)."""
     if final is not Result.PASS:
         return final, note
     if judgment.defect_observed is None:
-        return note_guard(final, note)
+        return note_guard(final, note, expects_error and backed)
     if judgment.defect_observed:
         return Result.INCONCLUSIVE, _joined(DEFECT_CONTRADICTION.format(
             summary=judgment.defect_summary or "no summary"), note)

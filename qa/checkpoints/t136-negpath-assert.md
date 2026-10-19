@@ -1,0 +1,8 @@
+# Checkpoint - t136-negpath-assert (single checker, cycle 0)
+Evidence identity: code 45a4b889 / head 046d8a9f, base 4ce91ea8, uv env of the worktree (.venv), policy proportional-verification/2026-10-19.16, clean tree.
+- affected set (8 files: test_grade_negative_path, test_grade_note_guard, test_grade_defect_field, test_grade_visual, test_grade, test_grade_assertion_rule, test_pathlynks_login_case_assertions, test_store) `uv run pytest <8 files>` -> 264 passed (239 + 25 equal the maker's pre-checks; reused identity, rerun once for confirmation)
+- ruff src tests scripts -> All checks passed; autotester doctor -> clean
+- falsification in copies under C:/Users/Lenovo/AppData/Local/Temp/claude/d--autoTesting/e46c0e51-15e9-4a31-a0b0-cf49de9d445f/scratchpad/chk-t136-negpath (green-before in each copy, then red-after): row1 revert rubric_for_case -> test_a_rubric_saved_before_expects_error_existed... red (assert False is True); row2 drop backing -> test_without_a_met_assertion_the_missing_defect_field_still_holds_the_pass red; row3 cases.jsonl at base -> 3 tests red in test_pathlynks_login_case_assertions; row4 (guard on backed only) -> SURVIVES, filed AT-1346
+- behaviour probe (9 grade() cases, real tree): only negative-path + met assertion + omitted defect_observed + expected-cue note PASSes; positive-path, no met row, unmet row, contrary marker, generic error, defect_observed=true all INCONCLUSIVE
+- cases.jsonl: parsed old vs new, 7 rows, ids same order, only step.expected of the 3 named rows changed; strings read in the recorded screenshots
+Attribution: checker subagent, verdict qa/verdicts/t136-negpath-assert.md
