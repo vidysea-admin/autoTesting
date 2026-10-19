@@ -45,3 +45,8 @@ Environment of the run: Windows, `TMP`/`TEMP=D:/autoTesting/.work/tmp` (inside t
 All 14 baseline reds above were re-shown red on a real detached worktree of d25227c3 (`.worktrees/int-6c-base-d25227c3`) and on head 5223173b.
 `test_revised_goal_contract_is_registered` now fails at `assert all(value in dashboard for value in facts)` (goal.json progress counts vs
 `.goal/dashboard.html`, AT-743) rather than `92 == 106`; the message drifts as goal.json changes, the cause is unchanged.
+
+## r8 note (2026-10-20, base ec151a35)
+
+New pre-existing red, also red on origin/master ec151a35 (shown by the 6c run, qa/verdicts/integration-6c-int1019-redact.md):
+`tests/test_role_port_mail.py::test_w2_a_mail_that_arrived_is_observed_through_the_read_only_reader` (not caused by crawl-redact or env-input-mask; neither touches role mail).
