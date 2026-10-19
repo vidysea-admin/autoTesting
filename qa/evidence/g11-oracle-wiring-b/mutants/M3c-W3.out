@@ -1,0 +1,42 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  D:\autoTesting\.work\tmp\ow-b-mut\M3c-W3\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_role_port_authz.py::test_w3_every_request_the_run_made_is_counted_including_the_role_assign_page_loads
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 19.51s
+
+=====MUTATED=====
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_w3_every_request_the_run_made_is_counted_including_the_role_assign_page_loads _
+
+wired_port = Wired(app=PortApp(port=52764, server=<http.server.ThreadingHTTPServer object at 0x000001AB2D698050>, sessions={'44af74...SS', tenant_label=None, mailbox_ref=None, user_persona_ref=None, provided_by=<AccountOrigin.ONBOARDER: 'onboarder'>)]))
+probed_port = (OracleRunSummary(statuses=[OracleStatus(oracle=<OracleName.MAILBOX: 'mailbox'>, module='autotester.stages.oracle_mail...], WindowsPath('D:/autoTesting/.work/tmp/ow-b-mut/M3c-W3/.work/pytest-tmp/r20584-1792373726/g11wire0/probe-run'), 5, 3)
+
+    def test_w3_every_request_the_run_made_is_counted_including_the_role_assign_page_loads(
+            wired_port: Wired, probed_port) -> None:
+        """The full authz run on the fixture app: the api reads AND the /assign* pages that
+        `can_reach` and `assign` load must all be inside what the two oracles paid the budget."""
+        _, _, run_dir, reads, loads = probed_port
+        sent = sum(ProbeLog.model_validate_json((run_dir / "authz" / f"{o.value}_log.json").read_text(
+            encoding="utf-8")).sent for o in AUTHZ)
+        assert loads >= 3, "the fixture must have seen the role-assign page loads"
+>       assert reads + loads <= sent
+E       assert (5 + 3) <= 7
+
+tests\test_role_port_authz.py:78: AssertionError
+============================== warnings summary ===============================
+tests/test_role_port_authz.py::test_w3_every_request_the_run_made_is_counted_including_the_role_assign_page_loads
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_port_authz.py::test_w3_every_request_the_run_made_is_counted_including_the_role_assign_page_loads
+1 failed, 1 warning in 19.38s

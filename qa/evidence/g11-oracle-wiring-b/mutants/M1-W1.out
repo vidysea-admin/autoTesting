@@ -1,0 +1,54 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  D:\autoTesting\.work\tmp\ow-b-mut\M1-W1\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_oracle_declarations.py::test_w1_the_payment_oracle_takes_its_paths_from_the_context_and_reads_no_file
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 0.39s
+
+=====MUTATED=====
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_w1_the_payment_oracle_takes_its_paths_from_the_context_and_reads_no_file _
+
+tmp_path = WindowsPath('D:/autoTesting/.work/tmp/ow-b-mut/M1-W1/.work/pytest-tmp/r30144-1792373899/test_w1_the_payment_oracle_tak0')
+
+    def test_w1_the_payment_oracle_takes_its_paths_from_the_context_and_reads_no_file(
+            tmp_path) -> None:
+        assert not (tmp_path / PAYMENT_FILE).exists()
+        app = GatewayApp(checkout_leads_to="error")
+>       (finding,) = payment_run(_ctx(app, tmp_path, payment_paths=_payments()))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_oracle_declarations.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\autotester\stages\oracle_payment.py:188: in payment_findings
+    or load_declaration(context.run_dir))
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+run_dir = 'D:\\autoTesting\\.work\\tmp\\ow-b-mut\\M1-W1\\.work\\pytest-tmp\\r30144-1792373899\\test_w1_the_payment_oracle_tak0'
+
+    def load_declaration(run_dir: str) -> PaymentDeclaration:
+        """The declared paid paths in `run_dir`, or `PaymentNotDeclaredError`."""
+        try:
+            text = (Path(run_dir) / PAYMENT_FILE).read_text(encoding="utf-8")
+        except OSError:
+>           raise PaymentNotDeclaredError("no payment paths declared") from None
+E           autotester.stages.oracle_payment.PaymentNotDeclaredError: no payment paths declared
+
+src\autotester\stages\oracle_payment.py:58: PaymentNotDeclaredError
+============================== warnings summary ===============================
+tests/test_oracle_declarations.py::test_w1_the_payment_oracle_takes_its_paths_from_the_context_and_reads_no_file
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_oracle_declarations.py::test_w1_the_payment_oracle_takes_its_paths_from_the_context_and_reads_no_file
+1 failed, 1 warning in 0.32s

@@ -1,0 +1,37 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  D:\autoTesting\.work\tmp\ow-b-mut\M3a-W3\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_role_port_authz.py::test_w3_a_url_off_the_platform_is_never_requested
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 6.39s
+
+=====MUTATED=====
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_w3_a_url_off_the_platform_is_never_requested ______________
+
+wired_port = Wired(app=PortApp(port=59036, server=<http.server.ThreadingHTTPServer object at 0x000001E8E1739CD0>, sessions={'f00761...SS', tenant_label=None, mailbox_ref=None, user_persona_ref=None, provided_by=<AccountOrigin.ONBOARDER: 'onboarder'>)]))
+
+    def test_w3_a_url_off_the_platform_is_never_requested(wired_port: Wired) -> None:
+        before = wired_port.app.offsite_hits
+        with pytest.raises(PlatformScopeError):
+            wired_port.port.read(ALICE, f"http://127.0.0.1:{wired_port.app.port}/x")
+>       with pytest.raises(PlatformScopeError):              # a redirect hop is checked too
+E       Failed: DID NOT RAISE PlatformScopeError
+
+tests\test_role_port_authz.py:181: Failed
+============================== warnings summary ===============================
+tests/test_role_port_authz.py::test_w3_a_url_off_the_platform_is_never_requested
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_port_authz.py::test_w3_a_url_off_the_platform_is_never_requested
+1 failed, 1 warning in 5.73s
