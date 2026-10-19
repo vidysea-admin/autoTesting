@@ -8,11 +8,13 @@ the test-account email included), and a finished crawl leaves a small committed
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, TypeVar
+from enum import Enum
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from pydantic import BaseModel
 
 from autotester.core.path_pii import safe_path
+from autotester.core.redact import Redactor
 from autotester.schema.crawl import Crawl
 from autotester.schema.crawl_summary import CrawlSummary
 from autotester.schema.enums import NodeStatus
@@ -25,6 +27,7 @@ ModelT = TypeVar("ModelT", bound=BaseModel)
 # Enumerated stop-reason codes (first match wins); the free text after the code is only a short,
 # URL-free, parenthesis-free detail, so the tracked summary never carries page text or a URL.
 _STOP_CODES = (
+    ("crawl error", "crawl_error"),
     ("max_screens", "max_screens"), ("max_actions", "max_actions"),
     ("wall_clock_s", "wall_clock_s"), ("max_depth", "max_depth"),
     ("abandoned visits", "abandoned_visits"), ("login case", "login_failed"),
@@ -47,11 +50,34 @@ def safe_stop_reason(reason: str | None) -> str | None:
     return f"{code}: {detail}" if detail and detail.lower() != code else code
 
 
+# Values the system mints and later parses or joins on: ids and the crawl's ISO timestamps. They
+# are never free text, so a short numeric secret (SMTP port 587) inside one is a coincidence;
+# masking it breaks the re-parse (T-136 r5: a crawl died on `ScreenEdge.created_at`) or splits
+# the graph's edge<->node joins. Every other string, free text and selectors included, is scrubbed.
+_MINTED = frozenset({"id", "crawl_id", "node_id", "from_node", "to_node", "discovered_by",
+                     "approval_id", "started_at", "finished_at", "heartbeat_at"})
+
+
+def _scrub_text(redactor: Redactor, value: Any, key: str | None = None) -> Any:
+    """Mask secrets in the STRING values of a python-mode dump only. datetimes, numbers and
+    enum members are typed, not text (as in `core/trace.py::TraceWriter._scrub_value`)."""
+    if isinstance(value, Enum):
+        return value
+    if isinstance(value, str):
+        return value if key in _MINTED else redactor.scrub(value)
+    if isinstance(value, dict):
+        return {k: _scrub_text(redactor, v, k) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_scrub_text(redactor, v, key) for v in value]
+    return value
+
+
 def scrubbed(rt: ExploreRuntime, model: ModelT) -> ModelT:
     """A copy of `model` with every secret/account value masked, for DISK only. The
-    in-memory object keeps the real selectors the crawler still needs. Ids are kept."""
-    clean = rt.session.secrets.redactor().scrub_obj(model.model_dump(mode="json"))
-    return type(model).model_validate(clean)
+    in-memory object keeps the real selectors the crawler still needs. Ids and timestamps
+    are kept (`_MINTED`; typed datetimes are never text)."""
+    redactor = rt.session.secrets.redactor()
+    return type(model).model_validate(_scrub_text(redactor, model.model_dump(mode="python")))
 
 
 def _split_paths(rt: ExploreRuntime) -> tuple[list[str], list[str]]:

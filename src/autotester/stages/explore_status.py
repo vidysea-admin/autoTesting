@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from autotester.browser.observe import observe
 from autotester.core.redact import PLACEHOLDER_RE
@@ -25,6 +26,9 @@ from autotester.schema.enums import Action, CrawlStatus, EdgeOutcome, NodeStatus
 from autotester.schema.screen_graph import ScreenEdge, ScreenNode
 from autotester.stages.explore_safety import FORM_SUBMIT_REFUSED
 from autotester.stages.screen_identity import structural_signature
+
+if TYPE_CHECKING:
+    from autotester.stages.explore_runtime import ExploreRuntime
 
 NEVER_LEFT_LOGIN = (
     "the login case ran, but every screen reached was still the login page ({template}) -- "
@@ -223,6 +227,27 @@ def displayed_status(crawl: Crawl, *, now: datetime | None = None) -> CrawlStatu
     if crawl.status is CrawlStatus.RUNNING and _heartbeat_stale(crawl, now or datetime.now(UTC)):
         return CrawlStatus.ABORTED
     return crawl.status
+
+
+def login_failed_reason(rt: ExploreRuntime) -> str:
+    """AT-273: name the login-precheck's own swallowed cause when the case
+    then genuinely failed too, so an operator sees the precheck itself
+    glitched rather than only that login did. AT-528: a failure that already
+    named a SPECIFIC cause (the 401 guard sets its own stop_reason) keeps it
+    verbatim — the vaguer sentence would overwrite the server's verdict.
+    (Moved here from `explore.py`, at its 300-line cap, when C3 added the crash guard.)"""
+    if rt.stop_reason and "AT-528" in rt.stop_reason:
+        return rt.stop_reason
+    reason = rt.stop_reason or "login case did not complete"  # AT-889 names the case error
+    if rt.login_precheck_error:
+        reason += f" (precheck also failed: {rt.login_precheck_error})"
+    return reason
+
+
+def crash_reason(exc: BaseException) -> str:
+    """T-136 r5 C3: the stop reason of a crawl whose walk raised -- the error type and
+    message, so the stored crawl says what happened instead of sitting at `running`."""
+    return f"crawl error -- {type(exc).__name__}: {exc}"
 
 
 def _recorded_error_reason(crawl: Crawl) -> str | None:

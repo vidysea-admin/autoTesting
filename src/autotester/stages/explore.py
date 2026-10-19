@@ -189,20 +189,6 @@ def _bfs(rt: ExploreRuntime) -> None:
         else explore_incremental.exhausted_reason(rt.skipped_unchanged))
 
 
-def _login_failed_reason(rt: ExploreRuntime) -> str:
-    """AT-273: name the login-precheck's own swallowed cause when the case
-    then genuinely failed too, so an operator sees the precheck itself
-    glitched rather than only that login did. AT-528: a failure that already
-    named a SPECIFIC cause (the 401 guard sets its own stop_reason) keeps it
-    verbatim — the vaguer sentence would overwrite the server's verdict."""
-    if rt.stop_reason and "AT-528" in rt.stop_reason:
-        return rt.stop_reason
-    reason = rt.stop_reason or "login case did not complete"  # AT-889 names the case error
-    if rt.login_precheck_error:
-        reason += f" (precheck also failed: {rt.login_precheck_error})"
-    return reason
-
-
 def _terminal_status(rt: ExploreRuntime, completed: bool, login_case: Case | None) -> CrawlStatus:
     """Decided in `explore_status` (AT-242, X18); this feeds it the graph."""
     status, reason = explore_status.terminal_status(
@@ -290,8 +276,17 @@ def run_crawl(
         started=clock(), frontier=CrawlFrontier(), strategy=strategy,
         persona=explore_incremental.load_index(store, enabled=incremental),
     )
+    try:
+        return _walk(rt, login_case)
+    except Exception as exc:  # C3 (T-136 r5): an exception mid-run ends terminal, never `running`
+        rt.stop_reason = explore_status.crash_reason(exc)
+        return _finish(rt, CrawlStatus.ABORTED)
+
+
+def _walk(rt: ExploreRuntime, login_case: Case | None) -> Crawl:
+    """Login, seed, walk the frontier, then judge the finished graph."""
     if login_case is not None and not _bootstrap_login(rt, login_case):
-        rt.stop_reason = _login_failed_reason(rt)
+        rt.stop_reason = explore_status.login_failed_reason(rt)
         return _finish(rt, CrawlStatus.LOGIN_FAILED)
     if _seed(rt) is None:
         rt.stop_reason = f"could not open base_url -- {rt.seed_error or 'cause not recorded'}"
