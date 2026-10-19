@@ -27,6 +27,6 @@ EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
 - AT-1346 (low, beyond the floor): the `expects_error` half of `expects_error and backed` is not pinned by a grade-level test; the code is correct.
 - "Logged in successfully" is a toast that auto-dismisses; a slow capture could miss it (timing risk for case_efaed2c0eb91, not a criterion here).
 - Review of manifest claim "positive-path ... keeps the guard exactly as before": true by probe; the named test of that claim passes with or without the expects_error condition.
-slow: reading the 1,200-line checker protocol and the 4-copy falsification setup (conftest needs scripts/ on the path) about 4 min
+slow: reading the 1,200-line checker protocol and the 4-copy falsification setup (conftest needs scripts/ on the path) about 4 min (wall 9 min, under the 10-min hard checkpoint)
 
-Metrics: start=2026-10-19T09:54:59Z end=2026-10-19T10:08:00Z wall_min=13 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=4 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.16 check_s=780 mutants=1 defects_unit=0 defects_6c=0
+Metrics: start=2026-10-19T09:54:59Z end=2026-10-19T10:04:21Z wall_min=9 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=4 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.16 check_s=562 mutants=1 defects_unit=0 defects_6c=0
