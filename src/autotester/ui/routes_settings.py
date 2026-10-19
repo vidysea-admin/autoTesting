@@ -60,7 +60,7 @@ def provider_settings_view() -> str:
             f"<input type='hidden' name='key' value='{escape(key)}'>"
             f"<td style='display:flex;gap:6px'>"
             f"<input type='{input_type}' name='value' "
-            f"value='{escape(shown)}' "
+            f"value='{escape(shown)}' aria-label='Value for {escape(key)}' "
             f"placeholder='new value' style='flex:1'>{_EYE if show and is_secret else ''}"
             f"</td>"
             f"<td><button class='btn btn-sm' type='submit'>Save</button></td></form></tr>"

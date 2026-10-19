@@ -68,7 +68,7 @@ def _env_table(project: object, present: dict[str, str], show_values: bool = Fal
             f"<input type='hidden' name='key' value='{escape(key)}'>"
             f"<td style='display:flex;gap:6px'>"
             f"<input type='{'password' if is_secret else 'text'}' name='value' "
-            f"value='{escape(shown)}' "
+            f"value='{escape(shown)}' aria-label='Value for {escape(key)}' "
             f"placeholder='new value' style='flex:1'>{_EYE if show_values and is_secret else ''}"
             f"</td>"
             f"<td><button class='btn btn-sm' type='submit'>Save</button></td></form></tr>"
@@ -89,11 +89,12 @@ def _platform_url_card(slug: str, project: object) -> str:
     domains = ", ".join(project.allowed_domains)  # type: ignore[attr-defined]
     return theme.card(
         f"<form method='post' action='/projects/{safe}/env/url'>"
-        f"<div class='field'><label>Platform URL (base URL)</label>"
-        f"<input name='base_url' value='{escape(project.base_url)}' required></div>"  # type: ignore[attr-defined]"
-        f"<div class='field'><label>Allowed domains (comma-separated — the browser's "
-        f"hard boundary)</label>"
-        f"<input name='allowed_domains' value='{escape(domains)}' required></div>"
+        f"<div class='field'><label for='pu-base-url'>Platform URL (base URL)</label>"
+        f"<input id='pu-base-url' name='base_url' "
+        f"value='{escape(project.base_url)}' required></div>"  # type: ignore[attr-defined]"
+        f"<div class='field'><label for='pu-domains'>Allowed domains (comma-separated — the "
+        f"browser's hard boundary)</label>"
+        f"<input id='pu-domains' name='allowed_domains' value='{escape(domains)}' required></div>"
         "<button class='btn' type='submit'>Save URL</button></form>",
         title="Platform URL",
     )
@@ -105,14 +106,16 @@ def _custom_credential_card(slug: str, project: object) -> str:
     scope = ", ".join(project.allowed_domains)  # type: ignore[attr-defined]
     return theme.card(
         f"<form method='post' action='/projects/{safe}/env/add'>"
-        f"<div class='field'><label>Key (UPPER_SNAKE_CASE)</label>"
-        f"<input name='key' required placeholder='e.g. ERP_TENANT_ID'></div>"
-        f"<div class='field'><label>Value</label>"
-        f"<input name='value' required placeholder='the value to store'></div>"
-        f"<div class='field'><label>Allowed domains (where it may be typed)</label>"
-        f"<input name='domains' value='{escape(scope)}' required></div>"
-        f"<div class='field'><label>Description (optional)</label>"
-        f"<input name='description' placeholder='what this key is for'></div>"
+        f"<div class='field'><label for='ac-key'>Key (UPPER_SNAKE_CASE)</label>"
+        f"<input id='ac-key' name='key' required placeholder='e.g. ERP_TENANT_ID'></div>"
+        f"<div class='field'><label for='ac-value'>Value</label>"
+        f"<input id='ac-value' type='password' autocomplete='new-password' name='value' "
+        f"required placeholder='the value to store'></div>"
+        f"<div class='field'><label for='ac-domains'>"
+        f"Allowed domains (where it may be typed)</label>"
+        f"<input id='ac-domains' name='domains' value='{escape(scope)}' required></div>"
+        f"<div class='field'><label for='ac-description'>Description (optional)</label>"
+        f"<input id='ac-description' name='description' placeholder='what this key is for'></div>"
         f"<button class='btn' type='submit'>Add credential</button></form>",
         title="Add a custom credential",
     )
