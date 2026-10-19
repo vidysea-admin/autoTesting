@@ -1,0 +1,5 @@
+probe: probe_cap_loads_test.py::test_p1b_cap_one_read_then_no_assign_page_is_loaded
+  request_cap=1, 1 read + 2 role-assign controls, approval 7; assertion: the fixture app saw ZERO /assign* page loads
+  cycle-0 src (79e98ef3) in a copy: LOADS ['alice:/assign', 'alice:/assign-locked'] -> FAILED (2 loads after the cap was spent)
+  head src (9cca3e6d) in a copy:    LOADS [] -> passed
+  probe p2 (nested OracleContext validation does not echo the canary): passed at head (probe_cap_loads_test.py::test_p2_...)

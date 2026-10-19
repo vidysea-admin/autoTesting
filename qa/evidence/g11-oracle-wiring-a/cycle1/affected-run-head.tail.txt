@@ -1,0 +1,3 @@
+FAILED tests/test_oracle_state_after.py::test_the_registry_runs_this_module_and_counts_its_findings
+36 failed, 413 passed, 1 warning in 251.25s (0:04:11)
+done-exit=1
