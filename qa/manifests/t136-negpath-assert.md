@@ -55,4 +55,4 @@ Open point for the checker: the live verdict does not record whether gemini set 
 ## Live browser evidence
 Not UI-touching - no surface changed. Changed paths: src/autotester/stages/grade.py, src/autotester/stages/grade_images.py, src/autotester/stages/run_case_pipeline.py, projects/pathlynks/cases.jsonl, tests/test_grade_negative_path.py, tests/test_pathlynks_login_case_assertions.py. The strings asserted were read from the recorded screenshots of run-01M58F744J7R3CB99CMH9S7FQ3 (projects/pathlynks/runs/run-01M58F744J7R3CB99CMH9S7FQ3/case_efaed2c0eb91/04-step04-click.png, case_7a978722a38c/02-step02-click.png, case_093f5070df79/04-step04-click.png); no new live run was made.
 
-## Status: ready-for-check
+## Status: checked-PASS
