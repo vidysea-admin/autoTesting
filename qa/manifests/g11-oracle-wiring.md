@@ -1,6 +1,6 @@
 # Manifest - g11-oracle-wiring (G11 integration: declarations on the context, mailbox and authz on the live port, findings into the unified report)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/g11-oracle-wiring.md accb1977 + .b.md 88ffb64a, dual)
 **Fix cycle:** 1 of max 2
 superseded: dual-check-a 0f01a3b5
 superseded: dual-check-b 0f01a3b5
