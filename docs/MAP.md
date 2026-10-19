@@ -276,6 +276,7 @@
 | `stages/ceo_run_evidence.py` | Check that one CEO-benchmark run's evidence is complete (MP31, build leg on fixture evidence). |
 | `stages/coverage.py` | COVERAGE: diff what a run actually saw against what the FlowSpec knows. |
 | `stages/crawl_coverage.py` | What a crawl covered, stated by the crawl itself — and every hole, with its reason (V7). |
+| `stages/crawl_findings.py` | Turn a project's recorded crawl issues into bench `Finding`s (T-136 route (b)). |
 | `stages/crawl_report.py` | The crawl, as something a human can read: an Excel workbook and the |
 | `stages/credential_files.py` | Which file names and suffixes hold credentials; they are refused without being opened. |
 | `stages/cross_role_runner.py` | The cross-role runner: role-tagged steps, then timed assertions polled to a window (MP13, MP14). |

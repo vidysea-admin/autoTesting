@@ -40,7 +40,9 @@ def render(cmp: AcceptanceComparison) -> str:
             continue
         lines.append(f"  {col.participant} [{col.kind}, ordering {col.ordering}] "
                      f"reported {col.findings_reported} "
-                     f"(independent {col.independent_findings}, prompted {col.prompted_findings})")
+                     f"(independent {col.independent_findings}, prompted {col.prompted_findings}; "
+                     f"crawl findings: {col.crawl_findings}, "
+                     f"case findings: {col.findings_reported - col.crawl_findings})")
         lines.append(f"    recall: {col.severity_weighted_recall.text()}  "
                      f"detection: {col.detection_rate.text()}  "
                      f"fp_rate: {col.false_positive_rate.text()} "

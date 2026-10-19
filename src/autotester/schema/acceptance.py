@@ -50,6 +50,8 @@ class ParticipantColumn(BaseModel):
     findings_reported: int = 0
     independent_findings: int = 0
     prompted_findings: int = 0
+    crawl_findings: int = 0
+    crawl_ids_scanned: list[str] = Field(default_factory=list)
     detected: int = 0
     seeded: int = 0
     detection_rate: Measure
