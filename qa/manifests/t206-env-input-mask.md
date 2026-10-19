@@ -1,6 +1,6 @@
 # Manifest - t206-env-input-mask (T-206, TA15 fix cycle for qa/verdicts/t206-modeD.md F1, F2)
 
-**Status:** ready-for-check
+Status: checked-PASS (dual, cycle 0: qa/verdicts/t206-env-input-mask.md bf46137a, .b.md 0c28e610; merged to int/1019)
 **Fix cycle:** 0
 **Contract:** qa/contracts/team-loop-acceptance.md TA15 (secret inputs masked; every form control labelled)
 **Goal task:** T-206
