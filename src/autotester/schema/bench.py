@@ -47,6 +47,11 @@ class Finding(BaseModel):
     evidence_refs: list[str] = Field(default_factory=list)
     reported_at_s: float | None = None
     provenance: Literal["independent", "prompted", "unknown"] = "unknown"
+    source: Literal["case", "crawl"] = Field(
+        default="case",
+        description="where the finding came from: a FAIL verdict on a case, or a crawl issue "
+        "(stages/crawl_findings.py), so a report can tell them apart",
+    )
 
 
 class BenchCorpus(Artifact):
@@ -88,6 +93,11 @@ class BenchTrial(Artifact):
         "independent_parallel", "human_read_ai_first", "ai_read_human_first", "unknown"
     ] = "unknown"
     duration_s: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+    crawl_ids_scanned: list[str] = Field(
+        default_factory=list,
+        description="crawls whose recorded issues were converted to findings; non-empty makes "
+        "'0 product issues' a measured fact rather than a missing input",
+    )
 
     @model_validator(mode="after")
     def validate_participant(self) -> BenchTrial:

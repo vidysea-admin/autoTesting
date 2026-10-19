@@ -1,10 +1,13 @@
 """T-136b: convert a real executed+graded run into the acceptance bench files.
 
-    uv run python scripts/bench_from_run.py <slug> --run <run_id> [--bug-map FILE] [--root DIR]
+    uv run python scripts/bench_from_run.py <slug> --run <run_id> [--bug-map FILE]
+        [--crawl <crawl_id>|all ...] [--root DIR]
 
 Writes projects/<slug>/bench/<slug>-acceptance.json (only if absent; a human-list corpus is
 never overwritten) and <slug>-acceptance-autotester.trial.json, then run
-scripts/check_acceptance_comparison.py <slug>. Contract: qa/contracts/bench.md K10.
+scripts/check_acceptance_comparison.py <slug>. `--crawl` (repeatable, or `all`) also converts
+the named crawls' recorded issues into findings labelled source `crawl` (T-136 route (b)).
+Contract: qa/contracts/bench.md K10.
 """
 
 from __future__ import annotations
@@ -29,12 +32,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ordering", default="independent_parallel",
                         choices=["independent_parallel", "human_read_ai_first",
                                  "ai_read_human_first", "unknown"])
+    parser.add_argument("--crawl", action="append", default=[], metavar="CRAWL_ID|all",
+                        help="stored crawl whose recorded issues become findings; repeatable")
     parser.add_argument("--root", type=Path, default=None)
     args = parser.parse_args(argv)
     store = ProjectStore(args.project, args.root)
     bug_map = json.loads(args.bug_map.read_text(encoding="utf-8")) if args.bug_map else None
+    crawl_ids = store.list_crawl_ids() if "all" in args.crawl else args.crawl
     try:
-        trial = bench_from_run(store, args.project, args.run, bug_map, ordering=args.ordering)
+        trial = bench_from_run(store, args.project, args.run, bug_map, ordering=args.ordering,
+                               crawl_ids=crawl_ids)
     except RunNotUsable as exc:
         print(f"cannot build bench files: {exc}", file=sys.stderr)
         return 2

@@ -44,6 +44,14 @@ def _measure(score: dict, key: str, override: str | None = None) -> Measure:
     return Measure(value=float(value))
 
 
+def _scanned_reason(trial: BenchTrial) -> str | None:
+    """Zero findings after a crawl scan is a measured fact, not a missing input (T-136 route b)."""
+    if trial.findings or not trial.crawl_ids_scanned:
+        return None
+    return (f"no reported findings: {len(trial.crawl_ids_scanned)} crawl(s) scanned, "
+            "0 product issues")
+
+
 def _absent(participant: str, reason: str) -> ParticipantColumn:
     gone = Measure(unavailable_reason=reason)
     return ParticipantColumn(
@@ -59,13 +67,15 @@ def _column(corpus: BenchCorpus, trial: BenchTrial, human_missing: bool) -> Part
     override = NO_HUMAN if human_missing and corpus.mode not in ("fixture", AI_ASSISTED) else None
     independent = sum(1 for f in trial.findings if f.provenance == "independent")
     prompted = sum(1 for f in trial.findings if f.provenance == "prompted")
+    crawl = sum(1 for f in trial.findings if f.source == "crawl")
     return ParticipantColumn(
         participant=trial.participant.value, present=True, label=trial.participant_label,
         kind=trial.kind, ordering=trial.ordering, findings_reported=len(trial.findings),
         independent_findings=independent, prompted_findings=prompted,
+        crawl_findings=crawl, crawl_ids_scanned=list(trial.crawl_ids_scanned),
         detected=int(score["detected"]), seeded=int(score["seeded"]),
         detection_rate=_measure(score, "detection_rate", override),
-        false_positive_rate=_measure(score, "false_positive_rate"),
+        false_positive_rate=_measure(score, "false_positive_rate", _scanned_reason(trial)),
         severity_weighted_recall=_measure(score, "severity_weighted_recall", override),
         duration_s=_measure(score, "duration_s"),
         false_positive_population=str(score["false_positive_population"]),
@@ -115,6 +125,11 @@ def build_comparison(
     )
 
 
+def _zero_after_scan(col: ParticipantColumn) -> bool:
+    """FP rate has no value only because a crawl scan honestly found nothing to report."""
+    return col.findings_reported == 0 and bool(col.crawl_ids_scanned)
+
+
 def completeness_problems(cmp: AcceptanceComparison) -> list[str]:
     """Why this comparison is not judgeable (bench.md K9). Empty means complete.
 
@@ -128,6 +143,8 @@ def completeness_problems(cmp: AcceptanceComparison) -> list[str]:
         problems.append("AutoTester ordering not recorded (K7)")
     for name, measure in (("false_positive_rate", ai.false_positive_rate),
                           ("duration_s", ai.duration_s)):
+        if name == "false_positive_rate" and _zero_after_scan(ai):
+            continue
         if measure.value is None:
             problems.append(f"autotester {name} {measure.text()} (must be measured)")
     if cmp.human_list == "present":

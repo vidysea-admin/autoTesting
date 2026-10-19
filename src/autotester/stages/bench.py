@@ -42,15 +42,17 @@ def run_autotester_trial(
     ordering: Literal[
         "independent_parallel", "human_read_ai_first", "ai_read_human_first", "unknown"
     ] = "unknown",
+    crawl_findings: list[Finding] | None = None, crawl_ids_scanned: list[str] | None = None,
 ) -> BenchTrial:
     """The real participant: findings derived mechanically from a real
-    execute+grade run, never hand-adjusted afterward."""
+    execute+grade run (plus, when named, the crawl issues converted by
+    `stages/crawl_findings.py`), never hand-adjusted afterward."""
     return BenchTrial(
         id=trial_id, corpus_id=corpus.id, participant=Participant.AUTOTESTER,
         participant_label="autotester-real-run",
         kind="autotester", ordering=ordering,
-        findings=findings_from_verdicts(verdicts, case_bug_map),
-        duration_s=duration_s,
+        findings=findings_from_verdicts(verdicts, case_bug_map) + (crawl_findings or []),
+        duration_s=duration_s, crawl_ids_scanned=list(crawl_ids_scanned or []),
     )
 
 

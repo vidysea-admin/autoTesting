@@ -12,6 +12,7 @@ from typing import Literal
 from autotester.schema.bench import BenchCorpus, BenchTrial
 from autotester.stages import bench
 from autotester.stages.acceptance_comparison import corpus_id_for
+from autotester.stages.crawl_findings import CrawlNotFound, crawl_findings_for
 from autotester.store.project_store import ProjectStore
 
 Ordering = Literal["independent_parallel", "human_read_ai_first", "ai_read_human_first", "unknown"]
@@ -52,9 +53,12 @@ def corpus_for(store: ProjectStore, slug: str) -> BenchCorpus:
 
 def bench_from_run(
     store: ProjectStore, slug: str, run_id: str, case_bug_map: dict[str, str] | None = None,
-    *, ordering: Ordering = "independent_parallel",
+    *, ordering: Ordering = "independent_parallel", crawl_ids: list[str] | None = None,
 ) -> BenchTrial:
-    """Build and save the corpus (if absent) and AutoTester trial for `run_id`."""
+    """Build and save the corpus (if absent) and AutoTester trial for `run_id`.
+
+    `crawl_ids` names stored crawls whose recorded issues are also converted to findings
+    (`stages/crawl_findings.py`, source `crawl`); an unknown crawl refuses with nothing written."""
     run = store.load_run(run_id)
     if run is None:
         raise RunNotUsable(f"run {run_id!r} not found under {store.paths.run_dir(run_id)}")
@@ -66,12 +70,17 @@ def bench_from_run(
             f"run {run_id!r} is not fully graded: no verdict for "
             f"{missing or 'any case'} (execute and grade first)"
         )
+    try:
+        crawl_findings = crawl_findings_for(store, crawl_ids or [])
+    except CrawlNotFound as exc:
+        raise RunNotUsable(str(exc)) from exc
     corpus = corpus_for(store, slug)
     if store.load_bench_corpus(corpus.id) is None:
         store.save_bench_corpus(corpus)
     trial = bench.run_autotester_trial(
         trial_id_for(slug), corpus, verdicts, case_bug_map or {},
         _duration_s(store, run_id), ordering=ordering,
+        crawl_findings=crawl_findings, crawl_ids_scanned=crawl_ids,
     )
     store.save_bench_trial(trial)
     return trial
