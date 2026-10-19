@@ -26,7 +26,7 @@ Each fired on the assertion the test is named for.
 C1 dedup by kind+URL(query stripped)+status, evidence and screenshot refs, source label, exclusions: met. C2 numeric FP rate, or honest unavailable with the scan count; zero with no scan still exits 1 (K8): met. C3 recall/detection stay `unavailable (no human list)`, human absent: met. K3: scoring stays in `BenchTrial.score` (new code only counts and labels). K11b: an unknown crawl raises before the corpus or trial is written (test and code order).
 
 ## Non-blocking findings (ledger rows, no fix cycle)
-- AT-1346 low: console `error:` lines carry no URL and `drain()` marks every console line first-party, so a third-party failed-resource console error would become a finding; 5 of the 14 real findings are console twins of a network finding already counted, plus a CSP report-only advisory. 14 is an upper bound; FP rate reads unadjudicated 1.0 either way.
+- AT-1348 low: console `error:` lines carry no URL and `drain()` marks every console line first-party, so a third-party failed-resource console error would become a finding; 5 of the 14 real findings are console twins of a network finding already counted, plus a CSP report-only advisory. 14 is an upper bound; FP rate reads unadjudicated 1.0 either way.
 - AT-1347 low (process): this check ran past the S/M 10 min hard checkpoint (protocol read plus a real-data copy run).
 
 VERDICT: PASS
@@ -35,7 +35,7 @@ TIER: M (new stage + schema fields + comparison wiring; no security/prod-write t
 FAILURES: none
 CAPABILITY-COVERAGE: 4/4 rows reproduced (floor of 1 per criterion met)
 LIVE-BROWSER: not-applicable (no UI path changed)
-ISSUES-WRITTEN: AT-1346, AT-1347
+ISSUES-WRITTEN: AT-1348, AT-1347
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
-EXPLANATION: Re-ran the manifest commands and a wider consumer set green, reproduced the real-data conversion in a copy (14 findings, exit 0, evidence paths resolve), and made four isolated falsifications red on the named assertions. Findings are not inflated by tool failures, third-party network rows, crawler state or warnings; the one soft spot is console lines without a URL (AT-1346).
+EXPLANATION: Re-ran the manifest commands and a wider consumer set green, reproduced the real-data conversion in a copy (14 findings, exit 0, evidence paths resolve), and made four isolated falsifications red on the named assertions. Findings are not inflated by tool failures, third-party network rows, crawler state or warnings; the one soft spot is console lines without a URL (AT-1348).
 Metrics: start=2026-10-19T15:30:00+05:30 end=2026-10-19T15:44:00+05:30 wall_min=14 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=4 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.16 check_s=840 mutants=0 defects_unit=0 defects_6c=0 slow: protocol-read-and-real-data-copy 8
