@@ -33,6 +33,11 @@ class UnsupportedStep(ValueError):
     """The step's verb or target cannot be performed by this port."""
 
 
+class AssignUnproven(RuntimeError):
+    """A role-assign control was pressed but the app did not show it accepted: state unknown, so
+    the oracle must try the undo and record it (MPI4) instead of reading "refused"."""
+
+
 class ChannelUnavailable(LookupError):
     """The assertion's channel is not wired on this port (the mailbox is T-212's)."""
 
@@ -80,6 +85,10 @@ class PortBase:
     _states: dict[str, RoleState]
     _logins: dict[str, RoleSignIn]
     _redactor: Any
+
+    def _absolute(self, role_id: str, target: str) -> str:
+        """The concrete URL for `target` inside the role's own platform (`LiveRolePort`)."""
+        raise NotImplementedError
 
     def _guard(self, role_id: str) -> RoleState:
         """The role's state, or an error when it cannot be used (unknown, failed, not in)."""

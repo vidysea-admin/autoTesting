@@ -24,6 +24,7 @@ import importlib
 import math
 import time
 from collections.abc import Iterable, Sequence
+from pathlib import Path
 from typing import Protocol
 
 from autotester.schema.cross_role_assertion import (
@@ -38,6 +39,7 @@ from autotester.schema.leak_evidence import contains_personal_shape
 from autotester.schema.multi_role_enums import Expectation, OracleName
 from autotester.schema.oracle_context import OracleContext, RoleSessionPort
 from autotester.schema.role_step import RoleStep, StepOutcome, StepState
+from autotester.stages.leak_evidence import write_finding
 from autotester.stages.oracle_registry import Importer, run_oracles
 
 WITHHELD = "[withheld: looks like personal data]"
@@ -162,8 +164,13 @@ def _drive(scenario: CrossRoleScenario, port: RoleSessionPort, clock: Clock,
 def run_scenario(scenario: CrossRoleScenario, port: RoleSessionPort, clock: Clock | None = None,
                  *, project_slug: str, run_dir: str, platform_ids: Sequence[str] = (),
                  oracles: Iterable[OracleName] = (),
-                 importer: Importer = importlib.import_module) -> ScenarioResult:
-    """Run the steps, decide every assertion, then run the selected oracles and summarise all."""
+                 importer: Importer = importlib.import_module,
+                 record: bool = False) -> ScenarioResult:
+    """Run the steps, decide every assertion, then run the selected oracles and summarise all.
+
+    `record=True` saves each finding under `run_dir` (`leak_evidence.write_finding`), which is
+    where the unified report reads them back for its release-blocking banner (AT-1038, MP8). One
+    scenario per `run_dir`: files from an earlier scenario in the same directory are not cleared."""
     steps, by_id = _drive(scenario, port, clock or SystemClock())
     ordered = [by_id[a.id] for a in scenario.assertions]
     context = OracleContext(
@@ -171,5 +178,7 @@ def run_scenario(scenario: CrossRoleScenario, port: RoleSessionPort, clock: Cloc
         role_ids=list(scenario.roles), platform_ids=list(platform_ids), steps=list(scenario.steps),
         assertion_outcomes=ordered, port=port)
     summary, findings = run_oracles(context, oracles, importer)
+    for finding in findings if record else ():
+        write_finding(Path(run_dir), finding)
     return ScenarioResult(scenario_id=scenario.id, steps=steps, assertions=ordered,
                           oracle_summary=summary, findings=findings)

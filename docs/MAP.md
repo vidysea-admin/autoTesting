@@ -143,6 +143,7 @@
 | `schema/approval.py` | Consent as an artifact, not a habit (D-018). |
 | `schema/approval_revocation.py` | A signed withdrawal of one `RunApproval` (D-018 follow-up, AT-110 key). |
 | `schema/auth.py` | Team login shapes (T-204, D-072; contract qa/contracts/auth.md): the closed permission |
+| `schema/authz_probe.py` | The authorisation-probe plan, its two transport seams and the run's own log (MP18-MP20). |
 | `schema/base.py` | Base model every artifact inherits. Defines the shared envelope. |
 | `schema/bench.py` | The north star, made measurable: human expert tester vs AutoTester. |
 | `schema/bug_run.py` | What reading the bug store and processing one run reports: the shapes of T-199b (TB3, TB4, TB6). |
@@ -155,6 +156,7 @@
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
 | `schema/crawl_summary.py` | CrawlSummary: the small, redacted, TRACKED record of one finished crawl. |
+| `schema/credential_policy.py` | What a project declares about its password rules and its credential mail (MP27). |
 | `schema/cross_role_assertion.py` | A timed cross-role assertion and the evidence the runner records for it (MP13, MP14). |
 | `schema/cross_role_scenario.py` | A cross-role scenario and the result of running it (MP13-MP15). |
 | `schema/delivery.py` | Report-delivery shapes: preference, recipient, summary, rendered message, record, SMTP settings. |
@@ -173,6 +175,7 @@
 | `schema/ledger.py` | Ledger records, relitigation and reviewed decision citations (living-ledger contract). |
 | `schema/link_outcome.py` | What happened to one declared PlatformLink when a run tried to follow it (MP12). |
 | `schema/lint_rule.py` | The declared surface checks and what the surface oracles read (MP25, MP26). |
+| `schema/mail_observation.py` | What a read-only mailbox look returns, and the rule that keeps token values out of it (MP17). |
 | `schema/mailbox_ref.py` | Where a role account's mailbox is, as KEYS only (MP2) -- plus the one secret-key rule. |
 | `schema/media.py` | Host-side media preparation artifacts: transcripts and chunk manifests. |
 | `schema/multi_role_enums.py` | The Group 11 (multi-role platform) vocabulary file: every closed value set G11 adds. |
@@ -181,6 +184,8 @@
 | `schema/negative_input_form.py` | A form to probe with negative input, once per role account that reaches it (MP32). |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/oracle_context.py` | The oracle interface: what an oracle is handed, what the run reports about each oracle (MP15). |
+| `schema/oracle_declarations.py` | The declarations a runner hands to the oracles that need one (T-217 CORE-REQUEST, MP27, MP28). |
+| `schema/payment_path.py` | The paid paths a project declares, and what the payment oracle reports about each (MP28). |
 | `schema/platform.py` | One product surface inside a multi-platform project (MP1). |
 | `schema/platform_link.py` | A declared hop from one platform to another (MP1). |
 | `schema/portal_persona.py` | The durable Portal Persona — what AutoTester knows about one product, kept |
@@ -191,6 +196,7 @@
 | `schema/request_budget.py` | What the network oracles read: captured requests per step and the request budget (MP21, MP22). |
 | `schema/review_recall.py` | The TA16 evidence record: a video review measured against an oracle, in numbers (T-206). |
 | `schema/role_account.py` | One signed-in identity on one platform, held as KEYS only (MP2, MPI5). |
+| `schema/role_control.py` | How a live role port drives one role-assign control, so MP19's escalation can be tried (MP19). |
 | `schema/role_signin.py` | How one platform's sign-in page is driven, so a live role port can sign its accounts in (MP11). |
 | `schema/role_step.py` | One role-tagged step of a cross-role scenario, and how it went (MP13). |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
@@ -236,6 +242,7 @@
 | `sources/extract.py` | Deterministic host-side text extraction for DOC sources. |
 | `sources/gws_drive.py` | The real Drive seam: the existing `gws` CLI login behind `DriveFetcher` (metadata, list, fetch). |
 | `sources/gws_runner.py` | Run the `gws` CLI as a subprocess: an argument list, a timeout, a size watch, no shell. |
+| `sources/imap_mailbox.py` | Read a role's mailbox over IMAP: read-only, bounded, scrubbed (SA9, MP16-MP17). |
 | `sources/intake_commit.py` | Atomic video registration, the per-project intake lock, staging and orphan sweep. |
 | `sources/pdf_extract.py` | Supervise local PDF extraction with a hard timeout and bounded input/output. |
 | `sources/pdf_ocr.py` | Read one scanned PDF page with bounded local Poppler and Tesseract commands. |
@@ -255,6 +262,7 @@
 | `stages/ai_report.py` | AI REPORT: one Excel workbook of a project's stored Track C evidence, grouped by tier (T-155). |
 | `stages/analysis_flows.py` | Turn a finished `VideoAnalysis` into DRAFT flows in the FlowSpec (TV9, R37). |
 | `stages/analyze_video.py` | ANALYZE: run the ensemble over a prepared recording, then adjudicate. |
+| `stages/authz_probe.py` | The bounded-probe session both authorisation oracles share: gate, budget, log (MP20, A5, MPI4). |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/bench_from_run.py` | Turn a real project's executed+graded run into the T-136 bench files. Contract: bench.md K10. |
 | `stages/browser_recovery.py` | Bounded recovery from a closed browser between serial cases (AT-888). |
@@ -311,11 +319,16 @@
 | `stages/oracle_api_error.py` | The hidden API error oracle (MP21): a first-party 4xx/5xx behind a screen that shows success. |
 | `stages/oracle_consistency.py` | The cross-role consistency oracle: one entity, read as each role (MP23, MPI1). |
 | `stages/oracle_copy_lint.py` | The copy, branding and timezone lint oracle (MP25). |
+| `stages/oracle_credential_policy.py` | The credential-policy oracle: weak passwords accepted, and credentials sent in plain mail (MP27). |
+| `stages/oracle_mailbox.py` | The mailbox oracle: an expected mail that a complete read never found is a finding (MP13-MP17). |
 | `stages/oracle_negative_input.py` | The negative-input oracle: bad input, once per role account that reaches the form (MP32). |
+| `stages/oracle_payment.py` | The payment oracle: does each declared paid path reach a gateway page, and stop there (MP28). |
+| `stages/oracle_privilege.py` | Vertical-privilege oracle: reads and role-assigns a lower role should not be able to do (MP19). |
 | `stages/oracle_registry.py` | The oracle registry: every G11 oracle by module name, built or not (MP15). |
 | `stages/oracle_request_budget.py` | The request and polling budget oracle (MP22), plus the adapter from `network_capture` to samples. |
 | `stages/oracle_responsive.py` | The responsive sweep oracle (MP26). |
 | `stages/oracle_state_after.py` | The state-after oracle: did an action leave the promised change, and did it persist? (MP33) |
+| `stages/oracle_tenant.py` | Cross-tenant oracle: rows tenant A can see that are not A's are counted, P0 (MP18, MP20). |
 | `stages/orchestrate.py` | ORCHESTRATE: drive the stage pipeline as a resumable LangGraph run (D-041, T-167). |
 | `stages/orchestrate_checkpoint.py` | Persist one run's LangGraph checkpoint without arbitrary Python deserialization. |
 | `stages/orchestrate_downstream.py` | Adapt generation, observation, independent grading and exports into durable pipeline stages. |
@@ -340,6 +353,8 @@
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/review_recall.py` | Score stored video reviews against an oracle corpus into a `ReviewRecall` (TA16). |
 | `stages/role_onboarding.py` | Validate N role accounts across M platforms at onboarding time (T-208, MP4-MP5). |
+| `stages/role_port_authz.py` | The live role port's authorisation capabilities: `ReadTransport`, `EscalationTransport`. |
+| `stages/role_port_mail.py` | The mailbox channel of the live role port (MP13-MP17, MPI5). |
 | `stages/role_port_network.py` | The network-log capability of the live role port: `NetworkLogPort` (MP21, MP22). |
 | `stages/role_port_state.py` | The per-role state and shared guards of the live role port (MP11, MP15). |
 | `stages/role_port_surface.py` | The surface capabilities of the live role port: `TextSurface` and `LayoutSurface` (MP25, MP26). |
@@ -374,6 +389,7 @@
 | `stages/tracker_binding.py` | TRACKER BINDING: propose a project's column mapping from a header row, and keep it per project. |
 | `stages/tracker_export.py` | TRACKER EXPORT: BugStore bugs as CSV / xlsx bytes in the Tracker sheet's layout (TB15). |
 | `stages/unified_report.py` | The damage-control report's loaders and assembly (T-168, `damage-control-report.md` DC1-DC4). |
+| `stages/unified_report_findings.py` | The multi-role findings a run recorded, loaded for the unified report (AT-1038, MP8). |
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
 | `stages/ux_wiring.py` | Run the advisory UX pass after a run is saved, and never let it touch the run (AT-794). |
@@ -530,6 +546,17 @@
 | `ResourceRef` (`schema/auth.py`) | What `authorize` judges a scoped key against (auth.md Vocabulary). |
 | `Principal` (`schema/auth.py`) | Who makes the current request, resolved from a live server-side session. |
 | `RouteRule` (`schema/auth.py`) | One row of the central route policy table (AU14). |
+| `TenantProbe` (`schema/authz_probe.py`) | One list view read as tenant A (the viewer); rows that are not A's are foreign (MP18). |
+| `RoleAssignControl` (`schema/authz_probe.py`) | A control that assigns a role (a button, a form); at most one attempt is made (MP19). |
+| `PrivilegeProbe` (`schema/authz_probe.py`) | Reads captured in a higher role's session, replayed as a lower role, plus role-assigns. |
+| `AuthzPlan` (`schema/authz_probe.py`) | Everything planned against ONE platform. The planned count is derived, never typed. |
+| `ProbeReply` (`schema/authz_probe.py`) | One answer. `status` is the final one after redirects; a login redirect reports 401/403. |
+| `ReadTransport` (`schema/authz_probe.py`) | GET `url` as the named role account. The oracles call nothing else to read. |
+| `EscalationTransport` (`schema/authz_probe.py`) | The writes of MP19, only ever called when the project's write policy allows them. |
+| `StopReason` (`schema/authz_probe.py`) | Why something planned was not probed. |
+| `UnprobedItem` (`schema/authz_probe.py`) | One planned probe that was not made, named by probe id and kind, never by a value. |
+| `ProbeLog` (`schema/authz_probe.py`) | What one oracle did on one platform: counts and what it left unprobed (MP20). |
+| `RevertRecord` (`schema/authz_probe.py`) | An escalation that succeeded and what happened to it. `reverted: false` is a P0 follow-up. |
 | `Provenance` (`schema/base.py`) | Who or what produced this artifact, and from what. |
 | `Artifact` (`schema/base.py`) | Common envelope: versioned, timestamped, attributable. |
 | `SeededBug` (`schema/bench.py`) | A deliberately introduced defect with known ground truth. |
@@ -581,6 +608,12 @@
 | `NoiseCount` (`schema/crawl.py`) | One third-party host's dropped-request tally (never an issue, X9). |
 | `Crawl` (`schema/crawl.py`) | The envelope for one bounded BFS run — `stages/explore.py`'s output. |
 | `CrawlSummary` (`schema/crawl_summary.py`) |  |
+| `PasswordRule` (`schema/credential_policy.py`) | The rule names a finding reports. The value is what the report says, never a password. |
+| `MailRule` (`schema/credential_policy.py`) | The rule a credential-bearing mail breaks. |
+| `FlowKind` (`schema/credential_policy.py`) | Which password form is probed. |
+| `PasswordRules` (`schema/credential_policy.py`) | The password rules the product declares; a rule left at its default is not probed. |
+| `PolicyFlow` (`schema/credential_policy.py`) | One create or reset form: reach it, type a candidate password, submit, look for success. |
+| `CredentialPolicy` (`schema/credential_policy.py`) | Everything the credential-policy oracle needs, declared by the project. |
 | `AssertVerdict` (`schema/cross_role_assertion.py`) | `not_run` means an earlier step failed, so the assertion was never looked at. |
 | `CrossRoleAssertion` (`schema/cross_role_assertion.py`) | What one role must (or must not) see, on one channel, within a window. |
 | `Observation` (`schema/cross_role_assertion.py`) | One look at a channel: did the target match, and a short description of what was seen. |
@@ -669,6 +702,12 @@
 | `LayoutSurface` (`schema/lint_rule.py`) | A port that can resize its role contexts and measure the visited screens. |
 | `SurfaceUnavailable` (`schema/lint_rule.py`) | The port lacks the surface capability, so the oracle cannot look. Never a clean result. |
 | `SurfaceDeclarationMissing` (`schema/lint_rule.py`) | No usable `surface_checks.json`: with nothing declared the oracle would be vacuous. |
+| `CredentialTokenKind` (`schema/mail_observation.py`) | The shapes of secret a mail body can carry (recorded as present, never as a value). |
+| `MailReadState` (`schema/mail_observation.py`) | `unavailable` is never "no message arrived": an absence is evidence only after a read. |
+| `MailUnavailableReason` (`schema/mail_observation.py`) | Why a read did not happen. Closed, so no server text or host can ride along. |
+| `MailQuery` (`schema/mail_observation.py`) | The bounds of one read (SA9): since-time, recipient, message cap, timeout. |
+| `MailObservation` (`schema/mail_observation.py`) | One message: scrubbed subject, time, and which credential-shaped tokens it held. |
+| `MailReadResult` (`schema/mail_observation.py`) | A completed read, or `unavailable` with a closed reason (and key NAMES when missing). |
 | `MailboxRef` (`schema/mailbox_ref.py`) | A read-only mailbox, named by keys. The values stay in the repo-root `.env`. |
 | `TranscriptSegment` (`schema/media.py`) | One spoken utterance, absolute seconds into the source video. |
 | `Transcript` (`schema/media.py`) | A video's narration. `from_sidecar` loads the exact shape the existing |
@@ -698,6 +737,12 @@
 | `OracleStatus` (`schema/oracle_context.py`) | One oracle's line in the run summary. |
 | `OracleRunSummary` (`schema/oracle_context.py`) | Every G11 oracle exactly once; an omitted oracle is a validation error (MP15). |
 | `OracleContext` (`schema/oracle_context.py`) | What one oracle run is handed. Serialisable fields only, plus the live port. |
+| `OracleDeclarations` (`schema/oracle_declarations.py`) | Per-oracle declarations; an oracle whose field is `None` falls back to its run-dir file. |
+| `GatewayState` (`schema/payment_path.py`) | `unobserved` is never read as "not reached": the page could not be looked at. |
+| `CouponState` (`schema/payment_path.py`) | `not_reached` means the path never got as far as the coupon step. |
+| `PaymentPath` (`schema/payment_path.py`) | One paid path, declared as four phases that the oracle performs in order. |
+| `PaymentDeclaration` (`schema/payment_path.py`) | The project's declared paid paths. |
+| `PathReport` (`schema/payment_path.py`) | What the oracle saw on one path. Counts and states, no URL, page text or value. |
 | `Platform` (`schema/platform.py`) | A platform's boundary. Secrets for it are scoped within `allowed_domains` (MPI5). |
 | `PlatformLink` (`schema/platform_link.py`) | `from_platform` -> `to_platform`, reached through `url_template` or `control_name`. |
 | `PersonaProfile` (`schema/portal_persona.py`) | What the product is, at a glance — the durable header of the persona. |
@@ -737,6 +782,7 @@
 | `OracleRef` (`schema/review_recall.py`) | Where the denominator came from. Never a claim of independence. |
 | `ReviewRecall` (`schema/review_recall.py`) | `recall.json`. `k` and `unconfirmed_count` must be re-derivable from the id lists. |
 | `RoleAccount` (`schema/role_account.py`) | A test account for one role. Its scope is the account's own permissions (D-018). |
+| `ControlBinding` (`schema/role_control.py`) | The press-and-prove recipe for one role-assign control and its undo. |
 | `RoleSignIn` (`schema/role_signin.py`) | The sign-in recipe of one platform; every account on the platform uses it. |
 | `StepState` (`schema/role_step.py`) | How one step ended. `not_run` is a step skipped because an earlier one failed. |
 | `RoleStep` (`schema/role_step.py`) | An action performed as one named role account. |

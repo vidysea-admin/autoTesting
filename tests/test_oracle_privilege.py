@@ -184,6 +184,22 @@ def test_mp19_a_port_that_cannot_escalate_names_the_controls_unprobed(sc: Scaffo
     assert [u.reason for u in _log(sc).unprobed] == [StopReason.NO_ESCALATION_TRANSPORT]
 
 
+def test_mp19_a_transport_that_cannot_tell_if_a_control_is_reachable_names_it_unprobed(
+        sc: Scaffold) -> None:
+    """g11-oracle-wiring W4: an error from `can_reach` is "could not tell", never "refused"."""
+    class Unsure(type(sc.app)):  # type: ignore[misc]
+        def can_reach(self, role_id: str, control: RoleAssignControl) -> bool:
+            raise RuntimeError("no binding; this text must not be reported")
+
+    port = Unsure()
+    sc.plan(_plan(_probe(read_urls=[OPEN], controls=[_control("promote")])))
+    sc.grant(4)
+    _run(sc, port=port)
+    assert [(u.item, u.reason) for u in _log(sc).unprobed] == [
+        ("privilege:admin-area:control_promote", StopReason.TRANSPORT_ERROR)]
+    assert port.assigns == [] and "must not be reported" not in sc.tree_text()
+
+
 # --- MP20 / MPI4 bounds on this oracle -------------------------------------------------------
 
 def test_mp20_the_cap_reserves_room_for_the_revert_so_it_is_never_exceeded(sc: Scaffold) -> None:

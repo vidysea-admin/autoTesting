@@ -10,12 +10,22 @@ per oracle, each carrying exactly one planted fault (synthetic data only, MPI2; 
   /settings   a form whose `title` max length (10) is enforced for alice and not for bob
   /orders     a counter and an Add button; with `persist` off the server forgets the add
   /reports    a 900 px wide block and a control 700 px from the left edge (overflows at 390 px)
+
+and, for the authorisation probes (g11-oracle-wiring), JSON and one role-assign control:
+  /api/rows         alice's list also holds bob's row b1 (a planted cross-tenant leak); bob's is
+                    clean
+  /api/rows/<id>    one row by id, any id, for any signed-in role (the id swap succeeds)
+  /api/admin/users  answers alice 200 (a planted privilege hole); /api/admin/audit refuses her 403
+  /assign           alice may press #make-admin (role becomes admin, `#now-admin`) and #undo-admin
+  /assign-locked    no control for alice; /go-away redirects to another host; /api/expire?u=NAME
+                    ends that user's server-side sessions (a logged-out role)
 """
 
 from __future__ import annotations
 
 import http.cookies
 import http.server
+import json
 import secrets
 import threading
 from dataclasses import dataclass, field
@@ -43,6 +53,9 @@ class PortApp:
     sessions: dict[str, str] = field(default_factory=dict)
     orders: int = 0
     persist: bool = True
+    roles: dict[str, str] = field(default_factory=lambda: {"alice": "user", "bob": "admin"})
+    reads: list[str] = field(default_factory=list)
+    offsite_hits: int = 0
 
     def url(self, path: str = "/") -> str:
         return f"http://{HOST}:{self.port}{path}"
@@ -69,6 +82,20 @@ def _pages(user: str) -> dict[str, str]:
         "/reports": ("<h1>Reports</h1><div style='width:900px;background:#ddd'>wide table</div>"
                      "<button id=far style='margin-left:700px'>Far</button>"),
     }
+
+
+ROWS = {"a1": "ZZNAME-alice-1", "a2": "ZZNAME-alice-2", "b1": "ZZNAME-bob-1"}
+_ASSIGN = ("<h1>Team</h1><span id=role>{role}</span><button id=make-admin>Make admin</button>"
+           "<button id=undo-admin>Undo</button><script>const say=(id)=>{{const e="
+           "document.createElement('span');e.id=id;e.textContent=id;document.body.append(e)}};"
+           "document.getElementById('make-admin').onclick=()=>fetch('/api/role?set=admin',"
+           "{{method:'POST'}}).then(()=>say('now-admin'));"
+           "document.getElementById('undo-admin').onclick=()=>fetch('/api/role?set=user',"
+           "{{method:'POST'}}).then(()=>say('now-user'))</script>")
+
+
+def _json(rows: object) -> str:
+    return json.dumps(rows)
 
 
 def _handler_for(app: dict) -> type[http.server.BaseHTTPRequestHandler]:
@@ -106,6 +133,9 @@ def _handler_for(app: dict) -> type[http.server.BaseHTTPRequestHandler]:
                 handle.sessions[token] = name
                 return self._send("", 302, {"Location": "/home",
                                             "Set-Cookie": f"sid={token}; Path=/; HttpOnly"})
+            if path == "/api/role" and user:
+                handle.roles[user] = parse_qs(self.path.partition("?")[2]).get("set", ["user"])[0]
+                return self._send("{}")
             if path == "/api/save":
                 return self._send("error", 500)
             if path == "/api/orders":
@@ -118,6 +148,19 @@ def _handler_for(app: dict) -> type[http.server.BaseHTTPRequestHandler]:
                 return self._send("<p id=saved>saved</p>")
             self._send("<h1>not found</h1>", 404)
 
+        def _api(self, user: str, path: str) -> None:
+            rows = [{"id": i, "name": n} for i, n in ROWS.items()
+                    if i.startswith(user[0]) or (user == "alice" and i == "b1")]
+            if path == "/api/rows":
+                return self._send(_json({"results": rows}))
+            if path.startswith("/api/rows/"):
+                row = ROWS.get(path.rsplit("/", 1)[1])
+                body = _json({"id": path.rsplit("/", 1)[1], "name": row})
+                return self._send(body, 200 if row else 404)
+            if path == "/api/admin/users":
+                return self._send(_json([{"id": "u1", "name": "ZZNAME-admin"}]))
+            self._send(_json({}), 403)
+
         def do_GET(self) -> None:
             handle, path, user = app["handle"], self.path.split("?")[0], self._user()
             if path == "/login":
@@ -125,6 +168,13 @@ def _handler_for(app: dict) -> type[http.server.BaseHTTPRequestHandler]:
                                   "<input id=p name=p type=password>"
                                   "<button id=go>Go</button></form>")
             if path == "/api/ping":
+                return self._send("{}")
+            if path == "/api/expire":
+                gone = parse_qs(self.path.partition("?")[2]).get("u", [""])[0]
+                handle.sessions = {k: v for k, v in handle.sessions.items() if v != gone}
+                return self._send("{}")
+            if not self.headers.get("Host", "").startswith(HOST):  # left the platform
+                handle.offsite_hits += 1
                 return self._send("{}")
             if user is None:
                 return self._send("", 302, {"Location": "/login"})
@@ -135,6 +185,15 @@ def _handler_for(app: dict) -> type[http.server.BaseHTTPRequestHandler]:
                     "<script>document.getElementById('add').onclick=()=>fetch('/api/orders',"
                     "{method:'POST'}).then(()=>{const c=document.getElementById('count');"
                     "c.textContent=String(+c.textContent+1)})</script>")
+            if path.startswith("/api/"):
+                handle.reads.append(f"{user}:{path}")
+                return self._api(user, path)
+            if path == "/assign" and user == "alice":
+                return self._send(_ASSIGN.format(role=handle.roles[user]))
+            if path == "/assign-locked":
+                return self._send("<h1>Team</h1><p>Admins only.</p>")
+            if path == "/go-away":
+                return self._send("", 302, {"Location": f"http://127.0.0.1:{handle.port}/x"})
             page = _pages(user).get(path)
             self._send(page, 200) if page else self._send("<h1>not found</h1>", 404)
 

@@ -19,6 +19,8 @@ never edited by an oracle unit. Rules the registry relies on:
     send a page to a model (MPI1).
   * `context.assertion_outcomes` and `context.steps` are what the scenario already did, so an
     oracle can read the run without re-driving it.
+  * `context.declarations` (`schema/oracle_declarations.py`) carries the declaration of an oracle
+    that needs one (credential policy, paid paths). Use it first; the run-dir file is the fallback.
 A module that is absent is `not built`; one that exists but cannot be imported or has no `run`
 is `errored`. Neither is ever dropped from the summary, which must name every `OracleName`.
 """
@@ -33,6 +35,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from autotester.schema.cross_role_assertion import AssertionOutcome, CrossRoleAssertion, Observation
 from autotester.schema.multi_role_enums import OracleName
+from autotester.schema.oracle_declarations import OracleDeclarations
 from autotester.schema.platform import PLATFORM_ID_PATTERN
 from autotester.schema.role_account import ROLE_ACCOUNT_ID_PATTERN
 from autotester.schema.role_step import RoleStep
@@ -97,6 +100,9 @@ class OracleContext(BaseModel):
     steps: list[RoleStep] = Field(default_factory=list)
     assertion_outcomes: list[AssertionOutcome] = Field(default_factory=list)
     port: RoleSessionPort | None = Field(default=None, exclude=True, repr=False)
+    declarations: OracleDeclarations = Field(
+        default_factory=OracleDeclarations, exclude=True, repr=False,
+        description="typed per-oracle declarations; an oracle falls back to its run-dir file")
 
     @model_validator(mode="after")
     def _ids_are_ids(self) -> OracleContext:

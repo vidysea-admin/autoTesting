@@ -261,3 +261,8 @@ def _signed_in_test_clients(tmp_path_factory: pytest.TempPathFactory) -> Iterato
     TestClient.request = _request
     yield
     TestClient.request = original
+
+
+# -- the live-port wiring fixtures (g11-oracle-wiring) -------------------------
+# Registered here, not imported into each test module, for the F811 reason above.
+from role_port_wired import live_deadline, probed_port, wired_port  # noqa: E402,F401

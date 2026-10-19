@@ -45,6 +45,7 @@ from autotester.stages.report_export import (
     _run_sort_key,
     valid_runs_newest_first,
 )
+from autotester.stages.unified_report_findings import load_run_findings
 from autotester.stages.unified_report_render import render_html
 from autotester.store.project_store import ProjectStore
 
@@ -54,13 +55,11 @@ _STORED = re.compile(r"^(?P<path>.+?\.jsonl?)(?::\d+)?: ", re.S)
 
 
 class ReportUnavailable(ValueError):
-    """Nothing to report yet (no project / no run); the message is fixed text plus what the
-    caller typed, never stored data."""
+    """Nothing to report yet (no project / no run); fixed text plus what the caller typed."""
 
 
 class ReportUnreadable(ValueError):
-    """A stored file could not be read into the report. The message is built from field NAMES
-    and the exception TYPE only (DC4/C5: pydantic's own text carries `input_value`)."""
+    """A stored file could not be read. Message: field NAMES and exception TYPE only (DC4/C5)."""
 
 
 def _file_of(exc: Exception) -> str:
@@ -271,15 +270,19 @@ def _assemble(store: ProjectStore, run_id: str | None) -> UnifiedReport:
         project=store.paths.slug, run_id=rid, regression=load_regression(store, rid),
         api=load_api(store, rid, crawl_id), workflows=load_workflows(store, rid),
         history=load_history(store), coverage=load_coverage(store, crawl_id))
-    # DC4: scrub the OBJECT, so the renderer never sees a secret in any form. `Redactor.scrub`
-    # matches exact bytes: after `render_html` HTML-escapes `& < > '` it would no longer match.
+    # DC4: scrub the OBJECT (exact bytes), before `render_html` HTML-escapes `& < > '`.
     return UnifiedReport.model_validate(
         _load_redactor(store).scrub_obj(report.model_dump(mode="json")))
 
 
 def unified_html(store: ProjectStore, run_id: str | None = None) -> str:
-    """The one artifact's text: rendered from a report already scrubbed of secrets (DC4)."""
-    return render_html(build_report(store, run_id))
+    """The artifact's text: a scrubbed report (DC4) plus the run's findings, for the banner."""
+    report = build_report(store, run_id)
+    try:
+        found = load_run_findings(store, report.run_id, _load_redactor(store))
+    except Exception as exc:
+        raise _unreadable(store, exc) from None
+    return render_html(report, found)
 
 
 def export_unified_html(project_slug: str, run_id: str | None, out_path: Path,
