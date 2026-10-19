@@ -4,8 +4,9 @@
 **Fix cycle:** 0
 **Contract:** qa/contracts/explore.md (X11), qa/contracts/core-invariants.md (redaction: no raw secret reaches disk); no contract edited
 **Goal task:** T-136 (live run r5, `.work/t136-live-report-r5.md`)
-**Dual check:** no
-Dual-check reason: the diff changes no line in `core/redact.py` or `browser/secrets.py` (`Redactor.scrub` / `SecretStore.redactor` are byte-for-byte unchanged for every caller); the fix lives only in `stages/explore_*`. No security/auth/tenancy/prod-write trigger line applies; one checker still reads the exempt-key set (`_MINTED`) for a secret leak path.
+**Dual check:** required
+dual-trigger: security src/autotester/stages/explore_summary.py:67
+Dual-check reason (maker): the diff exempts `_MINTED` string keys from secret scrubbing before persistence, which narrows redaction (security). Overrides the builder's "no".
 **Persona walk:** skip (no UI surface)
 **Issues addressed:** none (T-136 live defect)
 **Executor:** claude-sonnet-subagent
