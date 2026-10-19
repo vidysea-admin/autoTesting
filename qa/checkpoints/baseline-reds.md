@@ -21,6 +21,7 @@ Environment of the run: Windows, `TMP`/`TEMP=D:/autoTesting/.work/tmp` (inside t
 | fcedc9f4 | tests/test_mutation_check.py::test_a_failing_test_that_prints_a_summary_line_cannot_fake_a_kill | e9b139a84ac1 | same | env (TMP) |
 | fcedc9f4 | tests/test_mutation_check.py::test_a_named_test_that_did_not_run_under_the_mutation_is_never_killed | f75de8e4c02d | same | env (TMP) |
 | fcedc9f4 | tests/test_mutation_check.py::test_a_named_test_that_errors_in_setup_is_not_a_kill | b6b5e7f314b7 | same | env (TMP) |
+| fcedc9f4 | tests/test_mutation_check.py::test_a_mutation_is_attributed_to_a_parametrized_test_with_spaces_in_its_id | 441725533781 | `MutationError ... names test(s) that are not collected: [tests/test_spaced.py::test_small[one small value]]` (same TMP cause; shown red on `.worktrees/base-6c-fcedc9f4` by the r5 checker) | env (TMP) |
 | fcedc9f4 | tests/test_mutation_check_judgement.py::test_an_interrupted_run_with_real_failures_is_not_a_kill | 194d6ac656d7 | `an interrupted run still reports the tests that really failed` (TMP-prefix cause) | env (TMP) |
 
 ## Not recorded as baseline (load-dependent, one-offs)
