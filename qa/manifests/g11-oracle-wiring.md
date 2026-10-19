@@ -4,7 +4,9 @@
 **Fix cycle:** 0
 **Contract:** `qa/contracts/multi-role-platform.md` (MP8, MP14, MP16-MP20, MP27, MP28, MPI4, MPI5) - criteria W1..W5 below are PROPOSED for the checker to fold in, each quoting the existing contract text it serves; no contract edited
 **Goal task:** T-217 CORE-REQUEST (declarations on `OracleContext`), T-212/T-213 wiring onto `LiveRolePort`, AT-1038 (P0 banner unreachable); authority D-104 (Approved-by Umesh 2026-10-17); 2026-10-18 "build every remaining feature now; credentials come later, so no live leg in this unit"
-**Dual check:** no (the T-213 approval, scope and ceiling lines are untouched: `git diff 8b93e475 HEAD -- src/autotester/stages/authz_probe.py` is empty; the new port code only CALLS `require_project_approval` through the unchanged gate and adds one extra refusal of its own, never a bypass)
+**Dual check:** required (maker raised: the port reads across tenants and presses a role-assign control on the target; new security code paths, not covered by the .10-7 small-security waiver)
+dual-trigger: tenancy src/autotester/stages/role_port_authz.py:65
+dual-trigger: prod-write src/autotester/stages/role_port_authz.py:105
 **Executor:** claude-sonnet-subagent
 **Base SHA:** 8b93e475 (int/1017 head with `LiveRolePort` from g11-port-wiring); worktree .worktrees/g11-oracle-wiring
 
