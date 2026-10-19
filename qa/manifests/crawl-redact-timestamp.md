@@ -6,6 +6,7 @@
 **Goal task:** T-136 (live run r5, `.work/t136-live-report-r5.md`)
 **Dual check:** required
 dual-trigger: security src/autotester/stages/explore_summary.py:67
+Round cap: (a) SECURITY CLASS -- credential handling: the unit scrubs secret values out of crawl summaries before they are persisted (dual-trigger security src/autotester/stages/explore_summary.py:67); D-014 does not cap it.
 Dual-check reason (maker): the diff exempts `_MINTED` string keys from secret scrubbing before persistence, which narrows redaction (security). Overrides the builder's "no".
 **Persona walk:** skip (no UI surface)
 **Issues addressed:** none (T-136 live defect)
