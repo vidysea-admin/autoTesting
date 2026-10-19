@@ -65,7 +65,8 @@ def _unseen_basis(failures: list[Failure], unseen: list[Path], delivered: list[P
     return None
 
 
-def _met_assertions(result: RawResult) -> int:
+def met_assertions(result: RawResult) -> int:
+    """Count of deterministic `assert ...: met` rows the executor recorded (the DOM verified)."""
     return sum(1 for ev in result.evidence if ev.path.startswith("assert ") and ": met" in ev.path)
 
 
@@ -85,7 +86,7 @@ def visual_decision(final: Result, failures: list[Failure], result: RawResult,
         final, why = Result.INCONCLUSIVE, UNSEEN_FAIL_NOTE.format(why=why)
     elif final is Result.PASS:
         gap = (f"{len(unseen)} screenshot(s) were withheld or absent" if unseen
-               else None if _met_assertions(result)
+               else None if met_assertions(result)
                else "no deterministic assertion was met to back the masked screenshots")
         if gap:
             final, why = Result.INCONCLUSIVE, UNBACKED_PASS_NOTE.format(why=gap)

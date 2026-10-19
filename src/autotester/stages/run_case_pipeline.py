@@ -97,7 +97,9 @@ def rubric_for_case(case: Case, store: ProjectStore) -> Rubric:
     if rubric is None or is_stale_default(rubric, case):
         rubric = default_rubric(case, rubric_id)
         store.save_rubric(rubric)
-    return rubric
+    # T-136: a rubric saved before `expects_error` existed loads False though the case's own
+    # outcome is a rejection; the flag is a fact about the case, raised in memory, never lowered.
+    return rubric.model_copy(update={"expects_error": True}) if expects_error(case) else rubric
 
 
 def _finalize_video(result: RawResult, verdict: Verdict, video_rel: str | None,
