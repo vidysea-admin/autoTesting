@@ -27,3 +27,7 @@ Count check: 29 + 14 = 43 (29 pass = 22 non-mutation + 7 mutation nodes; 14 red 
 New reds: 0. Load flakes: none claimed (every red reproduced alone).
 
 Metrics: start=2026-10-19T12:45 end=2026-10-19T13:05 wall_min=20 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=1 mutations=0 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-18.15 check_s=1200 mutants=0 defects_unit=0 defects_6c=0
+
+## Stamp and gate
+- `tick.mjs --stamp-6c-green`: `6c-green: 79faf28d6d5a6a73e77aa11ab6c6810673bdfd6b` (tree of the verdict commit 2736db68, on tested code 5223173b).
+- `tick.mjs --push-gate` stdout: `push-gate: green 79faf28d6d5a6a73e77aa11ab6c6810673bdfd6b`
