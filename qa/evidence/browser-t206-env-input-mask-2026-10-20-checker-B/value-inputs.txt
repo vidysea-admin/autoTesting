@@ -1,0 +1,11 @@
+env.html:<input type='text' name='value' value='synth@demo.test' aria-label='Value for DEMO_EMAIL' placeholder='new value' style='flex:1'>
+env.html:<input type='password' name='value' value='SYNTH-pw-12345' aria-label='Value for DEMO_PASSWORD' placeholder='new value' style='flex:1'>
+env.html:<input type='password' name='value' value='SYNTH-key-67890' aria-label='Value for DEMO_API_KEY' placeholder='new value' style='flex:1'>
+env.html:<input id='ac-value' type='password' autocomplete='new-password' name='value' required placeholder='the value to store'>
+prov.html:<input type='password' name='value' value='' aria-label='Value for ANTHROPIC_API_KEY' placeholder='new value' style='flex:1'>
+prov.html:<input type='password' name='value' value='' aria-label='Value for GEMINI_API_KEY' placeholder='new value' style='flex:1'>
+prov.html:<input type='password' name='value' value='' aria-label='Value for GOOGLE_API_KEY' placeholder='new value' style='flex:1'>
+prov.html:<input type='text' name='value' value='' aria-label='Value for OLLAMA_BASE_URL' placeholder='new value' style='flex:1'>
+prov.html:<input type='text' name='value' value='' aria-label='Value for OLLAMA_MODEL' placeholder='new value' style='flex:1'>
+prov.html:<input type='password' name='value' value='' aria-label='Value for OLLAMA_API_KEY' placeholder='new value' style='flex:1'>
+prov.html:<input type='password' name='value' value='' aria-label='Value for OPENAI_API_KEY' placeholder='new value' style='flex:1'>

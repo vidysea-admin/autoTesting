@@ -39,11 +39,14 @@ def _kind_and_production(project_production: bool) -> str:
     """The kind selector and the production checkbox - forced on (and submitted) for a
     production project, so a UI row is never the production:false row D-088 refuses."""
     options = "".join(f"<option value='{k.value}'>{k.value}</option>" for k in _KINDS)
-    box = ("<input type='checkbox' checked disabled> <input type='hidden' name='production' "
+    box = ("<input id='ca-production' type='checkbox' checked disabled> "
+           "<input type='hidden' name='production' "
            "value='1'> required: this project is declared production (D-088)"
-           if project_production else "<input type='checkbox' name='production' value='1'>")
-    return (f"<div class='field'><label>Kind</label><select name='kind'>{options}</select></div>"
-            f"<div class='field'><label>Production</label>{box}</div>")
+           if project_production else
+           "<input id='ca-production' type='checkbox' name='production' value='1'>")
+    return (f"<div class='field'><label for='ca-kind'>Kind</label>"
+            f"<select id='ca-kind' name='kind'>{options}</select></div>"
+            f"<div class='field'><label for='ca-production'>Production</label>{box}</div>")
 
 
 def _crawl_approval_form(slug: str, target: str, production: bool = False) -> str:
@@ -55,11 +58,13 @@ def _crawl_approval_form(slug: str, target: str, production: bool = False) -> st
         f"<form method='post' action='/projects/{safe}/crawl-approval'>"
         f"<p>Signed by <code>{escape(_signer() or 'nobody - sign in first')}</code></p>"
         f"{_kind_and_production(production)}"
-        "<div class='field'><label>Scope</label>"
-        "<input name='scope' required placeholder='what this crawl may read and click'></div>"
-        "<div class='field'><label>Expires at</label>"
-        "<input type='datetime-local' name='expires_at' required></div>"
-        "<div class='field'><label>UTC offset in minutes (auto-detected)</label>"
+        "<div class='field'><label for='ca-scope'>Scope</label>"
+        "<input id='ca-scope' name='scope' required "
+        "placeholder='what this crawl may read and click'></div>"
+        "<div class='field'><label for='ca-expires'>Expires at</label>"
+        "<input id='ca-expires' type='datetime-local' name='expires_at' required></div>"
+        "<div class='field'><label for='crawl-timezone-offset'>"
+        "UTC offset in minutes (auto-detected)</label>"
         "<input type='number' id='crawl-timezone-offset' name='timezone_offset_minutes' "
         "min='-840' max='840' value='0' required></div>"
         "<script>const expiry=document.querySelector(\"[name='expires_at']\");"
@@ -69,14 +74,17 @@ def _crawl_approval_form(slug: str, target: str, production: bool = False) -> st
         "String(-selected.getTimezoneOffset());};"
         "expiry.addEventListener('change',syncOffset);"
         "expiry.form.addEventListener('submit',syncOffset);</script>"
-        "<div class='field'><label>Maximum actions</label>"
-        "<input type='number' name='max_actions' min='1' value='200' required></div>"
-        "<div class='field'><label>Maximum probes (0 grants none)</label>"
-        "<input type='number' name='max_probes' min='0' max='40000' value='4000' required></div>"
-        "<div class='field'><label>Wall clock (seconds)</label>"
-        "<input type='number' name='wall_clock_s' min='1' step='any' value='600' required></div>"
-        "<div class='field'><label>Note (optional)</label>"
-        "<input name='note' placeholder='why this crawl is approved'></div>"
+        "<div class='field'><label for='ca-actions'>Maximum actions</label>"
+        "<input id='ca-actions' type='number' name='max_actions' min='1' value='200' "
+        "required></div>"
+        "<div class='field'><label for='ca-probes'>Maximum probes (0 grants none)</label>"
+        "<input id='ca-probes' type='number' name='max_probes' min='0' max='40000' "
+        "value='4000' required></div>"
+        "<div class='field'><label for='ca-wall'>Wall clock (seconds)</label>"
+        "<input id='ca-wall' type='number' name='wall_clock_s' min='1' step='any' "
+        "value='600' required></div>"
+        "<div class='field'><label for='ca-note'>Note (optional)</label>"
+        "<input id='ca-note' name='note' placeholder='why this crawl is approved'></div>"
         "<button type='submit'>Save crawl approval</button></form>"
     )
     return f"<section id='crawl-approval'>{theme.card(form, title='Approve a run')}</section>"

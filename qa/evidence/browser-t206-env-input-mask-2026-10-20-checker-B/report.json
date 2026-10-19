@@ -1,0 +1,239 @@
+{
+  "pages": {
+    "env": {
+      "audit": {
+        "total": 18,
+        "unlabelled": []
+      },
+      "controls": [
+        {
+          "type": "text",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for DEMO_EMAIL"
+        },
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for DEMO_PASSWORD"
+        },
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for DEMO_API_KEY"
+        },
+        {
+          "type": "text",
+          "name": "base_url",
+          "labels": [
+            "Platform URL (base URL)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "text",
+          "name": "allowed_domains",
+          "labels": [
+            "Allowed domains (comma-separated \u2014 the browser's hard boundary)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "text",
+          "name": "key",
+          "labels": [
+            "Key (UPPER_SNAKE_CASE)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [
+            "Value"
+          ],
+          "aria": null
+        },
+        {
+          "type": "text",
+          "name": "domains",
+          "labels": [
+            "Allowed domains (where it may be typed)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "text",
+          "name": "description",
+          "labels": [
+            "Description (optional)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "select-one",
+          "name": "kind",
+          "labels": [
+            "Kind"
+          ],
+          "aria": null
+        },
+        {
+          "type": "checkbox",
+          "name": "production",
+          "labels": [
+            "Production"
+          ],
+          "aria": null
+        },
+        {
+          "type": "text",
+          "name": "scope",
+          "labels": [
+            "Scope"
+          ],
+          "aria": null
+        },
+        {
+          "type": "datetime-local",
+          "name": "expires_at",
+          "labels": [
+            "Expires at"
+          ],
+          "aria": null
+        },
+        {
+          "type": "number",
+          "name": "timezone_offset_minutes",
+          "labels": [
+            "UTC offset in minutes (auto-detected)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "number",
+          "name": "max_actions",
+          "labels": [
+            "Maximum actions"
+          ],
+          "aria": null
+        },
+        {
+          "type": "number",
+          "name": "max_probes",
+          "labels": [
+            "Maximum probes (0 grants none)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "number",
+          "name": "wall_clock_s",
+          "labels": [
+            "Wall clock (seconds)"
+          ],
+          "aria": null
+        },
+        {
+          "type": "text",
+          "name": "note",
+          "labels": [
+            "Note (optional)"
+          ],
+          "aria": null
+        }
+      ]
+    },
+    "providers": {
+      "audit": {
+        "total": 7,
+        "unlabelled": []
+      },
+      "controls": [
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for ANTHROPIC_API_KEY"
+        },
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for GEMINI_API_KEY"
+        },
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for GOOGLE_API_KEY"
+        },
+        {
+          "type": "text",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for OLLAMA_BASE_URL"
+        },
+        {
+          "type": "text",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for OLLAMA_MODEL"
+        },
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for OLLAMA_API_KEY"
+        },
+        {
+          "type": "password",
+          "name": "value",
+          "labels": [],
+          "aria": "Value for OPENAI_API_KEY"
+        }
+      ]
+    },
+    "/projects/demo": {
+      "status": 200,
+      "audit": {
+        "total": 12,
+        "unlabelled": []
+      }
+    },
+    "/projects/demo/crawl-approval": {
+      "status": 405,
+      "audit": {
+        "total": 0,
+        "unlabelled": []
+      }
+    }
+  },
+  "add_value_type": "password",
+  "add_value_dom_value_len": 22,
+  "add_value_typed_matches": true,
+  "typed_in_visible_text": false,
+  "tab_order_add_form": [
+    "ac-key",
+    "ac-value",
+    "ac-domains",
+    "ac-description",
+    "BUTTON",
+    "ca-kind"
+  ],
+  "label_click_focuses_value": "ac-value",
+  "pw_row_type_before": "password",
+  "pw_row_type_after_show": "text",
+  "pw_row_type_after_hide": "password",
+  "row_aria": "Value for DEMO_PASSWORD",
+  "console_errors": {
+    "/projects/demo/crawl-approval": [
+      [
+        "error",
+        "Failed to load resource: the server responded with a status of 405 (Method Not Allowed)"
+      ]
+    ]
+  }
+}

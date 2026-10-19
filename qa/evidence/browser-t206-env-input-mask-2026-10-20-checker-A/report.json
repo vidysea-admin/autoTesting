@@ -1,0 +1,20 @@
+{
+  "unit": "t206-env-input-mask", "checker": "A", "head": "d0e6b08b", "code_sha": "e6640a2f",
+  "app": {"port": 8231, "root": "synthetic scratch AUTOTESTER_ROOT", "auth": "AUTOTESTER_AUTH_DISABLED=1 loopback", "pids_started_and_killed": [32144, 33672]},
+  "browser": "playwright MCP (chromium)",
+  "pages": {
+    "/projects/demo/env": {"controls": 23, "unnamed": 0, "console_errors": 0, "console_verbose": 2, "note": "2 verbose DOM autocomplete hints, no errors"},
+    "/settings/providers": {"controls": 19, "unnamed": 0, "console_errors": 0}
+  },
+  "interaction": {
+    "add_value_type_before_and_while_typing": "password",
+    "autocomplete": "new-password",
+    "typed_25_chars_visible_in_page_text": false,
+    "computed_webkitTextSecurity": "disc",
+    "screenshot": "t206A-add-form-masked.png (dots shown)",
+    "keyboard_tab_order": ["ac-key", "ac-value:password", "ac-domains", "ac-description", "Add credential button", "ca-kind select"],
+    "submit_with_wrong_prefix": "400 'must start with DEMO_' = expected app refusal from my own synthetic input; the only console error seen (Failed to load resource 400)",
+    "submit_ok": "DEMO_TOKEN_KEY row created; its row input is type=password, aria-label 'Value for DEMO_TOKEN_KEY'"
+  },
+  "data": "synthetic only (DEMO_* keys, SYNTH-* values); no real .env, no Pathlynks traffic"
+}
