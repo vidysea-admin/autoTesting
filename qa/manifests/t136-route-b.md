@@ -83,4 +83,4 @@ Red-before for the new module: on the base tree `tests/test_crawl_findings.py` f
 ## Live browser evidence
 Not UI-touching - no surface changed. Changed paths: src/autotester/stages/crawl_findings.py, src/autotester/stages/bench.py, src/autotester/stages/bench_from_run.py, src/autotester/stages/acceptance_comparison.py, src/autotester/schema/bench.py, src/autotester/schema/acceptance.py, scripts/bench_from_run.py, scripts/check_acceptance_comparison.py, docs/MAP.md, tests/test_crawl_findings.py (stored-file converter and CLI; no browser, no UI route).
 
-## Status: ready-for-check
+## Status: checked-PASS
