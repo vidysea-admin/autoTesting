@@ -1,11 +1,12 @@
 # Manifest - crawl-redact-timestamp (T-136 live r5: a short numeric .env secret corrupted crawl timestamps and the crawl stayed running)
 
 **Status:** ready-for-check
-**Fix cycle:** 1 of max 2
-**Repair base:** 6e94d128
+**Fix cycle:** 2 of max 2
+**Repair base:** 943b0655
 **Contract:** qa/contracts/explore.md (X11), qa/contracts/core-invariants.md (redaction: no raw secret reaches disk); no contract edited
 **Goal task:** T-136 (live run r5, `.work/t136-live-report-r5.md`)
 **Dual check:** no
+Round cap: (a) SECURITY CLASS -- credential handling: the unit scrubs secret values out of crawl summaries before they are persisted (src/autotester/stages/explore_summary.py:67); D-014 does not cap it.
 dual-waiver: small-security 0 lines; prior-dual qa/verdicts/crawl-redact-timestamp-A.md
 Dual-check note (maker): cycle 0 was dual-checked (A and B PASS). The cycle-1 repair changes only tests/test_explore_replay.py (+4 lines, a test double); no product line in the security-triggered files changes, so security behaviour is unchanged.
 **Persona walk:** skip (no UI surface)
@@ -29,6 +30,12 @@ Tests[C1-fix]: tests/test_explore_replay.py::test_a_replay_that_lands_off_domain
 Pre-check[C1-fix]: 74120f36 uv run pytest tests/test_explore_replay.py tests/test_crawl_redact_timestamp.py -> 16 passed t=39 blobs=tests/test_explore_replay.py (committed 74120f36)
 Falsify[C1]: red@6e94d128 green@74120f36 - the 4 nodes (test_a_replay_that_lands_off_domain_is_refused_and_recorded[click], [fill], test_the_off_domain_replay_refusal_is_recorded_as_an_edge_a_surface_can_show, test_a_refill_that_leaves_the_domain_is_caught_before_the_submit_is_clicked) failed with the AttributeError on the unchanged head, pass after the fix
 Metrics-cycle1: defects_6c=1
+
+## Fix cycle 2 (repair check c1 FAIL ce1efcaa: doctor file-too-long 301 > 300)
+
+Removed the one-line comment in the `_Redactor.scrub` double (tests/test_explore_replay.py), back to 300 lines. Test-only; no product line changed.
+Pre-check[C1-fix2]: WORKTREE uv run pytest tests/test_explore_replay.py tests/test_crawl_redact_timestamp.py -> 16 passed; uv run autotester doctor -> no file-too-long; ruff clean
+Metrics-cycle2: defects_unit=1 (doctor)
 
 ## Verification scope
 Policy-Version: proportional-verification/2026-10-19.17
