@@ -34,7 +34,7 @@ Metrics-cycle1: defects_6c=1
 ## Fix cycle 2 (repair check c1 FAIL ce1efcaa: doctor file-too-long 301 > 300)
 
 Removed the one-line comment in the `_Redactor.scrub` double (tests/test_explore_replay.py), back to 300 lines. Test-only; no product line changed.
-Pre-check[C1-fix2]: WORKTREE uv run pytest tests/test_explore_replay.py tests/test_crawl_redact_timestamp.py -> 16 passed; uv run autotester doctor -> no file-too-long; ruff clean
+Pre-check[C1-fix2]: 9f1d0a46 uv run pytest tests/test_explore_replay.py tests/test_crawl_redact_timestamp.py -> 16 passed; uv run autotester doctor -> no file-too-long; ruff clean
 Metrics-cycle2: defects_unit=1 (doctor)
 
 ## Verification scope
